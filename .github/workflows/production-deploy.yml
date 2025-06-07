@@ -28,6 +28,8 @@ permissions:
   contents: read
   packages: write
   deployments: write
+  actions: read
+  security-events: write
 
 env:
   REGISTRY: ghcr.io
@@ -44,7 +46,7 @@ jobs:
       deployment_id: ${{ steps.deployment.outputs.deployment_id }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4
 
       - name: Create deployment
         id: deployment
@@ -92,10 +94,10 @@ jobs:
     if: needs.pre-deployment-checks.outputs.should_deploy == 'true'
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.31.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -103,6 +105,7 @@ jobs:
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
+        continue-on-error: false
 
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v3
@@ -120,13 +123,13 @@ jobs:
         service: ['auth_service', 'ac_service', 'integrity_service', 'fv_service', 'gs_service', 'pgc_service', 'ec_service']
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.4.0
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Container Registry
-        uses: docker/login-action@v3.2.0
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -134,7 +137,7 @@ jobs:
 
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@v5.5.1
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}
           tags: |
@@ -145,7 +148,7 @@ jobs:
             type=raw,value=production-{{sha}},enable={{is_default_branch}}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6.5.0
+        uses: docker/build-push-action@v6
         with:
           context: src/backend/${{ matrix.service }}
           file: src/backend/${{ matrix.service }}/Dockerfile
@@ -166,7 +169,7 @@ jobs:
       url: https://api.acgs-pgp.com
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4
 
       - name: Make scripts executable
         run: |
@@ -174,7 +177,7 @@ jobs:
           # Add other scripts here if needed in the future
 
       - name: Set up kubectl
-        uses: azure/setup-kubectl@v3
+        uses: azure/setup-kubectl@v4
         with:
           version: 'v1.28.0'
 
@@ -186,8 +189,15 @@ jobs:
 
       - name: Deploy to Blue Environment
         run: |
+          set -euo pipefail  # Exit on error, undefined vars, pipe failures
           export KUBECONFIG=/tmp/kubeconfig
-          
+
+          # Validate required environment variables
+          if [[ -z "${{ env.REGISTRY }}" ]] || [[ -z "${{ env.IMAGE_NAME }}" ]] || [[ -z "${{ github.sha }}" ]]; then
+            echo "ERROR: Required environment variables are missing"
+            exit 1
+          fi
+
           # Update image tags for blue deployment
           sed -i "s|image: .*auth-service:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/auth_service:production-${{ github.sha }}|g" config/k8s/auth-service.yaml
           sed -i "s|image: .*ac-service:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ac_service:production-${{ github.sha }}|g" config/k8s/ac-service.yaml
@@ -195,15 +205,24 @@ jobs:
           sed -i "s|image: .*fv-service:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/fv_service:production-${{ github.sha }}|g" config/k8s/fv-service.yaml
           sed -i "s|image: .*gs-service:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/gs_service:production-${{ github.sha }}|g" config/k8s/gs-service.yaml
           sed -i "s|image: .*pgc-service:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/pgc_service:production-${{ github.sha }}|g" config/k8s/pgc-service.yaml
-          
+
           # Create blue namespace if it doesn't exist
-          kubectl create namespace acgs-pgp-blue --dry-run=client -o yaml | kubectl apply -f -
-          
+          kubectl create namespace acgs-pgp-blue --dry-run=client -o yaml | kubectl apply -f - || {
+            echo "ERROR: Failed to create blue namespace"
+            exit 1
+          }
+
           # Deploy to blue environment
-          kubectl apply -f config/k8s/ -n acgs-pgp-blue
-          
+          kubectl apply -f config/k8s/ -n acgs-pgp-blue || {
+            echo "ERROR: Failed to deploy to blue environment"
+            exit 1
+          }
+
           # Wait for blue deployment to be ready
-          kubectl wait --for=condition=available --timeout=600s deployment --all -n acgs-pgp-blue
+          kubectl wait --for=condition=available --timeout=600s deployment --all -n acgs-pgp-blue || {
+            echo "ERROR: Blue deployment failed to become ready within timeout"
+            exit 1
+          }
 
       - name: Run Health Checks on Blue
         env:
@@ -230,23 +249,35 @@ jobs:
 
       - name: Post-deployment Verification
         run: |
+          set -euo pipefail
           export KUBECONFIG=/tmp/kubeconfig
-          
+
           # Wait for traffic switch to complete
           sleep 30
-          
+
           # Run integration tests against production
           echo "Running post-deployment verification..."
-          
-          # Test API endpoints
-          curl -f https://api.acgs-pgp.com/api/v1/auth/health --max-time 30
-          curl -f https://api.acgs-pgp.com/api/v1/ac/health --max-time 30
-          curl -f https://api.acgs-pgp.com/api/v1/integrity/health --max-time 30
-          curl -f https://api.acgs-pgp.com/api/v1/fv/health --max-time 30
-          curl -f https://api.acgs-pgp.com/api/v1/gs/health --max-time 30
-          curl -f https://api.acgs-pgp.com/api/v1/pgc/health --max-time 30
-          
-          echo "✅ Post-deployment verification completed"
+
+          # Test API endpoints with proper error handling
+          ENDPOINTS=(
+            "https://api.acgs-pgp.com/api/v1/auth/health"
+            "https://api.acgs-pgp.com/api/v1/ac/health"
+            "https://api.acgs-pgp.com/api/v1/integrity/health"
+            "https://api.acgs-pgp.com/api/v1/fv/health"
+            "https://api.acgs-pgp.com/api/v1/gs/health"
+            "https://api.acgs-pgp.com/api/v1/pgc/health"
+          )
+
+          for endpoint in "${ENDPOINTS[@]}"; do
+            echo "Testing endpoint: $endpoint"
+            if ! curl -f "$endpoint" --max-time 30 --retry 3 --retry-delay 5; then
+              echo "ERROR: Health check failed for $endpoint"
+              exit 1
+            fi
+            echo "✅ $endpoint is healthy"
+          done
+
+          echo "✅ Post-deployment verification completed successfully"
 
       - name: Cleanup Green Environment
         if: success()
