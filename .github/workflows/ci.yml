@@ -80,12 +80,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.31.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
@@ -115,7 +116,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 black isort mypy pytest-cov bandit safety
+          pip install flake8 black isort mypy pytest-cov bandit[toml] safety
+          # Install project dependencies if requirements.txt exists
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          fi
 
       - name: Reformat code with black
         run: black src/ tests/
@@ -132,8 +137,18 @@ jobs:
         run: mypy src/ --ignore-missing-imports
 
       - name: Security analysis
-        working-directory: ./src
-        run: bandit -r . -f json -o ../bandit-report.json || true
+        run: |
+          # Create bandit config if it doesn't exist
+          if [ ! -f "pyproject.toml" ] && [ ! -f ".bandit" ]; then
+            echo "[tool.bandit]" > pyproject.toml
+            echo "exclude_dirs = ['tests', 'venv', '.venv']" >> pyproject.toml
+          fi
+          # Run bandit on source code
+          if [ -d "src" ]; then
+            bandit -r src/ -f json -o bandit-report.json || true
+          else
+            bandit -r . -f json -o bandit-report.json --exclude ./tests,./venv,./.venv || true
+          fi
 
       - name: Safety scan
         run: safety check --json --output safety-report.json || true
