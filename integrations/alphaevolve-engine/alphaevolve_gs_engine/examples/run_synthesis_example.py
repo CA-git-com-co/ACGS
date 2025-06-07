@@ -22,10 +22,10 @@ src_dir = os.path.join(os.path.dirname(os.path.dirname(current_dir)), "src")
 if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
 
-from alphaevolve_gs_engine.services.llm_service import get_llm_service, MockLLMService
-from alphaevolve_gs_engine.services.policy_synthesizer import LLMPolicyGenerator, PolicySynthesisInput
-from alphaevolve_gs_engine.utils.logging_utils import setup_logger
-from alphaevolve_gs_engine.core.constitutional_principle import ConstitutionalPrinciple
+from integrations.alphaevolve_engine.services.llm_service import get_llm_service, MockLLMService
+from integrations.alphaevolve_engine.services.policy_synthesizer import LLMPolicyGenerator, PolicySynthesisInput
+from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
+from integrations.alphaevolve_engine.core.constitutional_principle import ConstitutionalPrinciple
 
 # Setup logger for the example
 logger = setup_logger("PolicySynthesisExample", level="INFO") # Use "DEBUG" for more verbosity

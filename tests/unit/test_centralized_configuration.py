@@ -7,7 +7,7 @@ import json
 from unittest.mock import patch
 from pathlib import Path
 
-from src.backend.shared.utils import (
+from services.shared.utils import (
     ACGSConfig, ACGSConfigModel, Environment,
     DatabaseConfig, ServiceUrlsConfig, SecurityConfig,
     AIModelConfig, MonitoringConfig
@@ -258,7 +258,7 @@ OPENAI_API_KEY=test-openai-key
 
     def test_config_caching_and_reset(self, temp_env_file):
         """Test configuration caching and reset functionality."""
-        from src.backend.shared.utils import get_config, reset_config
+        from services.shared.utils import get_config, reset_config
         
         # Reset any existing config
         reset_config()

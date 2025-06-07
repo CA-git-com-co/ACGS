@@ -12,10 +12,10 @@ from dataclasses import dataclass
 from enum import Enum
 
 # Import schemas and models
-from src.backend.ac_service.app.schemas import (
+from services.core.constitutional_ai.app.schemas import (
     ACAmendmentCreate, ACAmendmentVoteCreate, ACAmendmentCommentCreate
 )
-from src.backend.shared.models import ACAmendment, ACAmendmentVote, User
+from services.shared.models import ACAmendment, ACAmendmentVote, User
 
 
 class VotingBehavior(Enum):

@@ -11,7 +11,7 @@ import sys
 import os
 
 # Add the parent directory to the path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # Removed during reorganization
 
 from unittest.mock import Mock, patch, AsyncMock
 

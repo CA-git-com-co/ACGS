@@ -5,7 +5,7 @@ import asyncio
 from unittest.mock import Mock, patch
 from datetime import datetime, timezone
 
-from src.backend.fv_service.app.core.enhanced_multi_model_validation import (
+from services.core.formal_verification.app.core.enhanced_multi_model_validation import (
     EnhancedMultiModelValidator,
     ValidationContext,
     ValidationError,
@@ -15,7 +15,7 @@ from src.backend.fv_service.app.core.enhanced_multi_model_validation import (
     create_enhanced_multi_model_validator,
     create_validation_context
 )
-from src.backend.fv_service.app.schemas import ValidationResult
+from services.core.formal_verification.app.schemas import ValidationResult
 
 
 class TestEnhancedMultiModelValidator:

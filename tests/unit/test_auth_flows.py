@@ -14,7 +14,7 @@ sys.path.insert(0, str(project_root / "src/backend"))
 
 # Mock shared modules to avoid import errors
 try:
-    from src.backend.auth_service.app.core.config import settings # For API prefixes
+    from services.platform.authentication.app.core.config import settings # For API prefixes
     AUTH_CONFIG_AVAILABLE = True
 except ImportError:
     # Mock settings when not available
@@ -25,7 +25,7 @@ except ImportError:
     AUTH_CONFIG_AVAILABLE = False
 
 try:
-    from src.backend.shared.schemas.user import UserCreate # For type hinting if needed, though client sends JSON
+    from services.shared.schemas.user import UserCreate # For type hinting if needed, though client sends JSON
     USER_SCHEMA_AVAILABLE = True
 except ImportError:
     # Mock UserCreate when not available
@@ -33,7 +33,7 @@ except ImportError:
     USER_SCHEMA_AVAILABLE = False
 
 try:
-    from src.backend.auth_service.app.core import security # For direct calls if needed for test setup, e.g. password hashing
+    from services.platform.authentication.app.core import security # For direct calls if needed for test setup, e.g. password hashing
     SECURITY_AVAILABLE = True
 except ImportError:
     # Mock security module when not available
@@ -366,7 +366,7 @@ async def test_refresh_token_revoked_in_db_after_logout(client: AsyncClient):
 
 @pytest.mark.skipif(not AUTH_CONFIG_AVAILABLE, reason="Auth service components not available")
 async def test_rate_limit_enforcement(monkeypatch):
-    from src.backend.auth_service.app.core import limiter as limiter_module
+    from services.platform.authentication.app.core import limiter as limiter_module
     call_count = {"count": 0}
     def dummy_limit(rate):
         def decorator(func):

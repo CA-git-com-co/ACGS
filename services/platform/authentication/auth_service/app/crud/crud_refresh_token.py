@@ -1,7 +1,7 @@
 # acgspcp-main/auth_service/app/crud/crud_refresh_token.py
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
-from shared.models import RefreshToken # Ensure shared.models has RefreshToken
+from services.shared.models import RefreshToken # Ensure shared.models has RefreshToken
 from datetime import datetime, timezone
 from typing import Optional
 

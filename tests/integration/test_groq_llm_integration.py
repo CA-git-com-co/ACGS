@@ -75,7 +75,7 @@ class GroqLLMIntegrationTest:
         logger.info("Testing AlphaEvolve GS Engine Groq Integration...")
         
         try:
-            from alphaevolve_gs_engine.services.llm_service import get_llm_service, GroqLLMService
+            from integrations.alphaevolve_engine.services.llm_service import get_llm_service, GroqLLMService
             
             # Test each Groq model
             for model in self.groq_models:
@@ -171,7 +171,7 @@ class GroqLLMIntegrationTest:
             return
         
         try:
-            from alphaevolve_gs_engine.services.llm_service import GroqLLMService
+            from integrations.alphaevolve_engine.services.llm_service import GroqLLMService
             
             performance_results = {}
             

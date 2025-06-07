@@ -28,7 +28,7 @@ sys.path.insert(0, str(project_root / "src/backend"))
 
 # Import WINA components - using mock implementations for testing
 try:
-    from src.backend.shared.wina import (
+    from services.shared.wina import (
         WINAConfig,
         WINAIntegrationConfig,
         WINAModelIntegrator,
@@ -36,9 +36,9 @@ try:
         ModelWeightInfo,
         WINAOptimizationResult
     )
-    from src.backend.shared.wina.model_integration import WINAModelIntegrator
-    from src.backend.shared.wina.svd_transformation import SVDTransformation
-    from src.backend.shared.wina.exceptions import WINAError, WINAOptimizationError
+    from services.shared.wina.model_integration import WINAModelIntegrator
+    from services.shared.wina.svd_transformation import SVDTransformation
+    from services.shared.wina.exceptions import WINAError, WINAOptimizationError
     WINA_AVAILABLE = True
 except ImportError:
     # Mock WINA components for testing when not available
@@ -56,13 +56,13 @@ except ImportError:
 
 # Import GS Engine components - using mock implementations for testing
 try:
-    from src.backend.gs_service.app.core.wina_llm_integration import (
+    from services.core.governance_synthesis.app.core.wina_llm_integration import (
         WINAOptimizedLLMClient,
         WINAOptimizedSynthesisResult,
         get_wina_optimized_llm_client,
         query_llm_with_wina_optimization
     )
-    from src.backend.gs_service.app.schemas import LLMInterpretationInput, ConstitutionalSynthesisInput
+    from services.core.governance_synthesis.app.schemas import LLMInterpretationInput, ConstitutionalSynthesisInput
     GS_WINA_AVAILABLE = True
 except ImportError:
     # Mock GS Engine components for testing when not available

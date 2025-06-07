@@ -11,14 +11,14 @@ from typing import Dict, Any, List, Optional
 from pydantic import BaseModel, Field
 import logging
 
-from shared.auth import get_current_active_user as get_current_user
-from shared.database import get_async_db
+from services.shared.auth import get_current_active_user as get_current_user
+from services.shared.database import get_async_db
 from app.workflows.workflow_manager import get_workflow_manager
 from app.workflows.constitutional_council_graph import (
     execute_constitutional_council_workflow,
     AmendmentProposalInput
 )
-from shared.models import User
+from services.shared.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)

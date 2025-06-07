@@ -14,9 +14,9 @@ from typing import Dict, Any
 # Import QEC enhancement components
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'alphaevolve_gs_engine', 'src'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'alphaevolve_gs_engine', 'src'))  # Removed during reorganization
 
-from alphaevolve_gs_engine.services.qec_enhancement import (
+from integrations.alphaevolve_engine.services.qec_enhancement import (
     ConstitutionalDistanceCalculator,
     ValidationDSLParser,
     ErrorPredictionModel,
@@ -25,7 +25,7 @@ from alphaevolve_gs_engine.services.qec_enhancement import (
     SynthesisAttemptLog,
     RecoveryStrategy
 )
-from alphaevolve_gs_engine.core.constitutional_principle import ConstitutionalPrinciple
+from integrations.alphaevolve_engine.core.constitutional_principle import ConstitutionalPrinciple
 
 # Mock GS service components for testing
 class MockLLMInterpretationInput:

@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from typing import Dict, List, Any
 
 # Add the federated service to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
 # Test fixtures
 @pytest.fixture

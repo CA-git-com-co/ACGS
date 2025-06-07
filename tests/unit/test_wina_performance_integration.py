@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 # We'll use relative imports for the EC service components
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))  # Removed during reorganization
 
 try:
     from ec_service.app.main import app, get_wina_coordinator, get_wina_performance_collector

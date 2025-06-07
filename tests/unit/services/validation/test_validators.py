@@ -27,21 +27,21 @@ src_path = os.path.join(project_root, 'src')
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
 
-from alphaevolve_gs_engine.services.validation.syntactic_validator import SyntacticValidator
-from alphaevolve_gs_engine.services.validation.semantic_validator import ScenarioBasedSemanticValidator, SemanticTestCase
-from alphaevolve_gs_engine.services.validation.formal_verifier import MockFormalVerifier, FormalVerificationProperty
-from alphaevolve_gs_engine.services.validation.safety_validator import (
+from integrations.alphaevolve_engine.services.validation.syntactic_validator import SyntacticValidator
+from integrations.alphaevolve_engine.services.validation.semantic_validator import ScenarioBasedSemanticValidator, SemanticTestCase
+from integrations.alphaevolve_engine.services.validation.formal_verifier import MockFormalVerifier, FormalVerificationProperty
+from integrations.alphaevolve_engine.services.validation.safety_validator import (
     PatternBasedSafetyValidator, 
     SimulationBasedSafetyValidator, # This is mocked for simulation part
     SafetyAssertion
 )
-from alphaevolve_gs_engine.services.validation.bias_validator import (
+from integrations.alphaevolve_engine.services.validation.bias_validator import (
     FairnessMetricValidator, # OPA part is mocked in its example, will be here too
     LLMBiasReviewer,         # LLM part is mocked
     BiasMetric
 )
-from alphaevolve_gs_engine.services.validation.conflict_validator import OPAConflictDetector, ConflictDefinition
-from alphaevolve_gs_engine.services.llm_service import get_llm_service # For LLMBiasReviewer
+from integrations.alphaevolve_engine.services.validation.conflict_validator import OPAConflictDetector, ConflictDefinition
+from integrations.alphaevolve_engine.services.llm_service import get_llm_service # For LLMBiasReviewer
 
 
 # Helper: Define some common Rego policies for testing

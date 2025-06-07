@@ -23,9 +23,9 @@ if src_path not in sys.path:
     sys.path.insert(0, src_path)
 
 
-from alphaevolve_gs_engine.core.constitutional_principle import ConstitutionalPrinciple
-from alphaevolve_gs_engine.core.operational_rule import OperationalRule
-from alphaevolve_gs_engine.core.amendment import Amendment
+from integrations.alphaevolve_engine.core.constitutional_principle import ConstitutionalPrinciple
+from integrations.alphaevolve_engine.core.operational_rule import OperationalRule
+from integrations.alphaevolve_engine.core.amendment import Amendment
 
 class TestConstitutionalPrinciple(unittest.TestCase):
     """Tests for the ConstitutionalPrinciple class."""

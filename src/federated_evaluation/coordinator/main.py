@@ -6,7 +6,7 @@ from fastapi import FastAPI, Body
 import logging
 
 # Add the proto directory to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'proto'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'proto'))  # Removed during reorganization
 import evaluation_pb2
 import evaluation_pb2_grpc
 

@@ -10,7 +10,7 @@ from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared.database import get_async_db
+from services.shared.database import get_async_db
 from shared.wina.constitutional_integration import (
     WINAConstitutionalPrincipleAnalyzer,
     WINAConstitutionalUpdateService,

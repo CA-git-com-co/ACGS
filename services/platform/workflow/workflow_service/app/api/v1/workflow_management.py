@@ -13,8 +13,8 @@ from ...core.workflow_engine import workflow_engine, WorkflowType, WorkflowStatu
 from ...monitoring.workflow_monitor import workflow_monitor, AlertSeverity
 from ...recovery.workflow_recovery import recovery_manager, RecoveryAction, CheckpointType
 from ...testing.automated_validator import automated_validator, TestType
-from shared.database import get_async_db
-from shared.auth import get_current_active_user, User
+from services.shared.database import get_async_db
+from services.shared.auth import get_current_active_user, User
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

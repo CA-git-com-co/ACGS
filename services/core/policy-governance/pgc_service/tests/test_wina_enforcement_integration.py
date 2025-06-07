@@ -13,18 +13,18 @@ from datetime import datetime, timedelta
 
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))  # Removed during reorganization
 
 try:
-    from src.backend.pgc_service.app.main import app
-    from src.backend.pgc_service.app.core.wina_enforcement_optimizer import (
+    from services.core.policy_governance.app.main import app
+    from services.core.policy_governance.app.core.wina_enforcement_optimizer import (
         WINAEnforcementOptimizer,
         EnforcementContext,
         EnforcementStrategy,
         WINAEnforcementResult,
         WINAEnforcementMetrics
     )
-    from src.backend.pgc_service.app import schemas
+    from services.core.policy_governance.app import schemas
 except ImportError:
     # Mock implementations for testing when modules are not available
     from enum import Enum

@@ -1,5 +1,5 @@
 # Import shared authentication utilities
-from shared.auth import (
+from services.shared.auth import (
     get_current_user_from_token,
     get_current_active_user,
     require_admin,

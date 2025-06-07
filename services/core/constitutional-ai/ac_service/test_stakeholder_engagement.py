@@ -17,8 +17,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from shared.database import Base
-from shared.models import User
+from services.shared.database import Base
+from services.shared.models import User
 from app.models import ACAmendment
 from app.services.stakeholder_engagement import (
     StakeholderNotificationService,

@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from dataclasses import dataclass
 from enum import Enum
 
-from shared.models import DomainContext, Principle
+from services.shared.models import DomainContext, Principle
 
 logger = logging.getLogger(__name__)
 

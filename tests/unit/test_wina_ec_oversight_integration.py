@@ -25,8 +25,8 @@ from unittest.mock import Mock, patch, AsyncMock
 # Import the modules under test
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'ec_service', 'app'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'shared'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'ec_service', 'app'))  # Removed during reorganization
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'shared'))  # Removed during reorganization
 
 from core.wina_oversight_coordinator import (
     WINAECOversightCoordinator,

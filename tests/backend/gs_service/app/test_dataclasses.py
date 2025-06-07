@@ -18,7 +18,7 @@ shared_mod.auth = auth_mod
 sys.modules.setdefault("shared", shared_mod)
 sys.modules.setdefault("shared.auth", auth_mod)
 
-from src.backend.gs_service.app.core.llm_reliability_framework import ConstitutionalPrinciple, SynthesisContext
+from services.core.governance_synthesis.app.core.llm_reliability_framework import ConstitutionalPrinciple, SynthesisContext
 
 import pytest
 

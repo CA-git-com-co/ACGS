@@ -32,10 +32,10 @@ if backend_path not in sys.path:
 
 # Import the enhanced components with fallback
 try:
-    from src.backend.gs_service.app.services.lipschitz_estimator import (
+    from services.core.governance_synthesis.app.services.lipschitz_estimator import (
         LipschitzEstimator, LipschitzEstimationConfig, LipschitzEstimationResult
     )
-    from src.backend.gs_service.app.core.llm_reliability_framework import (
+    from services.core.governance_synthesis.app.core.llm_reliability_framework import (
         LLMReliabilityFramework, LLMReliabilityConfig, ReliabilityLevel
     )
     LIPSCHITZ_AVAILABLE = True
@@ -51,7 +51,7 @@ except ImportError:
     LIPSCHITZ_AVAILABLE = False
 
 try:
-    from src.backend.ac_service.app.core.constitutional_council_scalability import (
+    from services.core.constitutional_ai.app.core.constitutional_council_scalability import (
         ConstitutionalCouncilScalabilityFramework, ScalabilityConfig, CoEvolutionMode
     )
     CONSTITUTIONAL_COUNCIL_AVAILABLE = True
@@ -64,7 +64,7 @@ except ImportError:
     CONSTITUTIONAL_COUNCIL_AVAILABLE = False
 
 try:
-    from src.backend.fv_service.app.core.adversarial_robustness_tester import (
+    from services.core.formal_verification.app.core.adversarial_robustness_tester import (
         AdversarialRobustnessTester, AdversarialTestConfig, AdversarialTestType
     )
     ADVERSARIAL_AVAILABLE = True
@@ -77,7 +77,7 @@ except ImportError:
     ADVERSARIAL_AVAILABLE = False
 
 try:
-    from src.backend.pgc_service.app.core.proactive_fairness_generator import (
+    from services.core.policy_governance.app.core.proactive_fairness_generator import (
         ProactiveFairnessGenerator, FairnessGenerationConfig, FairnessMetric
     )
     FAIRNESS_AVAILABLE = True
@@ -185,7 +185,7 @@ class TestLLMReliabilityEnhancements:
 
         # Mock LLM input
         try:
-            from src.backend.gs_service.app.schemas import LLMInterpretationInput
+            from services.core.governance_synthesis.app.schemas import LLMInterpretationInput
             input_data = LLMInterpretationInput(
                 principle_id=1,
                 principle_content="AI systems must be fair and unbiased",
@@ -230,7 +230,7 @@ class TestLLMReliabilityEnhancements:
         bias_detector = framework.bias_detector
 
         try:
-            from src.backend.gs_service.app.schemas import LLMStructuredOutput
+            from services.core.governance_synthesis.app.schemas import LLMStructuredOutput
             biased_output = LLMStructuredOutput(
                 interpretations=[],
                 raw_llm_response="This policy applies to normal users with standard capabilities"
@@ -300,7 +300,7 @@ class TestConstitutionalCouncilScalability:
 
         # Mock amendment data
         try:
-            from src.backend.ac_service.app.schemas import ACAmendmentCreate
+            from services.core.constitutional_ai.app.schemas import ACAmendmentCreate
             amendment_data = ACAmendmentCreate(
                 principle_id=1,
                 amendment_type="modify",

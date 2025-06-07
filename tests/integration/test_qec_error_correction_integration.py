@@ -39,12 +39,12 @@ sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(project_root / "src/backend"))
 
 # Import models and services
-from src.backend.shared.models import ConstitutionalPrinciple, Policy, User
-from src.backend.shared.database import get_async_db
+from services.shared.models import ConstitutionalPrinciple, Policy, User
+from services.shared.database import get_async_db
 
 # Import QEC error correction services
 try:
-    from src.backend.gs_service.app.services.qec_error_correction_service import (
+    from services.core.governance_synthesis.app.services.qec_error_correction_service import (
         QECErrorCorrectionService,
         ConflictDetectionEngine,
         AutomaticResolutionWorkflow,

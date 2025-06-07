@@ -34,8 +34,8 @@ from pathlib import Path
 
 # Add project paths
 project_root = Path(__file__).parent
-sys.path.append(str(project_root))
-sys.path.append(str(project_root / "src" / "backend" / "shared"))
+# sys.path.append(str(project_root))  # Removed during reorganization
+# sys.path.append(str(project_root / "src" / "backend" / "shared"))  # Removed during reorganization
 
 class ComprehensiveIntegrationTestRunner:
     """Comprehensive integration test runner for ACGS-PGP production readiness."""

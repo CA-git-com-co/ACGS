@@ -7,7 +7,7 @@ import uuid
 import time
 from datetime import datetime, timedelta
 
-from shared.database import get_async_db
+from services.shared.database import get_async_db
 from app import schemas as gs_schemas
 from app.services.ac_client import ac_service_client as ac_client
 from app.core.constitutional_prompting import constitutional_prompt_builder

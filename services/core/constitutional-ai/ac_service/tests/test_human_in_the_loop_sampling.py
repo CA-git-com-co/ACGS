@@ -20,7 +20,7 @@ from app.services.human_in_the_loop_sampler import (
     UncertaintyDimension, SamplingTrigger
 )
 from app.services.human_escalation_system import EscalationLevel
-from shared.models import Principle
+from services.shared.models import Principle
 
 
 class TestHITLSamplingConfig:

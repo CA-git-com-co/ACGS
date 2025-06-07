@@ -25,11 +25,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, func, desc, text
 from sqlalchemy.orm import selectinload
 
-from shared.models import (
+from services.shared.models import (
     ConstitutionalViolation, ViolationAlert, ViolationEscalation,
     AuditLog, User
 )
-from shared.database import get_async_db
+from services.shared.database import get_async_db
 
 logger = logging.getLogger(__name__)
 

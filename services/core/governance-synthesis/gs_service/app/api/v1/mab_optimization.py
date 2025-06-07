@@ -11,8 +11,8 @@ from typing import Dict, List, Optional, Any
 import logging
 
 # Fix the import paths to use the full package path
-from shared.database import get_async_db
-from shared.auth import get_current_user_from_token, get_current_active_user
+from services.shared.database import get_async_db
+from services.shared.auth import get_current_user_from_token, get_current_active_user
 from app.core.mab_integration import MABIntegratedGSService
 from app.core.mab_prompt_optimizer import MABConfig, MABAlgorithm, PromptTemplate
 from app.schemas import ConstitutionalSynthesisInput, ConstitutionalSynthesisOutput

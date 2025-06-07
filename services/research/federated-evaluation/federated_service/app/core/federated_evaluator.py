@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from abc import ABC, abstractmethod
 
 # Core dependencies
-from shared.database import get_async_db
+from services.shared.database import get_async_db
 from shared.redis_client import get_redis_client
 
 logger = logging.getLogger(__name__)
@@ -476,8 +476,8 @@ class FederatedEvaluator:
     async def _store_evaluation_in_db(self, task: EvaluationTask, selected_nodes: List[str]):
         """Store evaluation task and node assignments in database."""
         try:
-            from shared.database import get_async_db
-            from shared.models import FederatedEvaluation, EvaluationNodeAssignment
+            from services.shared.database import get_async_db
+            from services.shared.models import FederatedEvaluation, EvaluationNodeAssignment
 
             async with get_async_db() as db:
                 # Create federated evaluation record

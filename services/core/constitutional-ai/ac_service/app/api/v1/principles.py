@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession # Changed
 from typing import List, Optional
 
 from app import crud, models, schemas # Import from app directory
-from shared.database import get_async_db # Corrected import for async db session
+from services.shared.database import get_async_db # Corrected import for async db session
 from app.core.auth import get_current_active_user_placeholder, require_admin_role, User # Import from app directory
 
 router = APIRouter()

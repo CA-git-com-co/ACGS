@@ -28,7 +28,7 @@ from jinja2 import Template
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
-from shared.models import (
+from services.shared.models import (
     ConstitutionalViolation, ViolationAlert, ViolationEscalation,
     Principle, User, ACAmendment, ACAmendmentVote
 )

@@ -35,8 +35,8 @@ try:
     # sys.path already has /app from:
     # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     # So we can use src.backend.shared
-    from src.backend.shared.database import Base as SharedBase
-    from src.backend.shared import models # This import is crucial to ensure models are registered
+    from services.shared.database import Base as SharedBase
+    from services.shared import models # This import is crucial to ensure models are registered
 
     target_metadata = SharedBase.metadata
     print(f"Successfully imported Base.metadata from src.backend.shared.database. Number of tables: {len(target_metadata.tables)}")

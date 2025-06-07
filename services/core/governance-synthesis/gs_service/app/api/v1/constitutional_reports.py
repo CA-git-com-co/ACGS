@@ -19,9 +19,9 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 
-from shared.database import get_async_db
-from shared.auth import get_current_active_user, require_admin
-from shared.models import User
+from services.shared.database import get_async_db
+from services.shared.auth import get_current_active_user, require_admin
+from services.shared.models import User
 from shared.metrics import get_metrics
 
 from app.services.constitutional_reporting_service import (

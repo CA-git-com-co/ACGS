@@ -17,9 +17,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from shared.database import get_async_db
-from shared.models import ConstitutionalPrinciple, Policy, User
-from shared.auth import get_current_active_user
+from services.shared.database import get_async_db
+from services.shared.models import ConstitutionalPrinciple, Policy, User
+from services.shared.auth import get_current_active_user
 
 # Import QEC error correction services
 from app.services.qec_error_correction_service import (

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, func, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
-from shared.database import Base # Assuming shared/database.py provides Base
+from services.shared.database import Base # Assuming shared/database.py provides Base
 from datetime import datetime
 
 class User(Base):

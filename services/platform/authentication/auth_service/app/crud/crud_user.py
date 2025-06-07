@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional, Union
 
 from ..core.password import get_password_hash, verify_password  # Import from password module to avoid circular imports
-from shared.models import User
+from services.shared.models import User
 from shared.schemas.user import UserCreate, UserUpdate
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession

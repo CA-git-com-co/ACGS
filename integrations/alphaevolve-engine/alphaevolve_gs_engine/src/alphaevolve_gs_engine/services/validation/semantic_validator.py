@@ -16,7 +16,7 @@ from typing import List, Dict, Any, Tuple, Optional
 import subprocess # For OPA eval if used
 import os # For file operations
 
-from alphaevolve_gs_engine.utils.logging_utils import setup_logger
+from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 # from alphaevolve_gs_engine.core.constitutional_principle import ConstitutionalPrinciple
 # from alphaevolve_gs_engine.core.operational_rule import OperationalRule
 # from alphaevolve_gs_engine.services.llm_service import LLMService, get_llm_service

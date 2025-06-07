@@ -12,8 +12,8 @@ import logging
 
 from ...core.incremental_compiler import get_incremental_compiler, IncrementalCompiler
 from ...services.integrity_client import IntegrityPolicyRule
-from shared.auth import get_current_user
-from shared.models import User
+from services.shared.auth import get_current_user
+from services.shared.models import User
 
 logger = logging.getLogger(__name__)
 

@@ -25,8 +25,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_
 from pydantic import BaseModel, Field, validator
 
-from shared.models import User
-from shared.auth import get_current_active_user
+from services.shared.models import User
+from services.shared.auth import get_current_active_user
 from app.models import ACAmendment, ACAmendmentComment, ACAmendmentVote
 from app import crud
 from shared.langgraph_config import ConstitutionalCouncilConfig

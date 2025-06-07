@@ -33,7 +33,7 @@ import json
 try:
     import sys
     import os
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+    # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))  # Removed during reorganization
     from wina.config import WINAConfig, WINAIntegrationConfig, load_wina_config_from_env
     from wina.metrics import WINAMetrics
     from wina.constitutional_integration import ConstitutionalWINASupport, ConstitutionalPrincipleUpdate

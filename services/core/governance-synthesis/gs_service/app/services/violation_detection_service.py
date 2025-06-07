@@ -24,20 +24,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, func, desc
 from sqlalchemy.orm import selectinload
 
-from shared.models import (
+from services.shared.models import (
     ConstitutionalViolation, ViolationAlert, ViolationThreshold,
     Principle, Policy, User
 )
-from shared.database import get_async_db
+from services.shared.database import get_async_db
 
 # Import QEC enhancement services
-from alphaevolve_gs_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
+from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
     ConstitutionalFidelityMonitor, FidelityComponents
 )
-from alphaevolve_gs_engine.services.qec_enhancement.constitutional_distance_calculator import (
+from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
     ConstitutionalDistanceCalculator
 )
-from alphaevolve_gs_engine.services.qec_enhancement.error_prediction_model import (
+from integrations.alphaevolve_engine.services.qec_enhancement.error_prediction_model import (
     ErrorPredictionModel, FailureType
 )
 

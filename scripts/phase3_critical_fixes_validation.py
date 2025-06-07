@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 
 # Add project root to path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # Removed during reorganization
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -95,7 +95,7 @@ class Phase3CriticalFixesValidator:
         
         try:
             # Import memory optimizer
-            from src.backend.shared.memory_optimizer import MemoryOptimizer, MemoryThresholds
+            from services.shared.memory_optimizer import MemoryOptimizer, MemoryThresholds
             
             # Initialize memory optimizer
             optimizer = MemoryOptimizer("validation_test")
@@ -315,8 +315,8 @@ class Phase3CriticalFixesValidator:
         
         try:
             # Import cache warming service
-            from src.backend.shared.cache_warming_service import CacheWarmingService, CacheWarmingConfig
-            from src.backend.shared.redis_client import ACGSRedisClient
+            from services.shared.cache_warming_service import CacheWarmingService, CacheWarmingConfig
+            from services.shared.redis_client import ACGSRedisClient
             
             # Initialize Redis client
             redis_client = ACGSRedisClient("validation_test")

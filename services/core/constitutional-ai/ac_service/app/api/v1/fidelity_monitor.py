@@ -9,14 +9,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import logging
 from datetime import datetime, timedelta
 
-from shared.database import get_async_db as get_db
+from services.shared.database import get_async_db as get_db
 from ... import crud
-from shared.auth import get_current_active_user as get_current_user, require_admin, require_policy_manager
-from shared.models import User
+from services.shared.auth import get_current_active_user as get_current_user, require_admin, require_policy_manager
+from services.shared.models import User
 
 # Import QEC enhancement components
 try:
-    from alphaevolve_gs_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
+    from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
         ConstitutionalFidelityMonitor,
         FidelityComponents,
         FidelityAlert,

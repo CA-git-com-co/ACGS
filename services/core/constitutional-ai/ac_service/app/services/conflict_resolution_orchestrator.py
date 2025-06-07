@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared.models import ACConflictResolution, Principle
+from services.shared.models import ACConflictResolution, Principle
 from ..schemas import ACConflictResolutionCreate, ACConflictResolutionUpdate
 from .intelligent_conflict_detector import IntelligentConflictDetector, ConflictDetectionResult
 from .automated_resolution_engine import AutomatedResolutionEngine, ResolutionResult, ResolutionStatus

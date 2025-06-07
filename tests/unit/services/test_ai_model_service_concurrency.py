@@ -8,7 +8,7 @@ try:
         reset_ai_model_service,
     )
 except ImportError:  # fallback if path not set
-    from src.backend.shared.ai_model_service import (
+    from services.shared.ai_model_service import (
         get_ai_model_service,
         reset_ai_model_service,
     )
@@ -39,7 +39,7 @@ async def test_concurrent_generate_text_does_not_mutate_config():
 
 @pytest.mark.asyncio
 async def test_concurrent_generation_federated_does_not_mutate_config():
-    from src.backend.federated_service.shared.ai_model_service import (
+    from services.research.federated_evaluation.shared.ai_model_service import (
         get_ai_model_service as get_fed_service,
         reset_ai_model_service as reset_fed_service,
     )

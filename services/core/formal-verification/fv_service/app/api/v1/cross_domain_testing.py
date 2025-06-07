@@ -15,8 +15,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_
 
-from shared.database import get_async_db
-from shared.models import DomainContext, CrossDomainTestScenario, CrossDomainTestResult, Principle
+from services.shared.database import get_async_db
+from services.shared.models import DomainContext, CrossDomainTestScenario, CrossDomainTestResult, Principle
 from app.core.auth import require_verification_triggerer, User
 from app.core.cross_domain_testing_engine import cross_domain_testing_engine
 from app.services.ac_client import ac_service_client

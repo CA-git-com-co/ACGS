@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 import pytest
 from prometheus_client import Counter
 
-from src.backend.gs_service.app.services import monitoring_service
-from src.backend.gs_service.app.services.monitoring_service import MonitoringService
-from src.backend.gs_service.app.services.advanced_cache import CacheStats
+from services.core.governance_synthesis.app.services import monitoring_service
+from services.core.governance_synthesis.app.services.monitoring_service import MonitoringService
+from services.core.governance_synthesis.app.services.advanced_cache import CacheStats
 
 @pytest.mark.asyncio
 async def test_collect_performance_metrics_integration(monkeypatch):

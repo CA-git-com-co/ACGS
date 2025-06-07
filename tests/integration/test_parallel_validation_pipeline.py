@@ -16,7 +16,7 @@ from unittest.mock import AsyncMock, patch, MagicMock
 async def test_parallel_validation_pipeline_initialization():
     """Test parallel validation pipeline initialization."""
     try:
-        from src.backend.fv_service.app.core.parallel_validation_pipeline import (
+        from services.core.formal_verification.app.core.parallel_validation_pipeline import (
             ParallelValidationPipeline, PipelineConfig
         )
         
@@ -45,7 +45,7 @@ async def test_parallel_validation_pipeline_initialization():
 async def test_parallel_processing_components():
     """Test core parallel processing components."""
     try:
-        from src.backend.shared.parallel_processing import (
+        from services.shared.parallel_processing import (
             ParallelTask, ValidationBatch, TaskStatus, TaskPriority,
             DependencyGraphAnalyzer, TaskPartitioner, ParallelExecutor
         )
@@ -105,7 +105,7 @@ async def test_parallel_processing_components():
 async def test_result_aggregation_byzantine_fault_tolerance():
     """Test result aggregation with Byzantine fault tolerance."""
     try:
-        from src.backend.shared.result_aggregation import (
+        from services.shared.result_aggregation import (
             ValidationResult, ByzantineFaultTolerantAggregator,
             AggregationStrategy
         )
@@ -168,7 +168,7 @@ async def test_result_aggregation_byzantine_fault_tolerance():
 async def test_websocket_streaming():
     """Test WebSocket streaming for real-time progress updates."""
     try:
-        from src.backend.shared.result_aggregation import WebSocketStreamer
+        from services.shared.result_aggregation import WebSocketStreamer
         
         # Test WebSocket streamer initialization
         streamer = WebSocketStreamer()
@@ -213,10 +213,10 @@ async def test_websocket_streaming():
 async def test_parallel_validation_performance():
     """Test parallel validation performance and latency reduction."""
     try:
-        from src.backend.fv_service.app.core.parallel_validation_pipeline import (
+        from services.core.formal_verification.app.core.parallel_validation_pipeline import (
             ParallelValidationPipeline, PipelineConfig
         )
-        from src.backend.fv_service.app.schemas import VerificationRequest
+        from services.core.formal_verification.app.schemas import VerificationRequest
         
         # Create test configuration for performance testing
         config = PipelineConfig(
@@ -242,7 +242,7 @@ async def test_parallel_validation_performance():
             ])
             
             # Create test request with multiple rules
-            from src.backend.fv_service.app.schemas import PolicyRuleRef, ACPrincipleRef
+            from services.core.formal_verification.app.schemas import PolicyRuleRef, ACPrincipleRef
             request = VerificationRequest(
                 policy_rule_refs=[PolicyRuleRef(id=i, version=1) for i in range(1, 11)],  # 10 rules
                 ac_principle_refs=[ACPrincipleRef(id=1, version=1)]
@@ -290,10 +290,10 @@ async def test_parallel_validation_performance():
 async def test_concurrent_request_handling():
     """Test handling of 1000+ concurrent validation requests (Task 7 enhancement)."""
     try:
-        from src.backend.fv_service.app.core.parallel_validation_pipeline import (
+        from services.core.formal_verification.app.core.parallel_validation_pipeline import (
             ParallelValidationPipeline, PipelineConfig
         )
-        from src.backend.fv_service.app.schemas import VerificationRequest
+        from services.core.formal_verification.app.schemas import VerificationRequest
 
         # Task 7: Enhanced configuration for 1000+ concurrent validations
         config = PipelineConfig(
@@ -319,7 +319,7 @@ async def test_concurrent_request_handling():
             mock_ac.get_principles_by_ids = AsyncMock(return_value=[])
             
             # Create multiple concurrent requests
-            from src.backend.fv_service.app.schemas import PolicyRuleRef
+            from services.core.formal_verification.app.schemas import PolicyRuleRef
             requests = [
                 VerificationRequest(
                     policy_rule_refs=[PolicyRuleRef(id=i, version=1)],
@@ -376,7 +376,7 @@ async def test_concurrent_request_handling():
 async def test_redis_caching_integration():
     """Test Redis caching for validation results."""
     try:
-        from src.backend.shared.redis_client import get_redis_client
+        from services.shared.redis_client import get_redis_client
         
         # Test Redis client
         redis_client = await get_redis_client('test_service')
@@ -418,10 +418,10 @@ async def test_redis_caching_integration():
 async def test_constitutional_validation_integration():
     """Test Task 7 constitutional validation integration."""
     try:
-        from src.backend.fv_service.app.core.parallel_validation_pipeline import (
+        from services.core.formal_verification.app.core.parallel_validation_pipeline import (
             ParallelValidationPipeline, PipelineConfig, ConstitutionalValidationContext
         )
-        from src.backend.fv_service.app.schemas import VerificationRequest, PolicyRuleRef
+        from services.core.formal_verification.app.schemas import VerificationRequest, PolicyRuleRef
 
         config = PipelineConfig(
             enable_constitutional_validation=True,
@@ -481,7 +481,7 @@ async def test_constitutional_validation_integration():
 async def test_resource_monitoring_and_adaptive_scaling():
     """Test Task 7 resource monitoring and adaptive scaling."""
     try:
-        from src.backend.fv_service.app.core.parallel_validation_pipeline import (
+        from services.core.formal_verification.app.core.parallel_validation_pipeline import (
             ResourceMonitor, PipelineConfig, ResourceMetrics
         )
 
@@ -526,10 +526,10 @@ async def test_resource_monitoring_and_adaptive_scaling():
 async def test_federated_validation_integration():
     """Test Task 7 federated validation integration."""
     try:
-        from src.backend.fv_service.app.core.parallel_validation_pipeline import (
+        from services.core.formal_verification.app.core.parallel_validation_pipeline import (
             ParallelValidationPipeline, PipelineConfig
         )
-        from src.backend.fv_service.app.schemas import VerificationRequest, PolicyRuleRef
+        from services.core.formal_verification.app.schemas import VerificationRequest, PolicyRuleRef
 
         config = PipelineConfig(
             enable_federated_validation=True,
@@ -585,7 +585,7 @@ async def test_federated_validation_integration():
 async def test_performance_monitoring_and_alerting():
     """Test Task 7 performance monitoring and alerting."""
     try:
-        from src.backend.fv_service.app.core.parallel_validation_pipeline import (
+        from services.core.formal_verification.app.core.parallel_validation_pipeline import (
             ParallelValidationPipeline, PipelineConfig
         )
 
@@ -625,7 +625,7 @@ async def test_performance_monitoring_and_alerting():
 async def test_rollback_mechanisms():
     """Test Task 7 rollback mechanisms for failed operations."""
     try:
-        from src.backend.fv_service.app.core.parallel_validation_pipeline import (
+        from services.core.formal_verification.app.core.parallel_validation_pipeline import (
             ParallelValidationPipeline, PipelineConfig
         )
 

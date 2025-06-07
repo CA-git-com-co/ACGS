@@ -11,8 +11,8 @@ from typing import Dict, List, Optional, Any
 import logging
 import asyncio
 
-from shared.database import get_async_db
-from shared.auth import get_current_user_from_token, get_current_active_user
+from services.shared.database import get_async_db
+from services.shared.auth import get_current_user_from_token, get_current_active_user
 from ...core.federated_evaluator import federated_evaluator
 from ...schemas import (
     FederatedEvaluationRequest, FederatedEvaluationResponse,

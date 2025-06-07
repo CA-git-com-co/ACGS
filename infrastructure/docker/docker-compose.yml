@@ -101,7 +101,7 @@ services:
     # No restart policy is needed unless you want it to retry on failure.
 
   auth_service:
-    build: ../../src/backend/auth_service
+    build: ../../services/platform/authentication
     container_name: acgs_auth_service
     ports:
       - "8000:8000" # External port mapping for direct access
@@ -122,7 +122,7 @@ services:
       alembic-runner:
         condition: service_completed_successfully # Depends on alembic-runner exiting cleanly
     volumes:
-      - ../../src/backend/auth_service:/app
+      - ../../services/platform/authentication:/app
       - ../../src/backend/shared:/app/shared
     restart: unless-stopped
     healthcheck:
@@ -132,7 +132,7 @@ services:
       retries: 3
 
   ac_service:
-    build: ../../src/backend/ac_service
+    build: ../../services/core/constitutional-ai
     container_name: acgs_ac_service
     ports:
       - "8001:8001" # Internal port
@@ -157,12 +157,12 @@ services:
       langgraph_redis:
         condition: service_healthy
     volumes:
-      - ../../src/backend/ac_service:/app
+      - ../../services/core/constitutional-ai:/app
       - ../../src/backend/shared:/app/shared
     restart: unless-stopped
 
   integrity_service:
-    build: ../../src/backend/integrity_service
+    build: ../../services/platform/integrity
     container_name: acgs_integrity_service
     ports:
       - "8002:8002" # Internal port
@@ -176,12 +176,12 @@ services:
       postgres_db:
         condition: service_healthy
     volumes:
-      - ../../src/backend/integrity_service:/app
+      - ../../services/platform/integrity:/app
       - ../../src/backend/shared:/app/shared
     restart: unless-stopped
 
   fv_service:
-    build: ../../src/backend/fv_service
+    build: ../../services/core/formal-verification
     container_name: acgs_fv_service
     ports:
       - "8003:8003" # Internal port
@@ -208,12 +208,12 @@ services:
       redis:
         condition: service_healthy # Wait for Redis to be ready
     volumes:
-      - ../../src/backend/fv_service:/app
+      - ../../services/core/formal-verification:/app
       - ../../src/backend/shared:/app/shared
     restart: unless-stopped
 
   gs_service:
-    build: ../../src/backend/gs_service
+    build: ../../services/core/governance-synthesis
     container_name: acgs_gs_service
     ports:
       - "8004:8004" # Internal port
@@ -244,13 +244,13 @@ services:
       langgraph_redis:
         condition: service_healthy
     volumes:
-      - ../../src/backend/gs_service:/app
+      - ../../services/core/governance-synthesis:/app
       - ../../src/backend/shared:/app/shared
       - ../../src/alphaevolve_gs_engine/src/alphaevolve_gs_engine:/app/alphaevolve_gs_engine
     restart: unless-stopped
 
   pgc_service:
-    build: ../../src/backend/pgc_service
+    build: ../../services/core/policy-governance
     container_name: acgs_pgc_service
     ports:
       - "8005:8005" # Internal port
@@ -272,7 +272,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ../../src/backend/pgc_service:/app
+      - ../../services/core/policy-governance:/app
       - ../../src/backend/shared:/app/shared
     restart: unless-stopped
 

@@ -28,7 +28,7 @@ except ImportError:
 
 from dotenv import load_dotenv
 
-from alphaevolve_gs_engine.utils.logging_utils import setup_logger
+from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
 # Load environment variables from .env file
 load_dotenv()

@@ -19,20 +19,20 @@ from unittest.mock import AsyncMock, patch
 
 # Test imports for enhanced components
 try:
-    from src.backend.ac_service.app.services.collective_constitutional_ai import (
+    from services.core.constitutional_ai.app.services.collective_constitutional_ai import (
         get_collective_constitutional_ai,
         BiasCategory,
         DemocraticLegitimacyLevel,
         CollectiveInput,
         DemocraticPrinciple
     )
-    from src.backend.gs_service.app.services.enhanced_multi_model_validation import (
+    from services.core.governance_synthesis.app.services.enhanced_multi_model_validation import (
         get_enhanced_multi_model_validator,
         ValidationStrategy,
         ModelCluster,
         ValidationContext
     )
-    from src.backend.pgc_service.app.core.ultra_low_latency_optimizer import (
+    from services.core.policy_governance.app.core.ultra_low_latency_optimizer import (
         get_ultra_low_latency_optimizer,
         OptimizationLevel,
         LatencyTarget

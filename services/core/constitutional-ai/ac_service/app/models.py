@@ -1,5 +1,5 @@
 # Import models from shared module to maintain consistency across services
-from shared.models import (
+from services.shared.models import (
     Principle,
     ACMetaRule,
     ACAmendment,

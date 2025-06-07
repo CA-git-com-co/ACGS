@@ -25,7 +25,7 @@ from typing import Dict, Any, List
 
 # Add project root to path
 project_root = Path(__file__).parent
-sys.path.append(str(project_root / "src" / "backend" / "shared"))
+# sys.path.append(str(project_root / "src" / "backend" / "shared"))  # Removed during reorganization
 
 # Service endpoints
 SERVICES = {

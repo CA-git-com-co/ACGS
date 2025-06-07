@@ -140,7 +140,7 @@ class ImportPathFixer:
             return self._fix_from_import(line, file_path)
         elif stripped.startswith('import '):
             return self._fix_direct_import(line, file_path)
-        elif 'sys.path.append' in stripped:
+        # elif 'sys.path.append' in stripped:  # Removed during reorganization
             return self._fix_sys_path_append(line, file_path)
         
         return line
@@ -186,9 +186,9 @@ class ImportPathFixer:
         return line
     
     def _fix_sys_path_append(self, line: str, file_path: Path) -> str:
-        """Fix or remove sys.path.append statements"""
+        # """Fix or remove sys.path.append statements"""  # Removed during reorganization
         # These should generally be removed in the new structure
-        if 'sys.path.append' in line:
+        # if 'sys.path.append' in line:  # Removed during reorganization
             # Comment out the line instead of removing it
             if not line.strip().startswith('#'):
                 indentation = len(line) - len(line.lstrip())

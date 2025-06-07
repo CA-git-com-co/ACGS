@@ -16,7 +16,7 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Tuple, Optional
 import re # For pattern matching
 
-from alphaevolve_gs_engine.utils.logging_utils import setup_logger
+from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 # from alphaevolve_gs_engine.core.constitutional_principle import ConstitutionalPrinciple
 # from alphaevolve_gs_engine.core.operational_rule import OperationalRule
 # from alphaevolve_gs_engine.services.validation.semantic_validator import SemanticTestCase, ScenarioBasedSemanticValidator
