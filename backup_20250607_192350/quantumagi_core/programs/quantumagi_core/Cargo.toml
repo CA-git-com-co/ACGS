@@ -1,0 +1,19 @@
+[package]
+name = "quantumagi_core"
+version = "0.1.0"
+description = "Quantumagi: On-Chain Constitutional Governance Framework for Solana"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "quantumagi_core"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.29.0"
