@@ -15,7 +15,7 @@ Classes:
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Tuple, Optional, Callable
 
-from alphaevolve_gs_engine.utils.logging_utils import setup_logger
+from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 # from alphaevolve_gs_engine.services.llm_service import LLMService, get_llm_service
 # from alphaevolve_gs_engine.services.validation.semantic_validator import ScenarioBasedSemanticValidator # For outcome generation
 

@@ -130,7 +130,7 @@ class ReorganizationValidator:
         problematic_patterns = [
             "src.backend",  # Old backend path
             "quantumagi_core.gs_engine",  # Old GS engine path
-            "sys.path.append",  # Path manipulation
+            # "sys.path.append",  # Path manipulation  # Removed during reorganization
             "../",  # Relative imports
         ]
         

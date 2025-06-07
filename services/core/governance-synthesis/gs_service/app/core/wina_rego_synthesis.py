@@ -41,11 +41,11 @@ from ..schemas import ConstitutionalSynthesisInput, ConstitutionalSynthesisOutpu
 try:
     import sys
     import os
-    sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../alphaevolve_gs_engine/src'))
-    from alphaevolve_gs_engine.services.policy_synthesizer import (
+    # sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../alphaevolve_gs_engine/src'))  # Removed during reorganization
+    from integrations.alphaevolve_engine.services.policy_synthesizer import (
         LLMPolicyGenerator, PolicySynthesisInput, PolicySuggestion
     )
-    from alphaevolve_gs_engine.services.llm_service import get_llm_service
+    from integrations.alphaevolve_engine.services.llm_service import get_llm_service
     ALPHAEVOLVE_AVAILABLE = True
 except ImportError as e:
     ALPHAEVOLVE_AVAILABLE = False

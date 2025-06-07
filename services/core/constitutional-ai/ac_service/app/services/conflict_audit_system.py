@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, func
 
-from shared.models import ACConflictResolution, User
+from services.shared.models import ACConflictResolution, User
 from .intelligent_conflict_detector import ConflictDetectionResult
 from .automated_resolution_engine import ResolutionResult
 from .human_escalation_system import EscalationRequest, EscalationResponse

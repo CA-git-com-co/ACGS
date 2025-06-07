@@ -161,7 +161,7 @@ class AnthropicUpgradeValidator:
         
         try:
             # Test import of DGM agent modules
-            sys.path.append('src/dgm-best_swe_agent')
+            # sys.path.append('src/dgm-best_swe_agent')  # Removed during reorganization
             
             from llm import create_client, AVAILABLE_LLMS
             
@@ -202,7 +202,7 @@ class AnthropicUpgradeValidator:
         logger.info("🔄 Testing cross-platform adapter...")
         
         try:
-            sys.path.append('src/backend/federated_service/app/core')
+            # sys.path.append('src/backend/federated_service/app/core')  # Removed during reorganization
             
             # Test import of cross-platform adapters
             from cross_platform_adapters import AnthropicPlatformAdapter

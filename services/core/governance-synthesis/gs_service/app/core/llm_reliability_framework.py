@@ -12,7 +12,7 @@ import logging
 import time
 from typing import Dict, List, Optional, Any, Tuple, Union
 from math import sqrt
-from alphaevolve_gs_engine.services.validation.formal_verifier import (
+from integrations.alphaevolve_engine.services.validation.formal_verifier import (
     MockFormalVerifier,
     FormalVerificationProperty,
 )

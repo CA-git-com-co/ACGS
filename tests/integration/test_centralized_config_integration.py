@@ -13,7 +13,7 @@ from typing import Dict, List, Optional
 from datetime import datetime
 
 # Add the shared module to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization
 
 from utils import get_config, reset_config
 

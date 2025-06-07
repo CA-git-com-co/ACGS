@@ -11,7 +11,7 @@ Classes:
 from typing import Tuple, Optional
 import subprocess # For calling external linters/parsers like 'opa parse'
 
-from alphaevolve_gs_engine.utils.logging_utils import setup_logger
+from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
 logger = setup_logger(__name__)
 

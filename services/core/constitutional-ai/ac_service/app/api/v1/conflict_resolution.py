@@ -9,15 +9,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import logging
 from datetime import datetime
 
-from shared.database import get_async_db as get_db
+from services.shared.database import get_async_db as get_db
 from ...schemas import (
     ACConflictResolution,
     ACConflictResolutionCreate,
     ACConflictResolutionUpdate
 )
 from ... import crud
-from shared.auth import get_current_active_user, require_admin, require_policy_manager, require_auditor
-from shared.models import User
+from services.shared.auth import get_current_active_user, require_admin, require_policy_manager, require_auditor
+from services.shared.models import User
 
 # Import QEC enhancement components and service
 from ...services.qec_conflict_resolver import QECConflictResolver

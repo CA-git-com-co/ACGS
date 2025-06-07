@@ -12,8 +12,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared.database import get_async_db as get_db
-from shared.auth import get_current_user_id
+from services.shared.database import get_async_db as get_db
+from services.shared.auth import get_current_user_id
 from ...services.collective_constitutional_ai import (
     get_collective_constitutional_ai,
     BiasCategory,

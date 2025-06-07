@@ -17,7 +17,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any
 
 # Add project root to path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# sys.path.append(os.path.dirname(os.path.abspath(__file__)))  # Removed during reorganization
 
 class ComprehensiveFeatureTester:
     def __init__(self):

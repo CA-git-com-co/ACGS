@@ -26,7 +26,7 @@ from .constitutional_prompting import ConstitutionalPromptBuilder
 from ..schemas import LLMInterpretationInput, LLMStructuredOutput
 
 # Import QEC enhancement components
-from alphaevolve_gs_engine.services.qec_enhancement import (
+from integrations.alphaevolve_engine.services.qec_enhancement import (
     ConstitutionalDistanceCalculator,
     ValidationDSLParser,
     ErrorPredictionModel,
@@ -35,7 +35,7 @@ from alphaevolve_gs_engine.services.qec_enhancement import (
     SynthesisAttemptLog,
     RecoveryStrategy
 )
-from alphaevolve_gs_engine.core.constitutional_principle import ConstitutionalPrinciple
+from integrations.alphaevolve_engine.core.constitutional_principle import ConstitutionalPrinciple
 
 logger = logging.getLogger(__name__)
 

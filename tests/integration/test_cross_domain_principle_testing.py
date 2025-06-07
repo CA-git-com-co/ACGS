@@ -29,7 +29,7 @@ sys.path.insert(0, str(project_root / "src/backend"))
 
 # ACGS-PGP imports with fallback
 try:
-    from src.backend.shared.models import (
+    from services.shared.models import (
         DomainContext, CrossDomainTestScenario, CrossDomainTestResult,
         ResearchDataExport, Principle
     )
@@ -45,7 +45,7 @@ except ImportError:
     SHARED_MODELS_AVAILABLE = False
 
 try:
-    from src.backend.fv_service.app.core.cross_domain_testing_engine import (
+    from services.core.formal_verification.app.core.cross_domain_testing_engine import (
         cross_domain_testing_engine, DomainType, HealthcareDomainValidator, FinanceDomainValidator
     )
     CROSS_DOMAIN_ENGINE_AVAILABLE = True
@@ -59,7 +59,7 @@ except ImportError:
     CROSS_DOMAIN_ENGINE_AVAILABLE = False
 
 try:
-    from src.backend.ac_service.app.core.domain_context_manager import (
+    from services.core.constitutional_ai.app.core.domain_context_manager import (
         domain_context_manager, AdaptationStrategy
     )
     DOMAIN_CONTEXT_AVAILABLE = True
@@ -71,7 +71,7 @@ except ImportError:
     DOMAIN_CONTEXT_AVAILABLE = False
 
 try:
-    from src.backend.integrity_service.app.services.research_data_pipeline import (
+    from services.platform.integrity.app.services.research_data_pipeline import (
         research_data_pipeline, AnonymizationMethod, AnonymizationConfig
     )
     RESEARCH_PIPELINE_AVAILABLE = True
@@ -373,7 +373,7 @@ class TestCrossDomainTestingFramework:
 
         # Create test request
         try:
-            from src.backend.fv_service.app.schemas import CrossDomainTestRequest
+            from services.core.formal_verification.app.schemas import CrossDomainTestRequest
             test_request = CrossDomainTestRequest(
                 scenario_ids=[scenario.id for scenario in sample_test_scenarios],
                 target_accuracy=0.9,
@@ -614,7 +614,7 @@ def test_cross_domain_testing_mock_functionality():
     ):
         """Test that the framework meets performance and accuracy targets."""
         
-        from src.backend.fv_service.app.schemas import CrossDomainTestRequest
+        from services.core.formal_verification.app.schemas import CrossDomainTestRequest
         import time
         
         # Performance test: <200ms API response times
@@ -694,7 +694,7 @@ async def benchmark_cross_domain_testing(
 ) -> Dict[str, float]:
     """Benchmark cross-domain testing performance."""
     
-    from src.backend.fv_service.app.schemas import CrossDomainTestRequest
+    from services.core.formal_verification.app.schemas import CrossDomainTestRequest
     import time
     
     execution_times = []

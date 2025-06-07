@@ -14,8 +14,8 @@ from typing import Dict, Any, Optional
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared.database import get_async_db
-from shared.auth import User
+from services.shared.database import get_async_db
+from services.shared.auth import User
 from app.services.constitutional_council_dashboard import get_constitutional_council_dashboard
 
 # Placeholder function for WebSocket authentication

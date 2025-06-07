@@ -1,7 +1,7 @@
 import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship
-from shared.database import Base # Import the shared Base from top-level shared
+from services.shared.database import Base # Import the shared Base from top-level shared
 
 # Association table for User and Role many-to-many relationship
 user_roles_table = Table('auth_user_roles', Base.metadata,

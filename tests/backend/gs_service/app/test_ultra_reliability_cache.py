@@ -28,7 +28,7 @@ def event_loop():
     yield loop
     loop.close()
 
-from src.backend.gs_service.app.core.llm_reliability_framework import (
+from services.core.governance_synthesis.app.core.llm_reliability_framework import (
     EnhancedMultiModelValidator,
     LLMReliabilityConfig,
     PrometheusMetricsCollector,

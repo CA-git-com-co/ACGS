@@ -12,7 +12,7 @@ from typing import Dict, List, Any
 from unittest.mock import Mock, AsyncMock, patch
 
 # Import WINA constitutional components
-from src.backend.shared.wina.constitutional_integration import (
+from services.shared.wina.constitutional_integration import (
     WINAConstitutionalPrincipleAnalyzer,
     WINAConstitutionalUpdateService,
     ConstitutionalPrincipleUpdate

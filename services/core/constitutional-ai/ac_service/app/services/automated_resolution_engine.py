@@ -21,7 +21,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared.models import Principle, ACConflictResolution
+from services.shared.models import Principle, ACConflictResolution
 from ..schemas import ACConflictResolutionUpdate
 from .qec_conflict_resolver import QECConflictResolver, ConflictAnalysis, PatchResult
 from .intelligent_conflict_detector import ConflictDetectionResult, ConflictType, ConflictSeverity

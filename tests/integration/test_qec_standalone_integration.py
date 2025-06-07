@@ -22,10 +22,10 @@ from typing import Dict, Any, List
 # QEC Enhancement imports
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'alphaevolve_gs_engine', 'src'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'alphaevolve_gs_engine', 'src'))  # Removed during reorganization
 
 try:
-    from alphaevolve_gs_engine.services.qec_enhancement import (
+    from integrations.alphaevolve_engine.services.qec_enhancement import (
         ConstitutionalDistanceCalculator,
         ValidationDSLParser,
         ErrorPredictionModel,
@@ -34,13 +34,13 @@ try:
         SynthesisAttemptLog,
         RecoveryStrategy
     )
-    from alphaevolve_gs_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
+    from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
         ConstitutionalFidelityMonitor,
         FidelityComponents,
         FidelityAlert,
         FidelityThresholds
     )
-    from alphaevolve_gs_engine.core.constitutional_principle import ConstitutionalPrinciple
+    from integrations.alphaevolve_engine.core.constitutional_principle import ConstitutionalPrinciple
     QEC_AVAILABLE = True
 except ImportError as e:
     print(f"QEC components not available: {e}")

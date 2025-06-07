@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from sqlalchemy.ext.asyncio import AsyncSession
 
 try:
-    from shared.models import Principle, User, ACConflictResolution
+    from services.shared.models import Principle, User, ACConflictResolution
 except ImportError:
     # Fallback for testing
     from typing import Any
@@ -43,7 +43,7 @@ from .intelligent_conflict_detector import IntelligentConflictDetector, Conflict
 
 # Import QEC enhancement components
 try:
-    from alphaevolve_gs_engine.services.qec_enhancement import (
+    from integrations.alphaevolve_engine.services.qec_enhancement import (
         ConstitutionalFidelityMonitor,
         FidelityComponents,
         FidelityLevel

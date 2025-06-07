@@ -23,7 +23,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
 
 try:
-    from shared.models import ACAmendment, ACAmendmentComment, User
+    from services.shared.models import ACAmendment, ACAmendmentComment, User
 except ImportError:
     from typing import Any
     ACAmendment = Any

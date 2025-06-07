@@ -9,7 +9,7 @@ import uuid
 import docker
 
 # Add the proto directory to the path to ensure generated files are found
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'proto'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'proto'))  # Removed during reorganization
 import evaluation_pb2
 import evaluation_pb2_grpc
 

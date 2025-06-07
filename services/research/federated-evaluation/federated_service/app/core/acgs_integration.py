@@ -17,7 +17,7 @@ from enum import Enum
 
 from .federated_evaluator import FederatedEvaluator, EvaluationTask, EvaluationStatus
 from .cross_platform_coordinator import CrossPlatformCoordinator
-from shared.auth import get_auth_headers, get_service_token
+from services.shared.auth import get_auth_headers, get_service_token
 from shared.metrics import get_metrics
 
 logger = logging.getLogger(__name__)

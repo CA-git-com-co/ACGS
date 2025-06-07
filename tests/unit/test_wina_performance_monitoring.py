@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 from unittest.mock import AsyncMock, Mock, patch
 from typing import Dict, Any
 
-from src.backend.shared.wina.performance_monitoring import (
+from services.shared.wina.performance_monitoring import (
     WINAPerformanceCollector,
     WINANeuronActivationMetrics,
     WINASVDTransformationMetrics,
@@ -25,7 +25,7 @@ from src.backend.shared.wina.performance_monitoring import (
     get_wina_performance_collector
 )
 
-from src.backend.shared.wina.dashboard import (
+from services.shared.wina.dashboard import (
     WINADashboard,
     get_wina_dashboard
 )

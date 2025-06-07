@@ -114,7 +114,7 @@ class QuantumagiSolanaClient:
         """
         try:
             # Create mock principle for GS Engine
-            from alphaevolve_gs_engine.core import ConstitutionalPrinciple
+            from integrations.alphaevolve_engine.core import ConstitutionalPrinciple
             
             principle = ConstitutionalPrinciple(
                 id=principle_id,

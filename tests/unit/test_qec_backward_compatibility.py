@@ -20,9 +20,9 @@ from unittest.mock import Mock, patch, AsyncMock
 # Import test dependencies
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'ac_service'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'shared'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))  # Removed during reorganization
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'ac_service'))  # Removed during reorganization
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'shared'))  # Removed during reorganization
 
 # Test imports with fallbacks
 try:

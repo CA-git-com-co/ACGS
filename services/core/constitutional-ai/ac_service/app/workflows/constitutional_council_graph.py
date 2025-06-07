@@ -47,9 +47,9 @@ from shared.langgraph_config import (
     ConstitutionalCouncilConfig,
     ModelRole
 )
-from shared.database import get_async_db
-from shared.auth import get_current_active_user
-from shared.models import User, ACAmendment, ACAmendmentVote, ACAmendmentComment
+from services.shared.database import get_async_db
+from services.shared.auth import get_current_active_user
+from services.shared.models import User, ACAmendment, ACAmendmentVote, ACAmendmentComment
 
 # Import AC service CRUD operations
 from .. import crud, schemas

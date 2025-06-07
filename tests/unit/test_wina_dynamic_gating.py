@@ -12,15 +12,15 @@ from typing import Dict, List, Any
 from unittest.mock import Mock, patch
 
 # Import WINA gating components
-from src.backend.shared.wina.gating import (
+from services.shared.wina.gating import (
     RuntimeGating,
     GatingStrategy,
     GatingDecision,
     NeuronGate,
     GatingPerformance
 )
-from src.backend.shared.wina.config import WINAConfig
-from src.backend.shared.wina.exceptions import WINAGatingError
+from services.shared.wina.config import WINAConfig
+from services.shared.wina.exceptions import WINAGatingError
 
 
 class TestEnhancedDynamicGating:

@@ -15,7 +15,7 @@ from ..schemas import ACConflictResolutionCreate, ACConflictResolutionUpdate
 
 # Import QEC enhancement components
 try:
-    from alphaevolve_gs_engine.services.qec_enhancement import (
+    from integrations.alphaevolve_engine.services.qec_enhancement import (
         ConstitutionalDistanceCalculator,
         ErrorPredictionModel,
         RecoveryStrategyDispatcher,
@@ -23,7 +23,7 @@ try:
         FailureType,
         RecoveryStrategy
     )
-    from alphaevolve_gs_engine.core.constitutional_principle import ConstitutionalPrinciple
+    from integrations.alphaevolve_engine.core.constitutional_principle import ConstitutionalPrinciple
     QEC_AVAILABLE = True
 except ImportError:
     QEC_AVAILABLE = False

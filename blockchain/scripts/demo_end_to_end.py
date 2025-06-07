@@ -13,8 +13,8 @@ from typing import Dict, List
 import logging
 
 # Add project paths
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '../gs_engine'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # Removed during reorganization
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../gs_engine'))  # Removed during reorganization
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

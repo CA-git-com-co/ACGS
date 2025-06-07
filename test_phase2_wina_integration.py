@@ -24,7 +24,7 @@ from typing import Dict, Any, List
 
 # Add project root to path
 project_root = Path(__file__).parent
-sys.path.append(str(project_root / "src" / "backend" / "shared"))
+# sys.path.append(str(project_root / "src" / "backend" / "shared"))  # Removed during reorganization
 
 async def test_wina_core_functionality():
     """Test WINA core optimization functionality."""
@@ -186,7 +186,7 @@ async def test_multi_model_coordination():
     
     try:
         # Test if multi-model coordinator is available
-        sys.path.append(str(project_root / "src" / "backend" / "gs_service" / "app"))
+        # sys.path.append(str(project_root / "src" / "backend" / "gs_service" / "app"))  # Removed during reorganization
         
         from core.multi_model_coordinator import MultiModelCoordinator, EnsembleStrategy
 

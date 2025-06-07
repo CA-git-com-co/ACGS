@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 def test_wina_imports():
     """Test WINA module imports."""
     try:
-        from src.backend.shared.wina import (
+        from services.shared.wina import (
             WINAConfig,
             WINAIntegrationConfig,
             SVDTransformation,
@@ -40,7 +40,7 @@ def test_wina_imports():
 def test_svd_transformation():
     """Test SVD transformation functionality."""
     try:
-        from src.backend.shared.wina import WINAConfig, SVDTransformation
+        from services.shared.wina import WINAConfig, SVDTransformation
         
         # Create configuration
         config = WINAConfig(
@@ -100,7 +100,7 @@ def test_svd_transformation():
 async def test_model_weight_extraction():
     """Test model weight extraction."""
     try:
-        from src.backend.shared.wina import MockModelWeightExtractor
+        from services.shared.wina import MockModelWeightExtractor
         
         extractor = MockModelWeightExtractor()
         
@@ -136,7 +136,7 @@ async def test_model_weight_extraction():
 async def test_model_integration():
     """Test model integration functionality."""
     try:
-        from src.backend.shared.wina import (
+        from services.shared.wina import (
             WINAConfig, 
             WINAIntegrationConfig, 
             WINAModelIntegrator
@@ -193,7 +193,7 @@ async def test_model_integration():
 async def test_computational_invariance():
     """Test computational invariance verification."""
     try:
-        from src.backend.shared.wina import (
+        from services.shared.wina import (
             WINAConfig, 
             WINAIntegrationConfig, 
             WINAModelIntegrator

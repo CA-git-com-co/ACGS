@@ -14,7 +14,7 @@ import json
 from unittest.mock import patch, AsyncMock, MagicMock
 from typing import Dict, Any
 
-from src.backend.gs_service.app.core.opa_integration import (
+from services.core.governance_synthesis.app.core.opa_integration import (
     OPAClient,
     PolicyDecisionRequest,
     PolicyDecisionResponse,
@@ -24,7 +24,7 @@ from src.backend.gs_service.app.core.opa_integration import (
     get_opa_client,
     close_opa_client
 )
-from src.backend.gs_service.app.config.opa_config import OPAMode, get_opa_config
+from services.core.governance_synthesis.app.config.opa_config import OPAMode, get_opa_config
 
 
 @pytest.fixture

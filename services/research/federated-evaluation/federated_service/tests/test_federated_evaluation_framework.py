@@ -41,7 +41,7 @@ except ImportError:
     class PlatformType:
         CLOUD_OPENAI = "cloud_openai"
         CLOUD_ANTHROPIC = "cloud_anthropic"
-from shared.models import (
+from services.shared.models import (
     FederatedEvaluation, FederatedNode as DBFederatedNode, 
     EvaluationNodeResult, SecureAggregationSession
 )

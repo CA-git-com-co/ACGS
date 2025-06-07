@@ -48,7 +48,7 @@ except ImportError:
         def NoEncryption(): pass
 
 
-from alphaevolve_gs_engine.utils.logging_utils import setup_logger
+from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
 logger = setup_logger(__name__)
 

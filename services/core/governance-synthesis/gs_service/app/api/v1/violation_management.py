@@ -17,12 +17,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, func, desc
 from sqlalchemy.orm import selectinload
 
-from shared.database import get_async_db
-from shared.models import (
+from services.shared.database import get_async_db
+from services.shared.models import (
     ConstitutionalViolation, ViolationAlert, ViolationEscalation,
     ViolationThreshold, User, ConstitutionalPrinciple, Policy
 )
-from shared.auth import get_current_active_user
+from services.shared.auth import get_current_active_user
 
 # Import violation services
 from app.services.violation_detection_service import (

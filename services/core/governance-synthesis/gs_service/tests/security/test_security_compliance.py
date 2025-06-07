@@ -16,7 +16,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from fastapi import Request, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 
-from src.backend.gs_service.app.services.security_compliance import (
+from services.core.governance_synthesis.app.services.security_compliance import (
     SecurityComplianceService,
     InputValidator,
     RateLimiter,

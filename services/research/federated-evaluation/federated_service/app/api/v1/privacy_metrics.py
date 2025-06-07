@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import Dict, List, Optional, Any
 import logging
 
-from shared.auth import get_current_user_from_token, get_current_active_user
+from services.shared.auth import get_current_user_from_token, get_current_active_user
 from ...core.privacy_metrics import differential_privacy_manager, PrivacyMechanism
 from ...schemas import PrivacyMetricsResponse, ErrorResponse
 

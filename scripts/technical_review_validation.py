@@ -14,9 +14,9 @@ import logging
 from pathlib import Path
 
 # Add backend paths to Python path
-sys.path.append(str(Path(__file__).parent.parent / "backend" / "gs_service"))
-sys.path.append(str(Path(__file__).parent.parent / "backend" / "fv_service"))
-sys.path.append(str(Path(__file__).parent.parent / "backend" / "integrity_service"))
+# sys.path.append(str(Path(__file__).parent.parent / "backend" / "gs_service"))  # Removed during reorganization
+# sys.path.append(str(Path(__file__).parent.parent / "backend" / "fv_service"))  # Removed during reorganization
+# sys.path.append(str(Path(__file__).parent.parent / "backend" / "integrity_service"))  # Removed during reorganization
 
 from app.services.lipschitz_estimator import LipschitzEstimator, MetricSpaceValidator
 from app.services.fairness_evaluation_framework import FairnessEvaluationFramework, DomainType

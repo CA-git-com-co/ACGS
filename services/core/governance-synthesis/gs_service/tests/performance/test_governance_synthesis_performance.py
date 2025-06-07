@@ -17,30 +17,30 @@ from typing import List, Dict, Any
 from unittest.mock import AsyncMock, MagicMock, patch
 import redis.asyncio as redis
 
-from src.backend.gs_service.app.services.policy_validator import (
+from services.core.governance_synthesis.app.services.policy_validator import (
     PolicyValidationEngine,
     PolicyValidationRequest,
     ValidationLevel,
     PolicyType
 )
-from src.backend.gs_service.app.core.opa_integration import (
+from services.core.governance_synthesis.app.core.opa_integration import (
     OPAClient,
     PolicyDecisionRequest,
     PolicyDecisionResponse
 )
 
 # Phase 3: Performance optimization imports
-from src.backend.gs_service.app.services.performance_monitor import (
+from services.core.governance_synthesis.app.services.performance_monitor import (
     PerformanceMonitor,
     PerformanceProfiler,
     SystemResourceMonitor
 )
-from src.backend.gs_service.app.services.advanced_cache import (
+from services.core.governance_synthesis.app.services.advanced_cache import (
     MultiTierCache,
     LRUCache,
     RedisCache
 )
-from src.backend.gs_service.app.services.security_compliance import (
+from services.core.governance_synthesis.app.services.security_compliance import (
     SecurityComplianceService,
     RateLimiter,
     InputValidator
@@ -393,7 +393,7 @@ class TestMemoryAndResourceUsage:
     @pytest.mark.asyncio
     async def test_cache_performance_impact(self, performance_test_config):
         """Test performance impact of caching."""
-        from src.backend.gs_service.app.core.opa_integration import PolicyDecisionCache
+        from services.core.governance_synthesis.app.core.opa_integration import PolicyDecisionCache
         
         cache = PolicyDecisionCache(max_size=1000, ttl_seconds=300)
         

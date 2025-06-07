@@ -14,7 +14,7 @@ from ...core import security
 from ...core.config import settings
 from . import deps # Assuming deps.get_db is correctly defined for AsyncSession
 from ...crud import crud_refresh_token, crud_user # crud_refresh_token was created earlier
-from shared.models import User # RefreshToken model not directly used here, but in crud
+from services.shared.models import User # RefreshToken model not directly used here, but in crud
 from shared.schemas.token import Token # Token schema now includes refresh_token
 from shared.schemas.user import UserCreate, UserInDB
 

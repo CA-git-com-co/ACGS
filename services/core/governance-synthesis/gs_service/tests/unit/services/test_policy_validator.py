@@ -13,7 +13,7 @@ import time
 from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from typing import Dict, Any, List
 
-from src.backend.gs_service.app.services.policy_validator import (
+from services.core.governance_synthesis.app.services.policy_validator import (
     PolicyValidationEngine,
     PolicyValidationRequest,
     PolicyValidationResponse,
@@ -24,7 +24,7 @@ from src.backend.gs_service.app.services.policy_validator import (
     ConstitutionalValidationResult,
     get_policy_validator
 )
-from src.backend.gs_service.app.core.opa_integration import (
+from services.core.governance_synthesis.app.core.opa_integration import (
     PolicyDecisionRequest,
     PolicyDecisionResponse,
     PolicyValidationResult,

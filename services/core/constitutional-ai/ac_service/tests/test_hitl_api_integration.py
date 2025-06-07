@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.main import app
 from app.schemas import HITLSamplingRequest, HITLFeedbackRequest
-from shared.models import User
+from services.shared.models import User
 
 
 class TestHITLSamplingAPI:

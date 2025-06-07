@@ -28,7 +28,7 @@ from app.services.conflict_audit_system import (
     ConflictAuditSystem, AuditEventType, AuditLevel, PerformanceMetrics
 )
 from app.services.conflict_resolution_orchestrator import ConflictResolutionOrchestrator
-from shared.models import Principle, ACConflictResolution
+from services.shared.models import Principle, ACConflictResolution
 
 
 class TestIntelligentConflictDetector:

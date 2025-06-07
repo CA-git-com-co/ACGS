@@ -11,8 +11,8 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
-from shared.database import get_async_db
-from shared.auth import get_current_active_user, User
+from services.shared.database import get_async_db
+from services.shared.auth import get_current_active_user, User
 
 # Placeholder function for current user
 async def get_current_active_user_placeholder() -> User:
@@ -295,7 +295,7 @@ async def websocket_engagement_updates(
         await websocket.accept()
 
         # Create engagement service (simplified for WebSocket)
-        from shared.database import get_async_db
+        from services.shared.database import get_async_db
         async for db in get_async_db():
             config = ConstitutionalCouncilConfig()
             engagement_service = get_stakeholder_engagement_service(db=db, config=config)

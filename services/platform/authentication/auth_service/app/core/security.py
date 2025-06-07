@@ -17,15 +17,15 @@ from .password import verify_password, get_password_hash
 # Adjust path if shared is not directly under a dir in sys.path
 # This assumes 'acgspcp-main' is the project root and is in PYTHONPATH
 try:
-    from shared.database import get_async_db
-    from shared.models import User
+    from services.shared.database import get_async_db
+    from services.shared.models import User
 except ImportError: # Fallback for different execution contexts (e.g. tests vs uvicorn)
     # This relative path logic might be fragile. Best to ensure PYTHONPATH is set correctly.
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
-    from shared.database import get_async_db
-    from shared.models import User
+    from services.shared.database import get_async_db
+    from services.shared.models import User
 
 
 from .config import settings

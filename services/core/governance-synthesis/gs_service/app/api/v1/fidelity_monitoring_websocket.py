@@ -460,7 +460,7 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
         elif message_type == "get_fidelity_status":
             # Send comprehensive fidelity status
             try:
-                from alphaevolve_gs_engine.services.qec_enhancement import ConstitutionalFidelityMonitor
+                from integrations.alphaevolve_engine.services.qec_enhancement import ConstitutionalFidelityMonitor
 
                 # Initialize fidelity monitor if not already done
                 if not hasattr(session, 'fidelity_monitor'):

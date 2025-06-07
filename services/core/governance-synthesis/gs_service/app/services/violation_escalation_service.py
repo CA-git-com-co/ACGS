@@ -24,11 +24,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, func, desc
 from sqlalchemy.orm import selectinload
 
-from shared.models import (
+from services.shared.models import (
     ConstitutionalViolation, ViolationAlert, ViolationEscalation,
     User, ACAmendment
 )
-from shared.database import get_async_db
+from services.shared.database import get_async_db
 
 # Import notification services
 from app.services.stakeholder_engagement import (

@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Optional, Tuple, Set
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_
 
-from shared.models import Principle, ACConflictResolution
+from services.shared.models import Principle, ACConflictResolution
 from ..schemas import ACConflictResolutionCreate
 from .qec_conflict_resolver import QECConflictResolver, ConflictAnalysis
 

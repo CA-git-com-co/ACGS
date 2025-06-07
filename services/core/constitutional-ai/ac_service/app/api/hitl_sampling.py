@@ -11,15 +11,15 @@ from typing import Dict, Any, Optional, List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared.database import get_async_db as get_db
+from services.shared.database import get_async_db as get_db
 from ..schemas import (
     HITLSamplingRequest, HITLSamplingResult, HITLFeedbackRequest, 
     HITLPerformanceMetrics, UncertaintyMetrics
 )
 from ..services.human_in_the_loop_sampler import HumanInTheLoopSampler, UncertaintyAssessment
 from ..services.hitl_cross_service_integration import HITLCrossServiceIntegrator, CrossServiceConfidenceMetrics
-from shared.auth import get_current_active_user as get_current_user, require_admin, require_policy_manager
-from shared.models import User
+from services.shared.auth import get_current_active_user as get_current_user, require_admin, require_policy_manager
+from services.shared.models import User
 
 logger = logging.getLogger(__name__)
 

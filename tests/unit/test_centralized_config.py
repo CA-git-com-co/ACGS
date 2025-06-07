@@ -11,7 +11,7 @@ from unittest.mock import patch, mock_open
 import sys
 
 # Add the shared module to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization
 
 from utils import ACGSConfig, get_config, reset_config
 

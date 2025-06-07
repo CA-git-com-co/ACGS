@@ -14,14 +14,14 @@ from typing import Dict, List, Any
 from unittest.mock import Mock, patch
 
 # Import WINA components
-from src.backend.shared.wina import (
+from services.shared.wina import (
     WINAConfig,
     WINAIntegrationConfig,
     RuntimeGating,
     GatingStrategy,
     WINACore
 )
-from src.backend.shared.wina.gating import GatingDecision
+from services.shared.wina.gating import GatingDecision
 
 
 class TestWINAGatingIntegration:

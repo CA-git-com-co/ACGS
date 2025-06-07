@@ -10,7 +10,7 @@ from app.crud import (
     create_ac_conflict_resolution, get_ac_conflict_resolution, get_ac_conflict_resolutions, update_ac_conflict_resolution
 )
 from app import schemas
-from shared.database import get_async_db
+from services.shared.database import get_async_db
 from app.core.auth import get_current_active_user_placeholder, require_admin_role, require_constitutional_council_role, User
 from app.core.constitutional_council_scalability import ConstitutionalCouncilScalabilityFramework, ScalabilityConfig
 from app.workflows.constitutional_council_graph import ConstitutionalCouncilGraph

@@ -27,22 +27,22 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # Import WINA components
-from src.backend.shared.wina import (
+from services.shared.wina import (
     WINAConfig,
     WINAIntegrationConfig,
     WINAModelIntegrator,
     MockModelWeightExtractor,
     SVDTransformation
 )
-from src.backend.shared.wina.config import load_wina_config_from_env
+from services.shared.wina.config import load_wina_config_from_env
 
 # Import GS Engine components
-from src.backend.gs_service.app.core.wina_llm_integration import (
+from services.core.governance_synthesis.app.core.wina_llm_integration import (
     WINAOptimizedLLMClient,
     get_wina_optimized_llm_client,
     query_llm_with_wina_optimization
 )
-from src.backend.gs_service.app.schemas import LLMInterpretationInput, ConstitutionalSynthesisInput
+from services.core.governance_synthesis.app.schemas import LLMInterpretationInput, ConstitutionalSynthesisInput
 
 # Configure logging
 logging.basicConfig(

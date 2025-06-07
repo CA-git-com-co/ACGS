@@ -27,9 +27,9 @@ async def create_db_tables():
     # We need to ensure all models that use a Base are imported before calling create_all.
     try:
         # If models are defined using the Base from shared.database, then:
-        from shared.database import Base
+        from services.shared.database import Base
         # Import all models here that should be created
-        from shared.models import User, RefreshToken # noqa
+        from services.shared.models import User, RefreshToken # noqa
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         print("Tables created (if they didn't exist already, including refresh_tokens).")

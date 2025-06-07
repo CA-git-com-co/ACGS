@@ -24,7 +24,7 @@ sys.path.insert(0, str(project_root / "src/backend"))
 
 # Import QEC conflict resolution components with fallback
 try:
-    from src.backend.ac_service.app.services.qec_conflict_resolver import (
+    from services.core.constitutional_ai.app.services.qec_conflict_resolver import (
         QECConflictResolver,
         ConflictAnalysis,
         PatchResult
@@ -39,7 +39,7 @@ except ImportError:
     QEC_RESOLVER_AVAILABLE = False
 
 try:
-    from src.backend.shared.models import ACPrinciple, ACConflictResolution
+    from services.shared.models import ACPrinciple, ACConflictResolution
     SHARED_MODELS_AVAILABLE = True
 except ImportError:
     # Mock shared models when not available

@@ -23,7 +23,7 @@ def test_imports():
     
     try:
         # Test performance monitoring imports
-        from src.backend.gs_service.app.services.performance_monitor import (
+        from services.core.governance_synthesis.app.services.performance_monitor import (
             PerformanceMonitor, PerformanceProfiler, SystemResourceMonitor
         )
         print("✅ Performance monitoring imports successful")
@@ -33,7 +33,7 @@ def test_imports():
     
     try:
         # Test advanced cache imports
-        from src.backend.gs_service.app.services.advanced_cache import (
+        from services.core.governance_synthesis.app.services.advanced_cache import (
             LRUCache, MultiTierCache
         )
         print("✅ Advanced cache imports successful")
@@ -43,7 +43,7 @@ def test_imports():
     
     try:
         # Test security compliance imports
-        from src.backend.gs_service.app.services.security_compliance import (
+        from services.core.governance_synthesis.app.services.security_compliance import (
             SecurityComplianceService, InputValidator, RateLimiter
         )
         print("✅ Security compliance imports successful")
@@ -58,7 +58,7 @@ def test_performance_profiler():
     print("\n⚡ Testing Performance Profiler...")
     
     try:
-        from src.backend.gs_service.app.services.performance_monitor import PerformanceProfiler
+        from services.core.governance_synthesis.app.services.performance_monitor import PerformanceProfiler
         
         profiler = PerformanceProfiler(max_samples=100)
         
@@ -93,7 +93,7 @@ def test_lru_cache():
     print("\n💾 Testing LRU Cache...")
     
     try:
-        from src.backend.gs_service.app.services.advanced_cache import LRUCache
+        from services.core.governance_synthesis.app.services.advanced_cache import LRUCache
         
         cache = LRUCache(max_size=10, default_ttl=300)
         
@@ -128,7 +128,7 @@ def test_input_validator():
     print("\n🔒 Testing Input Validator...")
     
     try:
-        from src.backend.gs_service.app.services.security_compliance import InputValidator
+        from services.core.governance_synthesis.app.services.security_compliance import InputValidator
         
         # Test valid input
         valid_input = "normal policy content"
@@ -173,7 +173,7 @@ def test_rate_limiter():
     print("\n🚦 Testing Rate Limiter...")
     
     try:
-        from src.backend.gs_service.app.services.security_compliance import RateLimiter
+        from services.core.governance_synthesis.app.services.security_compliance import RateLimiter
         
         rate_limiter = RateLimiter()
         client_id = "test_client"
@@ -207,7 +207,7 @@ async def test_performance_monitor():
     print("\n📊 Testing Performance Monitor...")
     
     try:
-        from src.backend.gs_service.app.services.performance_monitor import PerformanceMonitor
+        from services.core.governance_synthesis.app.services.performance_monitor import PerformanceMonitor
         
         monitor = PerformanceMonitor()
         

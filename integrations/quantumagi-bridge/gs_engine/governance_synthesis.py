@@ -17,12 +17,12 @@ from datetime import datetime
 # Integration with existing ACGS framework
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../../src'))  # Removed during reorganization
 
 try:
-    from alphaevolve_gs_engine.core import ConstitutionalPrinciple, OperationalRule
-    from alphaevolve_gs_engine.services.llm import get_llm_service
-    from alphaevolve_gs_engine.services.policy_synthesis import PolicySynthesizer
+    from integrations.alphaevolve_engine.core import ConstitutionalPrinciple, OperationalRule
+    from integrations.alphaevolve_engine.services.llm import get_llm_service
+    from integrations.alphaevolve_engine.services.policy_synthesis import PolicySynthesizer
     ACGS_AVAILABLE = True
 except ImportError:
     ACGS_AVAILABLE = False
