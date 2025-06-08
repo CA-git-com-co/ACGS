@@ -202,6 +202,11 @@ class InputValidationMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         try:
+            # Health endpoint bypass - allow all GET requests to health endpoints without validation
+            if request.url.path.startswith("/health") and request.method == "GET":
+                logger.debug(f"Health endpoint bypass: {request.url.path}")
+                return await call_next(request)
+
             # Validate request method
             if request.method not in ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]:
                 logger.warning(f"Invalid HTTP method: {request.method}")
@@ -211,8 +216,8 @@ class InputValidationMiddleware(BaseHTTPMiddleware):
                 )
 
             # Special handling for health endpoint - only allow GET
-            if request.url.path == "/health" and request.method != "GET":
-                logger.warning(f"Invalid method {request.method} for /health endpoint")
+            if request.url.path.startswith("/health") and request.method != "GET":
+                logger.warning(f"Invalid method {request.method} for health endpoint")
                 raise HTTPException(
                     status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
                     detail="Method not allowed for health endpoint"

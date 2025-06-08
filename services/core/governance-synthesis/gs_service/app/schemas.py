@@ -133,6 +133,7 @@ class SynthesisResponse(BaseModel):
     generated_rules: List[GeneratedRuleInfo]
     message: str
     overall_synthesis_status: str # e.g., "success", "partial_failure", "failure"
+    error_prediction: Optional[Dict[str, Any]] = Field(None, description="Error prediction and risk assessment metadata")
     # detailed_statuses: Optional[List[Dict[str, Any]]] = None # For per-principle status if needed
 
 # Added for Structured LLM Interaction and Rule Assembly as per issue #ISSUE_ID
