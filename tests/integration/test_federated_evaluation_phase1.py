@@ -17,7 +17,7 @@ def test_federated_evaluator_import():
     try:
         import sys
         import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))
+        # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.core.federated_evaluator import (
             FederatedEvaluator, PlatformType, EvaluationStatus, FederatedNode, EvaluationTask
@@ -43,7 +43,7 @@ def test_secure_aggregation_import():
     try:
         import sys
         import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))
+        # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.core.secure_aggregation import (
             SecureAggregator, AggregationMethod, AggregationConfig, SecureShare
@@ -66,7 +66,7 @@ def test_privacy_metrics_import():
     try:
         import sys
         import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))
+        # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.core.privacy_metrics import (
             DifferentialPrivacyManager, PrivacyMechanism, PrivacyBudget, PrivacyMetrics
@@ -89,7 +89,7 @@ def test_federated_schemas_import():
     try:
         import sys
         import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))
+        # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.schemas import (
             FederatedEvaluationRequest, FederatedEvaluationResponse,
@@ -109,7 +109,7 @@ async def test_federated_evaluator_initialization():
     try:
         import sys
         import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))
+        # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.core.federated_evaluator import FederatedEvaluator
         
@@ -149,7 +149,7 @@ async def test_secure_aggregator_initialization():
     try:
         import sys
         import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))
+        # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.core.secure_aggregation import SecureAggregator
         
@@ -183,7 +183,7 @@ async def test_privacy_manager_initialization():
     try:
         import sys
         import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))
+        # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.core.privacy_metrics import DifferentialPrivacyManager
         
@@ -219,7 +219,7 @@ async def test_mock_federated_evaluation():
     try:
         import sys
         import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))
+        # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.core.federated_evaluator import FederatedEvaluator, PlatformType
         

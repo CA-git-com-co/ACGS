@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from src.backend.gs_service.app.wina.svd_utils import (
+from services.core.governance_synthesis.app.wina.svd_utils import (
     perform_svd,
     reconstruct_from_svd,
     apply_svd_transformation,

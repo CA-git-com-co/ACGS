@@ -134,7 +134,7 @@ async def test_phase2_integration():
     try:
         # This would test the multi-model coordinator directly
         import sys
-        sys.path.append("src/backend/gs_service/app")
+        # sys.path.append("src/backend/gs_service/app")  # Removed during reorganization
         from core.multi_model_coordinator import MultiModelCoordinator, EnsembleStrategy
         
         config = {
@@ -153,7 +153,7 @@ async def test_phase2_integration():
     
     # Test WINA components
     try:
-        sys.path.append("src/backend/shared")
+        # sys.path.append("src/backend/shared")  # Removed during reorganization
         from wina.core import WINACore
         from wina.config import WINAConfig
         

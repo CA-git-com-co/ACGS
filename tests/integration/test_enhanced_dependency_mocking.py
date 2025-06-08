@@ -12,8 +12,8 @@ from typing import Dict, Any
 from unittest.mock import patch, AsyncMock
 
 # Add test utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '../utils'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../utils'))  # Removed during reorganization
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization
 
 from mock_services import (
     MockServiceManager, EnhancedHTTPXMock, MockLLMService, MockZ3Solver,

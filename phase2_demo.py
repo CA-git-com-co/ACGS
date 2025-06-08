@@ -14,13 +14,13 @@ from typing import Dict, Any
 from datetime import datetime
 
 # Import Phase 2 components
-from src.backend.shared.di import (
+from services.shared.di import (
     DIContainer, injectable, singleton, transient, get_container
 )
-from src.backend.shared.events import (
+from services.shared.events import (
     EventBus, Event, EventType, EventPriority, get_event_bus
 )
-from src.backend.shared.database import (
+from services.shared.database import (
     DatabasePoolManager, PoolConfig, get_pool_manager
 )
 

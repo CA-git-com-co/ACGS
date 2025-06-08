@@ -12,8 +12,8 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Add the shared module to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend'))  # Removed during reorganization
 
 # Import with absolute path handling
 try:
@@ -22,7 +22,7 @@ try:
 except ImportError:
     # Try alternative import path
     import shared.ai_model_service as ai_model_service
-    import shared.utils as utils
+    import services.shared.utils as utils
     AIModelService = ai_model_service.AIModelService
     ModelRole = ai_model_service.ModelRole
     get_ai_model_service = ai_model_service.get_ai_model_service

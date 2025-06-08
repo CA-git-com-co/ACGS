@@ -50,7 +50,7 @@ class Task8PerformanceBenchmark:
     async def setup(self):
         """Setup benchmark environment."""
         try:
-            from src.backend.pgc_service.app.core.incremental_compiler import get_incremental_compiler
+            from services.core.policy_governance.app.core.incremental_compiler import get_incremental_compiler
             self.compiler = await get_incremental_compiler()
             print("✅ Benchmark environment setup complete")
         except Exception as e:
@@ -78,7 +78,7 @@ class Task8PerformanceBenchmark:
     
     def create_test_policies(self, count: int) -> List:
         """Create test policies for benchmarking."""
-        from src.backend.pgc_service.app.services.integrity_client import IntegrityPolicyRule
+        from services.core.policy_governance.app.services.integrity_client import IntegrityPolicyRule
 
         policies = []
         for i in range(count):

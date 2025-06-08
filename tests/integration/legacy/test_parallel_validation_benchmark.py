@@ -17,7 +17,7 @@ from typing import List, Dict, Any
 from dataclasses import dataclass
 
 # Add backend path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'backend'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'backend'))  # Removed during reorganization
 
 @dataclass
 class BenchmarkResult:

@@ -25,7 +25,7 @@ def test_performance_monitoring_endpoints():
     
     try:
         # Create a minimal FastAPI app with Phase 3 endpoints
-        from src.backend.gs_service.app.api.v1.performance_monitoring import router as performance_router
+        from services.core.governance_synthesis.app.api.v1.performance_monitoring import router as performance_router
         
         app = FastAPI(title="Phase 3 Test App")
         app.include_router(performance_router, prefix="/api/v1/performance", tags=["Performance Monitoring"])
@@ -69,7 +69,7 @@ def test_security_compliance_direct():
     print("=" * 50)
     
     try:
-        from src.backend.gs_service.app.services.security_compliance import (
+        from services.core.governance_synthesis.app.services.security_compliance import (
             SecurityComplianceService, JWTManager, InputValidator, RateLimiter
         )
         
@@ -138,7 +138,7 @@ def test_advanced_cache_performance():
     print("=" * 45)
     
     try:
-        from src.backend.gs_service.app.services.advanced_cache import LRUCache, MultiTierCache
+        from services.core.governance_synthesis.app.services.advanced_cache import LRUCache, MultiTierCache
         
         # Test LRU Cache performance
         cache = LRUCache(max_size=1000, default_ttl=300)
@@ -205,7 +205,7 @@ async def test_performance_monitor_async():
     print("=" * 55)
     
     try:
-        from src.backend.gs_service.app.services.performance_monitor import PerformanceMonitor
+        from services.core.governance_synthesis.app.services.performance_monitor import PerformanceMonitor
         
         monitor = PerformanceMonitor()
         

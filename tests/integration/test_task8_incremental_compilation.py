@@ -138,7 +138,7 @@ class Task8IntegrationTester:
         
         try:
             # Import and test incremental compiler
-            from src.backend.pgc_service.app.core.incremental_compiler import get_incremental_compiler
+            from services.core.policy_governance.app.core.incremental_compiler import get_incremental_compiler
             
             start_time = time.time()
             compiler = await get_incremental_compiler()
@@ -167,7 +167,7 @@ class Task8IntegrationTester:
         test_name = "OPA Client Initialization"
         
         try:
-            from src.backend.pgc_service.app.core.opa_client import get_opa_client
+            from services.core.policy_governance.app.core.opa_client import get_opa_client
             
             start_time = time.time()
             opa_client = await get_opa_client()
@@ -199,8 +199,8 @@ class Task8IntegrationTester:
         test_name = "Policy Compilation Performance"
         
         try:
-            from src.backend.pgc_service.app.core.incremental_compiler import get_incremental_compiler
-            from src.backend.pgc_service.app.services.integrity_client import IntegrityPolicyRule
+            from services.core.policy_governance.app.core.incremental_compiler import get_incremental_compiler
+            from services.core.policy_governance.app.services.integrity_client import IntegrityPolicyRule
             
             compiler = await get_incremental_compiler()
             
@@ -269,8 +269,8 @@ class Task8IntegrationTester:
         test_name = "Policy Dependency Tracking"
         
         try:
-            from src.backend.pgc_service.app.core.incremental_compiler import get_incremental_compiler
-            from src.backend.pgc_service.app.services.integrity_client import IntegrityPolicyRule
+            from services.core.policy_governance.app.core.incremental_compiler import get_incremental_compiler
+            from services.core.policy_governance.app.services.integrity_client import IntegrityPolicyRule
             
             compiler = await get_incremental_compiler()
             
@@ -337,8 +337,8 @@ class Task8IntegrationTester:
         test_name = "Cache Functionality"
 
         try:
-            from src.backend.pgc_service.app.core.incremental_compiler import get_incremental_compiler
-            from src.backend.pgc_service.app.services.integrity_client import IntegrityPolicyRule
+            from services.core.policy_governance.app.core.incremental_compiler import get_incremental_compiler
+            from services.core.policy_governance.app.services.integrity_client import IntegrityPolicyRule
 
             compiler = await get_incremental_compiler()
 
@@ -396,8 +396,8 @@ class Task8IntegrationTester:
         test_name = "Error Handling and Fallback"
 
         try:
-            from src.backend.pgc_service.app.core.incremental_compiler import get_incremental_compiler
-            from src.backend.pgc_service.app.services.integrity_client import IntegrityPolicyRule
+            from services.core.policy_governance.app.core.incremental_compiler import get_incremental_compiler
+            from services.core.policy_governance.app.services.integrity_client import IntegrityPolicyRule
 
             compiler = await get_incremental_compiler()
 
@@ -436,8 +436,8 @@ class Task8IntegrationTester:
         test_name = "Metrics Collection"
 
         try:
-            from src.backend.pgc_service.app.core.incremental_compiler import get_incremental_compiler
-            from src.backend.pgc_service.app.services.integrity_client import IntegrityPolicyRule
+            from services.core.policy_governance.app.core.incremental_compiler import get_incremental_compiler
+            from services.core.policy_governance.app.services.integrity_client import IntegrityPolicyRule
 
             compiler = await get_incremental_compiler()
 
