@@ -1,33 +1,116 @@
-# ACGS-PGP Documentation
+# ACGS-1 Documentation
 
-This directory contains detailed documentation for the ACGS-PGP (Artificial Constitutionalism: Self-Synthesizing Prompt Governance Compiler) framework and the AlphaEvolve-ACGS Integration System. Below is a guide to the documents available:
+Welcome to the AI Compliance Governance System (ACGS-1) documentation - a comprehensive constitutional AI governance framework with Quantumagi integration deployed on Solana blockchain.
 
--   **`README.md`**: You are here! This file provides an overview of the documentation structure within the `docs/` directory.
--   **`architecture.md`**: Describes the overall system architecture of ACGS-PGP, including its microservices, data storage solutions, communication flows, and the core technology stack. Essential for understanding how the various components interact.
--   **`data_models.md`**: Details the core data models (SQLAlchemy classes in `shared/models.py`) used throughout the ACGS-PGP system, such as User, Policy, Principle, and AuditLog. Crucial for developers working with the database and APIs.
--   **`deployment.md`**: Provides instructions for deploying the ACGS-PGP system using Docker Compose for local development/testing and Kubernetes for staging/production environments.
--   **`developer_guide.md`**: A comprehensive guide for developers contributing to the project. It covers initial setup, development workflow (backend/frontend), coding guidelines, API design, inter-service communication patterns, the contribution process, and debugging/troubleshooting tips.
--   **`research_overview.md`**: Offers a consolidated view of the research contributions and theoretical underpinnings of the ACGS-PGP framework and the AlphaEvolve-ACGS Integration System, with links to key research papers and related project resources.
--   **`roadmap.md`**: Outlines the project's development phases, planned features, current progress, and future milestones for the ACGS-PGP system.
--   **`security.md`**: Discusses security considerations, best practices, potential threats, and measures implemented or planned to ensure the security of the ACGS-PGP system.
--   **`user_guide.md`**: Explains how to use the ACGS-PGP platform from an end-user's perspective, covering its features, functionalities, and user interface interactions.
--   **`ai-research-assistant-guidelines.md`**: Best practices for developing accurate and reliable AI research assistants.
+## Documentation Structure
 
-## Microservice Guides
+### API Documentation (`api/`)
+- **[API Reference](api/README.md)**: Complete API documentation for all services
+- **[AC Service API](api/ac_service_api.md)**: Constitutional AI Service endpoints
+- **[GS Service API](api/gs_service_api.md)**: Governance Synthesis Service endpoints
 
-Each backend service has its own README with setup details and API overviews:
+### Architecture Documentation (`architecture/`)
+- **[System Architecture](architecture/REORGANIZED_ARCHITECTURE.md)**: Blockchain-first system design and component interactions
+- **[Multi-Agent DGM Architecture](architecture/multi_agent_dgm_architecture.md)**: Darwin Gödel Machine orchestration platform
+- **[Multi-Agent API Specification](architecture/multi_agent_api_specification.md)**: API specifications for multi-agent coordination
 
-- **ac_service**: [README](../src/backend/ac_service/README.md)
-- **auth_service**: [README](../src/backend/auth_service/README.md)
-- **ec_service**: [README](../src/backend/ec_service/README.md)
-- **federated_service**: [README](../src/backend/federated_service/README.md)
-- **fv_service**: [README](../src/backend/fv_service/README.md)
-- **gs_service**: [README](../src/backend/gs_service/README.md)
-- **integrity_service**: [README](../src/backend/integrity_service/README.md)
-- **monitoring**: [README](../src/backend/monitoring/README.md)
-- **pgc_service**: [README](../src/backend/pgc_service/README.md)
-- **research_service**: [README](../src/backend/research_service/README.md)
-- **shared**: [README](../src/backend/shared/README.md)
-- **workflow_service**: [README](../src/backend/workflow_service/README.md)
+### Deployment Documentation (`deployment/`)
+- **[Deployment Guide](deployment/deployment.md)**: Step-by-step deployment instructions
+- **[Production Deployment Checklist](deployment/production_deployment_checklist.md)**: Pre-production validation checklist
+- **[Kubernetes Production Guide](deployment/kubernetes_production_guide.md)**: Kubernetes deployment for production
+- **[Backup Strategy](deployment/backup_strategy.md)**: Data backup and recovery procedures
+- **[Disaster Recovery Playbook](deployment/disaster_recovery_playbook.md)**: Emergency response procedures
 
-Please refer to the main project [README.md](../README.md) for general project information and setup instructions.
+### Development Documentation (`development/`)
+- **[Developer Guide](development/developer_guide.md)**: Development setup and workflows for reorganized structure
+- **[Reorganization Summary](development/REORGANIZATION_SUMMARY.md)**: Complete reorganization documentation
+- **[Roadmap](development/roadmap.md)**: Project roadmap and future plans
+- **[Security Guidelines](development/SECURITY.md)**: Security best practices and guidelines
+- **[File Naming Conventions](development/FILE_NAMING_CONVENTIONS.md)**: Standardized file naming rules
+
+### Research Documentation (`research/`)
+- **[ACGS-PGP Framework](research/ACGS-PGP_Framework/)**: Core framework research and papers
+- **[AlphaEvolve-ACGS Integration](research/AlphaEvolve-ACGS_Integration_System/)**: Integration system documentation
+- **[arXiv Submissions](research/)**: Research papers and academic submissions
+
+## Quick Navigation
+
+### For Blockchain Developers
+- [Quantumagi Core Program](../blockchain/programs/quantumagi-core/)
+- [Anchor Development Guide](../blockchain/README.md)
+- [Solana Integration](../integrations/quantumagi-bridge/)
+
+### For Backend Developers
+- [Core Services](../services/core/)
+- [Platform Services](../services/platform/)
+- [Service Registry](../services/shared/config/)
+
+### For Frontend Developers
+- [Governance Dashboard](../applications/governance-dashboard/)
+- [Constitutional Council Interface](../applications/constitutional-council/)
+- [Public Consultation Portal](../applications/public-consultation/)
+
+### For DevOps/SRE
+- [Infrastructure Setup](../infrastructure/)
+- [Docker Configurations](../infrastructure/docker/)
+- [Kubernetes Manifests](../infrastructure/kubernetes/)
+- [Monitoring & Observability](../infrastructure/monitoring/)
+
+### For Researchers
+- [Research Overview](research/)
+- [Technical Specifications](research/technical_specifications.md)
+- [AlphaEvolve Integration](research/AlphaEvolve-ACGS_Integration_System/)
+
+## Service Documentation
+
+### Core Services (`services/core/`)
+- **constitutional-ai**: [README](../services/core/constitutional-ai/README.md)
+- **governance-synthesis**: [README](../services/core/governance-synthesis/README.md)
+- **policy-governance**: [README](../services/core/policy-governance/README.md)
+- **formal-verification**: [README](../services/core/formal-verification/README.md)
+
+### Platform Services (`services/platform/`)
+- **authentication**: [README](../services/platform/authentication/README.md)
+- **integrity**: [README](../services/platform/integrity/README.md)
+- **workflow**: [README](../services/platform/workflow/README.md)
+
+### Research Services (`services/research/`)
+- **federated-evaluation**: [README](../services/research/federated-evaluation/README.md)
+- **research-platform**: [README](../services/research/research-platform/README.md)
+
+### Blockchain Programs (`blockchain/programs/`)
+- **quantumagi-core**: [README](../blockchain/programs/quantumagi-core/README.md)
+- **appeals**: [README](../blockchain/programs/appeals/README.md)
+- **logging**: [README](../blockchain/programs/logging/README.md)
+
+## Documentation Standards
+
+All documentation follows these standards:
+- **Markdown format** with consistent formatting
+- **Clear headings** and table of contents
+- **Code examples** with syntax highlighting
+- **Cross-references** between related documents
+- **Version information** and last updated dates
+- **Blockchain-first architecture** documentation approach
+
+## Contributing to Documentation
+
+1. Follow the [File Naming Conventions](development/FILE_NAMING_CONVENTIONS.md)
+2. Use clear, concise language
+3. Include code examples where applicable
+4. Update cross-references when adding new content
+5. Test all links and code examples
+6. Ensure blockchain integration documentation is up-to-date
+
+## Support
+
+For documentation issues or suggestions:
+- Create an issue in the [GitHub repository](https://github.com/CA-git-com-co/ACGS/issues)
+- Contact the development team
+- Check existing documentation for similar topics
+
+---
+
+**Last Updated:** 2025-12-07
+**Documentation Version:** 4.0.0
+**ACGS-1**: Bringing Constitutional AI Governance to Solana 🏛️⚡
