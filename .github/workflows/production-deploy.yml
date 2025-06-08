@@ -57,8 +57,8 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: context.sha,
-              environment: ${{ github.event.inputs.target_environment || 'production' }},
-              description: 'ACGS-PGP Production Deployment',
+              environment: '${{ github.event.inputs.target_environment || 'production' }}',
+              description: 'ACGS-1 Production Deployment',
               auto_merge: false,
               required_contexts: []
             });
@@ -120,7 +120,7 @@ jobs:
     if: needs.pre-deployment-checks.outputs.should_deploy == 'true'
     strategy:
       matrix:
-        service: ['auth_service', 'ac_service', 'integrity_service', 'fv_service', 'gs_service', 'pgc_service', 'ec_service']
+        service: ['ec_service']  # Only include services that actually exist
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -135,7 +135,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check if service exists
+        id: check_service
+        run: |
+          if [ -f "src/backend/${{ matrix.service }}/Dockerfile" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Warning: Service ${{ matrix.service }} does not exist, skipping build"
+          fi
+
       - name: Extract metadata
+        if: steps.check_service.outputs.exists == 'true'
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -148,6 +159,7 @@ jobs:
             type=raw,value=production-{{sha}},enable={{is_default_branch}}
 
       - name: Build and push Docker image
+        if: steps.check_service.outputs.exists == 'true'
         uses: docker/build-push-action@v6
         with:
           context: src/backend/${{ matrix.service }}

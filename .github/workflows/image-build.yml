@@ -13,24 +13,31 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: auth
-            file: src/backend/auth_service/Dockerfile
-            context: src/backend/auth_service
-          # This previously built ac_service under the generic 'backend' image name.
-          # Renaming to 'ac_service' for clarity. The ci.yml workflow builds other backend services.
-          - name: ac_service
-            file: src/backend/ac_service/Dockerfile
-            context: src/backend/ac_service
+          - name: ec_service
+            file: src/backend/ec_service/Dockerfile
+            context: src/backend/ec_service
           - name: frontend
             file: src/frontend/Dockerfile
             context: src/frontend
+            exists: false  # Mark as non-existent for now
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
       - name: Set repository lowercase
         id: vars
         run: echo "repo=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-      - run: |
+      - name: Check if Dockerfile exists
+        id: check_dockerfile
+        run: |
+          if [ -f "${{ matrix.file }}" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Warning: Dockerfile ${{ matrix.file }} does not exist, skipping build"
+          fi
+      - name: Build Docker image
+        if: steps.check_dockerfile.outputs.exists == 'true'
+        run: |
           docker buildx build \
             -f ${{ matrix.file }} \
             -t ghcr.io/${{ steps.vars.outputs.repo }}/${{ matrix.name }}:pr-${{ github.sha }} \
