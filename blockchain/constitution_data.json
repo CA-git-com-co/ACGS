@@ -1,0 +1,15 @@
+{
+  "constitution": {
+    "text": "\n        # Quantumagi Constitutional Framework\n        \n        ## Article I: Governance Principles\n        1. Democratic Decision Making: All policy changes require community voting\n        2. Transparency: All governance actions are recorded on-chain\n        3. Accountability: Appeals process for disputed decisions\n        4. Compliance: Real-time policy enforcement through PGC\n        \n        ## Article II: Policy Categories\n        1. PC-001: Core Constitutional Amendments\n        2. Safety: Security and risk management policies\n        3. Governance: Voting and decision-making procedures\n        4. Financial: Economic and treasury management\n        \n        ## Article III: Voting Mechanisms\n        1. Proposal Submission: Any stakeholder may propose policies\n        2. Voting Period: 7 days for standard proposals, 3 days for emergency\n        3. Quorum Requirements: Minimum 10% participation for validity\n        4. Approval Threshold: Simple majority (>50%) for passage\n        \n        ## Article IV: Emergency Procedures\n        1. Emergency Policy Deactivation: Immediate suspension for critical issues\n        2. Fast-Track Voting: Reduced timeframes for urgent matters\n        3. Override Mechanisms: Super-majority (67%) can override vetoes\n        \n        ## Article V: Appeals Process\n        1. Appeal Submission: 48-hour window after policy enactment\n        2. Review Committee: Randomly selected stakeholder panel\n        3. Resolution Timeline: 5 business days maximum\n        4. Final Authority: Community vote on disputed appeals\n        \n        ## Article VI: Compliance Framework\n        1. Real-time Monitoring: Continuous PGC compliance checking\n        2. Violation Reporting: Automated alerts for policy breaches\n        3. Enforcement Actions: Graduated response system\n        4. Audit Trail: Immutable record of all governance actions\n        ",
+    "hash": "cdd01ef066bc6cf2",
+    "version": "1.0.0",
+    "effective_date": "2025-06-07T00:00:00Z"
+  },
+  "account_data": {
+    "constitution_hash": "cdd01ef066bc6cf2",
+    "version": "1.0.0",
+    "effective_date": "2025-06-07T00:00:00Z",
+    "status": "active",
+    "amendment_count": 0
+  }
+}
