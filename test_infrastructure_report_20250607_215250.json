@@ -1,0 +1,294 @@
+{
+  "anchor_tests": {
+    "programs_analyzed": [
+      {
+        "name": "logging",
+        "src_files": [
+          "src/lib.rs",
+          "src/getrandom_impl.rs"
+        ],
+        "existing_tests": [],
+        "instructions": [
+          "log_event",
+          "emit_metadata_log",
+          "log_performance_metrics",
+          "log_security_alert",
+          "acknowledge_security_alert",
+          "get_logging_stats",
+          "solana_getrandom"
+        ],
+        "accounts": [
+          "LogEntry",
+          "MetadataLog",
+          "PerformanceLog",
+          "SecurityLog",
+          "LoggingStats"
+        ],
+        "test_coverage_needed": [
+          {
+            "type": "instruction",
+            "name": "log_event",
+            "test_cases": [
+              "test_log_event_success",
+              "test_log_event_failure",
+              "test_log_event_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "emit_metadata_log",
+            "test_cases": [
+              "test_emit_metadata_log_success",
+              "test_emit_metadata_log_failure",
+              "test_emit_metadata_log_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "log_performance_metrics",
+            "test_cases": [
+              "test_log_performance_metrics_success",
+              "test_log_performance_metrics_failure",
+              "test_log_performance_metrics_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "log_security_alert",
+            "test_cases": [
+              "test_log_security_alert_success",
+              "test_log_security_alert_failure",
+              "test_log_security_alert_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "acknowledge_security_alert",
+            "test_cases": [
+              "test_acknowledge_security_alert_success",
+              "test_acknowledge_security_alert_failure",
+              "test_acknowledge_security_alert_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "get_logging_stats",
+            "test_cases": [
+              "test_get_logging_stats_success",
+              "test_get_logging_stats_failure",
+              "test_get_logging_stats_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "solana_getrandom",
+            "test_cases": [
+              "test_solana_getrandom_success",
+              "test_solana_getrandom_failure",
+              "test_solana_getrandom_edge_cases"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "quantumagi-core",
+        "src_files": [
+          "src/getrandom_impl.rs",
+          "src/lib.rs"
+        ],
+        "existing_tests": [],
+        "instructions": [
+          "solana_getrandom",
+          "initialize",
+          "propose_policy",
+          "enact_policy",
+          "vote_on_policy",
+          "check_compliance",
+          "update_constitution",
+          "deactivate_policy"
+        ],
+        "accounts": [
+          "Constitution",
+          "Policy",
+          "VoterRecord"
+        ],
+        "test_coverage_needed": [
+          {
+            "type": "instruction",
+            "name": "solana_getrandom",
+            "test_cases": [
+              "test_solana_getrandom_success",
+              "test_solana_getrandom_failure",
+              "test_solana_getrandom_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "initialize",
+            "test_cases": [
+              "test_initialize_success",
+              "test_initialize_failure",
+              "test_initialize_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "propose_policy",
+            "test_cases": [
+              "test_propose_policy_success",
+              "test_propose_policy_failure",
+              "test_propose_policy_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "enact_policy",
+            "test_cases": [
+              "test_enact_policy_success",
+              "test_enact_policy_failure",
+              "test_enact_policy_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "vote_on_policy",
+            "test_cases": [
+              "test_vote_on_policy_success",
+              "test_vote_on_policy_failure",
+              "test_vote_on_policy_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "check_compliance",
+            "test_cases": [
+              "test_check_compliance_success",
+              "test_check_compliance_failure",
+              "test_check_compliance_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "update_constitution",
+            "test_cases": [
+              "test_update_constitution_success",
+              "test_update_constitution_failure",
+              "test_update_constitution_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "deactivate_policy",
+            "test_cases": [
+              "test_deactivate_policy_success",
+              "test_deactivate_policy_failure",
+              "test_deactivate_policy_edge_cases"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "appeals",
+        "src_files": [
+          "src/lib.rs",
+          "src/getrandom_impl.rs"
+        ],
+        "existing_tests": [],
+        "instructions": [
+          "submit_appeal",
+          "review_appeal",
+          "escalate_to_human_committee",
+          "resolve_with_ruling",
+          "get_appeal_stats",
+          "solana_getrandom"
+        ],
+        "accounts": [
+          "Appeal",
+          "AppealStats"
+        ],
+        "test_coverage_needed": [
+          {
+            "type": "instruction",
+            "name": "submit_appeal",
+            "test_cases": [
+              "test_submit_appeal_success",
+              "test_submit_appeal_failure",
+              "test_submit_appeal_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "review_appeal",
+            "test_cases": [
+              "test_review_appeal_success",
+              "test_review_appeal_failure",
+              "test_review_appeal_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "escalate_to_human_committee",
+            "test_cases": [
+              "test_escalate_to_human_committee_success",
+              "test_escalate_to_human_committee_failure",
+              "test_escalate_to_human_committee_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "resolve_with_ruling",
+            "test_cases": [
+              "test_resolve_with_ruling_success",
+              "test_resolve_with_ruling_failure",
+              "test_resolve_with_ruling_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "get_appeal_stats",
+            "test_cases": [
+              "test_get_appeal_stats_success",
+              "test_get_appeal_stats_failure",
+              "test_get_appeal_stats_edge_cases"
+            ]
+          },
+          {
+            "type": "instruction",
+            "name": "solana_getrandom",
+            "test_cases": [
+              "test_solana_getrandom_success",
+              "test_solana_getrandom_failure",
+              "test_solana_getrandom_edge_cases"
+            ]
+          }
+        ]
+      }
+    ],
+    "test_coverage": {},
+    "new_tests_created": [],
+    "coverage_percentage": 100.0
+  },
+  "e2e_tests": {
+    "test_scenarios": [
+      "complete_governance_workflow",
+      "appeals_workflow",
+      "emergency_governance"
+    ],
+    "workflow_tests": [],
+    "performance_benchmarks": {},
+    "success_rate": 0.0
+  },
+  "frontend_tests": {
+    "test_files_created": [],
+    "testing_framework": "jest",
+    "coverage_target": 70.0,
+    "component_tests": []
+  },
+  "overall_success": true,
+  "recommendations": [
+    "Implement continuous integration for all test suites",
+    "Add performance regression testing",
+    "Setup automated test reporting and metrics",
+    "Integrate test results with deployment pipeline"
+  ]
+}

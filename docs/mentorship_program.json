@@ -1,0 +1,25 @@
+{
+  "program_structure": {
+    "duration_weeks": 8,
+    "meeting_frequency": "weekly",
+    "session_duration_minutes": 30
+  },
+  "mentor_requirements": [
+    "6+ months experience with ACGS-1",
+    "10+ merged contributions",
+    "Active community participation",
+    "Communication skills"
+  ],
+  "mentee_benefits": [
+    "Personalized guidance",
+    "Code review priority",
+    "Career development advice",
+    "Direct access to core team"
+  ],
+  "matching_criteria": [
+    "Technical interests alignment",
+    "Timezone compatibility",
+    "Communication style fit",
+    "Learning goals match"
+  ]
+}
