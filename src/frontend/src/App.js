@@ -8,6 +8,7 @@ import PolicySynthesisPage from './pages/Synthesis/PolicySynthesisPage'; // Usin
 import PolicyListPage from './pages/Policies/PolicyListPage'; // Using actual component
 import PublicConsultationPage from './pages/PublicConsultation/PublicConsultationPage'; // Public consultation component
 import ConstitutionalCouncilDashboard from './components/ConstitutionalCouncilDashboard'; // Real-time dashboard
+import QuantumagiApp from './components/QuantumagiDashboard'; // Quantumagi Solana Dashboard
 import Layout from './components/Layout/Layout'; // Import Layout
 
 // HomePage component (can be moved to pages/Home/HomePage.js later)
@@ -74,6 +75,10 @@ function App() {
                         <Route
                             path="/constitutional-council-dashboard"
                             element={<ProtectedRoute><ConstitutionalCouncilDashboard /></ProtectedRoute>}
+                        />
+                        <Route
+                            path="/quantumagi"
+                            element={<QuantumagiApp />}
                         />
 
                         {/* Add more routes as needed */}
