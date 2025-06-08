@@ -40,7 +40,7 @@ sys.modules['shared.metrics'] = type(sys)('shared.metrics')
 sys.modules['shared.metrics'].get_metrics = get_metrics
 
 try:
-    from src.backend.ac_service.app.services.collective_constitutional_ai import (
+    from services.core.constitutional_ai.app.services.collective_constitutional_ai import (
         CollectiveConstitutionalAI,
         CollectiveInput,
         DemocraticPrinciple,

@@ -13,7 +13,7 @@ from typing import Dict, Any
 # Mock imports for demonstration
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))  # Removed during reorganization
 
 from shared.wina.performance_monitoring import (
     WINAPerformanceCollector,

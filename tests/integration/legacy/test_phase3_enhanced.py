@@ -19,10 +19,10 @@ from datetime import datetime
 
 # Test imports
 try:
-    from src.backend.gs_service.app.services.cache_manager import get_cache_manager, shutdown_cache_manager
-    from src.backend.gs_service.app.services.monitoring_service import get_monitoring_service, shutdown_monitoring_service
-    from src.backend.gs_service.app.services.security_compliance import get_security_service
-    from src.backend.gs_service.app.services.advanced_cache import CACHE_TTL_POLICIES
+    from services.core.governance_synthesis.app.services.cache_manager import get_cache_manager, shutdown_cache_manager
+    from services.core.governance_synthesis.app.services.monitoring_service import get_monitoring_service, shutdown_monitoring_service
+    from services.core.governance_synthesis.app.services.security_compliance import get_security_service
+    from services.core.governance_synthesis.app.services.advanced_cache import CACHE_TTL_POLICIES
     ENHANCED_SERVICES_AVAILABLE = True
 except ImportError as e:
     print(f"⚠️  Enhanced services not available: {e}")

@@ -20,8 +20,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 try:
-    from src.backend.gs_service.app.main import app
-    from src.backend.gs_service.app.services.constitutional_reporting_service import (
+    from services.core.governance_synthesis.app.main import app
+    from services.core.governance_synthesis.app.services.constitutional_reporting_service import (
         ConstitutionalReportingService,
         ReportType,
         ReportFormat

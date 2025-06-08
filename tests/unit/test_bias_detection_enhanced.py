@@ -11,10 +11,10 @@ from typing import List, Dict, Any
 
 # Import the enhanced bias detector
 import sys
-sys.path.append('src/backend/fv_service')
+# sys.path.append('src/backend/fv_service')  # Removed during reorganization
 
-from src.backend.fv_service.app.core.bias_detector import BiasDetector, FAIRLEARN_AVAILABLE
-from src.backend.fv_service.app.schemas import (
+from services.core.formal_verification.app.core.bias_detector import BiasDetector, FAIRLEARN_AVAILABLE
+from services.core.formal_verification.app.schemas import (
     BiasDetectionRequest, BiasDetectionResult, BiasMetric, PolicyRule
 )
 

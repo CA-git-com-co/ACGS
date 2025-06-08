@@ -9,21 +9,21 @@ Simple test script to verify OPA integration implementation.
 
 import sys
 import os
-sys.path.append('/home/dislove/ACGS-master')
+# sys.path.append('/home/dislove/ACGS-master')  # Removed during reorganization
 
 def test_imports():
     """Test that all modules can be imported."""
     try:
-        from src.backend.gs_service.app.config.opa_config import get_opa_config
+        from services.core.governance_synthesis.app.config.opa_config import get_opa_config
         print("✓ OPA config import successful")
         
-        from src.backend.gs_service.app.core.opa_integration import OPAClient
+        from services.core.governance_synthesis.app.core.opa_integration import OPAClient
         print("✓ OPA integration import successful")
         
-        from src.backend.gs_service.app.services.policy_validator import PolicyValidationEngine
+        from services.core.governance_synthesis.app.services.policy_validator import PolicyValidationEngine
         print("✓ Policy validator import successful")
         
-        from src.backend.gs_service.app.services.enhanced_governance_synthesis import EnhancedGovernanceSynthesis
+        from services.core.governance_synthesis.app.services.enhanced_governance_synthesis import EnhancedGovernanceSynthesis
         print("✓ Enhanced governance synthesis import successful")
         
         return True
@@ -34,7 +34,7 @@ def test_imports():
 def test_opa_config():
     """Test OPA configuration."""
     try:
-        from src.backend.gs_service.app.config.opa_config import get_opa_config
+        from services.core.governance_synthesis.app.config.opa_config import get_opa_config
         config = get_opa_config()
         print(f"✓ OPA config created: mode={config.mode.value}")
         print(f"  - Max latency: {config.performance.max_policy_decision_latency_ms}ms")
@@ -65,11 +65,11 @@ def test_policy_files():
 def test_score_calculation():
     """Test score calculation logic."""
     try:
-        from src.backend.gs_service.app.services.policy_validator import (
+        from services.core.governance_synthesis.app.services.policy_validator import (
             PolicyValidationEngine, ConstitutionalValidationResult, 
             ComplianceCheckResult, ConflictDetectionResult
         )
-        from src.backend.gs_service.app.core.opa_integration import PolicyValidationResult
+        from services.core.governance_synthesis.app.core.opa_integration import PolicyValidationResult
         
         engine = PolicyValidationEngine()
         

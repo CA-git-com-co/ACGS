@@ -26,15 +26,15 @@ import httpx
 # Import test dependencies
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend', 'ac_service'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend', 'shared'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend'))  # Removed during reorganization
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend', 'ac_service'))  # Removed during reorganization
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend', 'shared'))  # Removed during reorganization
 
 # QEC Enhancement imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'alphaevolve_gs_engine', 'src'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'alphaevolve_gs_engine', 'src'))  # Removed during reorganization
 
 try:
-    from alphaevolve_gs_engine.services.qec_enhancement import (
+    from integrations.alphaevolve_engine.services.qec_enhancement import (
         ConstitutionalDistanceCalculator,
         ValidationDSLParser,
         ErrorPredictionModel,
@@ -43,7 +43,7 @@ try:
         SynthesisAttemptLog,
         RecoveryStrategy
     )
-    from alphaevolve_gs_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
+    from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
         ConstitutionalFidelityMonitor,
         FidelityComponents,
         FidelityAlert,

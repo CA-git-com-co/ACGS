@@ -82,7 +82,7 @@ class ACGSGroqTester:
         
         # Check imports
         try:
-            from alphaevolve_gs_engine.services.llm_service import GroqLLMService
+            from integrations.alphaevolve_engine.services.llm_service import GroqLLMService
             print("✅ AlphaEvolve GS Engine imports available")
         except ImportError as e:
             print(f"❌ AlphaEvolve GS Engine import failed: {e}")
@@ -95,7 +95,7 @@ class ACGSGroqTester:
         print("\n🧪 Testing AlphaEvolve GS Engine Integration...")
         
         try:
-            from alphaevolve_gs_engine.services.llm_service import GroqLLMService
+            from integrations.alphaevolve_engine.services.llm_service import GroqLLMService
             
             for model_key, model_info in self.groq_models.items():
                 print(f"\n📋 Testing {model_info['name']}...")

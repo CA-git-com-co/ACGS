@@ -14,11 +14,11 @@ from typing import Dict, Any
 from datetime import datetime
 
 # Import the new consolidated utilities
-from src.backend.shared.common import (
+from services.shared.common import (
     ACGSHttpClient, ServiceClient, validate_request, format_response,
     ACGSException, handle_service_error
 )
-from src.backend.shared.service_mesh import (
+from services.shared.service_mesh import (
     ServiceMesh, ServiceRegistry, ServiceType, get_service_mesh
 )
 
@@ -99,7 +99,7 @@ class RefactoringDemo:
         print("\n✅ AFTER: Unified validation with consistent error handling")
         
         # Import validation functions
-        from src.backend.shared.common.validation import (
+        from services.shared.common.validation import (
             validate_email, validate_username, validate_pagination_params,
             ValidationError
         )
@@ -147,7 +147,7 @@ class RefactoringDemo:
         print("\n✅ AFTER: Standardized error handling with structured responses")
         
         # Import error handling utilities
-        from src.backend.shared.common.error_handling import (
+        from services.shared.common.error_handling import (
             ValidationError, AuthenticationError, NotFoundError,
             create_error_response, log_error
         )
@@ -248,7 +248,7 @@ class RefactoringDemo:
         print("\n✅ AFTER: Unified response formatting")
         
         # Import formatting utilities
-        from src.backend.shared.common.formatting import (
+        from services.shared.common.formatting import (
             format_response, format_list_response, format_health_check,
             format_pagination, ResponseStatus
         )

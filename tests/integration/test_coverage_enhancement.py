@@ -34,10 +34,10 @@ except ImportError:
 
 # Import components to test (only those that work)
 try:
-    from src.backend.gs_service.app.core.constitutional_prompting import ConstitutionalPromptBuilder
-    from src.backend.gs_service.app.core.llm_integration import MockLLMClient, RealLLMClient
-    from src.backend.gs_service.app.services.lipschitz_estimator import LipschitzEstimator
-    from src.backend.integrity_service.app.services.crypto_service import CryptographicIntegrityService
+    from services.core.governance_synthesis.app.core.constitutional_prompting import ConstitutionalPromptBuilder
+    from services.core.governance_synthesis.app.core.llm_integration import MockLLMClient, RealLLMClient
+    from services.core.governance_synthesis.app.services.lipschitz_estimator import LipschitzEstimator
+    from services.platform.integrity.app.services.crypto_service import CryptographicIntegrityService
     IMPORTS_AVAILABLE = True
 except ImportError as e:
     IMPORTS_AVAILABLE = False
@@ -139,7 +139,7 @@ class TestCoverageEnhancement:
                 })
 
                 # Mock LLM response with reliability scoring
-                from src.backend.gs_service.app.schemas import LLMInterpretationInput
+                from services.core.governance_synthesis.app.schemas import LLMInterpretationInput
                 input_data = LLMInterpretationInput(
                     principle_id=1,
                     principle_text=prompt,
@@ -180,7 +180,7 @@ class TestCoverageEnhancement:
             "expected_bound": expected_bound
         })
         
-        from src.backend.gs_service.app.services.lipschitz_estimator import LipschitzEstimationConfig
+        from services.core.governance_synthesis.app.services.lipschitz_estimator import LipschitzEstimationConfig
         config = LipschitzEstimationConfig(
             num_perturbations=lipschitz_config["samples"],
             perturbation_magnitude=0.1
@@ -330,7 +330,7 @@ class TestCoverageEnhancement:
                 # Cryptography library not available, mock the result
                 result = b"mock_signature"
         elif crypto_operation == "merkle_tree":
-            from src.backend.integrity_service.app.services.crypto_service import merkle_service
+            from services.platform.integrity.app.services.crypto_service import merkle_service
             data_hashes = [crypto_service.generate_sha3_hash(test_data + str(i)) for i in range(4)]
             result = merkle_service.build_merkle_tree(data_hashes)
         elif crypto_operation == "key_derivation":

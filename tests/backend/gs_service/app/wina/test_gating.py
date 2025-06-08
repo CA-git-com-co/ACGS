@@ -1,8 +1,8 @@
 import pytest
 from typing import Dict
 
-from src.backend.gs_service.app.wina.models import WINAWeightOutput, GatingThresholdConfig, GatingDecision
-from src.backend.gs_service.app.wina.gating import determine_gating_decision
+from services.core.governance_synthesis.app.wina.models import WINAWeightOutput, GatingThresholdConfig, GatingDecision
+from services.core.governance_synthesis.app.wina.gating import determine_gating_decision
 
 @pytest.mark.asyncio
 async def test_determine_gating_decision_basic_scenario():
