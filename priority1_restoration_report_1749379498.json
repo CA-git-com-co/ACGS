@@ -1,0 +1,217 @@
+{
+  "phase": "Priority 1: Complete Service Restoration",
+  "execution_time": 43.727696657180786,
+  "restored_services": [],
+  "failed_services": [
+    "ac_service",
+    "integrity_service",
+    "fv_service",
+    "gs_service"
+  ],
+  "validation_results": {
+    "results": {
+      "ac_service": false,
+      "integrity_service": false,
+      "fv_service": false,
+      "gs_service": false,
+      "auth_service": true,
+      "pgc_service": true,
+      "ec_service": true
+    },
+    "healthy_count": 3,
+    "total_services": 7,
+    "availability_percentage": 42.857142857142854,
+    "success": false
+  },
+  "health_check_passed": true,
+  "overall_success": false,
+  "availability_improvement": "3/7 (42.9%)",
+  "execution_log": [
+    {
+      "timestamp": 1.1920928955078125e-06,
+      "action": "\ud83d\ude80 Starting Priority 1: Complete Service Restoration",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 2.288818359375e-05,
+      "action": "Stopping existing Docker containers",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 0.011508464813232422,
+      "action": "Stopped Docker container: acgs_ac_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.024196624755859375,
+      "action": "Stopped Docker container: acgs_integrity_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.033834218978881836,
+      "action": "Stopped Docker container: acgs_fv_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.044611454010009766,
+      "action": "Stopped Docker container: acgs_gs_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.12316513061523438,
+      "action": "Killed existing processes on port 8001",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.19651412963867188,
+      "action": "Killed existing processes on port 8002",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.2693455219268799,
+      "action": "Killed existing processes on port 8003",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.341869592666626,
+      "action": "Killed existing processes on port 8004",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 3.342114210128784,
+      "action": "Environment variables configured",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 3.342146396636963,
+      "action": "Starting ac_service on port 8001",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 3.342787027359009,
+      "action": "Process started for ac_service (PID: 1397096)",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 11.350310564041138,
+      "action": "Service ac_service process exited",
+      "status": "ERROR",
+      "details": "Traceback (most recent call last):\n  File \"/home/dislove/ACGS-1/venv/bin/uvicorn\", line 8, in <module>\n    sys.exit(main())\n             ^^^^^^\n  File \"/home/dislove/ACGS-1/venv/lib/python3.12/site-packages/click/core.py\", line 1161, in __call__\n    return self.main(*args, **kwargs)\n           ^^^^^"
+    },
+    {
+      "timestamp": 13.35227084159851,
+      "action": "Starting integrity_service on port 8002",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 13.352725505828857,
+      "action": "Process started for integrity_service (PID: 1397903)",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 21.360878467559814,
+      "action": "Service integrity_service process exited",
+      "status": "ERROR",
+      "details": "Traceback (most recent call last):\n  File \"/home/dislove/ACGS-1/venv/bin/uvicorn\", line 8, in <module>\n    sys.exit(main())\n             ^^^^^^\n  File \"/home/dislove/ACGS-1/venv/lib/python3.12/site-packages/click/core.py\", line 1161, in __call__\n    return self.main(*args, **kwargs)\n           ^^^^^"
+    },
+    {
+      "timestamp": 23.362787008285522,
+      "action": "Starting fv_service on port 8003",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 23.363373517990112,
+      "action": "Process started for fv_service (PID: 1398674)",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 31.371299982070923,
+      "action": "Service fv_service process exited",
+      "status": "ERROR",
+      "details": "Traceback (most recent call last):\n  File \"/home/dislove/ACGS-1/venv/bin/uvicorn\", line 8, in <module>\n    sys.exit(main())\n             ^^^^^^\n  File \"/home/dislove/ACGS-1/venv/lib/python3.12/site-packages/click/core.py\", line 1161, in __call__\n    return self.main(*args, **kwargs)\n           ^^^^^"
+    },
+    {
+      "timestamp": 33.373250246047974,
+      "action": "Starting gs_service on port 8004",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 33.37377381324768,
+      "action": "Process started for gs_service (PID: 1399520)",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 41.381309509277344,
+      "action": "Service gs_service process exited",
+      "status": "ERROR",
+      "details": "Traceback (most recent call last):\n  File \"/home/dislove/ACGS-1/venv/bin/uvicorn\", line 8, in <module>\n    sys.exit(main())\n             ^^^^^^\n  File \"/home/dislove/ACGS-1/venv/lib/python3.12/site-packages/click/core.py\", line 1161, in __call__\n    return self.main(*args, **kwargs)\n           ^^^^^"
+    },
+    {
+      "timestamp": 43.38325071334839,
+      "action": "Validating all services",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 43.406656980514526,
+      "action": "Health check exception for ac_service: All connection attempts failed",
+      "status": "WARNING",
+      "details": ""
+    },
+    {
+      "timestamp": 43.42232871055603,
+      "action": "Health check exception for integrity_service: All connection attempts failed",
+      "status": "WARNING",
+      "details": ""
+    },
+    {
+      "timestamp": 43.44115138053894,
+      "action": "Health check exception for fv_service: All connection attempts failed",
+      "status": "WARNING",
+      "details": ""
+    },
+    {
+      "timestamp": 43.46038031578064,
+      "action": "Health check exception for gs_service: All connection attempts failed",
+      "status": "WARNING",
+      "details": ""
+    },
+    {
+      "timestamp": 43.55259704589844,
+      "action": "Service validation complete: 3/7 healthy (42.9%)",
+      "status": "WARNING",
+      "details": ""
+    },
+    {
+      "timestamp": 43.5526168346405,
+      "action": "Running comprehensive health check",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 43.72767615318298,
+      "action": "Comprehensive health check shows partial success",
+      "status": "WARNING",
+      "details": ""
+    }
+  ]
+}

@@ -7,7 +7,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Fv Service")
+app = FastAPI(title="Ac Service")
 
 # Add CORS middleware
 app.add_middleware(
@@ -21,9 +21,9 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {
-        "message": "Fv Service is running",
+        "message": "Ac Service is running",
         "status": "operational",
-        "port": 8003
+        "port": 8001
     }
 
 @app.get("/health")
@@ -31,8 +31,8 @@ async def health_check():
     """Health check endpoint."""
     return {
         "status": "healthy",
-        "service": "fv_service",
-        "port": 8003,
+        "service": "ac_service",
+        "port": 8001,
         "message": "Service is operational"
     }
 
@@ -41,11 +41,11 @@ async def api_status():
     """API status endpoint."""
     return {
         "api_version": "v1",
-        "service": "fv_service",
+        "service": "ac_service",
         "status": "active",
         "endpoints": ["/", "/health", "/api/v1/status"]
     }
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8003)
+    uvicorn.run(app, host="0.0.0.0", port=8001)

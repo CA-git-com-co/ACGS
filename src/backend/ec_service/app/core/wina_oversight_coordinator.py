@@ -153,7 +153,7 @@ class ECOversightReport:
     constitutional_compliance_summary: Dict[str, Any]
     performance_improvements: Dict[str, float]
     governance_decisions: List[Dict[str, Any]]
-    constitutional_updates_proposed: List[ConstitutionalPrincipleUpdate]
+    constitutional_updates_proposed: List[Dict[str, Any]]
     learning_adaptations: List[Dict[str, Any]]
     system_health_indicators: Dict[str, float]
     recommendations: List[str]
@@ -173,11 +173,409 @@ class WINAECOversightCoordinator:
     def __init__(self, enable_wina: bool = True):
         """
         Initialize WINA-optimized EC oversight coordinator.
-        
+
         Args:
             enable_wina: Whether to enable WINA optimization
         """
         self.enable_wina = enable_wina
+
+        # Task #4: Advanced optimization algorithms
+        self.optimization_algorithms = {
+            "resource_allocation": self._optimize_resource_allocation,
+            "coordination_efficiency": self._optimize_coordination_efficiency,
+            "performance_tuning": self._optimize_performance_tuning,
+            "governance_compliance": self._optimize_governance_compliance
+        }
+
+        # Task #4: Real-time monitoring and alerting
+        self.monitoring_active = True
+        self.alert_thresholds = {
+            "response_time_ms": 500,
+            "error_rate_percent": 5.0,
+            "resource_utilization_percent": 85.0,
+            "compliance_score_min": 0.90
+        }
+        self.active_alerts = []
+
+        # Task #4: PGC service integration
+        self.pgc_integration_enabled = True
+        self.pgc_service_url = "http://localhost:8015"  # Enhanced PGC service from Task #3
+
+        # Task #4: Advanced analytics and reporting
+        self.analytics_data = {
+            "oversight_operations": 0,
+            "optimization_cycles": 0,
+            "compliance_checks": 0,
+            "performance_improvements": 0,
+            "alerts_generated": 0
+        }
+
+        # Task #4: Enterprise-scale performance optimization
+        self.enterprise_config = {
+            "max_concurrent_operations": 1000,
+            "optimization_interval_seconds": 30,
+            "batch_processing_size": 100,
+            "cache_ttl_seconds": 300
+        }
+
+    # Task #4: Advanced Optimization Algorithm Implementations
+
+    async def _optimize_resource_allocation(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Advanced resource allocation optimization algorithm.
+
+        Optimizes resource distribution across WINA oversight operations
+        based on current system load, priority, and performance metrics.
+        """
+        start_time = time.time()
+
+        try:
+            # Analyze current resource utilization
+            current_load = context.get("system_load", 0.5)
+            operation_priority = context.get("priority", "medium")
+            available_resources = context.get("available_resources", 100)
+
+            # Apply optimization algorithm
+            if operation_priority == "high":
+                allocated_resources = min(available_resources * 0.8, 80)
+            elif operation_priority == "medium":
+                allocated_resources = min(available_resources * 0.5, 50)
+            else:
+                allocated_resources = min(available_resources * 0.3, 30)
+
+            # Adjust based on current load
+            load_factor = max(0.1, 1.0 - current_load)
+            optimized_allocation = allocated_resources * load_factor
+
+            optimization_time = (time.time() - start_time) * 1000
+
+            return {
+                "algorithm": "resource_allocation",
+                "allocated_resources": round(optimized_allocation, 2),
+                "load_factor": round(load_factor, 3),
+                "optimization_time_ms": round(optimization_time, 2),
+                "efficiency_gain": round((optimized_allocation / available_resources) * 100, 1),
+                "status": "optimized"
+            }
+
+        except Exception as e:
+            return {
+                "algorithm": "resource_allocation",
+                "status": "error",
+                "error": str(e),
+                "optimization_time_ms": round((time.time() - start_time) * 1000, 2)
+            }
+
+    async def _optimize_coordination_efficiency(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Coordination efficiency optimization algorithm.
+
+        Optimizes coordination patterns between WINA oversight components
+        to minimize latency and maximize throughput.
+        """
+        start_time = time.time()
+
+        try:
+            # Analyze coordination patterns
+            active_operations = context.get("active_operations", 1)
+            coordination_complexity = context.get("coordination_complexity", "medium")
+            target_latency_ms = context.get("target_latency_ms", 100)
+
+            # Calculate optimal coordination strategy
+            if coordination_complexity == "high":
+                coordination_factor = 0.7
+                parallel_operations = min(active_operations, 3)
+            elif coordination_complexity == "medium":
+                coordination_factor = 0.85
+                parallel_operations = min(active_operations, 5)
+            else:
+                coordination_factor = 0.95
+                parallel_operations = min(active_operations, 8)
+
+            # Optimize coordination timing
+            optimized_latency = target_latency_ms * coordination_factor
+            throughput_improvement = parallel_operations / max(1, active_operations)
+
+            optimization_time = (time.time() - start_time) * 1000
+
+            return {
+                "algorithm": "coordination_efficiency",
+                "optimized_latency_ms": round(optimized_latency, 2),
+                "parallel_operations": parallel_operations,
+                "throughput_improvement": round(throughput_improvement, 3),
+                "coordination_factor": coordination_factor,
+                "optimization_time_ms": round(optimization_time, 2),
+                "status": "optimized"
+            }
+
+        except Exception as e:
+            return {
+                "algorithm": "coordination_efficiency",
+                "status": "error",
+                "error": str(e),
+                "optimization_time_ms": round((time.time() - start_time) * 1000, 2)
+            }
+
+    async def _optimize_performance_tuning(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Performance tuning optimization algorithm.
+
+        Dynamically adjusts WINA oversight parameters for optimal performance
+        based on real-time metrics and historical patterns.
+        """
+        start_time = time.time()
+
+        try:
+            # Analyze performance metrics
+            current_response_time = context.get("response_time_ms", 50)
+            error_rate = context.get("error_rate", 0.01)
+            memory_usage = context.get("memory_usage_percent", 60)
+            cpu_usage = context.get("cpu_usage_percent", 70)
+
+            # Calculate performance optimizations
+            performance_score = 100 - (
+                (current_response_time / 10) +
+                (error_rate * 1000) +
+                (memory_usage * 0.5) +
+                (cpu_usage * 0.3)
+            )
+
+            # Determine optimization adjustments
+            if performance_score < 70:
+                cache_adjustment = 1.5
+                batch_size_adjustment = 0.8
+                timeout_adjustment = 1.2
+            elif performance_score < 85:
+                cache_adjustment = 1.2
+                batch_size_adjustment = 0.9
+                timeout_adjustment = 1.1
+            else:
+                cache_adjustment = 1.0
+                batch_size_adjustment = 1.0
+                timeout_adjustment = 1.0
+
+            optimization_time = (time.time() - start_time) * 1000
+
+            return {
+                "algorithm": "performance_tuning",
+                "performance_score": round(performance_score, 2),
+                "cache_adjustment": cache_adjustment,
+                "batch_size_adjustment": batch_size_adjustment,
+                "timeout_adjustment": timeout_adjustment,
+                "optimization_time_ms": round(optimization_time, 2),
+                "status": "optimized"
+            }
+
+        except Exception as e:
+            return {
+                "algorithm": "performance_tuning",
+                "status": "error",
+                "error": str(e),
+                "optimization_time_ms": round((time.time() - start_time) * 1000, 2)
+            }
+
+    async def _optimize_governance_compliance(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Governance compliance optimization algorithm with PGC service integration.
+
+        Optimizes governance compliance checking and enforcement
+        by integrating with the enhanced PGC service from Task #3.
+        """
+        start_time = time.time()
+
+        try:
+            # Extract governance context
+            policy_id = context.get("policy_id")
+            compliance_requirements = context.get("compliance_requirements", [])
+            stakeholders = context.get("stakeholders", [])
+
+            # Integrate with PGC service for governance compliance
+            pgc_result = await self._integrate_with_pgc_service(
+                policy_id, compliance_requirements, stakeholders
+            )
+
+            # Calculate compliance optimization
+            base_compliance_score = context.get("compliance_score", 0.85)
+            pgc_compliance_boost = pgc_result.get("compliance_boost", 0.05)
+            optimized_compliance = min(1.0, base_compliance_score + pgc_compliance_boost)
+
+            # Determine optimization actions
+            optimization_actions = []
+            if optimized_compliance < self.alert_thresholds["compliance_score_min"]:
+                optimization_actions.extend([
+                    "escalate_to_stakeholders",
+                    "request_policy_review",
+                    "enable_enhanced_monitoring"
+                ])
+
+            optimization_time = (time.time() - start_time) * 1000
+
+            # Update analytics
+            self.analytics_data["compliance_checks"] += 1
+            if optimized_compliance > base_compliance_score:
+                self.analytics_data["performance_improvements"] += 1
+
+            return {
+                "algorithm": "governance_compliance",
+                "base_compliance_score": base_compliance_score,
+                "optimized_compliance_score": round(optimized_compliance, 3),
+                "pgc_integration_result": pgc_result,
+                "optimization_actions": optimization_actions,
+                "optimization_time_ms": round(optimization_time, 2),
+                "status": "optimized"
+            }
+
+        except Exception as e:
+            return {
+                "algorithm": "governance_compliance",
+                "status": "error",
+                "error": str(e),
+                "optimization_time_ms": round((time.time() - start_time) * 1000, 2)
+            }
+
+    async def _integrate_with_pgc_service(
+        self,
+        policy_id: Optional[str],
+        compliance_requirements: List[str],
+        stakeholders: List[str]
+    ) -> Dict[str, Any]:
+        """
+        Integrate with enhanced PGC service for governance compliance.
+
+        This method connects to the PGC service implemented in Task #3
+        to leverage comprehensive policy governance capabilities.
+        """
+        try:
+            if not self.pgc_integration_enabled:
+                return {"status": "disabled", "compliance_boost": 0.0}
+
+            # Import httpx for HTTP requests
+            import httpx
+
+            # Prepare integration request
+            integration_request = {
+                "source": "ec_service_wina_oversight",
+                "policy_id": policy_id,
+                "compliance_requirements": compliance_requirements,
+                "stakeholders": stakeholders,
+                "optimization_context": "wina_oversight_coordination"
+            }
+
+            # Call PGC service governance status endpoint
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                response = await client.get(f"{self.pgc_service_url}/governance/status")
+
+                if response.status_code == 200:
+                    pgc_status = response.json()
+
+                    # Calculate compliance boost based on PGC metrics
+                    compliance_score = pgc_status.get("policy_lifecycle", {}).get("compliance_score", 0.95)
+                    enforcement_rate = pgc_status.get("policy_lifecycle", {}).get("enforcement_rate", 0.98)
+
+                    compliance_boost = (compliance_score + enforcement_rate) / 20  # Max 0.1 boost
+
+                    return {
+                        "status": "success",
+                        "pgc_service_status": pgc_status.get("governance_status"),
+                        "compliance_boost": round(compliance_boost, 3),
+                        "pgc_metrics": pgc_status.get("metrics", {}),
+                        "integration_timestamp": time.time()
+                    }
+                else:
+                    return {
+                        "status": "error",
+                        "error": f"PGC service returned status {response.status_code}",
+                        "compliance_boost": 0.0
+                    }
+
+        except Exception as e:
+            return {
+                "status": "error",
+                "error": str(e),
+                "compliance_boost": 0.0
+            }
+
+    # Task #4: Real-time Monitoring and Alerting Methods
+
+    async def check_alert_conditions(self, metrics: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Check for alert conditions based on real-time metrics.
+
+        Monitors system performance and governance compliance,
+        generating alerts when thresholds are exceeded.
+        """
+        alerts = []
+        current_time = time.time()
+
+        try:
+            # Check response time alerts
+            response_time = metrics.get("response_time_ms", 0)
+            if response_time > self.alert_thresholds["response_time_ms"]:
+                alerts.append({
+                    "type": "performance",
+                    "severity": "high" if response_time > self.alert_thresholds["response_time_ms"] * 2 else "medium",
+                    "message": f"Response time {response_time}ms exceeds threshold {self.alert_thresholds['response_time_ms']}ms",
+                    "metric": "response_time_ms",
+                    "value": response_time,
+                    "threshold": self.alert_thresholds["response_time_ms"],
+                    "timestamp": current_time
+                })
+
+            # Check error rate alerts
+            error_rate = metrics.get("error_rate_percent", 0)
+            if error_rate > self.alert_thresholds["error_rate_percent"]:
+                alerts.append({
+                    "type": "reliability",
+                    "severity": "high",
+                    "message": f"Error rate {error_rate}% exceeds threshold {self.alert_thresholds['error_rate_percent']}%",
+                    "metric": "error_rate_percent",
+                    "value": error_rate,
+                    "threshold": self.alert_thresholds["error_rate_percent"],
+                    "timestamp": current_time
+                })
+
+            # Check resource utilization alerts
+            resource_util = metrics.get("resource_utilization_percent", 0)
+            if resource_util > self.alert_thresholds["resource_utilization_percent"]:
+                alerts.append({
+                    "type": "resource",
+                    "severity": "medium",
+                    "message": f"Resource utilization {resource_util}% exceeds threshold {self.alert_thresholds['resource_utilization_percent']}%",
+                    "metric": "resource_utilization_percent",
+                    "value": resource_util,
+                    "threshold": self.alert_thresholds["resource_utilization_percent"],
+                    "timestamp": current_time
+                })
+
+            # Check compliance score alerts
+            compliance_score = metrics.get("compliance_score", 1.0)
+            if compliance_score < self.alert_thresholds["compliance_score_min"]:
+                alerts.append({
+                    "type": "governance",
+                    "severity": "high",
+                    "message": f"Compliance score {compliance_score} below minimum threshold {self.alert_thresholds['compliance_score_min']}",
+                    "metric": "compliance_score",
+                    "value": compliance_score,
+                    "threshold": self.alert_thresholds["compliance_score_min"],
+                    "timestamp": current_time
+                })
+
+            # Update active alerts and analytics
+            self.active_alerts.extend(alerts)
+            self.analytics_data["alerts_generated"] += len(alerts)
+
+            # Keep only recent alerts (last 24 hours)
+            cutoff_time = current_time - 86400  # 24 hours
+            self.active_alerts = [
+                alert for alert in self.active_alerts
+                if alert["timestamp"] > cutoff_time
+            ]
+
+            return alerts
+
+        except Exception as e:
+            logger.error(f"Alert condition checking failed: {e}")
+            return []
         
         # Initialize WINA components
         if enable_wina and WINA_AVAILABLE:
@@ -215,7 +613,7 @@ class WINAECOversightCoordinator:
         # Reporting infrastructure
         self._oversight_reports: List[ECOversightReport] = []
         self._governance_decisions_log: List[Dict[str, Any]] = []
-        self._constitutional_updates_proposed: List[ConstitutionalPrincipleUpdate] = []
+        self._constitutional_updates_proposed: List[Dict[str, Any]] = []
         
         # Configuration
         self.cache_ttl = timedelta(minutes=10)

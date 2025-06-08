@@ -1,0 +1,125 @@
+{
+  "phase": "Phase 2 Systematic Remediation",
+  "start_time": 1749379172.8141737,
+  "execution_duration": 10.35961365699768,
+  "priority_1_results": {
+    "phase": "Priority 1",
+    "target": "Complete Service Restoration",
+    "timeline": "0-2 hours",
+    "services_restored": [],
+    "services_failed": [
+      "ac_service",
+      "integrity_service",
+      "fv_service",
+      "gs_service"
+    ],
+    "success": false,
+    "health_check_passed": false,
+    "availability_improvement": "3/7 services (42.9%)"
+  },
+  "execution_log": [
+    {
+      "timestamp": 2.384185791015625e-06,
+      "action": "\ud83d\ude80 Starting ACGS-1 Phase 2 Systematic Remediation",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 3.075599670410156e-05,
+      "action": "Starting Priority 1: Service Restoration",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 3.695487976074219e-05,
+      "action": "Stopping failing Docker containers",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 1.1926755905151367,
+      "action": "Stopped Docker container: acgs_ac_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 1.413830041885376,
+      "action": "Stopped Docker container: acgs_integrity_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 1.6297156810760498,
+      "action": "Stopped Docker container: acgs_fv_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 1.8553829193115234,
+      "action": "Stopped Docker container: acgs_gs_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 1.8554012775421143,
+      "action": "Deploying services using host-based approach",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 3.930811643600464,
+      "action": "Service directory not found for ac_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 3.9308419227600098,
+      "action": "Failed to restore ac_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 6.003651857376099,
+      "action": "Service directory not found for integrity_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 6.00368332862854,
+      "action": "Failed to restore integrity_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 8.084616899490356,
+      "action": "Service directory not found for fv_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 8.084641695022583,
+      "action": "Failed to restore fv_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 10.15676736831665,
+      "action": "Service directory not found for gs_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 10.156797170639038,
+      "action": "Failed to restore gs_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 10.35959267616272,
+      "action": "Priority 1 Complete - Restored 0/4 services",
+      "status": "PARTIAL",
+      "details": ""
+    }
+  ],
+  "overall_success": false
+}

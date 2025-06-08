@@ -1,0 +1,183 @@
+{
+  "timestamp": 1749378313.7108042,
+  "service_discovery": {
+    "ac_service": {
+      "service": "ac_service",
+      "base_url": "http://localhost:8001",
+      "discovered_endpoints": [],
+      "total_found": 0
+    },
+    "pgc_service": {
+      "service": "pgc_service",
+      "base_url": "http://localhost:8005",
+      "discovered_endpoints": [
+        "/api/v1/alphaevolve/evaluate-single",
+        "/api/v1/alphaevolve/evaluate-batch",
+        "/health",
+        "/",
+        "/api/v1/alphaevolve/cache/clear",
+        "/metrics",
+        "/openapi.json",
+        "/api/v1/alphaevolve/cache/stats",
+        "/docs"
+      ],
+      "total_found": 9
+    }
+  },
+  "endpoint_tests": {
+    "ac_service": [
+      {
+        "service": "ac_service",
+        "endpoint": "/health",
+        "url": "http://localhost:8001/health",
+        "method": "GET",
+        "accessible": false,
+        "error": "All connection attempts failed"
+      },
+      {
+        "service": "ac_service",
+        "endpoint": "/api/v1/constitutional-council/meta-rules",
+        "url": "http://localhost:8001/api/v1/constitutional-council/meta-rules",
+        "method": "GET",
+        "accessible": false,
+        "error": "All connection attempts failed"
+      },
+      {
+        "service": "ac_service",
+        "endpoint": "/api/v1/constitutional-council/rules",
+        "url": "http://localhost:8001/api/v1/constitutional-council/rules",
+        "method": "GET",
+        "accessible": false,
+        "error": "All connection attempts failed"
+      },
+      {
+        "service": "ac_service",
+        "endpoint": "/api/v1/constitutional-council/validate",
+        "url": "http://localhost:8001/api/v1/constitutional-council/validate",
+        "method": "GET",
+        "accessible": false,
+        "error": "All connection attempts failed"
+      }
+    ],
+    "pgc_service": [
+      {
+        "service": "pgc_service",
+        "endpoint": "/health",
+        "url": "http://localhost:8005/health",
+        "method": "GET",
+        "status_code": 200,
+        "accessible": true,
+        "requires_auth": false,
+        "not_found": false,
+        "response_size": 415,
+        "response_type": "json",
+        "response_preview": "{'status': 'healthy', 'service': 'pgc_service', 'version': '1.0.0', 'timestamp': '2024-01-20T00:00:00Z', 'dependencies': {'opa': {'status': 'healthy', 'response_time_ms': 1.776}, 'integrity_service': ..."
+      },
+      {
+        "service": "pgc_service",
+        "endpoint": "/api/v1/compliance/validate",
+        "url": "http://localhost:8005/api/v1/compliance/validate",
+        "method": "GET",
+        "status_code": 404,
+        "accessible": false,
+        "requires_auth": false,
+        "not_found": true,
+        "response_size": 22
+      },
+      {
+        "service": "pgc_service",
+        "endpoint": "/api/v1/compliance/check",
+        "url": "http://localhost:8005/api/v1/compliance/check",
+        "method": "GET",
+        "status_code": 404,
+        "accessible": false,
+        "requires_auth": false,
+        "not_found": true,
+        "response_size": 22
+      },
+      {
+        "service": "pgc_service",
+        "endpoint": "/api/v1/policy/evaluate",
+        "url": "http://localhost:8005/api/v1/policy/evaluate",
+        "method": "GET",
+        "status_code": 404,
+        "accessible": false,
+        "requires_auth": false,
+        "not_found": true,
+        "response_size": 22
+      }
+    ]
+  },
+  "auth_config": {
+    "auth_bypass_enabled": true,
+    "test_mode": true,
+    "constitutional_compliance": {
+      "ac_service": {
+        "auth_required": false,
+        "test_endpoints": [
+          "/api/v1/constitutional-council/meta-rules",
+          "/api/v1/constitutional-council/validate"
+        ]
+      },
+      "pgc_service": {
+        "auth_required": false,
+        "test_endpoints": [
+          "/api/v1/compliance/validate",
+          "/api/v1/policy/evaluate"
+        ]
+      }
+    },
+    "test_credentials": {
+      "username": "test_user",
+      "api_key": "test_key_12345",
+      "token": "test_token_abcdef"
+    }
+  },
+  "workflow_test": {
+    "workflow_name": "constitutional_compliance_validation",
+    "steps": [
+      {
+        "step": "ac_constitutional_rules",
+        "result": {
+          "service": "ac_service",
+          "endpoint": "/api/v1/constitutional-council/meta-rules",
+          "url": "http://localhost:8001/api/v1/constitutional-council/meta-rules",
+          "method": "GET",
+          "accessible": false,
+          "error": "All connection attempts failed"
+        },
+        "success": false
+      },
+      {
+        "step": "pgc_compliance_validation",
+        "result": {
+          "service": "pgc_service",
+          "endpoint": "/api/v1/compliance/validate",
+          "url": "http://localhost:8005/api/v1/compliance/validate",
+          "method": "POST",
+          "status_code": 404,
+          "accessible": false,
+          "requires_auth": false,
+          "not_found": true,
+          "functional": false
+        },
+        "success": false
+      },
+      {
+        "step": "integrated_compliance_workflow",
+        "result": {
+          "status": "blocked",
+          "message": "Service access issues prevent integration"
+        },
+        "success": false
+      }
+    ],
+    "overall_success": false,
+    "timestamp": 1749378314.017713
+  },
+  "recommendations": [
+    "\ud83d\udd0d Implement missing endpoints: pgc_service/api/v1/compliance/validate, pgc_service/api/v1/compliance/check, pgc_service/api/v1/policy/evaluate",
+    "\u26a0\ufe0f Constitutional compliance workflow requires endpoint fixes"
+  ],
+  "success": false
+}

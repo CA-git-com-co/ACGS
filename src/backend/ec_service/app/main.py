@@ -26,6 +26,7 @@ from app.api.v1.alphaevolve import router as alphaevolve_router
 from app.api.v1.reporting import router as reporting_router
 from app.api.v1.monitoring import router as monitoring_router
 from app.api.v1.wina_oversight import router as wina_oversight_router
+from app.api.v1.advanced_wina_oversight import router as advanced_wina_oversight_router
 # Local implementations to avoid shared module dependencies
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -196,6 +197,7 @@ app.include_router(alphaevolve_router, prefix="/api/v1/alphaevolve", tags=["Alph
 app.include_router(reporting_router, prefix="/api/v1/reporting", tags=["Reporting & Analytics"])
 app.include_router(monitoring_router, prefix="/api/v1/monitoring", tags=["Performance Monitoring"])
 app.include_router(wina_performance_router, prefix="/api/v1/wina/performance", tags=["WINA Performance Monitoring"])
+app.include_router(advanced_wina_oversight_router, prefix="/api/v1/advanced-wina", tags=["Advanced WINA Oversight - Task #4"])
 
 # Add metrics endpoint
 app.get("/metrics")(create_metrics_endpoint())
@@ -260,7 +262,12 @@ async def root():
             "Comprehensive WINA performance metrics",
             "REST API for performance data access",
             "Prometheus metrics export",
-            "Performance dashboard and alerts"
+            "Performance dashboard and alerts",
+            "Advanced optimization algorithms (Task #4)",
+            "PGC service integration for governance compliance",
+            "Automated alerting for oversight violations",
+            "Enterprise-scale performance optimization",
+            "Advanced analytics and reporting capabilities"
         ],
         "api_endpoints": {
             "oversight": "/api/v1/oversight/*",
@@ -268,7 +275,8 @@ async def root():
             "alphaevolve": "/api/v1/alphaevolve/*",
             "reporting": "/api/v1/reporting/*",
             "monitoring": "/api/v1/monitoring/*",
-            "wina_performance": "/api/v1/wina/performance/*"
+            "wina_performance": "/api/v1/wina/performance/*",
+            "advanced_wina_oversight": "/api/v1/advanced-wina/*"
         }
     }
 

@@ -1,0 +1,125 @@
+{
+  "phase": "Phase 2 Systematic Remediation",
+  "start_time": 1749379238.7511861,
+  "execution_duration": 40.600492000579834,
+  "priority_1_results": {
+    "phase": "Priority 1",
+    "target": "Complete Service Restoration",
+    "timeline": "0-2 hours",
+    "services_restored": [],
+    "services_failed": [
+      "ac_service",
+      "integrity_service",
+      "fv_service",
+      "gs_service"
+    ],
+    "success": false,
+    "health_check_passed": false,
+    "availability_improvement": "3/7 services (42.9%)"
+  },
+  "execution_log": [
+    {
+      "timestamp": 1.6689300537109375e-06,
+      "action": "\ud83d\ude80 Starting ACGS-1 Phase 2 Systematic Remediation",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 2.0265579223632812e-05,
+      "action": "Starting Priority 1: Service Restoration",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 2.6226043701171875e-05,
+      "action": "Stopping failing Docker containers",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 0.011228799819946289,
+      "action": "Stopped Docker container: acgs_ac_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.025256633758544922,
+      "action": "Stopped Docker container: acgs_integrity_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.035775184631347656,
+      "action": "Stopped Docker container: acgs_fv_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.045923471450805664,
+      "action": "Stopped Docker container: acgs_gs_service",
+      "status": "SUCCESS",
+      "details": ""
+    },
+    {
+      "timestamp": 0.045946598052978516,
+      "action": "Deploying services using host-based approach",
+      "status": "INFO",
+      "details": ""
+    },
+    {
+      "timestamp": 10.149108409881592,
+      "action": "Service ac_service started but health check failed",
+      "status": "WARNING",
+      "details": ""
+    },
+    {
+      "timestamp": 10.14912462234497,
+      "action": "Failed to restore ac_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 20.24031662940979,
+      "action": "Service integrity_service started but health check failed",
+      "status": "WARNING",
+      "details": ""
+    },
+    {
+      "timestamp": 20.240335941314697,
+      "action": "Failed to restore integrity_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 30.327626943588257,
+      "action": "Service fv_service started but health check failed",
+      "status": "WARNING",
+      "details": ""
+    },
+    {
+      "timestamp": 30.327646017074585,
+      "action": "Failed to restore fv_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 40.41880226135254,
+      "action": "Service gs_service started but health check failed",
+      "status": "WARNING",
+      "details": ""
+    },
+    {
+      "timestamp": 40.41882300376892,
+      "action": "Failed to restore gs_service",
+      "status": "ERROR",
+      "details": ""
+    },
+    {
+      "timestamp": 40.600473403930664,
+      "action": "Priority 1 Complete - Restored 0/4 services",
+      "status": "PARTIAL",
+      "details": ""
+    }
+  ],
+  "overall_success": false
+}

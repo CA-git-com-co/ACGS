@@ -1,0 +1,58 @@
+{
+  "service_mesh_health": {
+    "auth_service": {
+      "status": "healthy",
+      "response_time_ms": 25.0
+    },
+    "ac_service": {
+      "status": "healthy",
+      "response_time_ms": 30.0
+    },
+    "integrity_service": {
+      "status": "healthy",
+      "response_time_ms": 20.0
+    },
+    "fv_service": {
+      "status": "healthy",
+      "response_time_ms": 15.0
+    },
+    "gs_service": {
+      "status": "degraded",
+      "error": "Dependencies unhealthy"
+    },
+    "pgc_service": {
+      "status": "healthy",
+      "response_time_ms": 45.0
+    },
+    "ec_service": {
+      "status": "healthy",
+      "response_time_ms": 18.0
+    }
+  },
+  "performance_monitoring": null,
+  "constitutional_compliance": {
+    "constitutional_compliance": true,
+    "compliance_score": 0.85,
+    "violations": [],
+    "recommendations": [
+      "Consider adding explicit privacy protections",
+      "Ensure stakeholder consultation process is defined"
+    ],
+    "validation_timestamp": "2025-06-08T05:15:00Z"
+  },
+  "wina_oversight": {
+    "oversight_decision": "approved",
+    "wina_optimization_applied": true,
+    "performance_metrics": {
+      "processing_time_ms": 1250,
+      "accuracy_score": 0.92,
+      "efficiency_gain": 0.15
+    },
+    "constitutional_compliance_verified": true,
+    "recommendations": [
+      "Monitor performance for next 24 hours",
+      "Consider expanding optimization to similar operations"
+    ],
+    "oversight_timestamp": "2025-06-08T05:15:30Z"
+  }
+}

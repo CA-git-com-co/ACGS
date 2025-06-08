@@ -1,0 +1,133 @@
+{
+  "timestamp": 1749374946.2187724,
+  "fixes_applied": [
+    "gs_service_config_updated_restart_required",
+    "restart_script_created: restart_gs_service.sh",
+    "service_registry_config_created: service_registry_config.json"
+  ],
+  "connectivity_results": {
+    "initial": {
+      "ac_service": {
+        "service": "ac_service",
+        "url": "http://localhost:8001",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 21.61,
+        "reachable": true
+      },
+      "integrity_service": {
+        "service": "integrity_service",
+        "url": "http://localhost:8002",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 6.73,
+        "reachable": true
+      },
+      "fv_service": {
+        "service": "fv_service",
+        "url": "http://localhost:8003",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 3.49,
+        "reachable": true
+      },
+      "gs_service": {
+        "service": "gs_service",
+        "url": "http://localhost:8004",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 34.94,
+        "reachable": true
+      },
+      "pgc_service": {
+        "service": "pgc_service",
+        "url": "http://localhost:8005",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 65.97,
+        "reachable": true
+      },
+      "ec_service": {
+        "service": "ec_service",
+        "url": "http://localhost:8006",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 7.73,
+        "reachable": true
+      }
+    },
+    "final": {
+      "ac_service": {
+        "service": "ac_service",
+        "url": "http://localhost:8001",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 9.59,
+        "reachable": true
+      },
+      "integrity_service": {
+        "service": "integrity_service",
+        "url": "http://localhost:8002",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 2.01,
+        "reachable": true
+      },
+      "fv_service": {
+        "service": "fv_service",
+        "url": "http://localhost:8003",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 2.79,
+        "reachable": true
+      },
+      "gs_service": {
+        "service": "gs_service",
+        "url": "http://localhost:8004",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 43.88,
+        "reachable": true
+      },
+      "pgc_service": {
+        "service": "pgc_service",
+        "url": "http://localhost:8005",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 37.53,
+        "reachable": true
+      },
+      "ec_service": {
+        "service": "ec_service",
+        "url": "http://localhost:8006",
+        "status": "healthy",
+        "status_code": 200,
+        "response_time_ms": 6.69,
+        "reachable": true
+      }
+    }
+  },
+  "gs_service_health": {
+    "status": "degraded",
+    "service": "gs_service",
+    "version": "1.0.0",
+    "timestamp": "2024-01-20T00:00:00Z",
+    "dependencies": {
+      "ac_service": {
+        "status": "unhealthy",
+        "error": "All connection attempts failed"
+      },
+      "integrity_service": {
+        "status": "unhealthy",
+        "error": "All connection attempts failed"
+      }
+    },
+    "components": {
+      "llm_reliability": {
+        "status": "initialized"
+      }
+    },
+    "message": "Critical dependencies unhealthy: ac_service"
+  },
+  "success": false
+}
