@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex main"] 1749361997.09861 "main.aux" "main.bbl" "main" 1749361999.25104 0
+["bibtex main"] 1749367879.91203 "main.aux" "main.bbl" "main" 1749368601.14236 0
   "./AlphaEvolve-ACGS.bib" 1749311206.19619 15921 a8148c8119f8588ddd40c9956ef9990c ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/acmart/ACM-Reference-Format.bst" 1680299675 90332 18dc4e5c9b5c2ddd337e9f97727d04f1 ""
-  "main.aux" 1749361998.94793 51003 5c5a5869b430ff4bdda1803a4f5336f3 "pdflatex"
+  "main.aux" 1749368600.83241 51003 60ff804fffc5fce0b9bf3d19b5fcfc7e "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1749361997.18429 "/home/dislove/ACGS-1/docs/research/AlphaEvolve-ACGS_arXiv_submission/arxiv_submission_package/main.tex" "main.pdf" "main" 1749361999.25127 0
+["pdflatex"] 1749368598.97883 "/home/dislove/ACGS-1/docs/research/AlphaEvolve-ACGS_arXiv_submission/arxiv_submission_package/main.tex" "main.pdf" "main" 1749368601.14267 0
   "/etc/texmf/web2c/texmf.cnf" 1746903930.98296 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/dislove/ACGS-1/docs/research/AlphaEvolve-ACGS_arXiv_submission/arxiv_submission_package/main.tex" 1749361994.67195 164527 d972985715d85be2740fcc86b56a98ff ""
+  "/home/dislove/ACGS-1/docs/research/AlphaEvolve-ACGS_arXiv_submission/arxiv_submission_package/main.tex" 1749368598.65642 165588 0f4eeb30bb818b637222b70c763a767c ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-4.enc" 1558214095 7693 0f2dce6d313c82989ec3a67fc24df2a0 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_25tcsq.enc" 1490131464 2921 8ca0eb0831f9bc5da080d3697cfe67bf ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_76gpa5.enc" 1490131464 2933 9ad527ce78d7c5fa0a642dead095f172 ""
@@ -246,10 +246,12 @@
   "/usr/share/texlive/texmf-dist/tex/latex/newtx/untxsym.fd" 1692649180 568 9df6be53c1b3ec79740d714ff4ae0937 ""
   "/usr/share/texlive/texmf-dist/tex/latex/oberdiek/centernot.sty" 1575152444 1640 c9cca60f81c5839b9a3e794d72c0b0a7 ""
   "/usr/share/texlive/texmf-dist/tex/latex/oberdiek/ifdraft.sty" 1575152444 1922 5bdcc31b0573e5e7f31c36f1b88b6a7d ""
+  "/usr/share/texlive/texmf-dist/tex/latex/placeins/placeins.sty" 1137110565 4087 636308456f60d2b31cbf97867db5708d ""
   "/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty" 1576624809 9878 9e94e8fa600d95f9c7731bb21dfb67a4 ""
   "/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1657483315 9714 ba3194bd52c8499b3f1e3eb91d409670 ""
   "/usr/share/texlive/texmf-dist/tex/latex/setspace/setspace.sty" 1670275497 22490 8cac309b79a4c53a4ffce4b1b07aead0 ""
   "/usr/share/texlive/texmf-dist/tex/latex/textcase/textcase.sty" 1690576885 3050 42e1650bbafdaeb05aa69e5d5263388a ""
+  "/usr/share/texlive/texmf-dist/tex/latex/tools/afterpage.sty" 1698869629 4085 b09ffbe3858cbb65749bb88cc092d0fc ""
   "/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty" 1698869629 12667 e4b5eb11e4b7239e6c8a52bbe074a6c6 ""
   "/usr/share/texlive/texmf-dist/tex/latex/tools/bm.sty" 1698869629 13231 2c742011581e2bf297e33520567d9464 ""
   "/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty" 1698869629 10214 547fd4d29642cb7c80bf54b49d447f01 ""
@@ -265,17 +267,17 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1748896237.34129 5472669 54eaf61a88b6b7896ebd0dac973cb29c ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1747083669 8211355 bc6dcf965fb56e15832c202c29bbd44b ""
-  "comment.cut" 1749361998.76393 716 579f5212ea7a3de289bdcf4c0f5b48f6 "pdflatex"
+  "comment.cut" 1749368600.62741 716 579f5212ea7a3de289bdcf4c0f5b48f6 "pdflatex"
   "figs/Figure_1_Appeal_and_Dispute_Resolution_Workflow.png" 1749311206.19719 196410 615b9fb80e2a21e27ab83fcb020fa003 ""
   "figs/Figure_2_Enhanced_Explainability_Dashboard_Mockup.png" 1749311206.19919 338978 6b7f24bef25ef1604b243331bb12d26e ""
   "figs/Figure_3_Rule_Synthesis_Success_Rate_per_Principle.png" 1749311206.20019 1276323 95a57afed17aded3a2f2afddf0b11545 ""
   "figs/Figure_4_Constitutional_Compliance_Over_Generations.png" 1749311206.20119 1354235 d8f0cdbf924c57cad0a6f47951af4376 ""
   "figs/Figure_5_compliance_generations.png" 1749311206.20219 189539 abc9ae63edd8bedb85082eea9bcf2025 ""
   "figs/architecture_overview.png" 1749311206.20719 1709584 5e6f3016d4e663a9633d1efb05a5d032 ""
-  "main.aux" 1749361998.94793 51003 5c5a5869b430ff4bdda1803a4f5336f3 "pdflatex"
-  "main.bbl" 1749361997.17794 24371 2f72cf59a458db63fb196f75fbe57556 "bibtex main"
-  "main.out" 1749361998.94993 6527 c7b366a07e30cb56ac00e432dccccd5f "pdflatex"
-  "main.tex" 1749361994.67195 164527 d972985715d85be2740fcc86b56a98ff ""
+  "main.aux" 1749368600.83241 51003 60ff804fffc5fce0b9bf3d19b5fcfc7e "pdflatex"
+  "main.bbl" 1749367879.97828 24371 2f72cf59a458db63fb196f75fbe57556 "bibtex main"
+  "main.out" 1749368600.83441 6527 c7b366a07e30cb56ac00e432dccccd5f "pdflatex"
+  "main.tex" 1749368598.65642 165588 0f4eeb30bb818b637222b70c763a767c ""
   (generated)
   "comment.cut"
   "main.aux"

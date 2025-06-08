@@ -17,9 +17,27 @@ import json
 from datetime import datetime, timedelta
 
 # Add shared modules to path
-# sys.path.append(os.path.join(os.path.dirname(__file__), '../src/backend/shared'))  # Removed during reorganization
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../services/shared'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../src/backend/shared'))
 
-from utils import get_config, reset_config
+try:
+    from services.shared.utils import get_config, reset_config
+except ImportError:
+    try:
+        from src.backend.shared.utils import get_config, reset_config
+    except ImportError:
+        # Fallback to mock implementations for testing
+        def get_config():
+            class MockConfig:
+                def __init__(self):
+                    self.environment = 'testing'
+                    self.debug = False
+                def get_database_config(self):
+                    return {'url': 'sqlite:///:memory:'}
+            return MockConfig()
+
+        def reset_config():
+            pass
 
 
 # =============================================================================

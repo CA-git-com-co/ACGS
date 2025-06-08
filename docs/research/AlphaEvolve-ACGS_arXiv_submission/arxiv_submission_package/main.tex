@@ -53,6 +53,10 @@
 % Other utilities
 \usepackage{enumitem} % For customizing lists
 
+% Float placement and page layout optimization
+\usepackage{placeins} % For \FloatBarrier command
+\usepackage{afterpage} % For better page break control
+
 % Smart references (load after hyperref, which acmart loads)
 \usepackage{cleveref}
 
@@ -64,6 +68,18 @@
 \setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
 \setlength{\floatsep}{8pt plus 2pt minus 2pt}
 \setlength{\intextsep}{8pt plus 2pt minus 2pt}
+
+% Enhanced float placement parameters to reduce underfull vbox warnings
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\renewcommand{\dbltopfraction}{0.9}
+\setcounter{dbltopnumber}{2}
+
+% Page layout optimization to reduce underfull vbox warnings
+\raggedbottom % Allow variable page heights to reduce underfull vbox warnings
 
 % Reduce space around section headings for FAccT compliance
 \makeatletter
@@ -158,9 +174,10 @@
 \newcommand{\contributionsbox}[1]{%
   \begin{center}
     \fcolorbox{contribborder}{contribgreen}{%
-      \parbox{0.96\linewidth}{%
+      \parbox{0.98\linewidth}{% Slightly wider parbox to reduce line breaking issues
         \footnotesize\textbf{Key Contributions:}\\[0.5ex] % Changed from Main Contributions for conciseness
-        #1
+        \raggedright % Use ragged right to eliminate justification issues
+        #1%
       }%
     }%
   \end{center}%
@@ -359,7 +376,7 @@ Empirical evaluation across five computational domains demonstrates that AlphaEv
 \end{center}
 
 % Architecture Figure - Enhanced Layout and Accessibility
-\begin{figure*}[!t]
+\begin{figure*}[!htb]
 \centering
 \fbox{\includegraphics[width=0.92\textwidth,height=0.38\textheight,keepaspectratio]{figs/architecture_overview.png}}
 \caption[AlphaEvolve-ACGS Four-Layer Co-Evolutionary Architecture]{%
@@ -382,14 +399,13 @@ System architecture diagram of AlphaEvolve-ACGS showing four horizontally-stacke
 
 % Main Contributions Box
 \contributionsbox{%
-\begin{enumerate}[itemsep=2pt,parsep=2pt,leftmargin=*] 
+\begin{enumerate}[itemsep=2pt,parsep=2pt,leftmargin=*]
 \item[(1)] We \textbf{introduce} a co-evolutionary governance theory and framework where governance mechanisms adapt alongside AI systems, providing mathematical foundations for constitutional stability and adaptation (\Cref{sec:methods}).
 \item[(2)] We \textbf{develop} a Prompt Governance Compiler (PGC) for real-time constitutional enforcement, achieving a \textbf{38.3ms} average latency with \textbf{99.7\%} accuracy, enabling governance with minimal performance degradation (\Cref{subsec:pgc_performance}).
 \item[(3)] We \textbf{design} an automated policy synthesis pipeline using LLMs to translate natural language principles into executable Rego policies, achieving \textbf{99.92\%} reliability for safety-critical rules via quintuple-model validation and formal verification for amenable principles (\Cref{sec:synthesis_evaluation}).
 \item[(4)] We \textbf{establish} scalable democratic governance mechanisms, including a multi-stakeholder Constitutional Council, cryptographically secured amendment protocols, and formal appeal processes, demonstrating scalability to 50+ principles (\Cref{sec:governance_evaluation}).
 \item[(5)] We \textbf{provide} comprehensive empirical validation across five computational domains, demonstrating constitutional compliance improvements from 31.7\% to 91.3\% with less than 5\% performance impact, and offer comparisons against baseline governance approaches (\Cref{sec:results}).
-\end{enumerate}
-}
+\end{enumerate}}
 
 % Main Content
 \section{Introduction}
@@ -430,6 +446,7 @@ The AlphaEvolve-ACGS framework provides a technical implementation pathway for p
 \end{enumerate}
 By embedding these social processes within the technical system, our work advances FAccT's goal of developing technologies that are not only technically sophisticated but also socially responsible and democratically accountable.
 
+\FloatBarrier % Ensure all floats are placed before starting new section
 \section{Related Work}
 \label{sec:related_work}
 
@@ -633,15 +650,16 @@ This layer integrates constitutional awareness directly into the EC process thro
 
 A multi-stage appeal workflow (\Cref{fig:appeal_workflow}) allows stakeholders to challenge governance decisions, escalating through Ombudsperson triage, Technical review, Council sub-committee review, to Full Constitutional Council review, with defined timeframes and audit logging. An \textbf{Explainability Dashboard} (\Cref{fig:explainability_dashboard}), designed with WCAG 2.1 AA compliance (\Cref{subsubsec:enhanced_accessibility}), provides transparency into rule enforcement, provenance, and appeal status.
 
-\begin{figure}[htbp]
+\FloatBarrier % Ensure previous floats are placed before this figure
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.95\linewidth,height=0.7\textheight,keepaspectratio]{figs/Figure_1_Appeal_and_Dispute_Resolution_Workflow.png}
+\includegraphics[width=0.95\linewidth,height=0.65\textheight,keepaspectratio]{figs/Figure_1_Appeal_and_Dispute_Resolution_Workflow.png}
 \caption[Multi-Stakeholder Constitutional Appeal Process]{The Multi-Stakeholder Constitutional Appeal Process. This tiered resolution framework ensures procedural justice via a four-stage escalation pathway with defined resolution timeframes and multiple exit points for rapid resolution, balancing efficiency with democratic legitimacy through comprehensive audit trails.}
 \label{fig:appeal_workflow}
 \Description{Flowchart of the Appeal and Dispute Resolution Workflow. Stages: Appeal Submission -> Ombudsperson Triage (1-2 days) with optional Quick Fix -> Technical Review (3-5 days) with optional Resolution -> Escalation to Council Sub-committee (5-10 days) with optional Resolution/Recommendation -> Full Council Review (10-20 days) -> Final Decision & Implementation. All stages log to an audit trail. This is a conceptual description of the visual flowchart.}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\linewidth,keepaspectratio]{figs/Figure_2_Enhanced_Explainability_Dashboard_Mockup.png}
 \caption[Constitutional Governance Explainability Interface]{The Constitutional Governance Explainability Interface. This interactive dashboard, designed for WCAG 2.1 AA compliance, offers fine-grained transparency into rule enforcement decisions, displaying triggering constitutional principles (e.g., CP-SAFETY-001), execution traces, performance metrics, and appeal status, thereby enabling stakeholder verification and engagement.}
@@ -884,7 +902,8 @@ Regression analysis of PGC latency scaling with constitutional set size ($n$) yi
 \label{sec:synthesis_evaluation}
 We evaluated GS Engine policy synthesis across three primary domains (N=50 LLM trials/principle, GPT-4-turbo). Success was syntactically valid Rego correctly implementing principle intent (verified by automated testing and expert review). \Cref{fig:rule_synthesis_chart} illustrates example success rates.
 
-\begin{figure}[htbp]
+\FloatBarrier % Ensure previous floats are placed before this figure
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\linewidth,keepaspectratio]{figs/Figure_3_Rule_Synthesis_Success_Rate_per_Principle.png}
 \caption[Principle-Specific LLM Policy Synthesis Performance]{Principle-Specific LLM Policy Synthesis Performance (N=30 trials/principle). Synthesis success rates demonstrate domain-dependent reliability: safety principles (e.g., CP-SAFETY-001) achieve high consistency (93.3\%), while format regulations show more variability (73.3\%). This suggests LLMs more reliably encode concrete constraints than abstract guidelines. Error bars represent 95\% Wilson score confidence intervals.}
@@ -967,7 +986,8 @@ Neural Arch. (Fairness) & \tablenumfmt{82.4} & \tablenumfmt{15.1} & \tablenumfmt
 \subsection{Impact on Evolutionary System Compliance}
 \label{subsec:impact_compliance}
 Experiments evolving arithmetic expressions (100 generations) compared unguided vs. AlphaEvolve-ACGS governed runs. Compliance was percentage of valid, non-violating expressions. \Cref{fig:compliance_over_generations} illustrates results.
-\begin{figure}[htbp]
+\FloatBarrier % Ensure previous floats are placed before this figure
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\linewidth,keepaspectratio]{figs/Figure_4_Constitutional_Compliance_Over_Generations.png}
 \caption[Evolutionary Trajectory of Constitutional Compliance]{Evolutionary Trajectory of Constitutional Compliance in Arithmetic Expression Domain. Unguided evolution shows low compliance (31.7\% average). AlphaEvolve-ACGS rapidly converges to high compliance (94.9\% by generation 25), validating co-evolutionary governance effectiveness.}
@@ -1088,7 +1108,8 @@ Autonomous Vehicles     & 18 & \tablenumfmt{88.2} & \tablenumfmt{72.4} & \tablen
 \begin{minipage}{\linewidth}\footnotesize \textsuperscript{\dag}Overall fairness score computed as a weighted average across domains where fairness metrics were applicable (Symbolic Regression, Neural Arch. Search, Financial Portfolio, Autonomous Vehicles). Arithmetic Evolution was excluded as it lacked relevant protected attributes in our setup.\end{minipage}
 \end{table}
 
-\begin{figure}[htbp]
+\FloatBarrier % Ensure previous floats are placed before this figure
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\linewidth,keepaspectratio]{figs/Figure_5_compliance_generations.png}
 \caption{Aggregate compliance metrics over evolutionary runs. This chart synthesizes trends in constitutional fidelity (e.g., average compliance rate, solid line), dispute frequency (e.g., appeals per 10 generations, dashed line), and rule conflict resolutions (e.g., number of conflicts identified and resolved, dotted line) across evaluation domains, illustrating the dynamic interplay of governance mechanisms.}
