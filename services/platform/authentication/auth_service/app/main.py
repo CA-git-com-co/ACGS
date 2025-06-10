@@ -19,7 +19,7 @@ from app.core.config import settings
 
 # Import metrics functionality and enhanced security (with fallbacks)
 try:
-    from shared.metrics import get_metrics, metrics_middleware, create_metrics_endpoint
+    from services.shared.metrics import get_metrics, metrics_middleware, create_metrics_endpoint
 except ImportError:
     # Fallback for missing shared modules
     def get_metrics(service_name):
@@ -30,8 +30,8 @@ except ImportError:
         return lambda: {"metrics": "not_available"}
 
 try:
-    from shared.security_middleware import add_security_middleware
-    from shared.security_config import security_config
+    from services.shared.security_middleware import add_security_middleware
+    from services.shared.security_config import security_config
 except ImportError:
     # Fallback for missing security modules
     def add_security_middleware(app):

@@ -28,7 +28,7 @@ import aiohttp
 import numpy as np
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared.metrics import get_metrics
+from services.shared.metrics import get_metrics
 from ..models import Principle as ConstitutionalPrinciple
 from .democratic_governance import DemocraticGovernanceOrchestrator
 

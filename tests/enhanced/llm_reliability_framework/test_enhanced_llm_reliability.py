@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 # Import the LLM Reliability Framework components
 try:
-    from src.backend.shared.llm_reliability_framework import (
+    from services.shared.llm_reliability_framework import (
         LLMReliabilityFramework,
         ReliabilityMetrics,
         LLMProvider,

@@ -23,7 +23,7 @@ COPY app/ ./app/
 # Note: shared modules will be mounted as volume at runtime
 
 # Set Python path to include shared modules
-ENV PYTHONPATH=/app/shared:/app:$PYTHONPATH
+ENV PYTHONPATH=/app/services/shared:/app:$PYTHONPATH
 
 # Create directories for research data
 RUN mkdir -p /app/research_data /app/experiment_artifacts /app/analysis_results

@@ -78,7 +78,7 @@ services:
   alembic-runner:
     build:
       context: ../.. # Build context is the root directory
-      dockerfile: ./src/backend/shared/Dockerfile.alembic
+      dockerfile: ./services/shared/Dockerfile.alembic
     container_name: acgs_alembic_runner
     depends_on:
       postgres_db:
@@ -123,7 +123,7 @@ services:
         condition: service_completed_successfully # Depends on alembic-runner exiting cleanly
     volumes:
       - ../../services/platform/authentication:/app
-      - ../../src/backend/shared:/app/shared
+      - ../../services/shared:/app/shared
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -158,7 +158,7 @@ services:
         condition: service_healthy
     volumes:
       - ../../services/core/constitutional-ai:/app
-      - ../../src/backend/shared:/app/shared
+      - ../../services/shared:/app/shared
     restart: unless-stopped
 
   integrity_service:
@@ -177,7 +177,7 @@ services:
         condition: service_healthy
     volumes:
       - ../../services/platform/integrity:/app
-      - ../../src/backend/shared:/app/shared
+      - ../../services/shared:/app/shared
     restart: unless-stopped
 
   fv_service:
@@ -209,7 +209,7 @@ services:
         condition: service_healthy # Wait for Redis to be ready
     volumes:
       - ../../services/core/formal-verification:/app
-      - ../../src/backend/shared:/app/shared
+      - ../../services/shared:/app/shared
     restart: unless-stopped
 
   gs_service:
@@ -245,8 +245,8 @@ services:
         condition: service_healthy
     volumes:
       - ../../services/core/governance-synthesis:/app
-      - ../../src/backend/shared:/app/shared
-      - ../../src/alphaevolve_gs_engine/src/alphaevolve_gs_engine:/app/alphaevolve_gs_engine
+      - ../../services/shared:/app/shared
+      - ../../integrations/alphaevolve-engine/src/alphaevolve_gs_engine:/app/alphaevolve_gs_engine
     restart: unless-stopped
 
   pgc_service:
@@ -273,12 +273,12 @@ services:
         condition: service_healthy
     volumes:
       - ../../services/core/policy-governance:/app
-      - ../../src/backend/shared:/app/shared
+      - ../../services/shared:/app/shared
     restart: unless-stopped
 
   # Research Infrastructure Service
   research_service:
-    build: ../../src/backend/research_service
+    build: ../../services/research/research-platform/research_service
     container_name: acgs_research_service
     ports:
       - "8007:8007" # Internal port
@@ -309,8 +309,8 @@ services:
       alembic-runner:
         condition: service_completed_successfully
     volumes:
-      - ../../src/backend/research_service:/app
-      - ../../src/backend/shared:/app/shared
+      - ../../services/research/research-platform/research_service:/app
+      - ../../services/shared:/app/shared
       - research_data:/app/research_data
       - experiment_artifacts:/app/experiment_artifacts
       - analysis_results:/app/analysis_results
@@ -323,7 +323,7 @@ services:
 
   # EC Service (Evolutionary Computation) - WINA Optimization and Constitutional Oversight
   ec_service:
-    build: ../../src/backend/ec_service
+    build: ../../services/core/evolutionary-computation/ec_service
     container_name: acgs_ec_service
     ports:
       - "8006:8006" # Internal port (service runs on 8006 inside container)
@@ -369,8 +369,8 @@ services:
       alembic-runner:
         condition: service_completed_successfully
     volumes:
-      - ../../src/backend/ec_service:/app
-      - ../../src/backend/shared:/app/shared
+      - ../../services/core/evolutionary-computation/ec_service:/app
+      - ../../services/shared:/app/shared
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
@@ -396,7 +396,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ../../src/frontend
+    build: ../../applications/legacy-frontend
     container_name: acgs_frontend
     ports:
       - "3000:3000" # React development server port (host:container)
@@ -404,7 +404,7 @@ services:
       - REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL:-/api} # Points to Nginx gateway
       - CHOKIDAR_USEPOLLING=true # For Docker hot-reloading on some systems
     volumes:
-      - ../../src/frontend:/app
+      - ../../applications/legacy-frontend:/app
       - /app/node_modules # Use node_modules from image, not host, to avoid OS conflicts
     depends_on:
       - nginx_gateway # Frontend makes API calls through Nginx

@@ -146,7 +146,7 @@ class TimestampToken(Base):
 
 
 # --- Phase 3: Appeal and Dispute Resolution Models ---
-# Note: Appeal and DisputeResolution models are imported from shared.models to avoid table conflicts
+# Note: Appeal and DisputeResolution models are imported from services.shared.models to avoid table conflicts
 # Note: Indexes for these models are defined in shared.models
 
 # Indexes for cryptographic integrity models

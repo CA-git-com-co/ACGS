@@ -22,7 +22,7 @@ from pydantic import BaseModel, Field
 
 from .federated_evaluator import PlatformType, FederatedNode
 from .secure_aggregation import SecureAggregator, AggregationMethod
-from shared.metrics import get_metrics
+from services.services.shared.metrics import get_metrics
 
 logger = logging.getLogger(__name__)
 

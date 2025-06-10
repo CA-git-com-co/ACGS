@@ -29,7 +29,7 @@ from services.shared.models import User
 from services.shared.auth import get_current_active_user
 from app.models import ACAmendment, ACAmendmentComment, ACAmendmentVote
 from app import crud
-from shared.langgraph_config import ConstitutionalCouncilConfig
+from services.shared.langgraph_config import ConstitutionalCouncilConfig
 
 logger = logging.getLogger(__name__)
 

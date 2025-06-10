@@ -15,7 +15,7 @@ import sys
 import os
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))  # Removed during reorganization
 
-from shared.wina.performance_monitoring import (
+from services.shared.wina.performance_monitoring import (
     WINAPerformanceCollector,
     WINAMonitoringLevel,
     WINANeuronActivationMetrics,

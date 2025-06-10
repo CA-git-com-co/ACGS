@@ -166,7 +166,7 @@ def test_enhanced_policy_schema():
 
     try:
         # Import the enhanced schema
-        from shared.schemas import PolicyRuleBase
+        from services.shared.schemas import PolicyRuleBase
 
         # Test schema with enhanced fields
         policy_data = {

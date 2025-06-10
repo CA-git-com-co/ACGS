@@ -82,7 +82,7 @@ ACGS-master/
 ### 3. Configuration Updates
 
 #### Docker Compose
-- Updated all build paths to use new `src/backend/` structure
+- Updated all build paths to use new `services/` structure
 - Updated volume mounts to reflect new directory layout
 - Updated Dockerfile references
 

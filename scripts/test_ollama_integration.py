@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src', 'backend
 
 from gs_service.app.core.ollama_client import OllamaLLMClient, get_ollama_client
 from gs_service.app.workflows.multi_model_manager import MultiModelManager
-from shared.langgraph_config import get_langgraph_config, ModelRole
+from services.shared.langgraph_config import get_langgraph_config, ModelRole
 
 # Configure logging
 logging.basicConfig(

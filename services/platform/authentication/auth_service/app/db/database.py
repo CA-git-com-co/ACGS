@@ -26,7 +26,7 @@ async def create_db_tables():
     # For now, we are just setting up the structure.
     # We need to ensure all models that use a Base are imported before calling create_all.
     try:
-        # If models are defined using the Base from shared.database, then:
+        # If models are defined using the Base from services.shared.database, then:
         from services.shared.database import Base
         # Import all models here that should be created
         from services.shared.models import User, RefreshToken # noqa

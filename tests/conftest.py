@@ -24,7 +24,7 @@ try:
     from services.shared.utils import get_config, reset_config
 except ImportError:
     try:
-        from src.backend.shared.utils import get_config, reset_config
+        from services.shared.utils import get_config, reset_config
     except ImportError:
         # Fallback to mock implementations for testing
         def get_config():

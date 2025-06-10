@@ -17,7 +17,7 @@ from sqlalchemy import select
 
 from ..models import ACAmendment, ACAmendmentVote, User
 from ..schemas import ACAmendmentVoteCreate
-# from shared.redis_client import get_redis_client
+# from services.shared.redis_client import get_redis_client
 
 logger = logging.getLogger(__name__)
 

@@ -13,12 +13,27 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: ec_service
-            file: src/backend/ec_service/Dockerfile
-            context: src/backend/ec_service
-          - name: frontend
-            file: src/frontend/Dockerfile
-            context: src/frontend
+          - name: constitutional-ai
+            file: services/core/constitutional-ai/ac_service/Dockerfile
+            context: services/core/constitutional-ai/ac_service
+          - name: governance-synthesis
+            file: services/core/governance-synthesis/gs_service/Dockerfile
+            context: services/core/governance-synthesis/gs_service
+          - name: policy-governance
+            file: services/core/policy-governance/pgc_service/Dockerfile
+            context: services/core/policy-governance/pgc_service
+          - name: formal-verification
+            file: services/core/formal-verification/fv_service/Dockerfile
+            context: services/core/formal-verification/fv_service
+          - name: authentication
+            file: services/platform/authentication/auth_service/Dockerfile
+            context: services/platform/authentication/auth_service
+          - name: integrity
+            file: services/platform/integrity/integrity_service/Dockerfile
+            context: services/platform/integrity/integrity_service
+          - name: legacy-frontend
+            file: applications/legacy-frontend/Dockerfile
+            context: applications/legacy-frontend
             exists: false  # Mark as non-existent for now
     steps:
       - uses: actions/checkout@v4

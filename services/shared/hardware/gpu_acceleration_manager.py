@@ -39,7 +39,7 @@ except ImportError:
     NVML_AVAILABLE = False
     logging.warning("NVIDIA ML Python not available - GPU monitoring limited")
 
-from shared.metrics import get_metrics
+from services.shared.metrics import get_metrics
 
 logger = logging.getLogger(__name__)
 

@@ -25,8 +25,8 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
-from shared.metrics import get_metrics
-from shared.llm import LLMService
+from services.shared.metrics import get_metrics
+from services.shared.llm import LLMService
 from ..core.federated_evaluator import FederatedEvaluator
 
 logger = logging.getLogger(__name__)

@@ -108,7 +108,7 @@ cd src/frontend
 cp .env.example .env
 ```
 
-Edit `src/frontend/.env`:
+Edit `applications/legacy-frontend/.env`:
 ```bash
 REACT_APP_API_BASE_URL=/api
 REACT_APP_ENVIRONMENT=development

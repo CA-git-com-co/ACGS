@@ -3,7 +3,7 @@ import pytest
 
 # Import AIModelService utilities
 try:
-    from shared.ai_model_service import (
+    from services.shared.ai_model_service import (
         get_ai_model_service,
         reset_ai_model_service,
     )

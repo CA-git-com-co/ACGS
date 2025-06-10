@@ -26,7 +26,7 @@ from typing import Any, Dict, List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared.metrics import get_metrics
+from services.shared.metrics import get_metrics
 
 logger = logging.getLogger(__name__)
 

@@ -18,8 +18,8 @@ from sqlalchemy import select, func, and_, or_
 
 from app import crud
 from app.models import ACAmendment, ACAmendmentVote, ACAmendmentComment, User
-from shared.constitutional_metrics import get_constitutional_metrics
-from shared.metrics import get_metrics
+from services.shared.constitutional_metrics import get_constitutional_metrics
+from services.shared.metrics import get_metrics
 
 logger = logging.getLogger(__name__)
 

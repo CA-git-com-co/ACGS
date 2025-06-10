@@ -2,7 +2,7 @@ import os
 import httpx
 from typing import List, Optional
 from ..schemas import ACPrinciple # Using the schema defined in fv_service
-# from shared.auth import get_service_token, get_auth_headers
+# from services.shared.auth import get_service_token, get_auth_headers
 # from shared import get_config
 
 # Local auth and config stubs

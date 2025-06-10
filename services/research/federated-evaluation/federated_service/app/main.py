@@ -17,9 +17,9 @@ from .api.v1.privacy_metrics import router as privacy_router
 from .core.federated_coordinator import federated_coordinator
 from .core.secure_aggregation import secure_aggregator
 from .dashboard.federated_dashboard import create_dash_app
-from shared.security_middleware import SecurityHeadersMiddleware
+from services.shared.security_middleware import SecurityHeadersMiddleware
 from shared import get_config
-from shared.metrics import get_metrics, metrics_middleware, create_metrics_endpoint
+from services.shared.metrics import get_metrics, metrics_middleware, create_metrics_endpoint
 
 # Load centralized configuration
 config = get_config()

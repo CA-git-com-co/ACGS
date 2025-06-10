@@ -376,7 +376,7 @@ def add_security_headers(app: ASGIApp) -> ASGIApp:
 
 # Example usage in a FastAPI main.py:
 # from fastapi import FastAPI
-# from shared.security_middleware import add_security_middleware
+# from services.shared.security_middleware import add_security_middleware
 #
 # app = FastAPI()
 # add_security_middleware(app)

@@ -23,7 +23,7 @@ async def get_current_active_user_placeholder() -> User:
         roles=["admin", "constitutional_expert"],
         is_active=True
     )
-from shared.langgraph_config import ConstitutionalCouncilConfig
+from services.shared.langgraph_config import ConstitutionalCouncilConfig
 from app.services.stakeholder_engagement import (
     StakeholderNotificationService,
     StakeholderEngagementInput,

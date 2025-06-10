@@ -17,4 +17,4 @@ require_policy_evaluation_triggerer = RoleChecker(allowed_roles=["policy_request
 get_current_user_placeholder = get_current_user_from_token
 get_current_active_user_placeholder = get_current_active_user
 
-# Role checkers are imported from shared.auth above
+# Role checkers are imported from services.shared.auth above

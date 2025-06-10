@@ -62,7 +62,7 @@ class TestWINARegoSynthesizer:
     @pytest.fixture
     def mock_wina_optimization_result(self):
         """Mock WINA optimization result."""
-        from shared.wina.model_integration import WINAOptimizationResult
+        from services.shared.wina.model_integration import WINAOptimizationResult
         return WINAOptimizationResult(
             gflops_reduction=0.55,  # 55% reduction (within 40-70% target)
             accuracy_preservation=0.97,  # 97% accuracy (>95% target)

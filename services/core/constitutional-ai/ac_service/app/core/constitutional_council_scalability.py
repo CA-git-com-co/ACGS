@@ -23,8 +23,8 @@ from prometheus_client import Counter, Histogram, Gauge
 
 from ..models import ACAmendment, ACAmendmentVote, ACAmendmentComment, User
 from ..schemas import ACAmendmentCreate, ACAmendmentVoteCreate, ACAmendmentCommentCreate
-# from shared.redis_client import get_redis_client
-from shared.metrics import ACGSMetrics
+# from services.shared.redis_client import get_redis_client
+from services.shared.metrics import ACGSMetrics
 
 logger = logging.getLogger(__name__)
 

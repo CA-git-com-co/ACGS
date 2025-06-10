@@ -32,7 +32,7 @@ from services.shared.models import (
     ConstitutionalViolation, ViolationAlert, ViolationEscalation,
     Principle, User, ACAmendment, ACAmendmentVote
 )
-from shared.metrics import get_metrics
+from services.shared.metrics import get_metrics
 
 logger = logging.getLogger(__name__)
 

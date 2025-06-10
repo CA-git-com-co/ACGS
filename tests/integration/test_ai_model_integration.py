@@ -21,7 +21,7 @@ try:
     from utils import get_config, reset_config
 except ImportError:
     # Try alternative import path
-    import shared.ai_model_service as ai_model_service
+    import services.shared.ai_model_service as ai_model_service
     import services.shared.utils as utils
     AIModelService = ai_model_service.AIModelService
     ModelRole = ai_model_service.ModelRole

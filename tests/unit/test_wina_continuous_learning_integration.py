@@ -53,7 +53,7 @@ try:
         FeedbackTypeAPI,
         integrate_with_performance_monitoring
     )
-    # from src.backend.ec_service.app.core.wina_oversight_coordinator import (  # Removed during reorganization
+    # from services.core.evolutionary_computation.ec_service.app.core.wina_oversight_coordinator import (  # Removed during reorganization
     #     WINAECOversightCoordinator,
     #     ECOversightRequest,
     #     ECOversightContext,

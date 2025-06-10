@@ -94,8 +94,8 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./src/backend/ac_service:/app
-      - ./src/backend/shared:/app/shared
+      - ./services/core/constitutional-ai/ac_service:/app
+      - ./services/shared:/app/shared
     restart: unless-stopped
     # Fix cgroup issues
     security_opt:
@@ -129,8 +129,8 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./src/backend/integrity_service:/app
-      - ./src/backend/shared:/app/shared
+      - ./services/platform/integrity/integrity_service:/app
+      - ./services/shared:/app/shared
     restart: unless-stopped
     # Fix cgroup issues
     security_opt:
@@ -144,7 +144,7 @@ services:
   # FV Service - Formal Verification
   fv_service:
     build:
-      context: ./src/backend/fv_service
+      context: ./services/core/formal-verification/fv_service
       dockerfile: Dockerfile
     container_name: acgs-fv-service-staging
     environment:
@@ -166,7 +166,7 @@ services:
       integrity_service:
         condition: service_healthy
     volumes:
-      - ./src/backend/shared:/app/shared
+      - ./services/shared:/app/shared
     restart: unless-stopped
     # Fix cgroup issues
     security_opt:
@@ -180,7 +180,7 @@ services:
   # GS Service - Governance Synthesis
   gs_service:
     build:
-      context: ./src/backend/gs_service
+      context: ./services/core/governance-synthesis/gs_service
       dockerfile: Dockerfile
     container_name: acgs-gs-service-staging
     environment:
@@ -208,7 +208,7 @@ services:
       fv_service:
         condition: service_healthy
     volumes:
-      - ./src/backend/shared:/app/shared
+      - ./services/shared:/app/shared
     restart: unless-stopped
     # Fix cgroup issues
     security_opt:
@@ -222,7 +222,7 @@ services:
   # PGC Service - Prompt Governance Compiler
   pgc_service:
     build:
-      context: ./src/backend/pgc_service
+      context: ./services/core/policy-governance/pgc_service
       dockerfile: Dockerfile
     container_name: acgs-pgc-service-staging
     environment:
@@ -248,7 +248,7 @@ services:
       opa:
         condition: service_healthy
     volumes:
-      - ./src/backend/shared:/app/shared
+      - ./services/shared:/app/shared
     restart: unless-stopped
     # Fix cgroup issues
     security_opt:

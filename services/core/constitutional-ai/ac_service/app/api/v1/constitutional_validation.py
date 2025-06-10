@@ -17,7 +17,7 @@ from pathlib import Path
 backend_dir = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(backend_dir))
 
-from shared.redis_cache import get_cache
+from services.shared.redis_cache import get_cache
 
 logger = logging.getLogger(__name__)
 
