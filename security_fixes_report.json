@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-06-10T02:34:59.135644",
+  "fixes_applied": 4,
+  "files_modified": 2,
+  "errors": 0,
+  "details": {
+    "fixes": [
+      {
+        "type": "MD5_to_SHA256",
+        "file": "./backup_reorganization/integrations/alphaevolve-engine/alphaevolve_gs_engine/src/alphaevolve_gs_engine/services/crypto_service.py",
+        "line": 77,
+        "original": "hasher = hashlib.md5()",
+        "fixed": "hasher = hashlib.sha256()"
+      },
+      {
+        "type": "MD5_to_SHA256",
+        "file": "./integrations/alphaevolve-engine/alphaevolve_gs_engine/src/alphaevolve_gs_engine/services/crypto_service.py",
+        "line": 94,
+        "original": "hasher = hashlib.md5()",
+        "fixed": "hasher = hashlib.sha256()"
+      },
+      {
+        "type": "Security_Middleware",
+        "file": "services/shared/security_middleware.py",
+        "description": "Added comprehensive security headers middleware"
+      },
+      {
+        "type": "Input_Validation",
+        "file": "services/shared/input_validation.py",
+        "description": "Added secure input validation utilities"
+      }
+    ],
+    "errors": [],
+    "modified_files": [
+      "./backup_reorganization/integrations/alphaevolve-engine/alphaevolve_gs_engine/src/alphaevolve_gs_engine/services/crypto_service.py",
+      "./integrations/alphaevolve-engine/alphaevolve_gs_engine/src/alphaevolve_gs_engine/services/crypto_service.py"
+    ]
+  }
+}

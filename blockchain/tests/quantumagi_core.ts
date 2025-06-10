@@ -562,6 +562,3 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
     });
   });
 });
-
-
-});

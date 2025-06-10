@@ -160,7 +160,7 @@ class ConstitutionDistanceFunction:
         if text not in self._embeddings_cache:
             # In practice, use actual sentence transformer
             # For now, simulate with hash-based embedding
-            hash_obj = hashlib.md5(text.encode())
+            hash_obj = hashlib.sha256(text.encode())
             # Create deterministic "embedding" from hash
             import random
 

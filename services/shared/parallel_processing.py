@@ -78,7 +78,7 @@ class ParallelTask:
     def _generate_task_id(self) -> str:
         """Generate unique task ID."""
         content = f"{self.task_type}_{self.payload}_{time.time()}"
-        return hashlib.md5(content.encode()).hexdigest()[:16]
+        return hashlib.sha256(content.encode()).hexdigest()[:16]
 
     @property
     def execution_time_ms(self) -> Optional[float]:

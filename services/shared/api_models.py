@@ -1,0 +1,234 @@
+"""
+ACGS-1 Phase A3: Standardized API Models and Response Structures
+
+This module provides standardized API response structures, error handling,
+and common Pydantic models for all ACGS-1 services to ensure consistency
+and production-grade API implementation.
+"""
+
+import uuid
+import time
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Union
+from enum import Enum
+from pydantic import BaseModel, Field, validator
+
+
+class APIStatus(str, Enum):
+    """Standard API response status values."""
+    SUCCESS = "success"
+    ERROR = "error"
+    WARNING = "warning"
+    PARTIAL = "partial"
+
+
+class ErrorCode(str, Enum):
+    """Standard error codes for consistent error handling."""
+    VALIDATION_ERROR = "VALIDATION_ERROR"
+    AUTHENTICATION_ERROR = "AUTHENTICATION_ERROR"
+    AUTHORIZATION_ERROR = "AUTHORIZATION_ERROR"
+    NOT_FOUND = "NOT_FOUND"
+    CONFLICT = "CONFLICT"
+    RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED"
+    INTERNAL_ERROR = "INTERNAL_ERROR"
+    SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE"
+    CONSTITUTIONAL_VIOLATION = "CONSTITUTIONAL_VIOLATION"
+    POLICY_VIOLATION = "POLICY_VIOLATION"
+
+
+class APIError(BaseModel):
+    """Standardized error structure for API responses."""
+    code: ErrorCode
+    message: str
+    details: Optional[Dict[str, Any]] = None
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    correlation_id: Optional[str] = None
+
+
+class APIMetadata(BaseModel):
+    """Metadata for API responses including performance and tracing information."""
+    correlation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    response_time_ms: Optional[float] = None
+    service_name: str
+    service_version: str = "3.0.0"
+    api_version: str = "v1"
+    request_id: Optional[str] = None
+
+
+class APIResponse(BaseModel):
+    """
+    Standardized API response structure for all ACGS-1 services.
+    
+    This ensures consistent response format across all services and
+    provides proper error handling, metadata, and performance tracking.
+    """
+    status: APIStatus
+    data: Optional[Union[Dict[str, Any], List[Any], str, int, bool]] = None
+    error: Optional[APIError] = None
+    metadata: APIMetadata
+    
+    @validator('error')
+    def error_required_for_error_status(cls, v, values):
+        """Ensure error is provided when status is error."""
+        if values.get('status') == APIStatus.ERROR and v is None:
+            raise ValueError('Error details required when status is error')
+        return v
+    
+    @validator('data')
+    def data_required_for_success_status(cls, v, values):
+        """Ensure data is provided when status is success."""
+        if values.get('status') == APIStatus.SUCCESS and v is None:
+            # Allow empty data for success responses
+            return {}
+        return v
+
+
+class HealthCheckResponse(BaseModel):
+    """Standardized health check response for all services."""
+    status: str = "healthy"
+    service: str
+    version: str = "3.0.0"
+    port: int
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    uptime_seconds: Optional[float] = None
+    dependencies: Dict[str, str] = Field(default_factory=dict)
+    performance_metrics: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ServiceInfo(BaseModel):
+    """Service information for root endpoints."""
+    service: str
+    version: str = "3.0.0"
+    status: str = "operational"
+    port: int
+    phase: str = "Phase A3 - Production Implementation"
+    capabilities: List[str] = Field(default_factory=list)
+    api_documentation: str = "/docs"
+    health_check: str = "/health"
+
+
+class PaginationParams(BaseModel):
+    """Standard pagination parameters."""
+    page: int = Field(1, ge=1, description="Page number (1-based)")
+    size: int = Field(20, ge=1, le=100, description="Items per page")
+    sort_by: Optional[str] = Field(None, description="Field to sort by")
+    sort_order: str = Field("asc", regex="^(asc|desc)$", description="Sort order")
+
+
+class PaginatedResponse(BaseModel):
+    """Standardized paginated response structure."""
+    items: List[Any]
+    total: int
+    page: int
+    size: int
+    pages: int
+    has_next: bool
+    has_prev: bool
+    
+    @validator('pages', pre=True, always=True)
+    def calculate_pages(cls, v, values):
+        """Calculate total pages based on total items and page size."""
+        total = values.get('total', 0)
+        size = values.get('size', 20)
+        return max(1, (total + size - 1) // size)
+    
+    @validator('has_next', pre=True, always=True)
+    def calculate_has_next(cls, v, values):
+        """Calculate if there's a next page."""
+        page = values.get('page', 1)
+        pages = values.get('pages', 1)
+        return page < pages
+    
+    @validator('has_prev', pre=True, always=True)
+    def calculate_has_prev(cls, v, values):
+        """Calculate if there's a previous page."""
+        page = values.get('page', 1)
+        return page > 1
+
+
+class ConstitutionalComplianceInfo(BaseModel):
+    """Constitutional compliance information for governance-related responses."""
+    is_compliant: bool
+    compliance_score: float = Field(ge=0.0, le=1.0)
+    violations: List[str] = Field(default_factory=list)
+    recommendations: List[str] = Field(default_factory=list)
+    validation_timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class PerformanceMetrics(BaseModel):
+    """Performance metrics for API responses."""
+    response_time_ms: float
+    cpu_usage_percent: Optional[float] = None
+    memory_usage_mb: Optional[float] = None
+    database_query_time_ms: Optional[float] = None
+    cache_hit_rate: Optional[float] = None
+
+
+# Common validation schemas
+class IDParam(BaseModel):
+    """Standard ID parameter validation."""
+    id: Union[int, str] = Field(..., description="Resource identifier")
+
+
+class TimestampRange(BaseModel):
+    """Standard timestamp range for filtering."""
+    start: Optional[datetime] = Field(None, description="Start timestamp")
+    end: Optional[datetime] = Field(None, description="End timestamp")
+    
+    @validator('end')
+    def end_after_start(cls, v, values):
+        """Ensure end timestamp is after start timestamp."""
+        start = values.get('start')
+        if start and v and v <= start:
+            raise ValueError('End timestamp must be after start timestamp')
+        return v
+
+
+def create_success_response(
+    data: Any,
+    service_name: str,
+    correlation_id: Optional[str] = None,
+    response_time_ms: Optional[float] = None
+) -> APIResponse:
+    """Helper function to create standardized success responses."""
+    metadata = APIMetadata(
+        service_name=service_name,
+        correlation_id=correlation_id or str(uuid.uuid4()),
+        response_time_ms=response_time_ms
+    )
+    
+    return APIResponse(
+        status=APIStatus.SUCCESS,
+        data=data,
+        metadata=metadata
+    )
+
+
+def create_error_response(
+    error_code: ErrorCode,
+    message: str,
+    service_name: str,
+    details: Optional[Dict[str, Any]] = None,
+    correlation_id: Optional[str] = None,
+    response_time_ms: Optional[float] = None
+) -> APIResponse:
+    """Helper function to create standardized error responses."""
+    metadata = APIMetadata(
+        service_name=service_name,
+        correlation_id=correlation_id or str(uuid.uuid4()),
+        response_time_ms=response_time_ms
+    )
+    
+    error = APIError(
+        code=error_code,
+        message=message,
+        details=details,
+        correlation_id=metadata.correlation_id
+    )
+    
+    return APIResponse(
+        status=APIStatus.ERROR,
+        error=error,
+        metadata=metadata
+    )

@@ -82,7 +82,7 @@ python-jose[cryptography]==3.4.0
 python-multipart==0.0.18
 pyyaml==6.0.2
 qrcode==7.4.2
-requests==2.32.2
+requests==2.32.4
 rsa==4.9.1
 six==1.17.0
 slowapi==0.1.9

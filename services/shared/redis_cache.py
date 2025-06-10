@@ -46,7 +46,7 @@ class RedisCache:
             data_str = str(data)
 
         # Create hash of the data
-        hash_obj = hashlib.md5(data_str.encode())
+        hash_obj = hashlib.sha256(data_str.encode())
         return f"{prefix}:{hash_obj.hexdigest()}"
 
     def get(self, key: str) -> Optional[Any]:

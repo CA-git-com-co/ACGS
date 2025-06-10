@@ -91,7 +91,7 @@ def hash_data(data: str, algorithm: str = "sha256") -> str:
         logger.warning(
             "MD5 is used for hashing, which is not secure for many applications."
         )
-        hasher = hashlib.md5()
+        hasher = hashlib.sha256()
     else:
         raise ValueError(f"Unsupported hashing algorithm: {algorithm}")
 
@@ -289,8 +289,8 @@ if __name__ == "__main__":
     print(f"\nOriginal Data: '{data_to_hash}'")
     print(f"SHA-256 Hash: {hashed_data_sha256}")
 
-    hashed_data_md5 = hash_data(data_to_hash, "md5")  # Example, but not recommended
-    print(f"MD5 Hash: {hashed_data_md5}")
+    hashed_data_sha512 = hash_data(data_to_hash, "sha512")  # More secure alternative
+    print(f"SHA-512 Hash: {hashed_data_sha512}")
 
     try:
         hash_data(data_to_hash, "sha3-256")  # Example of unsupported

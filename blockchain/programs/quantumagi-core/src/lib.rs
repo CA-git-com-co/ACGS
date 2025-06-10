@@ -4,8 +4,8 @@
 
 use anchor_lang::prelude::*;
 
-// Program ID - This will be updated when deployed
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+// Program ID - Updated for devnet deployment
+declare_id!("8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4");
 
 #[program]
 pub mod quantumagi_core {
