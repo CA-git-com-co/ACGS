@@ -26,5 +26,5 @@ __all__ = [
     "ServiceProvider",
     "DatabaseProvider",
     "CacheProvider",
-    "DIServiceRegistry"
+    "DIServiceRegistry",
 ]

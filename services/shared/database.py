@@ -1,11 +1,15 @@
 # ACGS/shared/database.py
 import os
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker, declarative_base # Updated import for declarative_base
+from sqlalchemy.orm import (
+    sessionmaker,
+    declarative_base,
+)  # Updated import for declarative_base
 
 # Import centralized configuration
 try:
     from .utils import get_config
+
     _config_available = True
 except ImportError:
     # Fallback for when utils is not available (e.g., during initial setup)
@@ -16,7 +20,7 @@ if _config_available:
     try:
         config = get_config()
         DATABASE_URL = config.get_database_url()
-        DB_ECHO = config.get('db_echo_log', False)
+        DB_ECHO = config.get("db_echo_log", False)
     except Exception:
         # Fallback to environment variables if config fails
         DATABASE_URL = os.getenv(
@@ -34,7 +38,7 @@ else:
 
 # Create async engine with optimized connection pooling
 # Handle different database types (PostgreSQL vs SQLite)
-if DATABASE_URL.startswith('sqlite'):
+if DATABASE_URL.startswith("sqlite"):
     # SQLite configuration (for testing)
     async_engine = create_async_engine(
         DATABASE_URL,
@@ -56,16 +60,16 @@ else:
                 "application_name": "acgs_pgp",
                 "jit": "off",  # Disable JIT for consistent performance
             }
-        }
+        },
     )
 
 # Create async session factory
 AsyncSessionLocal = sessionmaker(
-    bind=async_engine, 
-    class_=AsyncSession, 
-    expire_on_commit=False, 
-    autocommit=False, # Default for AsyncSession
-    autoflush=False   # Default for AsyncSession
+    bind=async_engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+    autocommit=False,  # Default for AsyncSession
+    autoflush=False,  # Default for AsyncSession
 )
 
 # Base for declarative models
@@ -74,22 +78,26 @@ try:
     if Base is None:
         print("ERROR: declarative_base() returned None, creating new instance")
         from sqlalchemy.orm import declarative_base as db_base
+
         Base = db_base()
 except Exception as e:
     print(f"ERROR creating declarative_base: {e}")
     from sqlalchemy.orm import declarative_base as db_base
+
     Base = db_base()
 
 # Ensure Base is not None
 if Base is None:
     print("CRITICAL: Base is still None after creation, forcing new declarative_base")
     from sqlalchemy.orm import declarative_base as db_base
+
     Base = db_base()
 
-metadata = Base.metadata # Expose metadata for Alembic and table creation
+metadata = Base.metadata  # Expose metadata for Alembic and table creation
+
 
 # Async dependency to get DB session for FastAPI
-async def get_async_db() -> AsyncSession: # Changed to yield AsyncGenerator
+async def get_async_db() -> AsyncSession:  # Changed to yield AsyncGenerator
     async with AsyncSessionLocal() as session:
         try:
             yield session
@@ -99,10 +107,11 @@ async def get_async_db() -> AsyncSession: # Changed to yield AsyncGenerator
             # If an operation completes successfully, it commits. If it raises an error,
             # the calling code or an exception handler should ensure rollback.
         except Exception:
-            await session.rollback() # Rollback on error within the session's scope
+            await session.rollback()  # Rollback on error within the session's scope
             raise
         # finally:
-            # await session.close() # session is closed automatically by context manager
+        # await session.close() # session is closed automatically by context manager
+
 
 async def create_db_and_tables():
     """
@@ -121,6 +130,7 @@ async def create_db_and_tables():
         # from . import models # noqa
         await conn.run_sync(Base.metadata.create_all)
     print(f"Database tables checked/created for {DATABASE_URL}")
+
 
 # Note: For Alembic, env.py handles table creation/migration.
 # create_db_and_tables() might be called by individual service main.py on startup

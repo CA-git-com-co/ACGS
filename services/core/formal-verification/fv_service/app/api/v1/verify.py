@@ -1,4 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from typing import List, Optional, Dict
 import time
 import logging
@@ -6,17 +13,20 @@ from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
-from ... import schemas # Relative imports for app directory
+from ... import schemas  # Relative imports for app directory
 from ...core.verification_logic import verify_policy_rules
 from ...services.ac_client import ac_service_client, ACPrinciple
 from ...services.integrity_client import integrity_service_client, PolicyRule
-from ...core.auth import require_verification_triggerer, User # Placeholder auth
+from ...core.auth import require_verification_triggerer, User  # Placeholder auth
+
 # Phase 3 imports
 from ...core.tiered_validation import tiered_validation_pipeline
 from ...core.safety_conflict_checker import safety_property_checker, conflict_detector
 from ...core.bias_detector import bias_detector
+
 # Task 7 imports
 from ...core.parallel_validation_pipeline import parallel_pipeline
+
 
 # Local implementations to avoid shared module dependencies
 class MockWebSocketStreamer:
@@ -32,42 +42,55 @@ class MockWebSocketStreamer:
     async def get_connection_stats(self):
         return {"active_connections": 0}
 
+
 websocket_streamer = MockWebSocketStreamer()
 
 router = APIRouter()
+
 
 # Local service authentication
 async def get_service_token():
     """Mock function to get service token."""
     return "mock_service_token"
 
-@router.post("/", response_model=schemas.VerificationResponse, status_code=status.HTTP_200_OK)
+
+@router.post(
+    "/", response_model=schemas.VerificationResponse, status_code=status.HTTP_200_OK
+)
 async def verify_policies(
     request_data: schemas.VerificationRequest,
-    current_user: User = Depends(require_verification_triggerer) # Protect this endpoint
+    current_user: User = Depends(
+        require_verification_triggerer
+    ),  # Protect this endpoint
 ):
     """
     Orchestrates the formal verification of Datalog policy rules against AC principles.
     """
     if not request_data.policy_rule_refs:
-        raise HTTPException(status_code=400, detail="No policy rule references provided for verification.")
+        raise HTTPException(
+            status_code=400,
+            detail="No policy rule references provided for verification.",
+        )
 
     # 1. Fetch Policy Rules from Integrity Service
     policy_rules_to_verify: List[PolicyRule] = []
     rule_ids_to_fetch = [ref.id for ref in request_data.policy_rule_refs]
-    
-    fetched_rules_from_integrity = await integrity_service_client.get_policy_rules_by_ids(
-        rule_ids=rule_ids_to_fetch,
-        auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+
+    fetched_rules_from_integrity = (
+        await integrity_service_client.get_policy_rules_by_ids(
+            rule_ids=rule_ids_to_fetch, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+        )
     )
     if len(fetched_rules_from_integrity) != len(rule_ids_to_fetch):
         # Handle case where some rules couldn't be fetched
         # For now, raising an error. Could also proceed with found rules.
         found_ids = {r.id for r in fetched_rules_from_integrity}
         missing_ids = set(rule_ids_to_fetch) - found_ids
-        raise HTTPException(status_code=404, detail=f"Could not fetch policy rules with IDs: {list(missing_ids)} from Integrity Service.")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Could not fetch policy rules with IDs: {list(missing_ids)} from Integrity Service.",
+        )
     policy_rules_to_verify = fetched_rules_from_integrity
-    
 
     # 2. Determine and Fetch AC Principles
     # Principles can be directly referenced in the request or derived from the policy rules.
@@ -83,21 +106,28 @@ async def verify_policies(
             if rule.source_principle_ids:
                 for pid in rule.source_principle_ids:
                     principle_ids_to_fetch.add(pid)
-    
+
     if not principle_ids_to_fetch:
         # If no principles are identified, verification cannot proceed meaningfully against custom obligations
         # Or, it could mean verification against a "default" set of obligations, if applicable.
         # For now, let's assume principles are required.
         results = [
-            schemas.VerificationResult(policy_rule_id=rule.id, status="error", message="No AC principles identified for deriving proof obligations.")
+            schemas.VerificationResult(
+                policy_rule_id=rule.id,
+                status="error",
+                message="No AC principles identified for deriving proof obligations.",
+            )
             for rule in policy_rules_to_verify
         ]
-        return schemas.VerificationResponse(results=results, overall_status="error", summary_message="Missing AC principle context.")
+        return schemas.VerificationResponse(
+            results=results,
+            overall_status="error",
+            summary_message="Missing AC principle context.",
+        )
 
     service_token = await get_service_token()
     fetched_ac_principles = await ac_service_client.list_principles_by_ids(
-        principle_ids=list(principle_ids_to_fetch),
-        auth_token=service_token
+        principle_ids=list(principle_ids_to_fetch), auth_token=service_token
     )
     if len(fetched_ac_principles) != len(principle_ids_to_fetch):
         found_pids = {p.id for p in fetched_ac_principles}
@@ -106,18 +136,25 @@ async def verify_policies(
         # For now, proceed with found principles, but a real system might log/error.
         print(f"Warning: Could not fetch AC principles with IDs: {list(missing_pids)}")
         if not fetched_ac_principles:
-             results = [
-                schemas.VerificationResult(policy_rule_id=rule.id, status="error", message=f"Could not fetch any of the specified AC principles: {list(missing_pids)}.")
+            results = [
+                schemas.VerificationResult(
+                    policy_rule_id=rule.id,
+                    status="error",
+                    message=f"Could not fetch any of the specified AC principles: {list(missing_pids)}.",
+                )
                 for rule in policy_rules_to_verify
             ]
-             return schemas.VerificationResponse(results=results, overall_status="error", summary_message="AC principle fetching failed.")
+            return schemas.VerificationResponse(
+                results=results,
+                overall_status="error",
+                summary_message="AC principle fetching failed.",
+            )
 
     ac_principles_for_obligations = fetched_ac_principles
 
     # 3. Perform Verification using Verification Logic
     verification_results: List[schemas.VerificationResult] = await verify_policy_rules(
-        policy_rules=policy_rules_to_verify,
-        ac_principles=ac_principles_for_obligations
+        policy_rules=policy_rules_to_verify, ac_principles=ac_principles_for_obligations
     )
 
     # 4. Update verification status in Integrity Service for each rule
@@ -126,11 +163,13 @@ async def verify_policies(
         if result.status in ["verified", "failed"]:
             updated_rule = await integrity_service_client.update_policy_rule_status(
                 rule_id=result.policy_rule_id,
-                status=result.status, # "verified" or "failed"
-                auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+                status=result.status,  # "verified" or "failed"
+                auth_token=INTEGRITY_SERVICE_MOCK_TOKEN,
             )
             if not updated_rule:
-                result.message = (result.message or "") + f" | Failed to update status in Integrity Service."
+                result.message = (
+                    result.message or ""
+                ) + f" | Failed to update status in Integrity Service."
                 # Potentially change result.status to "error_updating_status" here if needed
 
     # 5. Determine overall status and return response
@@ -138,38 +177,47 @@ async def verify_policies(
     if any(r.status == "failed" for r in verification_results):
         overall_status = "some_failed"
     if any(r.status == "error" for r in verification_results):
-        overall_status = "error" # Or more granular if mixed results
+        overall_status = "error"  # Or more granular if mixed results
 
-    summary = f"Verification process completed. {len(verification_results)} rules processed."
+    summary = (
+        f"Verification process completed. {len(verification_results)} rules processed."
+    )
     if overall_status == "error":
         summary += " Errors occurred during verification."
-        
+
     return schemas.VerificationResponse(
         results=verification_results,
         overall_status=overall_status,
-        summary_message=summary
+        summary_message=summary,
     )
 
 
 # --- Phase 3: Advanced Verification Endpoints ---
 
-@router.post("/tiered", response_model=schemas.TieredVerificationResponse, status_code=status.HTTP_200_OK)
+
+@router.post(
+    "/tiered",
+    response_model=schemas.TieredVerificationResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def tiered_verification(
     request_data: schemas.TieredVerificationRequest,
-    current_user: User = Depends(require_verification_triggerer)
+    current_user: User = Depends(require_verification_triggerer),
 ):
     """
     Phase 3: Tiered formal verification with Automated, HITL, and Rigorous validation levels.
     """
     if not request_data.policy_rule_refs:
-        raise HTTPException(status_code=400, detail="No policy rule references provided for tiered verification.")
+        raise HTTPException(
+            status_code=400,
+            detail="No policy rule references provided for tiered verification.",
+        )
 
     # Fetch Policy Rules from Integrity Service
     rule_ids_to_fetch = [ref.id for ref in request_data.policy_rule_refs]
 
     fetched_rules = await integrity_service_client.get_policy_rules_by_ids(
-        rule_ids=rule_ids_to_fetch,
-        auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+        rule_ids=rule_ids_to_fetch, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
     )
 
     if len(fetched_rules) != len(rule_ids_to_fetch):
@@ -177,7 +225,7 @@ async def tiered_verification(
         missing_ids = set(rule_ids_to_fetch) - found_ids
         raise HTTPException(
             status_code=404,
-            detail=f"Could not fetch policy rules with IDs: {list(missing_ids)} from Integrity Service."
+            detail=f"Could not fetch policy rules with IDs: {list(missing_ids)} from Integrity Service.",
         )
 
     # Fetch AC Principles for context
@@ -191,30 +239,33 @@ async def tiered_verification(
     if principle_ids_to_fetch:
         service_token = await get_service_token()
         ac_principles = await ac_service_client.list_principles_by_ids(
-            principle_ids=list(principle_ids_to_fetch),
-            auth_token=service_token
+            principle_ids=list(principle_ids_to_fetch), auth_token=service_token
         )
 
     # Perform tiered validation
     response = await tiered_validation_pipeline.validate_tiered(
-        request=request_data,
-        policy_rules=fetched_rules,
-        ac_principles=ac_principles
+        request=request_data, policy_rules=fetched_rules, ac_principles=ac_principles
     )
 
     return response
 
 
-@router.post("/safety-check", response_model=schemas.SafetyCheckResponse, status_code=status.HTTP_200_OK)
+@router.post(
+    "/safety-check",
+    response_model=schemas.SafetyCheckResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def safety_property_check(
     request_data: schemas.SafetyCheckRequest,
-    current_user: User = Depends(require_verification_triggerer)
+    current_user: User = Depends(require_verification_triggerer),
 ):
     """
     Phase 3: Safety property verification for policy rules.
     """
     if not request_data.safety_properties:
-        raise HTTPException(status_code=400, detail="No safety properties provided for verification.")
+        raise HTTPException(
+            status_code=400, detail="No safety properties provided for verification."
+        )
 
     # For this endpoint, we'll check safety properties against all active policy rules
     # In a real implementation, you might want to specify which rules to check
@@ -224,23 +275,28 @@ async def safety_property_check(
 
     # Perform safety property checking
     response = await safety_property_checker.check_safety_properties(
-        request=request_data,
-        policy_rules=all_rules
+        request=request_data, policy_rules=all_rules
     )
 
     return response
 
 
-@router.post("/conflict-check", response_model=schemas.ConflictCheckResponse, status_code=status.HTTP_200_OK)
+@router.post(
+    "/conflict-check",
+    response_model=schemas.ConflictCheckResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def conflict_detection(
     request_data: schemas.ConflictCheckRequest,
-    current_user: User = Depends(require_verification_triggerer)
+    current_user: User = Depends(require_verification_triggerer),
 ):
     """
     Phase 3: Conflict detection between policy rule sets.
     """
     if not request_data.rule_sets:
-        raise HTTPException(status_code=400, detail="No rule sets provided for conflict detection.")
+        raise HTTPException(
+            status_code=400, detail="No rule sets provided for conflict detection."
+        )
 
     # Fetch rules for each rule set
     # In this simplified implementation, we'll treat rule_sets as categories or tags
@@ -255,22 +311,26 @@ async def conflict_detection(
         )
 
         # Simple filtering - in practice, you'd have proper rule set categorization
-        filtered_rules = [rule for rule in all_rules if rule_set_name.lower() in rule.rule_content.lower()]
+        filtered_rules = [
+            rule
+            for rule in all_rules
+            if rule_set_name.lower() in rule.rule_content.lower()
+        ]
         all_rules_by_set[rule_set_name] = filtered_rules
 
     # Perform conflict detection
     response = await conflict_detector.detect_conflicts(
-        request=request_data,
-        all_policy_rules=all_rules_by_set
+        request=request_data, all_policy_rules=all_rules_by_set
     )
 
     return response
 
 
-@router.get("/validation-status/{rule_id}", response_model=Dict, status_code=status.HTTP_200_OK)
+@router.get(
+    "/validation-status/{rule_id}", response_model=Dict, status_code=status.HTTP_200_OK
+)
 async def get_validation_status(
-    rule_id: int,
-    current_user: User = Depends(require_verification_triggerer)
+    rule_id: int, current_user: User = Depends(require_verification_triggerer)
 ):
     """
     Phase 3: Get comprehensive validation status for a specific rule.
@@ -278,12 +338,13 @@ async def get_validation_status(
     # Fetch the rule
     try:
         rules = await integrity_service_client.get_policy_rules_by_ids(
-            rule_ids=[rule_id],
-            auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+            rule_ids=[rule_id], auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
         )
 
         if not rules:
-            raise HTTPException(status_code=404, detail=f"Policy rule {rule_id} not found.")
+            raise HTTPException(
+                status_code=404, detail=f"Policy rule {rule_id} not found."
+            )
 
         rule = rules[0]
 
@@ -294,30 +355,41 @@ async def get_validation_status(
             "rule_content": rule.rule_content,
             "verification_status": rule.verification_status,
             "last_verified": rule.verified_at,
-            "available_validation_tiers": ["automated", "human_in_the_loop", "rigorous"],
+            "available_validation_tiers": [
+                "automated",
+                "human_in_the_loop",
+                "rigorous",
+            ],
             "safety_check_status": "not_checked",  # Would be populated from actual checks
-            "conflict_status": "not_checked",      # Would be populated from actual checks
+            "conflict_status": "not_checked",  # Would be populated from actual checks
             "recommendations": [
                 "Consider running tiered validation for comprehensive verification",
                 "Safety property checking recommended for critical rules",
-                "Conflict detection recommended when multiple rule sets are active"
-            ]
+                "Conflict detection recommended when multiple rule sets are active",
+            ],
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving validation status: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving validation status: {str(e)}"
+        )
 
 
 # --- Task 7: Parallel Validation Pipeline Endpoints ---
 
-@router.post("/parallel", response_model=schemas.VerificationResponse, status_code=status.HTTP_200_OK)
+
+@router.post(
+    "/parallel",
+    response_model=schemas.VerificationResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def parallel_verify_policies(
     request_data: schemas.VerificationRequest,
     current_user: User = Depends(require_verification_triggerer),
     enable_parallel: bool = True,
     amendment_id: Optional[int] = None,
     voting_session_id: Optional[str] = None,
-    governance_workflow_stage: str = "validation"
+    governance_workflow_stage: str = "validation",
 ):
     """
     Task 7: Enhanced parallel policy verification with constitutional compliance and 1000+ concurrent validations.
@@ -331,35 +403,42 @@ async def parallel_verify_policies(
     - Comprehensive error handling with rollback capabilities
     """
     if not request_data.policy_rule_ids:
-        raise HTTPException(status_code=400, detail="No policy rule IDs provided for verification.")
+        raise HTTPException(
+            status_code=400, detail="No policy rule IDs provided for verification."
+        )
 
     try:
         # Task 7: Create constitutional validation context
         constitutional_context = None
         if amendment_id or voting_session_id:
-            from ..core.parallel_validation_pipeline import ConstitutionalValidationContext
+            from ..core.parallel_validation_pipeline import (
+                ConstitutionalValidationContext,
+            )
+
             constitutional_context = ConstitutionalValidationContext(
                 amendment_id=amendment_id,
                 voting_session_id=voting_session_id,
                 governance_workflow_stage=governance_workflow_stage,
-                democratic_legitimacy_required=True
+                democratic_legitimacy_required=True,
             )
 
         # Use enhanced parallel validation pipeline
         response = await parallel_pipeline.process_verification_request(
             request_data,
             enable_parallel=enable_parallel,
-            constitutional_context=constitutional_context
+            constitutional_context=constitutional_context,
         )
         return response
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Parallel verification failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Parallel verification failed: {str(e)}"
+        )
 
 
 @router.get("/parallel/statistics", status_code=status.HTTP_200_OK)
 async def get_parallel_validation_statistics(
-    current_user: User = Depends(require_verification_triggerer)
+    current_user: User = Depends(require_verification_triggerer),
 ):
     """
     Task 7: Get parallel validation pipeline performance statistics and metrics.
@@ -377,16 +456,17 @@ async def get_parallel_validation_statistics(
         return {
             "status": "success",
             "statistics": statistics,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get statistics: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get statistics: {str(e)}"
+        )
 
 
 @router.post("/parallel/scale", status_code=status.HTTP_200_OK)
 async def manual_scale_parallel_pipeline(
-    scale_factor: float,
-    current_user: User = Depends(require_verification_triggerer)
+    scale_factor: float, current_user: User = Depends(require_verification_triggerer)
 ):
     """
     Task 7: Manually scale the parallel validation pipeline.
@@ -395,7 +475,9 @@ async def manual_scale_parallel_pipeline(
         scale_factor: Scaling factor (0.5 to 2.0)
     """
     if not 0.5 <= scale_factor <= 2.0:
-        raise HTTPException(status_code=400, detail="Scale factor must be between 0.5 and 2.0")
+        raise HTTPException(
+            status_code=400, detail="Scale factor must be between 0.5 and 2.0"
+        )
 
     try:
         if scale_factor > parallel_pipeline.current_scale_factor:
@@ -406,7 +488,7 @@ async def manual_scale_parallel_pipeline(
         return {
             "status": "success",
             "message": f"Pipeline scaled to factor {parallel_pipeline.current_scale_factor:.2f}",
-            "current_concurrent_tasks": parallel_pipeline.parallel_executor.max_concurrent
+            "current_concurrent_tasks": parallel_pipeline.parallel_executor.max_concurrent,
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Scaling failed: {str(e)}")
@@ -414,7 +496,7 @@ async def manual_scale_parallel_pipeline(
 
 @router.get("/parallel/stats", response_model=Dict, status_code=status.HTTP_200_OK)
 async def get_parallel_pipeline_stats(
-    current_user: User = Depends(require_verification_triggerer)
+    current_user: User = Depends(require_verification_triggerer),
 ):
     """
     Task 7: Get parallel validation pipeline performance statistics.
@@ -424,7 +506,9 @@ async def get_parallel_pipeline_stats(
         return stats
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get pipeline stats: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get pipeline stats: {str(e)}"
+        )
 
 
 @router.websocket("/ws/progress")
@@ -464,24 +548,32 @@ async def websocket_progress_endpoint(websocket: WebSocket):
 
 # --- Phase 3: Algorithmic Fairness Endpoints ---
 
-@router.post("/bias-detection", response_model=schemas.BiasDetectionResponse, status_code=status.HTTP_200_OK)
+
+@router.post(
+    "/bias-detection",
+    response_model=schemas.BiasDetectionResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def bias_detection_analysis(
     request_data: schemas.BiasDetectionRequest,
-    current_user: User = Depends(require_verification_triggerer)
+    current_user: User = Depends(require_verification_triggerer),
 ):
     """
     Phase 3: Comprehensive bias detection analysis for policy rules.
     """
     if not request_data.policy_rule_ids:
-        raise HTTPException(status_code=400, detail="No policy rule IDs provided for bias detection.")
+        raise HTTPException(
+            status_code=400, detail="No policy rule IDs provided for bias detection."
+        )
 
     if not request_data.bias_metrics:
-        raise HTTPException(status_code=400, detail="No bias metrics specified for analysis.")
+        raise HTTPException(
+            status_code=400, detail="No bias metrics specified for analysis."
+        )
 
     # Fetch Policy Rules from Integrity Service
     fetched_rules = await integrity_service_client.get_policy_rules_by_ids(
-        rule_ids=request_data.policy_rule_ids,
-        auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+        rule_ids=request_data.policy_rule_ids, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
     )
 
     if len(fetched_rules) != len(request_data.policy_rule_ids):
@@ -489,36 +581,43 @@ async def bias_detection_analysis(
         missing_ids = set(request_data.policy_rule_ids) - found_ids
         raise HTTPException(
             status_code=404,
-            detail=f"Could not fetch policy rules with IDs: {list(missing_ids)} from Integrity Service."
+            detail=f"Could not fetch policy rules with IDs: {list(missing_ids)} from Integrity Service.",
         )
 
     # Perform bias detection analysis
     response = await bias_detector.detect_bias(
-        request=request_data,
-        policy_rules=fetched_rules
+        request=request_data, policy_rules=fetched_rules
     )
 
     return response
 
 
-@router.post("/fairness-validation", response_model=schemas.FairnessValidationResponse, status_code=status.HTTP_200_OK)
+@router.post(
+    "/fairness-validation",
+    response_model=schemas.FairnessValidationResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def fairness_validation_analysis(
     request_data: schemas.FairnessValidationRequest,
-    current_user: User = Depends(require_verification_triggerer)
+    current_user: User = Depends(require_verification_triggerer),
 ):
     """
     Phase 3: Fairness property validation for policy rules.
     """
     if not request_data.policy_rule_ids:
-        raise HTTPException(status_code=400, detail="No policy rule IDs provided for fairness validation.")
+        raise HTTPException(
+            status_code=400,
+            detail="No policy rule IDs provided for fairness validation.",
+        )
 
     if not request_data.fairness_properties:
-        raise HTTPException(status_code=400, detail="No fairness properties specified for validation.")
+        raise HTTPException(
+            status_code=400, detail="No fairness properties specified for validation."
+        )
 
     # Fetch Policy Rules from Integrity Service
     fetched_rules = await integrity_service_client.get_policy_rules_by_ids(
-        rule_ids=request_data.policy_rule_ids,
-        auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+        rule_ids=request_data.policy_rule_ids, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
     )
 
     if len(fetched_rules) != len(request_data.policy_rule_ids):
@@ -526,13 +625,12 @@ async def fairness_validation_analysis(
         missing_ids = set(request_data.policy_rule_ids) - found_ids
         raise HTTPException(
             status_code=404,
-            detail=f"Could not fetch policy rules with IDs: {list(missing_ids)} from Integrity Service."
+            detail=f"Could not fetch policy rules with IDs: {list(missing_ids)} from Integrity Service.",
         )
 
     # Perform fairness validation
     response = await bias_detector.validate_fairness(
-        request=request_data,
-        policy_rules=fetched_rules
+        request=request_data, policy_rules=fetched_rules
     )
 
     return response
@@ -540,7 +638,7 @@ async def fairness_validation_analysis(
 
 @router.get("/bias-metrics", response_model=List[Dict], status_code=status.HTTP_200_OK)
 async def get_available_bias_metrics(
-    current_user: User = Depends(require_verification_triggerer)
+    current_user: User = Depends(require_verification_triggerer),
 ):
     """
     Phase 3: Get available bias detection metrics and their configurations.
@@ -553,7 +651,7 @@ async def get_available_bias_metrics(
             "metric_name": "Demographic Parity",
             "description": "Ensures equal positive outcome rates across protected groups",
             "threshold": 0.1,
-            "parameters": {"requires_dataset": True}
+            "parameters": {"requires_dataset": True},
         },
         {
             "metric_id": "counterfactual_fairness",
@@ -561,7 +659,7 @@ async def get_available_bias_metrics(
             "metric_name": "Counterfactual Fairness",
             "description": "Detects differential treatment based on protected attributes",
             "threshold": 0.2,
-            "parameters": {"protected_attributes_required": True}
+            "parameters": {"protected_attributes_required": True},
         },
         {
             "metric_id": "semantic_bias",
@@ -569,7 +667,7 @@ async def get_available_bias_metrics(
             "metric_name": "Semantic Bias Detection",
             "description": "Analyzes semantic embeddings for bias-associated patterns",
             "threshold": 0.15,
-            "parameters": {"embedding_model": "default"}
+            "parameters": {"embedding_model": "default"},
         },
         {
             "metric_id": "llm_bias_review",
@@ -577,16 +675,18 @@ async def get_available_bias_metrics(
             "metric_name": "LLM Bias Review",
             "description": "Expert-level bias review using large language models",
             "threshold": 0.3,
-            "parameters": {"model": "gpt-4", "review_depth": "comprehensive"}
-        }
+            "parameters": {"model": "gpt-4", "review_depth": "comprehensive"},
+        },
     ]
 
     return bias_metrics
 
 
-@router.get("/fairness-properties", response_model=List[Dict], status_code=status.HTTP_200_OK)
+@router.get(
+    "/fairness-properties", response_model=List[Dict], status_code=status.HTTP_200_OK
+)
 async def get_available_fairness_properties(
-    current_user: User = Depends(require_verification_triggerer)
+    current_user: User = Depends(require_verification_triggerer),
 ):
     """
     Phase 3: Get available fairness properties and their definitions.
@@ -599,7 +699,7 @@ async def get_available_fairness_properties(
             "property_name": "Demographic Parity",
             "description": "P(Ŷ = 1|A = 0) = P(Ŷ = 1|A = 1) - Equal positive outcome rates",
             "threshold": 0.1,
-            "criticality_level": "high"
+            "criticality_level": "high",
         },
         {
             "property_id": "equalized_odds",
@@ -607,7 +707,7 @@ async def get_available_fairness_properties(
             "property_name": "Equalized Odds",
             "description": "P(Ŷ = 1|Y = y, A = a) independent of A - Equal true/false positive rates",
             "threshold": 0.1,
-            "criticality_level": "high"
+            "criticality_level": "high",
         },
         {
             "property_id": "calibration",
@@ -615,7 +715,7 @@ async def get_available_fairness_properties(
             "property_name": "Calibration",
             "description": "P(Y = 1|Ŷ = s, A = a) independent of A - Consistent prediction accuracy",
             "threshold": 0.05,
-            "criticality_level": "medium"
+            "criticality_level": "medium",
         },
         {
             "property_id": "individual_fairness",
@@ -623,8 +723,8 @@ async def get_available_fairness_properties(
             "property_name": "Individual Fairness",
             "description": "Similar individuals receive similar treatment",
             "threshold": 0.2,
-            "criticality_level": "medium"
-        }
+            "criticality_level": "medium",
+        },
     ]
 
     return fairness_properties

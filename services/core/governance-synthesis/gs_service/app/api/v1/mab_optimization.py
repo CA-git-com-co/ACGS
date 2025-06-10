@@ -93,7 +93,7 @@ async def get_mab_status():
         logger.error(f"Failed to get MAB status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve MAB status: {str(e)}"
+            detail=f"Failed to retrieve MAB status: {str(e)}",
         )
 
 
@@ -108,7 +108,7 @@ async def get_mab_metrics():
         logger.error(f"Failed to get MAB metrics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve MAB metrics: {str(e)}"
+            detail=f"Failed to retrieve MAB metrics: {str(e)}",
         )
 
 
@@ -123,7 +123,7 @@ async def get_best_templates(top_k: int = Query(5, ge=1, le=20)):
         logger.error(f"Failed to get best templates: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve best templates: {str(e)}"
+            detail=f"Failed to retrieve best templates: {str(e)}",
         )
 
 
@@ -135,10 +135,10 @@ async def register_prompt_template(
     """Register a new prompt template for MAB optimization."""
     try:
         mab_service = get_mab_service()
-        
+
         # Create template ID from name
         template_id = template_request.name.lower().replace(" ", "_").replace("-", "_")
-        
+
         # Create PromptTemplate object
         template = PromptTemplate(
             template_id=template_id,
@@ -146,23 +146,23 @@ async def register_prompt_template(
             template_content=template_request.template_content,
             category=template_request.category,
             version=template_request.version,
-            metadata=template_request.metadata
+            metadata=template_request.metadata,
         )
-        
+
         # Register with MAB optimizer
         mab_service.mab_optimizer.register_prompt_template(template)
-        
+
         return {
             "message": "Template registered successfully",
             "template_id": template_id,
             "template_name": template_request.name,
-            "category": template_request.category
+            "category": template_request.category,
         }
     except Exception as e:
         logger.error(f"Failed to register template: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to register template: {str(e)}"
+            detail=f"Failed to register template: {str(e)}",
         )
 
 
@@ -174,42 +174,42 @@ async def synthesize_with_mab(
     """Synthesize constitutional policies using MAB-optimized prompts."""
     try:
         mab_service = get_mab_service()
-        
+
         # Create synthesis input
         synthesis_input = ConstitutionalSynthesisInput(
             context=synthesis_request.context,
             target_format=synthesis_request.target_format,
             requirements=[],  # Would be populated from request
-            constraints=[]    # Would be populated from request
+            constraints=[],  # Would be populated from request
         )
-        
+
         # Prepare context
         context = {
             "category": synthesis_request.category,
             "safety_level": synthesis_request.safety_level,
-            **synthesis_request.additional_context
+            **synthesis_request.additional_context,
         }
-        
+
         # Execute MAB-optimized synthesis
-        synthesis_output, integration_metadata = await mab_service.synthesize_with_mab_optimization(
-            synthesis_input, context
+        synthesis_output, integration_metadata = (
+            await mab_service.synthesize_with_mab_optimization(synthesis_input, context)
         )
-        
+
         return {
             "synthesis_result": {
                 "context": synthesis_output.context,
                 "generated_rules": synthesis_output.generated_rules,
                 "constitutional_context": synthesis_output.constitutional_context,
                 "synthesis_metadata": synthesis_output.synthesis_metadata,
-                "raw_llm_response": synthesis_output.raw_llm_response
+                "raw_llm_response": synthesis_output.raw_llm_response,
             },
-            "integration_metadata": integration_metadata
+            "integration_metadata": integration_metadata,
         }
     except Exception as e:
         logger.error(f"MAB synthesis failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"MAB synthesis failed: {str(e)}"
+            detail=f"MAB synthesis failed: {str(e)}",
         )
 
 
@@ -226,9 +226,9 @@ async def update_mab_config(
         except ValueError:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid algorithm: {config_request.algorithm}"
+                detail=f"Invalid algorithm: {config_request.algorithm}",
             )
-        
+
         # Create new config
         new_config = MABConfig(
             algorithm=algorithm,
@@ -240,20 +240,20 @@ async def update_mab_config(
             policy_quality_weight=config_request.policy_quality_weight,
             constitutional_compliance_weight=config_request.constitutional_compliance_weight,
             bias_mitigation_weight=config_request.bias_mitigation_weight,
-            reward_threshold=config_request.reward_threshold
+            reward_threshold=config_request.reward_threshold,
         )
-        
+
         # Reinitialize MAB service with new config
         global _mab_service
         _mab_service = MABIntegratedGSService(mab_config=new_config)
-        
+
         return {
             "message": "MAB configuration updated successfully",
             "new_config": {
                 "algorithm": new_config.algorithm.value,
                 "exploration_rate": new_config.exploration_rate,
-                "reward_threshold": new_config.reward_threshold
-            }
+                "reward_threshold": new_config.reward_threshold,
+            },
         }
     except HTTPException:
         raise
@@ -261,25 +261,25 @@ async def update_mab_config(
         logger.error(f"Failed to update MAB config: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update MAB config: {str(e)}"
+            detail=f"Failed to update MAB config: {str(e)}",
         )
 
 
 @router.get("/templates")
 async def list_prompt_templates(
     category: Optional[str] = Query(None, description="Filter by category"),
-    active_only: bool = Query(True, description="Show only active templates")
+    active_only: bool = Query(True, description="Show only active templates"),
 ):
     """List all registered prompt templates."""
     try:
         mab_service = get_mab_service()
         templates = mab_service.mab_optimizer.prompt_templates
-        
+
         template_list = []
         for template_id, template in templates.items():
             if category and template.category != category:
                 continue
-                
+
             template_info = {
                 "template_id": template.template_id,
                 "name": template.name,
@@ -289,20 +289,20 @@ async def list_prompt_templates(
                 "success_count": template.success_count,
                 "average_reward": template.average_reward,
                 "confidence_interval": template.confidence_interval,
-                "created_at": template.created_at.isoformat()
+                "created_at": template.created_at.isoformat(),
             }
             template_list.append(template_info)
-        
+
         return {
             "templates": template_list,
             "total_count": len(template_list),
-            "categories": list(set(t.category for t in templates.values()))
+            "categories": list(set(t.category for t in templates.values())),
         }
     except Exception as e:
         logger.error(f"Failed to list templates: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list templates: {str(e)}"
+            detail=f"Failed to list templates: {str(e)}",
         )
 
 
@@ -315,22 +315,22 @@ async def list_available_algorithms():
             "display_name": "Thompson Sampling",
             "description": "Bayesian approach using Beta-Bernoulli conjugate priors for exploration-exploitation balance",
             "best_for": "Dynamic environments with changing reward distributions",
-            "parameters": ["alpha_prior", "beta_prior"]
+            "parameters": ["alpha_prior", "beta_prior"],
         },
         {
             "name": "upper_confidence_bound",
             "display_name": "Upper Confidence Bound (UCB1)",
             "description": "Optimistic approach using confidence intervals for arm selection",
             "best_for": "Stable environments with consistent reward patterns",
-            "parameters": ["confidence_level"]
+            "parameters": ["confidence_level"],
         },
         {
             "name": "epsilon_greedy",
             "display_name": "Epsilon-Greedy",
             "description": "Simple exploration strategy with fixed exploration rate",
             "best_for": "Baseline comparison and simple scenarios",
-            "parameters": ["exploration_rate"]
-        }
+            "parameters": ["exploration_rate"],
+        },
     ]
-    
+
     return {"algorithms": algorithms}

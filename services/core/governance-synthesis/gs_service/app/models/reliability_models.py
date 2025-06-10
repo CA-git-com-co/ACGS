@@ -1,18 +1,22 @@
 from dataclasses import dataclass, field
 from typing import Dict, Any, Optional, List
 
+
 @dataclass
 class ConstitutionalPrinciple:
     """Represents a constitutional principle for policy synthesis."""
+
     id: str
     text: str
     version: Optional[str] = None
     source: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
 
+
 @dataclass
 class SynthesisContext:
     """Context information for policy synthesis."""
+
     domain: Optional[str] = None
     jurisdiction: Optional[str] = None
     target_audience: Optional[str] = None

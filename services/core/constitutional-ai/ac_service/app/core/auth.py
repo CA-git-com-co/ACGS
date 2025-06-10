@@ -6,14 +6,16 @@ from services.shared.auth import (
     require_policy_manager,
     require_ac_admin,
     RoleChecker,
-    User
+    User,
 )
 
 # AC service specific role checkers
 require_admin_role = require_ac_admin
 require_policy_manager_role = require_policy_manager
 require_user_role = RoleChecker(allowed_roles=["user", "ac_admin", "policy_manager"])
-require_constitutional_council_role = RoleChecker(allowed_roles=["constitutional_council", "ac_admin"])
+require_constitutional_council_role = RoleChecker(
+    allowed_roles=["constitutional_council", "ac_admin"]
+)
 
 # Backward compatibility aliases for existing code
 get_current_user_placeholder = get_current_user_from_token

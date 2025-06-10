@@ -1,4 +1,3 @@
-
 """
 ACGS-1 Phase 3: Production-Grade Governance Synthesis Service
 
@@ -28,11 +27,11 @@ import sys
 # Configure enhanced logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler('/tmp/gs_service.log', mode='a')
-    ]
+        logging.FileHandler("/tmp/gs_service.log", mode="a"),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -57,7 +56,9 @@ SecurityMiddleware = None
 try:
     from app.api.v1.synthesize import router as synthesize_router
     from app.api.v1.policy_management import router as policy_management_router
-    from app.api.v1.constitutional_synthesis import router as constitutional_synthesis_router
+    from app.api.v1.constitutional_synthesis import (
+        router as constitutional_synthesis_router,
+    )
     from app.api.v1.alphaevolve_integration import router as alphaevolve_router
     from app.api.v1.mab_optimization import router as mab_router
     from app.api.v1.wina_rego_synthesis import router as wina_rego_router
@@ -81,6 +82,7 @@ enhanced_synthesis_service = None
 multi_model_coordinator = None
 policy_workflow = None
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan management with service initialization."""
@@ -92,12 +94,12 @@ async def lifespan(app: FastAPI):
         # Initialize core services
         if ROUTERS_AVAILABLE and EnhancedGovernanceSynthesis is not None:
             enhanced_synthesis_service = EnhancedGovernanceSynthesis()
-            if hasattr(enhanced_synthesis_service, 'initialize'):
+            if hasattr(enhanced_synthesis_service, "initialize"):
                 await enhanced_synthesis_service.initialize()
 
             if MultiModelCoordinator is not None:
                 multi_model_coordinator = MultiModelCoordinator()
-                if hasattr(multi_model_coordinator, 'initialize'):
+                if hasattr(multi_model_coordinator, "initialize"):
                     await multi_model_coordinator.initialize()
 
             if PolicySynthesisWorkflow is not None:
@@ -115,6 +117,7 @@ async def lifespan(app: FastAPI):
     finally:
         logger.info("🔄 Shutting down GS service")
 
+
 # Create FastAPI application with enhanced configuration
 app = FastAPI(
     title="ACGS-1 Production Governance Synthesis Service",
@@ -123,7 +126,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Add security middleware
@@ -136,7 +139,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
-    expose_headers=["X-Request-ID", "X-Response-Time"]
+    expose_headers=["X-Request-ID", "X-Response-Time"],
 )
 
 # Add custom security middleware
@@ -145,6 +148,7 @@ if ROUTERS_AVAILABLE and SecurityMiddleware is not None:
         app.add_middleware(SecurityMiddleware)
     except Exception as e:
         logger.warning(f"Security middleware not available: {e}")
+
 
 @app.middleware("http")
 async def add_process_time_header(request, call_next):
@@ -155,6 +159,7 @@ async def add_process_time_header(request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     return response
 
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
     """Global exception handler for production error management."""
@@ -164,9 +169,10 @@ async def global_exception_handler(request, exc):
         content={
             "error": "Internal server error",
             "message": "An unexpected error occurred",
-            "request_id": getattr(request.state, 'request_id', 'unknown')
-        }
+            "request_id": getattr(request.state, "request_id", "unknown"),
+        },
     )
+
 
 @app.get("/")
 async def root():
@@ -182,10 +188,11 @@ async def root():
             "Multi-Model Consensus",
             "Constitutional Compliance",
             "Real-time Monitoring",
-            "Enterprise Security"
+            "Enterprise Security",
         ],
-        "routers_available": ROUTERS_AVAILABLE
+        "routers_available": ROUTERS_AVAILABLE,
     }
+
 
 @app.get("/health")
 async def health_check():
@@ -199,8 +206,8 @@ async def health_check():
         "services": {
             "enhanced_synthesis": enhanced_synthesis_service is not None,
             "multi_model_coordinator": multi_model_coordinator is not None,
-            "policy_workflow": policy_workflow is not None
-        }
+            "policy_workflow": policy_workflow is not None,
+        },
     }
 
     # Check service health
@@ -215,6 +222,7 @@ async def health_check():
 
     return health_status
 
+
 @app.get("/api/v1/status")
 async def api_status():
     """Enhanced API status endpoint with detailed service information."""
@@ -228,20 +236,21 @@ async def api_status():
             "synthesis": [
                 "/api/v1/synthesize",
                 "/api/v1/multi-model/synthesize",
-                "/api/v1/enhanced/synthesize"
+                "/api/v1/enhanced/synthesize",
             ],
             "management": ["/api/v1/policy-management"],
             "monitoring": ["/api/v1/reliability", "/api/v1/performance"],
-            "integration": ["/api/v1/alphaevolve", "/api/v1/mab"]
+            "integration": ["/api/v1/alphaevolve", "/api/v1/mab"],
         },
         "capabilities": {
             "advanced_synthesis": True,
             "multi_model_consensus": ROUTERS_AVAILABLE,
             "constitutional_compliance": ROUTERS_AVAILABLE,
             "real_time_monitoring": ROUTERS_AVAILABLE,
-            "enterprise_security": ROUTERS_AVAILABLE
-        }
+            "enterprise_security": ROUTERS_AVAILABLE,
+        },
     }
+
 
 @app.get("/api/v1/performance")
 async def performance_metrics():
@@ -252,36 +261,64 @@ async def performance_metrics():
         "performance": {
             "response_time_target": "<500ms for 95% requests",
             "throughput_target": ">1000 concurrent actions",
-            "availability_target": ">99.9%"
-        }
+            "availability_target": ">99.9%",
+        },
     }
 
-    if enhanced_synthesis_service and hasattr(enhanced_synthesis_service, 'get_performance_metrics'):
+    if enhanced_synthesis_service and hasattr(
+        enhanced_synthesis_service, "get_performance_metrics"
+    ):
         try:
             # Get performance metrics from enhanced synthesis service
-            synthesis_metrics = await enhanced_synthesis_service.get_performance_metrics()
+            synthesis_metrics = (
+                await enhanced_synthesis_service.get_performance_metrics()
+            )
             metrics["synthesis_performance"] = synthesis_metrics
         except Exception as e:
             logger.warning(f"Failed to get synthesis metrics: {e}")
             metrics["synthesis_performance"] = {"error": str(e)}
     else:
-        metrics["synthesis_performance"] = {"status": "minimal_mode", "message": "Enhanced metrics not available"}
+        metrics["synthesis_performance"] = {
+            "status": "minimal_mode",
+            "message": "Enhanced metrics not available",
+        }
 
     return metrics
+
 
 # Include API routers if available
 if ROUTERS_AVAILABLE:
     try:
         routers_to_include = [
             (synthesize_router, "/api/v1/synthesize", ["Core Governance Synthesis"]),
-            (multi_model_synthesis_router, "/api/v1/multi-model", ["Multi-Model Policy Synthesis"]),
-            (enhanced_synthesis_router, "/api/v1/enhanced", ["Enhanced Governance Synthesis"]),
-            (policy_management_router, "/api/v1/policy-management", ["Policy Management"]),
-            (constitutional_synthesis_router, "/api/v1/constitutional", ["Constitutional Synthesis"]),
+            (
+                multi_model_synthesis_router,
+                "/api/v1/multi-model",
+                ["Multi-Model Policy Synthesis"],
+            ),
+            (
+                enhanced_synthesis_router,
+                "/api/v1/enhanced",
+                ["Enhanced Governance Synthesis"],
+            ),
+            (
+                policy_management_router,
+                "/api/v1/policy-management",
+                ["Policy Management"],
+            ),
+            (
+                constitutional_synthesis_router,
+                "/api/v1/constitutional",
+                ["Constitutional Synthesis"],
+            ),
             (alphaevolve_router, "/api/v1/alphaevolve", ["AlphaEvolve Integration"]),
             (mab_router, "/api/v1/mab", ["MAB Optimization"]),
             (wina_rego_router, "/api/v1/wina", ["WINA Rego Synthesis"]),
-            (reliability_metrics_router, "/api/v1/reliability", ["Reliability Metrics"])
+            (
+                reliability_metrics_router,
+                "/api/v1/reliability",
+                ["Reliability Metrics"],
+            ),
         ]
 
         included_count = 0
@@ -295,6 +332,7 @@ if ROUTERS_AVAILABLE:
     except Exception as e:
         logger.error(f"❌ Failed to include some API routers: {e}")
 
+
 # Production-grade startup validation
 @app.on_event("startup")
 async def startup_validation():
@@ -307,8 +345,8 @@ async def startup_validation():
         "performance_targets": {
             "response_time": "<500ms",
             "throughput": ">1000 concurrent",
-            "availability": ">99.9%"
-        }
+            "availability": ">99.9%",
+        },
     }
 
     if enhanced_synthesis_service and multi_model_coordinator:
@@ -318,6 +356,7 @@ async def startup_validation():
         logger.warning("⚠️ Some services not fully initialized")
 
     logger.info(f"📊 Startup validation complete: {validation_results}")
+
 
 if __name__ == "__main__":
     import uvicorn
@@ -331,8 +370,10 @@ if __name__ == "__main__":
         "workers": 1,  # Single worker for development, increase for production
         "loop": "asyncio",
         "http": "httptools",
-        "lifespan": "on"
+        "lifespan": "on",
     }
 
-    logger.info(f"🚀 Starting ACGS-1 Phase 3 Production GS Service on port {config['port']}")
+    logger.info(
+        f"🚀 Starting ACGS-1 Phase 3 Production GS Service on port {config['port']}"
+    )
     uvicorn.run(app, **config)

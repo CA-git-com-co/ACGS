@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
@@ -18,13 +17,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
     return {
         "message": "Integrity Service is running",
         "status": "operational",
-        "port": 8002
+        "port": 8002,
     }
+
 
 @app.get("/health")
 async def health_check():
@@ -33,8 +34,9 @@ async def health_check():
         "status": "healthy",
         "service": "integrity_service",
         "port": 8002,
-        "message": "Service is operational"
+        "message": "Service is operational",
     }
+
 
 @app.get("/api/v1/status")
 async def api_status():
@@ -43,9 +45,11 @@ async def api_status():
         "api_version": "v1",
         "service": "integrity_service",
         "status": "active",
-        "endpoints": ["/", "/health", "/api/v1/status"]
+        "endpoints": ["/", "/health", "/api/v1/status"],
     }
+
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8002)

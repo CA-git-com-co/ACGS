@@ -3,6 +3,7 @@ from fastapi import Request
 # Import the new function from security.py
 from ..core.security import get_user_id_from_request_optional
 
+
 # Mock classes for testing
 class MockLimiter:
     def __init__(self, key_func=None, default_limits=None):
@@ -12,20 +13,27 @@ class MockLimiter:
     def limit(self, rate_limit):
         def decorator(func):
             return func
+
         return decorator
 
+
 def mock_get_remote_address(request: Request) -> str:
-    return getattr(request.client, 'host', '127.0.0.1') if request.client else '127.0.0.1'
+    return (
+        getattr(request.client, "host", "127.0.0.1") if request.client else "127.0.0.1"
+    )
+
 
 # Try to import slowapi, fall back to mock if not available
 try:
     from slowapi import Limiter
     from slowapi.util import get_remote_address
+
     SLOWAPI_AVAILABLE = True
 except ImportError:
     SLOWAPI_AVAILABLE = False
     Limiter = MockLimiter
     get_remote_address = mock_get_remote_address
+
 
 def get_request_identifier(request: Request) -> str:
     """
@@ -38,6 +46,7 @@ def get_request_identifier(request: Request) -> str:
     if user_identifier:
         return user_identifier
     return get_remote_address(request)
+
 
 # Initialize the Limiter with the new key function
 # Default limits are kept as "100 per minute" unless specified otherwise on endpoints.

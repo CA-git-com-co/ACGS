@@ -1,28 +1,37 @@
 # backend/auth_service/app/api/v1/endpoints.py
 import secrets
-from datetime import timedelta, timezone, datetime as dt # Use dt alias for datetime objects
+from datetime import (
+    timedelta,
+    timezone,
+    datetime as dt,
+)  # Use dt alias for datetime objects
 
-from fastapi import (APIRouter, Depends, HTTPException, Request, Response,
-                     status)
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_csrf_protect import CsrfProtect
-from jose import JWTError, jwt # For decoding in /logout and /token/refresh
+from jose import JWTError, jwt  # For decoding in /logout and /token/refresh
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Application-specific imports
 from ...core import security
 from ...core.config import settings
-from . import deps # Assuming deps.get_db is correctly defined for AsyncSession
-from ...crud import crud_refresh_token, crud_user # crud_refresh_token was created earlier
-from ...models import User # RefreshToken model not directly used here, but in crud
+from . import deps  # Assuming deps.get_db is correctly defined for AsyncSession
+from ...crud import (
+    crud_refresh_token,
+    crud_user,
+)  # crud_refresh_token was created earlier
+from ...models import User  # RefreshToken model not directly used here, but in crud
+
 # Create simple schemas locally since shared ones are not available
 from pydantic import BaseModel
 from typing import Optional
+
 
 class Token(BaseModel):
     access_token: str
     token_type: str
     refresh_token: Optional[str] = None
+
 
 class UserCreate(BaseModel):
     username: str
@@ -30,6 +39,7 @@ class UserCreate(BaseModel):
     password: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+
 
 class UserInDB(BaseModel):
     id: int
@@ -43,6 +53,7 @@ class UserInDB(BaseModel):
     class Config:
         from_attributes = True
 
+
 router = APIRouter()
 
 # Determine if cookies should be secure based on environment setting
@@ -52,7 +63,9 @@ SECURE_COOKIE = getattr(settings, "ENVIRONMENT", "production") != "development"
 
 @router.post("/register", response_model=UserInDB, status_code=status.HTTP_201_CREATED)
 async def register_user(user: UserCreate, db: AsyncSession = Depends(deps.get_db)):
-    db_user_by_username = await crud_user.get_user_by_username(db, username=user.username)
+    db_user_by_username = await crud_user.get_user_by_username(
+        db, username=user.username
+    )
     if db_user_by_username:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -64,7 +77,7 @@ async def register_user(user: UserCreate, db: AsyncSession = Depends(deps.get_db
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered",
         )
-    
+
     created_user = await crud_user.create_user(db=db, obj_in=user)
     return created_user
 
@@ -87,7 +100,9 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     if not user_obj.is_active:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
+        )
 
     # Create access token
     access_token_str, access_jti = security.create_access_token(
@@ -99,7 +114,11 @@ async def login_for_access_token(
         subject=user_obj.username, user_id=user_obj.id, roles=[user_obj.role]
     )
     await crud_refresh_token.create_refresh_token(
-        db, user_id=user_obj.id, token=refresh_token_str, jti=refresh_jti, expires_at=refresh_expires_at
+        db,
+        user_id=user_obj.id,
+        token=refresh_token_str,
+        jti=refresh_jti,
+        expires_at=refresh_expires_at,
     )
 
     # Set CSRF token using correct API
@@ -115,20 +134,20 @@ async def login_for_access_token(
         value=access_token_str,
         httponly=True,
         max_age=access_token_expires_seconds,
-        expires=access_token_expires_seconds, # For older browsers
+        expires=access_token_expires_seconds,  # For older browsers
         path="/",
         secure=SECURE_COOKIE,
-        samesite="lax", # Or "strict"
+        samesite="lax",  # Or "strict"
     )
     response.set_cookie(
         key="refresh_token_cookie",
         value=refresh_token_str,
         httponly=True,
         max_age=refresh_token_expires_seconds,
-        expires=refresh_token_expires_seconds, # For older browsers
-        path="/auth/token/refresh", # Path specific to refresh endpoint
+        expires=refresh_token_expires_seconds,  # For older browsers
+        path="/auth/token/refresh",  # Path specific to refresh endpoint
         secure=SECURE_COOKIE,
-        samesite="lax", # Or "strict"
+        samesite="lax",  # Or "strict"
     )
     # The response model Token schema has refresh_token field, but we're not sending it in the body
     return Token(access_token=access_token_str, token_type="bearer", refresh_token=None)
@@ -154,15 +173,24 @@ async def refresh_token(
             refresh_token_cookie,
             settings.SECRET_KEY,
             algorithms=[settings.ALGORITHM],
-            options={"verify_exp": True} # Ensure token is not expired
+            options={"verify_exp": True},  # Ensure token is not expired
         )
-        token_data = security.TokenPayload(**payload) # Validate payload structure
-        if token_data.type != "refresh" or token_data.user_id is None or token_data.jti is None or token_data.sub is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token type")
+        token_data = security.TokenPayload(**payload)  # Validate payload structure
+        if (
+            token_data.type != "refresh"
+            or token_data.user_id is None
+            or token_data.jti is None
+            or token_data.sub is None
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid refresh token type",
+            )
 
-    except JWTError: # Catches expired signature, invalid signature, etc.
+    except JWTError:  # Catches expired signature, invalid signature, etc.
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired refresh token"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
         )
 
     is_valid = await crud_refresh_token.is_valid_refresh_token(
@@ -170,24 +198,38 @@ async def refresh_token(
     )
     if not is_valid:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token revoked or invalid"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token revoked or invalid",
         )
 
-    await crud_refresh_token.revoke_refresh_token(db, jti=token_data.jti, user_id=token_data.user_id)
+    await crud_refresh_token.revoke_refresh_token(
+        db, jti=token_data.jti, user_id=token_data.user_id
+    )
 
     # Issue new tokens
-    user_obj = await crud_user.get_user(db, user_id=token_data.user_id) # Fetch user for roles
+    user_obj = await crud_user.get_user(
+        db, user_id=token_data.user_id
+    )  # Fetch user for roles
     if not user_obj or not user_obj.is_active:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found or inactive")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found or inactive",
+        )
 
     new_access_token_str, new_access_jti = security.create_access_token(
         subject=user_obj.username, user_id=user_obj.id, roles=[user_obj.role]
     )
-    new_refresh_token_str, new_refresh_jti, new_refresh_expires_at = security.create_refresh_token(
-        subject=user_obj.username, user_id=user_obj.id, roles=[user_obj.role]
+    new_refresh_token_str, new_refresh_jti, new_refresh_expires_at = (
+        security.create_refresh_token(
+            subject=user_obj.username, user_id=user_obj.id, roles=[user_obj.role]
+        )
     )
     await crud_refresh_token.create_refresh_token(
-        db, user_id=user_obj.id, token=new_refresh_token_str, jti=new_refresh_jti, expires_at=new_refresh_expires_at
+        db,
+        user_id=user_obj.id,
+        token=new_refresh_token_str,
+        jti=new_refresh_jti,
+        expires_at=new_refresh_expires_at,
     )
 
     # Set new CSRF token using correct API
@@ -218,7 +260,9 @@ async def refresh_token(
         secure=SECURE_COOKIE,
         samesite="lax",
     )
-    return Token(access_token=new_access_token_str, token_type="bearer", refresh_token=None)
+    return Token(
+        access_token=new_access_token_str, token_type="bearer", refresh_token=None
+    )
 
 
 @router.post("/logout", status_code=status.HTTP_200_OK)
@@ -234,28 +278,54 @@ async def logout(
     if access_token_cookie:
         try:
             # Decode access token to get JTI, ignore expiration for revocation
-            payload = jwt.decode(access_token_cookie, settings.SECRET_KEY, algorithms=[settings.ALGORITHM], options={"verify_exp": False})
+            payload = jwt.decode(
+                access_token_cookie,
+                settings.SECRET_KEY,
+                algorithms=[settings.ALGORITHM],
+                options={"verify_exp": False},
+            )
             token_data = security.TokenPayload(**payload)
             if token_data.type == "access" and token_data.jti:
                 security.revoke_access_jti(token_data.jti)
         except JWTError:
-            pass # Ignore if token is invalid, just try to delete cookie
+            pass  # Ignore if token is invalid, just try to delete cookie
 
     refresh_token_cookie = request.cookies.get("refresh_token_cookie")
     if refresh_token_cookie:
         try:
             # Decode refresh token to get JTI and user_id for targeted revocation
-            payload = jwt.decode(refresh_token_cookie, settings.SECRET_KEY, algorithms=[settings.ALGORITHM], options={"verify_exp": False})
+            payload = jwt.decode(
+                refresh_token_cookie,
+                settings.SECRET_KEY,
+                algorithms=[settings.ALGORITHM],
+                options={"verify_exp": False},
+            )
             token_data = security.TokenPayload(**payload)
             if token_data.type == "refresh" and token_data.jti and token_data.user_id:
-                await crud_refresh_token.revoke_refresh_token(db, jti=token_data.jti, user_id=token_data.user_id)
+                await crud_refresh_token.revoke_refresh_token(
+                    db, jti=token_data.jti, user_id=token_data.user_id
+                )
         except JWTError:
-            pass # Ignore if token is invalid
+            pass  # Ignore if token is invalid
 
     # Delete cookies
-    response.delete_cookie(key="access_token_cookie", path="/", secure=SECURE_COOKIE, httponly=True, samesite="lax")
-    response.delete_cookie(key="refresh_token_cookie", path="/auth/token/refresh", secure=SECURE_COOKIE, httponly=True, samesite="lax")
-    csrf_protect.unset_csrf_cookie(response) # Deletes CSRF cookie to prevent token reuse
+    response.delete_cookie(
+        key="access_token_cookie",
+        path="/",
+        secure=SECURE_COOKIE,
+        httponly=True,
+        samesite="lax",
+    )
+    response.delete_cookie(
+        key="refresh_token_cookie",
+        path="/auth/token/refresh",
+        secure=SECURE_COOKIE,
+        httponly=True,
+        samesite="lax",
+    )
+    csrf_protect.unset_csrf_cookie(
+        response
+    )  # Deletes CSRF cookie to prevent token reuse
 
     return {"message": "Logout successful"}
 
@@ -264,6 +334,7 @@ async def logout(
 async def read_users_me(current_user: User = Depends(security.get_current_active_user)):
     # security.get_current_active_user now uses cookie-based authentication
     return current_user
+
 
 # Include this router in the main FastAPI app
 # Example: app.include_router(endpoints.router, prefix="/api/v1/auth", tags=["auth"])

@@ -2,22 +2,54 @@ from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
+
 # Base schema for Principle attributes
 class PrincipleBase(BaseModel):
-    name: str = Field(..., min_length=3, max_length=100, description="Unique name of the principle")
-    description: Optional[str] = Field(None, max_length=500, description="Detailed description of the principle")
-    content: str = Field(..., description="The full content of the principle (e.g., text, JSON string)")
+    name: str = Field(
+        ..., min_length=3, max_length=100, description="Unique name of the principle"
+    )
+    description: Optional[str] = Field(
+        None, max_length=500, description="Detailed description of the principle"
+    )
+    content: str = Field(
+        ..., description="The full content of the principle (e.g., text, JSON string)"
+    )
 
     # Enhanced Phase 1 Constitutional Fields
-    priority_weight: Optional[float] = Field(None, ge=0.0, le=1.0, description="Priority weight for principle prioritization (0.0 to 1.0)")
-    scope: Optional[List[str]] = Field(None, description="List of contexts where principle applies")
-    normative_statement: Optional[str] = Field(None, description="Structured normative statement for constitutional interpretation")
-    constraints: Optional[dict] = Field(None, description="Formal constraints and requirements")
-    rationale: Optional[str] = Field(None, description="Detailed rationale and justification for the principle")
-    keywords: Optional[List[str]] = Field(None, description="Keywords for principle categorization")
-    category: Optional[str] = Field(None, max_length=100, description="Category classification (e.g., Safety, Privacy, Fairness)")
-    validation_criteria_nl: Optional[str] = Field(None, description="Natural language validation criteria for testing")
-    constitutional_metadata: Optional[dict] = Field(None, description="Metadata for constitutional compliance tracking")
+    priority_weight: Optional[float] = Field(
+        None,
+        ge=0.0,
+        le=1.0,
+        description="Priority weight for principle prioritization (0.0 to 1.0)",
+    )
+    scope: Optional[List[str]] = Field(
+        None, description="List of contexts where principle applies"
+    )
+    normative_statement: Optional[str] = Field(
+        None,
+        description="Structured normative statement for constitutional interpretation",
+    )
+    constraints: Optional[dict] = Field(
+        None, description="Formal constraints and requirements"
+    )
+    rationale: Optional[str] = Field(
+        None, description="Detailed rationale and justification for the principle"
+    )
+    keywords: Optional[List[str]] = Field(
+        None, description="Keywords for principle categorization"
+    )
+    category: Optional[str] = Field(
+        None,
+        max_length=100,
+        description="Category classification (e.g., Safety, Privacy, Fairness)",
+    )
+    validation_criteria_nl: Optional[str] = Field(
+        None, description="Natural language validation criteria for testing"
+    )
+    constitutional_metadata: Optional[dict] = Field(
+        None, description="Metadata for constitutional compliance tracking"
+    )
+
 
 # Schema for creating a new principle
 class PrincipleCreate(PrincipleBase):
@@ -32,9 +64,10 @@ class PrincipleCreate(PrincipleBase):
                 "content": "All user data must be encrypted and access logged",
                 "priority_weight": 0.8,
                 "scope": ["data_processing", "user_management"],
-                "category": "Privacy"
+                "category": "Privacy",
             }
         }
+
 
 # Schema for updating an existing principle
 # All fields are optional for updates
@@ -42,20 +75,41 @@ class PrincipleUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=3, max_length=100)
     description: Optional[str] = Field(None, max_length=500)
     content: Optional[str] = None
-    status: Optional[str] = Field(None, description="e.g., 'draft', 'approved', 'deprecated'")
+    status: Optional[str] = Field(
+        None, description="e.g., 'draft', 'approved', 'deprecated'"
+    )
 
     # Enhanced Phase 1 Constitutional Fields (all optional for updates)
-    priority_weight: Optional[float] = Field(None, ge=0.0, le=1.0, description="Priority weight for principle prioritization")
-    scope: Optional[List[str]] = Field(None, description="List of contexts where principle applies")
-    normative_statement: Optional[str] = Field(None, description="Structured normative statement")
-    constraints: Optional[dict] = Field(None, description="Formal constraints and requirements")
-    rationale: Optional[str] = Field(None, description="Detailed rationale and justification")
-    keywords: Optional[List[str]] = Field(None, description="Keywords for categorization")
-    category: Optional[str] = Field(None, max_length=100, description="Category classification")
-    validation_criteria_nl: Optional[str] = Field(None, description="Natural language validation criteria")
-    constitutional_metadata: Optional[dict] = Field(None, description="Constitutional compliance metadata")
+    priority_weight: Optional[float] = Field(
+        None, ge=0.0, le=1.0, description="Priority weight for principle prioritization"
+    )
+    scope: Optional[List[str]] = Field(
+        None, description="List of contexts where principle applies"
+    )
+    normative_statement: Optional[str] = Field(
+        None, description="Structured normative statement"
+    )
+    constraints: Optional[dict] = Field(
+        None, description="Formal constraints and requirements"
+    )
+    rationale: Optional[str] = Field(
+        None, description="Detailed rationale and justification"
+    )
+    keywords: Optional[List[str]] = Field(
+        None, description="Keywords for categorization"
+    )
+    category: Optional[str] = Field(
+        None, max_length=100, description="Category classification"
+    )
+    validation_criteria_nl: Optional[str] = Field(
+        None, description="Natural language validation criteria"
+    )
+    constitutional_metadata: Optional[dict] = Field(
+        None, description="Constitutional compliance metadata"
+    )
     # version might be handled automatically or via a specific versioning endpoint
     # version: Optional[int] = Field(None, gt=0)
+
 
 # Schema for representing a Principle in API responses
 class Principle(PrincipleBase):
@@ -64,33 +118,53 @@ class Principle(PrincipleBase):
     status: str
     created_at: datetime
     updated_at: datetime
-    created_by_user_id: Optional[int] = None # Made optional if user can be anonymous or system-created
+    created_by_user_id: Optional[int] = (
+        None  # Made optional if user can be anonymous or system-created
+    )
 
     class Config:
-        from_attributes = True # For SQLAlchemy model compatibility (Pydantic v2)
+        from_attributes = True  # For SQLAlchemy model compatibility (Pydantic v2)
+
 
 # Optional: Schema for a list of principles for responses
 class PrincipleList(BaseModel):
     principles: List[Principle]
     total: int
 
+
 # Placeholder for user information, to be refined with actual auth integration
 class User(BaseModel):
     id: int
     username: str
-    roles: List[str] = [] # e.g., ["user", "ac_admin"]
+    roles: List[str] = []  # e.g., ["user", "ac_admin"]
+
 
 # Constitutional Council and AC Enhancement Schemas
 
+
 # Meta-Rules (R) component schemas
 class ACMetaRuleBase(BaseModel):
-    rule_type: str = Field(..., description="Type of meta-rule (e.g., amendment_procedure, voting_threshold)")
-    name: str = Field(..., min_length=3, max_length=255, description="Name of the meta-rule")
+    rule_type: str = Field(
+        ...,
+        description="Type of meta-rule (e.g., amendment_procedure, voting_threshold)",
+    )
+    name: str = Field(
+        ..., min_length=3, max_length=255, description="Name of the meta-rule"
+    )
     description: Optional[str] = Field(None, description="Description of the meta-rule")
-    rule_definition: dict = Field(..., description="JSON structure defining the meta-governance rule")
-    threshold: Optional[str] = Field(None, description="Voting threshold (e.g., 0.67, simple_majority)")
-    stakeholder_roles: Optional[List[str]] = Field(None, description="Roles that can participate")
-    decision_mechanism: Optional[str] = Field(None, description="Decision mechanism (e.g., supermajority_vote)")
+    rule_definition: dict = Field(
+        ..., description="JSON structure defining the meta-governance rule"
+    )
+    threshold: Optional[str] = Field(
+        None, description="Voting threshold (e.g., 0.67, simple_majority)"
+    )
+    stakeholder_roles: Optional[List[str]] = Field(
+        None, description="Roles that can participate"
+    )
+    decision_mechanism: Optional[str] = Field(
+        None, description="Decision mechanism (e.g., supermajority_vote)"
+    )
+
 
 class ACMetaRuleCreate(ACMetaRuleBase):
 
@@ -102,9 +176,10 @@ class ACMetaRuleCreate(ACMetaRuleBase):
                 "description": "Defines voting threshold for constitutional amendments",
                 "threshold": "0.67",
                 "stakeholder_roles": ["admin", "policy_manager"],
-                "decision_mechanism": "supermajority_vote"
+                "decision_mechanism": "supermajority_vote",
             }
         }
+
 
 class ACMetaRuleUpdate(BaseModel):
     rule_type: Optional[str] = None
@@ -114,7 +189,10 @@ class ACMetaRuleUpdate(BaseModel):
     threshold: Optional[str] = None
     stakeholder_roles: Optional[List[str]] = None
     decision_mechanism: Optional[str] = None
-    status: Optional[str] = Field(None, description="Status (active, deprecated, proposed)")
+    status: Optional[str] = Field(
+        None, description="Status (active, deprecated, proposed)"
+    )
+
 
 class ACMetaRule(ACMetaRuleBase):
     id: int
@@ -126,99 +204,102 @@ class ACMetaRule(ACMetaRuleBase):
     class Config:
         from_attributes = True
 
+
 # Amendment schemas with enhanced Pydantic v2.0+ validation
 class ACAmendmentBase(BaseModel):
-    principle_id: int = Field(..., description="ID of the principle being amended", gt=0)
+    principle_id: int = Field(
+        ..., description="ID of the principle being amended", gt=0
+    )
     amendment_type: str = Field(
         ...,
         description="Type of amendment (modify, add, remove, status_change)",
-        pattern="^(modify|add|remove|status_change)$"
+        pattern="^(modify|add|remove|status_change)$",
     )
     proposed_changes: str = Field(
         ...,
         description="Description of proposed changes",
         min_length=10,
-        max_length=5000
+        max_length=5000,
     )
     justification: Optional[str] = Field(
-        None,
-        description="Rationale for the amendment",
-        max_length=2000
+        None, description="Rationale for the amendment", max_length=2000
     )
     proposed_content: Optional[str] = Field(
-        None,
-        description="New content if modifying/adding",
-        max_length=10000
+        None, description="New content if modifying/adding", max_length=10000
     )
     proposed_status: Optional[str] = Field(
         None,
         description="New status if changing status",
-        pattern="^(active|inactive|deprecated|under_review)$"
+        pattern="^(active|inactive|deprecated|under_review)$",
     )
 
     # Co-evolution metadata fields
     urgency_level: Optional[str] = Field(
         "normal",
         description="Amendment urgency level for co-evolution handling",
-        pattern="^(normal|rapid|emergency)$"
+        pattern="^(normal|rapid|emergency)$",
     )
     co_evolution_context: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Context for rapid co-evolution scenarios"
+        None, description="Context for rapid co-evolution scenarios"
     )
     expected_impact: Optional[str] = Field(
         None,
         description="Expected impact assessment",
-        pattern="^(low|medium|high|critical)$"
+        pattern="^(low|medium|high|critical)$",
     )
+
 
 class ACAmendmentCreate(ACAmendmentBase):
     consultation_period_days: Optional[int] = Field(
-        30,
-        description="Days for public consultation",
-        ge=1,
-        le=365
+        30, description="Days for public consultation", ge=1, le=365
     )
     public_comment_enabled: bool = Field(True, description="Enable public comments")
     stakeholder_groups: Optional[List[str]] = Field(
-        None,
-        description="Stakeholder groups to invite",
-        max_items=20
+        None, description="Stakeholder groups to invite", max_items=20
     )
 
     # Enhanced validation for co-evolution
     rapid_processing_requested: bool = Field(
-        False,
-        description="Request rapid processing for urgent amendments"
+        False, description="Request rapid processing for urgent amendments"
     )
     constitutional_significance: Optional[str] = Field(
         "normal",
         description="Constitutional significance level",
-        pattern="^(normal|significant|fundamental)$"
+        pattern="^(normal|significant|fundamental)$",
     )
 
-    @field_validator('stakeholder_groups')
+    @field_validator("stakeholder_groups")
     @classmethod
     def validate_stakeholder_groups(cls, v):
         if v is not None:
             valid_groups = {
-                "citizens", "experts", "affected_parties", "regulatory_bodies",
-                "constitutional_council", "policy_managers", "auditors",
-                "privacy_advocates", "security_experts", "legal_experts"
+                "citizens",
+                "experts",
+                "affected_parties",
+                "regulatory_bodies",
+                "constitutional_council",
+                "policy_managers",
+                "auditors",
+                "privacy_advocates",
+                "security_experts",
+                "legal_experts",
             }
             for group in v:
                 if group not in valid_groups:
                     raise ValueError(f"Invalid stakeholder group: {group}")
         return v
 
-    @field_validator('co_evolution_context')
+    @field_validator("co_evolution_context")
     @classmethod
     def validate_co_evolution_context(cls, v):
         if v is not None:
             required_fields = {"trigger_event", "timeline", "stakeholders"}
             if not all(field in v for field in required_fields):
-                raise ValueError(f"Co-evolution context must include: {required_fields}")
+                raise ValueError(
+                    f"Co-evolution context must include: {required_fields}"
+                )
         return v
+
 
 class ACAmendmentUpdate(BaseModel):
     amendment_type: Optional[str] = None
@@ -230,6 +311,7 @@ class ACAmendmentUpdate(BaseModel):
     consultation_period_days: Optional[int] = None
     public_comment_enabled: Optional[bool] = None
     stakeholder_groups: Optional[List[str]] = None
+
 
 class ACAmendment(ACAmendmentBase):
     id: int
@@ -252,31 +334,32 @@ class ACAmendment(ACAmendmentBase):
     rapid_processing_requested: bool = False
     constitutional_significance: Optional[str] = "normal"
     processing_metrics: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Performance metrics for co-evolution tracking"
+        None, description="Performance metrics for co-evolution tracking"
     )
 
     # Workflow state tracking
     workflow_state: Optional[str] = Field(
         "proposed",
         description="Current workflow state",
-        pattern="^(proposed|under_review|voting|approved|rejected|implemented)$"
+        pattern="^(proposed|under_review|voting|approved|rejected|implemented)$",
     )
     state_transitions: Optional[List[Dict[str, Any]]] = Field(
-        None,
-        description="History of state transitions"
+        None, description="History of state transitions"
     )
 
     class Config:
         from_attributes = True
+
 
 # Amendment vote schemas
 class ACAmendmentVoteBase(BaseModel):
     vote: str = Field(..., description="Vote choice (for, against, abstain)")
     reasoning: Optional[str] = Field(None, description="Optional explanation of vote")
 
+
 class ACAmendmentVoteCreate(ACAmendmentVoteBase):
     amendment_id: int = Field(..., description="ID of the amendment being voted on")
+
 
 class ACAmendmentVote(ACAmendmentVoteBase):
     id: int
@@ -287,16 +370,27 @@ class ACAmendmentVote(ACAmendmentVoteBase):
     class Config:
         from_attributes = True
 
+
 # Amendment comment schemas
 class ACAmendmentCommentBase(BaseModel):
     comment_text: str = Field(..., description="Comment content")
-    sentiment: Optional[str] = Field(None, description="Comment sentiment (support, oppose, neutral)")
-    stakeholder_group: Optional[str] = Field(None, description="Stakeholder group of commenter")
+    sentiment: Optional[str] = Field(
+        None, description="Comment sentiment (support, oppose, neutral)"
+    )
+    stakeholder_group: Optional[str] = Field(
+        None, description="Stakeholder group of commenter"
+    )
+
 
 class ACAmendmentCommentCreate(ACAmendmentCommentBase):
     amendment_id: int = Field(..., description="ID of the amendment being commented on")
-    commenter_name: Optional[str] = Field(None, description="Name for anonymous commenters")
-    commenter_email: Optional[str] = Field(None, description="Email for anonymous commenters")
+    commenter_name: Optional[str] = Field(
+        None, description="Name for anonymous commenters"
+    )
+    commenter_email: Optional[str] = Field(
+        None, description="Email for anonymous commenters"
+    )
+
 
 class ACAmendmentComment(ACAmendmentCommentBase):
     id: int
@@ -311,16 +405,29 @@ class ACAmendmentComment(ACAmendmentCommentBase):
     class Config:
         from_attributes = True
 
+
 # Conflict resolution schemas
 class ACConflictResolutionBase(BaseModel):
-    conflict_type: str = Field(..., description="Type of conflict (principle_contradiction, practical_incompatibility)")
-    principle_ids: List[int] = Field(..., description="IDs of principles involved in conflict")
+    conflict_type: str = Field(
+        ...,
+        description="Type of conflict (principle_contradiction, practical_incompatibility)",
+    )
+    principle_ids: List[int] = Field(
+        ..., description="IDs of principles involved in conflict"
+    )
     context: Optional[str] = Field(None, description="Context of the conflict")
     conflict_description: str = Field(..., description="Description of the conflict")
-    severity: str = Field(..., description="Severity level (low, medium, high, critical)")
+    severity: str = Field(
+        ..., description="Severity level (low, medium, high, critical)"
+    )
     resolution_strategy: str = Field(..., description="Strategy for resolution")
-    resolution_details: Optional[dict] = Field(None, description="Structured resolution information")
-    precedence_order: Optional[List[int]] = Field(None, description="Priority order of principles")
+    resolution_details: Optional[dict] = Field(
+        None, description="Structured resolution information"
+    )
+    precedence_order: Optional[List[int]] = Field(
+        None, description="Priority order of principles"
+    )
+
 
 class ACConflictResolutionCreate(ACConflictResolutionBase):
 
@@ -332,9 +439,10 @@ class ACConflictResolutionCreate(ACConflictResolutionBase):
                 "context": "Privacy vs Security conflict in user authentication",
                 "resolution_strategy": "weighted_priority",
                 "resolution_details": {"weights": {"privacy": 0.6, "security": 0.4}},
-                "precedence_order": [1, 2]
+                "precedence_order": [1, 2],
             }
         }
+
 
 class ACConflictResolutionUpdate(BaseModel):
     conflict_type: Optional[str] = None
@@ -345,7 +453,10 @@ class ACConflictResolutionUpdate(BaseModel):
     resolution_strategy: Optional[str] = None
     resolution_details: Optional[dict] = None
     precedence_order: Optional[List[int]] = None
-    status: Optional[str] = Field(None, description="Status (identified, analyzed, resolved, monitoring)")
+    status: Optional[str] = Field(
+        None, description="Status (identified, analyzed, resolved, monitoring)"
+    )
+
 
 class ACConflictResolution(ACConflictResolutionBase):
     id: int
@@ -361,52 +472,105 @@ class ACConflictResolution(ACConflictResolutionBase):
 
 # Human-in-the-Loop Sampling Schemas
 
+
 class UncertaintyMetrics(BaseModel):
     """Schema for uncertainty metrics in different dimensions."""
-    constitutional: float = Field(..., ge=0.0, le=1.0, description="Constitutional interpretation uncertainty")
-    technical: float = Field(..., ge=0.0, le=1.0, description="Technical implementation uncertainty")
-    stakeholder: float = Field(..., ge=0.0, le=1.0, description="Stakeholder consensus uncertainty")
-    precedent: float = Field(..., ge=0.0, le=1.0, description="Historical precedent uncertainty")
-    complexity: float = Field(..., ge=0.0, le=1.0, description="Overall complexity uncertainty")
+
+    constitutional: float = Field(
+        ..., ge=0.0, le=1.0, description="Constitutional interpretation uncertainty"
+    )
+    technical: float = Field(
+        ..., ge=0.0, le=1.0, description="Technical implementation uncertainty"
+    )
+    stakeholder: float = Field(
+        ..., ge=0.0, le=1.0, description="Stakeholder consensus uncertainty"
+    )
+    precedent: float = Field(
+        ..., ge=0.0, le=1.0, description="Historical precedent uncertainty"
+    )
+    complexity: float = Field(
+        ..., ge=0.0, le=1.0, description="Overall complexity uncertainty"
+    )
 
 
 class HITLSamplingRequest(BaseModel):
     """Schema for requesting human-in-the-loop sampling assessment."""
+
     decision_id: str = Field(..., description="Unique identifier for the decision")
-    decision_context: Dict[str, Any] = Field(..., description="Context information for the decision")
-    ai_confidence: Optional[float] = Field(None, ge=0.0, le=1.0, description="AI confidence score if available")
-    principle_ids: Optional[List[int]] = Field(None, description="Related constitutional principle IDs")
+    decision_context: Dict[str, Any] = Field(
+        ..., description="Context information for the decision"
+    )
+    ai_confidence: Optional[float] = Field(
+        None, ge=0.0, le=1.0, description="AI confidence score if available"
+    )
+    principle_ids: Optional[List[int]] = Field(
+        None, description="Related constitutional principle IDs"
+    )
 
     # Decision characteristics
-    decision_scope: Optional[str] = Field("local", description="Scope of decision (local, service, system, global)")
-    time_pressure: Optional[str] = Field("normal", description="Time pressure level (low, normal, high, critical)")
-    reversibility: Optional[str] = Field("reversible", description="Reversibility (reversible, difficult, irreversible)")
-    impact_magnitude: Optional[str] = Field("low", description="Impact magnitude (low, medium, high, critical)")
-    safety_critical: bool = Field(False, description="Whether decision is safety-critical")
+    decision_scope: Optional[str] = Field(
+        "local", description="Scope of decision (local, service, system, global)"
+    )
+    time_pressure: Optional[str] = Field(
+        "normal", description="Time pressure level (low, normal, high, critical)"
+    )
+    reversibility: Optional[str] = Field(
+        "reversible", description="Reversibility (reversible, difficult, irreversible)"
+    )
+    impact_magnitude: Optional[str] = Field(
+        "low", description="Impact magnitude (low, medium, high, critical)"
+    )
+    safety_critical: bool = Field(
+        False, description="Whether decision is safety-critical"
+    )
 
     # Stakeholder information
-    stakeholder_count: Optional[int] = Field(1, ge=1, description="Number of stakeholders involved")
-    stakeholder_diversity: Optional[float] = Field(0.5, ge=0.0, le=1.0, description="Stakeholder diversity score")
-    stakeholder_conflicts: bool = Field(False, description="Whether stakeholder conflicts exist")
-    requires_public_consultation: bool = Field(False, description="Whether public consultation is required")
+    stakeholder_count: Optional[int] = Field(
+        1, ge=1, description="Number of stakeholders involved"
+    )
+    stakeholder_diversity: Optional[float] = Field(
+        0.5, ge=0.0, le=1.0, description="Stakeholder diversity score"
+    )
+    stakeholder_conflicts: bool = Field(
+        False, description="Whether stakeholder conflicts exist"
+    )
+    requires_public_consultation: bool = Field(
+        False, description="Whether public consultation is required"
+    )
 
     # Technical factors
     multi_service: bool = Field(False, description="Decision affects multiple services")
     database_changes: bool = Field(False, description="Requires database modifications")
     external_apis: bool = Field(False, description="Involves external API calls")
-    real_time_processing: bool = Field(False, description="Requires real-time processing")
+    real_time_processing: bool = Field(
+        False, description="Requires real-time processing"
+    )
     security_implications: bool = Field(False, description="Has security implications")
-    performance_critical: bool = Field(False, description="Performance-critical operation")
-    novel_technology: bool = Field(False, description="Uses novel or experimental technology")
+    performance_critical: bool = Field(
+        False, description="Performance-critical operation"
+    )
+    novel_technology: bool = Field(
+        False, description="Uses novel or experimental technology"
+    )
 
     # Context flags
     novel_scenario: bool = Field(False, description="Novel scenario without precedent")
     has_training_data: bool = Field(True, description="AI has relevant training data")
-    domain_expertise_available: bool = Field(True, description="Domain expertise is available")
-    clear_requirements: bool = Field(True, description="Requirements are clear and well-defined")
-    has_implementation_precedent: bool = Field(True, description="Implementation precedent exists")
-    has_stakeholder_feedback: bool = Field(False, description="Previous stakeholder feedback available")
-    escalation_required: bool = Field(False, description="Escalation from conflict resolution")
+    domain_expertise_available: bool = Field(
+        True, description="Domain expertise is available"
+    )
+    clear_requirements: bool = Field(
+        True, description="Requirements are clear and well-defined"
+    )
+    has_implementation_precedent: bool = Field(
+        True, description="Implementation precedent exists"
+    )
+    has_stakeholder_feedback: bool = Field(
+        False, description="Previous stakeholder feedback available"
+    )
+    escalation_required: bool = Field(
+        False, description="Escalation from conflict resolution"
+    )
 
     class Config:
         json_schema_extra = {
@@ -415,36 +579,55 @@ class HITLSamplingRequest(BaseModel):
                 "decision_context": {
                     "policy_type": "privacy_protection",
                     "affected_users": 10000,
-                    "regulatory_compliance": True
+                    "regulatory_compliance": True,
                 },
                 "ai_confidence": 0.72,
                 "principle_ids": [1, 3, 7],
                 "decision_scope": "system",
                 "safety_critical": True,
                 "stakeholder_count": 5,
-                "stakeholder_conflicts": True
+                "stakeholder_conflicts": True,
             }
         }
 
 
 class HITLSamplingResult(BaseModel):
     """Schema for human-in-the-loop sampling assessment result."""
+
     decision_id: str = Field(..., description="Decision identifier")
-    overall_uncertainty: float = Field(..., ge=0.0, le=1.0, description="Overall uncertainty score")
-    dimensional_uncertainties: UncertaintyMetrics = Field(..., description="Uncertainty by dimension")
-    confidence_score: float = Field(..., ge=0.0, le=1.0, description="AI confidence in decision")
+    overall_uncertainty: float = Field(
+        ..., ge=0.0, le=1.0, description="Overall uncertainty score"
+    )
+    dimensional_uncertainties: UncertaintyMetrics = Field(
+        ..., description="Uncertainty by dimension"
+    )
+    confidence_score: float = Field(
+        ..., ge=0.0, le=1.0, description="AI confidence in decision"
+    )
 
     # Sampling decision
-    requires_human_oversight: bool = Field(..., description="Whether human oversight is required")
-    recommended_oversight_level: str = Field(..., description="Recommended level of oversight")
-    triggers_activated: List[str] = Field(..., description="List of activated sampling triggers")
+    requires_human_oversight: bool = Field(
+        ..., description="Whether human oversight is required"
+    )
+    recommended_oversight_level: str = Field(
+        ..., description="Recommended level of oversight"
+    )
+    triggers_activated: List[str] = Field(
+        ..., description="List of activated sampling triggers"
+    )
 
     # Assessment metadata
-    assessment_timestamp: datetime = Field(..., description="When assessment was performed")
-    assessment_metadata: Dict[str, Any] = Field(..., description="Additional assessment metadata")
+    assessment_timestamp: datetime = Field(
+        ..., description="When assessment was performed"
+    )
+    assessment_metadata: Dict[str, Any] = Field(
+        ..., description="Additional assessment metadata"
+    )
 
     # Performance tracking
-    processing_time_ms: Optional[float] = Field(None, description="Assessment processing time in milliseconds")
+    processing_time_ms: Optional[float] = Field(
+        None, description="Assessment processing time in milliseconds"
+    )
 
     class Config:
         json_schema_extra = {
@@ -456,25 +639,40 @@ class HITLSamplingResult(BaseModel):
                     "technical": 0.45,
                     "stakeholder": 0.85,
                     "precedent": 0.70,
-                    "complexity": 0.75
+                    "complexity": 0.75,
                 },
                 "confidence_score": 0.72,
                 "requires_human_oversight": True,
                 "recommended_oversight_level": "constitutional_council",
-                "triggers_activated": ["high_uncertainty", "stakeholder_conflict", "safety_critical"],
-                "assessment_timestamp": "2024-01-15T10:30:00Z"
+                "triggers_activated": [
+                    "high_uncertainty",
+                    "stakeholder_conflict",
+                    "safety_critical",
+                ],
+                "assessment_timestamp": "2024-01-15T10:30:00Z",
             }
         }
 
 
 class HITLFeedbackRequest(BaseModel):
     """Schema for submitting human feedback on HITL sampling decisions."""
+
     assessment_id: str = Field(..., description="ID of the original assessment")
-    human_decision: Dict[str, Any] = Field(..., description="Human decision and reasoning")
-    agreed_with_assessment: bool = Field(..., description="Whether human agreed with AI assessment")
-    reasoning: Optional[str] = Field(None, description="Human reasoning for the decision")
-    quality_score: Optional[float] = Field(0.8, ge=0.0, le=1.0, description="Quality score for the decision")
-    feedback_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional feedback metadata")
+    human_decision: Dict[str, Any] = Field(
+        ..., description="Human decision and reasoning"
+    )
+    agreed_with_assessment: bool = Field(
+        ..., description="Whether human agreed with AI assessment"
+    )
+    reasoning: Optional[str] = Field(
+        None, description="Human reasoning for the decision"
+    )
+    quality_score: Optional[float] = Field(
+        0.8, ge=0.0, le=1.0, description="Quality score for the decision"
+    )
+    feedback_metadata: Optional[Dict[str, Any]] = Field(
+        None, description="Additional feedback metadata"
+    )
 
     class Config:
         json_schema_extra = {
@@ -483,30 +681,53 @@ class HITLFeedbackRequest(BaseModel):
                 "human_decision": {
                     "oversight_needed": True,
                     "final_decision": "approved_with_conditions",
-                    "conditions": ["additional_stakeholder_review", "security_audit"]
+                    "conditions": ["additional_stakeholder_review", "security_audit"],
                 },
                 "agreed_with_assessment": True,
                 "reasoning": "Assessment correctly identified stakeholder conflicts requiring Constitutional Council review",
-                "quality_score": 0.9
+                "quality_score": 0.9,
             }
         }
 
 
 class HITLPerformanceMetrics(BaseModel):
     """Schema for HITL sampling performance metrics."""
-    total_assessments: int = Field(..., description="Total number of assessments performed")
-    human_oversight_triggered: int = Field(..., description="Number of times human oversight was triggered")
-    oversight_rate: float = Field(..., ge=0.0, le=1.0, description="Rate of human oversight triggers")
-    accuracy_rate: float = Field(..., ge=0.0, le=1.0, description="Accuracy rate of oversight predictions")
-    false_positive_rate: float = Field(..., ge=0.0, le=1.0, description="False positive rate")
-    recent_accuracy: float = Field(..., ge=0.0, le=1.0, description="Recent accuracy (last 50 assessments)")
-    recent_quality: float = Field(..., ge=0.0, le=1.0, description="Recent decision quality score")
+
+    total_assessments: int = Field(
+        ..., description="Total number of assessments performed"
+    )
+    human_oversight_triggered: int = Field(
+        ..., description="Number of times human oversight was triggered"
+    )
+    oversight_rate: float = Field(
+        ..., ge=0.0, le=1.0, description="Rate of human oversight triggers"
+    )
+    accuracy_rate: float = Field(
+        ..., ge=0.0, le=1.0, description="Accuracy rate of oversight predictions"
+    )
+    false_positive_rate: float = Field(
+        ..., ge=0.0, le=1.0, description="False positive rate"
+    )
+    recent_accuracy: float = Field(
+        ..., ge=0.0, le=1.0, description="Recent accuracy (last 50 assessments)"
+    )
+    recent_quality: float = Field(
+        ..., ge=0.0, le=1.0, description="Recent decision quality score"
+    )
 
     # Configuration
-    current_thresholds: Dict[str, float] = Field(..., description="Current uncertainty and confidence thresholds")
-    learning_enabled: bool = Field(..., description="Whether adaptive learning is enabled")
-    feedback_samples: int = Field(..., description="Number of feedback samples collected")
-    threshold_adjustments_count: int = Field(..., description="Number of threshold adjustments made")
+    current_thresholds: Dict[str, float] = Field(
+        ..., description="Current uncertainty and confidence thresholds"
+    )
+    learning_enabled: bool = Field(
+        ..., description="Whether adaptive learning is enabled"
+    )
+    feedback_samples: int = Field(
+        ..., description="Number of feedback samples collected"
+    )
+    threshold_adjustments_count: int = Field(
+        ..., description="Number of threshold adjustments made"
+    )
 
     class Config:
         json_schema_extra = {
@@ -520,28 +741,52 @@ class HITLPerformanceMetrics(BaseModel):
                 "recent_quality": 0.88,
                 "current_thresholds": {
                     "uncertainty_threshold": 0.75,
-                    "confidence_threshold": 0.75
+                    "confidence_threshold": 0.75,
                 },
                 "learning_enabled": True,
                 "feedback_samples": 89,
-                "threshold_adjustments_count": 3
+                "threshold_adjustments_count": 3,
             }
         }
 
 
 # Public Consultation Schemas
 
+
 class PublicProposalCreate(BaseModel):
     """Schema for creating a public amendment proposal."""
+
     title: str = Field(..., min_length=10, max_length=200, description="Proposal title")
-    description: str = Field(..., min_length=50, max_length=2000, description="Detailed proposal description")
-    proposed_changes: str = Field(..., min_length=20, max_length=1000, description="Specific changes being proposed")
-    justification: str = Field(..., min_length=20, max_length=1000, description="Justification for the proposal")
-    submitter_name: Optional[str] = Field(None, max_length=100, description="Name of the submitter")
-    submitter_email: Optional[str] = Field(None, max_length=100, description="Email of the submitter")
-    submitter_organization: Optional[str] = Field(None, max_length=100, description="Organization of the submitter")
-    stakeholder_group: str = Field(..., description="Stakeholder group (citizen, expert, etc.)")
-    consultation_period_days: Optional[int] = Field(30, ge=7, le=90, description="Consultation period in days")
+    description: str = Field(
+        ..., min_length=50, max_length=2000, description="Detailed proposal description"
+    )
+    proposed_changes: str = Field(
+        ...,
+        min_length=20,
+        max_length=1000,
+        description="Specific changes being proposed",
+    )
+    justification: str = Field(
+        ...,
+        min_length=20,
+        max_length=1000,
+        description="Justification for the proposal",
+    )
+    submitter_name: Optional[str] = Field(
+        None, max_length=100, description="Name of the submitter"
+    )
+    submitter_email: Optional[str] = Field(
+        None, max_length=100, description="Email of the submitter"
+    )
+    submitter_organization: Optional[str] = Field(
+        None, max_length=100, description="Organization of the submitter"
+    )
+    stakeholder_group: str = Field(
+        ..., description="Stakeholder group (citizen, expert, etc.)"
+    )
+    consultation_period_days: Optional[int] = Field(
+        30, ge=7, le=90, description="Consultation period in days"
+    )
 
     class Config:
         json_schema_extra = {
@@ -554,26 +799,33 @@ class PublicProposalCreate(BaseModel):
                 "submitter_email": "jane@privacyadvocates.org",
                 "submitter_organization": "Digital Rights Foundation",
                 "stakeholder_group": "privacy_advocate",
-                "consultation_period_days": 30
+                "consultation_period_days": 30,
             }
         }
 
 
 class PublicProposalResponse(BaseModel):
     """Schema for public proposal response."""
+
     id: int = Field(..., description="Unique proposal identifier")
     title: str = Field(..., description="Proposal title")
     description: str = Field(..., description="Detailed proposal description")
     proposed_changes: str = Field(..., description="Specific changes being proposed")
     justification: str = Field(..., description="Justification for the proposal")
     submitter_name: Optional[str] = Field(None, description="Name of the submitter")
-    submitter_organization: Optional[str] = Field(None, description="Organization of the submitter")
+    submitter_organization: Optional[str] = Field(
+        None, description="Organization of the submitter"
+    )
     stakeholder_group: str = Field(..., description="Stakeholder group")
     status: str = Field(..., description="Current proposal status")
     created_at: datetime = Field(..., description="Proposal creation timestamp")
-    consultation_period_days: int = Field(..., description="Consultation period in days")
+    consultation_period_days: int = Field(
+        ..., description="Consultation period in days"
+    )
     public_support_count: int = Field(..., description="Number of public supporters")
-    requires_review: bool = Field(..., description="Whether proposal requires manual review")
+    requires_review: bool = Field(
+        ..., description="Whether proposal requires manual review"
+    )
 
     class Config:
         json_schema_extra = {
@@ -590,20 +842,35 @@ class PublicProposalResponse(BaseModel):
                 "created_at": "2024-01-15T10:30:00Z",
                 "consultation_period_days": 30,
                 "public_support_count": 125,
-                "requires_review": False
+                "requires_review": False,
             }
         }
 
 
 class PublicFeedbackCreate(BaseModel):
     """Schema for creating public feedback."""
-    proposal_id: Optional[int] = Field(None, description="ID of the proposal being commented on")
-    amendment_id: Optional[int] = Field(None, description="ID of the amendment being commented on")
-    feedback_type: Optional[str] = Field(None, description="Type of feedback (support, oppose, suggestion, etc.)")
-    content: str = Field(..., min_length=10, max_length=5000, description="Feedback content")
-    submitter_name: Optional[str] = Field(None, max_length=100, description="Name of the submitter")
-    submitter_email: Optional[str] = Field(None, max_length=100, description="Email of the submitter")
-    stakeholder_group: str = Field(..., description="Stakeholder group of the submitter")
+
+    proposal_id: Optional[int] = Field(
+        None, description="ID of the proposal being commented on"
+    )
+    amendment_id: Optional[int] = Field(
+        None, description="ID of the amendment being commented on"
+    )
+    feedback_type: Optional[str] = Field(
+        None, description="Type of feedback (support, oppose, suggestion, etc.)"
+    )
+    content: str = Field(
+        ..., min_length=10, max_length=5000, description="Feedback content"
+    )
+    submitter_name: Optional[str] = Field(
+        None, max_length=100, description="Name of the submitter"
+    )
+    submitter_email: Optional[str] = Field(
+        None, max_length=100, description="Email of the submitter"
+    )
+    stakeholder_group: str = Field(
+        ..., description="Stakeholder group of the submitter"
+    )
 
     class Config:
         json_schema_extra = {
@@ -613,13 +880,14 @@ class PublicFeedbackCreate(BaseModel):
                 "content": "I strongly support this proposal as it addresses critical privacy concerns in AI governance. The proposed changes would significantly improve citizen trust.",
                 "submitter_name": "John Citizen",
                 "submitter_email": "john@example.com",
-                "stakeholder_group": "citizen"
+                "stakeholder_group": "citizen",
             }
         }
 
 
 class PublicFeedbackResponse(BaseModel):
     """Schema for public feedback response."""
+
     id: int = Field(..., description="Unique feedback identifier")
     proposal_id: Optional[int] = Field(None, description="ID of the related proposal")
     amendment_id: Optional[int] = Field(None, description="ID of the related amendment")
@@ -627,7 +895,9 @@ class PublicFeedbackResponse(BaseModel):
     content: str = Field(..., description="Feedback content")
     submitter_name: Optional[str] = Field(None, description="Name of the submitter")
     stakeholder_group: str = Field(..., description="Stakeholder group")
-    sentiment_score: Optional[float] = Field(None, ge=0.0, le=1.0, description="Automated sentiment score")
+    sentiment_score: Optional[float] = Field(
+        None, ge=0.0, le=1.0, description="Automated sentiment score"
+    )
     is_verified: bool = Field(..., description="Whether submitter is verified")
     created_at: datetime = Field(..., description="Feedback creation timestamp")
 
@@ -642,22 +912,33 @@ class PublicFeedbackResponse(BaseModel):
                 "stakeholder_group": "citizen",
                 "sentiment_score": 0.85,
                 "is_verified": True,
-                "created_at": "2024-01-15T14:30:00Z"
+                "created_at": "2024-01-15T14:30:00Z",
             }
         }
 
 
 class ConsultationMetricsResponse(BaseModel):
     """Schema for consultation metrics response."""
+
     total_proposals: int = Field(..., description="Total number of proposals")
     active_consultations: int = Field(..., description="Number of active consultations")
     total_participants: int = Field(..., description="Total number of participants")
     feedback_count: int = Field(..., description="Total feedback items collected")
-    sentiment_distribution: Dict[str, int] = Field(..., description="Distribution of sentiment in feedback")
-    stakeholder_participation: Dict[str, int] = Field(..., description="Participation by stakeholder group")
-    engagement_rate: float = Field(..., ge=0.0, le=1.0, description="Overall engagement rate")
-    completion_rate: float = Field(..., ge=0.0, le=1.0, description="Consultation completion rate")
-    time_period_days: Optional[int] = Field(None, description="Time period for metrics calculation")
+    sentiment_distribution: Dict[str, int] = Field(
+        ..., description="Distribution of sentiment in feedback"
+    )
+    stakeholder_participation: Dict[str, int] = Field(
+        ..., description="Participation by stakeholder group"
+    )
+    engagement_rate: float = Field(
+        ..., ge=0.0, le=1.0, description="Overall engagement rate"
+    )
+    completion_rate: float = Field(
+        ..., ge=0.0, le=1.0, description="Consultation completion rate"
+    )
+    time_period_days: Optional[int] = Field(
+        None, description="Time period for metrics calculation"
+    )
 
     class Config:
         json_schema_extra = {
@@ -669,16 +950,16 @@ class ConsultationMetricsResponse(BaseModel):
                 "sentiment_distribution": {
                     "positive": 45,
                     "neutral": 35,
-                    "negative": 20
+                    "negative": 20,
                 },
                 "stakeholder_participation": {
                     "citizen": 60,
                     "expert": 25,
                     "civil_society": 10,
-                    "industry": 5
+                    "industry": 5,
                 },
                 "engagement_rate": 0.75,
                 "completion_rate": 0.68,
-                "time_period_days": 30
+                "time_period_days": 30,
             }
         }

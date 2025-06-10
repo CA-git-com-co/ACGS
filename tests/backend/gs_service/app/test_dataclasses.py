@@ -1,12 +1,17 @@
 import sys
 import types
 import asyncio
+
 tenacity_mod = types.ModuleType("tenacity")
 tenacity_mod.retry = lambda *a, **k: (lambda f: f)
 tenacity_mod.stop_after_attempt = lambda *a, **k: None
 tenacity_mod.wait_exponential = lambda *a, **k: None
+
+
 class RetryError(Exception):
     pass
+
+
 tenacity_mod.RetryError = RetryError
 sys.modules.setdefault("tenacity", tenacity_mod)
 sys.modules.setdefault("openai", types.ModuleType("openai"))
@@ -21,7 +26,14 @@ sys.modules.setdefault("shared.auth", auth_mod)
 try:
     import sys
     import os
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../../services/core/governance-synthesis/gs_service'))
+
+    sys.path.insert(
+        0,
+        os.path.join(
+            os.path.dirname(__file__),
+            "../../../../services/core/governance-synthesis/gs_service",
+        ),
+    )
     from app.models.reliability_models import ConstitutionalPrinciple, SynthesisContext
 except ImportError:
     # Fallback to mock implementations for testing
@@ -35,6 +47,7 @@ except ImportError:
     @dataclass
     class SynthesisContext:
         domain: str
+
 
 import pytest
 

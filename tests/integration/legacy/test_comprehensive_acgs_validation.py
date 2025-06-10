@@ -1,4 +1,5 @@
 import os, pytest
+
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
 
@@ -30,106 +31,121 @@ import psutil
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler('acgs_validation_results.log'),
-        logging.StreamHandler(sys.stdout)
-    ]
+        logging.FileHandler("acgs_validation_results.log"),
+        logging.StreamHandler(sys.stdout),
+    ],
 )
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class TestResult:
     """Test result data structure"""
+
     test_name: str
     status: str  # PASS, FAIL, SKIP
     response_time: float
     details: Dict[str, Any]
     timestamp: datetime
 
+
 @dataclass
 class ServiceConfig:
     """Service configuration"""
+
     name: str
     port: int
     base_url: str
     health_endpoint: str
     auth_required: bool = False
 
+
 class ACGSTestSuite:
     """Comprehensive ACGS-PGP Testing Suite"""
-    
+
     def __init__(self):
         self.services = {
-            'auth': ServiceConfig('Authentication Service', 8000, 'http://localhost:8000', '/health'),
-            'ac': ServiceConfig('AC Service', 8001, 'http://localhost:8001', '/health'),
-            'integrity': ServiceConfig('Integrity Service', 8002, 'http://localhost:8002', '/health'),
-            'fv': ServiceConfig('FV Service', 8003, 'http://localhost:8003', '/health'),
-            'gs': ServiceConfig('GS Service', 8004, 'http://localhost:8004', '/health'),
-            'pgc': ServiceConfig('PGC Service', 8005, 'http://localhost:8005', '/health')
+            "auth": ServiceConfig(
+                "Authentication Service", 8000, "http://localhost:8000", "/health"
+            ),
+            "ac": ServiceConfig("AC Service", 8001, "http://localhost:8001", "/health"),
+            "integrity": ServiceConfig(
+                "Integrity Service", 8002, "http://localhost:8002", "/health"
+            ),
+            "fv": ServiceConfig("FV Service", 8003, "http://localhost:8003", "/health"),
+            "gs": ServiceConfig("GS Service", 8004, "http://localhost:8004", "/health"),
+            "pgc": ServiceConfig(
+                "PGC Service", 8005, "http://localhost:8005", "/health"
+            ),
         }
         # API endpoint configurations
         self.api_endpoints = {
-            'auth_register': '/auth/register',
-            'auth_token': '/auth/token',
-            'ac_principles': '/api/v1/principles/',
-            'ac_meta_rules': '/api/v1/meta-rules/',
-            'integrity_policies': '/api/v1/policies/',
-            'fv_verify': '/api/v1/verify/',
-            'gs_synthesize': '/api/v1/synthesize/',
-            'gs_constitutional': '/api/v1/constitutional/synthesize',
-            'pgc_evaluate': '/api/v1/evaluate/'
+            "auth_register": "/auth/register",
+            "auth_token": "/auth/token",
+            "ac_principles": "/api/v1/principles/",
+            "ac_meta_rules": "/api/v1/meta-rules/",
+            "integrity_policies": "/api/v1/policies/",
+            "fv_verify": "/api/v1/verify/",
+            "gs_synthesize": "/api/v1/synthesize/",
+            "gs_constitutional": "/api/v1/constitutional/synthesize",
+            "pgc_evaluate": "/api/v1/evaluate/",
         }
         self.test_results: List[TestResult] = []
         self.auth_token: Optional[str] = None
         self.session: Optional[aiohttp.ClientSession] = None
-        
+
     async def __aenter__(self):
         """Async context manager entry"""
         self.session = aiohttp.ClientSession(
             timeout=aiohttp.ClientTimeout(total=30),
-            connector=aiohttp.TCPConnector(limit=100)
+            connector=aiohttp.TCPConnector(limit=100),
         )
         return self
-        
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit"""
         if self.session:
             await self.session.close()
 
-    def log_test_result(self, test_name: str, status: str, response_time: float, details: Dict[str, Any]):
+    def log_test_result(
+        self, test_name: str, status: str, response_time: float, details: Dict[str, Any]
+    ):
         """Log test result"""
         result = TestResult(
             test_name=test_name,
             status=status,
             response_time=response_time,
             details=details,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
         self.test_results.append(result)
-        
+
         status_emoji = "✅" if status == "PASS" else "❌" if status == "FAIL" else "⏭️"
         logger.info(f"{status_emoji} {test_name}: {status} ({response_time:.3f}s)")
-        
-        if details.get('error'):
+
+        if details.get("error"):
             logger.error(f"   Error: {details['error']}")
 
     async def test_service_health(self, service_name: str) -> bool:
         """Test individual service health endpoint"""
         service = self.services[service_name]
         start_time = time.time()
-        
+
         try:
-            async with self.session.get(f"{service.base_url}{service.health_endpoint}") as response:
+            async with self.session.get(
+                f"{service.base_url}{service.health_endpoint}"
+            ) as response:
                 response_time = time.time() - start_time
-                
+
                 if response.status == 200:
                     data = await response.json()
                     self.log_test_result(
                         f"{service.name} Health Check",
                         "PASS",
                         response_time,
-                        {"status_code": response.status, "response": data}
+                        {"status_code": response.status, "response": data},
                     )
                     return True
                 else:
@@ -137,17 +153,17 @@ class ACGSTestSuite:
                         f"{service.name} Health Check",
                         "FAIL",
                         response_time,
-                        {"status_code": response.status, "error": f"Unexpected status code: {response.status}"}
+                        {
+                            "status_code": response.status,
+                            "error": f"Unexpected status code: {response.status}",
+                        },
                     )
                     return False
-                    
+
         except Exception as e:
             response_time = time.time() - start_time
             self.log_test_result(
-                f"{service.name} Health Check",
-                "FAIL",
-                response_time,
-                {"error": str(e)}
+                f"{service.name} Health Check", "FAIL", response_time, {"error": str(e)}
             )
             return False
 
@@ -162,12 +178,12 @@ class ACGSTestSuite:
                 "email": "test_validation@acgs.com",
                 "password": "TestPassword123!",
                 "first_name": "Test",
-                "last_name": "User"
+                "last_name": "User",
             }
 
             async with self.session.post(
                 f"{self.services['auth'].base_url}{self.api_endpoints['auth_register']}",
-                json=register_data
+                json=register_data,
             ) as response:
                 if response.status in [201, 400]:  # 400 if user already exists
                     logger.info("User registration: OK (user exists or created)")
@@ -176,24 +192,27 @@ class ACGSTestSuite:
 
             # Test login with form data (OAuth2 format)
             login_data = aiohttp.FormData()
-            login_data.add_field('username', 'test_user_validation')
-            login_data.add_field('password', 'TestPassword123!')
+            login_data.add_field("username", "test_user_validation")
+            login_data.add_field("password", "TestPassword123!")
 
             async with self.session.post(
                 f"{self.services['auth'].base_url}{self.api_endpoints['auth_token']}",
-                data=login_data
+                data=login_data,
             ) as response:
                 response_time = time.time() - start_time
 
                 if response.status == 200:
                     data = await response.json()
-                    self.auth_token = data.get('access_token')
+                    self.auth_token = data.get("access_token")
 
                     self.log_test_result(
                         "Authentication Flow",
                         "PASS",
                         response_time,
-                        {"status_code": response.status, "token_received": bool(self.auth_token)}
+                        {
+                            "status_code": response.status,
+                            "token_received": bool(self.auth_token),
+                        },
                     )
                     return True
                 else:
@@ -202,33 +221,33 @@ class ACGSTestSuite:
                         "Authentication Flow",
                         "FAIL",
                         response_time,
-                        {"status_code": response.status, "error": f"Login failed: {error_text}"}
+                        {
+                            "status_code": response.status,
+                            "error": f"Login failed: {error_text}",
+                        },
                     )
                     return False
 
         except Exception as e:
             response_time = time.time() - start_time
             self.log_test_result(
-                "Authentication Flow",
-                "FAIL",
-                response_time,
-                {"error": str(e)}
+                "Authentication Flow", "FAIL", response_time, {"error": str(e)}
             )
             return False
 
     async def test_ac_service_crud(self) -> bool:
         """Test AC Service CRUD operations"""
         start_time = time.time()
-        
+
         try:
             headers = {}
             if self.auth_token:
-                headers['Authorization'] = f'Bearer {self.auth_token}'
-            
+                headers["Authorization"] = f"Bearer {self.auth_token}"
+
             # Test GET principles
             async with self.session.get(
                 f"{self.services['ac'].base_url}{self.api_endpoints['ac_principles']}",
-                headers=headers
+                headers=headers,
             ) as response:
                 if response.status == 200:
                     principles = await response.json()
@@ -245,25 +264,25 @@ class ACGSTestSuite:
                 "scope": "validation",
                 "normative_statement": "All validation tests must pass",
                 "constraints": ["must_be_testable"],
-                "rationale": "Testing is essential for system reliability"
+                "rationale": "Testing is essential for system reliability",
             }
 
             async with self.session.post(
                 f"{self.services['ac'].base_url}{self.api_endpoints['ac_principles']}",
                 json=principle_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 response_time = time.time() - start_time
-                
+
                 if response.status in [200, 201]:
                     created_principle = await response.json()
-                    principle_id = created_principle.get('id')
-                    
+                    principle_id = created_principle.get("id")
+
                     self.log_test_result(
                         "AC Service CRUD Operations",
                         "PASS",
                         response_time,
-                        {"status_code": response.status, "principle_id": principle_id}
+                        {"status_code": response.status, "principle_id": principle_id},
                     )
                     return True
                 else:
@@ -271,17 +290,17 @@ class ACGSTestSuite:
                         "AC Service CRUD Operations",
                         "FAIL",
                         response_time,
-                        {"status_code": response.status, "error": "Failed to create principle"}
+                        {
+                            "status_code": response.status,
+                            "error": "Failed to create principle",
+                        },
                     )
                     return False
-                    
+
         except Exception as e:
             response_time = time.time() - start_time
             self.log_test_result(
-                "AC Service CRUD Operations",
-                "FAIL",
-                response_time,
-                {"error": str(e)}
+                "AC Service CRUD Operations", "FAIL", response_time, {"error": str(e)}
             )
             return False
 
@@ -292,19 +311,19 @@ class ACGSTestSuite:
         try:
             headers = {}
             if self.auth_token:
-                headers['Authorization'] = f'Bearer {self.auth_token}'
+                headers["Authorization"] = f"Bearer {self.auth_token}"
 
             # Test policy storage
             policy_data = {
                 "policy_content": "test_policy_rule(X) :- valid_input(X).",
                 "policy_type": "datalog",
-                "metadata": {"test": "validation"}
+                "metadata": {"test": "validation"},
             }
 
             async with self.session.post(
                 f"{self.services['integrity'].base_url}{self.api_endpoints['integrity_policies']}",
                 json=policy_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 response_time = time.time() - start_time
 
@@ -315,7 +334,7 @@ class ACGSTestSuite:
                         "Integrity Service Policy Storage",
                         "PASS",
                         response_time,
-                        {"status_code": response.status, "policy_id": policy.get('id')}
+                        {"status_code": response.status, "policy_id": policy.get("id")},
                     )
                     return True
                 else:
@@ -323,7 +342,10 @@ class ACGSTestSuite:
                         "Integrity Service Policy Storage",
                         "FAIL",
                         response_time,
-                        {"status_code": response.status, "error": "Failed to store policy"}
+                        {
+                            "status_code": response.status,
+                            "error": "Failed to store policy",
+                        },
                     )
                     return False
 
@@ -333,7 +355,7 @@ class ACGSTestSuite:
                 "Integrity Service Policy Storage",
                 "FAIL",
                 response_time,
-                {"error": str(e)}
+                {"error": str(e)},
             )
             return False
 
@@ -344,19 +366,19 @@ class ACGSTestSuite:
         try:
             headers = {}
             if self.auth_token:
-                headers['Authorization'] = f'Bearer {self.auth_token}'
+                headers["Authorization"] = f"Bearer {self.auth_token}"
 
             # Test Z3 verification
             verification_data = {
                 "policy": "test_policy_rule(X) :- valid_input(X).",
                 "principle": "All inputs must be valid",
-                "verification_type": "z3_smt"
+                "verification_type": "z3_smt",
             }
 
             async with self.session.post(
                 f"{self.services['fv'].base_url}{self.api_endpoints['fv_verify']}",
                 json=verification_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 response_time = time.time() - start_time
 
@@ -367,7 +389,10 @@ class ACGSTestSuite:
                         "FV Service Z3 Integration",
                         "PASS",
                         response_time,
-                        {"status_code": response.status, "verification_result": result.get('result')}
+                        {
+                            "status_code": response.status,
+                            "verification_result": result.get("result"),
+                        },
                     )
                     return True
                 else:
@@ -375,17 +400,17 @@ class ACGSTestSuite:
                         "FV Service Z3 Integration",
                         "FAIL",
                         response_time,
-                        {"status_code": response.status, "error": "Z3 verification failed"}
+                        {
+                            "status_code": response.status,
+                            "error": "Z3 verification failed",
+                        },
                     )
                     return False
 
         except Exception as e:
             response_time = time.time() - start_time
             self.log_test_result(
-                "FV Service Z3 Integration",
-                "FAIL",
-                response_time,
-                {"error": str(e)}
+                "FV Service Z3 Integration", "FAIL", response_time, {"error": str(e)}
             )
             return False
 
@@ -396,19 +421,19 @@ class ACGSTestSuite:
         try:
             headers = {}
             if self.auth_token:
-                headers['Authorization'] = f'Bearer {self.auth_token}'
+                headers["Authorization"] = f"Bearer {self.auth_token}"
 
             # Test policy synthesis
             synthesis_data = {
                 "principles": ["All inputs must be validated", "Security is paramount"],
                 "context": "web application security",
-                "output_format": "datalog"
+                "output_format": "datalog",
             }
 
             async with self.session.post(
                 f"{self.services['gs'].base_url}{self.api_endpoints['gs_synthesize']}",
                 json=synthesis_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 response_time = time.time() - start_time
 
@@ -419,7 +444,10 @@ class ACGSTestSuite:
                         "GS Service LLM Integration",
                         "PASS",
                         response_time,
-                        {"status_code": response.status, "synthesized_policy": bool(result.get('policy'))}
+                        {
+                            "status_code": response.status,
+                            "synthesized_policy": bool(result.get("policy")),
+                        },
                     )
                     return True
                 else:
@@ -427,17 +455,17 @@ class ACGSTestSuite:
                         "GS Service LLM Integration",
                         "FAIL",
                         response_time,
-                        {"status_code": response.status, "error": "Policy synthesis failed"}
+                        {
+                            "status_code": response.status,
+                            "error": "Policy synthesis failed",
+                        },
                     )
                     return False
 
         except Exception as e:
             response_time = time.time() - start_time
             self.log_test_result(
-                "GS Service LLM Integration",
-                "FAIL",
-                response_time,
-                {"error": str(e)}
+                "GS Service LLM Integration", "FAIL", response_time, {"error": str(e)}
             )
             return False
 
@@ -448,19 +476,19 @@ class ACGSTestSuite:
         try:
             headers = {}
             if self.auth_token:
-                headers['Authorization'] = f'Bearer {self.auth_token}'
+                headers["Authorization"] = f"Bearer {self.auth_token}"
 
             # Test policy evaluation
             evaluation_data = {
-                "policy": "allow { input.user.role == \"admin\" }",
+                "policy": 'allow { input.user.role == "admin" }',
                 "input": {"user": {"role": "admin"}},
-                "query": "data.allow"
+                "query": "data.allow",
             }
 
             async with self.session.post(
                 f"{self.services['pgc'].base_url}{self.api_endpoints['pgc_evaluate']}",
                 json=evaluation_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 response_time = time.time() - start_time
 
@@ -471,7 +499,10 @@ class ACGSTestSuite:
                         "PGC Service OPA Integration",
                         "PASS",
                         response_time,
-                        {"status_code": response.status, "evaluation_result": result.get('result')}
+                        {
+                            "status_code": response.status,
+                            "evaluation_result": result.get("result"),
+                        },
                     )
                     return True
                 else:
@@ -479,17 +510,17 @@ class ACGSTestSuite:
                         "PGC Service OPA Integration",
                         "FAIL",
                         response_time,
-                        {"status_code": response.status, "error": "Policy evaluation failed"}
+                        {
+                            "status_code": response.status,
+                            "error": "Policy evaluation failed",
+                        },
                     )
                     return False
 
         except Exception as e:
             response_time = time.time() - start_time
             self.log_test_result(
-                "PGC Service OPA Integration",
-                "FAIL",
-                response_time,
-                {"error": str(e)}
+                "PGC Service OPA Integration", "FAIL", response_time, {"error": str(e)}
             )
             return False
 
@@ -500,7 +531,7 @@ class ACGSTestSuite:
         try:
             headers = {}
             if self.auth_token:
-                headers['Authorization'] = f'Bearer {self.auth_token}'
+                headers["Authorization"] = f"Bearer {self.auth_token}"
 
             # Step 1: Create principle in AC Service
             principle_data = {
@@ -511,51 +542,55 @@ class ACGSTestSuite:
                 "scope": "system",
                 "normative_statement": "All system operations must be logged",
                 "constraints": ["must_be_auditable"],
-                "rationale": "Auditability is essential for compliance"
+                "rationale": "Auditability is essential for compliance",
             }
 
             async with self.session.post(
                 f"{self.services['ac'].base_url}{self.api_endpoints['ac_principles']}",
                 json=principle_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 if response.status not in [200, 201]:
                     raise Exception(f"Failed to create principle: {response.status}")
 
                 principle = await response.json()
-                principle_id = principle.get('id')
+                principle_id = principle.get("id")
 
             # Step 2: Synthesize policy in GS Service
             synthesis_data = {
                 "principle_ids": [principle_id],
                 "context": "system operations",
-                "output_format": "datalog"
+                "output_format": "datalog",
             }
 
             async with self.session.post(
                 f"{self.services['gs'].base_url}{self.api_endpoints['gs_synthesize']}",
                 json=synthesis_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 if response.status not in [200, 201]:
                     logger.warning(f"Policy synthesis failed: {response.status}")
                     # Continue with mock policy
-                    synthesized_policy = "audit_log(Operation) :- system_operation(Operation)."
+                    synthesized_policy = (
+                        "audit_log(Operation) :- system_operation(Operation)."
+                    )
                 else:
                     result = await response.json()
-                    synthesized_policy = result.get('policy', "audit_log(Operation) :- system_operation(Operation).")
+                    synthesized_policy = result.get(
+                        "policy", "audit_log(Operation) :- system_operation(Operation)."
+                    )
 
             # Step 3: Verify policy in FV Service
             verification_data = {
                 "policy": synthesized_policy,
-                "principle": principle_data['normative_statement'],
-                "verification_type": "z3_smt"
+                "principle": principle_data["normative_statement"],
+                "verification_type": "z3_smt",
             }
 
             async with self.session.post(
                 f"{self.services['fv'].base_url}{self.api_endpoints['fv_verify']}",
                 json=verification_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 verification_passed = response.status in [200, 201]
                 if verification_passed:
@@ -567,13 +602,16 @@ class ACGSTestSuite:
             policy_data = {
                 "policy_content": synthesized_policy,
                 "policy_type": "datalog",
-                "metadata": {"principle_id": principle_id, "verified": verification_passed}
+                "metadata": {
+                    "principle_id": principle_id,
+                    "verified": verification_passed,
+                },
             }
 
             async with self.session.post(
                 f"{self.services['integrity'].base_url}{self.api_endpoints['integrity_policies']}",
                 json=policy_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 if response.status not in [200, 201]:
                     logger.warning(f"Policy storage failed: {response.status}")
@@ -588,8 +626,8 @@ class ACGSTestSuite:
                     "principle_created": bool(principle_id),
                     "policy_synthesized": bool(synthesized_policy),
                     "verification_attempted": True,
-                    "policy_stored": True
-                }
+                    "policy_stored": True,
+                },
             )
             return True
 
@@ -599,7 +637,7 @@ class ACGSTestSuite:
                 "Cross-Service Integration Pipeline",
                 "FAIL",
                 response_time,
-                {"error": str(e)}
+                {"error": str(e)},
             )
             return False
 
@@ -610,26 +648,28 @@ class ACGSTestSuite:
         try:
             headers = {}
             if self.auth_token:
-                headers['Authorization'] = f'Bearer {self.auth_token}'
+                headers["Authorization"] = f"Bearer {self.auth_token}"
 
             # Test Constitutional Prompting
             constitutional_data = {
                 "prompt": "Generate a policy for data protection",
                 "principles": ["Privacy must be protected", "Data minimization"],
-                "context": "GDPR compliance"
+                "context": "GDPR compliance",
             }
 
             async with self.session.post(
                 f"{self.services['gs'].base_url}{self.api_endpoints['gs_constitutional']}",
                 json=constitutional_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 constitutional_success = response.status in [200, 201]
                 if constitutional_success:
                     result = await response.json()
                     logger.info("Constitutional prompting: SUCCESS")
                 else:
-                    logger.warning(f"Constitutional prompting failed: {response.status}")
+                    logger.warning(
+                        f"Constitutional prompting failed: {response.status}"
+                    )
 
             # Test Meta-Rules
             meta_rule_data = {
@@ -638,13 +678,13 @@ class ACGSTestSuite:
                 "rule_type": "conflict_resolution",
                 "priority": 1,
                 "conditions": ["principle_conflict"],
-                "actions": ["apply_higher_priority"]
+                "actions": ["apply_higher_priority"],
             }
 
             async with self.session.post(
                 f"{self.services['ac'].base_url}{self.api_endpoints['ac_meta_rules']}",
                 json=meta_rule_data,
-                headers=headers
+                headers=headers,
             ) as response:
                 meta_rule_success = response.status in [200, 201]
                 if meta_rule_success:
@@ -660,18 +700,15 @@ class ACGSTestSuite:
                 response_time,
                 {
                     "constitutional_prompting": constitutional_success,
-                    "meta_rules": meta_rule_success
-                }
+                    "meta_rules": meta_rule_success,
+                },
             )
             return constitutional_success or meta_rule_success
 
         except Exception as e:
             response_time = time.time() - start_time
             self.log_test_result(
-                "Phase 1 Features",
-                "FAIL",
-                response_time,
-                {"error": str(e)}
+                "Phase 1 Features", "FAIL", response_time, {"error": str(e)}
             )
             return False
 
@@ -686,7 +723,9 @@ class ACGSTestSuite:
             for service_name, service in self.services.items():
                 service_start = time.time()
                 try:
-                    async with self.session.get(f"{service.base_url}{service.health_endpoint}") as response:
+                    async with self.session.get(
+                        f"{service.base_url}{service.health_endpoint}"
+                    ) as response:
                         service_time = time.time() - service_start
                         response_times[service_name] = service_time
                 except Exception as e:
@@ -695,23 +734,21 @@ class ACGSTestSuite:
             # Get system resource usage
             cpu_percent = psutil.cpu_percent(interval=1)
             memory = psutil.virtual_memory()
-            disk = psutil.disk_usage('/')
+            disk = psutil.disk_usage("/")
 
             performance_data = {
                 "response_times": response_times,
                 "cpu_usage_percent": cpu_percent,
                 "memory_usage_percent": memory.percent,
                 "disk_usage_percent": disk.percent,
-                "avg_response_time": sum(t for t in response_times.values() if t > 0) / len([t for t in response_times.values() if t > 0])
+                "avg_response_time": sum(t for t in response_times.values() if t > 0)
+                / len([t for t in response_times.values() if t > 0]),
             }
 
             response_time = time.time() - start_time
 
             self.log_test_result(
-                "Performance Metrics",
-                "PASS",
-                response_time,
-                performance_data
+                "Performance Metrics", "PASS", response_time, performance_data
             )
 
             return performance_data
@@ -719,10 +756,7 @@ class ACGSTestSuite:
         except Exception as e:
             response_time = time.time() - start_time
             self.log_test_result(
-                "Performance Metrics",
-                "FAIL",
-                response_time,
-                {"error": str(e)}
+                "Performance Metrics", "FAIL", response_time, {"error": str(e)}
             )
             return {}
 
@@ -733,7 +767,11 @@ class ACGSTestSuite:
         failed_tests = len([r for r in self.test_results if r.status == "FAIL"])
         skipped_tests = len([r for r in self.test_results if r.status == "SKIP"])
 
-        avg_response_time = sum(r.response_time for r in self.test_results) / total_tests if total_tests > 0 else 0
+        avg_response_time = (
+            sum(r.response_time for r in self.test_results) / total_tests
+            if total_tests > 0
+            else 0
+        )
 
         report = {
             "summary": {
@@ -741,8 +779,10 @@ class ACGSTestSuite:
                 "passed": passed_tests,
                 "failed": failed_tests,
                 "skipped": skipped_tests,
-                "success_rate": (passed_tests / total_tests * 100) if total_tests > 0 else 0,
-                "avg_response_time": avg_response_time
+                "success_rate": (
+                    (passed_tests / total_tests * 100) if total_tests > 0 else 0
+                ),
+                "avg_response_time": avg_response_time,
             },
             "test_results": [
                 {
@@ -750,11 +790,11 @@ class ACGSTestSuite:
                     "status": r.status,
                     "response_time": r.response_time,
                     "timestamp": r.timestamp.isoformat(),
-                    "details": r.details
+                    "details": r.details,
                 }
                 for r in self.test_results
             ],
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
         return report
@@ -807,7 +847,7 @@ class ACGSTestSuite:
         report = self.generate_report()
 
         # Save report to file
-        with open('acgs_comprehensive_test_report.json', 'w') as f:
+        with open("acgs_comprehensive_test_report.json", "w") as f:
             json.dump(report, f, indent=2)
 
         # Print summary
@@ -816,11 +856,17 @@ class ACGSTestSuite:
         logger.info(f"Passed: {report['summary']['passed']}")
         logger.info(f"Failed: {report['summary']['failed']}")
         logger.info(f"Success Rate: {report['summary']['success_rate']:.1f}%")
-        logger.info(f"Average Response Time: {report['summary']['avg_response_time']:.3f}s")
+        logger.info(
+            f"Average Response Time: {report['summary']['avg_response_time']:.3f}s"
+        )
 
         if performance_data:
-            logger.info(f"System CPU Usage: {performance_data.get('cpu_usage_percent', 'N/A')}%")
-            logger.info(f"System Memory Usage: {performance_data.get('memory_usage_percent', 'N/A')}%")
+            logger.info(
+                f"System CPU Usage: {performance_data.get('cpu_usage_percent', 'N/A')}%"
+            )
+            logger.info(
+                f"System Memory Usage: {performance_data.get('memory_usage_percent', 'N/A')}%"
+            )
 
         logger.info(f"\nDetailed report saved to: acgs_comprehensive_test_report.json")
         logger.info(f"Detailed logs saved to: acgs_validation_results.log")
@@ -835,7 +881,7 @@ async def main():
             report = await test_suite.run_comprehensive_tests()
 
             # Exit with appropriate code
-            if report['summary']['failed'] > 0:
+            if report["summary"]["failed"] > 0:
                 logger.error("❌ Some tests failed. Check the report for details.")
                 sys.exit(1)
             else:
@@ -868,9 +914,13 @@ import os
 import asyncio
 import pytest
 
-@pytest.mark.skipif(not os.environ.get("ACGS_INTEGRATION"), reason="Integration test requires running services")
+
+@pytest.mark.skipif(
+    not os.environ.get("ACGS_INTEGRATION"),
+    reason="Integration test requires running services",
+)
 def test_main_wrapper():
-    if 'main' in globals():
+    if "main" in globals():
         if asyncio.iscoroutinefunction(main):
             asyncio.run(main())
         else:

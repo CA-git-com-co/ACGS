@@ -1,8 +1,13 @@
 import pytest
 from typing import Dict
 
-from services.core.governance_synthesis.app.wina.models import WINAWeightOutput, GatingThresholdConfig, GatingDecision
+from services.core.governance_synthesis.app.wina.models import (
+    WINAWeightOutput,
+    GatingThresholdConfig,
+    GatingDecision,
+)
 from services.core.governance_synthesis.app.wina.gating import determine_gating_decision
+
 
 @pytest.mark.asyncio
 async def test_determine_gating_decision_basic_scenario():
@@ -16,20 +21,17 @@ async def test_determine_gating_decision_basic_scenario():
             "neuron_3": 0.9,
             "neuron_4": 0.1,
         },
-        "metadata": {"calculation_method": "test_method"}
+        "metadata": {"calculation_method": "test_method"},
     }
     wina_weights = WINAWeightOutput(**wina_weights_data)
 
-    gating_config_data = {
-        "threshold": 0.5,
-        "default_gating_state": False
-    }
+    gating_config_data = {"threshold": 0.5, "default_gating_state": False}
     gating_config = GatingThresholdConfig(**gating_config_data)
 
     expected_gating_mask = {
-        "neuron_1": True,   # 0.8 > 0.5
+        "neuron_1": True,  # 0.8 > 0.5
         "neuron_2": False,  # 0.3 < 0.5
-        "neuron_3": True,   # 0.9 > 0.5
+        "neuron_3": True,  # 0.9 > 0.5
         "neuron_4": False,  # 0.1 < 0.5
     }
 
@@ -42,6 +44,7 @@ async def test_determine_gating_decision_basic_scenario():
     assert gating_decision.metadata["num_components_processed"] == 4
     assert gating_decision.metadata["wina_calculation_method"] == "test_method"
 
+
 @pytest.mark.asyncio
 async def test_determine_gating_decision_all_active():
     """
@@ -52,14 +55,11 @@ async def test_determine_gating_decision_all_active():
             "comp_A": 0.9,
             "comp_B": 0.7,
         },
-        "metadata": {}
+        "metadata": {},
     }
     wina_weights = WINAWeightOutput(**wina_weights_data)
 
-    gating_config_data = {
-        "threshold": 0.6,
-        "default_gating_state": False
-    }
+    gating_config_data = {"threshold": 0.6, "default_gating_state": False}
     gating_config = GatingThresholdConfig(**gating_config_data)
 
     expected_gating_mask = {
@@ -71,6 +71,7 @@ async def test_determine_gating_decision_all_active():
 
     assert gating_decision.gating_mask == expected_gating_mask
     assert gating_decision.metadata["num_components_activated"] == 2
+
 
 @pytest.mark.asyncio
 async def test_determine_gating_decision_all_inactive():
@@ -87,7 +88,7 @@ async def test_determine_gating_decision_all_inactive():
 
     gating_config_data = {
         "threshold": 0.2,
-        "default_gating_state": True # Note: default state won't apply here as weights exist
+        "default_gating_state": True,  # Note: default state won't apply here as weights exist
     }
     gating_config = GatingThresholdConfig(**gating_config_data)
 
@@ -101,6 +102,7 @@ async def test_determine_gating_decision_all_inactive():
     assert gating_decision.gating_mask == expected_gating_mask
     assert gating_decision.metadata["num_components_activated"] == 0
 
+
 @pytest.mark.asyncio
 async def test_determine_gating_decision_empty_weights():
     """
@@ -108,14 +110,11 @@ async def test_determine_gating_decision_empty_weights():
     """
     wina_weights_data: Dict[str, Dict] = {
         "weights": {},
-        "metadata": {"info": "no_weights_calculated"}
+        "metadata": {"info": "no_weights_calculated"},
     }
     wina_weights = WINAWeightOutput(**wina_weights_data)
 
-    gating_config_data = {
-        "threshold": 0.5,
-        "default_gating_state": False
-    }
+    gating_config_data = {"threshold": 0.5, "default_gating_state": False}
     gating_config = GatingThresholdConfig(**gating_config_data)
 
     expected_gating_mask = {}
@@ -125,7 +124,10 @@ async def test_determine_gating_decision_empty_weights():
     assert gating_decision.gating_mask == expected_gating_mask
     assert gating_decision.metadata["num_components_activated"] == 0
     assert gating_decision.metadata["num_components_processed"] == 0
-    assert gating_decision.metadata["wina_calculation_method"] == "unknown" # Default from function
+    assert (
+        gating_decision.metadata["wina_calculation_method"] == "unknown"
+    )  # Default from function
+
 
 @pytest.mark.asyncio
 async def test_determine_gating_decision_with_default_state_logic():

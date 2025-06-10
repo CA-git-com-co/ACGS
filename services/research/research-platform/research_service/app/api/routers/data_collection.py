@@ -18,19 +18,23 @@ router = APIRouter()
 
 class DatasetCreateRequest(BaseModel):
     """Request model for creating datasets."""
+
     name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
     domain: Optional[str] = None
     data_type: str = Field(..., pattern="^(experimental|observational|synthetic)$")
     schema_definition: Dict[str, Any] = Field(default_factory=dict)
     data_format: str = Field(default="json")
-    access_level: str = Field(default="private", pattern="^(public|private|restricted)$")
+    access_level: str = Field(
+        default="private", pattern="^(public|private|restricted)$"
+    )
     tags: List[str] = Field(default_factory=list)
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class DatasetResponse(BaseModel):
     """Response model for datasets."""
+
     id: str
     name: str
     description: Optional[str]
@@ -51,8 +55,7 @@ class DatasetResponse(BaseModel):
 
 @router.post("/datasets", response_model=DatasetResponse)
 async def create_dataset(
-    request: DatasetCreateRequest,
-    db: AsyncSession = Depends(get_db_session)
+    request: DatasetCreateRequest, db: AsyncSession = Depends(get_db_session)
 ):
     """Create a new research dataset."""
     try:
@@ -73,9 +76,9 @@ async def create_dataset(
             validity_score=None,
             access_level=request.access_level,
             tags=request.tags,
-            metadata=request.metadata
+            metadata=request.metadata,
         )
-        
+
     except Exception as e:
         logger.error(f"Error creating dataset: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -87,28 +90,25 @@ async def list_datasets(
     domain: Optional[str] = Query(None),
     data_type: Optional[str] = Query(None),
     limit: int = Query(50, le=100),
-    offset: int = Query(0, ge=0)
+    offset: int = Query(0, ge=0),
 ):
     """List research datasets with optional filtering."""
     try:
         # Placeholder implementation
         return []
-        
+
     except Exception as e:
         logger.error(f"Error listing datasets: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/datasets/{dataset_id}", response_model=DatasetResponse)
-async def get_dataset(
-    dataset_id: str,
-    db: AsyncSession = Depends(get_db_session)
-):
+async def get_dataset(dataset_id: str, db: AsyncSession = Depends(get_db_session)):
     """Get dataset by ID."""
     try:
         # Placeholder implementation
         raise HTTPException(status_code=404, detail="Dataset not found")
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -120,13 +120,15 @@ async def get_dataset(
 async def add_data_points(
     dataset_id: str,
     data_points: List[Dict[str, Any]],
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
 ):
     """Add data points to a dataset."""
     try:
         # Placeholder implementation
-        return {"message": f"Added {len(data_points)} data points to dataset {dataset_id}"}
-        
+        return {
+            "message": f"Added {len(data_points)} data points to dataset {dataset_id}"
+        }
+
     except Exception as e:
         logger.error(f"Error adding data points: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -137,23 +139,20 @@ async def get_data_points(
     dataset_id: str,
     db: AsyncSession = Depends(get_db_session),
     limit: int = Query(100, le=1000),
-    offset: int = Query(0, ge=0)
+    offset: int = Query(0, ge=0),
 ):
     """Get data points from a dataset."""
     try:
         # Placeholder implementation
         return {"data_points": [], "total": 0}
-        
+
     except Exception as e:
         logger.error(f"Error getting data points: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/datasets/{dataset_id}/validate")
-async def validate_dataset(
-    dataset_id: str,
-    db: AsyncSession = Depends(get_db_session)
-):
+async def validate_dataset(dataset_id: str, db: AsyncSession = Depends(get_db_session)):
     """Validate dataset quality and consistency."""
     try:
         # Placeholder implementation
@@ -162,9 +161,9 @@ async def validate_dataset(
             "consistency_score": 0.92,
             "validity_score": 0.98,
             "issues": [],
-            "recommendations": []
+            "recommendations": [],
         }
-        
+
     except Exception as e:
         logger.error(f"Error validating dataset: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -173,7 +172,7 @@ async def validate_dataset(
 @router.post("/collect/constitutional-compliance")
 async def collect_constitutional_compliance_data(
     db: AsyncSession = Depends(get_db_session),
-    duration_hours: int = Query(1, ge=1, le=24)
+    duration_hours: int = Query(1, ge=1, le=24),
 ):
     """Collect constitutional compliance data from all services."""
     try:
@@ -181,9 +180,9 @@ async def collect_constitutional_compliance_data(
         return {
             "collection_id": "placeholder-collection-id",
             "status": "started",
-            "estimated_completion": "2024-01-20T01:00:00Z"
+            "estimated_completion": "2024-01-20T01:00:00Z",
         }
-        
+
     except Exception as e:
         logger.error(f"Error starting data collection: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -192,7 +191,7 @@ async def collect_constitutional_compliance_data(
 @router.post("/collect/llm-reliability")
 async def collect_llm_reliability_data(
     db: AsyncSession = Depends(get_db_session),
-    sample_size: int = Query(1000, ge=100, le=10000)
+    sample_size: int = Query(1000, ge=100, le=10000),
 ):
     """Collect LLM reliability data for policy synthesis."""
     try:
@@ -201,9 +200,9 @@ async def collect_llm_reliability_data(
             "collection_id": "placeholder-collection-id",
             "status": "started",
             "sample_size": sample_size,
-            "estimated_completion": "2024-01-20T02:00:00Z"
+            "estimated_completion": "2024-01-20T02:00:00Z",
         }
-        
+
     except Exception as e:
         logger.error(f"Error starting LLM reliability data collection: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -212,7 +211,9 @@ async def collect_llm_reliability_data(
 @router.post("/collect/performance-metrics")
 async def collect_performance_metrics(
     db: AsyncSession = Depends(get_db_session),
-    services: List[str] = Query(["ac_service", "gs_service", "fv_service", "pgc_service"])
+    services: List[str] = Query(
+        ["ac_service", "gs_service", "fv_service", "pgc_service"]
+    ),
 ):
     """Collect performance metrics from specified services."""
     try:
@@ -221,9 +222,9 @@ async def collect_performance_metrics(
             "collection_id": "placeholder-collection-id",
             "status": "started",
             "services": services,
-            "estimated_completion": "2024-01-20T00:30:00Z"
+            "estimated_completion": "2024-01-20T00:30:00Z",
         }
-        
+
     except Exception as e:
         logger.error(f"Error starting performance metrics collection: {e}")
         raise HTTPException(status_code=500, detail=str(e))

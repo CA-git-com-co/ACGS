@@ -29,13 +29,14 @@ import os
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler('phase2_test_infrastructure.log'),
-        logging.StreamHandler(sys.stdout)
-    ]
+        logging.FileHandler("phase2_test_infrastructure.log"),
+        logging.StreamHandler(sys.stdout),
+    ],
 )
 logger = logging.getLogger(__name__)
+
 
 class TestInfrastructureManager:
     """Comprehensive test infrastructure manager for ACGS-1."""
@@ -48,12 +49,12 @@ class TestInfrastructureManager:
         self.tests_dir = project_root / "tests"
 
         self.test_results = {
-            'timestamp': datetime.now().isoformat(),
-            'anchor_tests': {},
-            'e2e_tests': {},
-            'frontend_tests': {},
-            'coverage_analysis': {},
-            'performance_metrics': {}
+            "timestamp": datetime.now().isoformat(),
+            "anchor_tests": {},
+            "e2e_tests": {},
+            "frontend_tests": {},
+            "coverage_analysis": {},
+            "performance_metrics": {},
         }
 
     def setup_anchor_test_infrastructure(self) -> Dict:
@@ -61,10 +62,10 @@ class TestInfrastructureManager:
         logger.info("Setting up Anchor test infrastructure...")
 
         anchor_results = {
-            'programs_analyzed': [],
-            'test_coverage': {},
-            'new_tests_created': [],
-            'coverage_percentage': 0.0
+            "programs_analyzed": [],
+            "test_coverage": {},
+            "new_tests_created": [],
+            "coverage_percentage": 0.0,
         }
 
         # Check if Anchor is installed
@@ -81,23 +82,24 @@ class TestInfrastructureManager:
                     logger.info(f"Analyzing program: {program_name}")
 
                     program_analysis = self._analyze_anchor_program(program_dir)
-                    anchor_results['programs_analyzed'].append(program_analysis)
+                    anchor_results["programs_analyzed"].append(program_analysis)
 
         # Generate comprehensive test suite
         self._generate_anchor_test_suite()
 
         # Calculate coverage
         coverage = self._calculate_test_coverage()
-        anchor_results['coverage_percentage'] = coverage
+        anchor_results["coverage_percentage"] = coverage
 
-        self.test_results['anchor_tests'] = anchor_results
+        self.test_results["anchor_tests"] = anchor_results
         return anchor_results
 
     def _check_anchor_installation(self) -> bool:
         """Check if Anchor CLI is installed."""
         try:
-            result = subprocess.run(['anchor', '--version'],
-                                  capture_output=True, text=True)
+            result = subprocess.run(
+                ["anchor", "--version"], capture_output=True, text=True
+            )
             return result.returncode == 0
         except FileNotFoundError:
             return False
@@ -105,41 +107,47 @@ class TestInfrastructureManager:
     def _analyze_anchor_program(self, program_dir: Path) -> Dict:
         """Analyze an individual Anchor program for test coverage."""
         program_analysis = {
-            'name': program_dir.name,
-            'src_files': [],
-            'existing_tests': [],
-            'instructions': [],
-            'accounts': [],
-            'test_coverage_needed': []
+            "name": program_dir.name,
+            "src_files": [],
+            "existing_tests": [],
+            "instructions": [],
+            "accounts": [],
+            "test_coverage_needed": [],
         }
 
         # Analyze source files
         src_dir = program_dir / "src"
         if src_dir.exists():
             for src_file in src_dir.glob("**/*.rs"):
-                program_analysis['src_files'].append(str(src_file.relative_to(program_dir)))
+                program_analysis["src_files"].append(
+                    str(src_file.relative_to(program_dir))
+                )
 
                 # Extract instructions and accounts from Rust code
                 instructions, accounts = self._extract_program_components(src_file)
-                program_analysis['instructions'].extend(instructions)
-                program_analysis['accounts'].extend(accounts)
+                program_analysis["instructions"].extend(instructions)
+                program_analysis["accounts"].extend(accounts)
 
         # Check existing tests
         test_file = self.blockchain_dir / "tests" / f"{program_dir.name}.ts"
         if test_file.exists():
-            program_analysis['existing_tests'].append(str(test_file.relative_to(self.blockchain_dir)))
+            program_analysis["existing_tests"].append(
+                str(test_file.relative_to(self.blockchain_dir))
+            )
 
         # Determine test coverage needs
-        for instruction in program_analysis['instructions']:
-            program_analysis['test_coverage_needed'].append({
-                'type': 'instruction',
-                'name': instruction,
-                'test_cases': [
-                    f"test_{instruction}_success",
-                    f"test_{instruction}_failure",
-                    f"test_{instruction}_edge_cases"
-                ]
-            })
+        for instruction in program_analysis["instructions"]:
+            program_analysis["test_coverage_needed"].append(
+                {
+                    "type": "instruction",
+                    "name": instruction,
+                    "test_cases": [
+                        f"test_{instruction}_success",
+                        f"test_{instruction}_failure",
+                        f"test_{instruction}_edge_cases",
+                    ],
+                }
+            )
 
         return program_analysis
 
@@ -149,16 +157,17 @@ class TestInfrastructureManager:
         accounts = []
 
         try:
-            with open(src_file, 'r') as f:
+            with open(src_file, "r") as f:
                 content = f.read()
 
                 # Extract instruction functions (simplified regex)
                 import re
-                instruction_pattern = r'pub fn (\w+)\s*\('
+
+                instruction_pattern = r"pub fn (\w+)\s*\("
                 instructions.extend(re.findall(instruction_pattern, content))
 
                 # Extract account structures
-                account_pattern = r'#\[account\]\s*pub struct (\w+)'
+                account_pattern = r"#\[account\]\s*pub struct (\w+)"
                 accounts.extend(re.findall(account_pattern, content))
 
         except Exception as e:
@@ -381,18 +390,24 @@ describe("PROGRAM_NAME", () => {
                     program_name_camel = self._to_camel_case(program_name)
 
                     test_content = test_template.replace("PROGRAM_NAME", program_name)
-                    test_content = test_content.replace("PROGRAM_NAME_CAMEL", program_name_camel)
+                    test_content = test_content.replace(
+                        "PROGRAM_NAME_CAMEL", program_name_camel
+                    )
 
-                    test_file = self.blockchain_dir / "tests" / f"{program_name}_comprehensive.ts"
-                    with open(test_file, 'w') as f:
+                    test_file = (
+                        self.blockchain_dir
+                        / "tests"
+                        / f"{program_name}_comprehensive.ts"
+                    )
+                    with open(test_file, "w") as f:
                         f.write(test_content)
 
                     logger.info(f"Generated comprehensive test suite: {test_file}")
 
     def _to_camel_case(self, snake_str: str) -> str:
         """Convert snake_case to CamelCase."""
-        components = snake_str.split('-')
-        return ''.join(word.capitalize() for word in components)
+        components = snake_str.split("-")
+        return "".join(word.capitalize() for word in components)
 
     def _calculate_test_coverage(self) -> float:
         """Calculate test coverage percentage."""
@@ -410,19 +425,21 @@ describe("PROGRAM_NAME", () => {
                     src_dir = program_dir / "src"
                     if src_dir.exists():
                         for src_file in src_dir.glob("**/*.rs"):
-                            with open(src_file, 'r') as f:
+                            with open(src_file, "r") as f:
                                 content = f.read()
                                 import re
-                                functions = re.findall(r'pub fn (\w+)\s*\(', content)
+
+                                functions = re.findall(r"pub fn (\w+)\s*\(", content)
                                 total_functions += len(functions)
 
         # Count test functions
         tests_dir = self.blockchain_dir / "tests"
         if tests_dir.exists():
             for test_file in tests_dir.glob("**/*.ts"):
-                with open(test_file, 'r') as f:
+                with open(test_file, "r") as f:
                     content = f.read()
                     import re
+
                     tests = re.findall(r'it\s*\(\s*["\']([^"\']+)["\']', content)
                     tested_functions += len(tests)
 
@@ -437,65 +454,65 @@ describe("PROGRAM_NAME", () => {
         logger.info("Setting up end-to-end testing infrastructure...")
 
         e2e_results = {
-            'test_scenarios': [],
-            'workflow_tests': [],
-            'performance_benchmarks': {},
-            'success_rate': 0.0
+            "test_scenarios": [],
+            "workflow_tests": [],
+            "performance_benchmarks": {},
+            "success_rate": 0.0,
         }
 
         # Create E2E test scenarios
         test_scenarios = [
             {
-                'name': 'complete_governance_workflow',
-                'description': 'Constitution deployment → Policy creation → Voting → Enactment',
-                'steps': [
-                    'deploy_constitution',
-                    'propose_policy',
-                    'vote_on_policy',
-                    'enact_policy',
-                    'validate_compliance'
-                ]
+                "name": "complete_governance_workflow",
+                "description": "Constitution deployment → Policy creation → Voting → Enactment",
+                "steps": [
+                    "deploy_constitution",
+                    "propose_policy",
+                    "vote_on_policy",
+                    "enact_policy",
+                    "validate_compliance",
+                ],
             },
             {
-                'name': 'appeals_workflow',
-                'description': 'Policy violation → Appeal submission → Resolution',
-                'steps': [
-                    'trigger_violation',
-                    'submit_appeal',
-                    'review_appeal',
-                    'resolve_appeal'
-                ]
+                "name": "appeals_workflow",
+                "description": "Policy violation → Appeal submission → Resolution",
+                "steps": [
+                    "trigger_violation",
+                    "submit_appeal",
+                    "review_appeal",
+                    "resolve_appeal",
+                ],
             },
             {
-                'name': 'emergency_governance',
-                'description': 'Emergency policy deactivation workflow',
-                'steps': [
-                    'detect_emergency',
-                    'deactivate_policy',
-                    'notify_stakeholders',
-                    'validate_deactivation'
-                ]
-            }
+                "name": "emergency_governance",
+                "description": "Emergency policy deactivation workflow",
+                "steps": [
+                    "detect_emergency",
+                    "deactivate_policy",
+                    "notify_stakeholders",
+                    "validate_deactivation",
+                ],
+            },
         ]
 
         # Generate E2E test files
         for scenario in test_scenarios:
             self._generate_e2e_test(scenario)
-            e2e_results['test_scenarios'].append(scenario['name'])
+            e2e_results["test_scenarios"].append(scenario["name"])
 
         # Setup performance benchmarking
         self._setup_performance_benchmarks()
 
-        self.test_results['e2e_tests'] = e2e_results
+        self.test_results["e2e_tests"] = e2e_results
         return e2e_results
 
     def _generate_e2e_test(self, scenario: Dict):
         """Generate end-to-end test file for a scenario."""
-        scenario_name = scenario['name']
-        scenario_description = scenario['description']
-        test_steps = self._generate_test_steps(scenario['steps'])
+        scenario_name = scenario["name"]
+        scenario_description = scenario["description"]
+        test_steps = self._generate_test_steps(scenario["steps"])
 
-        test_template = f'''
+        test_template = f"""
 import {{ expect }} from "chai";
 import * as anchor from "@project-serum/anchor";
 import {{ Program }} from "@project-serum/anchor";
@@ -530,12 +547,12 @@ describe("E2E: {scenario_name}", () => {{
     }}
   }});
 }});
-'''
+"""
 
         test_file = self.tests_dir / "e2e" / f"{scenario['name']}.test.ts"
         test_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(test_file, 'w') as f:
+        with open(test_file, "w") as f:
             f.write(test_template)
 
         logger.info(f"Generated E2E test: {test_file}")
@@ -543,7 +560,7 @@ describe("E2E: {scenario_name}", () => {{
     def _generate_test_steps(self, steps: List[str]) -> str:
         """Generate test step implementations."""
         step_implementations = {
-            'deploy_constitution': '''
+            "deploy_constitution": """
       // Deploy constitution
       const constitution = anchor.web3.Keypair.generate();
       const constitutionHash = "e2e_test_constitution_hash";
@@ -558,9 +575,8 @@ describe("E2E: {scenario_name}", () => {{
         .signers([constitution])
         .rpc();
 
-      console.log("✅ Constitution deployed");''',
-
-            'propose_policy': '''
+      console.log("✅ Constitution deployed");""",
+            "propose_policy": """
       // Propose policy
       const policy = anchor.web3.Keypair.generate();
       const policyContent = "E2E test policy content";
@@ -576,9 +592,8 @@ describe("E2E: {scenario_name}", () => {{
         .signers([policy])
         .rpc();
 
-      console.log("✅ Policy proposed");''',
-
-            'vote_on_policy': '''
+      console.log("✅ Policy proposed");""",
+            "vote_on_policy": """
       // Vote on policy
       await program.methods
         .voteOnPolicy(true)
@@ -588,9 +603,8 @@ describe("E2E: {scenario_name}", () => {{
         })
         .rpc();
 
-      console.log("✅ Vote cast");''',
-
-            'enact_policy': '''
+      console.log("✅ Vote cast");""",
+            "enact_policy": """
       // Enact policy
       await program.methods
         .enactPolicy()
@@ -600,9 +614,8 @@ describe("E2E: {scenario_name}", () => {{
         })
         .rpc();
 
-      console.log("✅ Policy enacted");''',
-
-            'validate_compliance': '''
+      console.log("✅ Policy enacted");""",
+            "validate_compliance": """
       // Validate compliance
       const result = await program.methods
         .checkCompliance("test_action", "test_context")
@@ -613,7 +626,7 @@ describe("E2E: {scenario_name}", () => {{
         .view();
 
       expect(result.isCompliant).to.be.true;
-      console.log("✅ Compliance validated");'''
+      console.log("✅ Compliance validated");""",
         }
 
         implementations = []
@@ -621,29 +634,29 @@ describe("E2E: {scenario_name}", () => {{
             if step in step_implementations:
                 implementations.append(step_implementations[step])
             else:
-                implementations.append(f'      // TODO: Implement {step}')
+                implementations.append(f"      // TODO: Implement {step}")
 
-        return '\n\n'.join(implementations)
+        return "\n\n".join(implementations)
 
     def _setup_performance_benchmarks(self):
         """Setup performance benchmarking infrastructure."""
         benchmark_config = {
-            'targets': {
-                'constitution_deployment': {'max_time_ms': 5000},
-                'policy_proposal': {'max_time_ms': 3000},
-                'policy_voting': {'max_time_ms': 2000},
-                'compliance_check': {'max_time_ms': 1000}
+            "targets": {
+                "constitution_deployment": {"max_time_ms": 5000},
+                "policy_proposal": {"max_time_ms": 3000},
+                "policy_voting": {"max_time_ms": 2000},
+                "compliance_check": {"max_time_ms": 1000},
             },
-            'load_testing': {
-                'concurrent_users': [1, 5, 10, 25],
-                'test_duration_seconds': 60
-            }
+            "load_testing": {
+                "concurrent_users": [1, 5, 10, 25],
+                "test_duration_seconds": 60,
+            },
         }
 
         config_file = self.tests_dir / "performance" / "benchmark_config.json"
         config_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(config_file, 'w') as f:
+        with open(config_file, "w") as f:
             json.dump(benchmark_config, f, indent=2)
 
         logger.info(f"Performance benchmark config created: {config_file}")
@@ -653,16 +666,18 @@ describe("E2E: {scenario_name}", () => {{
         logger.info("Setting up frontend testing infrastructure...")
 
         frontend_results = {
-            'test_files_created': [],
-            'testing_framework': 'jest',
-            'coverage_target': 70.0,
-            'component_tests': []
+            "test_files_created": [],
+            "testing_framework": "jest",
+            "coverage_target": 70.0,
+            "component_tests": [],
         }
 
         # Check if frontend directory exists
         frontend_dir = self.applications_dir / "frontend"
         if not frontend_dir.exists():
-            logger.warning("Frontend directory not found, creating placeholder structure")
+            logger.warning(
+                "Frontend directory not found, creating placeholder structure"
+            )
             frontend_dir.mkdir(parents=True, exist_ok=True)
 
         # Setup Jest configuration
@@ -674,7 +689,7 @@ describe("E2E: {scenario_name}", () => {{
         # Setup Anchor client testing
         self._setup_anchor_client_tests(frontend_dir)
 
-        self.test_results['frontend_tests'] = frontend_results
+        self.test_results["frontend_tests"] = frontend_results
         return frontend_results
 
     def _setup_jest_config(self, frontend_dir: Path):
@@ -683,26 +698,24 @@ describe("E2E: {scenario_name}", () => {{
             "preset": "ts-jest",
             "testEnvironment": "jsdom",
             "setupFilesAfterEnv": ["<rootDir>/src/setupTests.ts"],
-            "moduleNameMapping": {
-                "^@/(.*)$": "<rootDir>/src/$1"
-            },
+            "moduleNameMapping": {"^@/(.*)$": "<rootDir>/src/$1"},
             "collectCoverageFrom": [
                 "src/**/*.{ts,tsx}",
                 "!src/**/*.d.ts",
-                "!src/index.tsx"
+                "!src/index.tsx",
             ],
             "coverageThreshold": {
                 "global": {
                     "branches": 70,
                     "functions": 70,
                     "lines": 70,
-                    "statements": 70
+                    "statements": 70,
                 }
-            }
+            },
         }
 
         config_file = frontend_dir / "jest.config.json"
-        with open(config_file, 'w') as f:
+        with open(config_file, "w") as f:
             json.dump(jest_config, f, indent=2)
 
         logger.info(f"Jest configuration created: {config_file}")
@@ -729,7 +742,7 @@ describe('Governance Dashboard', () => {
 """
 
         test_file = test_dir / "GovernanceDashboard.test.tsx"
-        with open(test_file, 'w') as f:
+        with open(test_file, "w") as f:
             f.write(component_test)
 
         logger.info(f"Component test template created: {test_file}")
@@ -772,7 +785,7 @@ export const mockProgram = {
 """
 
         utils_file = utils_dir / "anchorMocks.ts"
-        with open(utils_file, 'w') as f:
+        with open(utils_file, "w") as f:
             f.write(anchor_test_utils)
 
         logger.info(f"Anchor client test utilities created: {utils_file}")
@@ -782,31 +795,33 @@ export const mockProgram = {
         logger.info("Running comprehensive test suite...")
 
         results = {
-            'anchor_tests': self.setup_anchor_test_infrastructure(),
-            'e2e_tests': self.setup_e2e_testing(),
-            'frontend_tests': self.setup_frontend_testing(),
-            'overall_success': True,
-            'recommendations': []
+            "anchor_tests": self.setup_anchor_test_infrastructure(),
+            "e2e_tests": self.setup_e2e_testing(),
+            "frontend_tests": self.setup_frontend_testing(),
+            "overall_success": True,
+            "recommendations": [],
         }
 
         # Generate recommendations based on results
         recommendations = []
 
-        anchor_coverage = results['anchor_tests'].get('coverage_percentage', 0)
+        anchor_coverage = results["anchor_tests"].get("coverage_percentage", 0)
         if anchor_coverage < 80:
             recommendations.append(
                 f"Anchor test coverage is {anchor_coverage}%. Target: 80%+. "
                 "Add more comprehensive test cases for program instructions."
             )
 
-        recommendations.extend([
-            "Implement continuous integration for all test suites",
-            "Add performance regression testing",
-            "Setup automated test reporting and metrics",
-            "Integrate test results with deployment pipeline"
-        ])
+        recommendations.extend(
+            [
+                "Implement continuous integration for all test suites",
+                "Add performance regression testing",
+                "Setup automated test reporting and metrics",
+                "Integrate test results with deployment pipeline",
+            ]
+        )
 
-        results['recommendations'] = recommendations
+        results["recommendations"] = recommendations
 
         # Generate comprehensive report
         self._generate_test_report(results)
@@ -818,48 +833,56 @@ export const mockProgram = {
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         report_file = self.project_root / f"test_infrastructure_report_{timestamp}.json"
 
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             json.dump(results, f, indent=2)
 
         logger.info(f"Test infrastructure report generated: {report_file}")
 
         # Print summary
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("ACGS-1 TEST INFRASTRUCTURE SUMMARY")
-        print("="*60)
+        print("=" * 60)
 
-        anchor_data = results['anchor_tests']
+        anchor_data = results["anchor_tests"]
         print(f"🔗 Anchor Tests:")
-        print(f"   - Programs analyzed: {len(anchor_data.get('programs_analyzed', []))}")
+        print(
+            f"   - Programs analyzed: {len(anchor_data.get('programs_analyzed', []))}"
+        )
         print(f"   - Coverage: {anchor_data.get('coverage_percentage', 0)}%")
 
-        e2e_data = results['e2e_tests']
+        e2e_data = results["e2e_tests"]
         print(f"🔄 E2E Tests:")
         print(f"   - Scenarios: {len(e2e_data.get('test_scenarios', []))}")
 
-        frontend_data = results['frontend_tests']
+        frontend_data = results["frontend_tests"]
         print(f"🖥️ Frontend Tests:")
         print(f"   - Framework: {frontend_data.get('testing_framework', 'N/A')}")
         print(f"   - Target coverage: {frontend_data.get('coverage_target', 0)}%")
 
-        recommendations = results.get('recommendations', [])
+        recommendations = results.get("recommendations", [])
         print(f"💡 Recommendations: {len(recommendations)} items")
 
-        print("="*60)
+        print("=" * 60)
+
 
 def main():
     """Main execution function."""
-    parser = argparse.ArgumentParser(description='ACGS-1 Test Infrastructure Manager')
-    parser.add_argument('--setup-all', action='store_true',
-                       help='Setup complete test infrastructure')
-    parser.add_argument('--anchor-tests', action='store_true',
-                       help='Setup Anchor program tests only')
-    parser.add_argument('--e2e-tests', action='store_true',
-                       help='Setup end-to-end tests only')
-    parser.add_argument('--frontend-tests', action='store_true',
-                       help='Setup frontend tests only')
-    parser.add_argument('--project-root', type=Path, default=Path.cwd(),
-                       help='Project root directory')
+    parser = argparse.ArgumentParser(description="ACGS-1 Test Infrastructure Manager")
+    parser.add_argument(
+        "--setup-all", action="store_true", help="Setup complete test infrastructure"
+    )
+    parser.add_argument(
+        "--anchor-tests", action="store_true", help="Setup Anchor program tests only"
+    )
+    parser.add_argument(
+        "--e2e-tests", action="store_true", help="Setup end-to-end tests only"
+    )
+    parser.add_argument(
+        "--frontend-tests", action="store_true", help="Setup frontend tests only"
+    )
+    parser.add_argument(
+        "--project-root", type=Path, default=Path.cwd(), help="Project root directory"
+    )
 
     args = parser.parse_args()
 
@@ -867,7 +890,9 @@ def main():
     test_manager = TestInfrastructureManager(args.project_root)
 
     try:
-        if args.setup_all or (not any([args.anchor_tests, args.e2e_tests, args.frontend_tests])):
+        if args.setup_all or (
+            not any([args.anchor_tests, args.e2e_tests, args.frontend_tests])
+        ):
             test_manager.run_comprehensive_tests()
         elif args.anchor_tests:
             test_manager.setup_anchor_test_infrastructure()
@@ -882,6 +907,7 @@ def main():
     except Exception as e:
         logger.error(f"Test setup failed: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

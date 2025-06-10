@@ -25,7 +25,13 @@ Usage:
 
 from .core import WINACore, WINAOptimizer
 from .svd_transformation import SVDTransformation, OrthogonalityProtocol
-from .gating import RuntimeGating, NeuronGate, GatingStrategy, GatingDecision, GatingPerformance
+from .gating import (
+    RuntimeGating,
+    NeuronGate,
+    GatingStrategy,
+    GatingDecision,
+    GatingPerformance,
+)
 from .config import WINAConfig, WINAIntegrationConfig
 from .metrics import WINAMetrics, GFLOPsTracker, PerformanceMonitor
 from .constitutional_integration import ConstitutionalWINASupport
@@ -36,7 +42,7 @@ from .model_integration import (
     OpenAIModelWeightExtractor,
     GroqModelWeightExtractor,
     ModelWeightInfo,
-    WINAOptimizationResult
+    WINAOptimizationResult,
 )
 from .exceptions import WINAError, WINAConfigurationError, WINAOptimizationError
 
@@ -46,7 +52,7 @@ __author__ = "ACGS-PGP Development Team"
 __all__ = [
     # Core components
     "WINACore",
-    "WINAOptimizer", 
+    "WINAOptimizer",
     "SVDTransformation",
     "OrthogonalityProtocol",
     "RuntimeGating",
@@ -54,21 +60,17 @@ __all__ = [
     "GatingStrategy",
     "GatingDecision",
     "GatingPerformance",
-    
     # Configuration
     "WINAConfig",
     "WINAIntegrationConfig",
-    
     # Monitoring
     "WINAMetrics",
-    "GFLOPsTracker", 
+    "GFLOPsTracker",
     "PerformanceMonitor",
-    
     # Constitutional integration
     "ConstitutionalWINASupport",
-    
     # Exceptions
     "WINAError",
-    "WINAConfigurationError", 
+    "WINAConfigurationError",
     "WINAOptimizationError",
 ]

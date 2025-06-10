@@ -14,16 +14,21 @@ from pydantic import BaseModel, Field
 
 from ...core.database import get_db_session
 from ...services.experiment_tracker import (
-    ExperimentTracker, ExperimentConfig, ExperimentStatus, MetricType
+    ExperimentTracker,
+    ExperimentConfig,
+    ExperimentStatus,
+    MetricType,
 )
 from ...models.experiment import Experiment, ExperimentRun, ExperimentMetric
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+
 # Pydantic models for API
 class ExperimentCreateRequest(BaseModel):
     """Request model for creating experiments."""
+
     name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
     hypothesis: str = Field(..., min_length=1)
@@ -37,6 +42,7 @@ class ExperimentCreateRequest(BaseModel):
 
 class ExperimentResponse(BaseModel):
     """Response model for experiments."""
+
     id: str
     name: str
     description: Optional[str]
@@ -54,11 +60,13 @@ class ExperimentResponse(BaseModel):
 
 class ExperimentRunCreateRequest(BaseModel):
     """Request model for creating experiment runs."""
+
     config: Dict[str, Any] = Field(default_factory=dict)
 
 
 class ExperimentRunResponse(BaseModel):
     """Response model for experiment runs."""
+
     id: str
     experiment_id: str
     run_number: int
@@ -74,6 +82,7 @@ class ExperimentRunResponse(BaseModel):
 
 class MetricLogRequest(BaseModel):
     """Request model for logging metrics."""
+
     metric_name: str = Field(..., min_length=1, max_length=255)
     value: float
     step: Optional[int] = None
@@ -83,6 +92,7 @@ class MetricLogRequest(BaseModel):
 
 class MetricResponse(BaseModel):
     """Response model for metrics."""
+
     id: str
     run_id: str
     metric_name: str
@@ -94,6 +104,7 @@ class MetricResponse(BaseModel):
 
 class ArtifactSaveRequest(BaseModel):
     """Request model for saving artifacts."""
+
     artifact_name: str = Field(..., min_length=1, max_length=255)
     artifact_data: Any
     artifact_type: str = Field(default="json")
@@ -102,6 +113,7 @@ class ArtifactSaveRequest(BaseModel):
 
 class ExperimentCompleteRequest(BaseModel):
     """Request model for completing experiments."""
+
     status: str = Field(default="completed")
     summary: Optional[str] = None
     conclusions: List[str] = Field(default_factory=list)
@@ -116,7 +128,7 @@ experiment_tracker = ExperimentTracker()
 async def create_experiment(
     request: ExperimentCreateRequest,
     db: AsyncSession = Depends(get_db_session),
-    user_id: Optional[int] = None
+    user_id: Optional[int] = None,
 ):
     """Create a new experiment."""
     try:
@@ -129,11 +141,11 @@ async def create_experiment(
             expected_duration_hours=request.expected_duration_hours,
             success_criteria=request.success_criteria,
             tags=request.tags,
-            metadata=request.metadata
+            metadata=request.metadata,
         )
-        
+
         experiment = await experiment_tracker.create_experiment(db, config, user_id)
-        
+
         return ExperimentResponse(
             id=experiment.id,
             name=experiment.name,
@@ -147,9 +159,9 @@ async def create_experiment(
             metadata=experiment.metadata,
             status=experiment.status,
             created_at=experiment.created_at,
-            updated_at=experiment.updated_at
+            updated_at=experiment.updated_at,
         )
-        
+
     except Exception as e:
         logger.error(f"Error creating experiment: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -160,14 +172,14 @@ async def list_experiments(
     db: AsyncSession = Depends(get_db_session),
     status: Optional[str] = Query(None),
     limit: int = Query(50, le=100),
-    offset: int = Query(0, ge=0)
+    offset: int = Query(0, ge=0),
 ):
     """List experiments with optional filtering."""
     try:
         # This would be implemented with proper database queries
         # For now, return empty list as placeholder
         return []
-        
+
     except Exception as e:
         logger.error(f"Error listing experiments: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -175,15 +187,14 @@ async def list_experiments(
 
 @router.get("/{experiment_id}", response_model=ExperimentResponse)
 async def get_experiment(
-    experiment_id: str,
-    db: AsyncSession = Depends(get_db_session)
+    experiment_id: str, db: AsyncSession = Depends(get_db_session)
 ):
     """Get experiment by ID."""
     try:
         # This would be implemented with proper database queries
         # For now, raise not found as placeholder
         raise HTTPException(status_code=404, detail="Experiment not found")
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -195,14 +206,14 @@ async def get_experiment(
 async def start_experiment_run(
     experiment_id: str,
     request: ExperimentRunCreateRequest,
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
 ):
     """Start a new experiment run."""
     try:
         experiment_run = await experiment_tracker.start_experiment_run(
             db, experiment_id, request.config
         )
-        
+
         return ExperimentRunResponse(
             id=experiment_run.id,
             experiment_id=experiment_run.experiment_id,
@@ -214,9 +225,9 @@ async def start_experiment_run(
             duration_seconds=experiment_run.duration_seconds,
             summary=experiment_run.summary,
             conclusions=experiment_run.conclusions or [],
-            recommendations=experiment_run.recommendations or []
+            recommendations=experiment_run.recommendations or [],
         )
-        
+
     except Exception as e:
         logger.error(f"Error starting experiment run: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -227,7 +238,7 @@ async def log_metric(
     experiment_id: str,
     run_id: str,
     request: MetricLogRequest,
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
 ):
     """Log a metric for an experiment run."""
     try:
@@ -238,9 +249,9 @@ async def log_metric(
             value=request.value,
             step=request.step,
             timestamp=request.timestamp,
-            metadata=request.metadata
+            metadata=request.metadata,
         )
-        
+
         return MetricResponse(
             id=metric.id,
             run_id=metric.run_id,
@@ -248,9 +259,9 @@ async def log_metric(
             value=metric.value,
             step=metric.step,
             timestamp=metric.timestamp,
-            metadata=metric.metadata
+            metadata=metric.metadata,
         )
-        
+
     except Exception as e:
         logger.error(f"Error logging metric: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -261,7 +272,7 @@ async def save_artifact(
     experiment_id: str,
     run_id: str,
     request: ArtifactSaveRequest,
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
 ):
     """Save an artifact for an experiment run."""
     try:
@@ -271,43 +282,45 @@ async def save_artifact(
             artifact_name=request.artifact_name,
             artifact_data=request.artifact_data,
             artifact_type=request.artifact_type,
-            metadata=request.metadata
+            metadata=request.metadata,
         )
-        
+
         return {
             "id": artifact.id,
             "name": artifact.name,
             "type": artifact.type,
             "size_bytes": artifact.size_bytes,
             "checksum": artifact.checksum,
-            "created_at": artifact.created_at
+            "created_at": artifact.created_at,
         }
-        
+
     except Exception as e:
         logger.error(f"Error saving artifact: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/{experiment_id}/runs/{run_id}/complete", response_model=ExperimentRunResponse)
+@router.put(
+    "/{experiment_id}/runs/{run_id}/complete", response_model=ExperimentRunResponse
+)
 async def complete_experiment_run(
     experiment_id: str,
     run_id: str,
     request: ExperimentCompleteRequest,
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
 ):
     """Complete an experiment run."""
     try:
         status = ExperimentStatus(request.status)
-        
+
         experiment_run = await experiment_tracker.complete_experiment_run(
             db=db,
             run_id=run_id,
             status=status,
             summary=request.summary,
             conclusions=request.conclusions,
-            recommendations=request.recommendations
+            recommendations=request.recommendations,
         )
-        
+
         return ExperimentRunResponse(
             id=experiment_run.id,
             experiment_id=experiment_run.experiment_id,
@@ -319,9 +332,9 @@ async def complete_experiment_run(
             duration_seconds=experiment_run.duration_seconds,
             summary=experiment_run.summary,
             conclusions=experiment_run.conclusions or [],
-            recommendations=experiment_run.recommendations or []
+            recommendations=experiment_run.recommendations or [],
         )
-        
+
     except Exception as e:
         logger.error(f"Error completing experiment run: {e}")
         raise HTTPException(status_code=500, detail=str(e))

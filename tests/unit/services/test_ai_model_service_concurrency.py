@@ -23,19 +23,16 @@ async def test_concurrent_generate_text_does_not_mutate_config():
     original_temperature = service.models["primary"].temperature
 
     async def call_one():
-        return await service.generate_text(
-            "one", max_tokens=50, temperature=0.9
-        )
+        return await service.generate_text("one", max_tokens=50, temperature=0.9)
 
     async def call_two():
-        return await service.generate_text(
-            "two", max_tokens=60, temperature=0.1
-        )
+        return await service.generate_text("two", max_tokens=60, temperature=0.1)
 
     await asyncio.gather(call_one(), call_two())
 
     assert service.models["primary"].max_tokens == original_max_tokens
     assert service.models["primary"].temperature == original_temperature
+
 
 @pytest.mark.asyncio
 async def test_concurrent_generation_federated_does_not_mutate_config():
@@ -51,14 +48,10 @@ async def test_concurrent_generation_federated_does_not_mutate_config():
     original_temperature = service.models["primary"].temperature
 
     async def call_one():
-        return await service.generate_text(
-            "f-one", max_tokens=40, temperature=0.8
-        )
+        return await service.generate_text("f-one", max_tokens=40, temperature=0.8)
 
     async def call_two():
-        return await service.generate_text(
-            "f-two", max_tokens=70, temperature=0.2
-        )
+        return await service.generate_text("f-two", max_tokens=70, temperature=0.2)
 
     await asyncio.gather(call_one(), call_two())
 

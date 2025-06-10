@@ -34,7 +34,7 @@ cannot_perform({{USER_VAR}}, {{ACTION_VALUE}}, {{RESOURCE_VAR}}) :-
     is_sensitive({{RESOURCE_VAR}}),
     NOT user_role_is({{USER_VAR}}, '{{REQUIRED_ROLE_FOR_SENSITIVE}}'),
     principle_source({{PRINCIPLE_ID}})."""
-    
+
 # Generic template for logging an event based on an action being performed
 LOG_ACTION_EVENT = """\
 log_event('{{ACTION_VALUE}}', {{USER_VAR}}, {{RESOURCE_VAR}}, '{{TIMESTAMP_VAR}}') :-

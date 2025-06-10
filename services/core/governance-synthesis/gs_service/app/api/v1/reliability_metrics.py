@@ -1,5 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.core.llm_reliability_framework import EnhancedLLMReliabilityFramework, ReliabilityMetrics
+from app.core.llm_reliability_framework import (
+    EnhancedLLMReliabilityFramework,
+    ReliabilityMetrics,
+)
 from typing import Dict, Any
 
 router = APIRouter()
@@ -10,6 +13,7 @@ router = APIRouter()
 # This assumes the framework is initialized elsewhere or can be initialized on demand.
 llm_reliability_framework_instance = EnhancedLLMReliabilityFramework()
 
+
 @router.get("/reliability_metrics", response_model=Dict[str, Any])
 async def get_reliability_metrics():
     """
@@ -19,7 +23,10 @@ async def get_reliability_metrics():
         summary = llm_reliability_framework_instance.get_performance_summary()
         return summary
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve reliability metrics: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to retrieve reliability metrics: {e}"
+        )
+
 
 @router.get("/reliability_metrics/history", response_model=Dict[str, Any])
 async def get_reliability_metrics_history():
@@ -29,7 +36,13 @@ async def get_reliability_metrics_history():
     try:
         # Assuming performance_metrics stores a list of ReliabilityMetrics objects
         # We need to convert these dataclasses to dictionaries for JSON serialization
-        history_data = [metric.__dict__ for metric in llm_reliability_framework_instance.performance_metrics]
+        history_data = [
+            metric.__dict__
+            for metric in llm_reliability_framework_instance.performance_metrics
+        ]
         return {"history": history_data}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve historical reliability metrics: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to retrieve historical reliability metrics: {e}",
+        )

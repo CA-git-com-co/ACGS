@@ -19,7 +19,11 @@ from .core.secure_aggregation import secure_aggregator
 from .dashboard.federated_dashboard import create_dash_app
 from services.shared.security_middleware import SecurityHeadersMiddleware
 from shared import get_config
-from services.shared.metrics import get_metrics, metrics_middleware, create_metrics_endpoint
+from services.shared.metrics import (
+    get_metrics,
+    metrics_middleware,
+    create_metrics_endpoint,
+)
 
 # Load centralized configuration
 config = get_config()
@@ -31,17 +35,17 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     logger.info("Starting Federated Evaluation Service...")
-    
+
     # Initialize federated coordinator
     await federated_coordinator.initialize()
-    
+
     # Initialize secure aggregator
     await secure_aggregator.initialize()
-    
+
     logger.info("Federated Evaluation Service started successfully")
-    
+
     yield
-    
+
     # Cleanup
     logger.info("Shutting down Federated Evaluation Service...")
     await federated_coordinator.shutdown()
@@ -51,9 +55,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Federated Evaluation (FE) Service",
-    version=config.get('api_version', 'v1'),
-    debug=config.get('debug', False),
-    lifespan=lifespan
+    version=config.get("api_version", "v1"),
+    debug=config.get("debug", False),
+    lifespan=lifespan,
 )
 
 # Add security headers middleware
@@ -62,7 +66,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=config.get('cors_origins', ["http://localhost:3000"]),
+    allow_origins=config.get("cors_origins", ["http://localhost:3000"]),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -76,7 +80,9 @@ app.add_middleware(metrics_middleware)
 
 # Include API routers
 app.include_router(federated_router, prefix="/api/v1/federated", tags=["federated"])
-app.include_router(aggregation_router, prefix="/api/v1/aggregation", tags=["aggregation"])
+app.include_router(
+    aggregation_router, prefix="/api/v1/aggregation", tags=["aggregation"]
+)
 app.include_router(privacy_router, prefix="/api/v1/privacy", tags=["privacy"])
 
 # Add metrics endpoint
@@ -93,7 +99,7 @@ async def health_check():
         "status": "healthy",
         "service": "federated_evaluation",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": config.get('api_version', 'v1')
+        "version": config.get("api_version", "v1"),
     }
 
 
@@ -102,20 +108,17 @@ async def root():
     """Root endpoint."""
     return {
         "message": "ACGS-PGP Federated Evaluation Service",
-        "version": config.get('api_version', 'v1'),
+        "version": config.get("api_version", "v1"),
         "docs": "/docs",
         "health": "/health",
         "metrics": "/metrics",
-        "dashboard": "/dashboard"
+        "dashboard": "/dashboard",
     }
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=8006,
-        reload=True,
-        log_level="info"
+        "app.main:app", host="0.0.0.0", port=8006, reload=True, log_level="info"
     )

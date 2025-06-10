@@ -12,7 +12,7 @@ from .error_handling import ACGSException, handle_service_error, log_error
 
 __all__ = [
     "ACGSHttpClient",
-    "ServiceClient", 
+    "ServiceClient",
     "validate_request",
     "validate_response",
     "ValidationError",
@@ -21,5 +21,5 @@ __all__ = [
     "standardize_timestamps",
     "ACGSException",
     "handle_service_error",
-    "log_error"
+    "log_error",
 ]

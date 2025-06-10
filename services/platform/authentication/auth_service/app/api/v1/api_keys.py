@@ -71,7 +71,7 @@ async def create_api_key(
     key_request: ApiKeyCreateRequest,
     request: Request,
     current_user: User = Depends(authorize_permissions(["api_key:create"])),
-    db: AsyncSession = Depends(get_async_db)
+    db: AsyncSession = Depends(get_async_db),
 ):
     """
     Create a new API key for the current user.
@@ -84,9 +84,9 @@ async def create_api_key(
             scopes=key_request.scopes,
             rate_limit_per_minute=key_request.rate_limit_per_minute,
             allowed_ips=key_request.allowed_ips,
-            expires_in_days=key_request.expires_in_days
+            expires_in_days=key_request.expires_in_days,
         )
-        
+
         # Log API key creation
         await security_audit.log_event(
             db=db,
@@ -97,13 +97,13 @@ async def create_api_key(
             metadata={
                 "api_key_name": key_request.name,
                 "scopes": key_request.scopes,
-                "rate_limit": key_request.rate_limit_per_minute
+                "rate_limit": key_request.rate_limit_per_minute,
             },
-            severity="info"
+            severity="info",
         )
-        
+
         return ApiKeyCreateResponse(**result)
-        
+
     except Exception as e:
         await security_audit.log_event(
             db=db,
@@ -113,18 +113,18 @@ async def create_api_key(
             success=False,
             error_message=str(e),
             metadata={"api_key_name": key_request.name},
-            severity="error"
+            severity="error",
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create API key"
+            detail="Failed to create API key",
         )
 
 
 @router.get("/", response_model=List[ApiKeyResponse])
 async def get_api_keys(
     current_user: User = Depends(authorize_permissions(["api_key:read"])),
-    db: AsyncSession = Depends(get_async_db)
+    db: AsyncSession = Depends(get_async_db),
 ):
     """
     Get all API keys for the current user.
@@ -132,11 +132,11 @@ async def get_api_keys(
     try:
         api_keys = await api_key_manager.get_api_keys(db, current_user.id)
         return [ApiKeyResponse(**key) for key in api_keys]
-        
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve API keys"
+            detail="Failed to retrieve API keys",
         )
 
 
@@ -144,28 +144,27 @@ async def get_api_keys(
 async def get_api_key(
     key_id: int,
     current_user: User = Depends(authorize_permissions(["api_key:read"])),
-    db: AsyncSession = Depends(get_async_db)
+    db: AsyncSession = Depends(get_async_db),
 ):
     """
     Get specific API key details.
     """
     try:
         api_key = await api_key_manager.get_api_key(db, key_id, current_user.id)
-        
+
         if not api_key:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="API key not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
             )
-        
+
         return ApiKeyResponse(**api_key)
-        
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve API key"
+            detail="Failed to retrieve API key",
         )
 
 
@@ -175,7 +174,7 @@ async def update_api_key(
     update_request: ApiKeyUpdateRequest,
     request: Request,
     current_user: User = Depends(authorize_permissions(["api_key:update"])),
-    db: AsyncSession = Depends(get_async_db)
+    db: AsyncSession = Depends(get_async_db),
 ):
     """
     Update API key settings.
@@ -189,15 +188,14 @@ async def update_api_key(
             scopes=update_request.scopes,
             rate_limit_per_minute=update_request.rate_limit_per_minute,
             allowed_ips=update_request.allowed_ips,
-            is_active=update_request.is_active
+            is_active=update_request.is_active,
         )
-        
+
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="API key not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
             )
-        
+
         # Log API key update
         await security_audit.log_event(
             db=db,
@@ -207,13 +205,13 @@ async def update_api_key(
             success=True,
             metadata={
                 "api_key_id": key_id,
-                "updated_fields": update_request.dict(exclude_unset=True)
+                "updated_fields": update_request.dict(exclude_unset=True),
             },
-            severity="info"
+            severity="info",
         )
-        
+
         return {"message": "API key updated successfully"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -225,11 +223,11 @@ async def update_api_key(
             success=False,
             error_message=str(e),
             metadata={"api_key_id": key_id},
-            severity="error"
+            severity="error",
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to update API key"
+            detail="Failed to update API key",
         )
 
 
@@ -238,20 +236,19 @@ async def revoke_api_key(
     key_id: int,
     request: Request,
     current_user: User = Depends(authorize_permissions(["api_key:revoke"])),
-    db: AsyncSession = Depends(get_async_db)
+    db: AsyncSession = Depends(get_async_db),
 ):
     """
     Revoke (deactivate) an API key.
     """
     try:
         success = await api_key_manager.revoke_api_key(db, key_id, current_user.id)
-        
+
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="API key not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
             )
-        
+
         # Log API key revocation
         await security_audit.log_event(
             db=db,
@@ -260,11 +257,11 @@ async def revoke_api_key(
             request=request,
             success=True,
             metadata={"api_key_id": key_id},
-            severity="warning"
+            severity="warning",
         )
-        
+
         return {"message": "API key revoked successfully"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -276,11 +273,11 @@ async def revoke_api_key(
             success=False,
             error_message=str(e),
             metadata={"api_key_id": key_id},
-            severity="error"
+            severity="error",
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to revoke API key"
+            detail="Failed to revoke API key",
         )
 
 
@@ -289,20 +286,19 @@ async def delete_api_key(
     key_id: int,
     request: Request,
     current_user: User = Depends(authorize_permissions(["api_key:delete"])),
-    db: AsyncSession = Depends(get_async_db)
+    db: AsyncSession = Depends(get_async_db),
 ):
     """
     Permanently delete an API key.
     """
     try:
         success = await api_key_manager.delete_api_key(db, key_id, current_user.id)
-        
+
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="API key not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
             )
-        
+
         # Log API key deletion
         await security_audit.log_event(
             db=db,
@@ -311,11 +307,11 @@ async def delete_api_key(
             request=request,
             success=True,
             metadata={"api_key_id": key_id},
-            severity="warning"
+            severity="warning",
         )
-        
+
         return {"message": "API key deleted successfully"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -327,18 +323,18 @@ async def delete_api_key(
             success=False,
             error_message=str(e),
             metadata={"api_key_id": key_id},
-            severity="error"
+            severity="error",
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to delete API key"
+            detail="Failed to delete API key",
         )
 
 
 @router.get("/usage/statistics", response_model=ApiKeyUsageResponse)
 async def get_api_key_usage_statistics(
     current_user: User = Depends(authorize_permissions(["api_key:read"])),
-    db: AsyncSession = Depends(get_async_db)
+    db: AsyncSession = Depends(get_async_db),
 ):
     """
     Get API key usage statistics for the current user.
@@ -346,9 +342,9 @@ async def get_api_key_usage_statistics(
     try:
         stats = await api_key_manager.get_usage_statistics(db, current_user.id)
         return ApiKeyUsageResponse(**stats)
-        
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve usage statistics"
+            detail="Failed to retrieve usage statistics",
         )

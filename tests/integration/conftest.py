@@ -21,15 +21,20 @@ if backend_path not in sys.path:
 
 # Set environment variables for testing
 os.environ.setdefault("TESTING", "true")
-os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://acgs_user:acgs_password@localhost:5434/acgs_test")
+os.environ.setdefault(
+    "DATABASE_URL",
+    "postgresql+asyncpg://acgs_user:acgs_password@localhost:5434/acgs_test",
+)
 
 try:
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
     from sqlalchemy.orm import sessionmaker
+
     ASYNC_DEPS_AVAILABLE = True
 except ImportError:
     ASYNC_DEPS_AVAILABLE = False
+
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -38,42 +43,54 @@ def event_loop():
     yield loop
     loop.close()
 
+
 @pytest.fixture
 def anyio_backend():
     return "asyncio"
+
 
 # Mock database session for tests that don't need real database
 @pytest.fixture
 async def mock_db_session():
     """Mock database session for testing without real database."""
+
     class MockSession:
         async def execute(self, query):
             class MockResult:
-                def scalar(self): return 0
-                def scalars(self): return []
-                def fetchall(self): return []
-                def fetchone(self): return None
+                def scalar(self):
+                    return 0
+
+                def scalars(self):
+                    return []
+
+                def fetchall(self):
+                    return []
+
+                def fetchone(self):
+                    return None
+
             return MockResult()
-        
-        async def get(self, model, id): 
+
+        async def get(self, model, id):
             return None
-        
-        def add(self, obj): 
+
+        def add(self, obj):
             pass
-        
-        async def commit(self): 
+
+        async def commit(self):
             pass
-        
-        async def refresh(self, obj): 
+
+        async def refresh(self, obj):
             pass
-        
+
         async def rollback(self):
             pass
-        
+
         async def close(self):
             pass
-    
+
     return MockSession()
+
 
 # Test client fixture for HTTP testing
 @pytest.fixture
@@ -97,10 +114,7 @@ async def integration_test_cleanup():
     temp_files = []
     temp_dirs = []
 
-    yield {
-        'temp_files': temp_files,
-        'temp_dirs': temp_dirs
-    }
+    yield {"temp_files": temp_files, "temp_dirs": temp_dirs}
 
     # Cleanup temporary files created during integration tests
     for temp_file in temp_files:
@@ -115,6 +129,7 @@ async def integration_test_cleanup():
         try:
             if Path(temp_dir).exists():
                 import shutil
+
                 shutil.rmtree(temp_dir)
         except Exception as e:
             print(f"Warning: Failed to remove temp directory {temp_dir}: {e}")
@@ -124,7 +139,7 @@ async def integration_test_cleanup():
         "phase2_test_results.json",
         "phase3_test_results.json",
         "integration_test_results.json",
-        "alphaevolve_test_results.json"
+        "alphaevolve_test_results.json",
     ]
 
     for result_file in result_files:
@@ -152,16 +167,13 @@ def integration_temp_manager(integration_test_cleanup):
         if content is not None:
             Path(path).write_text(content)
 
-        integration_test_cleanup['temp_files'].append(path)
+        integration_test_cleanup["temp_files"].append(path)
         return path
 
     def create_temp_dir(suffix="", prefix="integration_test_"):
         """Create temporary directory for integration testing."""
         path = tempfile.mkdtemp(suffix=suffix, prefix=prefix)
-        integration_test_cleanup['temp_dirs'].append(path)
+        integration_test_cleanup["temp_dirs"].append(path)
         return path
 
-    return {
-        'create_file': create_temp_file,
-        'create_dir': create_temp_dir
-    }
+    return {"create_file": create_temp_file, "create_dir": create_temp_dir}

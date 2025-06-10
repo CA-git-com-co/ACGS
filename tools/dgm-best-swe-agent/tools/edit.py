@@ -2,6 +2,7 @@ from pathlib import Path
 import subprocess
 from typing import Optional, List, Tuple, Union
 
+
 def tool_info():
     return {
         "name": "editor",
@@ -18,41 +19,43 @@ def tool_info():
                 "command": {
                     "type": "string",
                     "enum": ["view", "create", "str_replace"],
-                    "description": "The command to run: `view`, `create`, or `str_replace`."
+                    "description": "The command to run: `view`, `create`, or `str_replace`.",
                 },
                 "path": {
                     "description": "Absolute path to file or directory, e.g. `/repo/file.py` or `/repo`.",
-                    "type": "string"
+                    "type": "string",
                 },
                 "file_text": {
                     "description": "Required parameter of `create` command, containing the content for the entire file.",
-                    "type": "string"
+                    "type": "string",
                 },
                 "view_range": {
                     "description": "Optional parameter for `view` command. Array of [start_line, end_line] (1-based). Use -1 for end_line to read until end of file.",
                     "type": "array",
                     "items": {"type": "integer"},
                     "minItems": 2,
-                    "maxItems": 2
+                    "maxItems": 2,
                 },
                 "old_str": {
                     "description": "Required parameter of `str_replace` command, containing the exact text to find and replace.",
-                    "type": "string"
+                    "type": "string",
                 },
                 "new_str": {
                     "description": "Required parameter of `str_replace` command, containing the new text to replace old_str with.",
-                    "type": "string"
-                }
+                    "type": "string",
+                },
             },
-            "required": ["command", "path"]
-        }
+            "required": ["command", "path"],
+        },
     }
+
 
 def maybe_truncate(content: str, max_length: int = 10000) -> str:
     """Truncate long content and add marker."""
     if len(content) > max_length:
         return content[:max_length] + "\n<response clipped>"
     return content
+
 
 def validate_path(path: str, command: str) -> Path:
     """
@@ -88,15 +91,20 @@ def validate_path(path: str, command: str) -> Path:
 
     return path_obj
 
+
 def format_output(content: str, path: str, init_line: int = 1) -> str:
     """Format output with line numbers (for file content)."""
     content = maybe_truncate(content)
     content = content.expandtabs()
     numbered_lines = [
-        f"{i + init_line:6}\t{line}"
-        for i, line in enumerate(content.split("\n"))
+        f"{i + init_line:6}\t{line}" for i, line in enumerate(content.split("\n"))
     ]
-    return f"Here's the result of running `cat -n` on {path}:\n" + "\n".join(numbered_lines) + "\n"
+    return (
+        f"Here's the result of running `cat -n` on {path}:\n"
+        + "\n".join(numbered_lines)
+        + "\n"
+    )
+
 
 def read_file(path: Path) -> str:
     """Read and return the entire file contents."""
@@ -105,7 +113,10 @@ def read_file(path: Path) -> str:
     except Exception as e:
         raise ValueError(f"Failed to read file: {e}")
 
-def read_file_range(path: Path, line_range: Optional[List[int]] = None) -> Tuple[str, int]:
+
+def read_file_range(
+    path: Path, line_range: Optional[List[int]] = None
+) -> Tuple[str, int]:
     """
     Read and return file contents within specified line range.
     Returns tuple of (content, start_line).
@@ -137,13 +148,14 @@ def read_file_range(path: Path, line_range: Optional[List[int]] = None) -> Tuple
                     break
                 if end != -1 and current_line > end:
                     break
-                lines.append(line.rstrip('\n'))
+                lines.append(line.rstrip("\n"))
                 current_line += 1
 
-        return '\n'.join(lines), start
+        return "\n".join(lines), start
 
     except Exception as e:
         raise ValueError(f"Failed to read file range: {e}")
+
 
 def write_file(path: Path, content: str):
     """Write (overwrite) entire file contents."""
@@ -151,6 +163,7 @@ def write_file(path: Path, content: str):
         path.write_text(content)
     except Exception as e:
         raise ValueError(f"Failed to write file: {e}")
+
 
 def str_replace_in_file(path: Path, old_str: str, new_str: str) -> str:
     """
@@ -174,6 +187,7 @@ def str_replace_in_file(path: Path, old_str: str, new_str: str) -> str:
     except Exception as e:
         return f"Error during string replacement: {e}"
 
+
 def view_path(path_obj: Path, view_range: Optional[List[int]] = None) -> str:
     """
     View the file contents (optionally within a range) or directory listing.
@@ -189,9 +203,9 @@ def view_path(path_obj: Path, view_range: Optional[List[int]] = None) -> str:
         # For directories: list non-hidden files up to 2 levels deep
         try:
             result = subprocess.run(
-                ['find', str(path_obj), '-maxdepth', '2', '-not', '-path', '*/\\.*'],
+                ["find", str(path_obj), "-maxdepth", "2", "-not", "-path", "*/\\.*"],
                 capture_output=True,
-                text=True
+                text=True,
             )
             if result.stderr:
                 return f"Error listing directory: {result.stderr}"
@@ -206,8 +220,15 @@ def view_path(path_obj: Path, view_range: Optional[List[int]] = None) -> str:
     content, start_line = read_file_range(path_obj, view_range)
     return format_output(content, str(path_obj), start_line)
 
-def tool_function(command: str, path: str, file_text: str = None, view_range: Optional[List[int]] = None,
-                 old_str: str = None, new_str: str = None) -> str:
+
+def tool_function(
+    command: str,
+    path: str,
+    file_text: str = None,
+    view_range: Optional[List[int]] = None,
+    old_str: str = None,
+    new_str: str = None,
+) -> str:
     """
     Main tool function that handles:
       - 'view'       : View file or directory listing, optionally within line range for files
@@ -228,7 +249,9 @@ def tool_function(command: str, path: str, file_text: str = None, view_range: Op
 
         elif command == "str_replace":
             if old_str is None or new_str is None:
-                raise ValueError("Missing required `old_str` and/or `new_str` for 'str_replace' command.")
+                raise ValueError(
+                    "Missing required `old_str` and/or `new_str` for 'str_replace' command."
+                )
             return str_replace_in_file(path_obj, old_str, new_str)
 
         else:
@@ -236,6 +259,7 @@ def tool_function(command: str, path: str, file_text: str = None, view_range: Op
 
     except Exception as e:
         return f"Error: {str(e)}"
+
 
 if __name__ == "__main__":
     # Example usage

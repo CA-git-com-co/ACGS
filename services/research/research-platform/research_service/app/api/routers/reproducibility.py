@@ -18,6 +18,7 @@ router = APIRouter()
 
 class ReproducibilityTestRequest(BaseModel):
     """Request model for reproducibility testing."""
+
     original_experiment_id: str = Field(..., min_length=1)
     reproduction_config: Dict[str, Any] = Field(default_factory=dict)
     tolerance_thresholds: Dict[str, float] = Field(default_factory=dict)
@@ -26,6 +27,7 @@ class ReproducibilityTestRequest(BaseModel):
 
 class ReproducibilityTestResponse(BaseModel):
     """Response model for reproducibility tests."""
+
     id: str
     original_experiment_id: str
     reproduction_experiment_id: str
@@ -42,6 +44,7 @@ class ReproducibilityTestResponse(BaseModel):
 
 class EnvironmentSnapshotRequest(BaseModel):
     """Request model for environment snapshots."""
+
     name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
     include_dependencies: bool = Field(default=True)
@@ -52,6 +55,7 @@ class EnvironmentSnapshotRequest(BaseModel):
 
 class EnvironmentSnapshotResponse(BaseModel):
     """Response model for environment snapshots."""
+
     id: str
     name: str
     description: Optional[str]
@@ -67,7 +71,7 @@ class EnvironmentSnapshotResponse(BaseModel):
 async def run_reproducibility_test(
     request: ReproducibilityTestRequest,
     background_tasks: BackgroundTasks,
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
 ):
     """Run reproducibility test for an experiment."""
     try:
@@ -79,21 +83,33 @@ async def run_reproducibility_test(
             reproducibility_score=0.95,
             reproducible=True,
             metric_comparisons={
-                "accuracy": {"original": 0.923, "reproduction": 0.921, "difference": 0.002},
-                "precision": {"original": 0.887, "reproduction": 0.889, "difference": -0.002},
-                "recall": {"original": 0.934, "reproduction": 0.932, "difference": 0.002}
+                "accuracy": {
+                    "original": 0.923,
+                    "reproduction": 0.921,
+                    "difference": 0.002,
+                },
+                "precision": {
+                    "original": 0.887,
+                    "reproduction": 0.889,
+                    "difference": -0.002,
+                },
+                "recall": {
+                    "original": 0.934,
+                    "reproduction": 0.932,
+                    "difference": 0.002,
+                },
             },
             statistical_tests={
                 "t_test": {"p_value": 0.234, "significant": False},
-                "wilcoxon": {"p_value": 0.456, "significant": False}
+                "wilcoxon": {"p_value": 0.456, "significant": False},
             },
             differences=[],
             potential_causes=[],
             environment_differences={},
             dependency_differences={},
-            reproduction_notes="Experiment successfully reproduced within tolerance thresholds"
+            reproduction_notes="Experiment successfully reproduced within tolerance thresholds",
         )
-        
+
     except Exception as e:
         logger.error(f"Error running reproducibility test: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -104,13 +120,13 @@ async def list_reproducibility_tests(
     db: AsyncSession = Depends(get_db_session),
     reproducible: Optional[bool] = None,
     limit: int = 50,
-    offset: int = 0
+    offset: int = 0,
 ):
     """List reproducibility test results."""
     try:
         # Placeholder implementation
         return []
-        
+
     except Exception as e:
         logger.error(f"Error listing reproducibility tests: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -118,14 +134,13 @@ async def list_reproducibility_tests(
 
 @router.get("/tests/{test_id}", response_model=ReproducibilityTestResponse)
 async def get_reproducibility_test(
-    test_id: str,
-    db: AsyncSession = Depends(get_db_session)
+    test_id: str, db: AsyncSession = Depends(get_db_session)
 ):
     """Get reproducibility test result by ID."""
     try:
         # Placeholder implementation
         raise HTTPException(status_code=404, detail="Reproducibility test not found")
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -137,7 +152,7 @@ async def get_reproducibility_test(
 async def create_environment_snapshot(
     request: EnvironmentSnapshotRequest,
     background_tasks: BackgroundTasks,
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
 ):
     """Create environment snapshot for reproducibility."""
     try:
@@ -152,16 +167,16 @@ async def create_environment_snapshot(
             environment_info={
                 "python_version": "3.11.5",
                 "os": "Ubuntu 22.04",
-                "architecture": "x86_64"
+                "architecture": "x86_64",
             },
             dependencies={
                 "fastapi": "0.104.1",
                 "sqlalchemy": "2.0.23",
-                "pydantic": "2.5.0"
+                "pydantic": "2.5.0",
             },
-            created_at="2024-01-20T00:00:00Z"
+            created_at="2024-01-20T00:00:00Z",
         )
-        
+
     except Exception as e:
         logger.error(f"Error creating environment snapshot: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -169,15 +184,13 @@ async def create_environment_snapshot(
 
 @router.get("/snapshots", response_model=List[EnvironmentSnapshotResponse])
 async def list_environment_snapshots(
-    db: AsyncSession = Depends(get_db_session),
-    limit: int = 50,
-    offset: int = 0
+    db: AsyncSession = Depends(get_db_session), limit: int = 50, offset: int = 0
 ):
     """List environment snapshots."""
     try:
         # Placeholder implementation
         return []
-        
+
     except Exception as e:
         logger.error(f"Error listing environment snapshots: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -187,7 +200,7 @@ async def list_environment_snapshots(
 async def restore_environment_snapshot(
     snapshot_id: str,
     background_tasks: BackgroundTasks,
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
 ):
     """Restore environment from snapshot."""
     try:
@@ -196,9 +209,9 @@ async def restore_environment_snapshot(
             "restoration_id": "placeholder-restoration-id",
             "snapshot_id": snapshot_id,
             "status": "started",
-            "estimated_completion": "2024-01-20T00:30:00Z"
+            "estimated_completion": "2024-01-20T00:30:00Z",
         }
-        
+
     except Exception as e:
         logger.error(f"Error restoring environment snapshot: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -208,7 +221,7 @@ async def restore_environment_snapshot(
 async def validate_experiment_reproducibility(
     experiment_id: str,
     background_tasks: BackgroundTasks,
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
 ):
     """Validate experiment reproducibility."""
     try:
@@ -221,11 +234,11 @@ async def validate_experiment_reproducibility(
                 "environment_consistency",
                 "dependency_verification",
                 "data_integrity",
-                "code_reproducibility"
+                "code_reproducibility",
             ],
-            "estimated_completion": "2024-01-20T00:15:00Z"
+            "estimated_completion": "2024-01-20T00:15:00Z",
         }
-        
+
     except Exception as e:
         logger.error(f"Error validating experiment reproducibility: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -233,8 +246,7 @@ async def validate_experiment_reproducibility(
 
 @router.get("/reports/reproducibility-summary")
 async def get_reproducibility_summary(
-    db: AsyncSession = Depends(get_db_session),
-    days: int = 30
+    db: AsyncSession = Depends(get_db_session), days: int = 30
 ):
     """Get reproducibility summary report."""
     try:
@@ -247,18 +259,15 @@ async def get_reproducibility_summary(
             "average_score": 0.947,
             "common_issues": [
                 {"issue": "dependency_version_mismatch", "frequency": 2},
-                {"issue": "random_seed_variation", "frequency": 1}
+                {"issue": "random_seed_variation", "frequency": 1},
             ],
-            "trends": {
-                "reproducibility_rate": "stable",
-                "average_score": "improving"
-            },
+            "trends": {"reproducibility_rate": "stable", "average_score": "improving"},
             "recommendations": [
                 "Standardize dependency management",
-                "Implement stricter random seed controls"
-            ]
+                "Implement stricter random seed controls",
+            ],
         }
-        
+
     except Exception as e:
         logger.error(f"Error getting reproducibility summary: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -268,7 +277,7 @@ async def get_reproducibility_summary(
 async def enable_continuous_validation(
     experiment_ids: List[str],
     validation_frequency: str = "daily",
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
 ):
     """Enable continuous reproducibility validation for experiments."""
     try:
@@ -278,9 +287,9 @@ async def enable_continuous_validation(
             "experiment_ids": experiment_ids,
             "frequency": validation_frequency,
             "status": "enabled",
-            "next_validation": "2024-01-21T02:00:00Z"
+            "next_validation": "2024-01-21T02:00:00Z",
         }
-        
+
     except Exception as e:
         logger.error(f"Error enabling continuous validation: {e}")
         raise HTTPException(status_code=500, detail=str(e))

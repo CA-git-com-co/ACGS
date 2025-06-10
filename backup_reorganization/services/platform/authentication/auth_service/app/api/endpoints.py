@@ -25,7 +25,7 @@ SECURE_COOKIE = os.getenv("APP_ENV", "development").lower() == "production"
 # For now, defined here to illustrate the change in get_current_user's signature
 # async def get_current_user_from_cookie_placeholder(request: Request): 
 #     # ... (placeholder code) ...
-#     return models.User(id=1, username="cookieuser", email="test@example.com", hashed_password="xxx", is_active=True, role="user")
+#     return models.User(id=1, username="cookieuser", email="test@example.com", hashed_password = os.getenv("DATABASE_PASSWORD"), is_active=True, role="user")
 
 
 # Updated get_current_active_user to use the (to-be-defined) cookie-based dependency

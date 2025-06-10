@@ -10,6 +10,7 @@ import yaml
 from datetime import datetime
 from typing import Dict, List, Any
 
+
 class MonitoringSetup:
     def __init__(self):
         self.services = [
@@ -18,28 +19,19 @@ class MonitoringSetup:
             {"name": "fv_service", "port": 8003, "path": "/health"},
             {"name": "gs_service", "port": 8004, "path": "/health"},
             {"name": "pgc_service", "port": 8005, "path": "/health"},
-            {"name": "postgres_db", "port": 5433, "path": None}
+            {"name": "postgres_db", "port": 5433, "path": None},
         ]
-    
+
     def create_prometheus_config(self):
         """Create Prometheus monitoring configuration"""
         print("📊 Creating Prometheus Configuration...")
-        
+
         prometheus_config = {
-            "global": {
-                "scrape_interval": "15s",
-                "evaluation_interval": "15s"
-            },
-            "rule_files": [
-                "acgs_pgp_rules.yml"
-            ],
+            "global": {"scrape_interval": "15s", "evaluation_interval": "15s"},
+            "rule_files": ["acgs_pgp_rules.yml"],
             "alerting": {
                 "alertmanagers": [
-                    {
-                        "static_configs": [
-                            {"targets": ["alertmanager:9093"]}
-                        ]
-                    }
+                    {"static_configs": [{"targets": ["alertmanager:9093"]}]}
                 ]
             },
             "scrape_configs": [
@@ -49,40 +41,36 @@ class MonitoringSetup:
                         {
                             "targets": [
                                 "ac_service:8001",
-                                "integrity_service:8002", 
+                                "integrity_service:8002",
                                 "fv_service:8003",
                                 "gs_service:8004",
-                                "pgc_service:8005"
+                                "pgc_service:8005",
                             ]
                         }
                     ],
                     "metrics_path": "/metrics",
-                    "scrape_interval": "10s"
+                    "scrape_interval": "10s",
                 },
                 {
                     "job_name": "postgres",
-                    "static_configs": [
-                        {"targets": ["postgres_exporter:9187"]}
-                    ]
+                    "static_configs": [{"targets": ["postgres_exporter:9187"]}],
                 },
                 {
                     "job_name": "node-exporter",
-                    "static_configs": [
-                        {"targets": ["node_exporter:9100"]}
-                    ]
-                }
-            ]
+                    "static_configs": [{"targets": ["node_exporter:9100"]}],
+                },
+            ],
         }
-        
+
         with open("prometheus.yml", "w") as f:
             yaml.dump(prometheus_config, f, default_flow_style=False)
-        
+
         print("  ✅ Prometheus config created: prometheus.yml")
-    
+
     def create_alerting_rules(self):
         """Create Prometheus alerting rules"""
         print("\n🚨 Creating Alerting Rules...")
-        
+
         alerting_rules = {
             "groups": [
                 {
@@ -95,18 +83,18 @@ class MonitoringSetup:
                             "labels": {"severity": "critical"},
                             "annotations": {
                                 "summary": "ACGS-PGP service {{ $labels.instance }} is down",
-                                "description": "Service {{ $labels.instance }} has been down for more than 1 minute"
-                            }
+                                "description": "Service {{ $labels.instance }} has been down for more than 1 minute",
+                            },
                         },
                         {
                             "alert": "HighResponseTime",
-                            "expr": "http_request_duration_seconds{quantile=\"0.95\"} > 1",
+                            "expr": 'http_request_duration_seconds{quantile="0.95"} > 1',
                             "for": "5m",
                             "labels": {"severity": "warning"},
                             "annotations": {
                                 "summary": "High response time on {{ $labels.instance }}",
-                                "description": "95th percentile response time is {{ $value }}s"
-                            }
+                                "description": "95th percentile response time is {{ $value }}s",
+                            },
                         },
                         {
                             "alert": "DatabaseConnectionsHigh",
@@ -115,8 +103,8 @@ class MonitoringSetup:
                             "labels": {"severity": "warning"},
                             "annotations": {
                                 "summary": "High database connections",
-                                "description": "Database has {{ $value }} active connections"
-                            }
+                                "description": "Database has {{ $value }} active connections",
+                            },
                         },
                         {
                             "alert": "ConstitutionalViolation",
@@ -125,23 +113,23 @@ class MonitoringSetup:
                             "labels": {"severity": "critical"},
                             "annotations": {
                                 "summary": "Constitutional violation detected",
-                                "description": "{{ $value }} constitutional violations detected in the last 5 minutes"
-                            }
-                        }
-                    ]
+                                "description": "{{ $value }} constitutional violations detected in the last 5 minutes",
+                            },
+                        },
+                    ],
                 }
             ]
         }
-        
+
         with open("acgs_pgp_rules.yml", "w") as f:
             yaml.dump(alerting_rules, f, default_flow_style=False)
-        
+
         print("  ✅ Alerting rules created: acgs_pgp_rules.yml")
-    
+
     def create_grafana_dashboard(self):
         """Create Grafana dashboard configuration"""
         print("\n📈 Creating Grafana Dashboard...")
-        
+
         dashboard = {
             "dashboard": {
                 "id": None,
@@ -153,13 +141,8 @@ class MonitoringSetup:
                         "id": 1,
                         "title": "Service Health",
                         "type": "stat",
-                        "targets": [
-                            {
-                                "expr": "up",
-                                "legendFormat": "{{ instance }}"
-                            }
-                        ],
-                        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+                        "targets": [{"expr": "up", "legendFormat": "{{ instance }}"}],
+                        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
                     },
                     {
                         "id": 2,
@@ -167,11 +150,11 @@ class MonitoringSetup:
                         "type": "graph",
                         "targets": [
                             {
-                                "expr": "http_request_duration_seconds{quantile=\"0.95\"}",
-                                "legendFormat": "95th percentile"
+                                "expr": 'http_request_duration_seconds{quantile="0.95"}',
+                                "legendFormat": "95th percentile",
                             }
                         ],
-                        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+                        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
                     },
                     {
                         "id": 3,
@@ -180,27 +163,27 @@ class MonitoringSetup:
                         "targets": [
                             {
                                 "expr": "acgs_constitutional_compliance_rate",
-                                "legendFormat": "Compliance Rate"
+                                "legendFormat": "Compliance Rate",
                             }
                         ],
-                        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
-                    }
+                        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+                    },
                 ],
                 "time": {"from": "now-1h", "to": "now"},
-                "refresh": "5s"
+                "refresh": "5s",
             }
         }
-        
+
         with open("acgs_pgp_dashboard.json", "w") as f:
             json.dump(dashboard, f, indent=2)
-        
+
         print("  ✅ Grafana dashboard created: acgs_pgp_dashboard.json")
-    
+
     def create_health_check_script(self):
         """Create comprehensive health check script"""
         print("\n🏥 Creating Health Check Script...")
-        
-        health_script = '''#!/bin/bash
+
+        health_script = """#!/bin/bash
 # ACGS-PGP Comprehensive Health Check Script
 
 echo "🏥 ACGS-PGP System Health Check"
@@ -260,18 +243,18 @@ else
     echo "  Status: ❌ System degraded ($health_percentage%)"
     exit 2
 fi
-'''
-        
+"""
+
         with open("health_check.sh", "w") as f:
             f.write(health_script)
-        
+
         os.chmod("health_check.sh", 0o755)
         print("  ✅ Health check script created: health_check.sh")
-    
+
     def create_monitoring_docker_compose(self):
         """Create Docker Compose for monitoring stack"""
         print("\n🐳 Creating Monitoring Docker Compose...")
-        
+
         monitoring_compose = {
             "version": "3.8",
             "services": {
@@ -281,7 +264,7 @@ fi
                     "ports": ["9090:9090"],
                     "volumes": [
                         "./prometheus.yml:/etc/prometheus/prometheus.yml",
-                        "./acgs_pgp_rules.yml:/etc/prometheus/acgs_pgp_rules.yml"
+                        "./acgs_pgp_rules.yml:/etc/prometheus/acgs_pgp_rules.yml",
                     ],
                     "command": [
                         "--config.file=/etc/prometheus/prometheus.yml",
@@ -289,19 +272,15 @@ fi
                         "--web.console.libraries=/etc/prometheus/console_libraries",
                         "--web.console.templates=/etc/prometheus/consoles",
                         "--storage.tsdb.retention.time=200h",
-                        "--web.enable-lifecycle"
-                    ]
+                        "--web.enable-lifecycle",
+                    ],
                 },
                 "grafana": {
                     "image": "grafana/grafana:latest",
                     "container_name": "acgs_grafana",
                     "ports": ["3001:3000"],
-                    "environment": [
-                        "GF_SECURITY_ADMIN_PASSWORD=admin123"
-                    ],
-                    "volumes": [
-                        "grafana_data:/var/lib/grafana"
-                    ]
+                    "environment": ["GF_SECURITY_ADMIN_PASSWORD=admin123"],
+                    "volumes": ["grafana_data:/var/lib/grafana"],
                 },
                 "alertmanager": {
                     "image": "prom/alertmanager:latest",
@@ -309,39 +288,37 @@ fi
                     "ports": ["9093:9093"],
                     "volumes": [
                         "./alertmanager.yml:/etc/alertmanager/alertmanager.yml"
-                    ]
+                    ],
                 },
                 "node_exporter": {
                     "image": "prom/node-exporter:latest",
                     "container_name": "acgs_node_exporter",
-                    "ports": ["9100:9100"]
-                }
+                    "ports": ["9100:9100"],
+                },
             },
-            "volumes": {
-                "grafana_data": {}
-            }
+            "volumes": {"grafana_data": {}},
         }
-        
+
         with open("docker-compose.monitoring.yml", "w") as f:
             yaml.dump(monitoring_compose, f, default_flow_style=False)
-        
+
         print("  ✅ Monitoring Docker Compose created: docker-compose.monitoring.yml")
-    
+
     def create_alertmanager_config(self):
         """Create Alertmanager configuration"""
         print("\n📧 Creating Alertmanager Configuration...")
-        
+
         alertmanager_config = {
             "global": {
                 "smtp_smarthost": "localhost:587",
-                "smtp_from": "alerts@acgs-pgp.com"
+                "smtp_from": "alerts@acgs-pgp.com",
             },
             "route": {
                 "group_by": ["alertname"],
                 "group_wait": "10s",
                 "group_interval": "10s",
                 "repeat_interval": "1h",
-                "receiver": "web.hook"
+                "receiver": "web.hook",
             },
             "receivers": [
                 {
@@ -350,32 +327,32 @@ fi
                         {
                             "to": "admin@acgs-pgp.com",
                             "subject": "ACGS-PGP Alert: {{ .GroupLabels.alertname }}",
-                            "body": "{{ range .Alerts }}{{ .Annotations.description }}{{ end }}"
+                            "body": "{{ range .Alerts }}{{ .Annotations.description }}{{ end }}",
                         }
-                    ]
+                    ],
                 }
-            ]
+            ],
         }
-        
+
         with open("alertmanager.yml", "w") as f:
             yaml.dump(alertmanager_config, f, default_flow_style=False)
-        
+
         print("  ✅ Alertmanager config created: alertmanager.yml")
-    
+
     def setup_monitoring_and_alerting(self):
         """Main setup function"""
         print("🚀 Setting up Monitoring and Alerting for ACGS-PGP")
         print("=" * 60)
-        
+
         self.create_prometheus_config()
         self.create_alerting_rules()
         self.create_grafana_dashboard()
         self.create_health_check_script()
         self.create_monitoring_docker_compose()
         self.create_alertmanager_config()
-        
+
         # Create startup script
-        startup_script = '''#!/bin/bash
+        startup_script = """#!/bin/bash
 # Start ACGS-PGP monitoring stack
 
 echo "🚀 Starting ACGS-PGP Monitoring Stack..."
@@ -393,13 +370,13 @@ sleep 10
 
 # Run initial health check
 ./health_check.sh
-'''
-        
+"""
+
         with open("start_monitoring.sh", "w") as f:
             f.write(startup_script)
-        
+
         os.chmod("start_monitoring.sh", 0o755)
-        
+
         print("\n" + "=" * 60)
         print("✅ Monitoring and Alerting Setup Complete!")
         print("\nCreated files:")
@@ -416,9 +393,11 @@ sleep 10
         print("3. Import dashboard: acgs_pgp_dashboard.json")
         print("4. Configure email alerts in alertmanager.yml")
 
+
 def main():
     setup = MonitoringSetup()
     setup.setup_monitoring_and_alerting()
+
 
 if __name__ == "__main__":
     main()

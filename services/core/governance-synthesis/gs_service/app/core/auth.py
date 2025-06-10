@@ -6,12 +6,14 @@ from services.shared.auth import (
     require_gs_admin,
     require_internal_service,
     RoleChecker,
-    User
+    User,
 )
 
 # GS service specific role checkers
 require_gs_admin = require_gs_admin
-require_synthesis_triggerer = RoleChecker(allowed_roles=["gs_admin", "internal_service", "admin"])
+require_synthesis_triggerer = RoleChecker(
+    allowed_roles=["gs_admin", "internal_service", "admin"]
+)
 
 # Backward compatibility aliases for existing code
 get_current_user_placeholder = get_current_user_from_token

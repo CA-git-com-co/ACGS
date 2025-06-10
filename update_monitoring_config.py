@@ -10,138 +10,130 @@ import json
 import logging
 from pathlib import Path
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 class MonitoringConfigUpdater:
     def __init__(self, project_root: str = "/home/dislove/ACGS-1"):
         self.project_root = Path(project_root)
         self.monitoring_dir = self.project_root / "infrastructure/monitoring"
-        
+
         # Service configuration for monitoring
         self.services = {
-            "authentication": {"port": 8000, "path": "services/platform/authentication"},
-            "constitutional-ai": {"port": 8001, "path": "services/core/constitutional-ai"},
-            "governance-synthesis": {"port": 8002, "path": "services/core/governance-synthesis"},
-            "policy-governance": {"port": 8003, "path": "services/core/policy-governance"},
-            "formal-verification": {"port": 8004, "path": "services/core/formal-verification"},
+            "authentication": {
+                "port": 8000,
+                "path": "services/platform/authentication",
+            },
+            "constitutional-ai": {
+                "port": 8001,
+                "path": "services/core/constitutional-ai",
+            },
+            "governance-synthesis": {
+                "port": 8002,
+                "path": "services/core/governance-synthesis",
+            },
+            "policy-governance": {
+                "port": 8003,
+                "path": "services/core/policy-governance",
+            },
+            "formal-verification": {
+                "port": 8004,
+                "path": "services/core/formal-verification",
+            },
             "integrity": {"port": 8005, "path": "services/platform/integrity"},
-            "evolutionary-computation": {"port": 8006, "path": "services/core/evolutionary-computation"}
+            "evolutionary-computation": {
+                "port": 8006,
+                "path": "services/core/evolutionary-computation",
+            },
         }
 
     def update_prometheus_config(self):
         """Update Prometheus configuration for new service structure"""
         logger.info("Updating Prometheus configuration...")
-        
+
         prometheus_config = {
-            "global": {
-                "scrape_interval": "15s",
-                "evaluation_interval": "15s"
-            },
-            "rule_files": [
-                "rules/*.yml"
-            ],
+            "global": {"scrape_interval": "15s", "evaluation_interval": "15s"},
+            "rule_files": ["rules/*.yml"],
             "alerting": {
                 "alertmanagers": [
-                    {
-                        "static_configs": [
-                            {
-                                "targets": ["alertmanager:9093"]
-                            }
-                        ]
-                    }
+                    {"static_configs": [{"targets": ["alertmanager:9093"]}]}
                 ]
             },
             "scrape_configs": [
                 {
                     "job_name": "prometheus",
-                    "static_configs": [
-                        {
-                            "targets": ["localhost:9090"]
-                        }
-                    ]
+                    "static_configs": [{"targets": ["localhost:9090"]}],
                 }
-            ]
+            ],
         }
-        
+
         # Add ACGS-1 core services
         for service_name, config in self.services.items():
-            prometheus_config["scrape_configs"].append({
-                "job_name": f"acgs-{service_name}",
-                "static_configs": [
-                    {
-                        "targets": [f"localhost:{config['port']}"]
-                    }
-                ],
-                "metrics_path": "/metrics",
-                "scrape_interval": "10s",
-                "scrape_timeout": "5s",
-                "honor_labels": True,
-                "params": {
-                    "format": ["prometheus"]
+            prometheus_config["scrape_configs"].append(
+                {
+                    "job_name": f"acgs-{service_name}",
+                    "static_configs": [{"targets": [f"localhost:{config['port']}"]}],
+                    "metrics_path": "/metrics",
+                    "scrape_interval": "10s",
+                    "scrape_timeout": "5s",
+                    "honor_labels": True,
+                    "params": {"format": ["prometheus"]},
                 }
-            })
-        
+            )
+
         # Add blockchain monitoring
-        prometheus_config["scrape_configs"].extend([
-            {
-                "job_name": "solana-validator",
-                "static_configs": [
-                    {
-                        "targets": ["api.devnet.solana.com:443"]
-                    }
-                ],
-                "metrics_path": "/",
-                "scheme": "https",
-                "scrape_interval": "30s"
-            },
-            {
-                "job_name": "quantumagi-programs",
-                "static_configs": [
-                    {
-                        "targets": ["localhost:8080"]  # Custom metrics endpoint
-                    }
-                ],
-                "metrics_path": "/blockchain/metrics",
-                "scrape_interval": "15s"
-            }
-        ])
-        
+        prometheus_config["scrape_configs"].extend(
+            [
+                {
+                    "job_name": "solana-validator",
+                    "static_configs": [{"targets": ["api.devnet.solana.com:443"]}],
+                    "metrics_path": "/",
+                    "scheme": "https",
+                    "scrape_interval": "30s",
+                },
+                {
+                    "job_name": "quantumagi-programs",
+                    "static_configs": [
+                        {"targets": ["localhost:8080"]}  # Custom metrics endpoint
+                    ],
+                    "metrics_path": "/blockchain/metrics",
+                    "scrape_interval": "15s",
+                },
+            ]
+        )
+
         # Add infrastructure monitoring
-        prometheus_config["scrape_configs"].extend([
-            {
-                "job_name": "node-exporter",
-                "static_configs": [
-                    {
-                        "targets": ["localhost:9100"]
-                    }
-                ]
-            },
-            {
-                "job_name": "docker",
-                "static_configs": [
-                    {
-                        "targets": ["localhost:9323"]
-                    }
-                ]
-            }
-        ])
-        
+        prometheus_config["scrape_configs"].extend(
+            [
+                {
+                    "job_name": "node-exporter",
+                    "static_configs": [{"targets": ["localhost:9100"]}],
+                },
+                {
+                    "job_name": "docker",
+                    "static_configs": [{"targets": ["localhost:9323"]}],
+                },
+            ]
+        )
+
         # Create monitoring directory
         self.monitoring_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Save Prometheus configuration
         prometheus_file = self.monitoring_dir / "prometheus.yml"
-        with open(prometheus_file, 'w') as f:
+        with open(prometheus_file, "w") as f:
             yaml.dump(prometheus_config, f, default_flow_style=False)
-        
+
         logger.info("✅ Updated Prometheus configuration")
         return True
 
     def create_grafana_dashboards(self):
         """Create Grafana dashboards for ACGS-1 services"""
         logger.info("Creating Grafana dashboards...")
-        
+
         # ACGS-1 Overview Dashboard
         overview_dashboard = {
             "dashboard": {
@@ -155,25 +147,20 @@ class MonitoringConfigUpdater:
                         "title": "Service Health Status",
                         "type": "stat",
                         "targets": [
-                            {
-                                "expr": f"up{{job=~\"acgs-.*\"}}",
-                                "legendFormat": "{{job}}"
-                            }
+                            {"expr": f'up{{job=~"acgs-.*"}}', "legendFormat": "{{job}}"}
                         ],
                         "fieldConfig": {
                             "defaults": {
-                                "color": {
-                                    "mode": "thresholds"
-                                },
+                                "color": {"mode": "thresholds"},
                                 "thresholds": {
                                     "steps": [
                                         {"color": "red", "value": 0},
-                                        {"color": "green", "value": 1}
+                                        {"color": "green", "value": 1},
                                     ]
-                                }
+                                },
                             }
                         },
-                        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+                        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
                     },
                     {
                         "id": 2,
@@ -181,17 +168,12 @@ class MonitoringConfigUpdater:
                         "type": "graph",
                         "targets": [
                             {
-                                "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~\"acgs-.*\"}[5m]))",
-                                "legendFormat": "95th percentile - {{job}}"
+                                "expr": 'histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~"acgs-.*"}[5m]))',
+                                "legendFormat": "95th percentile - {{job}}",
                             }
                         ],
-                        "yAxes": [
-                            {
-                                "label": "Seconds",
-                                "max": 2.0  # 2s target
-                            }
-                        ],
-                        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+                        "yAxes": [{"label": "Seconds", "max": 2.0}],  # 2s target
+                        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
                     },
                     {
                         "id": 3,
@@ -199,21 +181,18 @@ class MonitoringConfigUpdater:
                         "type": "graph",
                         "targets": [
                             {
-                                "expr": "rate(http_requests_total{job=~\"acgs-.*\"}[5m])",
-                                "legendFormat": "{{job}} - {{method}}"
+                                "expr": 'rate(http_requests_total{job=~"acgs-.*"}[5m])',
+                                "legendFormat": "{{job}} - {{method}}",
                             }
                         ],
-                        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
-                    }
+                        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+                    },
                 ],
-                "time": {
-                    "from": "now-1h",
-                    "to": "now"
-                },
-                "refresh": "10s"
+                "time": {"from": "now-1h", "to": "now"},
+                "refresh": "10s",
             }
         }
-        
+
         # Constitutional Governance Dashboard
         governance_dashboard = {
             "dashboard": {
@@ -228,10 +207,10 @@ class MonitoringConfigUpdater:
                         "targets": [
                             {
                                 "expr": "rate(acgs_policies_created_total[5m])",
-                                "legendFormat": "Policies per second"
+                                "legendFormat": "Policies per second",
                             }
                         ],
-                        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+                        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
                     },
                     {
                         "id": 2,
@@ -240,7 +219,7 @@ class MonitoringConfigUpdater:
                         "targets": [
                             {
                                 "expr": "acgs_constitutional_compliance_rate",
-                                "legendFormat": "Compliance %"
+                                "legendFormat": "Compliance %",
                             }
                         ],
                         "fieldConfig": {
@@ -252,12 +231,12 @@ class MonitoringConfigUpdater:
                                     "steps": [
                                         {"color": "red", "value": 0},
                                         {"color": "yellow", "value": 90},
-                                        {"color": "green", "value": 95}
+                                        {"color": "green", "value": 95},
                                     ]
-                                }
+                                },
                             }
                         },
-                        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+                        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
                     },
                     {
                         "id": 3,
@@ -266,21 +245,16 @@ class MonitoringConfigUpdater:
                         "targets": [
                             {
                                 "expr": "acgs_governance_action_cost_sol",
-                                "legendFormat": "Cost per action"
+                                "legendFormat": "Cost per action",
                             }
                         ],
-                        "yAxes": [
-                            {
-                                "label": "SOL",
-                                "max": 0.01  # Target <0.01 SOL
-                            }
-                        ],
-                        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
-                    }
-                ]
+                        "yAxes": [{"label": "SOL", "max": 0.01}],  # Target <0.01 SOL
+                        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+                    },
+                ],
             }
         }
-        
+
         # Blockchain Dashboard
         blockchain_dashboard = {
             "dashboard": {
@@ -295,10 +269,10 @@ class MonitoringConfigUpdater:
                         "targets": [
                             {
                                 "expr": "solana_network_health",
-                                "legendFormat": "Network Status"
+                                "legendFormat": "Network Status",
                             }
                         ],
-                        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+                        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
                     },
                     {
                         "id": 2,
@@ -307,35 +281,35 @@ class MonitoringConfigUpdater:
                         "targets": [
                             {
                                 "expr": "rate(quantumagi_program_invocations_total[5m])",
-                                "legendFormat": "{{program}} invocations/sec"
+                                "legendFormat": "{{program}} invocations/sec",
                             }
                         ],
-                        "gridPos": {"h": 8, "w": 18, "x": 6, "y": 0}
-                    }
-                ]
+                        "gridPos": {"h": 8, "w": 18, "x": 6, "y": 0},
+                    },
+                ],
             }
         }
-        
+
         # Save dashboards
         dashboards_dir = self.monitoring_dir / "grafana/dashboards"
         dashboards_dir.mkdir(parents=True, exist_ok=True)
-        
-        with open(dashboards_dir / "acgs_overview.json", 'w') as f:
+
+        with open(dashboards_dir / "acgs_overview.json", "w") as f:
             json.dump(overview_dashboard, f, indent=2)
-        
-        with open(dashboards_dir / "constitutional_governance.json", 'w') as f:
+
+        with open(dashboards_dir / "constitutional_governance.json", "w") as f:
             json.dump(governance_dashboard, f, indent=2)
-        
-        with open(dashboards_dir / "blockchain_metrics.json", 'w') as f:
+
+        with open(dashboards_dir / "blockchain_metrics.json", "w") as f:
             json.dump(blockchain_dashboard, f, indent=2)
-        
+
         logger.info("✅ Created Grafana dashboards")
         return True
 
     def create_alerting_rules(self):
         """Create alerting rules for ACGS-1 services"""
         logger.info("Creating alerting rules...")
-        
+
         alerting_rules = {
             "groups": [
                 {
@@ -343,29 +317,25 @@ class MonitoringConfigUpdater:
                     "rules": [
                         {
                             "alert": "ServiceDown",
-                            "expr": "up{job=~\"acgs-.*\"} == 0",
+                            "expr": 'up{job=~"acgs-.*"} == 0',
                             "for": "1m",
-                            "labels": {
-                                "severity": "critical"
-                            },
+                            "labels": {"severity": "critical"},
                             "annotations": {
                                 "summary": "ACGS service {{ $labels.job }} is down",
-                                "description": "Service {{ $labels.job }} has been down for more than 1 minute."
-                            }
+                                "description": "Service {{ $labels.job }} has been down for more than 1 minute.",
+                            },
                         },
                         {
                             "alert": "HighResponseTime",
-                            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~\"acgs-.*\"}[5m])) > 2",
+                            "expr": 'histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~"acgs-.*"}[5m])) > 2',
                             "for": "5m",
-                            "labels": {
-                                "severity": "warning"
-                            },
+                            "labels": {"severity": "warning"},
                             "annotations": {
                                 "summary": "High response time for {{ $labels.job }}",
-                                "description": "95th percentile response time is {{ $value }}s, exceeding 2s target."
-                            }
-                        }
-                    ]
+                                "description": "95th percentile response time is {{ $value }}s, exceeding 2s target.",
+                            },
+                        },
+                    ],
                 },
                 {
                     "name": "acgs_governance",
@@ -374,27 +344,23 @@ class MonitoringConfigUpdater:
                             "alert": "LowConstitutionalCompliance",
                             "expr": "acgs_constitutional_compliance_rate < 95",
                             "for": "2m",
-                            "labels": {
-                                "severity": "critical"
-                            },
+                            "labels": {"severity": "critical"},
                             "annotations": {
                                 "summary": "Constitutional compliance below threshold",
-                                "description": "Constitutional compliance rate is {{ $value }}%, below 95% threshold."
-                            }
+                                "description": "Constitutional compliance rate is {{ $value }}%, below 95% threshold.",
+                            },
                         },
                         {
                             "alert": "HighGovernanceCosts",
                             "expr": "acgs_governance_action_cost_sol > 0.01",
                             "for": "1m",
-                            "labels": {
-                                "severity": "warning"
-                            },
+                            "labels": {"severity": "warning"},
                             "annotations": {
                                 "summary": "Governance action costs too high",
-                                "description": "Governance action cost is {{ $value }} SOL, exceeding 0.01 SOL target."
-                            }
-                        }
-                    ]
+                                "description": "Governance action cost is {{ $value }} SOL, exceeding 0.01 SOL target.",
+                            },
+                        },
+                    ],
                 },
                 {
                     "name": "acgs_blockchain",
@@ -403,32 +369,30 @@ class MonitoringConfigUpdater:
                             "alert": "QuantumagiProgramError",
                             "expr": "rate(quantumagi_program_errors_total[5m]) > 0.1",
                             "for": "2m",
-                            "labels": {
-                                "severity": "critical"
-                            },
+                            "labels": {"severity": "critical"},
                             "annotations": {
                                 "summary": "High error rate in Quantumagi programs",
-                                "description": "Error rate is {{ $value }} errors/sec in {{ $labels.program }}."
-                            }
+                                "description": "Error rate is {{ $value }} errors/sec in {{ $labels.program }}.",
+                            },
                         }
-                    ]
-                }
+                    ],
+                },
             ]
         }
-        
+
         rules_dir = self.monitoring_dir / "prometheus/rules"
         rules_dir.mkdir(parents=True, exist_ok=True)
-        
-        with open(rules_dir / "acgs_alerts.yml", 'w') as f:
+
+        with open(rules_dir / "acgs_alerts.yml", "w") as f:
             yaml.dump(alerting_rules, f, default_flow_style=False)
-        
+
         logger.info("✅ Created alerting rules")
         return True
 
     def create_health_check_script(self):
         """Create comprehensive health check script"""
         logger.info("Creating health check script...")
-        
+
         health_check_script = """#!/bin/bash
 # ACGS-1 Comprehensive Health Check Script
 # Validates all services and blockchain components
@@ -586,23 +550,23 @@ else
     exit 2
 fi
 """
-        
+
         health_check_file = self.project_root / "scripts/comprehensive_health_check.sh"
         health_check_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(health_check_file, 'w') as f:
+
+        with open(health_check_file, "w") as f:
             f.write(health_check_script)
-        
+
         # Make script executable
         health_check_file.chmod(0o755)
-        
+
         logger.info("✅ Created health check script")
         return True
 
     def create_docker_monitoring_compose(self):
         """Create Docker Compose for monitoring stack"""
         logger.info("Creating monitoring Docker Compose...")
-        
+
         monitoring_compose = {
             "version": "3.8",
             "services": {
@@ -613,7 +577,7 @@ fi
                     "volumes": [
                         "./prometheus.yml:/etc/prometheus/prometheus.yml",
                         "./prometheus/rules:/etc/prometheus/rules",
-                        "prometheus_data:/prometheus"
+                        "prometheus_data:/prometheus",
                     ],
                     "command": [
                         "--config.file=/etc/prometheus/prometheus.yml",
@@ -621,9 +585,9 @@ fi
                         "--web.console.libraries=/etc/prometheus/console_libraries",
                         "--web.console.templates=/etc/prometheus/consoles",
                         "--storage.tsdb.retention.time=200h",
-                        "--web.enable-lifecycle"
+                        "--web.enable-lifecycle",
                     ],
-                    "networks": ["acgs_monitoring"]
+                    "networks": ["acgs_monitoring"],
                 },
                 "grafana": {
                     "image": "grafana/grafana:latest",
@@ -632,12 +596,10 @@ fi
                     "volumes": [
                         "grafana_data:/var/lib/grafana",
                         "./grafana/dashboards:/etc/grafana/provisioning/dashboards",
-                        "./grafana/datasources:/etc/grafana/provisioning/datasources"
+                        "./grafana/datasources:/etc/grafana/provisioning/datasources",
                     ],
-                    "environment": {
-                        "GF_SECURITY_ADMIN_PASSWORD": "acgs_admin_2024"
-                    },
-                    "networks": ["acgs_monitoring"]
+                    "environment": {"GF_SECURITY_ADMIN_PASSWORD": "acgs_admin_2024"},
+                    "networks": ["acgs_monitoring"],
                 },
                 "alertmanager": {
                     "image": "prom/alertmanager:latest",
@@ -646,7 +608,7 @@ fi
                     "volumes": [
                         "./alertmanager.yml:/etc/alertmanager/alertmanager.yml"
                     ],
-                    "networks": ["acgs_monitoring"]
+                    "networks": ["acgs_monitoring"],
                 },
                 "node-exporter": {
                     "image": "prom/node-exporter:latest",
@@ -655,61 +617,59 @@ fi
                     "volumes": [
                         "/proc:/host/proc:ro",
                         "/sys:/host/sys:ro",
-                        "/:/rootfs:ro"
+                        "/:/rootfs:ro",
                     ],
                     "command": [
                         "--path.procfs=/host/proc",
                         "--path.rootfs=/rootfs",
                         "--path.sysfs=/host/sys",
-                        "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+                        "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)",
                     ],
-                    "networks": ["acgs_monitoring"]
-                }
+                    "networks": ["acgs_monitoring"],
+                },
             },
-            "networks": {
-                "acgs_monitoring": {
-                    "driver": "bridge"
-                }
-            },
-            "volumes": {
-                "prometheus_data": {},
-                "grafana_data": {}
-            }
+            "networks": {"acgs_monitoring": {"driver": "bridge"}},
+            "volumes": {"prometheus_data": {}, "grafana_data": {}},
         }
-        
+
         compose_file = self.monitoring_dir / "docker-compose.monitoring.yml"
-        with open(compose_file, 'w') as f:
+        with open(compose_file, "w") as f:
             yaml.dump(monitoring_compose, f, default_flow_style=False)
-        
+
         logger.info("✅ Created monitoring Docker Compose")
         return True
 
     def run_monitoring_updates(self):
         """Execute all monitoring configuration updates"""
         logger.info("Starting monitoring and observability configuration updates...")
-        
+
         try:
             results = {
                 "prometheus_config": self.update_prometheus_config(),
                 "grafana_dashboards": self.create_grafana_dashboards(),
                 "alerting_rules": self.create_alerting_rules(),
                 "health_check_script": self.create_health_check_script(),
-                "monitoring_compose": self.create_docker_monitoring_compose()
+                "monitoring_compose": self.create_docker_monitoring_compose(),
             }
-            
+
             success_count = sum(results.values())
             total_count = len(results)
-            
+
             if success_count == total_count:
-                logger.info("✅ All monitoring configuration updates completed successfully!")
+                logger.info(
+                    "✅ All monitoring configuration updates completed successfully!"
+                )
             else:
-                logger.warning(f"⚠️ {success_count}/{total_count} monitoring updates completed")
-            
+                logger.warning(
+                    f"⚠️ {success_count}/{total_count} monitoring updates completed"
+                )
+
             return success_count == total_count
-            
+
         except Exception as e:
             logger.error(f"Monitoring configuration update failed: {e}")
             return False
+
 
 if __name__ == "__main__":
     updater = MonitoringConfigUpdater()

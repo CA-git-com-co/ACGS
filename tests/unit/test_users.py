@@ -9,15 +9,18 @@ from unittest.mock import MagicMock, Mock
 import time
 import json
 
+
 # Mock settings for testing
 class MockSettings:
     API_V1_STR = "/api/v1"
+
 
 settings = MockSettings()
 
 # Mock user data store for testing
 mock_users_db = {}
 mock_tokens_db = {}
+
 
 class MockResponse:
     def __init__(self, status_code: int, json_data: dict = None):
@@ -26,6 +29,7 @@ class MockResponse:
 
     def json(self):
         return self._json_data
+
 
 class MockTestClient:
     def __init__(self):
@@ -59,7 +63,7 @@ class MockTestClient:
             "id": user_id,
             "email": email,
             "password": user_data.get("password"),
-            "is_active": True
+            "is_active": True,
         }
         return MockResponse(200, {"id": user_id, "email": email})
 
@@ -77,10 +81,7 @@ class MockTestClient:
         token = f"mock_token_{uuid4()}"
         mock_tokens_db[token] = {"user_email": username, "exp": time.time() + 3600}
 
-        return MockResponse(200, {
-            "access_token": token,
-            "token_type": "bearer"
-        })
+        return MockResponse(200, {"access_token": token, "token_type": "bearer"})
 
     def _handle_auth_register(self, user_data: dict):
         email = user_data.get("email")
@@ -96,7 +97,7 @@ class MockTestClient:
             "username": username,
             "full_name": user_data.get("full_name"),
             "password": user_data.get("password"),
-            "is_active": True
+            "is_active": True,
         }
         return MockResponse(201, {"id": user_id, "email": email, "username": username})
 
@@ -127,13 +128,16 @@ class MockTestClient:
         # Find user associated with token (simplified)
         for email, user_data in mock_users_db.items():
             if user_data.get("username"):  # Return first authenticated user
-                return MockResponse(200, {
-                    "id": user_data["id"],
-                    "email": user_data["email"],
-                    "username": user_data["username"],
-                    "full_name": user_data.get("full_name"),
-                    "is_active": user_data["is_active"]
-                })
+                return MockResponse(
+                    200,
+                    {
+                        "id": user_data["id"],
+                        "email": user_data["email"],
+                        "username": user_data["username"],
+                        "full_name": user_data.get("full_name"),
+                        "is_active": user_data["is_active"],
+                    },
+                )
 
         return MockResponse(401, {"detail": "User not found"})
 
@@ -209,10 +213,7 @@ def test_login_wrong_password(client, random_user_payload: dict):
 
 def test_login_nonexistent_user(client):
     """Test login with nonexistent user fails."""
-    login_data = {
-        "username": "nonexistent@example.com",
-        "password": "testpassword123"
-    }
+    login_data = {"username": "nonexistent@example.com", "password": "testpassword123"}
     login_url = f"{settings.API_V1_STR}/login/access-token"
     response = client.post(login_url, data=login_data)
     assert response.status_code == 401
@@ -226,7 +227,7 @@ def test_user_registration_flow(async_client, random_user_payload: dict):
         "username": random_user_payload["email"].split("@")[0] + "_usr",
         "email": random_user_payload["email"],
         "password": random_user_payload["password"],
-        "full_name": "Test User"
+        "full_name": "Test User",
     }
 
     register_url = f"{API_V1_AUTH_PREFIX}/register"
@@ -246,7 +247,7 @@ def test_user_authentication_flow(async_client, random_user_payload: dict):
         "username": random_user_payload["email"].split("@")[0] + "_usr",
         "email": random_user_payload["email"],
         "password": random_user_payload["password"],
-        "full_name": "Test User"
+        "full_name": "Test User",
     }
 
     register_url = f"{API_V1_AUTH_PREFIX}/register"
@@ -271,7 +272,7 @@ def test_get_current_user_authenticated(async_client, random_user_payload: dict)
         "username": random_user_payload["email"].split("@")[0] + "_usr",
         "email": random_user_payload["email"],
         "password": random_user_payload["password"],
-        "full_name": "Test User"
+        "full_name": "Test User",
     }
 
     register_url = f"{API_V1_AUTH_PREFIX}/register"
@@ -309,7 +310,7 @@ def test_user_data_validation():
     valid_emails = [
         "test@example.com",
         "user.name@domain.co.uk",
-        "test+tag@example.org"
+        "test+tag@example.org",
     ]
 
     for email in valid_emails:
@@ -317,11 +318,7 @@ def test_user_data_validation():
         assert "." in email.split("@")[1], f"Email {email} should have domain"
 
     # Test password requirements
-    valid_passwords = [
-        "testpassword123",
-        "SecurePass!@#",
-        "MyPassword2024"
-    ]
+    valid_passwords = ["testpassword123", "SecurePass!@#", "MyPassword2024"]
 
     for password in valid_passwords:
         assert len(password) >= 8, f"Password {password} should be at least 8 chars"

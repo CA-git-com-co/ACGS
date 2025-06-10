@@ -26,12 +26,12 @@ from .core.security_hardening import SecurityHardeningRecommendations
 
 __all__ = [
     "AdversarialTestingFramework",
-    "ConstitutionalAttackTester", 
+    "ConstitutionalAttackTester",
     "PolicyPoisoningDetector",
     "Z3BypassTester",
     "LLMSecurityTester",
     "CrossServiceVulnerabilityScanner",
     "AutomatedVulnerabilityScanner",
     "StressTestingProtocol",
-    "SecurityHardeningRecommendations"
+    "SecurityHardeningRecommendations",
 ]

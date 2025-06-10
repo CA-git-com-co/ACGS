@@ -1,16 +1,13 @@
 import math
 from typing import List, Dict, Tuple
-import numpy as np # Added for type hinting and example matrix
+import numpy as np  # Added for type hinting and example matrix
 
-from .models import (
-    NeuronActivationInput,
-    AnalyzedNeuronActivation,
-    WINAWeightOutput
-)
-from .svd_utils import apply_svd_transformation # Added SVD import
+from .models import NeuronActivationInput, AnalyzedNeuronActivation, WINAWeightOutput
+from .svd_utils import apply_svd_transformation  # Added SVD import
+
 
 async def analyze_neuron_activations(
-    activation_input: NeuronActivationInput
+    activation_input: NeuronActivationInput,
 ) -> List[AnalyzedNeuronActivation]:
     """
     Analyzes raw neuron activations to compute summary statistics.
@@ -33,27 +30,32 @@ async def analyze_neuron_activations(
         else:
             n = len(activations)
             mean_activation = sum(activations) / n if n > 0 else 0.0
-            
+
             # Calculate variance
             if n > 1:
-                variance_activation = sum((x - mean_activation) ** 2 for x in activations) / (n - 1)
+                variance_activation = sum(
+                    (x - mean_activation) ** 2 for x in activations
+                ) / (n - 1)
             else:
-                variance_activation = 0.0 # Variance is undefined for a single data point or no data
+                variance_activation = (
+                    0.0  # Variance is undefined for a single data point or no data
+                )
 
         analyzed_activations.append(
             AnalyzedNeuronActivation(
                 neuron_id=neuron_id,
                 mean_activation=mean_activation,
                 variance_activation=variance_activation,
-                raw_activations_sample=activations[:10] # Store a small sample
+                raw_activations_sample=activations[:10],  # Store a small sample
             )
         )
     return analyzed_activations
 
+
 async def calculate_wina_weights(
     analyzed_activations: List[AnalyzedNeuronActivation],
     # Alternatively, could take NeuronActivationInput directly
-    # activation_input: NeuronActivationInput 
+    # activation_input: NeuronActivationInput
 ) -> WINAWeightOutput:
     """
     Calculates WINA (Weight Informed Neuron Activation) weights based on
@@ -61,7 +63,7 @@ async def calculate_wina_weights(
 
     Args:
         analyzed_activations: A list of analyzed neuron activation objects.
-        
+
     Returns:
         A WINAWeightOutput object containing the calculated weights for each neuron.
 
@@ -76,7 +78,7 @@ async def calculate_wina_weights(
     # This is a simplified assumption and should be replaced with the actual WINA formula.
     # For example, it could involve normalization or more complex relationships
     # with variance, activation frequency, etc.
-    
+
     # Sum of all mean activations for normalization (optional, depends on WINA formula)
     # total_mean_activation = sum(ana.mean_activation for ana in analyzed_activations if ana.mean_activation > 0)
 
@@ -87,14 +89,16 @@ async def calculate_wina_weights(
         #     weights[analysis.neuron_id] = analysis.mean_activation / total_mean_activation
         # else:
         #     weights[analysis.neuron_id] = 0.0
-        
+
         # For now, a direct assignment or a simple scaling factor.
         # Let's assume WINA weights are directly related to their positive mean activation.
         # Negative or zero activations might imply less importance in some contexts.
         if analysis.mean_activation > 0:
-            weights[analysis.neuron_id] = analysis.mean_activation 
+            weights[analysis.neuron_id] = analysis.mean_activation
         else:
-            weights[analysis.neuron_id] = 0.0 # Assign zero weight if mean activation is not positive
+            weights[analysis.neuron_id] = (
+                0.0  # Assign zero weight if mean activation is not positive
+            )
 
         # Further considerations for a real WINA algorithm:
         # - How does variance play a role? Higher variance might mean less stable/reliable.
@@ -104,12 +108,13 @@ async def calculate_wina_weights(
 
     return WINAWeightOutput(
         weights=weights,
-        metadata={"calculation_method": "placeholder_mean_proportional"}
+        metadata={"calculation_method": "placeholder_mean_proportional"},
     )
+
 
 # Example usage (for testing or integration later)
 async def process_neuron_data_for_wina(
-    activation_input: NeuronActivationInput
+    activation_input: NeuronActivationInput,
 ) -> WINAWeightOutput:
     """
     Orchestrates the analysis of neuron activations and calculation of WINA weights.
@@ -118,10 +123,8 @@ async def process_neuron_data_for_wina(
     wina_weights = await calculate_wina_weights(analyzed_data)
     return wina_weights
 
-async def transform_matrix_with_svd(
-    matrix: np.ndarray,
-    k: int
-) -> np.ndarray:
+
+async def transform_matrix_with_svd(matrix: np.ndarray, k: int) -> np.ndarray:
     """
     Applies SVD-based transformation to a given matrix.
 
@@ -139,13 +142,14 @@ async def transform_matrix_with_svd(
         # In a real scenario, matrix loading/retrieval would happen here or be passed in.
         # For this example, we expect a NumPy array.
         raise TypeError("Input 'matrix' must be a NumPy array.")
-    
+
     # The actual SVD transformation is not async, but we keep the function
     # async to align with FastAPI patterns if it were to involve I/O
     # for loading matrices in a real application.
     # For pure computation, it could be synchronous.
     transformed_matrix = apply_svd_transformation(matrix, k)
     return transformed_matrix
+
 
 # Example of how transform_matrix_with_svd might be called (for testing/demonstration)
 # async def example_svd_usage():

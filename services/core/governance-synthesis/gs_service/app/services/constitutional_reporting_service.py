@@ -16,6 +16,7 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 import json
 import smtplib
+
 try:
     from email.mime.text import MimeText
     from email.mime.multipart import MimeMultipart
@@ -29,8 +30,13 @@ from jinja2 import Template
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
 from services.shared.models import (
-    ConstitutionalViolation, ViolationAlert, ViolationEscalation,
-    Principle, User, ACAmendment, ACAmendmentVote
+    ConstitutionalViolation,
+    ViolationAlert,
+    ViolationEscalation,
+    Principle,
+    User,
+    ACAmendment,
+    ACAmendmentVote,
 )
 from services.shared.metrics import get_metrics
 
@@ -39,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 class ReportType(Enum):
     """Types of constitutional compliance reports."""
+
     DAILY = "daily"
     WEEKLY = "weekly"
     MONTHLY = "monthly"
@@ -48,6 +55,7 @@ class ReportType(Enum):
 
 class ReportFormat(Enum):
     """Report output formats."""
+
     JSON = "json"
     HTML = "html"
     PDF = "pdf"
@@ -57,6 +65,7 @@ class ReportFormat(Enum):
 @dataclass
 class ComplianceMetrics:
     """Constitutional compliance metrics for reporting."""
+
     period_start: datetime
     period_end: datetime
     overall_fidelity_score: float
@@ -66,19 +75,19 @@ class ComplianceMetrics:
     adaptation_speed: float
     stakeholder_satisfaction: float
     appeal_frequency: float
-    
+
     # Violation metrics
     total_violations: int
     critical_violations: int
     resolved_violations: int
     pending_violations: int
     average_resolution_time: float
-    
+
     # QEC metrics
     qec_corrections_performed: int
     qec_success_rate: float
     average_qec_response_time: float
-    
+
     # Constitutional Council metrics
     amendments_proposed: int
     amendments_approved: int
@@ -89,6 +98,7 @@ class ComplianceMetrics:
 @dataclass
 class TrendAnalysis:
     """Trend analysis data for constitutional compliance."""
+
     metric_name: str
     current_value: float
     previous_value: float
@@ -100,6 +110,7 @@ class TrendAnalysis:
 @dataclass
 class ComplianceReport:
     """Complete constitutional compliance report."""
+
     report_id: str
     report_type: ReportType
     generated_at: datetime
@@ -115,7 +126,7 @@ class ComplianceReport:
 class ConstitutionalReportingService:
     """
     Service for generating automated constitutional compliance reports.
-    
+
     Provides comprehensive reporting capabilities including:
     - Daily/weekly/monthly compliance reports
     - Trend analysis for fidelity score patterns
@@ -123,71 +134,71 @@ class ConstitutionalReportingService:
     - Constitutional Council activity summaries
     - Automated notifications for critical issues
     """
-    
+
     def __init__(self):
         """Initialize the Constitutional Reporting Service."""
         self.metrics = get_metrics("gs_service")
         self.report_templates = self._load_report_templates()
         self.notification_config = self._load_notification_config()
-        
+
         # Report generation settings
         self.max_report_generation_time = 300  # 5 minutes
         self.trend_analysis_periods = {
-            ReportType.DAILY: 7,    # Compare with last 7 days
-            ReportType.WEEKLY: 4,   # Compare with last 4 weeks
-            ReportType.MONTHLY: 12  # Compare with last 12 months
+            ReportType.DAILY: 7,  # Compare with last 7 days
+            ReportType.WEEKLY: 4,  # Compare with last 4 weeks
+            ReportType.MONTHLY: 12,  # Compare with last 12 months
         }
-        
+
         logger.info("Constitutional Reporting Service initialized")
-    
+
     async def generate_compliance_report(
         self,
         report_type: ReportType,
         period_start: Optional[datetime] = None,
         period_end: Optional[datetime] = None,
-        db: Optional[AsyncSession] = None
+        db: Optional[AsyncSession] = None,
     ) -> ComplianceReport:
         """
         Generate a comprehensive constitutional compliance report.
-        
+
         Args:
             report_type: Type of report to generate
             period_start: Start of reporting period (auto-calculated if None)
             period_end: End of reporting period (auto-calculated if None)
             db: Database session
-            
+
         Returns:
             Complete compliance report
         """
         start_time = datetime.now(timezone.utc)
-        
+
         try:
             # Calculate reporting period if not provided
             if not period_start or not period_end:
                 period_start, period_end = self._calculate_reporting_period(report_type)
-            
+
             # Generate unique report ID
             report_id = f"{report_type.value}_{int(start_time.timestamp())}"
-            
+
             # Collect compliance metrics
             metrics = await self._collect_compliance_metrics(
                 period_start, period_end, db
             )
-            
+
             # Perform trend analysis
             trends = await self._perform_trend_analysis(
                 report_type, period_start, period_end, db
             )
-            
+
             # Generate recommendations
             recommendations = await self._generate_recommendations(metrics, trends)
-            
+
             # Collect active alerts
             alerts = await self._collect_active_alerts(db)
-            
+
             # Generate summary
             summary = await self._generate_report_summary(metrics, trends, alerts)
-            
+
             # Create complete report
             report = ComplianceReport(
                 report_id=report_id,
@@ -199,54 +210,51 @@ class ConstitutionalReportingService:
                 trends=trends,
                 recommendations=recommendations,
                 alerts=alerts,
-                summary=summary
+                summary=summary,
             )
-            
+
             # Record metrics
             generation_time = (datetime.now(timezone.utc) - start_time).total_seconds()
             self.metrics.record_custom_metric(
                 "constitutional_report_generation_time",
                 generation_time,
-                {"report_type": report_type.value}
+                {"report_type": report_type.value},
             )
-            
+
             logger.info(f"Generated {report_type.value} compliance report: {report_id}")
             return report
-            
+
         except Exception as e:
             logger.error(f"Error generating compliance report: {e}")
             self.metrics.record_error("report_generation_error", "error")
             raise
-    
+
     async def _collect_compliance_metrics(
-        self,
-        period_start: datetime,
-        period_end: datetime,
-        db: Optional[AsyncSession]
+        self, period_start: datetime, period_end: datetime, db: Optional[AsyncSession]
     ) -> ComplianceMetrics:
         """Collect constitutional compliance metrics for the reporting period."""
         try:
             # Mock implementation - in production, this would query actual metrics
             # from the monitoring systems and database
-            
+
             # Violation metrics
             total_violations = 15
             critical_violations = 3
             resolved_violations = 12
             pending_violations = 3
             average_resolution_time = 45.5  # minutes
-            
+
             # QEC metrics
             qec_corrections_performed = 28
             qec_success_rate = 0.857  # 85.7%
             average_qec_response_time = 12.3  # seconds
-            
+
             # Constitutional Council metrics
             amendments_proposed = 2
             amendments_approved = 1
             council_activities = 8
             stakeholder_engagement = 0.78
-            
+
             return ComplianceMetrics(
                 period_start=period_start,
                 period_end=period_end,
@@ -268,24 +276,28 @@ class ConstitutionalReportingService:
                 amendments_proposed=amendments_proposed,
                 amendments_approved=amendments_approved,
                 council_activities=council_activities,
-                stakeholder_engagement=stakeholder_engagement
+                stakeholder_engagement=stakeholder_engagement,
             )
-            
+
         except Exception as e:
             logger.error(f"Error collecting compliance metrics: {e}")
             raise
-    
-    def _calculate_reporting_period(self, report_type: ReportType) -> tuple[datetime, datetime]:
+
+    def _calculate_reporting_period(
+        self, report_type: ReportType
+    ) -> tuple[datetime, datetime]:
         """Calculate the reporting period based on report type."""
         now = datetime.now(timezone.utc)
-        
+
         if report_type == ReportType.DAILY:
             period_end = now.replace(hour=0, minute=0, second=0, microsecond=0)
             period_start = period_end - timedelta(days=1)
         elif report_type == ReportType.WEEKLY:
             # Start of current week (Monday)
             days_since_monday = now.weekday()
-            period_end = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days_since_monday)
+            period_end = now.replace(
+                hour=0, minute=0, second=0, microsecond=0
+            ) - timedelta(days=days_since_monday)
             period_start = period_end - timedelta(weeks=1)
         elif report_type == ReportType.MONTHLY:
             # Start of current month
@@ -299,17 +311,19 @@ class ConstitutionalReportingService:
             # Default to last 24 hours
             period_end = now
             period_start = now - timedelta(days=1)
-        
+
         return period_start, period_end
-    
+
     def _load_report_templates(self) -> Dict[str, Template]:
         """Load report templates for different formats."""
         # Mock implementation - in production, load from files
         return {
             "html_summary": Template("<h1>Constitutional Compliance Report</h1>"),
-            "email_notification": Template("Alert: Constitutional compliance issue detected")
+            "email_notification": Template(
+                "Alert: Constitutional compliance issue detected"
+            ),
         }
-    
+
     def _load_notification_config(self) -> Dict[str, Any]:
         """Load notification configuration."""
         # Mock implementation - in production, load from config
@@ -319,12 +333,12 @@ class ConstitutionalReportingService:
                 "smtp_port": 587,
                 "username": "",
                 "password": "",
-                "from_address": "acgs-pgp@example.com"
+                "from_address": "acgs-pgp@example.com",
             },
             "webhook": {
                 "url": "http://localhost:8080/webhooks/compliance",
-                "timeout": 30
-            }
+                "timeout": 30,
+            },
         }
 
     async def _perform_trend_analysis(
@@ -332,7 +346,7 @@ class ConstitutionalReportingService:
         report_type: ReportType,
         period_start: datetime,
         period_end: datetime,
-        db: Optional[AsyncSession]
+        db: Optional[AsyncSession],
     ) -> List[TrendAnalysis]:
         """Perform trend analysis for constitutional compliance metrics."""
         try:
@@ -344,20 +358,24 @@ class ConstitutionalReportingService:
                 ("synthesis_success_rate", 0.88, 0.90, "declining", "minor"),
                 ("qec_success_rate", 0.857, 0.820, "improving", "moderate"),
                 ("violation_resolution_time", 45.5, 52.3, "improving", "moderate"),
-                ("stakeholder_satisfaction", 0.87, 0.84, "improving", "minor")
+                ("stakeholder_satisfaction", 0.87, 0.84, "improving", "minor"),
             ]
 
             for metric_name, current, previous, direction, significance in trend_data:
-                change_percentage = ((current - previous) / previous) * 100 if previous > 0 else 0
+                change_percentage = (
+                    ((current - previous) / previous) * 100 if previous > 0 else 0
+                )
 
-                trends.append(TrendAnalysis(
-                    metric_name=metric_name,
-                    current_value=current,
-                    previous_value=previous,
-                    change_percentage=change_percentage,
-                    trend_direction=direction,
-                    significance=significance
-                ))
+                trends.append(
+                    TrendAnalysis(
+                        metric_name=metric_name,
+                        current_value=current,
+                        previous_value=previous,
+                        change_percentage=change_percentage,
+                        trend_direction=direction,
+                        significance=significance,
+                    )
+                )
 
             return trends
 
@@ -366,9 +384,7 @@ class ConstitutionalReportingService:
             return []
 
     async def _generate_recommendations(
-        self,
-        metrics: ComplianceMetrics,
-        trends: List[TrendAnalysis]
+        self, metrics: ComplianceMetrics, trends: List[TrendAnalysis]
     ) -> List[str]:
         """Generate recommendations based on metrics and trends."""
         recommendations = []
@@ -396,7 +412,10 @@ class ConstitutionalReportingService:
 
         # Trend-based recommendations
         for trend in trends:
-            if trend.trend_direction == "declining" and trend.significance in ["critical", "moderate"]:
+            if trend.trend_direction == "declining" and trend.significance in [
+                "critical",
+                "moderate",
+            ]:
                 recommendations.append(
                     f"Declining trend detected in {trend.metric_name} "
                     f"({trend.change_percentage:.1f}% decrease). Investigate root causes."
@@ -404,7 +423,9 @@ class ConstitutionalReportingService:
 
         return recommendations
 
-    async def _collect_active_alerts(self, db: Optional[AsyncSession]) -> List[Dict[str, Any]]:
+    async def _collect_active_alerts(
+        self, db: Optional[AsyncSession]
+    ) -> List[Dict[str, Any]]:
         """Collect currently active constitutional compliance alerts."""
         try:
             # Mock implementation - in production, query actual alerts
@@ -415,16 +436,18 @@ class ConstitutionalReportingService:
                     "severity": "high",
                     "message": "Critical constitutional violation detected in policy synthesis",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "status": "active"
+                    "status": "active",
                 },
                 {
                     "id": "alert_002",
                     "type": "qec_performance",
                     "severity": "medium",
                     "message": "QEC response time exceeding 30 seconds",
-                    "timestamp": (datetime.now(timezone.utc) - timedelta(minutes=15)).isoformat(),
-                    "status": "acknowledged"
-                }
+                    "timestamp": (
+                        datetime.now(timezone.utc) - timedelta(minutes=15)
+                    ).isoformat(),
+                    "status": "acknowledged",
+                },
             ]
 
         except Exception as e:
@@ -435,7 +458,7 @@ class ConstitutionalReportingService:
         self,
         metrics: ComplianceMetrics,
         trends: List[TrendAnalysis],
-        alerts: List[Dict[str, Any]]
+        alerts: List[Dict[str, Any]],
     ) -> str:
         """Generate executive summary for the compliance report."""
         try:
@@ -444,7 +467,7 @@ class ConstitutionalReportingService:
                 metrics.overall_fidelity_score,
                 metrics.synthesis_success_rate,
                 metrics.qec_success_rate,
-                1.0 - (metrics.pending_violations / max(metrics.total_violations, 1))
+                1.0 - (metrics.pending_violations / max(metrics.total_violations, 1)),
             ]
             overall_health = sum(health_indicators) / len(health_indicators)
 
@@ -459,8 +482,12 @@ class ConstitutionalReportingService:
                 health_status = "Poor"
 
             # Count improving vs declining trends
-            improving_trends = sum(1 for t in trends if t.trend_direction == "improving")
-            declining_trends = sum(1 for t in trends if t.trend_direction == "declining")
+            improving_trends = sum(
+                1 for t in trends if t.trend_direction == "improving"
+            )
+            declining_trends = sum(
+                1 for t in trends if t.trend_direction == "declining"
+            )
 
             # Count active critical alerts
             critical_alerts = sum(1 for a in alerts if a.get("severity") == "high")
@@ -499,7 +526,7 @@ Key Achievements:
         self,
         report: ComplianceReport,
         notification_type: str = "email",
-        recipients: Optional[List[str]] = None
+        recipients: Optional[List[str]] = None,
     ) -> bool:
         """
         Send notification for compliance report or critical issues.
@@ -526,9 +553,7 @@ Key Achievements:
             return False
 
     async def _send_email_notification(
-        self,
-        report: ComplianceReport,
-        recipients: Optional[List[str]]
+        self, report: ComplianceReport, recipients: Optional[List[str]]
     ) -> bool:
         """Send email notification for compliance report."""
         try:
@@ -541,9 +566,7 @@ Key Achievements:
             return False
 
     async def _send_webhook_notification(
-        self,
-        report: ComplianceReport,
-        recipients: Optional[List[str]]
+        self, report: ComplianceReport, recipients: Optional[List[str]]
     ) -> bool:
         """Send webhook notification for compliance report."""
         try:

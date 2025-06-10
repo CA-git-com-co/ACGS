@@ -13,9 +13,12 @@ class MockPyDatalog:
         # Mock query result - return a simple mock result
         class MockResult:
             answers = [()]  # Mock successful query
+
         return MockResult()
 
+
 pyDatalog = MockPyDatalog()
+
 
 class DatalogEngine:
     def __init__(self):
@@ -51,7 +54,7 @@ class DatalogEngine:
         """
         for fact_str in facts:
             if not fact_str.strip().startswith("+"):
-                fact_str = "+" + fact_str.strip() # Ensure it's an assertion
+                fact_str = "+" + fact_str.strip()  # Ensure it's an assertion
             try:
                 self.facts.append(fact_str)
                 pyDatalog.load(fact_str)
@@ -70,8 +73,8 @@ class DatalogEngine:
             # Mock implementation - return successful result for any query
             result = pyDatalog.ask(query_string)
             if result is not None:
-                return list(result.answers) # result.answers gives list of tuples
-            return [] # No results or predicate not defined
+                return list(result.answers)  # result.answers gives list of tuples
+            return []  # No results or predicate not defined
         except Exception as e:
             print(f"Error executing Datalog query: '{query_string}'. Error: {e}")
             return []
@@ -92,20 +95,35 @@ class DatalogEngine:
         """
         facts = []
         for entity_type, attributes in context.items():
-            if isinstance(attributes, dict): # user, resource, action, environment
-                entity_id = attributes.get("id") # Optional, action might not have an ID
+            if isinstance(attributes, dict):  # user, resource, action, environment
+                entity_id = attributes.get(
+                    "id"
+                )  # Optional, action might not have an ID
                 for key, value in attributes.items():
-                    if key == "id": # ID is often used to link attributes, not as an attribute itself in this model
-                        if entity_type != "action": # Action attributes are often direct, e.g. action_type('read')
-                             facts.append(f"+{entity_type}_id('{value}')") # e.g. +user_id('alice')
+                    if (
+                        key == "id"
+                    ):  # ID is often used to link attributes, not as an attribute itself in this model
+                        if (
+                            entity_type != "action"
+                        ):  # Action attributes are often direct, e.g. action_type('read')
+                            facts.append(
+                                f"+{entity_type}_id('{value}')"
+                            )  # e.g. +user_id('alice')
                     else:
-                        if entity_id and entity_type != "action": # e.g. user_attribute('alice', 'role', 'editor')
-                            facts.append(f"+{entity_type}_attribute('{entity_id}', '{key}', '{str(value)}')" )
-                        else: # For action or entities without explicit ID in this part of context
-                            facts.append(f"+{entity_type}_{key}('{str(value)}')" ) # e.g. +action_type('read')
-            else: # Direct context values
-                 facts.append(f"+context_value('{entity_type}', '{str(attributes)}')")
+                        if (
+                            entity_id and entity_type != "action"
+                        ):  # e.g. user_attribute('alice', 'role', 'editor')
+                            facts.append(
+                                f"+{entity_type}_attribute('{entity_id}', '{key}', '{str(value)}')"
+                            )
+                        else:  # For action or entities without explicit ID in this part of context
+                            facts.append(
+                                f"+{entity_type}_{key}('{str(value)}')"
+                            )  # e.g. +action_type('read')
+            else:  # Direct context values
+                facts.append(f"+context_value('{entity_type}', '{str(attributes)}')")
         return facts
+
 
 # Global instance
 datalog_engine = DatalogEngine()
@@ -113,12 +131,12 @@ datalog_engine = DatalogEngine()
 # Example Usage (for testing this file)
 if __name__ == "__main__":
     engine = DatalogEngine()
-    
+
     # Load rules
     rules_to_load = [
         "can_read(User, Document) <= user_role(User, 'editor') & document_type(Document, 'report')",
         "can_read(User, Document) <= user_role(User, 'admin')",
-        "user_role(User, Role) <= user_attribute(User, 'role', Role)" # More generic rule
+        "user_role(User, Role) <= user_attribute(User, 'role', Role)",  # More generic rule
     ]
     engine.load_rules(rules_to_load)
     print("Rules loaded.")
@@ -127,14 +145,14 @@ if __name__ == "__main__":
     query_context = {
         "user": {"id": "alice", "role": "editor"},
         "resource": {"id": "report123", "type": "report"},
-        "action": {"type": "read"}
+        "action": {"type": "read"},
     }
     context_facts = engine.build_facts_from_context(query_context)
     # Manually add facts based on context for this test, as build_facts_from_context is generic
     facts_to_add = [
         # "+user_role('alice', 'editor')", # This would be generated by a rule if user_attribute is used
         "+user_attribute('alice', 'role', 'editor')",
-        "+document_type('report123', 'report')"
+        "+document_type('report123', 'report')",
     ]
     engine.add_facts(facts_to_add)
     print(f"Facts added: {facts_to_add}")
@@ -142,31 +160,36 @@ if __name__ == "__main__":
     # Query
     print("\nQuerying: can_read('alice', 'report123')")
     result1 = engine.query("can_read('alice', 'report123')")
-    print(f"Result: {result1} (Expected: [()] if true, indicating alice can read report123)")
+    print(
+        f"Result: {result1} (Expected: [()] if true, indicating alice can read report123)"
+    )
     assert result1 == [()]
 
-
     engine.clear_rules_and_facts()
-    engine.load_rules([
-        "access_allowed(User, Action, Resource) <= user_has_role(User, Role) & permission_for_role(Role, Action, Resource)",
-        "user_has_role(User, Role) <= user_attribute(User, 'roles', Role)" # Assuming 'roles' can be a list
-    ])
+    engine.load_rules(
+        [
+            "access_allowed(User, Action, Resource) <= user_has_role(User, Role) & permission_for_role(Role, Action, Resource)",
+            "user_has_role(User, Role) <= user_attribute(User, 'roles', Role)",  # Assuming 'roles' can be a list
+        ]
+    )
     # pyDatalog handles list attributes by iterating if used in a specific way,
     # but direct string conversion might be tricky. Simpler to have one fact per role.
     # For this test, let's assume roles are individual facts or attributes.
-    
+
     # A more pyDatalog-idiomatic way for multi-valued attributes like roles:
     # +user_attribute('bob', 'role', 'viewer')
     # +user_attribute('bob', 'role', 'commenter')
     # Then user_has_role(User, Role) <= user_attribute(User, 'role', Role) works directly.
 
-    engine.add_facts([
-        "+user_attribute('bob', 'roles', 'viewer')", # This might not work as expected with the rule above
-                                                    # Let's use individual role facts for clarity
-        "+user_attribute('bob', 'role', 'viewer')",
-        "+permission_for_role('viewer', 'view', 'public_doc')"
-    ])
-    
+    engine.add_facts(
+        [
+            "+user_attribute('bob', 'roles', 'viewer')",  # This might not work as expected with the rule above
+            # Let's use individual role facts for clarity
+            "+user_attribute('bob', 'role', 'viewer')",
+            "+permission_for_role('viewer', 'view', 'public_doc')",
+        ]
+    )
+
     print("\nQuerying: access_allowed('bob', 'view', 'public_doc')")
     result2 = engine.query("access_allowed('bob', 'view', 'public_doc')")
     print(f"Result: {result2} (Expected: [()] if true)")
@@ -176,5 +199,5 @@ if __name__ == "__main__":
     result3 = engine.query("access_allowed('bob', 'edit', 'public_doc')")
     print(f"Result: {result3} (Expected: [] if false)")
     assert result3 == []
-    
+
     print("\nAll Datalog engine tests passed (basic).")

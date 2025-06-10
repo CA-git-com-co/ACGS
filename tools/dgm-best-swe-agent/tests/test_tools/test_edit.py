@@ -2,6 +2,7 @@ import pytest
 from pathlib import Path
 from tools.edit import tool_function
 
+
 def test_view_line_range(tmp_path):
     # Create a test file
     test_file = tmp_path / "test.txt"
@@ -34,6 +35,7 @@ def test_view_line_range(tmp_path):
     assert "line5" in result
     assert "     3\t" in result
 
+
 def test_view_range_validation(tmp_path):
     # Create a test file
     test_file = tmp_path / "test.txt"
@@ -47,6 +49,7 @@ def test_view_range_validation(tmp_path):
     # Test invalid range (end < start)
     result = tool_function("view", str(test_file), view_range=[2, 1])
     assert "Failed to read file range: End line must be >= start line or -1" in result
+
 
 def test_view_range_with_directory(tmp_path):
     # Test that view_range is rejected for directories

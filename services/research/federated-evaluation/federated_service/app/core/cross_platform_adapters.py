@@ -31,17 +31,21 @@ try:
     metrics = get_metrics("federated_service")
 except Exception as e:
     logger.warning(f"Failed to initialize metrics: {e}")
+
     # Create a mock metrics object for testing
     class MockMetrics:
         def counter(self, name, labels=None):
-            return type('MockCounter', (), {'inc': lambda: None})()
+            return type("MockCounter", (), {"inc": lambda: None})()
+
         def histogram(self, name, labels=None):
-            return type('MockHistogram', (), {'observe': lambda x: None})()
+            return type("MockHistogram", (), {"observe": lambda x: None})()
+
     metrics = MockMetrics()
 
 
 class AdapterStatus(Enum):
     """Status of platform adapter."""
+
     ACTIVE = "active"
     INACTIVE = "inactive"
     ERROR = "error"
@@ -50,6 +54,7 @@ class AdapterStatus(Enum):
 
 class EvaluationMode(Enum):
     """Evaluation mode for different use cases."""
+
     CONSTITUTIONAL = "constitutional"
     SAFETY_CRITICAL = "safety_critical"
     FAIRNESS_AWARE = "fairness_aware"
@@ -59,6 +64,7 @@ class EvaluationMode(Enum):
 @dataclass
 class PlatformCapabilities:
     """Platform-specific capabilities and limitations."""
+
     max_tokens: int = 4096
     supports_streaming: bool = False
     supports_function_calling: bool = False
@@ -68,7 +74,7 @@ class PlatformCapabilities:
     latency_p95_ms: float = 1000.0
     reliability_score: float = 0.95
     cost_per_1k_tokens: float = 0.002
-    
+
     # Platform-specific features
     supports_constitutional_ai: bool = False
     supports_bias_detection: bool = False
@@ -78,6 +84,7 @@ class PlatformCapabilities:
 @dataclass
 class EvaluationRequest:
     """Standardized evaluation request across platforms."""
+
     request_id: str
     policy_content: str
     evaluation_criteria: Dict[str, Any]
@@ -85,7 +92,7 @@ class EvaluationRequest:
     context: Dict[str, Any] = field(default_factory=dict)
     privacy_requirements: Dict[str, Any] = field(default_factory=dict)
     timeout_seconds: float = 60.0
-    
+
     # MAB integration
     mab_context: Dict[str, Any] = field(default_factory=dict)
     prompt_template_id: Optional[str] = None
@@ -94,28 +101,29 @@ class EvaluationRequest:
 @dataclass
 class EvaluationResponse:
     """Standardized evaluation response across platforms."""
+
     request_id: str
     platform_type: PlatformType
     success: bool
-    
+
     # Core evaluation results
     policy_compliance_score: float = 0.0
     constitutional_alignment: float = 0.0
     safety_score: float = 0.0
     fairness_score: float = 0.0
-    
+
     # Performance metrics
     execution_time_ms: float = 0.0
     tokens_used: int = 0
     cost_estimate: float = 0.0
-    
+
     # Platform-specific results
     platform_specific_metrics: Dict[str, Any] = field(default_factory=dict)
-    
+
     # Error handling
     error_message: Optional[str] = None
     error_code: Optional[str] = None
-    
+
     # Metadata
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     adapter_version: str = "1.0.0"
@@ -123,7 +131,7 @@ class EvaluationResponse:
 
 class BasePlatformAdapter(ABC):
     """Abstract base class for platform adapters."""
-    
+
     def __init__(self, platform_type: PlatformType, capabilities: PlatformCapabilities):
         self.platform_type = platform_type
         self.capabilities = capabilities
@@ -134,10 +142,10 @@ class BasePlatformAdapter(ABC):
             "failed_requests": 0,
             "avg_response_time_ms": 0.0,
             "total_tokens_used": 0,
-            "total_cost": 0.0
+            "total_cost": 0.0,
         }
         self._client: Optional[httpx.AsyncClient] = None
-        
+
     async def initialize(self) -> None:
         """Initialize the platform adapter."""
         try:
@@ -145,12 +153,14 @@ class BasePlatformAdapter(ABC):
             await self._platform_specific_init()
             self.status = AdapterStatus.ACTIVE
             logger.info(f"Initialized {self.platform_type.value} adapter")
-            
+
         except Exception as e:
             self.status = AdapterStatus.ERROR
-            logger.error(f"Failed to initialize {self.platform_type.value} adapter: {e}")
+            logger.error(
+                f"Failed to initialize {self.platform_type.value} adapter: {e}"
+            )
             raise
-    
+
     async def shutdown(self) -> None:
         """Shutdown the platform adapter."""
         try:
@@ -159,86 +169,97 @@ class BasePlatformAdapter(ABC):
             await self._platform_specific_shutdown()
             self.status = AdapterStatus.INACTIVE
             logger.info(f"Shutdown {self.platform_type.value} adapter")
-            
+
         except Exception as e:
-            logger.error(f"Error during {self.platform_type.value} adapter shutdown: {e}")
-    
+            logger.error(
+                f"Error during {self.platform_type.value} adapter shutdown: {e}"
+            )
+
     @abstractmethod
     async def _platform_specific_init(self) -> None:
         """Platform-specific initialization logic."""
         pass
-    
+
     @abstractmethod
     async def _platform_specific_shutdown(self) -> None:
         """Platform-specific shutdown logic."""
         pass
-    
+
     @abstractmethod
     async def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         """Evaluate policy using platform-specific implementation."""
         pass
-    
+
     async def health_check(self) -> Dict[str, Any]:
         """Perform health check for the platform."""
         try:
             start_time = time.time()
-            
+
             # Simple test request
             test_request = EvaluationRequest(
                 request_id="health_check",
                 policy_content="package test\nallow { true }",
                 evaluation_criteria={"category": "health_check"},
-                timeout_seconds=10.0
+                timeout_seconds=10.0,
             )
-            
+
             response = await self.evaluate(test_request)
             response_time = (time.time() - start_time) * 1000
-            
+
             return {
                 "status": "healthy" if response.success else "unhealthy",
                 "platform_type": self.platform_type.value,
                 "response_time_ms": response_time,
                 "capabilities": self.capabilities.__dict__,
-                "metrics": self.metrics
+                "metrics": self.metrics,
             }
-            
+
         except Exception as e:
             return {
                 "status": "unhealthy",
                 "platform_type": self.platform_type.value,
                 "error": str(e),
                 "capabilities": self.capabilities.__dict__,
-                "metrics": self.metrics
+                "metrics": self.metrics,
             }
-    
+
     def _update_metrics(self, response: EvaluationResponse) -> None:
         """Update adapter metrics."""
         self.metrics["total_requests"] += 1
-        
+
         if response.success:
             self.metrics["successful_requests"] += 1
         else:
             self.metrics["failed_requests"] += 1
-        
+
         # Update average response time
         current_avg = self.metrics["avg_response_time_ms"]
         total_requests = self.metrics["total_requests"]
-        new_avg = ((current_avg * (total_requests - 1)) + response.execution_time_ms) / total_requests
+        new_avg = (
+            (current_avg * (total_requests - 1)) + response.execution_time_ms
+        ) / total_requests
         self.metrics["avg_response_time_ms"] = new_avg
-        
+
         self.metrics["total_tokens_used"] += response.tokens_used
         self.metrics["total_cost"] += response.cost_estimate
-        
+
         # Update Prometheus metrics
-        metrics.counter("federated_adapter_requests_total", 
-                       labels={"platform": self.platform_type.value, "status": "success" if response.success else "error"}).inc()
-        metrics.histogram("federated_adapter_response_time_ms", 
-                         labels={"platform": self.platform_type.value}).observe(response.execution_time_ms)
+        metrics.counter(
+            "federated_adapter_requests_total",
+            labels={
+                "platform": self.platform_type.value,
+                "status": "success" if response.success else "error",
+            },
+        ).inc()
+        metrics.histogram(
+            "federated_adapter_response_time_ms",
+            labels={"platform": self.platform_type.value},
+        ).observe(response.execution_time_ms)
 
 
 class OpenAIPlatformAdapter(BasePlatformAdapter):
     """OpenAI platform adapter with GPT-4 optimization."""
-    
+
     def __init__(self, api_key: str):
         capabilities = PlatformCapabilities(
             max_tokens=8192,
@@ -252,12 +273,12 @@ class OpenAIPlatformAdapter(BasePlatformAdapter):
             cost_per_1k_tokens=0.03,
             supports_constitutional_ai=True,
             supports_bias_detection=True,
-            supports_safety_filtering=True
+            supports_safety_filtering=True,
         )
         super().__init__(PlatformType.CLOUD_OPENAI, capabilities)
         self.api_key = api_key
         self.base_url = "https://api.openai.com/v1"
-    
+
     async def _platform_specific_init(self) -> None:
         """Initialize OpenAI-specific components."""
         # Test API key validity
@@ -265,46 +286,56 @@ class OpenAIPlatformAdapter(BasePlatformAdapter):
         response = await self._client.get(f"{self.base_url}/models", headers=headers)
         if response.status_code != 200:
             raise ValueError(f"Invalid OpenAI API key: {response.status_code}")
-    
+
     async def _platform_specific_shutdown(self) -> None:
         """OpenAI-specific shutdown logic."""
         pass
-    
+
     async def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         """Evaluate policy using OpenAI GPT-4."""
         start_time = time.time()
-        
+
         try:
             # Build OpenAI-optimized prompt
             prompt = self._build_constitutional_prompt(request)
-            
+
             # Prepare OpenAI API request
             payload = {
                 "model": "gpt-4",
                 "messages": [
-                    {"role": "system", "content": "You are a constitutional AI policy evaluator."},
-                    {"role": "user", "content": prompt}
+                    {
+                        "role": "system",
+                        "content": "You are a constitutional AI policy evaluator.",
+                    },
+                    {"role": "user", "content": prompt},
                 ],
-                "max_tokens": min(request.context.get("max_tokens", 2048), self.capabilities.max_tokens),
+                "max_tokens": min(
+                    request.context.get("max_tokens", 2048),
+                    self.capabilities.max_tokens,
+                ),
                 "temperature": 0.1,  # Low temperature for consistent evaluation
-                "response_format": {"type": "json_object"} if self.capabilities.supports_json_mode else None
+                "response_format": (
+                    {"type": "json_object"}
+                    if self.capabilities.supports_json_mode
+                    else None
+                ),
             }
-            
+
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             }
-            
+
             # Make API request
             response = await self._client.post(
                 f"{self.base_url}/chat/completions",
                 json=payload,
                 headers=headers,
-                timeout=request.timeout_seconds
+                timeout=request.timeout_seconds,
             )
-            
+
             execution_time = (time.time() - start_time) * 1000
-            
+
             if response.status_code == 200:
                 result = response.json()
                 return self._parse_openai_response(request, result, execution_time)
@@ -315,9 +346,9 @@ class OpenAIPlatformAdapter(BasePlatformAdapter):
                     success=False,
                     execution_time_ms=execution_time,
                     error_message=f"OpenAI API error: {response.status_code}",
-                    error_code=str(response.status_code)
+                    error_code=str(response.status_code),
                 )
-                
+
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
             return EvaluationResponse(
@@ -326,13 +357,13 @@ class OpenAIPlatformAdapter(BasePlatformAdapter):
                 success=False,
                 execution_time_ms=execution_time,
                 error_message=str(e),
-                error_code="ADAPTER_ERROR"
+                error_code="ADAPTER_ERROR",
             )
         finally:
             # Update metrics regardless of success/failure
-            if 'response' in locals():
+            if "response" in locals():
                 self._update_metrics(response)
-    
+
     def _build_constitutional_prompt(self, request: EvaluationRequest) -> str:
         """Build OpenAI-optimized constitutional evaluation prompt."""
         return f"""
@@ -354,13 +385,15 @@ Please provide a JSON response with the following structure:
     "recommendations": ["<recommendation1>", "<recommendation2>"]
 }}
 """
-    
-    def _parse_openai_response(self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float) -> EvaluationResponse:
+
+    def _parse_openai_response(
+        self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float
+    ) -> EvaluationResponse:
         """Parse OpenAI API response into standardized format."""
         try:
             content = result["choices"][0]["message"]["content"]
             usage = result.get("usage", {})
-            
+
             # Try to parse JSON response
             try:
                 parsed_content = json.loads(content)
@@ -372,29 +405,35 @@ Please provide a JSON response with the following structure:
                     "safety_score": 0.5,
                     "fairness_score": 0.5,
                     "analysis": content,
-                    "recommendations": []
+                    "recommendations": [],
                 }
-            
+
             return EvaluationResponse(
                 request_id=request.request_id,
                 platform_type=self.platform_type,
                 success=True,
-                policy_compliance_score=parsed_content.get("policy_compliance_score", 0.5),
-                constitutional_alignment=parsed_content.get("constitutional_alignment", 0.5),
+                policy_compliance_score=parsed_content.get(
+                    "policy_compliance_score", 0.5
+                ),
+                constitutional_alignment=parsed_content.get(
+                    "constitutional_alignment", 0.5
+                ),
                 safety_score=parsed_content.get("safety_score", 0.5),
                 fairness_score=parsed_content.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,
                 tokens_used=usage.get("total_tokens", 0),
-                cost_estimate=usage.get("total_tokens", 0) * self.capabilities.cost_per_1k_tokens / 1000,
+                cost_estimate=usage.get("total_tokens", 0)
+                * self.capabilities.cost_per_1k_tokens
+                / 1000,
                 platform_specific_metrics={
                     "model": "gpt-4",
                     "analysis": parsed_content.get("analysis", ""),
                     "recommendations": parsed_content.get("recommendations", []),
                     "prompt_tokens": usage.get("prompt_tokens", 0),
-                    "completion_tokens": usage.get("completion_tokens", 0)
-                }
+                    "completion_tokens": usage.get("completion_tokens", 0),
+                },
             )
-            
+
         except Exception as e:
             return EvaluationResponse(
                 request_id=request.request_id,
@@ -402,7 +441,7 @@ Please provide a JSON response with the following structure:
                 success=False,
                 execution_time_ms=execution_time,
                 error_message=f"Failed to parse OpenAI response: {e}",
-                error_code="PARSE_ERROR"
+                error_code="PARSE_ERROR",
             )
 
 
@@ -422,7 +461,7 @@ class AnthropicPlatformAdapter(BasePlatformAdapter):
             cost_per_1k_tokens=0.025,
             supports_constitutional_ai=True,  # Native Constitutional AI
             supports_bias_detection=True,
-            supports_safety_filtering=True
+            supports_safety_filtering=True,
         )
         super().__init__(PlatformType.CLOUD_ANTHROPIC, capabilities)
         self.api_key = api_key
@@ -431,10 +470,7 @@ class AnthropicPlatformAdapter(BasePlatformAdapter):
     async def _platform_specific_init(self) -> None:
         """Initialize Anthropic-specific components."""
         # Test API key validity with a simple request
-        headers = {
-            "x-api-key": self.api_key,
-            "anthropic-version": "2023-06-01"
-        }
+        headers = {"x-api-key": self.api_key, "anthropic-version": "2023-06-01"}
         # Note: Anthropic doesn't have a models endpoint, so we'll validate during first request
         logger.info("Anthropic adapter initialized (API key validation deferred)")
 
@@ -453,18 +489,19 @@ class AnthropicPlatformAdapter(BasePlatformAdapter):
             # Prepare Anthropic API request
             payload = {
                 "model": "claude-3-sonnet-20240229",
-                "max_tokens": min(request.context.get("max_tokens", 2048), self.capabilities.max_tokens),
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ],
+                "max_tokens": min(
+                    request.context.get("max_tokens", 2048),
+                    self.capabilities.max_tokens,
+                ),
+                "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.1,
-                "system": "You are Claude, an AI assistant created by Anthropic to be helpful, harmless, and honest. You specialize in constitutional AI policy evaluation."
+                "system": "You are Claude, an AI assistant created by Anthropic to be helpful, harmless, and honest. You specialize in constitutional AI policy evaluation.",
             }
 
             headers = {
                 "x-api-key": self.api_key,
                 "anthropic-version": "2023-06-01",
-                "content-type": "application/json"
+                "content-type": "application/json",
             }
 
             # Make API request
@@ -472,7 +509,7 @@ class AnthropicPlatformAdapter(BasePlatformAdapter):
                 f"{self.base_url}/messages",
                 json=payload,
                 headers=headers,
-                timeout=request.timeout_seconds
+                timeout=request.timeout_seconds,
             )
 
             execution_time = (time.time() - start_time) * 1000
@@ -487,7 +524,7 @@ class AnthropicPlatformAdapter(BasePlatformAdapter):
                     success=False,
                     execution_time_ms=execution_time,
                     error_message=f"Anthropic API error: {response.status_code}",
-                    error_code=str(response.status_code)
+                    error_code=str(response.status_code),
                 )
 
         except Exception as e:
@@ -498,7 +535,7 @@ class AnthropicPlatformAdapter(BasePlatformAdapter):
                 success=False,
                 execution_time_ms=execution_time,
                 error_message=str(e),
-                error_code="ADAPTER_ERROR"
+                error_code="ADAPTER_ERROR",
             )
 
     def _build_constitutional_prompt(self, request: EvaluationRequest) -> str:
@@ -534,7 +571,9 @@ Recommendations:
 - [Additional recommendations as needed]
 """
 
-    def _parse_anthropic_response(self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float) -> EvaluationResponse:
+    def _parse_anthropic_response(
+        self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float
+    ) -> EvaluationResponse:
         """Parse Anthropic API response into standardized format."""
         try:
             content = result["content"][0]["text"]
@@ -553,16 +592,25 @@ Recommendations:
                 safety_score=scores.get("safety_score", 0.5),
                 fairness_score=scores.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,
-                tokens_used=usage.get("input_tokens", 0) + usage.get("output_tokens", 0),
-                cost_estimate=(usage.get("input_tokens", 0) + usage.get("output_tokens", 0)) * self.capabilities.cost_per_1k_tokens / 1000,
+                tokens_used=usage.get("input_tokens", 0)
+                + usage.get("output_tokens", 0),
+                cost_estimate=(
+                    usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
+                )
+                * self.capabilities.cost_per_1k_tokens
+                / 1000,
                 platform_specific_metrics={
                     "model": "claude-3-sonnet-20240229",
                     "analysis": analysis_sections.get("analysis", content),
                     "recommendations": analysis_sections.get("recommendations", []),
                     "input_tokens": usage.get("input_tokens", 0),
                     "output_tokens": usage.get("output_tokens", 0),
-                    "constitutional_ai_principles": ["helpfulness", "harmlessness", "honesty"]
-                }
+                    "constitutional_ai_principles": [
+                        "helpfulness",
+                        "harmlessness",
+                        "honesty",
+                    ],
+                },
             )
 
         except Exception as e:
@@ -572,7 +620,7 @@ Recommendations:
                 success=False,
                 execution_time_ms=execution_time,
                 error_message=f"Failed to parse Anthropic response: {e}",
-                error_code="PARSE_ERROR"
+                error_code="PARSE_ERROR",
             )
 
     def _extract_scores_from_text(self, text: str) -> Dict[str, float]:
@@ -584,7 +632,7 @@ Recommendations:
             "policy_compliance_score": r"Policy Compliance Score.*?(\d+\.?\d*)",
             "constitutional_alignment": r"Constitutional Alignment.*?(\d+\.?\d*)",
             "safety_score": r"Safety Score.*?(\d+\.?\d*)",
-            "fairness_score": r"Fairness Score.*?(\d+\.?\d*)"
+            "fairness_score": r"Fairness Score.*?(\d+\.?\d*)",
         }
 
         for key, pattern in patterns.items():
@@ -604,17 +652,27 @@ Recommendations:
         sections = {"analysis": "", "recommendations": []}
 
         # Extract detailed analysis
-        analysis_match = re.search(r"Detailed Analysis:\s*(.*?)(?=Recommendations:|$)", text, re.DOTALL | re.IGNORECASE)
+        analysis_match = re.search(
+            r"Detailed Analysis:\s*(.*?)(?=Recommendations:|$)",
+            text,
+            re.DOTALL | re.IGNORECASE,
+        )
         if analysis_match:
             sections["analysis"] = analysis_match.group(1).strip()
 
         # Extract recommendations
-        recommendations_match = re.search(r"Recommendations:\s*(.*?)$", text, re.DOTALL | re.IGNORECASE)
+        recommendations_match = re.search(
+            r"Recommendations:\s*(.*?)$", text, re.DOTALL | re.IGNORECASE
+        )
         if recommendations_match:
             recommendations_text = recommendations_match.group(1).strip()
             # Split by bullet points or dashes
-            recommendations = re.findall(r"[-•]\s*(.*?)(?=\n[-•]|\n\n|$)", recommendations_text, re.DOTALL)
-            sections["recommendations"] = [rec.strip() for rec in recommendations if rec.strip()]
+            recommendations = re.findall(
+                r"[-•]\s*(.*?)(?=\n[-•]|\n\n|$)", recommendations_text, re.DOTALL
+            )
+            sections["recommendations"] = [
+                rec.strip() for rec in recommendations if rec.strip()
+            ]
 
         return sections
 
@@ -635,7 +693,7 @@ class CoherePlatformAdapter(BasePlatformAdapter):
             cost_per_1k_tokens=0.015,
             supports_constitutional_ai=False,
             supports_bias_detection=True,
-            supports_safety_filtering=True
+            supports_safety_filtering=True,
         )
         super().__init__(PlatformType.CLOUD_COHERE, capabilities)
         self.api_key = api_key
@@ -665,16 +723,19 @@ class CoherePlatformAdapter(BasePlatformAdapter):
             payload = {
                 "model": "command",
                 "prompt": prompt,
-                "max_tokens": min(request.context.get("max_tokens", 2048), self.capabilities.max_tokens),
+                "max_tokens": min(
+                    request.context.get("max_tokens", 2048),
+                    self.capabilities.max_tokens,
+                ),
                 "temperature": 0.1,
                 "k": 0,  # Disable top-k sampling for consistency
                 "p": 1.0,  # Disable nucleus sampling for consistency
-                "stop_sequences": ["---END---"]
+                "stop_sequences": ["---END---"],
             }
 
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             }
 
             # Make API request
@@ -682,7 +743,7 @@ class CoherePlatformAdapter(BasePlatformAdapter):
                 f"{self.base_url}/generate",
                 json=payload,
                 headers=headers,
-                timeout=request.timeout_seconds
+                timeout=request.timeout_seconds,
             )
 
             execution_time = (time.time() - start_time) * 1000
@@ -697,7 +758,7 @@ class CoherePlatformAdapter(BasePlatformAdapter):
                     success=False,
                     execution_time_ms=execution_time,
                     error_message=f"Cohere API error: {response.status_code}",
-                    error_code=str(response.status_code)
+                    error_code=str(response.status_code),
                 )
 
         except Exception as e:
@@ -708,7 +769,7 @@ class CoherePlatformAdapter(BasePlatformAdapter):
                 success=False,
                 execution_time_ms=execution_time,
                 error_message=str(e),
-                error_code="ADAPTER_ERROR"
+                error_code="ADAPTER_ERROR",
             )
 
     def _build_constitutional_prompt(self, request: EvaluationRequest) -> str:
@@ -740,7 +801,9 @@ Recommendations:
 ---END---
 """
 
-    def _parse_cohere_response(self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float) -> EvaluationResponse:
+    def _parse_cohere_response(
+        self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float
+    ) -> EvaluationResponse:
         """Parse Cohere API response into standardized format."""
         try:
             content = result["generations"][0]["text"]
@@ -763,14 +826,18 @@ Recommendations:
                 fairness_score=scores.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,
                 tokens_used=int(estimated_tokens),
-                cost_estimate=estimated_tokens * self.capabilities.cost_per_1k_tokens / 1000,
+                cost_estimate=estimated_tokens
+                * self.capabilities.cost_per_1k_tokens
+                / 1000,
                 platform_specific_metrics={
                     "model": "command",
                     "analysis": analysis_sections.get("analysis", content),
                     "recommendations": analysis_sections.get("recommendations", []),
                     "likelihood": result["generations"][0].get("likelihood", 0.0),
-                    "finish_reason": result["generations"][0].get("finish_reason", "unknown")
-                }
+                    "finish_reason": result["generations"][0].get(
+                        "finish_reason", "unknown"
+                    ),
+                },
             )
 
         except Exception as e:
@@ -780,7 +847,7 @@ Recommendations:
                 success=False,
                 execution_time_ms=execution_time,
                 error_message=f"Failed to parse Cohere response: {e}",
-                error_code="PARSE_ERROR"
+                error_code="PARSE_ERROR",
             )
 
     def _extract_scores_from_text(self, text: str) -> Dict[str, float]:
@@ -792,7 +859,7 @@ Recommendations:
             "policy_compliance_score": r"Policy Compliance Score:\s*(\d+\.?\d*)",
             "constitutional_alignment": r"Constitutional Alignment:\s*(\d+\.?\d*)",
             "safety_score": r"Safety Score:\s*(\d+\.?\d*)",
-            "fairness_score": r"Fairness Score:\s*(\d+\.?\d*)"
+            "fairness_score": r"Fairness Score:\s*(\d+\.?\d*)",
         }
 
         for key, pattern in patterns.items():
@@ -812,17 +879,27 @@ Recommendations:
         sections = {"analysis": "", "recommendations": []}
 
         # Extract analysis
-        analysis_match = re.search(r"Analysis:\s*(.*?)(?=Recommendations:|---END---|$)", text, re.DOTALL | re.IGNORECASE)
+        analysis_match = re.search(
+            r"Analysis:\s*(.*?)(?=Recommendations:|---END---|$)",
+            text,
+            re.DOTALL | re.IGNORECASE,
+        )
         if analysis_match:
             sections["analysis"] = analysis_match.group(1).strip()
 
         # Extract recommendations
-        recommendations_match = re.search(r"Recommendations:\s*(.*?)(?=---END---|$)", text, re.DOTALL | re.IGNORECASE)
+        recommendations_match = re.search(
+            r"Recommendations:\s*(.*?)(?=---END---|$)", text, re.DOTALL | re.IGNORECASE
+        )
         if recommendations_match:
             recommendations_text = recommendations_match.group(1).strip()
             # Split by numbered items
-            recommendations = re.findall(r"\d+\.\s*(.*?)(?=\n\d+\.|\n\n|$)", recommendations_text, re.DOTALL)
-            sections["recommendations"] = [rec.strip() for rec in recommendations if rec.strip()]
+            recommendations = re.findall(
+                r"\d+\.\s*(.*?)(?=\n\d+\.|\n\n|$)", recommendations_text, re.DOTALL
+            )
+            sections["recommendations"] = [
+                rec.strip() for rec in recommendations if rec.strip()
+            ]
 
         return sections
 
@@ -843,7 +920,7 @@ class GroqPlatformAdapter(BasePlatformAdapter):
             cost_per_1k_tokens=0.0002,  # Very cost-effective
             supports_constitutional_ai=False,
             supports_bias_detection=False,
-            supports_safety_filtering=True
+            supports_safety_filtering=True,
         )
         super().__init__(PlatformType.CLOUD_GROQ, capabilities)
         self.api_key = api_key
@@ -873,17 +950,27 @@ class GroqPlatformAdapter(BasePlatformAdapter):
             payload = {
                 "model": "llama3-8b-8192",  # Fast Llama model
                 "messages": [
-                    {"role": "system", "content": "You are a fast and efficient constitutional AI policy evaluator."},
-                    {"role": "user", "content": prompt}
+                    {
+                        "role": "system",
+                        "content": "You are a fast and efficient constitutional AI policy evaluator.",
+                    },
+                    {"role": "user", "content": prompt},
                 ],
-                "max_tokens": min(request.context.get("max_tokens", 2048), self.capabilities.max_tokens),
+                "max_tokens": min(
+                    request.context.get("max_tokens", 2048),
+                    self.capabilities.max_tokens,
+                ),
                 "temperature": 0.1,
-                "response_format": {"type": "json_object"} if self.capabilities.supports_json_mode else None
+                "response_format": (
+                    {"type": "json_object"}
+                    if self.capabilities.supports_json_mode
+                    else None
+                ),
             }
 
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             }
 
             # Make API request
@@ -891,7 +978,7 @@ class GroqPlatformAdapter(BasePlatformAdapter):
                 f"{self.base_url}/chat/completions",
                 json=payload,
                 headers=headers,
-                timeout=request.timeout_seconds
+                timeout=request.timeout_seconds,
             )
 
             execution_time = (time.time() - start_time) * 1000
@@ -906,7 +993,7 @@ class GroqPlatformAdapter(BasePlatformAdapter):
                     success=False,
                     execution_time_ms=execution_time,
                     error_message=f"Groq API error: {response.status_code}",
-                    error_code=str(response.status_code)
+                    error_code=str(response.status_code),
                 )
 
         except Exception as e:
@@ -917,7 +1004,7 @@ class GroqPlatformAdapter(BasePlatformAdapter):
                 success=False,
                 execution_time_ms=execution_time,
                 error_message=str(e),
-                error_code="ADAPTER_ERROR"
+                error_code="ADAPTER_ERROR",
             )
 
     def _build_constitutional_prompt(self, request: EvaluationRequest) -> str:
@@ -942,7 +1029,9 @@ Please provide a JSON response with the following structure:
 }}
 """
 
-    def _parse_groq_response(self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float) -> EvaluationResponse:
+    def _parse_groq_response(
+        self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float
+    ) -> EvaluationResponse:
         """Parse Groq API response into standardized format."""
         try:
             content = result["choices"][0]["message"]["content"]
@@ -959,28 +1048,34 @@ Please provide a JSON response with the following structure:
                     "safety_score": 0.5,
                     "fairness_score": 0.5,
                     "analysis": content,
-                    "recommendations": []
+                    "recommendations": [],
                 }
 
             return EvaluationResponse(
                 request_id=request.request_id,
                 platform_type=self.platform_type,
                 success=True,
-                policy_compliance_score=parsed_content.get("policy_compliance_score", 0.5),
-                constitutional_alignment=parsed_content.get("constitutional_alignment", 0.5),
+                policy_compliance_score=parsed_content.get(
+                    "policy_compliance_score", 0.5
+                ),
+                constitutional_alignment=parsed_content.get(
+                    "constitutional_alignment", 0.5
+                ),
                 safety_score=parsed_content.get("safety_score", 0.5),
                 fairness_score=parsed_content.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,
                 tokens_used=usage.get("total_tokens", 0),
-                cost_estimate=usage.get("total_tokens", 0) * self.capabilities.cost_per_1k_tokens / 1000,
+                cost_estimate=usage.get("total_tokens", 0)
+                * self.capabilities.cost_per_1k_tokens
+                / 1000,
                 platform_specific_metrics={
                     "model": "llama3-8b-8192",
                     "analysis": parsed_content.get("analysis", ""),
                     "recommendations": parsed_content.get("recommendations", []),
                     "prompt_tokens": usage.get("prompt_tokens", 0),
                     "completion_tokens": usage.get("completion_tokens", 0),
-                    "inference_speed": "ultra_fast"
-                }
+                    "inference_speed": "ultra_fast",
+                },
             )
 
         except Exception as e:
@@ -990,5 +1085,5 @@ Please provide a JSON response with the following structure:
                 success=False,
                 execution_time_ms=execution_time,
                 error_message=f"Failed to parse Groq response: {e}",
-                error_code="PARSE_ERROR"
+                error_code="PARSE_ERROR",
             )

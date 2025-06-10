@@ -31,31 +31,43 @@ from sqlalchemy import select, and_, or_, func, desc, text
 from sqlalchemy.orm import selectinload
 
 from services.shared.models import (
-    ConstitutionalViolation, ViolationAlert, ViolationEscalation,
-    Principle, Policy, User, ACConflictResolution
+    ConstitutionalViolation,
+    ViolationAlert,
+    ViolationEscalation,
+    Principle,
+    Policy,
+    User,
+    ACConflictResolution,
 )
 from services.shared.database import get_async_db
 
 # Import QEC enhancement services
 from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
-    ConstitutionalFidelityMonitor, FidelityComponents
+    ConstitutionalFidelityMonitor,
+    FidelityComponents,
 )
 from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
-    ConstitutionalDistanceCalculator
+    ConstitutionalDistanceCalculator,
 )
 from integrations.alphaevolve_engine.services.qec_enhancement.error_prediction_model import (
-    ErrorPredictionModel, FailureType, SynthesisAttemptLog
+    ErrorPredictionModel,
+    FailureType,
+    SynthesisAttemptLog,
 )
 from integrations.alphaevolve_engine.services.qec_enhancement.recovery_strategy_dispatcher import (
-    RecoveryStrategyDispatcher, RecoveryStrategy
+    RecoveryStrategyDispatcher,
+    RecoveryStrategy,
 )
 
 # Import existing services
 from app.services.violation_detection_service import (
-    ViolationDetectionService, ViolationType, ViolationSeverity
+    ViolationDetectionService,
+    ViolationType,
+    ViolationSeverity,
 )
 from app.services.violation_escalation_service import (
-    ViolationEscalationService, EscalationLevel
+    ViolationEscalationService,
+    EscalationLevel,
 )
 from app.workflows.multi_model_manager import MultiModelManager
 
@@ -64,6 +76,7 @@ logger = logging.getLogger(__name__)
 
 class ConflictType(Enum):
     """Types of policy conflicts."""
+
     PRINCIPLE_CONTRADICTION = "principle_contradiction"
     POLICY_INCONSISTENCY = "policy_inconsistency"
     ENFORCEMENT_CONFLICT = "enforcement_conflict"
@@ -74,6 +87,7 @@ class ConflictType(Enum):
 
 class ResolutionStrategy(Enum):
     """Strategies for conflict resolution."""
+
     AUTOMATIC_MERGE = "automatic_merge"
     PRINCIPLE_PRIORITY = "principle_priority"
     STAKEHOLDER_CONSENSUS = "stakeholder_consensus"
@@ -84,6 +98,7 @@ class ResolutionStrategy(Enum):
 
 class ErrorCorrectionStatus(Enum):
     """Status of error correction workflows."""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     RESOLVED_AUTOMATICALLY = "resolved_automatically"
@@ -96,6 +111,7 @@ class ErrorCorrectionStatus(Enum):
 @dataclass
 class ConflictDetectionResult:
     """Result of conflict detection analysis."""
+
     conflict_detected: bool
     conflict_type: Optional[ConflictType] = None
     severity: Optional[ViolationSeverity] = None
@@ -110,6 +126,7 @@ class ConflictDetectionResult:
 @dataclass
 class ErrorCorrectionResult:
     """Result of error correction operations."""
+
     correction_id: str
     status: ErrorCorrectionStatus
     conflict_type: Optional[ConflictType] = None
@@ -127,6 +144,7 @@ class ErrorCorrectionResult:
 @dataclass
 class PolicyRefinementSuggestion:
     """Suggestion for policy refinement based on constitutional principles."""
+
     suggestion_id: str
     policy_id: str
     principle_id: str
@@ -142,71 +160,81 @@ class PolicyRefinementSuggestion:
 class ConflictDetectionEngine:
     """
     Engine for detecting conflicts between constitutional principles and policies.
-    
+
     Implements advanced conflict detection algorithms using semantic analysis,
     constitutional distance scoring, and pattern recognition.
     """
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """Initialize the conflict detection engine."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
         self.error_predictor = ErrorPredictionModel()
-        
+
         # Conflict pattern cache
         self.conflict_patterns: Dict[str, Any] = {}
         self.pattern_cache_ttl = self.config.get("pattern_cache_ttl", 3600)
         self.last_pattern_update: Optional[datetime] = None
-        
+
         logger.info("Conflict Detection Engine initialized")
-    
+
     async def detect_conflicts(
         self,
         principles: List[Principle],
         policies: List[Policy],
-        context_data: Optional[Dict[str, Any]] = None
+        context_data: Optional[Dict[str, Any]] = None,
     ) -> List[ConflictDetectionResult]:
         """
         Detect conflicts between principles and policies.
-        
+
         Args:
             principles: Constitutional principles to analyze
             policies: Policies to analyze
             context_data: Additional context for detection
-            
+
         Returns:
             List of ConflictDetectionResult objects
         """
         start_time = time.time()
         context_data = context_data or {}
         conflicts = []
-        
+
         try:
             # 1. Principle-to-principle conflicts
-            principle_conflicts = await self._detect_principle_conflicts(principles, context_data)
+            principle_conflicts = await self._detect_principle_conflicts(
+                principles, context_data
+            )
             conflicts.extend(principle_conflicts)
-            
+
             # 2. Policy-to-policy conflicts
-            policy_conflicts = await self._detect_policy_conflicts(policies, context_data)
+            policy_conflicts = await self._detect_policy_conflicts(
+                policies, context_data
+            )
             conflicts.extend(policy_conflicts)
-            
+
             # 3. Principle-to-policy conflicts
-            cross_conflicts = await self._detect_cross_conflicts(principles, policies, context_data)
+            cross_conflicts = await self._detect_cross_conflicts(
+                principles, policies, context_data
+            )
             conflicts.extend(cross_conflicts)
-            
+
             # 4. Semantic ambiguity detection
-            semantic_conflicts = await self._detect_semantic_conflicts(principles, policies, context_data)
+            semantic_conflicts = await self._detect_semantic_conflicts(
+                principles, policies, context_data
+            )
             conflicts.extend(semantic_conflicts)
-            
+
             detection_time = time.time() - start_time
-            logger.info(f"Conflict detection completed in {detection_time:.2f}s, found {len(conflicts)} conflicts")
-            
+            logger.info(
+                f"Conflict detection completed in {detection_time:.2f}s, found {len(conflicts)} conflicts"
+            )
+
             return conflicts
-            
+
         except Exception as e:
             logger.error(f"Error in conflict detection: {e}")
             return []
-    
+
     def _get_default_config(self) -> Dict[str, Any]:
         """Get default configuration for conflict detection."""
         return {
@@ -215,71 +243,76 @@ class ConflictDetectionEngine:
             "pattern_cache_ttl": 3600,
             "max_conflicts_per_scan": 100,
             "enable_semantic_analysis": True,
-            "enable_pattern_caching": True
+            "enable_pattern_caching": True,
         }
 
     async def _detect_principle_conflicts(
-        self,
-        principles: List[Principle],
-        context_data: Dict[str, Any]
+        self, principles: List[Principle], context_data: Dict[str, Any]
     ) -> List[ConflictDetectionResult]:
         """Detect conflicts between constitutional principles."""
         conflicts = []
 
         for i, principle1 in enumerate(principles):
-            for principle2 in principles[i+1:]:
+            for principle2 in principles[i + 1 :]:
                 # Calculate constitutional distance
                 distance_score = await self.distance_calculator.calculate_distance(
                     principle1, principle2
                 )
 
                 # Check for contradiction threshold
-                contradiction_threshold = self.config.get("contradiction_threshold", 0.8)
+                contradiction_threshold = self.config.get(
+                    "contradiction_threshold", 0.8
+                )
                 if distance_score > contradiction_threshold:
-                    conflicts.append(ConflictDetectionResult(
-                        conflict_detected=True,
-                        conflict_type=ConflictType.PRINCIPLE_CONTRADICTION,
-                        severity=ViolationSeverity.HIGH,
-                        conflicting_principles=[str(principle1.id), str(principle2.id)],
-                        conflict_description=f"High contradiction detected between principles {principle1.title} and {principle2.title}",
-                        confidence_score=distance_score,
-                        detection_metadata={
-                            "distance_score": distance_score,
-                            "threshold": contradiction_threshold,
-                            "principle1_id": str(principle1.id),
-                            "principle2_id": str(principle2.id)
-                        },
-                        recommended_strategy=ResolutionStrategy.CONSTITUTIONAL_COUNCIL
-                    ))
+                    conflicts.append(
+                        ConflictDetectionResult(
+                            conflict_detected=True,
+                            conflict_type=ConflictType.PRINCIPLE_CONTRADICTION,
+                            severity=ViolationSeverity.HIGH,
+                            conflicting_principles=[
+                                str(principle1.id),
+                                str(principle2.id),
+                            ],
+                            conflict_description=f"High contradiction detected between principles {principle1.title} and {principle2.title}",
+                            confidence_score=distance_score,
+                            detection_metadata={
+                                "distance_score": distance_score,
+                                "threshold": contradiction_threshold,
+                                "principle1_id": str(principle1.id),
+                                "principle2_id": str(principle2.id),
+                            },
+                            recommended_strategy=ResolutionStrategy.CONSTITUTIONAL_COUNCIL,
+                        )
+                    )
 
         return conflicts
 
     async def _detect_policy_conflicts(
-        self,
-        policies: List[Policy],
-        context_data: Dict[str, Any]
+        self, policies: List[Policy], context_data: Dict[str, Any]
     ) -> List[ConflictDetectionResult]:
         """Detect conflicts between policies."""
         conflicts = []
 
         for i, policy1 in enumerate(policies):
-            for policy2 in policies[i+1:]:
+            for policy2 in policies[i + 1 :]:
                 # Check for policy inconsistencies
                 if await self._policies_conflict(policy1, policy2):
-                    conflicts.append(ConflictDetectionResult(
-                        conflict_detected=True,
-                        conflict_type=ConflictType.POLICY_INCONSISTENCY,
-                        severity=ViolationSeverity.MEDIUM,
-                        conflicting_policies=[str(policy1.id), str(policy2.id)],
-                        conflict_description=f"Policy inconsistency detected between {policy1.name} and {policy2.name}",
-                        confidence_score=0.7,
-                        detection_metadata={
-                            "policy1_id": str(policy1.id),
-                            "policy2_id": str(policy2.id),
-                            "conflict_type": "policy_inconsistency"
-                        },
-                        recommended_strategy=ResolutionStrategy.AUTOMATIC_MERGE
-                    ))
+                    conflicts.append(
+                        ConflictDetectionResult(
+                            conflict_detected=True,
+                            conflict_type=ConflictType.POLICY_INCONSISTENCY,
+                            severity=ViolationSeverity.MEDIUM,
+                            conflicting_policies=[str(policy1.id), str(policy2.id)],
+                            conflict_description=f"Policy inconsistency detected between {policy1.name} and {policy2.name}",
+                            confidence_score=0.7,
+                            detection_metadata={
+                                "policy1_id": str(policy1.id),
+                                "policy2_id": str(policy2.id),
+                                "conflict_type": "policy_inconsistency",
+                            },
+                            recommended_strategy=ResolutionStrategy.AUTOMATIC_MERGE,
+                        )
+                    )
 
         return conflicts
 
@@ -287,7 +320,7 @@ class ConflictDetectionEngine:
         self,
         principles: List[Principle],
         policies: List[Policy],
-        context_data: Dict[str, Any]
+        context_data: Dict[str, Any],
     ) -> List[ConflictDetectionResult]:
         """Detect conflicts between principles and policies."""
         conflicts = []
@@ -296,21 +329,23 @@ class ConflictDetectionEngine:
             for policy in policies:
                 # Check if policy violates principle
                 if await self._policy_violates_principle(policy, principle):
-                    conflicts.append(ConflictDetectionResult(
-                        conflict_detected=True,
-                        conflict_type=ConflictType.ENFORCEMENT_CONFLICT,
-                        severity=ViolationSeverity.HIGH,
-                        conflicting_principles=[str(principle.id)],
-                        conflicting_policies=[str(policy.id)],
-                        conflict_description=f"Policy {policy.name} conflicts with principle {principle.title}",
-                        confidence_score=0.8,
-                        detection_metadata={
-                            "principle_id": str(principle.id),
-                            "policy_id": str(policy.id),
-                            "conflict_type": "enforcement_conflict"
-                        },
-                        recommended_strategy=ResolutionStrategy.PRINCIPLE_PRIORITY
-                    ))
+                    conflicts.append(
+                        ConflictDetectionResult(
+                            conflict_detected=True,
+                            conflict_type=ConflictType.ENFORCEMENT_CONFLICT,
+                            severity=ViolationSeverity.HIGH,
+                            conflicting_principles=[str(principle.id)],
+                            conflicting_policies=[str(policy.id)],
+                            conflict_description=f"Policy {policy.name} conflicts with principle {principle.title}",
+                            confidence_score=0.8,
+                            detection_metadata={
+                                "principle_id": str(principle.id),
+                                "policy_id": str(policy.id),
+                                "conflict_type": "enforcement_conflict",
+                            },
+                            recommended_strategy=ResolutionStrategy.PRINCIPLE_PRIORITY,
+                        )
+                    )
 
         return conflicts
 
@@ -318,7 +353,7 @@ class ConflictDetectionEngine:
         self,
         principles: List[Principle],
         policies: List[Policy],
-        context_data: Dict[str, Any]
+        context_data: Dict[str, Any],
     ) -> List[ConflictDetectionResult]:
         """Detect semantic ambiguity conflicts."""
         conflicts = []
@@ -326,19 +361,21 @@ class ConflictDetectionEngine:
         # Check for semantic ambiguity in principles
         for principle in principles:
             if await self._has_semantic_ambiguity(principle.description):
-                conflicts.append(ConflictDetectionResult(
-                    conflict_detected=True,
-                    conflict_type=ConflictType.SEMANTIC_AMBIGUITY,
-                    severity=ViolationSeverity.MEDIUM,
-                    conflicting_principles=[str(principle.id)],
-                    conflict_description=f"Semantic ambiguity detected in principle {principle.title}",
-                    confidence_score=0.6,
-                    detection_metadata={
-                        "principle_id": str(principle.id),
-                        "ambiguity_type": "semantic"
-                    },
-                    recommended_strategy=ResolutionStrategy.SEMANTIC_CLARIFICATION
-                ))
+                conflicts.append(
+                    ConflictDetectionResult(
+                        conflict_detected=True,
+                        conflict_type=ConflictType.SEMANTIC_AMBIGUITY,
+                        severity=ViolationSeverity.MEDIUM,
+                        conflicting_principles=[str(principle.id)],
+                        conflict_description=f"Semantic ambiguity detected in principle {principle.title}",
+                        confidence_score=0.6,
+                        detection_metadata={
+                            "principle_id": str(principle.id),
+                            "ambiguity_type": "semantic",
+                        },
+                        recommended_strategy=ResolutionStrategy.SEMANTIC_CLARIFICATION,
+                    )
+                )
 
         return conflicts
 
@@ -346,8 +383,11 @@ class ConflictDetectionEngine:
         """Check if two policies conflict with each other."""
         # Simple heuristic - check for contradictory keywords
         contradictory_pairs = [
-            ("allow", "deny"), ("permit", "forbid"), ("enable", "disable"),
-            ("grant", "revoke"), ("accept", "reject")
+            ("allow", "deny"),
+            ("permit", "forbid"),
+            ("enable", "disable"),
+            ("grant", "revoke"),
+            ("accept", "reject"),
         ]
 
         policy1_text = (policy1.description or "").lower()
@@ -361,13 +401,15 @@ class ConflictDetectionEngine:
 
         return False
 
-    async def _policy_violates_principle(self, policy: Policy, principle: Principle) -> bool:
+    async def _policy_violates_principle(
+        self, policy: Policy, principle: Principle
+    ) -> bool:
         """Check if a policy violates a constitutional principle."""
         # Use error prediction model to assess violation likelihood
         try:
             prediction = await self.error_predictor.predict_failure_likelihood(
                 principle_id=str(principle.id),
-                context_data={"policy_id": str(policy.id)}
+                context_data={"policy_id": str(policy.id)},
             )
             return prediction > 0.7  # High likelihood threshold
         except Exception as e:
@@ -380,7 +422,15 @@ class ConflictDetectionEngine:
             return False
 
         # Simple heuristic - check for ambiguous words
-        ambiguous_words = ["may", "might", "could", "should", "possibly", "perhaps", "unclear"]
+        ambiguous_words = [
+            "may",
+            "might",
+            "could",
+            "should",
+            "possibly",
+            "perhaps",
+            "unclear",
+        ]
         text_lower = text.lower()
 
         return any(word in text_lower for word in ambiguous_words)
@@ -406,15 +456,13 @@ class AutomaticResolutionWorkflow:
             "total_attempts": 0,
             "successful_resolutions": 0,
             "escalated_to_human": 0,
-            "failed_resolutions": 0
+            "failed_resolutions": 0,
         }
 
         logger.info("Automatic Resolution Workflow initialized")
 
     async def resolve_conflict(
-        self,
-        conflict: ConflictDetectionResult,
-        db: AsyncSession
+        self, conflict: ConflictDetectionResult, db: AsyncSession
     ) -> ErrorCorrectionResult:
         """
         Attempt automatic resolution of a detected conflict.
@@ -450,7 +498,9 @@ class AutomaticResolutionWorkflow:
 
             result.response_time_seconds = time.time() - start_time
 
-            logger.info(f"Conflict resolution completed: {result.status.value} in {result.response_time_seconds:.2f}s")
+            logger.info(
+                f"Conflict resolution completed: {result.status.value} in {result.response_time_seconds:.2f}s"
+            )
             return result
 
         except Exception as e:
@@ -465,17 +515,19 @@ class AutomaticResolutionWorkflow:
                 escalation_required=True,
                 escalation_reason=f"System error during resolution: {str(e)}",
                 response_time_seconds=time.time() - start_time,
-                correction_metadata={"error": str(e)}
+                correction_metadata={"error": str(e)},
             )
 
     async def _select_resolution_strategy(
-        self,
-        conflict: ConflictDetectionResult
+        self, conflict: ConflictDetectionResult
     ) -> ResolutionStrategy:
         """Select the best resolution strategy for a conflict."""
         # Use recommended strategy if available and confidence is high
-        if (conflict.recommended_strategy and
-            conflict.confidence_score > self.config.get("high_confidence_threshold", 0.8)):
+        if (
+            conflict.recommended_strategy
+            and conflict.confidence_score
+            > self.config.get("high_confidence_threshold", 0.8)
+        ):
             return conflict.recommended_strategy
 
         # Strategy selection based on conflict type
@@ -485,17 +537,19 @@ class AutomaticResolutionWorkflow:
             ConflictType.ENFORCEMENT_CONFLICT: ResolutionStrategy.PRINCIPLE_PRIORITY,
             ConflictType.STAKEHOLDER_DISAGREEMENT: ResolutionStrategy.STAKEHOLDER_CONSENSUS,
             ConflictType.SEMANTIC_AMBIGUITY: ResolutionStrategy.SEMANTIC_CLARIFICATION,
-            ConflictType.IMPLEMENTATION_MISMATCH: ResolutionStrategy.AUTOMATIC_MERGE
+            ConflictType.IMPLEMENTATION_MISMATCH: ResolutionStrategy.AUTOMATIC_MERGE,
         }
 
-        return strategy_map.get(conflict.conflict_type, ResolutionStrategy.HUMAN_ESCALATION)
+        return strategy_map.get(
+            conflict.conflict_type, ResolutionStrategy.HUMAN_ESCALATION
+        )
 
     async def _apply_resolution_strategy(
         self,
         conflict: ConflictDetectionResult,
         strategy: ResolutionStrategy,
         correction_id: str,
-        db: AsyncSession
+        db: AsyncSession,
     ) -> ErrorCorrectionResult:
         """Apply the selected resolution strategy."""
         if strategy == ResolutionStrategy.AUTOMATIC_MERGE:
@@ -519,15 +573,12 @@ class AutomaticResolutionWorkflow:
                 recommended_actions=[
                     f"Review conflict using {strategy.value} approach",
                     "Consult relevant stakeholders",
-                    "Apply constitutional principles"
-                ]
+                    "Apply constitutional principles",
+                ],
             )
 
     async def _apply_automatic_merge(
-        self,
-        conflict: ConflictDetectionResult,
-        correction_id: str,
-        db: AsyncSession
+        self, conflict: ConflictDetectionResult, correction_id: str, db: AsyncSession
     ) -> ErrorCorrectionResult:
         """Apply automatic merge resolution strategy."""
         try:
@@ -545,9 +596,7 @@ class AutomaticResolutionWorkflow:
             """
 
             response = await self.multi_model_manager.generate_with_fallback(
-                prompt=merge_prompt,
-                temperature=0.3,
-                max_retries=2
+                prompt=merge_prompt, temperature=0.3, max_retries=2
             )
 
             if response and response.get("success"):
@@ -561,13 +610,13 @@ class AutomaticResolutionWorkflow:
                     recommended_actions=[
                         "Review merged solution",
                         "Update affected policies/principles",
-                        "Notify stakeholders of changes"
+                        "Notify stakeholders of changes",
                     ],
                     correction_metadata={
                         "merged_content": response["content"],
                         "model_used": response.get("model_used"),
-                        "confidence": 0.8
-                    }
+                        "confidence": 0.8,
+                    },
                 )
             else:
                 raise Exception("LLM merge generation failed")
@@ -581,14 +630,11 @@ class AutomaticResolutionWorkflow:
                 resolution_strategy=ResolutionStrategy.AUTOMATIC_MERGE,
                 correction_description=f"Automatic merge failed: {str(e)}",
                 escalation_required=True,
-                escalation_reason=f"Merge generation error: {str(e)}"
+                escalation_reason=f"Merge generation error: {str(e)}",
             )
 
     async def _apply_principle_priority(
-        self,
-        conflict: ConflictDetectionResult,
-        correction_id: str,
-        db: AsyncSession
+        self, conflict: ConflictDetectionResult, correction_id: str, db: AsyncSession
     ) -> ErrorCorrectionResult:
         """Apply principle priority resolution strategy."""
         try:
@@ -604,12 +650,20 @@ class AutomaticResolutionWorkflow:
                     recommended_actions=[
                         "Update policy to align with constitutional principle",
                         "Review policy implementation",
-                        "Notify policy stakeholders"
+                        "Notify policy stakeholders",
                     ],
                     correction_metadata={
-                        "priority_principle": conflict.conflicting_principles[0] if conflict.conflicting_principles else None,
-                        "affected_policy": conflict.conflicting_policies[0] if conflict.conflicting_policies else None
-                    }
+                        "priority_principle": (
+                            conflict.conflicting_principles[0]
+                            if conflict.conflicting_principles
+                            else None
+                        ),
+                        "affected_policy": (
+                            conflict.conflicting_policies[0]
+                            if conflict.conflicting_policies
+                            else None
+                        ),
+                    },
                 )
             else:
                 raise Exception("No clear principle-policy conflict to resolve")
@@ -622,14 +676,11 @@ class AutomaticResolutionWorkflow:
                 resolution_strategy=ResolutionStrategy.PRINCIPLE_PRIORITY,
                 correction_description=f"Principle priority resolution failed: {str(e)}",
                 escalation_required=True,
-                escalation_reason=str(e)
+                escalation_reason=str(e),
             )
 
     async def _apply_semantic_clarification(
-        self,
-        conflict: ConflictDetectionResult,
-        correction_id: str,
-        db: AsyncSession
+        self, conflict: ConflictDetectionResult, correction_id: str, db: AsyncSession
     ) -> ErrorCorrectionResult:
         """Apply semantic clarification resolution strategy."""
         try:
@@ -647,7 +698,7 @@ class AutomaticResolutionWorkflow:
             response = await self.multi_model_manager.generate_with_fallback(
                 prompt=clarification_prompt,
                 temperature=0.2,  # Lower temperature for clarity
-                max_retries=2
+                max_retries=2,
             )
 
             if response and response.get("success"):
@@ -661,12 +712,12 @@ class AutomaticResolutionWorkflow:
                     recommended_actions=[
                         "Update documentation with clarified language",
                         "Review related principles/policies",
-                        "Communicate clarification to stakeholders"
+                        "Communicate clarification to stakeholders",
                     ],
                     correction_metadata={
                         "clarification": response["content"],
-                        "model_used": response.get("model_used")
-                    }
+                        "model_used": response.get("model_used"),
+                    },
                 )
             else:
                 raise Exception("LLM clarification generation failed")
@@ -679,14 +730,11 @@ class AutomaticResolutionWorkflow:
                 resolution_strategy=ResolutionStrategy.SEMANTIC_CLARIFICATION,
                 correction_description=f"Semantic clarification failed: {str(e)}",
                 escalation_required=True,
-                escalation_reason=str(e)
+                escalation_reason=str(e),
             )
 
     async def _apply_stakeholder_consensus(
-        self,
-        conflict: ConflictDetectionResult,
-        correction_id: str,
-        db: AsyncSession
+        self, conflict: ConflictDetectionResult, correction_id: str, db: AsyncSession
     ) -> ErrorCorrectionResult:
         """Apply stakeholder consensus resolution strategy."""
         # This strategy requires human intervention
@@ -702,8 +750,8 @@ class AutomaticResolutionWorkflow:
                 "Identify relevant stakeholders",
                 "Schedule consensus-building session",
                 "Facilitate stakeholder discussion",
-                "Document consensus decision"
-            ]
+                "Document consensus decision",
+            ],
         )
 
     def _get_default_config(self) -> Dict[str, Any]:
@@ -713,7 +761,7 @@ class AutomaticResolutionWorkflow:
             "max_resolution_time_seconds": 30,
             "enable_llm_assistance": True,
             "target_success_rate": 0.8,
-            "escalation_threshold": 0.7
+            "escalation_threshold": 0.7,
         }
 
 
@@ -738,7 +786,7 @@ class SemanticValidationEngine:
         self,
         principle: Principle,
         policy: Policy,
-        context_data: Optional[Dict[str, Any]] = None
+        context_data: Optional[Dict[str, Any]] = None,
     ) -> ErrorCorrectionResult:
         """
         Validate semantic consistency and apply corrections if needed.
@@ -763,7 +811,9 @@ class SemanticValidationEngine:
 
             # Get current fidelity score
             current_fidelity = self.fidelity_monitor.get_current_fidelity()
-            baseline_fidelity = current_fidelity.composite_score if current_fidelity else 0.5
+            baseline_fidelity = (
+                current_fidelity.composite_score if current_fidelity else 0.5
+            )
 
             # Determine if correction is needed
             distance_threshold = self.config.get("distance_threshold", 0.7)
@@ -776,7 +826,9 @@ class SemanticValidationEngine:
                 # Calculate fidelity improvement
                 if correction_result.correction_applied:
                     # Simulate fidelity improvement (in real implementation, recalculate)
-                    estimated_improvement = min(0.1, (distance_score - distance_threshold) * 0.2)
+                    estimated_improvement = min(
+                        0.1, (distance_score - distance_threshold) * 0.2
+                    )
                     correction_result.fidelity_improvement = estimated_improvement
 
                 correction_result.response_time_seconds = time.time() - start_time
@@ -792,8 +844,8 @@ class SemanticValidationEngine:
                     correction_metadata={
                         "distance_score": distance_score,
                         "threshold": distance_threshold,
-                        "validation_passed": True
-                    }
+                        "validation_passed": True,
+                    },
                 )
 
         except Exception as e:
@@ -805,7 +857,7 @@ class SemanticValidationEngine:
                 escalation_required=True,
                 escalation_reason=str(e),
                 response_time_seconds=time.time() - start_time,
-                correction_metadata={"error": str(e)}
+                correction_metadata={"error": str(e)},
             )
 
     async def _apply_semantic_correction(
@@ -813,7 +865,7 @@ class SemanticValidationEngine:
         principle: Principle,
         policy: Policy,
         distance_score: float,
-        correction_id: str
+        correction_id: str,
     ) -> ErrorCorrectionResult:
         """Apply semantic correction to improve constitutional alignment."""
         try:
@@ -834,9 +886,7 @@ class SemanticValidationEngine:
             """
 
             response = await self.multi_model_manager.generate_with_fallback(
-                prompt=correction_prompt,
-                temperature=0.3,
-                max_retries=2
+                prompt=correction_prompt, temperature=0.3, max_retries=2
             )
 
             if response and response.get("success"):
@@ -849,13 +899,13 @@ class SemanticValidationEngine:
                         "Review corrected policy text",
                         "Update policy documentation",
                         "Validate constitutional compliance",
-                        "Notify policy stakeholders"
+                        "Notify policy stakeholders",
                     ],
                     correction_metadata={
                         "original_distance": distance_score,
                         "correction_text": response["content"],
-                        "model_used": response.get("model_used")
-                    }
+                        "model_used": response.get("model_used"),
+                    },
                 )
             else:
                 raise Exception("LLM correction generation failed")
@@ -866,7 +916,7 @@ class SemanticValidationEngine:
                 status=ErrorCorrectionStatus.FAILED,
                 correction_description=f"Semantic correction failed: {str(e)}",
                 escalation_required=True,
-                escalation_reason=str(e)
+                escalation_reason=str(e),
             )
 
     def _get_default_config(self) -> Dict[str, Any]:
@@ -875,7 +925,7 @@ class SemanticValidationEngine:
             "distance_threshold": 0.7,
             "max_validation_time_seconds": 15,
             "enable_auto_correction": True,
-            "fidelity_improvement_threshold": 0.05
+            "fidelity_improvement_threshold": 0.05,
         }
 
 
@@ -899,7 +949,7 @@ class PolicyRefinementSuggester:
         self,
         policy: Policy,
         principles: List[Principle],
-        context_data: Optional[Dict[str, Any]] = None
+        context_data: Optional[Dict[str, Any]] = None,
     ) -> List[PolicyRefinementSuggestion]:
         """
         Generate refinement suggestions for a policy based on constitutional principles.
@@ -947,7 +997,7 @@ class PolicyRefinementSuggester:
         policy: Policy,
         principle: Principle,
         distance_score: float,
-        context_data: Dict[str, Any]
+        context_data: Dict[str, Any],
     ) -> Optional[PolicyRefinementSuggestion]:
         """Generate a refinement suggestion for a specific principle."""
         try:
@@ -972,14 +1022,14 @@ class PolicyRefinementSuggester:
             """
 
             response = await self.multi_model_manager.generate_with_fallback(
-                prompt=suggestion_prompt,
-                temperature=0.4,
-                max_retries=2
+                prompt=suggestion_prompt, temperature=0.4, max_retries=2
             )
 
             if response and response.get("success"):
                 # Parse response (simplified - in real implementation, use structured output)
-                suggestion_id = f"suggestion_{int(time.time() * 1000)}_{policy.id}_{principle.id}"
+                suggestion_id = (
+                    f"suggestion_{int(time.time() * 1000)}_{policy.id}_{principle.id}"
+                )
 
                 return PolicyRefinementSuggestion(
                     suggestion_id=suggestion_id,
@@ -994,8 +1044,8 @@ class PolicyRefinementSuggester:
                     impact_assessment={
                         "distance_score": distance_score,
                         "alignment_improvement": "high",
-                        "implementation_complexity": "medium"
-                    }
+                        "implementation_complexity": "medium",
+                    },
                 )
             else:
                 return None
@@ -1010,7 +1060,7 @@ class PolicyRefinementSuggester:
             "suggestion_threshold": 0.6,
             "max_suggestions": 5,
             "min_confidence_score": 0.5,
-            "enable_impact_assessment": True
+            "enable_impact_assessment": True,
         }
 
 
@@ -1032,7 +1082,7 @@ class ConflictComplexityScorer:
     async def score_complexity(
         self,
         conflict: ConflictDetectionResult,
-        context_data: Optional[Dict[str, Any]] = None
+        context_data: Optional[Dict[str, Any]] = None,
     ) -> Tuple[float, bool]:
         """
         Score the complexity of a conflict and determine if escalation is needed.
@@ -1053,19 +1103,22 @@ class ConflictComplexityScorer:
             # Weighted complexity score
             weights = self.config.get("complexity_weights", {})
             complexity_score = (
-                factors["stakeholder_count"] * weights.get("stakeholder_impact", 0.25) +
-                factors["principle_count"] * weights.get("principle_complexity", 0.20) +
-                factors["policy_count"] * weights.get("policy_complexity", 0.20) +
-                factors["semantic_ambiguity"] * weights.get("semantic_complexity", 0.15) +
-                factors["historical_failures"] * weights.get("historical_risk", 0.10) +
-                factors["urgency_level"] * weights.get("urgency", 0.10)
+                factors["stakeholder_count"] * weights.get("stakeholder_impact", 0.25)
+                + factors["principle_count"] * weights.get("principle_complexity", 0.20)
+                + factors["policy_count"] * weights.get("policy_complexity", 0.20)
+                + factors["semantic_ambiguity"]
+                * weights.get("semantic_complexity", 0.15)
+                + factors["historical_failures"] * weights.get("historical_risk", 0.10)
+                + factors["urgency_level"] * weights.get("urgency", 0.10)
             )
 
             # Determine escalation necessity
             escalation_threshold = self.config.get("escalation_threshold", 0.7)
             requires_escalation = complexity_score > escalation_threshold
 
-            logger.debug(f"Conflict complexity scored: {complexity_score:.3f}, escalation: {requires_escalation}")
+            logger.debug(
+                f"Conflict complexity scored: {complexity_score:.3f}, escalation: {requires_escalation}"
+            )
 
             return complexity_score, requires_escalation
 
@@ -1075,19 +1128,21 @@ class ConflictComplexityScorer:
             return 1.0, True
 
     async def _calculate_complexity_factors(
-        self,
-        conflict: ConflictDetectionResult,
-        context_data: Dict[str, Any]
+        self, conflict: ConflictDetectionResult, context_data: Dict[str, Any]
     ) -> Dict[str, float]:
         """Calculate individual complexity factors."""
         factors = {}
 
         # Stakeholder impact (0.0 - 1.0)
-        stakeholder_count = len(conflict.conflicting_principles) + len(conflict.conflicting_policies)
+        stakeholder_count = len(conflict.conflicting_principles) + len(
+            conflict.conflicting_policies
+        )
         factors["stakeholder_count"] = min(1.0, stakeholder_count / 5.0)
 
         # Principle complexity (0.0 - 1.0)
-        factors["principle_count"] = min(1.0, len(conflict.conflicting_principles) / 3.0)
+        factors["principle_count"] = min(
+            1.0, len(conflict.conflicting_principles) / 3.0
+        )
 
         # Policy complexity (0.0 - 1.0)
         factors["policy_count"] = min(1.0, len(conflict.conflicting_policies) / 3.0)
@@ -1126,8 +1181,8 @@ class ConflictComplexityScorer:
                 "policy_complexity": 0.20,
                 "semantic_complexity": 0.15,
                 "historical_risk": 0.10,
-                "urgency": 0.10
-            }
+                "urgency": 0.10,
+            },
         }
 
 
@@ -1151,7 +1206,7 @@ class ParallelConflictProcessor:
             "total_processed": 0,
             "average_response_time": 0.0,
             "parallel_efficiency": 0.0,
-            "cache_hit_rate": 0.0
+            "cache_hit_rate": 0.0,
         }
 
         # Conflict pattern cache
@@ -1161,9 +1216,7 @@ class ParallelConflictProcessor:
         logger.info("Parallel Conflict Processor initialized")
 
     async def process_conflicts_parallel(
-        self,
-        conflicts: List[ConflictDetectionResult],
-        db: AsyncSession
+        self, conflicts: List[ConflictDetectionResult], db: AsyncSession
     ) -> List[ErrorCorrectionResult]:
         """
         Process multiple conflicts in parallel for optimal response time.
@@ -1182,11 +1235,15 @@ class ParallelConflictProcessor:
 
         try:
             # Check cache for known patterns
-            cached_results, uncached_conflicts = await self._check_pattern_cache(conflicts)
+            cached_results, uncached_conflicts = await self._check_pattern_cache(
+                conflicts
+            )
 
             # Process uncached conflicts in parallel
             if uncached_conflicts:
-                parallel_results = await self._process_parallel_batch(uncached_conflicts, db)
+                parallel_results = await self._process_parallel_batch(
+                    uncached_conflicts, db
+                )
 
                 # Update cache with new results
                 await self._update_pattern_cache(uncached_conflicts, parallel_results)
@@ -1198,10 +1255,14 @@ class ParallelConflictProcessor:
 
             # Update performance statistics
             processing_time = time.time() - start_time
-            self._update_performance_stats(len(conflicts), processing_time, len(cached_results))
+            self._update_performance_stats(
+                len(conflicts), processing_time, len(cached_results)
+            )
 
-            logger.info(f"Processed {len(conflicts)} conflicts in {processing_time:.2f}s "
-                       f"(cached: {len(cached_results)}, parallel: {len(parallel_results)})")
+            logger.info(
+                f"Processed {len(conflicts)} conflicts in {processing_time:.2f}s "
+                f"(cached: {len(cached_results)}, parallel: {len(parallel_results)})"
+            )
 
             return all_results
 
@@ -1210,8 +1271,7 @@ class ParallelConflictProcessor:
             return []
 
     async def _check_pattern_cache(
-        self,
-        conflicts: List[ConflictDetectionResult]
+        self, conflicts: List[ConflictDetectionResult]
     ) -> Tuple[List[ErrorCorrectionResult], List[ConflictDetectionResult]]:
         """Check cache for known conflict patterns."""
         cached_results = []
@@ -1235,9 +1295,7 @@ class ParallelConflictProcessor:
         return cached_results, uncached_conflicts
 
     async def _process_parallel_batch(
-        self,
-        conflicts: List[ConflictDetectionResult],
-        db: AsyncSession
+        self, conflicts: List[ConflictDetectionResult], db: AsyncSession
     ) -> List[ErrorCorrectionResult]:
         """Process a batch of conflicts in parallel."""
         # Create resolution workflow for each conflict
@@ -1267,7 +1325,7 @@ class ParallelConflictProcessor:
     async def _update_pattern_cache(
         self,
         conflicts: List[ConflictDetectionResult],
-        results: List[ErrorCorrectionResult]
+        results: List[ErrorCorrectionResult],
     ) -> None:
         """Update pattern cache with new results."""
         if len(conflicts) != len(results):
@@ -1279,7 +1337,9 @@ class ParallelConflictProcessor:
                 pattern_key = self._generate_pattern_key(conflict)
 
                 # Add timestamp for cache expiry
-                result.correction_metadata["cached_at"] = datetime.now(timezone.utc).isoformat()
+                result.correction_metadata["cached_at"] = datetime.now(
+                    timezone.utc
+                ).isoformat()
                 self.pattern_cache[pattern_key] = result
 
         # Clean up old cache entries
@@ -1291,7 +1351,7 @@ class ParallelConflictProcessor:
             conflict.conflict_type.value if conflict.conflict_type else "unknown",
             str(len(conflict.conflicting_principles)),
             str(len(conflict.conflicting_policies)),
-            conflict.severity.value if conflict.severity else "unknown"
+            conflict.severity.value if conflict.severity else "unknown",
         ]
         return "_".join(key_components)
 
@@ -1302,7 +1362,7 @@ class ParallelConflictProcessor:
             return False
 
         try:
-            cached_at = datetime.fromisoformat(cached_at_str.replace('Z', '+00:00'))
+            cached_at = datetime.fromisoformat(cached_at_str.replace("Z", "+00:00"))
             age_seconds = (datetime.now(timezone.utc) - cached_at).total_seconds()
             return age_seconds < self.cache_ttl
         except Exception:
@@ -1323,10 +1383,7 @@ class ParallelConflictProcessor:
             logger.debug(f"Cleaned up {len(expired_keys)} expired cache entries")
 
     def _update_performance_stats(
-        self,
-        total_conflicts: int,
-        processing_time: float,
-        cached_count: int
+        self, total_conflicts: int, processing_time: float, cached_count: int
     ) -> None:
         """Update performance statistics."""
         self.processing_stats["total_processed"] += total_conflicts
@@ -1335,20 +1392,22 @@ class ParallelConflictProcessor:
         current_avg = self.processing_stats["average_response_time"]
         total_processed = self.processing_stats["total_processed"]
         self.processing_stats["average_response_time"] = (
-            (current_avg * (total_processed - total_conflicts) + processing_time) / total_processed
-        )
+            current_avg * (total_processed - total_conflicts) + processing_time
+        ) / total_processed
 
         # Update cache hit rate
         if total_conflicts > 0:
             current_hit_rate = self.processing_stats["cache_hit_rate"]
             new_hit_rate = cached_count / total_conflicts
             self.processing_stats["cache_hit_rate"] = (
-                (current_hit_rate + new_hit_rate) / 2
-            )
+                current_hit_rate + new_hit_rate
+            ) / 2
 
         # Calculate parallel efficiency (simplified metric)
         target_time = self.config.get("target_response_time_seconds", 30)
-        self.processing_stats["parallel_efficiency"] = min(1.0, target_time / processing_time)
+        self.processing_stats["parallel_efficiency"] = min(
+            1.0, target_time / processing_time
+        )
 
     def _get_default_config(self) -> Dict[str, Any]:
         """Get default configuration for parallel processing."""
@@ -1357,7 +1416,7 @@ class ParallelConflictProcessor:
             "cache_ttl_seconds": 1800,
             "target_response_time_seconds": 30,
             "enable_pattern_caching": True,
-            "batch_size": 10
+            "batch_size": 10,
         }
 
 
@@ -1415,15 +1474,13 @@ class QECErrorCorrectionService:
             "escalated_conflicts": 0,
             "average_response_time": 0.0,
             "accuracy_rate": 0.0,
-            "fidelity_improvements": []
+            "fidelity_improvements": [],
         }
 
         logger.info("QEC Error Correction Service initialized")
 
     async def predict_synthesis_errors(
-        self,
-        principles: List[Principle],
-        context_data: Optional[Dict[str, Any]] = None
+        self, principles: List[Principle], context_data: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
         Proactive error prediction for synthesis operations.
@@ -1447,11 +1504,19 @@ class QECErrorCorrectionService:
 
             # Calculate individual risk components
             ambiguity_risk = await self._calculate_ambiguity_risk(principle_features)
-            misalignment_risk = await self._calculate_misalignment_risk(principle_features)
-            implementation_risk = await self._calculate_implementation_risk(principle_features, context_data)
+            misalignment_risk = await self._calculate_misalignment_risk(
+                principle_features
+            )
+            implementation_risk = await self._calculate_implementation_risk(
+                principle_features, context_data
+            )
 
             # Calculate overall risk score
-            overall_risk = (ambiguity_risk * 0.4 + misalignment_risk * 0.35 + implementation_risk * 0.25)
+            overall_risk = (
+                ambiguity_risk * 0.4
+                + misalignment_risk * 0.35
+                + implementation_risk * 0.25
+            )
 
             # Recommend synthesis strategy based on risk assessment
             recommended_strategy = self._recommend_strategy(overall_risk)
@@ -1463,20 +1528,38 @@ class QECErrorCorrectionService:
                     "ambiguity_risk": round(ambiguity_risk, 3),
                     "misalignment_risk": round(misalignment_risk, 3),
                     "implementation_risk": round(implementation_risk, 3),
-                    "overall_risk": round(overall_risk, 3)
+                    "overall_risk": round(overall_risk, 3),
                 },
                 "recommended_strategy": recommended_strategy,
                 "prediction_metadata": {
                     "principles_analyzed": len(principles),
                     "prediction_time_seconds": round(prediction_time, 3),
                     "features_extracted": len(principle_features),
-                    "context_factors": len(context_data)
+                    "context_factors": len(context_data),
                 },
                 "risk_factors": {
-                    "high_complexity_principles": len([f for f in principle_features if f.get("complexity_score", 0) > 0.7]),
-                    "ambiguous_statements": len([f for f in principle_features if f.get("ambiguity_score", 0) > 0.6]),
-                    "conflicting_requirements": len([f for f in principle_features if f.get("conflict_potential", 0) > 0.5])
-                }
+                    "high_complexity_principles": len(
+                        [
+                            f
+                            for f in principle_features
+                            if f.get("complexity_score", 0) > 0.7
+                        ]
+                    ),
+                    "ambiguous_statements": len(
+                        [
+                            f
+                            for f in principle_features
+                            if f.get("ambiguity_score", 0) > 0.6
+                        ]
+                    ),
+                    "conflicting_requirements": len(
+                        [
+                            f
+                            for f in principle_features
+                            if f.get("conflict_potential", 0) > 0.5
+                        ]
+                    ),
+                },
             }
 
         except Exception as e:
@@ -1487,19 +1570,16 @@ class QECErrorCorrectionService:
                     "ambiguity_risk": 0.8,
                     "misalignment_risk": 0.8,
                     "implementation_risk": 0.8,
-                    "overall_risk": 0.8
+                    "overall_risk": 0.8,
                 },
                 "recommended_strategy": "human_review_required",
-                "prediction_metadata": {
-                    "error": str(e),
-                    "fallback_strategy": True
-                },
-                "risk_factors": {
-                    "error_occurred": True
-                }
+                "prediction_metadata": {"error": str(e), "fallback_strategy": True},
+                "risk_factors": {"error_occurred": True},
             }
 
-    async def _extract_principle_features(self, principles: List[Principle]) -> List[Dict[str, Any]]:
+    async def _extract_principle_features(
+        self, principles: List[Principle]
+    ) -> List[Dict[str, Any]]:
         """
         Extract quantifiable features from constitutional principles.
 
@@ -1520,59 +1600,113 @@ class QECErrorCorrectionService:
 
                 # Calculate complexity metrics
                 word_count = len(combined_text.split())
-                sentence_count = len([s for s in combined_text.split('.') if s.strip()])
+                sentence_count = len([s for s in combined_text.split(".") if s.strip()])
                 avg_sentence_length = word_count / max(sentence_count, 1)
 
                 # Ambiguity indicators
-                ambiguous_words = ["may", "might", "could", "should", "possibly", "perhaps", "unclear", "ambiguous"]
-                ambiguity_count = sum(1 for word in ambiguous_words if word in combined_text.lower())
+                ambiguous_words = [
+                    "may",
+                    "might",
+                    "could",
+                    "should",
+                    "possibly",
+                    "perhaps",
+                    "unclear",
+                    "ambiguous",
+                ]
+                ambiguity_count = sum(
+                    1 for word in ambiguous_words if word in combined_text.lower()
+                )
                 ambiguity_score = min(1.0, ambiguity_count / max(word_count / 100, 1))
 
                 # Complexity indicators
-                complex_words = ["notwithstanding", "whereas", "heretofore", "pursuant", "aforementioned"]
-                complexity_count = sum(1 for word in complex_words if word in combined_text.lower())
-                complexity_score = min(1.0, (avg_sentence_length / 20) + (complexity_count / 10))
+                complex_words = [
+                    "notwithstanding",
+                    "whereas",
+                    "heretofore",
+                    "pursuant",
+                    "aforementioned",
+                ]
+                complexity_count = sum(
+                    1 for word in complex_words if word in combined_text.lower()
+                )
+                complexity_score = min(
+                    1.0, (avg_sentence_length / 20) + (complexity_count / 10)
+                )
 
                 # Conflict potential indicators
-                conflict_words = ["except", "unless", "however", "but", "although", "despite", "nevertheless"]
-                conflict_count = sum(1 for word in conflict_words if word in combined_text.lower())
+                conflict_words = [
+                    "except",
+                    "unless",
+                    "however",
+                    "but",
+                    "although",
+                    "despite",
+                    "nevertheless",
+                ]
+                conflict_count = sum(
+                    1 for word in conflict_words if word in combined_text.lower()
+                )
                 conflict_potential = min(1.0, conflict_count / max(word_count / 50, 1))
 
                 # Technical requirement indicators
-                technical_words = ["implement", "enforce", "monitor", "validate", "verify", "audit", "compliance"]
-                technical_count = sum(1 for word in technical_words if word in combined_text.lower())
-                technical_complexity = min(1.0, technical_count / max(word_count / 30, 1))
+                technical_words = [
+                    "implement",
+                    "enforce",
+                    "monitor",
+                    "validate",
+                    "verify",
+                    "audit",
+                    "compliance",
+                ]
+                technical_count = sum(
+                    1 for word in technical_words if word in combined_text.lower()
+                )
+                technical_complexity = min(
+                    1.0, technical_count / max(word_count / 30, 1)
+                )
 
-                features.append({
-                    "principle_id": str(principle.id),
-                    "word_count": word_count,
-                    "sentence_count": sentence_count,
-                    "avg_sentence_length": avg_sentence_length,
-                    "ambiguity_score": ambiguity_score,
-                    "complexity_score": complexity_score,
-                    "conflict_potential": conflict_potential,
-                    "technical_complexity": technical_complexity,
-                    "priority_weight": getattr(principle, 'priority_weight', 0.5) or 0.5,
-                    "has_constraints": bool(getattr(principle, 'constraints', None)),
-                    "scope_breadth": len(getattr(principle, 'scope', []) or [])
-                })
+                features.append(
+                    {
+                        "principle_id": str(principle.id),
+                        "word_count": word_count,
+                        "sentence_count": sentence_count,
+                        "avg_sentence_length": avg_sentence_length,
+                        "ambiguity_score": ambiguity_score,
+                        "complexity_score": complexity_score,
+                        "conflict_potential": conflict_potential,
+                        "technical_complexity": technical_complexity,
+                        "priority_weight": getattr(principle, "priority_weight", 0.5)
+                        or 0.5,
+                        "has_constraints": bool(
+                            getattr(principle, "constraints", None)
+                        ),
+                        "scope_breadth": len(getattr(principle, "scope", []) or []),
+                    }
+                )
 
             except Exception as e:
-                logger.warning(f"Error extracting features for principle {principle.id}: {e}")
+                logger.warning(
+                    f"Error extracting features for principle {principle.id}: {e}"
+                )
                 # Add minimal feature set for failed extractions
-                features.append({
-                    "principle_id": str(principle.id),
-                    "word_count": 0,
-                    "ambiguity_score": 0.5,
-                    "complexity_score": 0.5,
-                    "conflict_potential": 0.5,
-                    "technical_complexity": 0.5,
-                    "extraction_error": True
-                })
+                features.append(
+                    {
+                        "principle_id": str(principle.id),
+                        "word_count": 0,
+                        "ambiguity_score": 0.5,
+                        "complexity_score": 0.5,
+                        "conflict_potential": 0.5,
+                        "technical_complexity": 0.5,
+                        "extraction_error": True,
+                    }
+                )
 
         return features
 
-    async def _calculate_ambiguity_risk(self, principle_features: List[Dict[str, Any]]) -> float:
+    async def _calculate_ambiguity_risk(
+        self, principle_features: List[Dict[str, Any]]
+    ) -> float:
         """Calculate risk score based on ambiguity in principles."""
         if not principle_features:
             return 0.5
@@ -1597,7 +1731,9 @@ class QECErrorCorrectionService:
 
         return min(1.0, weighted_ambiguity)
 
-    async def _calculate_misalignment_risk(self, principle_features: List[Dict[str, Any]]) -> float:
+    async def _calculate_misalignment_risk(
+        self, principle_features: List[Dict[str, Any]]
+    ) -> float:
         """Calculate risk score based on potential principle misalignment."""
         if not principle_features:
             return 0.5
@@ -1617,16 +1753,16 @@ class QECErrorCorrectionService:
         return min(1.0, misalignment_risk)
 
     async def _calculate_implementation_risk(
-        self,
-        principle_features: List[Dict[str, Any]],
-        context_data: Dict[str, Any]
+        self, principle_features: List[Dict[str, Any]], context_data: Dict[str, Any]
     ) -> float:
         """Calculate risk score based on implementation complexity."""
         if not principle_features:
             return 0.5
 
         # Technical complexity from principles
-        technical_scores = [f.get("technical_complexity", 0.5) for f in principle_features]
+        technical_scores = [
+            f.get("technical_complexity", 0.5) for f in principle_features
+        ]
         avg_technical = sum(technical_scores) / len(technical_scores)
 
         # Complexity from text analysis
@@ -1647,7 +1783,9 @@ class QECErrorCorrectionService:
                 context_risk += 0.1
 
         # Combine all implementation risk factors
-        implementation_risk = (avg_technical * 0.4) + (avg_complexity * 0.4) + (context_risk * 0.2)
+        implementation_risk = (
+            (avg_technical * 0.4) + (avg_complexity * 0.4) + (context_risk * 0.2)
+        )
 
         return min(1.0, implementation_risk)
 
@@ -1675,7 +1813,7 @@ class QECErrorCorrectionService:
         principles: List[Principle],
         policies: List[Policy],
         context_data: Optional[Dict[str, Any]] = None,
-        db: Optional[AsyncSession] = None
+        db: Optional[AsyncSession] = None,
     ) -> Dict[str, Any]:
         """
         Execute complete error correction workflow.
@@ -1715,28 +1853,34 @@ class QECErrorCorrectionService:
                     "corrections_applied": 0,
                     "escalations_required": 0,
                     "response_time_seconds": time.time() - start_time,
-                    "message": "No conflicts detected"
+                    "message": "No conflicts detected",
                 }
 
             # Phase 2: Complexity Analysis and Escalation Decision
             escalation_decisions = []
             for conflict in conflicts:
-                complexity_score, requires_escalation = await self.complexity_scorer.score_complexity(
-                    conflict, context_data
+                complexity_score, requires_escalation = (
+                    await self.complexity_scorer.score_complexity(
+                        conflict, context_data
+                    )
                 )
-                escalation_decisions.append({
-                    "conflict": conflict,
-                    "complexity_score": complexity_score,
-                    "requires_escalation": requires_escalation
-                })
+                escalation_decisions.append(
+                    {
+                        "conflict": conflict,
+                        "complexity_score": complexity_score,
+                        "requires_escalation": requires_escalation,
+                    }
+                )
 
             # Separate conflicts for automatic resolution vs escalation
             auto_conflicts = [
-                decision["conflict"] for decision in escalation_decisions
+                decision["conflict"]
+                for decision in escalation_decisions
                 if not decision["requires_escalation"]
             ]
             escalation_conflicts = [
-                decision["conflict"] for decision in escalation_decisions
+                decision["conflict"]
+                for decision in escalation_decisions
                 if decision["requires_escalation"]
             ]
 
@@ -1757,22 +1901,30 @@ class QECErrorCorrectionService:
             refinement_suggestions = []
             for principle in principles:
                 for policy in policies:
-                    suggestions = await self.refinement_suggester.generate_refinement_suggestions(
-                        policy, [principle], context_data
+                    suggestions = (
+                        await self.refinement_suggester.generate_refinement_suggestions(
+                            policy, [principle], context_data
+                        )
                     )
                     refinement_suggestions.extend(suggestions)
 
             # Phase 6: Performance Metrics and Reporting
             workflow_results = await self._compile_workflow_results(
-                workflow_id, conflicts, auto_results, escalation_results,
-                refinement_suggestions, start_time
+                workflow_id,
+                conflicts,
+                auto_results,
+                escalation_results,
+                refinement_suggestions,
+                start_time,
             )
 
             # Update performance metrics
             self._update_performance_metrics(workflow_results)
 
-            logger.info(f"Error correction workflow {workflow_id} completed in "
-                       f"{workflow_results['response_time_seconds']:.2f}s")
+            logger.info(
+                f"Error correction workflow {workflow_id} completed in "
+                f"{workflow_results['response_time_seconds']:.2f}s"
+            )
 
             return workflow_results
 
@@ -1782,13 +1934,11 @@ class QECErrorCorrectionService:
                 "workflow_id": workflow_id,
                 "status": "failed",
                 "error": str(e),
-                "response_time_seconds": time.time() - start_time
+                "response_time_seconds": time.time() - start_time,
             }
 
     async def _escalate_complex_conflict(
-        self,
-        conflict: ConflictDetectionResult,
-        db: AsyncSession
+        self, conflict: ConflictDetectionResult, db: AsyncSession
     ) -> ErrorCorrectionResult:
         """Escalate a complex conflict to human review."""
         start_time = time.time()
@@ -1797,7 +1947,11 @@ class QECErrorCorrectionService:
         try:
             # Create violation record for escalation
             violation = ConstitutionalViolation(
-                violation_type=conflict.conflict_type.value if conflict.conflict_type else "unknown",
+                violation_type=(
+                    conflict.conflict_type.value
+                    if conflict.conflict_type
+                    else "unknown"
+                ),
                 severity=conflict.severity.value if conflict.severity else "medium",
                 violation_description=conflict.conflict_description,
                 detection_method="qec_error_correction",
@@ -1807,8 +1961,12 @@ class QECErrorCorrectionService:
                 detection_metadata={
                     "correction_id": correction_id,
                     "escalation_reason": "Complex conflict requiring human review",
-                    "conflict_type": conflict.conflict_type.value if conflict.conflict_type else "unknown"
-                }
+                    "conflict_type": (
+                        conflict.conflict_type.value
+                        if conflict.conflict_type
+                        else "unknown"
+                    ),
+                },
             )
 
             db.add(violation)
@@ -1838,13 +1996,13 @@ class QECErrorCorrectionService:
                     recommended_actions=[
                         "Constitutional Council review required",
                         "Stakeholder consultation needed",
-                        "Expert analysis recommended"
+                        "Expert analysis recommended",
                     ],
                     correction_metadata={
                         "violation_id": str(violation.id),
                         "escalation_level": escalation_level.value,
-                        "complexity_score": conflict.confidence_score
-                    }
+                        "complexity_score": conflict.confidence_score,
+                    },
                 )
             else:
                 # Fallback escalation
@@ -1855,7 +2013,7 @@ class QECErrorCorrectionService:
                     correction_description="Conflict escalated for human review",
                     escalation_required=True,
                     escalation_reason="Complex conflict requiring manual intervention",
-                    response_time_seconds=time.time() - start_time
+                    response_time_seconds=time.time() - start_time,
                 )
 
         except Exception as e:
@@ -1866,7 +2024,7 @@ class QECErrorCorrectionService:
                 conflict_type=conflict.conflict_type,
                 correction_description=f"Escalation failed: {str(e)}",
                 response_time_seconds=time.time() - start_time,
-                correction_metadata={"error": str(e)}
+                correction_metadata={"error": str(e)},
             )
 
     def _get_default_config(self) -> Dict[str, Any]:
@@ -1878,7 +2036,7 @@ class QECErrorCorrectionService:
             "target_escalation_time_seconds": 300,  # 5 minutes
             "enable_parallel_processing": True,
             "enable_pattern_caching": True,
-            "max_concurrent_workflows": 10
+            "max_concurrent_workflows": 10,
         }
 
     async def _compile_workflow_results(
@@ -1888,32 +2046,39 @@ class QECErrorCorrectionService:
         auto_results: List[ErrorCorrectionResult],
         escalation_results: List[ErrorCorrectionResult],
         refinement_suggestions: List[PolicyRefinementSuggestion],
-        start_time: float
+        start_time: float,
     ) -> Dict[str, Any]:
         """Compile comprehensive workflow results."""
         total_time = time.time() - start_time
 
         # Count successful automatic resolutions
-        successful_auto = len([
-            r for r in auto_results
-            if r.status == ErrorCorrectionStatus.RESOLVED_AUTOMATICALLY
-        ])
+        successful_auto = len(
+            [
+                r
+                for r in auto_results
+                if r.status == ErrorCorrectionStatus.RESOLVED_AUTOMATICALLY
+            ]
+        )
 
         # Count escalations
         total_escalations = len(escalation_results)
 
         # Calculate accuracy (simplified metric)
         total_processed = len(auto_results) + len(escalation_results)
-        accuracy_rate = (successful_auto / total_processed) if total_processed > 0 else 0.0
+        accuracy_rate = (
+            (successful_auto / total_processed) if total_processed > 0 else 0.0
+        )
 
         # Calculate fidelity improvements
         fidelity_improvements = [
-            r.fidelity_improvement for r in auto_results
+            r.fidelity_improvement
+            for r in auto_results
             if r.fidelity_improvement is not None
         ]
         avg_fidelity_improvement = (
             sum(fidelity_improvements) / len(fidelity_improvements)
-            if fidelity_improvements else 0.0
+            if fidelity_improvements
+            else 0.0
         )
 
         return {
@@ -1927,9 +2092,16 @@ class QECErrorCorrectionService:
             "accuracy_rate": accuracy_rate,
             "average_fidelity_improvement": avg_fidelity_improvement,
             "performance_metrics": {
-                "target_response_time_met": total_time <= self.config.get("target_response_time_seconds", 30),
-                "target_resolution_rate_met": (successful_auto / len(conflicts)) >= self.config.get("target_automatic_resolution_rate", 0.8) if conflicts else True,
-                "target_accuracy_met": accuracy_rate >= self.config.get("target_accuracy_rate", 0.95)
+                "target_response_time_met": total_time
+                <= self.config.get("target_response_time_seconds", 30),
+                "target_resolution_rate_met": (
+                    (successful_auto / len(conflicts))
+                    >= self.config.get("target_automatic_resolution_rate", 0.8)
+                    if conflicts
+                    else True
+                ),
+                "target_accuracy_met": accuracy_rate
+                >= self.config.get("target_accuracy_rate", 0.95),
             },
             "detailed_results": {
                 "conflicts": [
@@ -1937,25 +2109,32 @@ class QECErrorCorrectionService:
                         "type": c.conflict_type.value if c.conflict_type else "unknown",
                         "severity": c.severity.value if c.severity else "unknown",
                         "description": c.conflict_description,
-                        "confidence": c.confidence_score
-                    } for c in conflicts
+                        "confidence": c.confidence_score,
+                    }
+                    for c in conflicts
                 ],
                 "automatic_corrections": [
                     {
                         "correction_id": r.correction_id,
                         "status": r.status.value,
-                        "strategy": r.resolution_strategy.value if r.resolution_strategy else "unknown",
+                        "strategy": (
+                            r.resolution_strategy.value
+                            if r.resolution_strategy
+                            else "unknown"
+                        ),
                         "response_time": r.response_time_seconds,
-                        "fidelity_improvement": r.fidelity_improvement
-                    } for r in auto_results
+                        "fidelity_improvement": r.fidelity_improvement,
+                    }
+                    for r in auto_results
                 ],
                 "escalations": [
                     {
                         "correction_id": r.correction_id,
                         "status": r.status.value,
                         "escalation_reason": r.escalation_reason,
-                        "response_time": r.response_time_seconds
-                    } for r in escalation_results
+                        "response_time": r.response_time_seconds,
+                    }
+                    for r in escalation_results
                 ],
                 "refinement_suggestions": [
                     {
@@ -1963,17 +2142,24 @@ class QECErrorCorrectionService:
                         "policy_id": s.policy_id,
                         "principle_id": s.principle_id,
                         "refinement_type": s.refinement_type,
-                        "confidence": s.confidence_score
-                    } for s in refinement_suggestions
-                ]
-            }
+                        "confidence": s.confidence_score,
+                    }
+                    for s in refinement_suggestions
+                ],
+            },
         }
 
     def _update_performance_metrics(self, workflow_results: Dict[str, Any]) -> None:
         """Update service performance metrics."""
-        self.performance_metrics["total_corrections"] += workflow_results["conflicts_detected"]
-        self.performance_metrics["automatic_resolutions"] += workflow_results["automatic_resolutions"]
-        self.performance_metrics["escalated_conflicts"] += workflow_results["escalations_required"]
+        self.performance_metrics["total_corrections"] += workflow_results[
+            "conflicts_detected"
+        ]
+        self.performance_metrics["automatic_resolutions"] += workflow_results[
+            "automatic_resolutions"
+        ]
+        self.performance_metrics["escalated_conflicts"] += workflow_results[
+            "escalations_required"
+        ]
 
         # Update average response time
         current_avg = self.performance_metrics["average_response_time"]
@@ -1982,9 +2168,10 @@ class QECErrorCorrectionService:
 
         if total_corrections > 0:
             self.performance_metrics["average_response_time"] = (
-                (current_avg * (total_corrections - workflow_results["conflicts_detected"]) +
-                 new_time * workflow_results["conflicts_detected"]) / total_corrections
-            )
+                current_avg
+                * (total_corrections - workflow_results["conflicts_detected"])
+                + new_time * workflow_results["conflicts_detected"]
+            ) / total_corrections
 
         # Update accuracy rate
         self.performance_metrics["accuracy_rate"] = workflow_results["accuracy_rate"]
@@ -2007,37 +2194,49 @@ class QECErrorCorrectionService:
         automatic_resolutions = self.performance_metrics["automatic_resolutions"]
 
         automatic_resolution_rate = (
-            automatic_resolutions / total_corrections
-            if total_corrections > 0 else 0.0
+            automatic_resolutions / total_corrections if total_corrections > 0 else 0.0
         )
 
         avg_fidelity_improvement = (
-            sum(self.performance_metrics["fidelity_improvements"]) /
-            len(self.performance_metrics["fidelity_improvements"])
-            if self.performance_metrics["fidelity_improvements"] else 0.0
+            sum(self.performance_metrics["fidelity_improvements"])
+            / len(self.performance_metrics["fidelity_improvements"])
+            if self.performance_metrics["fidelity_improvements"]
+            else 0.0
         )
 
         return {
             "total_corrections_processed": total_corrections,
             "automatic_resolution_rate": automatic_resolution_rate,
-            "average_response_time_seconds": self.performance_metrics["average_response_time"],
+            "average_response_time_seconds": self.performance_metrics[
+                "average_response_time"
+            ],
             "current_accuracy_rate": self.performance_metrics["accuracy_rate"],
             "average_fidelity_improvement": avg_fidelity_improvement,
             "escalation_rate": (
                 self.performance_metrics["escalated_conflicts"] / total_corrections
-                if total_corrections > 0 else 0.0
+                if total_corrections > 0
+                else 0.0
             ),
             "performance_targets": {
-                "automatic_resolution_target": self.config.get("target_automatic_resolution_rate", 0.8),
+                "automatic_resolution_target": self.config.get(
+                    "target_automatic_resolution_rate", 0.8
+                ),
                 "accuracy_target": self.config.get("target_accuracy_rate", 0.95),
-                "response_time_target": self.config.get("target_response_time_seconds", 30),
-                "escalation_time_target": self.config.get("target_escalation_time_seconds", 300)
+                "response_time_target": self.config.get(
+                    "target_response_time_seconds", 30
+                ),
+                "escalation_time_target": self.config.get(
+                    "target_escalation_time_seconds", 300
+                ),
             },
             "targets_met": {
-                "automatic_resolution": automatic_resolution_rate >= self.config.get("target_automatic_resolution_rate", 0.8),
-                "accuracy": self.performance_metrics["accuracy_rate"] >= self.config.get("target_accuracy_rate", 0.95),
-                "response_time": self.performance_metrics["average_response_time"] <= self.config.get("target_response_time_seconds", 30)
-            }
+                "automatic_resolution": automatic_resolution_rate
+                >= self.config.get("target_automatic_resolution_rate", 0.8),
+                "accuracy": self.performance_metrics["accuracy_rate"]
+                >= self.config.get("target_accuracy_rate", 0.95),
+                "response_time": self.performance_metrics["average_response_time"]
+                <= self.config.get("target_response_time_seconds", 30),
+            },
         }
 
 
@@ -2059,7 +2258,7 @@ class ConflictComplexityScorer:
     async def score_complexity(
         self,
         conflict: ConflictDetectionResult,
-        context_data: Optional[Dict[str, Any]] = None
+        context_data: Optional[Dict[str, Any]] = None,
     ) -> Tuple[float, bool]:
         """
         Score the complexity of a conflict and determine if escalation is needed.
@@ -2080,19 +2279,22 @@ class ConflictComplexityScorer:
             # Weighted complexity score
             weights = self.config.get("complexity_weights", {})
             complexity_score = (
-                factors["stakeholder_count"] * weights.get("stakeholder_impact", 0.25) +
-                factors["principle_count"] * weights.get("principle_complexity", 0.20) +
-                factors["policy_count"] * weights.get("policy_complexity", 0.20) +
-                factors["semantic_ambiguity"] * weights.get("semantic_complexity", 0.15) +
-                factors["historical_failures"] * weights.get("historical_risk", 0.10) +
-                factors["urgency_level"] * weights.get("urgency", 0.10)
+                factors["stakeholder_count"] * weights.get("stakeholder_impact", 0.25)
+                + factors["principle_count"] * weights.get("principle_complexity", 0.20)
+                + factors["policy_count"] * weights.get("policy_complexity", 0.20)
+                + factors["semantic_ambiguity"]
+                * weights.get("semantic_complexity", 0.15)
+                + factors["historical_failures"] * weights.get("historical_risk", 0.10)
+                + factors["urgency_level"] * weights.get("urgency", 0.10)
             )
 
             # Determine escalation necessity
             escalation_threshold = self.config.get("escalation_threshold", 0.7)
             requires_escalation = complexity_score > escalation_threshold
 
-            logger.debug(f"Conflict complexity scored: {complexity_score:.3f}, escalation: {requires_escalation}")
+            logger.debug(
+                f"Conflict complexity scored: {complexity_score:.3f}, escalation: {requires_escalation}"
+            )
 
             return complexity_score, requires_escalation
 
@@ -2102,19 +2304,21 @@ class ConflictComplexityScorer:
             return 1.0, True
 
     async def _calculate_complexity_factors(
-        self,
-        conflict: ConflictDetectionResult,
-        context_data: Dict[str, Any]
+        self, conflict: ConflictDetectionResult, context_data: Dict[str, Any]
     ) -> Dict[str, float]:
         """Calculate individual complexity factors."""
         factors = {}
 
         # Stakeholder impact (0.0 - 1.0)
-        stakeholder_count = len(conflict.conflicting_principles) + len(conflict.conflicting_policies)
+        stakeholder_count = len(conflict.conflicting_principles) + len(
+            conflict.conflicting_policies
+        )
         factors["stakeholder_count"] = min(1.0, stakeholder_count / 5.0)
 
         # Principle complexity (0.0 - 1.0)
-        factors["principle_count"] = min(1.0, len(conflict.conflicting_principles) / 3.0)
+        factors["principle_count"] = min(
+            1.0, len(conflict.conflicting_principles) / 3.0
+        )
 
         # Policy complexity (0.0 - 1.0)
         factors["policy_count"] = min(1.0, len(conflict.conflicting_policies) / 3.0)
@@ -2153,8 +2357,8 @@ class ConflictComplexityScorer:
                 "policy_complexity": 0.20,
                 "semantic_complexity": 0.15,
                 "historical_risk": 0.10,
-                "urgency": 0.10
-            }
+                "urgency": 0.10,
+            },
         }
 
 
@@ -2178,7 +2382,7 @@ class ParallelConflictProcessor:
             "total_processed": 0,
             "average_response_time": 0.0,
             "parallel_efficiency": 0.0,
-            "cache_hit_rate": 0.0
+            "cache_hit_rate": 0.0,
         }
 
         # Conflict pattern cache
@@ -2188,9 +2392,7 @@ class ParallelConflictProcessor:
         logger.info("Parallel Conflict Processor initialized")
 
     async def process_conflicts_parallel(
-        self,
-        conflicts: List[ConflictDetectionResult],
-        db: AsyncSession
+        self, conflicts: List[ConflictDetectionResult], db: AsyncSession
     ) -> List[ErrorCorrectionResult]:
         """
         Process multiple conflicts in parallel for optimal response time.
@@ -2209,11 +2411,15 @@ class ParallelConflictProcessor:
 
         try:
             # Check cache for known patterns
-            cached_results, uncached_conflicts = await self._check_pattern_cache(conflicts)
+            cached_results, uncached_conflicts = await self._check_pattern_cache(
+                conflicts
+            )
 
             # Process uncached conflicts in parallel
             if uncached_conflicts:
-                parallel_results = await self._process_parallel_batch(uncached_conflicts, db)
+                parallel_results = await self._process_parallel_batch(
+                    uncached_conflicts, db
+                )
 
                 # Update cache with new results
                 await self._update_pattern_cache(uncached_conflicts, parallel_results)
@@ -2225,10 +2431,14 @@ class ParallelConflictProcessor:
 
             # Update performance statistics
             processing_time = time.time() - start_time
-            self._update_performance_stats(len(conflicts), processing_time, len(cached_results))
+            self._update_performance_stats(
+                len(conflicts), processing_time, len(cached_results)
+            )
 
-            logger.info(f"Processed {len(conflicts)} conflicts in {processing_time:.2f}s "
-                       f"(cached: {len(cached_results)}, parallel: {len(parallel_results)})")
+            logger.info(
+                f"Processed {len(conflicts)} conflicts in {processing_time:.2f}s "
+                f"(cached: {len(cached_results)}, parallel: {len(parallel_results)})"
+            )
 
             return all_results
 
@@ -2243,5 +2453,5 @@ class ParallelConflictProcessor:
             "cache_ttl_seconds": 1800,
             "target_response_time_seconds": 30,
             "enable_pattern_caching": True,
-            "batch_size": 10
+            "batch_size": 10,
         }

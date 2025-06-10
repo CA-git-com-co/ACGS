@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class ErrorSeverity(Enum):
     """Error severity levels."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -25,6 +26,7 @@ class ErrorSeverity(Enum):
 
 class ErrorCategory(Enum):
     """Error categories for classification."""
+
     VALIDATION = "validation"
     AUTHENTICATION = "authentication"
     AUTHORIZATION = "authorization"
@@ -42,7 +44,7 @@ class ACGSException(Exception):
     """
     Base exception class for ACGS services with structured error information.
     """
-    
+
     def __init__(
         self,
         message: str,
@@ -51,7 +53,7 @@ class ACGSException(Exception):
         category: ErrorCategory = ErrorCategory.UNKNOWN,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
         user_message: Optional[str] = None,
-        suggestions: Optional[List[str]] = None
+        suggestions: Optional[List[str]] = None,
     ):
         self.message = message
         self.error_code = error_code
@@ -61,9 +63,9 @@ class ACGSException(Exception):
         self.user_message = user_message or message
         self.suggestions = suggestions or []
         self.timestamp = datetime.now(timezone.utc)
-        
+
         super().__init__(message)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert exception to dictionary for API responses."""
         return {
@@ -75,10 +77,10 @@ class ACGSException(Exception):
                 "user_message": self.user_message,
                 "suggestions": self.suggestions,
                 "details": self.details,
-                "timestamp": self.timestamp.isoformat()
+                "timestamp": self.timestamp.isoformat(),
             }
         }
-    
+
     def to_json(self) -> str:
         """Convert exception to JSON string."""
         return json.dumps(self.to_dict(), default=str)
@@ -86,27 +88,27 @@ class ACGSException(Exception):
 
 class ValidationError(ACGSException):
     """Exception for validation errors."""
-    
+
     def __init__(self, message: str, field: str = None, value: Any = None, **kwargs):
         details = kwargs.get("details", {})
         if field:
             details["field"] = field
         if value is not None:
             details["value"] = str(value)
-        
+
         super().__init__(
             message=message,
             error_code="VALIDATION_ERROR",
             details=details,
             category=ErrorCategory.VALIDATION,
             severity=ErrorSeverity.LOW,
-            **kwargs
+            **kwargs,
         )
 
 
 class AuthenticationError(ACGSException):
     """Exception for authentication errors."""
-    
+
     def __init__(self, message: str = "Authentication failed", **kwargs):
         super().__init__(
             message=message,
@@ -114,13 +116,13 @@ class AuthenticationError(ACGSException):
             category=ErrorCategory.AUTHENTICATION,
             severity=ErrorSeverity.HIGH,
             user_message="Please check your credentials and try again.",
-            **kwargs
+            **kwargs,
         )
 
 
 class AuthorizationError(ACGSException):
     """Exception for authorization errors."""
-    
+
     def __init__(self, message: str = "Access denied", **kwargs):
         super().__init__(
             message=message,
@@ -128,23 +130,23 @@ class AuthorizationError(ACGSException):
             category=ErrorCategory.AUTHORIZATION,
             severity=ErrorSeverity.HIGH,
             user_message="You don't have permission to perform this action.",
-            **kwargs
+            **kwargs,
         )
 
 
 class NotFoundError(ACGSException):
     """Exception for resource not found errors."""
-    
+
     def __init__(self, resource: str, identifier: str = None, **kwargs):
         message = f"{resource} not found"
         if identifier:
             message += f" with identifier: {identifier}"
-        
+
         details = kwargs.get("details", {})
         details["resource"] = resource
         if identifier:
             details["identifier"] = identifier
-        
+
         super().__init__(
             message=message,
             error_code="NOT_FOUND",
@@ -152,18 +154,18 @@ class NotFoundError(ACGSException):
             category=ErrorCategory.NOT_FOUND,
             severity=ErrorSeverity.LOW,
             user_message=f"The requested {resource.lower()} could not be found.",
-            **kwargs
+            **kwargs,
         )
 
 
 class ConflictError(ACGSException):
     """Exception for resource conflict errors."""
-    
+
     def __init__(self, message: str, resource: str = None, **kwargs):
         details = kwargs.get("details", {})
         if resource:
             details["resource"] = resource
-        
+
         super().__init__(
             message=message,
             error_code="CONFLICT",
@@ -171,18 +173,18 @@ class ConflictError(ACGSException):
             category=ErrorCategory.CONFLICT,
             severity=ErrorSeverity.MEDIUM,
             user_message="The operation conflicts with existing data.",
-            **kwargs
+            **kwargs,
         )
 
 
 class ServiceUnavailableError(ACGSException):
     """Exception for service unavailability errors."""
-    
+
     def __init__(self, message: str, service_name: str = None, **kwargs):
         details = kwargs.get("details", {})
         if service_name:
             details["service"] = service_name
-        
+
         super().__init__(
             message=message,
             error_code="SERVICE_UNAVAILABLE",
@@ -191,18 +193,18 @@ class ServiceUnavailableError(ACGSException):
             severity=ErrorSeverity.HIGH,
             user_message="The service is temporarily unavailable. Please try again later.",
             suggestions=["Check service status", "Retry after a few minutes"],
-            **kwargs
+            **kwargs,
         )
 
 
 class DatabaseError(ACGSException):
     """Exception for database errors."""
-    
+
     def __init__(self, message: str, operation: str = None, **kwargs):
         details = kwargs.get("details", {})
         if operation:
             details["operation"] = operation
-        
+
         super().__init__(
             message=message,
             error_code="DATABASE_ERROR",
@@ -210,18 +212,18 @@ class DatabaseError(ACGSException):
             category=ErrorCategory.DATABASE,
             severity=ErrorSeverity.HIGH,
             user_message="A database error occurred. Please try again.",
-            **kwargs
+            **kwargs,
         )
 
 
 class ConfigurationError(ACGSException):
     """Exception for configuration errors."""
-    
+
     def __init__(self, message: str, config_key: str = None, **kwargs):
         details = kwargs.get("details", {})
         if config_key:
             details["config_key"] = config_key
-        
+
         super().__init__(
             message=message,
             error_code="CONFIGURATION_ERROR",
@@ -229,7 +231,7 @@ class ConfigurationError(ACGSException):
             category=ErrorCategory.CONFIGURATION,
             severity=ErrorSeverity.CRITICAL,
             user_message="A configuration error occurred. Please contact support.",
-            **kwargs
+            **kwargs,
         )
 
 
@@ -237,70 +239,64 @@ def handle_service_error(
     error: Exception,
     service_name: str,
     operation: str,
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[Dict[str, Any]] = None,
 ) -> ACGSException:
     """
     Handle and convert service errors to standardized ACGS exceptions.
-    
+
     Args:
         error: Original exception
         service_name: Name of the service where error occurred
         operation: Operation being performed when error occurred
         context: Additional context information
-        
+
     Returns:
         Standardized ACGSException
     """
     context = context or {}
-    
+
     # If already an ACGS exception, add context and return
     if isinstance(error, ACGSException):
-        error.details.update({
-            "service": service_name,
-            "operation": operation,
-            **context
-        })
+        error.details.update(
+            {"service": service_name, "operation": operation, **context}
+        )
         return error
-    
+
     # Convert common exception types
     error_message = str(error)
     error_type = type(error).__name__
-    
+
     details = {
         "service": service_name,
         "operation": operation,
         "original_error": error_type,
         "traceback": traceback.format_exc(),
-        **context
+        **context,
     }
-    
+
     # Map common exceptions to ACGS exceptions
     if "connection" in error_message.lower() or "timeout" in error_message.lower():
         return ServiceUnavailableError(
             f"Service connection error in {service_name}: {error_message}",
             service_name=service_name,
-            details=details
+            details=details,
         )
-    
+
     if "permission" in error_message.lower() or "access" in error_message.lower():
         return AuthorizationError(
-            f"Access error in {service_name}: {error_message}",
-            details=details
+            f"Access error in {service_name}: {error_message}", details=details
         )
-    
+
     if "not found" in error_message.lower():
-        return NotFoundError(
-            "Resource",
-            details=details
-        )
-    
+        return NotFoundError("Resource", details=details)
+
     # Default to generic service error
     return ACGSException(
         f"Service error in {service_name}: {error_message}",
         error_code="SERVICE_ERROR",
         details=details,
         category=ErrorCategory.SERVICE_ERROR,
-        severity=ErrorSeverity.HIGH
+        severity=ErrorSeverity.HIGH,
     )
 
 
@@ -310,11 +306,11 @@ def log_error(
     operation: str,
     user_id: Optional[str] = None,
     request_id: Optional[str] = None,
-    extra_context: Optional[Dict[str, Any]] = None
+    extra_context: Optional[Dict[str, Any]] = None,
 ):
     """
     Log error with standardized format and context.
-    
+
     Args:
         error: Exception to log
         service_name: Service where error occurred
@@ -327,23 +323,25 @@ def log_error(
         "service": service_name,
         "operation": operation,
         "error_type": type(error).__name__,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
-    
+
     if user_id:
         context["user_id"] = user_id
     if request_id:
         context["request_id"] = request_id
     if extra_context:
         context.update(extra_context)
-    
+
     if isinstance(error, ACGSException):
-        context.update({
-            "error_code": error.error_code,
-            "category": error.category.value,
-            "severity": error.severity.value
-        })
-        
+        context.update(
+            {
+                "error_code": error.error_code,
+                "category": error.category.value,
+                "severity": error.severity.value,
+            }
+        )
+
         # Log based on severity
         if error.severity == ErrorSeverity.CRITICAL:
             logger.critical(f"Critical error: {error.message}", extra=context)
@@ -358,25 +356,26 @@ def log_error(
 
 
 def create_error_response(
-    error: Exception,
-    include_traceback: bool = False
+    error: Exception, include_traceback: bool = False
 ) -> Dict[str, Any]:
     """
     Create standardized error response for API endpoints.
-    
+
     Args:
         error: Exception to convert to response
         include_traceback: Whether to include traceback in response
-        
+
     Returns:
         Standardized error response dictionary
     """
     if isinstance(error, ACGSException):
         response = error.to_dict()
-        if not include_traceback and "traceback" in response["error"].get("details", {}):
+        if not include_traceback and "traceback" in response["error"].get(
+            "details", {}
+        ):
             del response["error"]["details"]["traceback"]
         return response
-    
+
     # Handle non-ACGS exceptions
     return {
         "error": {
@@ -385,6 +384,6 @@ def create_error_response(
             "category": ErrorCategory.UNKNOWN.value,
             "severity": ErrorSeverity.HIGH.value,
             "user_message": "An unexpected error occurred. Please try again.",
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     }

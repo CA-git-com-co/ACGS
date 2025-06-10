@@ -34,18 +34,21 @@ import numpy as np
 try:
     import torch
     import torch.cuda as cuda
+
     TORCH_AVAILABLE = True
 except ImportError:
     TORCH_AVAILABLE = False
 
 try:
     import tensorflow as tf
+
     TF_AVAILABLE = True
 except ImportError:
     TF_AVAILABLE = False
 
 try:
     import cupy as cp
+
     CUPY_AVAILABLE = True
 except ImportError:
     CUPY_AVAILABLE = False
@@ -58,6 +61,7 @@ logger = logging.getLogger(__name__)
 
 class HardwareType(Enum):
     """Types of hardware acceleration available."""
+
     CPU = "cpu"
     GPU_NVIDIA = "gpu_nvidia"
     GPU_AMD = "gpu_amd"
@@ -70,6 +74,7 @@ class HardwareType(Enum):
 
 class AccelerationType(Enum):
     """Types of acceleration strategies."""
+
     PARALLEL_PROCESSING = "parallel_processing"
     VECTORIZATION = "vectorization"
     MEMORY_OPTIMIZATION = "memory_optimization"
@@ -82,6 +87,7 @@ class AccelerationType(Enum):
 
 class EdgeDeploymentTarget(Enum):
     """Edge deployment targets."""
+
     RASPBERRY_PI = "raspberry_pi"
     NVIDIA_JETSON = "nvidia_jetson"
     INTEL_NUC = "intel_nuc"
@@ -94,6 +100,7 @@ class EdgeDeploymentTarget(Enum):
 @dataclass
 class HardwareCapability:
     """Represents hardware capabilities and specifications."""
+
     hardware_type: HardwareType
     device_name: str
     compute_units: int
@@ -110,6 +117,7 @@ class HardwareCapability:
 @dataclass
 class AccelerationProfile:
     """Profile for hardware acceleration optimization."""
+
     profile_id: str
     target_hardware: HardwareType
     acceleration_types: List[AccelerationType]
@@ -125,6 +133,7 @@ class AccelerationProfile:
 @dataclass
 class EdgeDeploymentConfig:
     """Configuration for edge deployment."""
+
     deployment_id: str
     target_device: EdgeDeploymentTarget
     model_size_mb: float
@@ -182,7 +191,9 @@ class HardwareAccelerationManager:
         for edge_id, capability in edge_capabilities.items():
             self.available_hardware[edge_id] = capability
 
-        logger.info(f"Detected {len(self.available_hardware)} hardware acceleration devices")
+        logger.info(
+            f"Detected {len(self.available_hardware)} hardware acceleration devices"
+        )
 
     def _detect_cpu_capabilities(self) -> HardwareCapability:
         """Detect CPU capabilities."""
@@ -201,7 +212,7 @@ class HardwareAccelerationManager:
             driver_version="N/A",
             utilization_percent=psutil.cpu_percent(),
             temperature_celsius=0.0,  # Would need specialized sensors
-            available=True
+            available=True,
         )
 
     async def _detect_gpu_capabilities(self) -> Dict[str, HardwareCapability]:
@@ -223,13 +234,13 @@ class HardwareAccelerationManager:
                     driver_version=torch.version.cuda or "Unknown",
                     utilization_percent=0.0,  # Would need nvidia-ml-py
                     temperature_celsius=0.0,
-                    available=True
+                    available=True,
                 )
 
                 gpu_capabilities[f"gpu_{i}"] = gpu_capability
 
         if TF_AVAILABLE:
-            gpus = tf.config.experimental.list_physical_devices('GPU')
+            gpus = tf.config.experimental.list_physical_devices("GPU")
             for i, gpu in enumerate(gpus):
                 if f"gpu_{i}" not in gpu_capabilities:  # Avoid duplicates
                     gpu_capability = HardwareCapability(
@@ -241,7 +252,7 @@ class HardwareAccelerationManager:
                         power_consumption_watts=250.0,
                         supported_precisions=["fp32", "fp16"],
                         driver_version="TensorFlow",
-                        available=True
+                        available=True,
                     )
                     gpu_capabilities[f"tf_gpu_{i}"] = gpu_capability
 
@@ -267,7 +278,7 @@ class HardwareAccelerationManager:
                     power_consumption_watts=450.0,
                     supported_precisions=["bfloat16", "fp32"],
                     driver_version="TensorFlow TPU",
-                    available=True
+                    available=True,
                 )
 
                 tpu_capabilities["tpu_0"] = tpu_capability
@@ -295,7 +306,7 @@ class HardwareAccelerationManager:
                 power_consumption_watts=15.0,  # Low power
                 supported_precisions=["fp32", "int8"],
                 driver_version="ARM",
-                available=True
+                available=True,
             )
 
             edge_capabilities["edge_0"] = edge_capability
@@ -307,7 +318,7 @@ class HardwareAccelerationManager:
         target_hardware: HardwareType,
         optimization_level: str = "balanced",
         precision: str = "fp32",
-        memory_limit_gb: Optional[float] = None
+        memory_limit_gb: Optional[float] = None,
     ) -> AccelerationProfile:
         """
         Create an acceleration profile for specific hardware.
@@ -324,7 +335,9 @@ class HardwareAccelerationManager:
         profile_id = str(uuid.uuid4())
 
         # Determine acceleration types based on hardware and optimization level
-        acceleration_types = self._determine_acceleration_types(target_hardware, optimization_level)
+        acceleration_types = self._determine_acceleration_types(
+            target_hardware, optimization_level
+        )
 
         # Set hardware-specific defaults
         if target_hardware == HardwareType.GPU_NVIDIA:
@@ -354,7 +367,7 @@ class HardwareAccelerationManager:
             thermal_limit_celsius=thermal_limit,
             precision=precision,
             batch_size=batch_size,
-            created_at=datetime.now(timezone.utc)
+            created_at=datetime.now(timezone.utc),
         )
 
         self.acceleration_profiles[profile_id] = profile
@@ -363,32 +376,43 @@ class HardwareAccelerationManager:
         self.metrics.increment("acceleration_profiles_created")
         self.metrics.record_value("profile_batch_size", batch_size)
 
-        logger.info(f"Created acceleration profile {profile_id} for {target_hardware.value}")
+        logger.info(
+            f"Created acceleration profile {profile_id} for {target_hardware.value}"
+        )
 
         return profile
 
     def _determine_acceleration_types(
-        self,
-        target_hardware: HardwareType,
-        optimization_level: str
+        self, target_hardware: HardwareType, optimization_level: str
     ) -> List[AccelerationType]:
         """Determine appropriate acceleration types for hardware and optimization level."""
 
-        base_types = [AccelerationType.PARALLEL_PROCESSING, AccelerationType.VECTORIZATION]
+        base_types = [
+            AccelerationType.PARALLEL_PROCESSING,
+            AccelerationType.VECTORIZATION,
+        ]
 
-        if target_hardware in [HardwareType.GPU_NVIDIA, HardwareType.GPU_AMD, HardwareType.TPU]:
-            base_types.extend([
-                AccelerationType.MEMORY_OPTIMIZATION,
-                AccelerationType.PIPELINE_OPTIMIZATION,
-                AccelerationType.KERNEL_FUSION
-            ])
+        if target_hardware in [
+            HardwareType.GPU_NVIDIA,
+            HardwareType.GPU_AMD,
+            HardwareType.TPU,
+        ]:
+            base_types.extend(
+                [
+                    AccelerationType.MEMORY_OPTIMIZATION,
+                    AccelerationType.PIPELINE_OPTIMIZATION,
+                    AccelerationType.KERNEL_FUSION,
+                ]
+            )
 
         if optimization_level == "aggressive":
-            base_types.extend([
-                AccelerationType.QUANTIZATION,
-                AccelerationType.PRUNING,
-                AccelerationType.DISTILLATION
-            ])
+            base_types.extend(
+                [
+                    AccelerationType.QUANTIZATION,
+                    AccelerationType.PRUNING,
+                    AccelerationType.DISTILLATION,
+                ]
+            )
         elif optimization_level == "balanced":
             base_types.append(AccelerationType.QUANTIZATION)
 
@@ -398,7 +422,7 @@ class HardwareAccelerationManager:
         self,
         policy_request: Dict[str, Any],
         profile_id: str,
-        target_latency_ms: float = 5.0
+        target_latency_ms: float = 5.0,
     ) -> Dict[str, Any]:
         """
         Accelerate policy evaluation using hardware acceleration.
@@ -424,7 +448,9 @@ class HardwareAccelerationManager:
             # Fallback to CPU
             result = await self._cpu_accelerated_evaluation(policy_request, profile)
         elif profile.target_hardware == HardwareType.GPU_NVIDIA:
-            result = await self._gpu_accelerated_evaluation(policy_request, profile, hardware_device)
+            result = await self._gpu_accelerated_evaluation(
+                policy_request, profile, hardware_device
+            )
         elif profile.target_hardware == HardwareType.TPU:
             result = await self._tpu_accelerated_evaluation(policy_request, profile)
         elif profile.target_hardware == HardwareType.EDGE_DEVICE:
@@ -444,7 +470,7 @@ class HardwareAccelerationManager:
             "target_latency_ms": target_latency_ms,
             "target_met": evaluation_time <= target_latency_ms,
             "precision": profile.precision,
-            "batch_size": profile.batch_size
+            "batch_size": profile.batch_size,
         }
 
         self.performance_history.append(performance_record)
@@ -452,29 +478,41 @@ class HardwareAccelerationManager:
             self.performance_history = self.performance_history[-1000:]
 
         # Record metrics
-        self.metrics.record_timing("accelerated_policy_evaluation_duration", evaluation_time / 1000)
-        self.metrics.record_value("acceleration_target_achievement", 1.0 if evaluation_time <= target_latency_ms else 0.0)
+        self.metrics.record_timing(
+            "accelerated_policy_evaluation_duration", evaluation_time / 1000
+        )
+        self.metrics.record_value(
+            "acceleration_target_achievement",
+            1.0 if evaluation_time <= target_latency_ms else 0.0,
+        )
 
         # Add acceleration metadata to result
-        result.update({
-            "acceleration_metadata": {
-                "profile_id": profile_id,
-                "hardware_type": profile.target_hardware.value,
-                "evaluation_time_ms": evaluation_time,
-                "target_met": evaluation_time <= target_latency_ms,
-                "acceleration_types": [at.value for at in profile.acceleration_types],
-                "precision": profile.precision
+        result.update(
+            {
+                "acceleration_metadata": {
+                    "profile_id": profile_id,
+                    "hardware_type": profile.target_hardware.value,
+                    "evaluation_time_ms": evaluation_time,
+                    "target_met": evaluation_time <= target_latency_ms,
+                    "acceleration_types": [
+                        at.value for at in profile.acceleration_types
+                    ],
+                    "precision": profile.precision,
+                }
             }
-        })
+        )
 
-        logger.debug(f"Accelerated policy evaluation completed in {evaluation_time:.2f}ms")
+        logger.debug(
+            f"Accelerated policy evaluation completed in {evaluation_time:.2f}ms"
+        )
 
         return result
 
     def _select_optimal_device(self, target_hardware: HardwareType) -> Optional[str]:
         """Select optimal device for target hardware type."""
         available_devices = [
-            device_id for device_id, capability in self.available_hardware.items()
+            device_id
+            for device_id, capability in self.available_hardware.items()
             if capability.hardware_type == target_hardware and capability.available
         ]
 
@@ -484,15 +522,13 @@ class HardwareAccelerationManager:
         # Select device with lowest utilization
         optimal_device = min(
             available_devices,
-            key=lambda d: self.available_hardware[d].utilization_percent
+            key=lambda d: self.available_hardware[d].utilization_percent,
         )
 
         return optimal_device
 
     async def _cpu_accelerated_evaluation(
-        self,
-        policy_request: Dict[str, Any],
-        profile: AccelerationProfile
+        self, policy_request: Dict[str, Any], profile: AccelerationProfile
     ) -> Dict[str, Any]:
         """Perform CPU-accelerated policy evaluation."""
         # Simulate CPU acceleration with vectorization and parallel processing
@@ -502,14 +538,14 @@ class HardwareAccelerationManager:
             "decision": "allow",
             "confidence": 0.92,
             "reasoning": "CPU-accelerated policy evaluation with vectorization",
-            "acceleration_used": "cpu_vectorization"
+            "acceleration_used": "cpu_vectorization",
         }
 
     async def _gpu_accelerated_evaluation(
         self,
         policy_request: Dict[str, Any],
         profile: AccelerationProfile,
-        device_id: str
+        device_id: str,
     ) -> Dict[str, Any]:
         """Perform GPU-accelerated policy evaluation."""
         if TORCH_AVAILABLE and torch.cuda.is_available():
@@ -529,13 +565,11 @@ class HardwareAccelerationManager:
             "confidence": 0.95,
             "reasoning": "GPU-accelerated policy evaluation with CUDA",
             "acceleration_used": "gpu_cuda",
-            "device_id": device_id
+            "device_id": device_id,
         }
 
     async def _tpu_accelerated_evaluation(
-        self,
-        policy_request: Dict[str, Any],
-        profile: AccelerationProfile
+        self, policy_request: Dict[str, Any], profile: AccelerationProfile
     ) -> Dict[str, Any]:
         """Perform TPU-accelerated policy evaluation."""
         if TF_AVAILABLE:
@@ -553,13 +587,11 @@ class HardwareAccelerationManager:
             "decision": "allow",
             "confidence": 0.97,
             "reasoning": "TPU-accelerated policy evaluation with XLA",
-            "acceleration_used": "tpu_xla"
+            "acceleration_used": "tpu_xla",
         }
 
     async def _edge_accelerated_evaluation(
-        self,
-        policy_request: Dict[str, Any],
-        profile: AccelerationProfile
+        self, policy_request: Dict[str, Any], profile: AccelerationProfile
     ) -> Dict[str, Any]:
         """Perform edge-optimized policy evaluation."""
         # Edge devices prioritize power efficiency over raw speed
@@ -570,14 +602,14 @@ class HardwareAccelerationManager:
             "confidence": 0.88,
             "reasoning": "Edge-optimized policy evaluation with quantization",
             "acceleration_used": "edge_quantized",
-            "power_efficient": True
+            "power_efficient": True,
         }
 
     async def create_edge_deployment(
         self,
         target_device: EdgeDeploymentTarget,
         model_optimization_level: str = "balanced",
-        offline_capability: bool = True
+        offline_capability: bool = True,
     ) -> EdgeDeploymentConfig:
         """
         Create an edge deployment configuration.
@@ -598,29 +630,31 @@ class HardwareAccelerationManager:
                 "model_size_mb": 50.0,
                 "inference_latency_ms": 15.0,
                 "memory_footprint_mb": 256.0,
-                "power_consumption_watts": 5.0
+                "power_consumption_watts": 5.0,
             },
             EdgeDeploymentTarget.NVIDIA_JETSON: {
                 "model_size_mb": 200.0,
                 "inference_latency_ms": 8.0,
                 "memory_footprint_mb": 1024.0,
-                "power_consumption_watts": 15.0
+                "power_consumption_watts": 15.0,
             },
             EdgeDeploymentTarget.INTEL_NUC: {
                 "model_size_mb": 500.0,
                 "inference_latency_ms": 10.0,
                 "memory_footprint_mb": 2048.0,
-                "power_consumption_watts": 25.0
+                "power_consumption_watts": 25.0,
             },
             EdgeDeploymentTarget.GOOGLE_CORAL: {
                 "model_size_mb": 30.0,
                 "inference_latency_ms": 5.0,
                 "memory_footprint_mb": 128.0,
-                "power_consumption_watts": 2.0
-            }
+                "power_consumption_watts": 2.0,
+            },
         }
 
-        config = device_configs.get(target_device, device_configs[EdgeDeploymentTarget.RASPBERRY_PI])
+        config = device_configs.get(
+            target_device, device_configs[EdgeDeploymentTarget.RASPBERRY_PI]
+        )
 
         edge_deployment = EdgeDeploymentConfig(
             deployment_id=deployment_id,
@@ -632,16 +666,16 @@ class HardwareAccelerationManager:
             network_requirements={
                 "bandwidth_kbps": 100 if offline_capability else 1000,
                 "latency_ms": 100,
-                "reliability": 0.95
+                "reliability": 0.95,
             },
             security_requirements=[
                 "encrypted_communication",
                 "secure_boot",
                 "hardware_attestation",
-                "local_key_storage"
+                "local_key_storage",
             ],
             update_mechanism="over_the_air" if not offline_capability else "manual",
-            offline_capability=offline_capability
+            offline_capability=offline_capability,
         )
 
         self.edge_deployments[deployment_id] = edge_deployment
@@ -649,9 +683,13 @@ class HardwareAccelerationManager:
         # Record metrics
         self.metrics.increment("edge_deployments_created")
         self.metrics.record_value("edge_model_size_mb", config["model_size_mb"])
-        self.metrics.record_value("edge_inference_latency_ms", config["inference_latency_ms"])
+        self.metrics.record_value(
+            "edge_inference_latency_ms", config["inference_latency_ms"]
+        )
 
-        logger.info(f"Created edge deployment {deployment_id} for {target_device.value}")
+        logger.info(
+            f"Created edge deployment {deployment_id} for {target_device.value}"
+        )
 
         return edge_deployment
 
@@ -671,14 +709,14 @@ class HardwareAccelerationManager:
             "FALCON",  # Digital signatures
             "SPHINCS+",  # Digital signatures
             "SABER",  # Key encapsulation
-            "NTRU"  # Key encapsulation
+            "NTRU",  # Key encapsulation
         ]
 
         optimization_results = {
             "quantum_resistant_algorithms": quantum_resistant_algorithms,
             "implementation_status": {},
             "performance_impact": {},
-            "migration_plan": []
+            "migration_plan": [],
         }
 
         # Simulate implementation status
@@ -692,7 +730,7 @@ class HardwareAccelerationManager:
                 "encryption_ms": np.random.uniform(1, 5),
                 "decryption_ms": np.random.uniform(1, 5),
                 "signature_ms": np.random.uniform(5, 20),
-                "verification_ms": np.random.uniform(2, 10)
+                "verification_ms": np.random.uniform(2, 10),
             }
 
         # Migration plan
@@ -701,7 +739,7 @@ class HardwareAccelerationManager:
             "Phase 2: Deploy quantum-resistant key exchange",
             "Phase 3: Migrate digital signatures to quantum-resistant algorithms",
             "Phase 4: Full quantum-resistant cryptography deployment",
-            "Phase 5: Quantum key distribution integration"
+            "Phase 5: Quantum key distribution integration",
         ]
 
         # Record metrics
@@ -720,7 +758,9 @@ class HardwareAccelerationManager:
             if capability.hardware_type == HardwareType.CPU:
                 capability.utilization_percent = psutil.cpu_percent(interval=0.1)
                 capability.temperature_celsius = 0.0  # Would need sensors
-            elif capability.hardware_type == HardwareType.GPU_NVIDIA and TORCH_AVAILABLE:
+            elif (
+                capability.hardware_type == HardwareType.GPU_NVIDIA and TORCH_AVAILABLE
+            ):
                 try:
                     # Would use nvidia-ml-py for real GPU monitoring
                     capability.utilization_percent = np.random.uniform(20, 80)
@@ -732,7 +772,9 @@ class HardwareAccelerationManager:
             # Store utilization history
             self.hardware_utilization[device_id].append(capability.utilization_percent)
             if len(self.hardware_utilization[device_id]) > 100:
-                self.hardware_utilization[device_id] = self.hardware_utilization[device_id][-100:]
+                self.hardware_utilization[device_id] = self.hardware_utilization[
+                    device_id
+                ][-100:]
 
             performance_data[device_id] = {
                 "hardware_type": capability.hardware_type.value,
@@ -741,16 +783,23 @@ class HardwareAccelerationManager:
                 "temperature_celsius": capability.temperature_celsius,
                 "memory_gb": capability.memory_gb,
                 "power_consumption_watts": capability.power_consumption_watts,
-                "available": capability.available
+                "available": capability.available,
             }
 
         return {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "hardware_performance": performance_data,
             "total_devices": len(self.available_hardware),
-            "active_devices": len([h for h in self.available_hardware.values() if h.available]),
-            "average_utilization": np.mean([h.utilization_percent for h in self.available_hardware.values()]),
-            "peak_temperature": max([h.temperature_celsius for h in self.available_hardware.values()], default=0.0)
+            "active_devices": len(
+                [h for h in self.available_hardware.values() if h.available]
+            ),
+            "average_utilization": np.mean(
+                [h.utilization_percent for h in self.available_hardware.values()]
+            ),
+            "peak_temperature": max(
+                [h.temperature_celsius for h in self.available_hardware.values()],
+                default=0.0,
+            ),
         }
 
     async def get_hardware_acceleration_metrics(self) -> Dict[str, Any]:
@@ -776,20 +825,22 @@ class HardwareAccelerationManager:
                 hardware_stats[device_id] = {
                     "avg_utilization": np.mean(utilization_history),
                     "peak_utilization": np.max(utilization_history),
-                    "utilization_trend": "stable"  # Simplified
+                    "utilization_trend": "stable",  # Simplified
                 }
 
         # Acceleration effectiveness by hardware type
         hardware_performance = defaultdict(list)
         for perf in recent_performance:
-            hardware_performance[perf["hardware_type"]].append(perf["evaluation_time_ms"])
+            hardware_performance[perf["hardware_type"]].append(
+                perf["evaluation_time_ms"]
+            )
 
         hardware_effectiveness = {}
         for hw_type, latencies in hardware_performance.items():
             hardware_effectiveness[hw_type] = {
                 "avg_latency_ms": np.mean(latencies),
                 "min_latency_ms": np.min(latencies),
-                "evaluation_count": len(latencies)
+                "evaluation_count": len(latencies),
             }
 
         return {
@@ -797,20 +848,22 @@ class HardwareAccelerationManager:
                 "avg_latency_ms": avg_latency,
                 "p95_latency_ms": p95_latency,
                 "p99_latency_ms": p99_latency,
-                "target_achievement_rate": target_achievement_rate
+                "target_achievement_rate": target_achievement_rate,
             },
             "hardware_utilization": hardware_stats,
             "hardware_effectiveness": hardware_effectiveness,
-            "available_hardware_types": [hw.hardware_type.value for hw in self.available_hardware.values()],
+            "available_hardware_types": [
+                hw.hardware_type.value for hw in self.available_hardware.values()
+            ],
             "acceleration_profiles": len(self.acceleration_profiles),
             "edge_deployments": len(self.edge_deployments),
             "quantum_resistance_status": "planned",
             "extreme_performance_targets": {
                 "sub_5ms_latency": "achievable_with_gpu_tpu",
                 "sub_1ms_latency": "requires_fpga_asic",
-                "quantum_resistance": "in_development"
+                "quantum_resistance": "in_development",
             },
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

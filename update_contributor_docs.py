@@ -8,8 +8,11 @@ import os
 import logging
 from pathlib import Path
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 class ContributorDocsUpdater:
     def __init__(self, project_root: str = "/home/dislove/ACGS-1"):
@@ -18,7 +21,7 @@ class ContributorDocsUpdater:
     def create_contributing_guide(self):
         """Create updated CONTRIBUTING.md"""
         logger.info("Creating updated CONTRIBUTING.md...")
-        
+
         contributing_content = """# Contributing to ACGS-1
 
 Welcome to the ACGS-1 (Autonomous Constitutional Governance System) project! This guide will help you get started with contributing to our blockchain-focused constitutional governance platform.
@@ -278,18 +281,18 @@ cd applications/governance-dashboard && npm test
 
 Thank you for contributing to ACGS-1! Together, we're building the future of constitutional governance on the blockchain.
 """
-        
+
         contributing_file = self.project_root / "CONTRIBUTING.md"
-        with open(contributing_file, 'w') as f:
+        with open(contributing_file, "w") as f:
             f.write(contributing_content)
-        
+
         logger.info("✅ Created updated CONTRIBUTING.md")
         return True
 
     def create_onboarding_script(self):
         """Create onboarding script for new contributors"""
         logger.info("Creating onboarding script...")
-        
+
         onboarding_script = """#!/bin/bash
 # ACGS-1 Developer Onboarding Script
 # Sets up development environment for new contributors
@@ -429,23 +432,23 @@ echo "   - Integration: integrations/"
 echo ""
 echo "🤝 Happy coding! Welcome to the ACGS-1 team!"
 """
-        
+
         onboarding_file = self.project_root / "scripts/setup/onboard_developer.sh"
         onboarding_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(onboarding_file, 'w') as f:
+
+        with open(onboarding_file, "w") as f:
             f.write(onboarding_script)
-        
+
         # Make script executable
         onboarding_file.chmod(0o755)
-        
+
         logger.info("✅ Created onboarding script")
         return True
 
     def create_migration_guide(self):
         """Create migration guide for existing contributors"""
         logger.info("Creating migration guide...")
-        
+
         migration_content = """# ACGS-1 Reorganization Migration Guide
 
 This guide helps existing contributors adapt to the new blockchain-focused directory structure.
@@ -685,18 +688,18 @@ If you encounter issues during migration:
 
 The reorganization positions ACGS-1 for better long-term maintainability and development efficiency while following blockchain development best practices.
 """
-        
+
         migration_file = self.project_root / "docs/development/MIGRATION_GUIDE.md"
-        with open(migration_file, 'w') as f:
+        with open(migration_file, "w") as f:
             f.write(migration_content)
-        
+
         logger.info("✅ Created migration guide")
         return True
 
     def update_code_review_guidelines(self):
         """Update code review guidelines"""
         logger.info("Updating code review guidelines...")
-        
+
         review_guidelines = """# Code Review Guidelines for ACGS-1
 
 ## 🎯 Review Principles
@@ -905,39 +908,44 @@ The reorganization positions ACGS-1 for better long-term maintainability and dev
 
 Remember: Code review is about maintaining quality, security, and constitutional governance principles while fostering a collaborative development environment.
 """
-        
+
         review_file = self.project_root / "docs/development/CODE_REVIEW_GUIDELINES.md"
-        with open(review_file, 'w') as f:
+        with open(review_file, "w") as f:
             f.write(review_guidelines)
-        
+
         logger.info("✅ Updated code review guidelines")
         return True
 
     def run_contributor_updates(self):
         """Execute all contributor documentation updates"""
         logger.info("Starting team onboarding and contributor documentation updates...")
-        
+
         try:
             results = {
                 "contributing_guide": self.create_contributing_guide(),
                 "onboarding_script": self.create_onboarding_script(),
                 "migration_guide": self.create_migration_guide(),
-                "code_review_guidelines": self.update_code_review_guidelines()
+                "code_review_guidelines": self.update_code_review_guidelines(),
             }
-            
+
             success_count = sum(results.values())
             total_count = len(results)
-            
+
             if success_count == total_count:
-                logger.info("✅ All contributor documentation updates completed successfully!")
+                logger.info(
+                    "✅ All contributor documentation updates completed successfully!"
+                )
             else:
-                logger.warning(f"⚠️ {success_count}/{total_count} contributor updates completed")
-            
+                logger.warning(
+                    f"⚠️ {success_count}/{total_count} contributor updates completed"
+                )
+
             return success_count == total_count
-            
+
         except Exception as e:
             logger.error(f"Contributor documentation update failed: {e}")
             return False
+
 
 if __name__ == "__main__":
     updater = ContributorDocsUpdater()

@@ -14,11 +14,18 @@ from fastapi.testclient import TestClient
 # We'll use relative imports for the EC service components
 import sys
 import os
+
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))  # Removed during reorganization
 
 try:
-    from ec_service.app.main import app, get_wina_coordinator, get_wina_performance_collector
-    from ec_service.app.core.wina_oversight_coordinator import WINAECOversightCoordinator
+    from ec_service.app.main import (
+        app,
+        get_wina_coordinator,
+        get_wina_performance_collector,
+    )
+    from ec_service.app.core.wina_oversight_coordinator import (
+        WINAECOversightCoordinator,
+    )
     from services.shared.wina.performance_monitoring import (
         WINAPerformanceCollector,
         WINAMonitoringLevel,
@@ -27,15 +34,18 @@ try:
         WINADynamicGatingMetrics,
         WINAConstitutionalComplianceMetrics,
         WINASystemHealthMetrics,
-        WINAIntegrationPerformanceMetrics
+        WINAIntegrationPerformanceMetrics,
     )
     from services.shared.wina.performance_api import set_collector_getter
+
     WINA_AVAILABLE = True
 except ImportError:
     WINA_AVAILABLE = False
 
 # Skip all tests if WINA components are not available
-pytestmark = pytest.mark.skipif(not WINA_AVAILABLE, reason="WINA components not available")
+pytestmark = pytest.mark.skipif(
+    not WINA_AVAILABLE, reason="WINA components not available"
+)
 
 
 class TestWINAPerformanceIntegration:
@@ -49,76 +59,80 @@ class TestWINAPerformanceIntegration:
         coordinator.performance_collector = WINAPerformanceCollector(
             monitoring_level=WINAMonitoringLevel.COMPREHENSIVE
         )
-        
+
         # Mock constitutional principles
         coordinator.constitutional_principles = {
             "democratic_oversight": {"weight": 0.8, "compliance_threshold": 0.9},
             "transparency": {"weight": 0.9, "compliance_threshold": 0.85},
-            "efficiency": {"weight": 0.7, "compliance_threshold": 0.8}
+            "efficiency": {"weight": 0.7, "compliance_threshold": 0.8},
         }
-        
+
         # Mock async methods
         coordinator.initialize_constitutional_principles = AsyncMock()
         coordinator._perform_health_check = AsyncMock()
-        coordinator.verify_constitutional_compliance = AsyncMock(return_value={
-            "compliant": True,
-            "score": 0.95,
-            "violations": [],
-            "principles_evaluated": 3
-        })
-        coordinator.apply_wina_optimization = AsyncMock(return_value={
-            "optimization_applied": True,
-            "gflops_reduction": 0.45,
-            "accuracy_retention": 0.97
-        })
+        coordinator.verify_constitutional_compliance = AsyncMock(
+            return_value={
+                "compliant": True,
+                "score": 0.95,
+                "violations": [],
+                "principles_evaluated": 3,
+            }
+        )
+        coordinator.apply_wina_optimization = AsyncMock(
+            return_value={
+                "optimization_applied": True,
+                "gflops_reduction": 0.45,
+                "accuracy_retention": 0.97,
+            }
+        )
         coordinator.record_learning_feedback = AsyncMock()
-        
+
         await coordinator.performance_collector.start_monitoring()
         return coordinator
 
     @pytest.fixture
     def test_client(self, mock_coordinator):
         """Create test client with mocked coordinator."""
-        
+
         def mock_get_coordinator():
             return mock_coordinator
-        
+
         def mock_get_performance_collector():
             return mock_coordinator.performance_collector
-        
+
         # Override the dependency functions
         app.dependency_overrides[get_wina_coordinator] = mock_get_coordinator
-        
+
         # Configure the performance API
         set_collector_getter(mock_get_performance_collector)
-        
+
         client = TestClient(app)
-        
+
         yield client
-        
+
         # Cleanup
         app.dependency_overrides.clear()
 
     def test_health_endpoint_includes_performance_monitoring(self, test_client):
         """Test that health endpoint includes performance monitoring status."""
         response = test_client.get("/health")
-        
+
         assert response.status_code == 200
         data = response.json()
-        
+
         # Verify basic health response
         assert data["status"] == "healthy"
         assert data["service"] == "evolutionary_computation"
         assert "wina_coordinator" in data
-        
+
         # Verify performance monitoring features
         assert "performance_monitoring" in data
         performance_info = data["performance_monitoring"]
-        
+
         assert "collector_available" in performance_info
         assert "monitoring_active" in performance_info
         assert "monitoring_level" in performance_info
-        
+
         # Verify features include performance monitoring capabilities
         features = data["features"]
         assert features["performance_monitoring"] is True
@@ -128,35 +142,35 @@ class TestWINAPerformanceIntegration:
     def test_root_endpoint_includes_performance_api_info(self, test_client):
         """Test that root endpoint includes performance API information."""
         response = test_client.get("/")
-        
+
         assert response.status_code == 200
         data = response.json()
-        
+
         # Verify API endpoints include performance monitoring
         assert "api_endpoints" in data
         endpoints = data["api_endpoints"]
         assert "wina_performance" in endpoints
         assert endpoints["wina_performance"] == "/api/v1/wina/performance/*"
-        
+
         # Verify features include performance capabilities
         features = data["features"]
         performance_features = [
             "Comprehensive WINA performance metrics",
             "REST API for performance data access",
             "Prometheus metrics export",
-            "Performance dashboard and alerts"
+            "Performance dashboard and alerts",
         ]
-        
+
         for feature in performance_features:
             assert feature in features
 
     def test_performance_api_health_endpoint(self, test_client):
         """Test WINA performance API health endpoint."""
         response = test_client.get("/api/v1/wina/performance/health")
-        
+
         assert response.status_code == 200
         data = response.json()
-        
+
         # Verify health response structure
         assert "status" in data
         assert "timestamp" in data
@@ -169,10 +183,10 @@ class TestWINAPerformanceIntegration:
     def test_performance_api_realtime_metrics(self, test_client):
         """Test WINA performance API real-time metrics endpoint."""
         response = test_client.get("/api/v1/wina/performance/metrics/realtime")
-        
+
         assert response.status_code == 200
         data = response.json()
-        
+
         # Verify real-time metrics structure
         assert isinstance(data, dict)
         # The exact structure depends on the implementation,
@@ -181,31 +195,33 @@ class TestWINAPerformanceIntegration:
     def test_performance_api_configuration(self, test_client):
         """Test WINA performance API configuration endpoint."""
         response = test_client.get("/api/v1/wina/performance/config")
-        
+
         assert response.status_code == 200
         data = response.json()
-        
+
         # Verify configuration response
         assert "monitoring_level" in data
         assert "monitoring_active" in data
         assert "collection_interval_seconds" in data
         assert "components_monitored" in data
         assert "metrics_storage_limits" in data
-        
+
         # Verify monitoring level
         assert data["monitoring_level"] == "comprehensive"
 
     @pytest.mark.asyncio
-    async def test_coordinator_performance_monitoring_integration(self, mock_coordinator):
+    async def test_coordinator_performance_monitoring_integration(
+        self, mock_coordinator
+    ):
         """Test that the coordinator properly integrates with performance monitoring."""
         collector = mock_coordinator.performance_collector
-        
+
         # Verify collector is properly configured
         assert collector.monitoring_level == WINAMonitoringLevel.COMPREHENSIVE
         assert collector.monitoring_active
-        
+
         # Test recording various metrics
-        
+
         # 1. System health metrics
         system_metrics = WINASystemHealthMetrics(
             cpu_utilization_percent=75.5,
@@ -216,10 +232,10 @@ class TestWINAPerformanceIntegration:
             availability_percent=99.9,
             response_time_p95_ms=45.2,
             concurrent_operations=12,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
         await collector.record_system_health_metrics(system_metrics)
-        
+
         # 2. Constitutional compliance metrics
         compliance_metrics = WINAConstitutionalComplianceMetrics(
             component_type="ec_oversight",
@@ -231,13 +247,13 @@ class TestWINAPerformanceIntegration:
             principle_adherence_breakdown={
                 "democratic_oversight": 0.96,
                 "transparency": 0.94,
-                "efficiency": 0.95
+                "efficiency": 0.95,
             },
             remediation_actions_taken=0,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
         await collector.record_constitutional_compliance_metrics(compliance_metrics)
-        
+
         # 3. Integration performance metrics
         integration_metrics = WINAIntegrationPerformanceMetrics(
             integration_type="ec_wina_optimization",
@@ -249,10 +265,10 @@ class TestWINAPerformanceIntegration:
             integration_success_rate=0.99,
             error_count=0,
             performance_improvement_ratio=0.42,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
         await collector.record_integration_performance_metrics(integration_metrics)
-        
+
         # 4. Neuron activation metrics
         neuron_metrics = WINANeuronActivationMetrics(
             layer_name="transformer_layer_12",
@@ -264,10 +280,10 @@ class TestWINAPerformanceIntegration:
             activation_scores_std=0.18,
             performance_impact_ms=8.5,
             energy_savings_ratio=0.35,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
         await collector.record_neuron_activation_metrics(neuron_metrics)
-        
+
         # 5. Dynamic gating metrics
         gating_metrics = WINADynamicGatingMetrics(
             gate_id="attention_gate_3",
@@ -279,10 +295,10 @@ class TestWINAPerformanceIntegration:
             decision_latency_ms=2.1,
             accuracy_impact=-0.002,
             resource_savings=0.28,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
         await collector.record_dynamic_gating_metrics(gating_metrics)
-        
+
         # Verify metrics were recorded
         assert len(collector.system_health_metrics) > 0
         assert len(collector.constitutional_compliance_metrics) > 0
@@ -292,7 +308,7 @@ class TestWINAPerformanceIntegration:
 
     def test_performance_metrics_recording_endpoints(self, test_client):
         """Test API endpoints for recording performance metrics."""
-        
+
         # Test neuron activation metrics recording
         neuron_data = {
             "layer_name": "test_layer",
@@ -303,13 +319,15 @@ class TestWINAPerformanceIntegration:
             "activation_scores_mean": 0.7,
             "activation_scores_std": 0.2,
             "performance_impact_ms": 10.0,
-            "energy_savings_ratio": 0.3
+            "energy_savings_ratio": 0.3,
         }
-        
-        response = test_client.post("/api/v1/wina/performance/metrics/neuron-activation", json=neuron_data)
+
+        response = test_client.post(
+            "/api/v1/wina/performance/metrics/neuron-activation", json=neuron_data
+        )
         assert response.status_code == 200
         assert response.json()["status"] == "success"
-        
+
         # Test constitutional compliance metrics recording
         compliance_data = {
             "component_type": "test_component",
@@ -321,15 +339,18 @@ class TestWINAPerformanceIntegration:
             "principle_adherence_breakdown": {
                 "principle1": 0.95,
                 "principle2": 0.93,
-                "principle3": 0.97
+                "principle3": 0.97,
             },
-            "remediation_actions_taken": 0
+            "remediation_actions_taken": 0,
         }
-        
-        response = test_client.post("/api/v1/wina/performance/metrics/constitutional-compliance", json=compliance_data)
+
+        response = test_client.post(
+            "/api/v1/wina/performance/metrics/constitutional-compliance",
+            json=compliance_data,
+        )
         assert response.status_code == 200
         assert response.json()["status"] == "success"
-        
+
         # Test system health metrics recording
         health_data = {
             "cpu_utilization_percent": 75.0,
@@ -339,10 +360,12 @@ class TestWINAPerformanceIntegration:
             "error_rate_percent": 0.1,
             "availability_percent": 99.9,
             "response_time_p95_ms": 50.0,
-            "concurrent_operations": 10
+            "concurrent_operations": 10,
         }
-        
-        response = test_client.post("/api/v1/wina/performance/metrics/system-health", json=health_data)
+
+        response = test_client.post(
+            "/api/v1/wina/performance/metrics/system-health", json=health_data
+        )
         assert response.status_code == 200
         assert response.json()["status"] == "success"
 
@@ -352,9 +375,9 @@ class TestWINAPerformanceIntegration:
             "monitoring_level": "detailed",
             "collection_interval_seconds": 60,
             "enable_prometheus": True,
-            "enable_real_time_alerts": True
+            "enable_real_time_alerts": True,
         }
-        
+
         response = test_client.post("/api/v1/wina/performance/config", json=config_data)
         assert response.status_code == 200
         assert response.json()["status"] == "success"
@@ -365,7 +388,7 @@ class TestWINAPerformanceIntegration:
         response = test_client.post("/api/v1/wina/performance/monitoring/stop")
         assert response.status_code == 200
         assert response.json()["status"] == "success"
-        
+
         # Test start
         response = test_client.post("/api/v1/wina/performance/monitoring/start")
         assert response.status_code == 200
@@ -374,10 +397,10 @@ class TestWINAPerformanceIntegration:
     def test_prometheus_metrics_export(self, test_client):
         """Test Prometheus metrics export endpoint."""
         response = test_client.get("/api/v1/wina/performance/prometheus")
-        
+
         assert response.status_code == 200
         assert response.headers["content-type"] == "text/plain; charset=utf-8"
-        
+
         # Verify it's valid Prometheus format (basic check)
         content = response.text
         assert isinstance(content, str)
@@ -386,10 +409,10 @@ class TestWINAPerformanceIntegration:
     def test_performance_alerts_endpoint(self, test_client):
         """Test performance alerts retrieval."""
         response = test_client.get("/api/v1/wina/performance/alerts?hours=24")
-        
+
         assert response.status_code == 200
         data = response.json()
-        
+
         assert "alerts" in data
         assert "total_count" in data
         assert "time_range" in data
@@ -397,11 +420,13 @@ class TestWINAPerformanceIntegration:
 
     def test_metrics_summary_endpoint(self, test_client):
         """Test metrics summary endpoint."""
-        response = test_client.get("/api/v1/wina/performance/metrics/summary?time_range_hours=24")
-        
+        response = test_client.get(
+            "/api/v1/wina/performance/metrics/summary?time_range_hours=24"
+        )
+
         assert response.status_code == 200
         data = response.json()
-        
+
         assert "time_range" in data
         assert "overall_performance" in data
         assert "component_metrics" in data
@@ -413,9 +438,9 @@ class TestWINAPerformanceIntegration:
         """Test complete oversight operation with performance monitoring."""
         coordinator = mock_coordinator
         collector = coordinator.performance_collector
-        
+
         # Simulate a complete oversight operation
-        
+
         # 1. Record initial system health
         system_metrics = WINASystemHealthMetrics(
             cpu_utilization_percent=70.0,
@@ -426,12 +451,14 @@ class TestWINAPerformanceIntegration:
             availability_percent=99.95,
             response_time_p95_ms=40.0,
             concurrent_operations=8,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
         await collector.record_system_health_metrics(system_metrics)
-        
+
         # 2. Perform constitutional compliance check
-        compliance_result = await coordinator.verify_constitutional_compliance("test_decision")
+        compliance_result = await coordinator.verify_constitutional_compliance(
+            "test_decision"
+        )
         compliance_metrics = WINAConstitutionalComplianceMetrics(
             component_type="ec_oversight",
             principles_evaluated=compliance_result["principles_evaluated"],
@@ -442,16 +469,16 @@ class TestWINAPerformanceIntegration:
             principle_adherence_breakdown={
                 "democratic_oversight": 0.96,
                 "transparency": 0.94,
-                "efficiency": 0.95
+                "efficiency": 0.95,
             },
             remediation_actions_taken=0,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
         await collector.record_constitutional_compliance_metrics(compliance_metrics)
-        
+
         # 3. Apply WINA optimization
         optimization_result = await coordinator.apply_wina_optimization("test_input")
-        
+
         # Record neuron activation metrics from optimization
         neuron_metrics = WINANeuronActivationMetrics(
             layer_name="optimization_layer",
@@ -463,10 +490,10 @@ class TestWINAPerformanceIntegration:
             activation_scores_std=0.15,
             performance_impact_ms=12.0,
             energy_savings_ratio=optimization_result["gflops_reduction"] * 0.8,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
         await collector.record_neuron_activation_metrics(neuron_metrics)
-        
+
         # 4. Record integration performance
         integration_metrics = WINAIntegrationPerformanceMetrics(
             integration_type="oversight_optimization",
@@ -478,22 +505,22 @@ class TestWINAPerformanceIntegration:
             integration_success_rate=0.98,
             error_count=0,
             performance_improvement_ratio=optimization_result["gflops_reduction"],
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
         await collector.record_integration_performance_metrics(integration_metrics)
-        
+
         # 5. Verify all metrics were recorded
         assert len(collector.system_health_metrics) >= 1
         assert len(collector.constitutional_compliance_metrics) >= 1
         assert len(collector.neuron_activation_metrics) >= 1
         assert len(collector.integration_performance_metrics) >= 1
-        
+
         # 6. Generate performance report
         end_time = datetime.now(timezone.utc)
         start_time = end_time - timedelta(hours=1)
-        
+
         report = await collector.get_performance_report(start_time, end_time)
-        
+
         # Verify report contains expected data
         assert report.total_operations > 0
         assert report.overall_gflops_reduction >= 0

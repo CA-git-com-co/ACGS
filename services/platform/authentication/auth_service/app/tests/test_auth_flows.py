@@ -4,9 +4,13 @@ from httpx import AsyncClient
 from fastapi import status
 import uuid
 
-from ..core.config import settings # For API prefixes
-from services.shared.schemas.user import UserCreate # For type hinting if needed, though client sends JSON
-from ..core import security # For direct calls if needed for test setup, e.g. password hashing
+from ..core.config import settings  # For API prefixes
+from services.shared.schemas.user import (
+    UserCreate,
+)  # For type hinting if needed, though client sends JSON
+from ..core import (
+    security,
+)  # For direct calls if needed for test setup, e.g. password hashing
 
 # Pytest marker for async tests
 pytestmark = pytest.mark.asyncio
@@ -14,15 +18,17 @@ pytestmark = pytest.mark.asyncio
 # API Prefixes
 API_V1_AUTH_PREFIX = f"{settings.API_V1_STR}/auth"
 
+
 # Helper to generate unique user data for each test run
 def get_unique_user_data(prefix: str = "testuser"):
     unique_id = uuid.uuid4().hex[:8]
     return {
         "username": f"{prefix}_{unique_id}",
         "email": f"{prefix}_{unique_id}@example.com",
-        "password": "Str0ngPassword!123", # Meets potential complexity requirements
-        "full_name": f"Test User {unique_id.capitalize()}"
+        "password": "Str0ngPassword!123",  # Meets potential complexity requirements
+        "full_name": f"Test User {unique_id.capitalize()}",
     }
+
 
 # --- Test User Registration ---
 async def test_register_user_success(client: AsyncClient):
@@ -35,6 +41,7 @@ async def test_register_user_success(client: AsyncClient):
     assert "id" in data
     assert "hashed_password" not in data
 
+
 async def test_register_user_duplicate_username(client: AsyncClient):
     user_data = get_unique_user_data("dup_uname")
     # First registration
@@ -42,10 +49,11 @@ async def test_register_user_duplicate_username(client: AsyncClient):
 
     # Second registration with same username
     user_data_dup = user_data.copy()
-    user_data_dup["email"] = f"new_{user_data_dup['email']}" # Different email
+    user_data_dup["email"] = f"new_{user_data_dup['email']}"  # Different email
     response = await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data_dup)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert "Username already registered" in response.json()["detail"]
+
 
 async def test_register_user_duplicate_email(client: AsyncClient):
     user_data = get_unique_user_data("dup_email")
@@ -54,28 +62,33 @@ async def test_register_user_duplicate_email(client: AsyncClient):
 
     # Second registration with same email
     user_data_dup = user_data.copy()
-    user_data_dup["username"] = f"new_{user_data_dup['username']}" # Different username
+    user_data_dup["username"] = f"new_{user_data_dup['username']}"  # Different username
     response = await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data_dup)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert "Email already registered" in response.json()["detail"]
 
+
 # Note: The shared.schemas.user.UserCreate does not specify password length validation.
 # If it did (e.g., using Pydantic's Field(min_length=...)), a test for short passwords
 # returning HTTP_422_UNPROCESSABLE_ENTITY would be appropriate.
+
 
 # --- Test User Login ---
 async def test_login_success(client: AsyncClient):
     user_data = get_unique_user_data("login_succ")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
 
-    login_payload = {"username": user_data["username"], "password": user_data["password"]}
+    login_payload = {
+        "username": user_data["username"],
+        "password": user_data["password"],
+    }
     response = await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
 
     assert response.status_code == status.HTTP_200_OK
     token_data = response.json()
     assert "access_token" in token_data
     assert token_data["token_type"] == "bearer"
-    assert token_data.get("refresh_token") is None # Refresh token is HttpOnly cookie
+    assert token_data.get("refresh_token") is None  # Refresh token is HttpOnly cookie
 
     # Check cookies (names based on auth_service/main.py CsrfSettings and endpoints.py)
     assert "access_token_cookie" in response.cookies
@@ -90,15 +103,24 @@ async def test_login_success(client: AsyncClient):
     # So, it should be "csrf_access_token".
     assert "csrf_access_token" in response.cookies
 
-    access_cookie_details = client.cookies.jar.get("access_token_cookie", domain="testserver", path="/")
+    access_cookie_details = client.cookies.jar.get(
+        "access_token_cookie", domain="testserver", path="/"
+    )
     assert access_cookie_details is not None
     assert access_cookie_details.secure == (settings.ENVIRONMENT != "development")
-    assert access_cookie_details.get("httponly") is not None # httpx sets this as a string 'HttpOnly' or True
+    assert (
+        access_cookie_details.get("httponly") is not None
+    )  # httpx sets this as a string 'HttpOnly' or True
 
-    refresh_cookie_details = client.cookies.jar.get("refresh_token_cookie", domain="testserver", path=f"{API_V1_AUTH_PREFIX}/token/refresh")
+    refresh_cookie_details = client.cookies.jar.get(
+        "refresh_token_cookie",
+        domain="testserver",
+        path=f"{API_V1_AUTH_PREFIX}/token/refresh",
+    )
     assert refresh_cookie_details is not None
     assert refresh_cookie_details.secure == (settings.ENVIRONMENT != "development")
     assert refresh_cookie_details.get("httponly") is not None
+
 
 async def test_login_incorrect_password(client: AsyncClient):
     user_data = get_unique_user_data("login_fail_pass")
@@ -109,11 +131,13 @@ async def test_login_incorrect_password(client: AsyncClient):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "Incorrect username or password" in response.json()["detail"]
 
+
 async def test_login_non_existent_user(client: AsyncClient):
     login_payload = {"username": "nonexistentuser", "password": "password"}
     response = await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "Incorrect username or password" in response.json()["detail"]
+
 
 async def test_login_inactive_user(client: AsyncClient):
     user_data = get_unique_user_data("login_inactive")
@@ -139,7 +163,8 @@ async def test_login_inactive_user(client: AsyncClient):
     # response = await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
     # assert response.status_code == status.HTTP_400_BAD_REQUEST
     # assert "Inactive user" in response.json()["detail"]
-    pass # Placeholder for inactive user test if DB manipulation is added
+    pass  # Placeholder for inactive user test if DB manipulation is added
+
 
 # --- Test Accessing Protected Endpoint (/me) ---
 async def test_read_me_success(client: AsyncClient):
@@ -147,8 +172,11 @@ async def test_read_me_success(client: AsyncClient):
     reg_response = await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
     user_id = reg_response.json()["id"]
 
-    login_payload = {"username": user_data["username"], "password": user_data["password"]}
-    await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload) # Sets cookies
+    login_payload = {
+        "username": user_data["username"],
+        "password": user_data["password"],
+    }
+    await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)  # Sets cookies
 
     me_response = await client.get(f"{API_V1_AUTH_PREFIX}/me")
     assert me_response.status_code == status.HTTP_200_OK
@@ -157,25 +185,36 @@ async def test_read_me_success(client: AsyncClient):
     assert me_data["email"] == user_data["email"]
     assert me_data["id"] == user_id
 
+
 async def test_read_me_no_auth(client: AsyncClient):
     me_response = await client.get(f"{API_V1_AUTH_PREFIX}/me")
     assert me_response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "Could not validate credentials" in me_response.json()["detail"]
+
 
 # --- Test Token Refresh ---
 async def test_refresh_token_success(client: AsyncClient):
     user_data = get_unique_user_data("refresh_succ")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
 
-    login_payload = {"username": user_data["username"], "password": user_data["password"]}
-    login_response = await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
+    login_payload = {
+        "username": user_data["username"],
+        "password": user_data["password"],
+    }
+    login_response = await client.post(
+        f"{API_V1_AUTH_PREFIX}/token", data=login_payload
+    )
     initial_access_cookie_value = client.cookies.get("access_token_cookie")
     initial_refresh_cookie_value = client.cookies.get("refresh_token_cookie")
-    csrf_token = client.cookies.get("csrf_access_token") # As per CsrfSettings cookie_key
+    csrf_token = client.cookies.get(
+        "csrf_access_token"
+    )  # As per CsrfSettings cookie_key
     assert csrf_token is not None
 
-    headers = {"X-CSRF-TOKEN": csrf_token} # As per CsrfSettings header_name
-    refresh_response = await client.post(f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers)
+    headers = {"X-CSRF-TOKEN": csrf_token}  # As per CsrfSettings header_name
+    refresh_response = await client.post(
+        f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers
+    )
 
     assert refresh_response.status_code == status.HTTP_200_OK
     refresh_data = refresh_response.json()
@@ -186,39 +225,65 @@ async def test_refresh_token_success(client: AsyncClient):
     new_refresh_cookie_value = client.cookies.get("refresh_token_cookie")
     assert new_access_cookie_value != initial_access_cookie_value
     assert new_refresh_cookie_value != initial_refresh_cookie_value
-    assert "csrf_access_token" in refresh_response.cookies # New CSRF cookie should be set
+    assert (
+        "csrf_access_token" in refresh_response.cookies
+    )  # New CSRF cookie should be set
+
 
 async def test_refresh_token_no_csrf_header(client: AsyncClient):
     user_data = get_unique_user_data("refresh_no_csrf")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
-    login_payload = {"username": user_data["username"], "password": user_data["password"]}
-    await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload) # Sets cookies including CSRF cookie
+    login_payload = {
+        "username": user_data["username"],
+        "password": user_data["password"],
+    }
+    await client.post(
+        f"{API_V1_AUTH_PREFIX}/token", data=login_payload
+    )  # Sets cookies including CSRF cookie
 
     # Attempt refresh without X-CSRF-TOKEN header
     refresh_response = await client.post(f"{API_V1_AUTH_PREFIX}/token/refresh")
-    assert refresh_response.status_code == status.HTTP_403_FORBIDDEN # CSRF validation failure
-    assert "Missing CSRF Token" in refresh_response.json()["detail"] # Or similar message from fastapi-csrf-protect
+    assert (
+        refresh_response.status_code == status.HTTP_403_FORBIDDEN
+    )  # CSRF validation failure
+    assert (
+        "Missing CSRF Token" in refresh_response.json()["detail"]
+    )  # Or similar message from fastapi-csrf-protect
+
 
 async def test_refresh_token_no_refresh_cookie(client: AsyncClient):
     user_data = get_unique_user_data("refresh_no_cookie")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
-    login_payload = {"username": user_data["username"], "password": user_data["password"]}
+    login_payload = {
+        "username": user_data["username"],
+        "password": user_data["password"],
+    }
     await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
     csrf_token = client.cookies.get("csrf_access_token")
 
     # Manually clear the refresh_token_cookie from the client's cookie jar
-    client.cookies.delete("refresh_token_cookie", domain="testserver", path=f"{API_V1_AUTH_PREFIX}/token/refresh")
-    
+    client.cookies.delete(
+        "refresh_token_cookie",
+        domain="testserver",
+        path=f"{API_V1_AUTH_PREFIX}/token/refresh",
+    )
+
     headers = {"X-CSRF-TOKEN": csrf_token}
-    refresh_response = await client.post(f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers)
+    refresh_response = await client.post(
+        f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers
+    )
     assert refresh_response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "Refresh token missing" in refresh_response.json()["detail"]
+
 
 # --- Test Logout ---
 async def test_logout_success(client: AsyncClient):
     user_data = get_unique_user_data("logout_succ")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
-    login_payload = {"username": user_data["username"], "password": user_data["password"]}
+    login_payload = {
+        "username": user_data["username"],
+        "password": user_data["password"],
+    }
     await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
     csrf_token = client.cookies.get("csrf_access_token")
     assert csrf_token is not None
@@ -230,9 +295,14 @@ async def test_logout_success(client: AsyncClient):
 
     # Check cookies are cleared (httpx client updates its cookie jar based on Set-Cookie headers)
     assert client.cookies.get("access_token_cookie") is None
-    assert client.cookies.get("refresh_token_cookie", path=f"{API_V1_AUTH_PREFIX}/token/refresh") is None
+    assert (
+        client.cookies.get(
+            "refresh_token_cookie", path=f"{API_V1_AUTH_PREFIX}/token/refresh"
+        )
+        is None
+    )
     assert client.cookies.get("csrf_access_token") is None
-    
+
     # Verify by trying to access /me
     me_response_after_logout = await client.get(f"{API_V1_AUTH_PREFIX}/me")
     assert me_response_after_logout.status_code == status.HTTP_401_UNAUTHORIZED
@@ -249,15 +319,22 @@ async def test_logout_success(client: AsyncClient):
     # with a new CSRF token (if obtainable) and expect a 401.
     # This tests the DB revocation of the refresh token.
 
+
 async def test_logout_no_csrf_header(client: AsyncClient):
     user_data = get_unique_user_data("logout_no_csrf")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
-    login_payload = {"username": user_data["username"], "password": user_data["password"]}
+    login_payload = {
+        "username": user_data["username"],
+        "password": user_data["password"],
+    }
     await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
 
-    logout_response = await client.post(f"{API_V1_AUTH_PREFIX}/logout") # No CSRF header
+    logout_response = await client.post(
+        f"{API_V1_AUTH_PREFIX}/logout"
+    )  # No CSRF header
     assert logout_response.status_code == status.HTTP_403_FORBIDDEN
     assert "Missing CSRF Token" in logout_response.json()["detail"]
+
 
 # TODO:
 # - Test access token JTI revocation: After logout, an old access token (if captured) should not work.

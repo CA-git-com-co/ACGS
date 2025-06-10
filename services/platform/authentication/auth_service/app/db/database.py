@@ -7,16 +7,19 @@ from dotenv import load_dotenv
 # In a containerized environment, these might be set directly.
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://youruser:yourpassword@postgres:5432/yourdatabase_auth")
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql+asyncpg://youruser:yourpassword@postgres:5432/yourdatabase_auth",
+)
 
 engine = create_async_engine(DATABASE_URL)
-AsyncSessionLocal = sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=False
-)
+AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
 
 async def get_async_db():
     async with AsyncSessionLocal() as session:
         yield session
+
 
 async def create_db_tables():
     # This is where you would import your models and call Base.metadata.create_all(engine)
@@ -28,11 +31,15 @@ async def create_db_tables():
     try:
         # If models are defined using the Base from services.shared.database, then:
         from services.shared.database import Base
+
         # Import all models here that should be created
-        from services.shared.models import User, RefreshToken # noqa
+        from services.shared.models import User, RefreshToken  # noqa
+
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        print("Tables created (if they didn't exist already, including refresh_tokens).")
+        print(
+            "Tables created (if they didn't exist already, including refresh_tokens)."
+        )
     except Exception as e:
         print(f"Error creating tables: {e}")
         # For now, just continue without creating tables

@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class PrivacyMechanism(Enum):
     """Supported privacy mechanisms."""
+
     LAPLACE = "laplace"
     GAUSSIAN = "gaussian"
     EXPONENTIAL = "exponential"
@@ -33,13 +34,14 @@ class PrivacyMechanism(Enum):
 @dataclass
 class PrivacyBudget:
     """Privacy budget tracking for differential privacy."""
+
     epsilon: float
     delta: float = 0.0
     used_epsilon: float = 0.0
     used_delta: float = 0.0
     remaining_epsilon: float = field(init=False)
     remaining_delta: float = field(init=False)
-    
+
     def __post_init__(self):
         self.remaining_epsilon = self.epsilon - self.used_epsilon
         self.remaining_delta = self.delta - self.used_delta
@@ -48,6 +50,7 @@ class PrivacyBudget:
 @dataclass
 class PrivacyMetrics:
     """Privacy metrics for evaluation results."""
+
     mechanism: PrivacyMechanism
     epsilon_used: float
     delta_used: float
@@ -60,27 +63,29 @@ class PrivacyMetrics:
 class DifferentialPrivacyManager:
     """
     Differential Privacy Manager for federated evaluation.
-    
+
     Implements (ε, δ)-differential privacy with configurable mechanisms
     and privacy budget tracking.
     """
-    
+
     def __init__(self, epsilon: float = 1.0, delta: float = 1e-5):
         self.privacy_budget = PrivacyBudget(epsilon=epsilon, delta=delta)
         self.privacy_history: List[PrivacyMetrics] = []
         self.global_sensitivity = 1.0  # Assume unit global sensitivity
-        
+
         # Privacy metrics tracking
         self.privacy_metrics = {
             "total_queries": 0,
             "privacy_budget_used": 0.0,
             "average_noise_added": 0.0,
             "privacy_violations": 0,
-            "data_utility_score": 0.0
+            "data_utility_score": 0.0,
         }
-        
-        logger.info(f"Initialized Differential Privacy Manager (ε={epsilon}, δ={delta})")
-    
+
+        logger.info(
+            f"Initialized Differential Privacy Manager (ε={epsilon}, δ={delta})"
+        )
+
     async def initialize(self):
         """Initialize the privacy manager."""
         try:
@@ -88,49 +93,55 @@ class DifferentialPrivacyManager:
         except Exception as e:
             logger.error(f"Failed to initialize Privacy Manager: {e}")
             raise
-    
+
     async def apply_differential_privacy(
-        self,
-        data: Dict[str, Any],
-        privacy_requirements: Dict[str, Any]
+        self, data: Dict[str, Any], privacy_requirements: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Apply differential privacy to federated evaluation data.
-        
+
         Args:
             data: Raw evaluation data from federated nodes
             privacy_requirements: Privacy requirements and constraints
-            
+
         Returns:
             Privacy-preserving version of the data
         """
         try:
             # Extract privacy parameters
-            epsilon_request = privacy_requirements.get("epsilon", self.privacy_budget.epsilon)
-            mechanism = PrivacyMechanism(privacy_requirements.get("mechanism", "laplace"))
-            
+            epsilon_request = privacy_requirements.get(
+                "epsilon", self.privacy_budget.epsilon
+            )
+            mechanism = PrivacyMechanism(
+                privacy_requirements.get("mechanism", "laplace")
+            )
+
             # Check privacy budget
             if not self._check_privacy_budget(epsilon_request):
-                raise ValueError(f"Insufficient privacy budget: {epsilon_request} > {self.privacy_budget.remaining_epsilon}")
-            
+                raise ValueError(
+                    f"Insufficient privacy budget: {epsilon_request} > {self.privacy_budget.remaining_epsilon}"
+                )
+
             # Apply privacy mechanism to each node's data
             private_data = {}
             total_noise = 0.0
-            
+
             for node_id, node_data in data.items():
                 if isinstance(node_data, dict) and node_data.get("success", False):
-                    private_node_data, noise_added = await self._apply_privacy_mechanism(
-                        node_data, mechanism, epsilon_request
+                    private_node_data, noise_added = (
+                        await self._apply_privacy_mechanism(
+                            node_data, mechanism, epsilon_request
+                        )
                     )
                     private_data[node_id] = private_node_data
                     total_noise += noise_added
                 else:
                     # Keep failed results as-is (no privacy needed)
                     private_data[node_id] = node_data
-            
+
             # Update privacy budget
             self._update_privacy_budget(epsilon_request, 0.0)
-            
+
             # Calculate privacy metrics
             privacy_metrics = PrivacyMetrics(
                 mechanism=mechanism,
@@ -138,41 +149,42 @@ class DifferentialPrivacyManager:
                 delta_used=0.0,
                 noise_added=total_noise,
                 privacy_loss=epsilon_request,
-                data_utility=self._calculate_data_utility(data, private_data)
+                data_utility=self._calculate_data_utility(data, private_data),
             )
-            
+
             # Store privacy metrics
             self.privacy_history.append(privacy_metrics)
             await self._update_privacy_metrics(privacy_metrics)
-            
-            logger.info(f"Applied differential privacy: ε={epsilon_request}, mechanism={mechanism.value}")
+
+            logger.info(
+                f"Applied differential privacy: ε={epsilon_request}, mechanism={mechanism.value}"
+            )
             return private_data
-            
+
         except Exception as e:
             logger.error(f"Failed to apply differential privacy: {e}")
             raise
-    
+
     async def _apply_privacy_mechanism(
-        self,
-        data: Dict[str, Any],
-        mechanism: PrivacyMechanism,
-        epsilon: float
+        self, data: Dict[str, Any], mechanism: PrivacyMechanism, epsilon: float
     ) -> Tuple[Dict[str, Any], float]:
         """Apply specific privacy mechanism to data."""
         try:
             private_data = data.copy()
             total_noise = 0.0
-            
+
             # Identify numeric fields to add noise to
             numeric_fields = [
-                "policy_compliance_score", "execution_time_ms", 
-                "success_rate", "consistency_score"
+                "policy_compliance_score",
+                "execution_time_ms",
+                "success_rate",
+                "consistency_score",
             ]
-            
+
             for field in numeric_fields:
                 if field in data and isinstance(data[field], (int, float)):
                     original_value = float(data[field])
-                    
+
                     if mechanism == PrivacyMechanism.LAPLACE:
                         noise = self._laplace_noise(epsilon)
                     elif mechanism == PrivacyMechanism.GAUSSIAN:
@@ -183,29 +195,29 @@ class DifferentialPrivacyManager:
                         noise = self._local_dp_noise(epsilon)
                     else:
                         noise = 0.0
-                    
+
                     # Add noise and ensure non-negative for certain fields
                     noisy_value = original_value + noise
                     if field in ["policy_compliance_score", "success_rate"]:
                         noisy_value = max(0.0, min(1.0, noisy_value))  # Clamp to [0, 1]
                     elif field == "execution_time_ms":
                         noisy_value = max(0.0, noisy_value)  # Ensure non-negative
-                    
+
                     private_data[field] = noisy_value
                     private_data[f"{field}_noise_added"] = abs(noise)
                     total_noise += abs(noise)
-            
+
             # Add privacy metadata
             private_data["privacy_applied"] = True
             private_data["privacy_mechanism"] = mechanism.value
             private_data["epsilon_used"] = epsilon
-            
+
             return private_data, total_noise
-            
+
         except Exception as e:
             logger.error(f"Failed to apply privacy mechanism: {e}")
             return data, 0.0
-    
+
     def _laplace_noise(self, epsilon: float) -> float:
         """Generate Laplace noise for differential privacy."""
         try:
@@ -215,7 +227,7 @@ class DifferentialPrivacyManager:
         except Exception as e:
             logger.error(f"Failed to generate Laplace noise: {e}")
             return 0.0
-    
+
     def _gaussian_noise(self, epsilon: float) -> float:
         """Generate Gaussian noise for differential privacy."""
         try:
@@ -223,13 +235,15 @@ class DifferentialPrivacyManager:
             delta = self.privacy_budget.delta
             if delta <= 0:
                 delta = 1e-5  # Default delta
-            
-            sigma = self.global_sensitivity * np.sqrt(2 * np.log(1.25 / delta)) / epsilon
+
+            sigma = (
+                self.global_sensitivity * np.sqrt(2 * np.log(1.25 / delta)) / epsilon
+            )
             return np.random.normal(0, sigma)
         except Exception as e:
             logger.error(f"Failed to generate Gaussian noise: {e}")
             return 0.0
-    
+
     def _exponential_noise(self, epsilon: float) -> float:
         """Generate exponential mechanism noise."""
         try:
@@ -239,7 +253,7 @@ class DifferentialPrivacyManager:
         except Exception as e:
             logger.error(f"Failed to generate exponential noise: {e}")
             return 0.0
-    
+
     def _local_dp_noise(self, epsilon: float) -> float:
         """Generate local differential privacy noise."""
         try:
@@ -252,47 +266,55 @@ class DifferentialPrivacyManager:
         except Exception as e:
             logger.error(f"Failed to generate local DP noise: {e}")
             return 0.0
-    
+
     def _check_privacy_budget(self, epsilon_request: float) -> bool:
         """Check if sufficient privacy budget is available."""
         return epsilon_request <= self.privacy_budget.remaining_epsilon
-    
+
     def _update_privacy_budget(self, epsilon_used: float, delta_used: float):
         """Update privacy budget after use."""
         self.privacy_budget.used_epsilon += epsilon_used
         self.privacy_budget.used_delta += delta_used
-        self.privacy_budget.remaining_epsilon = self.privacy_budget.epsilon - self.privacy_budget.used_epsilon
-        self.privacy_budget.remaining_delta = self.privacy_budget.delta - self.privacy_budget.used_delta
-    
-    def _calculate_data_utility(self, original_data: Dict[str, Any], private_data: Dict[str, Any]) -> float:
+        self.privacy_budget.remaining_epsilon = (
+            self.privacy_budget.epsilon - self.privacy_budget.used_epsilon
+        )
+        self.privacy_budget.remaining_delta = (
+            self.privacy_budget.delta - self.privacy_budget.used_delta
+        )
+
+    def _calculate_data_utility(
+        self, original_data: Dict[str, Any], private_data: Dict[str, Any]
+    ) -> float:
         """Calculate data utility after applying privacy."""
         try:
             if not original_data or not private_data:
                 return 0.0
-            
+
             # Calculate utility based on numeric field preservation
             total_utility = 0.0
             field_count = 0
-            
+
             for node_id in original_data:
                 if node_id in private_data:
                     orig_node = original_data[node_id]
                     priv_node = private_data[node_id]
-                    
+
                     if isinstance(orig_node, dict) and isinstance(priv_node, dict):
                         for field in ["policy_compliance_score", "execution_time_ms"]:
                             if field in orig_node and field in priv_node:
                                 orig_val = float(orig_node[field])
                                 priv_val = float(priv_node[field])
-                                
+
                                 if orig_val != 0:
-                                    relative_error = abs(orig_val - priv_val) / abs(orig_val)
+                                    relative_error = abs(orig_val - priv_val) / abs(
+                                        orig_val
+                                    )
                                     utility = max(0.0, 1.0 - relative_error)
                                     total_utility += utility
                                     field_count += 1
-            
+
             return total_utility / field_count if field_count > 0 else 0.0
-            
+
         except Exception as e:
             logger.error(f"Failed to calculate data utility: {e}")
             return 0.0
@@ -301,20 +323,22 @@ class DifferentialPrivacyManager:
         """Update global privacy metrics."""
         try:
             self.privacy_metrics["total_queries"] += 1
-            self.privacy_metrics["privacy_budget_used"] = self.privacy_budget.used_epsilon
+            self.privacy_metrics["privacy_budget_used"] = (
+                self.privacy_budget.used_epsilon
+            )
 
             # Update average noise
             total_queries = self.privacy_metrics["total_queries"]
             current_avg = self.privacy_metrics["average_noise_added"]
             self.privacy_metrics["average_noise_added"] = (
-                (current_avg * (total_queries - 1) + privacy_metrics.noise_added) / total_queries
-            )
+                current_avg * (total_queries - 1) + privacy_metrics.noise_added
+            ) / total_queries
 
             # Update data utility
             current_utility = self.privacy_metrics["data_utility_score"]
             self.privacy_metrics["data_utility_score"] = (
-                (current_utility * (total_queries - 1) + privacy_metrics.data_utility) / total_queries
-            )
+                current_utility * (total_queries - 1) + privacy_metrics.data_utility
+            ) / total_queries
 
             # Check for privacy violations
             if self.privacy_budget.remaining_epsilon < 0:
@@ -333,7 +357,7 @@ class DifferentialPrivacyManager:
                 "epsilon_remaining": self.privacy_budget.remaining_epsilon,
                 "delta_total": self.privacy_budget.delta,
                 "delta_used": self.privacy_budget.used_delta,
-                "delta_remaining": self.privacy_budget.remaining_delta
+                "delta_remaining": self.privacy_budget.remaining_delta,
             },
             "metrics": self.privacy_metrics.copy(),
             "recent_history": [
@@ -342,13 +366,15 @@ class DifferentialPrivacyManager:
                     "epsilon_used": pm.epsilon_used,
                     "noise_added": pm.noise_added,
                     "data_utility": pm.data_utility,
-                    "timestamp": pm.timestamp.isoformat()
+                    "timestamp": pm.timestamp.isoformat(),
                 }
                 for pm in self.privacy_history[-10:]  # Last 10 privacy applications
-            ]
+            ],
         }
 
-    async def reset_privacy_budget(self, new_epsilon: float = None, new_delta: float = None):
+    async def reset_privacy_budget(
+        self, new_epsilon: float = None, new_delta: float = None
+    ):
         """Reset privacy budget (use with caution)."""
         try:
             if new_epsilon is not None:
@@ -361,7 +387,9 @@ class DifferentialPrivacyManager:
             self.privacy_budget.remaining_epsilon = self.privacy_budget.epsilon
             self.privacy_budget.remaining_delta = self.privacy_budget.delta
 
-            logger.warning(f"Privacy budget reset: ε={self.privacy_budget.epsilon}, δ={self.privacy_budget.delta}")
+            logger.warning(
+                f"Privacy budget reset: ε={self.privacy_budget.epsilon}, δ={self.privacy_budget.delta}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to reset privacy budget: {e}")
@@ -401,11 +429,15 @@ class DifferentialPrivacyManager:
 
             # Check budget availability
             if epsilon_request > self.privacy_budget.remaining_epsilon:
-                logger.warning(f"Insufficient epsilon budget: {epsilon_request} > {self.privacy_budget.remaining_epsilon}")
+                logger.warning(
+                    f"Insufficient epsilon budget: {epsilon_request} > {self.privacy_budget.remaining_epsilon}"
+                )
                 return False
 
             if delta_request > self.privacy_budget.remaining_delta:
-                logger.warning(f"Insufficient delta budget: {delta_request} > {self.privacy_budget.remaining_delta}")
+                logger.warning(
+                    f"Insufficient delta budget: {delta_request} > {self.privacy_budget.remaining_delta}"
+                )
                 return False
 
             # Check mechanism validity
@@ -427,7 +459,9 @@ class DifferentialPrivacyManager:
             logger.info("Shutting down Differential Privacy Manager...")
 
             # Log final privacy budget status
-            logger.info(f"Final privacy budget: ε={self.privacy_budget.remaining_epsilon}/{self.privacy_budget.epsilon}")
+            logger.info(
+                f"Final privacy budget: ε={self.privacy_budget.remaining_epsilon}/{self.privacy_budget.epsilon}"
+            )
 
             # Clear sensitive data
             self.privacy_history.clear()

@@ -18,15 +18,17 @@ def test_python_environment():
 def test_project_structure():
     """Test that basic project structure exists."""
     project_root = Path(".")
-    
+
     # Check for key directories
     assert (project_root / "tests").exists(), "Tests directory should exist"
     assert (project_root / "services").exists(), "Services directory should exist"
     assert (project_root / "blockchain").exists(), "Blockchain directory should exist"
-    
+
     # Check for key files
     assert (project_root / "pytest.ini").exists(), "pytest.ini should exist"
-    assert (project_root / "requirements-test.txt").exists(), "requirements-test.txt should exist"
+    assert (
+        project_root / "requirements-test.txt"
+    ).exists(), "requirements-test.txt should exist"
 
 
 def test_imports():
@@ -35,12 +37,12 @@ def test_imports():
     import json
     import asyncio
     import datetime
-    
+
     # Test installed packages
     import pytest
     import httpx
     import pydantic
-    
+
     assert json is not None
     assert asyncio is not None
     assert datetime is not None

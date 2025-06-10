@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 class ConfigSource(Enum):
     """Sources of configuration data."""
+
     ENVIRONMENT = "environment"
     DATABASE = "database"
     FILE = "file"
@@ -39,6 +40,7 @@ class ConfigSource(Enum):
 
 class ThresholdType(Enum):
     """Types of violation thresholds."""
+
     FIDELITY_SCORE = "fidelity_score"
     VIOLATION_COUNT = "violation_count"
     SEVERITY_BASED = "severity_based"
@@ -49,6 +51,7 @@ class ThresholdType(Enum):
 @dataclass
 class ThresholdConfig:
     """Configuration for violation thresholds."""
+
     name: str
     threshold_type: ThresholdType
     green_threshold: float
@@ -58,7 +61,7 @@ class ThresholdConfig:
     description: str = ""
     configuration: Dict[str, Any] = None
     source: ConfigSource = ConfigSource.DEFAULT
-    
+
     def __post_init__(self):
         if self.configuration is None:
             self.configuration = {}
@@ -67,6 +70,7 @@ class ThresholdConfig:
 @dataclass
 class ViolationDetectionConfig:
     """Configuration for violation detection."""
+
     scan_interval_seconds: int = 30
     batch_size: int = 100
     detection_timeout_seconds: int = 60
@@ -80,6 +84,7 @@ class ViolationDetectionConfig:
 @dataclass
 class EscalationConfig:
     """Configuration for violation escalation."""
+
     enable_automatic_escalation: bool = True
     enable_timeout_escalation: bool = True
     max_escalation_level: str = "emergency_response"
@@ -91,15 +96,15 @@ class EscalationConfig:
 class ViolationConfigManager:
     """
     Constitutional Violation Configuration Manager.
-    
+
     Manages configurable thresholds, environment variable integration,
     and dynamic threshold adjustment for violation detection systems.
     """
-    
+
     def __init__(self, config_file_path: Optional[str] = None):
         """
         Initialize the violation configuration manager.
-        
+
         Args:
             config_file_path: Path to configuration file (optional)
         """
@@ -107,19 +112,19 @@ class ViolationConfigManager:
         self.cached_thresholds: Dict[str, ThresholdConfig] = {}
         self.cache_updated_at: Optional[datetime] = None
         self.cache_ttl_seconds = 300  # 5 minutes
-        
+
         # Load initial configuration
         self._load_initial_config()
-        
+
         logger.info("Violation Configuration Manager initialized")
-    
+
     def get_threshold_config(self, threshold_name: str) -> Optional[ThresholdConfig]:
         """
         Get threshold configuration by name.
-        
+
         Args:
             threshold_name: Name of the threshold
-            
+
         Returns:
             ThresholdConfig if found, None otherwise
         """
@@ -127,46 +132,48 @@ class ViolationConfigManager:
             # Check cache first
             if self._is_cache_valid() and threshold_name in self.cached_thresholds:
                 return self.cached_thresholds[threshold_name]
-            
+
             # Load from various sources
             config = self._load_threshold_from_sources(threshold_name)
-            
+
             # Cache the result
             if config:
                 self.cached_thresholds[threshold_name] = config
                 self.cache_updated_at = datetime.now(timezone.utc)
-            
+
             return config
-            
+
         except Exception as e:
             logger.error(f"Error getting threshold config for {threshold_name}: {e}")
             return None
-    
-    async def get_all_threshold_configs(self, db: Optional[AsyncSession] = None) -> Dict[str, ThresholdConfig]:
+
+    async def get_all_threshold_configs(
+        self, db: Optional[AsyncSession] = None
+    ) -> Dict[str, ThresholdConfig]:
         """
         Get all threshold configurations.
-        
+
         Args:
             db: Database session
-            
+
         Returns:
             Dictionary of threshold configurations
         """
         if db is None:
             async for db_session in get_async_db():
                 return await self.get_all_threshold_configs(db_session)
-        
+
         try:
             # Check cache first
             if self._is_cache_valid() and self.cached_thresholds:
                 return self.cached_thresholds.copy()
-            
+
             # Load from database
             result = await db.execute(
                 select(ViolationThreshold).where(ViolationThreshold.enabled == True)
             )
             db_thresholds = result.scalars().all()
-            
+
             # Convert to ThresholdConfig objects
             configs = {}
             for threshold in db_thresholds:
@@ -179,58 +186,60 @@ class ViolationConfigManager:
                     enabled=threshold.enabled,
                     description=threshold.description or "",
                     configuration=threshold.configuration or {},
-                    source=ConfigSource.DATABASE
+                    source=ConfigSource.DATABASE,
                 )
                 configs[threshold.threshold_name] = config
-            
+
             # Merge with environment and default configs
             env_configs = self._load_environment_configs()
             configs.update(env_configs)
-            
+
             default_configs = self._get_default_configs()
             for name, config in default_configs.items():
                 if name not in configs:
                     configs[name] = config
-            
+
             # Update cache
             self.cached_thresholds = configs
             self.cache_updated_at = datetime.now(timezone.utc)
-            
+
             return configs.copy()
-            
+
         except Exception as e:
             logger.error(f"Error getting all threshold configs: {e}")
             return {}
-    
+
     async def update_threshold_config(
         self,
         threshold_name: str,
         config: ThresholdConfig,
         user: Optional[User] = None,
-        db: Optional[AsyncSession] = None
+        db: Optional[AsyncSession] = None,
     ) -> bool:
         """
         Update threshold configuration.
-        
+
         Args:
             threshold_name: Name of the threshold
             config: New threshold configuration
             user: User making the update
             db: Database session
-            
+
         Returns:
             True if update successful, False otherwise
         """
         if db is None:
             async for db_session in get_async_db():
-                return await self.update_threshold_config(threshold_name, config, user, db_session)
-        
+                return await self.update_threshold_config(
+                    threshold_name, config, user, db_session
+                )
+
         try:
             # Validate configuration
             if not self._validate_threshold_config(config):
                 logger.error(f"Invalid threshold configuration for {threshold_name}")
                 return False
-            
+
             # Check if threshold exists
             result = await db.execute(
                 select(ViolationThreshold).where(
@@ -238,7 +247,7 @@ class ViolationConfigManager:
                 )
             )
             existing_threshold = result.scalar_one_or_none()
-            
+
             if existing_threshold:
                 # Update existing threshold
                 existing_threshold.threshold_type = config.threshold_type.value
@@ -260,115 +269,158 @@ class ViolationConfigManager:
                     enabled=config.enabled,
                     description=config.description,
                     configuration=config.configuration,
-                    created_by=user.id if user else None
+                    created_by=user.id if user else None,
                 )
                 db.add(new_threshold)
-            
+
             await db.commit()
-            
+
             # Invalidate cache
             self._invalidate_cache()
-            
+
             logger.info(f"Updated threshold configuration: {threshold_name}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Error updating threshold config {threshold_name}: {e}")
             await db.rollback()
             return False
-    
+
     def get_detection_config(self) -> ViolationDetectionConfig:
         """Get violation detection configuration."""
         return ViolationDetectionConfig(
-            scan_interval_seconds=int(os.getenv("VIOLATION_SCAN_INTERVAL_SECONDS", "30")),
+            scan_interval_seconds=int(
+                os.getenv("VIOLATION_SCAN_INTERVAL_SECONDS", "30")
+            ),
             batch_size=int(os.getenv("VIOLATION_BATCH_SIZE", "100")),
-            detection_timeout_seconds=int(os.getenv("VIOLATION_DETECTION_TIMEOUT_SECONDS", "60")),
-            enable_real_time_scanning=os.getenv("ENABLE_REAL_TIME_VIOLATION_SCANNING", "true").lower() == "true",
-            enable_batch_analysis=os.getenv("ENABLE_BATCH_VIOLATION_ANALYSIS", "true").lower() == "true",
-            enable_historical_analysis=os.getenv("ENABLE_HISTORICAL_VIOLATION_ANALYSIS", "true").lower() == "true",
+            detection_timeout_seconds=int(
+                os.getenv("VIOLATION_DETECTION_TIMEOUT_SECONDS", "60")
+            ),
+            enable_real_time_scanning=os.getenv(
+                "ENABLE_REAL_TIME_VIOLATION_SCANNING", "true"
+            ).lower()
+            == "true",
+            enable_batch_analysis=os.getenv(
+                "ENABLE_BATCH_VIOLATION_ANALYSIS", "true"
+            ).lower()
+            == "true",
+            enable_historical_analysis=os.getenv(
+                "ENABLE_HISTORICAL_VIOLATION_ANALYSIS", "true"
+            ).lower()
+            == "true",
             max_violations_per_scan=int(os.getenv("MAX_VIOLATIONS_PER_SCAN", "1000")),
-            cache_threshold_seconds=int(os.getenv("VIOLATION_CACHE_THRESHOLD_SECONDS", "300"))
+            cache_threshold_seconds=int(
+                os.getenv("VIOLATION_CACHE_THRESHOLD_SECONDS", "300")
+            ),
         )
-    
+
     def get_escalation_config(self) -> EscalationConfig:
         """Get violation escalation configuration."""
         return EscalationConfig(
-            enable_automatic_escalation=os.getenv("ENABLE_AUTOMATIC_ESCALATION", "true").lower() == "true",
-            enable_timeout_escalation=os.getenv("ENABLE_TIMEOUT_ESCALATION", "true").lower() == "true",
-            max_escalation_level=os.getenv("MAX_ESCALATION_LEVEL", "emergency_response"),
-            default_response_time_minutes=int(os.getenv("DEFAULT_ESCALATION_RESPONSE_TIME_MINUTES", "30")),
-            notification_retry_attempts=int(os.getenv("ESCALATION_NOTIFICATION_RETRY_ATTEMPTS", "3")),
-            notification_retry_delay_seconds=int(os.getenv("ESCALATION_NOTIFICATION_RETRY_DELAY_SECONDS", "60"))
+            enable_automatic_escalation=os.getenv(
+                "ENABLE_AUTOMATIC_ESCALATION", "true"
+            ).lower()
+            == "true",
+            enable_timeout_escalation=os.getenv(
+                "ENABLE_TIMEOUT_ESCALATION", "true"
+            ).lower()
+            == "true",
+            max_escalation_level=os.getenv(
+                "MAX_ESCALATION_LEVEL", "emergency_response"
+            ),
+            default_response_time_minutes=int(
+                os.getenv("DEFAULT_ESCALATION_RESPONSE_TIME_MINUTES", "30")
+            ),
+            notification_retry_attempts=int(
+                os.getenv("ESCALATION_NOTIFICATION_RETRY_ATTEMPTS", "3")
+            ),
+            notification_retry_delay_seconds=int(
+                os.getenv("ESCALATION_NOTIFICATION_RETRY_DELAY_SECONDS", "60")
+            ),
         )
-    
+
     def _load_initial_config(self):
         """Load initial configuration from all sources."""
         try:
             # Load default configurations
             self.cached_thresholds = self._get_default_configs()
-            
+
             # Override with environment configurations
             env_configs = self._load_environment_configs()
             self.cached_thresholds.update(env_configs)
-            
+
             # Load from file if specified
             if self.config_file_path and Path(self.config_file_path).exists():
                 file_configs = self._load_file_configs()
                 self.cached_thresholds.update(file_configs)
-            
+
             self.cache_updated_at = datetime.now(timezone.utc)
-            
+
         except Exception as e:
             logger.error(f"Error loading initial configuration: {e}")
-    
-    def _load_threshold_from_sources(self, threshold_name: str) -> Optional[ThresholdConfig]:
+
+    def _load_threshold_from_sources(
+        self, threshold_name: str
+    ) -> Optional[ThresholdConfig]:
         """Load threshold configuration from various sources."""
         # Try environment first
         env_config = self._load_environment_config(threshold_name)
         if env_config:
             return env_config
-        
+
         # Try file config
         if self.config_file_path:
             file_config = self._load_file_config(threshold_name)
             if file_config:
                 return file_config
-        
+
         # Try default config
         default_configs = self._get_default_configs()
         return default_configs.get(threshold_name)
-    
+
     def _load_environment_configs(self) -> Dict[str, ThresholdConfig]:
         """Load threshold configurations from environment variables."""
         configs = {}
-        
+
         # Fidelity score thresholds
         if os.getenv("CONSTITUTIONAL_FIDELITY_GREEN_THRESHOLD"):
             configs["fidelity_score"] = ThresholdConfig(
                 name="fidelity_score",
                 threshold_type=ThresholdType.FIDELITY_SCORE,
-                green_threshold=float(os.getenv("CONSTITUTIONAL_FIDELITY_GREEN_THRESHOLD", "0.85")),
-                amber_threshold=float(os.getenv("CONSTITUTIONAL_FIDELITY_AMBER_THRESHOLD", "0.70")),
-                red_threshold=float(os.getenv("CONSTITUTIONAL_FIDELITY_RED_THRESHOLD", "0.55")),
+                green_threshold=float(
+                    os.getenv("CONSTITUTIONAL_FIDELITY_GREEN_THRESHOLD", "0.85")
+                ),
+                amber_threshold=float(
+                    os.getenv("CONSTITUTIONAL_FIDELITY_AMBER_THRESHOLD", "0.70")
+                ),
+                red_threshold=float(
+                    os.getenv("CONSTITUTIONAL_FIDELITY_RED_THRESHOLD", "0.55")
+                ),
                 description="Constitutional fidelity score thresholds",
-                source=ConfigSource.ENVIRONMENT
+                source=ConfigSource.ENVIRONMENT,
             )
-        
+
         # Violation count thresholds
         if os.getenv("VIOLATION_COUNT_GREEN_THRESHOLD"):
             configs["violation_count"] = ThresholdConfig(
                 name="violation_count",
                 threshold_type=ThresholdType.VIOLATION_COUNT,
-                green_threshold=float(os.getenv("VIOLATION_COUNT_GREEN_THRESHOLD", "2")),
-                amber_threshold=float(os.getenv("VIOLATION_COUNT_AMBER_THRESHOLD", "5")),
+                green_threshold=float(
+                    os.getenv("VIOLATION_COUNT_GREEN_THRESHOLD", "2")
+                ),
+                amber_threshold=float(
+                    os.getenv("VIOLATION_COUNT_AMBER_THRESHOLD", "5")
+                ),
                 red_threshold=float(os.getenv("VIOLATION_COUNT_RED_THRESHOLD", "10")),
                 description="Violation count thresholds per hour",
-                source=ConfigSource.ENVIRONMENT
+                source=ConfigSource.ENVIRONMENT,
             )
-        
+
         return configs
 
-    def _load_environment_config(self, threshold_name: str) -> Optional[ThresholdConfig]:
+    def _load_environment_config(
+        self, threshold_name: str
+    ) -> Optional[ThresholdConfig]:
         """Load specific threshold configuration from environment variables."""
         env_configs = self._load_environment_configs()
         return env_configs.get(threshold_name)
@@ -394,7 +446,7 @@ class ViolationConfigManager:
                 amber_threshold=0.70,
                 red_threshold=0.55,
                 description="Default constitutional fidelity score thresholds",
-                source=ConfigSource.DEFAULT
+                source=ConfigSource.DEFAULT,
             ),
             "violation_count": ThresholdConfig(
                 name="violation_count",
@@ -404,7 +456,7 @@ class ViolationConfigManager:
                 red_threshold=10.0,
                 description="Default violation count thresholds per hour",
                 configuration={"time_window_hours": 1},
-                source=ConfigSource.DEFAULT
+                source=ConfigSource.DEFAULT,
             ),
             "severity_critical": ThresholdConfig(
                 name="severity_critical",
@@ -414,7 +466,7 @@ class ViolationConfigManager:
                 red_threshold=3.0,
                 description="Critical severity violation thresholds",
                 configuration={"severity_level": "critical", "time_window_hours": 24},
-                source=ConfigSource.DEFAULT
+                source=ConfigSource.DEFAULT,
             ),
             "resolution_time": ThresholdConfig(
                 name="resolution_time",
@@ -424,20 +476,29 @@ class ViolationConfigManager:
                 red_threshold=60.0,
                 description="Violation resolution time thresholds",
                 configuration={"unit": "minutes"},
-                source=ConfigSource.DEFAULT
-            )
+                source=ConfigSource.DEFAULT,
+            ),
         }
 
     def _validate_threshold_config(self, config: ThresholdConfig) -> bool:
         """Validate threshold configuration."""
         try:
             # Check threshold ordering
-            if not (config.red_threshold <= config.amber_threshold <= config.green_threshold):
+            if not (
+                config.red_threshold <= config.amber_threshold <= config.green_threshold
+            ):
                 logger.error(f"Invalid threshold ordering for {config.name}")
                 return False
 
             # Check threshold values are non-negative
-            if any(t < 0 for t in [config.green_threshold, config.amber_threshold, config.red_threshold]):
+            if any(
+                t < 0
+                for t in [
+                    config.green_threshold,
+                    config.amber_threshold,
+                    config.red_threshold,
+                ]
+            ):
                 logger.error(f"Negative threshold values not allowed for {config.name}")
                 return False
 

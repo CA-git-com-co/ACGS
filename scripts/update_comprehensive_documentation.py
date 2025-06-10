@@ -25,12 +25,16 @@ from datetime import datetime
 import subprocess
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class DocumentationUpdateResult:
     """Result of documentation update for a component."""
+
     component: str
     files_updated: int
     sections_added: int
@@ -38,16 +42,17 @@ class DocumentationUpdateResult:
     changes_made: List[str]
     errors: List[str]
 
+
 class DocumentationUpdater:
     """Updates and enhances documentation across ACGS-PGP project."""
-    
+
     def __init__(self, project_root: str):
         self.project_root = Path(project_root)
         self.results: List[DocumentationUpdateResult] = []
-        
+
         # Documentation templates for different components
         self.templates = {
-            'service_readme': """# {service_name}
+            "service_readme": """# {service_name}
 
 ## Overview
 {service_description}
@@ -73,7 +78,7 @@ class DocumentationUpdater:
 ## Contributing
 {contributing_guidelines}
 """,
-            'api_documentation': """## API Reference
+            "api_documentation": """## API Reference
 
 ### Authentication
 All endpoints require valid JWT authentication unless otherwise specified.
@@ -98,7 +103,7 @@ All endpoints return standardized error responses:
 - Headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`
 
 """,
-            'deployment_guide': """# Deployment Guide
+            "deployment_guide": """# Deployment Guide
 
 ## Prerequisites
 - Docker and Docker Compose
@@ -145,44 +150,45 @@ All endpoints return standardized error responses:
 - Metrics: `/metrics` endpoint (Prometheus format)
 - Logs: `docker-compose logs -f service_name`
 
-"""
+""",
         }
-    
+
     def get_service_info(self, service_path: Path) -> Dict[str, Any]:
         """Extract service information from service directory."""
         info = {
-            'name': service_path.name,
-            'description': 'ACGS-PGP service component',
-            'features': [],
-            'endpoints': [],
-            'configuration': {}
+            "name": service_path.name,
+            "description": "ACGS-PGP service component",
+            "features": [],
+            "endpoints": [],
+            "configuration": {},
         }
-        
+
         # Try to extract info from main.py
-        main_py = service_path / 'app' / 'main.py'
+        main_py = service_path / "app" / "main.py"
         if not main_py.exists():
-            main_py = service_path / 'main.py'
-        
+            main_py = service_path / "main.py"
+
         if main_py.exists():
             try:
-                with open(main_py, 'r') as f:
+                with open(main_py, "r") as f:
                     content = f.read()
-                
+
                 # Extract FastAPI app title
-                if 'title=' in content:
-                    title_match = content.split('title=')[1].split('"')[1]
-                    info['description'] = title_match
-                
+                if "title=" in content:
+                    title_match = content.split("title=")[1].split('"')[1]
+                    info["description"] = title_match
+
                 # Extract router prefixes to identify endpoints
                 import re
+
                 router_matches = re.findall(r'prefix="([^"]+)"', content)
-                info['endpoints'] = router_matches
-                
+                info["endpoints"] = router_matches
+
             except Exception as e:
                 logger.warning(f"Could not extract info from {main_py}: {e}")
-        
+
         return info
-    
+
     def update_service_readme(self, service_path: Path) -> DocumentationUpdateResult:
         """Update README for a service."""
         result = DocumentationUpdateResult(
@@ -191,43 +197,60 @@ All endpoints return standardized error responses:
             sections_added=0,
             examples_added=0,
             changes_made=[],
-            errors=[]
+            errors=[],
         )
-        
+
         try:
             service_info = self.get_service_info(service_path)
-            readme_path = service_path / 'README.md'
-            
+            readme_path = service_path / "README.md"
+
             # Generate README content
-            readme_content = self.templates['service_readme'].format(
-                service_name=service_info['name'].replace('_', ' ').title(),
-                service_description=service_info['description'],
-                service_features='\n'.join([f"- {feature}" for feature in service_info.get('features', ['Advanced functionality', 'RESTful API', 'Comprehensive error handling'])]),
-                api_endpoints='\n'.join([f"- `{endpoint}`" for endpoint in service_info.get('endpoints', ['/api/v1'])]),
+            readme_content = self.templates["service_readme"].format(
+                service_name=service_info["name"].replace("_", " ").title(),
+                service_description=service_info["description"],
+                service_features="\n".join(
+                    [
+                        f"- {feature}"
+                        for feature in service_info.get(
+                            "features",
+                            [
+                                "Advanced functionality",
+                                "RESTful API",
+                                "Comprehensive error handling",
+                            ],
+                        )
+                    ]
+                ),
+                api_endpoints="\n".join(
+                    [
+                        f"- `{endpoint}`"
+                        for endpoint in service_info.get("endpoints", ["/api/v1"])
+                    ]
+                ),
                 configuration_details="See `.env.example` for configuration options",
                 development_instructions="1. Install dependencies: `pip install -r requirements.txt`\n2. Run service: `uvicorn main:app --reload`",
                 deployment_instructions="Use Docker Compose: `docker-compose up -d`",
                 troubleshooting_guide="Check logs: `docker-compose logs service_name`",
-                contributing_guidelines="Follow project coding standards and submit pull requests"
+                contributing_guidelines="Follow project coding standards and submit pull requests",
             )
-            
+
             # Write README
-            with open(readme_path, 'w') as f:
+            with open(readme_path, "w") as f:
                 f.write(readme_content)
-            
+
             result.files_updated = 1
             result.sections_added = 8
             result.changes_made.append(f"Updated README.md for {service_info['name']}")
-            
+
             logger.info(f"Updated README for {service_path.name}")
-            
+
         except Exception as e:
             error_msg = f"Error updating README for {service_path}: {str(e)}"
             result.errors.append(error_msg)
             logger.error(error_msg)
-        
+
         return result
-    
+
     def update_main_readme(self) -> DocumentationUpdateResult:
         """Update the main project README."""
         result = DocumentationUpdateResult(
@@ -236,20 +259,20 @@ All endpoints return standardized error responses:
             sections_added=0,
             examples_added=0,
             changes_made=[],
-            errors=[]
+            errors=[],
         )
-        
+
         try:
-            readme_path = self.project_root / 'README.md'
-            
+            readme_path = self.project_root / "README.md"
+
             # Get current project status
             services = []
-            backend_dir = self.project_root / 'src' / 'backend'
+            backend_dir = self.project_root / "src" / "backend"
             if backend_dir.exists():
                 for service_dir in backend_dir.iterdir():
-                    if service_dir.is_dir() and not service_dir.name.startswith('.'):
+                    if service_dir.is_dir() and not service_dir.name.startswith("."):
                         services.append(service_dir.name)
-            
+
             readme_content = f"""# ACGS-PGP: AI Compliance Governance System - Policy Generation Platform
 
 ## Overview
@@ -368,23 +391,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Version:** 3.0.0
 **Status:** Production Ready
 """
-            
-            with open(readme_path, 'w') as f:
+
+            with open(readme_path, "w") as f:
                 f.write(readme_content)
-            
+
             result.files_updated = 1
             result.sections_added = 10
-            result.changes_made.append("Updated main README.md with current project status")
-            
+            result.changes_made.append(
+                "Updated main README.md with current project status"
+            )
+
             logger.info("Updated main README.md")
-            
+
         except Exception as e:
             error_msg = f"Error updating main README: {str(e)}"
             result.errors.append(error_msg)
             logger.error(error_msg)
-        
+
         return result
-    
+
     def update_api_documentation(self) -> DocumentationUpdateResult:
         """Update API documentation files."""
         result = DocumentationUpdateResult(
@@ -393,59 +418,61 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
             sections_added=0,
             examples_added=0,
             changes_made=[],
-            errors=[]
+            errors=[],
         )
-        
+
         try:
-            docs_dir = self.project_root / 'docs'
+            docs_dir = self.project_root / "docs"
             docs_dir.mkdir(exist_ok=True)
-            
-            api_doc_path = docs_dir / 'api_reference.md'
-            
-            with open(api_doc_path, 'w') as f:
-                f.write(self.templates['api_documentation'])
-            
+
+            api_doc_path = docs_dir / "api_reference.md"
+
+            with open(api_doc_path, "w") as f:
+                f.write(self.templates["api_documentation"])
+
             result.files_updated = 1
             result.sections_added = 3
             result.examples_added = 1
-            result.changes_made.append("Created comprehensive API reference documentation")
-            
+            result.changes_made.append(
+                "Created comprehensive API reference documentation"
+            )
+
             logger.info("Updated API documentation")
-            
+
         except Exception as e:
             error_msg = f"Error updating API documentation: {str(e)}"
             result.errors.append(error_msg)
             logger.error(error_msg)
-        
+
         return result
-    
+
     def process_all_documentation(self) -> None:
         """Process all documentation updates."""
         logger.info("Starting comprehensive documentation update")
-        
+
         # Update main README
         main_readme_result = self.update_main_readme()
         self.results.append(main_readme_result)
-        
+
         # Update API documentation
         api_doc_result = self.update_api_documentation()
         self.results.append(api_doc_result)
-        
+
         # Update service READMEs
-        backend_dir = self.project_root / 'src' / 'backend'
+        backend_dir = self.project_root / "src" / "backend"
         if backend_dir.exists():
             for service_dir in backend_dir.iterdir():
-                if service_dir.is_dir() and not service_dir.name.startswith('.'):
+                if service_dir.is_dir() and not service_dir.name.startswith("."):
                     service_result = self.update_service_readme(service_dir)
                     self.results.append(service_result)
-    
+
     def generate_report(self) -> str:
         """Generate comprehensive documentation update report."""
         total_files = sum(r.files_updated for r in self.results)
         total_sections = sum(r.sections_added for r in self.results)
         total_examples = sum(r.examples_added for r in self.results)
         total_errors = sum(len(r.errors) for r in self.results)
-        
+
         report = f"""
 # ACGS-PGP Documentation Update Report
 
@@ -459,14 +486,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Updates Made
 
 """
-        
+
         for result in self.results:
             if result.changes_made:
                 report += f"### {result.component}\n"
                 for change in result.changes_made:
                     report += f"- {change}\n"
                 report += "\n"
-        
+
         if total_errors > 0:
             report += "## Errors Encountered\n\n"
             for result in self.results:
@@ -475,8 +502,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
                     for error in result.errors:
                         report += f"- {error}\n"
                     report += "\n"
-        
+
         return report
+
 
 def main():
     """Main execution function."""
@@ -484,25 +512,25 @@ def main():
         project_root = sys.argv[1]
     else:
         project_root = "/mnt/persist/workspace"
-    
+
     logger.info(f"Starting documentation update for ACGS-PGP project at {project_root}")
-    
+
     updater = DocumentationUpdater(project_root)
     updater.process_all_documentation()
-    
+
     # Generate and save report
     report = updater.generate_report()
-    
+
     report_file = Path(project_root) / "DOCUMENTATION_UPDATE_REPORT.md"
-    with open(report_file, 'w') as f:
+    with open(report_file, "w") as f:
         f.write(report)
-    
+
     logger.info(f"Documentation update complete. Report saved to {report_file}")
-    
+
     # Print summary
     total_files = sum(r.files_updated for r in updater.results)
     total_changes = sum(len(r.changes_made) for r in updater.results)
-    
+
     print(f"\n{'='*60}")
     print(f"DOCUMENTATION UPDATE SUMMARY")
     print(f"{'='*60}")
@@ -510,6 +538,7 @@ def main():
     print(f"Files Updated: {total_files}")
     print(f"Total Changes: {total_changes}")
     print(f"{'='*60}")
+
 
 if __name__ == "__main__":
     main()

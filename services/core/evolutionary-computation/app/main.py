@@ -27,8 +27,10 @@ from app.api.v1.reporting import router as reporting_router
 from app.api.v1.monitoring import router as monitoring_router
 from app.api.v1.wina_oversight import router as wina_oversight_router
 from app.api.v1.advanced_wina_oversight import router as advanced_wina_oversight_router
+
 # Local implementations to avoid shared module dependencies
 from fastapi.middleware.cors import CORSMiddleware
+
 
 def add_security_middleware(app: FastAPI):
     """Local implementation of security middleware"""
@@ -40,48 +42,67 @@ def add_security_middleware(app: FastAPI):
         allow_headers=["*"],
     )
 
+
 class MockSecurityConfig:
     def get(self, key, default=None):
         return default
 
+
 security_config = MockSecurityConfig()
+
 
 class MockMetrics:
     def record_verification_operation(self, verification_type: str, result: str):
         pass
 
+
 def get_metrics(service_name: str) -> MockMetrics:
     return MockMetrics()
 
+
 def metrics_middleware(service_name: str):
     """Mock metrics middleware"""
+
     async def middleware(request, call_next):
         response = await call_next(request)
         return response
+
     return middleware
+
 
 def create_metrics_endpoint():
     """Mock metrics endpoint"""
+
     async def metrics():
         return {"status": "ok", "service": "ec_service"}
+
     return metrics
+
 
 class MockConfig:
     def get(self, key, default=None):
         return default
 
+
 def get_config():
     return MockConfig()
 
+
 # Import local components
 try:
-    from services.shared.wina.performance_api import router as wina_performance_router, set_collector_getter
+    from services.shared.wina.performance_api import (
+        router as wina_performance_router,
+        set_collector_getter,
+    )
 except ImportError:
     # Mock WINA performance router
     from fastapi import APIRouter
+
     wina_performance_router = APIRouter()
+
     def set_collector_getter(func):
         pass
+
 
 from app.core.wina_oversight_coordinator import WINAECOversightCoordinator
 from app.services.gs_client import gs_service_client
@@ -93,8 +114,7 @@ config = get_config()
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -106,48 +126,48 @@ wina_coordinator: WINAECOversightCoordinator = None
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     global wina_coordinator
-    
+
     logger.info("Starting ACGS-PGP Evolutionary Computation Service...")
-    
+
     try:
         # Initialize WINA oversight coordinator
         wina_coordinator = WINAECOversightCoordinator(enable_wina=True)
         await wina_coordinator.initialize_constitutional_principles()
-        
+
         # Configure performance API to use coordinator's collector
         set_collector_getter(get_wina_performance_collector)
         logger.info("Performance API configured with WINA coordinator collector")
-        
+
         # Initialize service clients
         logger.info("Initializing service clients...")
-        
+
         # Start background monitoring tasks
         monitoring_task = asyncio.create_task(background_monitoring())
-        
+
         logger.info("EC Service started successfully with WINA optimization enabled")
-        
+
         yield
-        
+
     except Exception as e:
         logger.error(f"Failed to start EC Service: {e}")
         raise
     finally:
         # Cleanup
         logger.info("Shutting down ACGS-PGP Evolutionary Computation Service...")
-        
+
         # Cancel background tasks
-        if 'monitoring_task' in locals():
+        if "monitoring_task" in locals():
             monitoring_task.cancel()
             try:
                 await monitoring_task
             except asyncio.CancelledError:
                 pass
-        
+
         # Close service clients
         await gs_service_client.close()
         await ac_service_client.close()
         await pgc_service_client.close()
-        
+
         logger.info("EC Service shutdown complete")
 
 
@@ -158,10 +178,10 @@ async def background_monitoring():
             if wina_coordinator:
                 # Perform periodic health checks and optimization
                 await wina_coordinator._perform_health_check()
-            
+
             # Sleep for monitoring interval
             await asyncio.sleep(30)  # 30 seconds
-            
+
         except asyncio.CancelledError:
             logger.info("Background monitoring task cancelled")
             break
@@ -173,9 +193,9 @@ async def background_monitoring():
 app = FastAPI(
     title="ACGS-PGP Evolutionary Computation (EC) Service",
     description="WINA-optimized oversight and governance for evolutionary computation systems",
-    version=config.get('api_version', 'v1'),
-    debug=config.get('debug', False),
-    lifespan=lifespan
+    version=config.get("api_version", "v1"),
+    debug=config.get("debug", False),
+    lifespan=lifespan,
 )
 
 # Initialize metrics for EC service
@@ -191,13 +211,29 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 # app.middleware("http")(metrics_middleware("ec_service"))
 
 # Include API routers
-app.include_router(oversight_router, prefix="/api/v1/oversight", tags=["WINA Oversight"])
+app.include_router(
+    oversight_router, prefix="/api/v1/oversight", tags=["WINA Oversight"]
+)
 app.include_router(wina_oversight_router, prefix="/api/v1", tags=["WINA EC Oversight"])
-app.include_router(alphaevolve_router, prefix="/api/v1/alphaevolve", tags=["AlphaEvolve Integration"])
-app.include_router(reporting_router, prefix="/api/v1/reporting", tags=["Reporting & Analytics"])
-app.include_router(monitoring_router, prefix="/api/v1/monitoring", tags=["Performance Monitoring"])
-app.include_router(wina_performance_router, prefix="/api/v1/wina/performance", tags=["WINA Performance Monitoring"])
-app.include_router(advanced_wina_oversight_router, prefix="/api/v1/advanced-wina", tags=["Advanced WINA Oversight - Task #4"])
+app.include_router(
+    alphaevolve_router, prefix="/api/v1/alphaevolve", tags=["AlphaEvolve Integration"]
+)
+app.include_router(
+    reporting_router, prefix="/api/v1/reporting", tags=["Reporting & Analytics"]
+)
+app.include_router(
+    monitoring_router, prefix="/api/v1/monitoring", tags=["Performance Monitoring"]
+)
+app.include_router(
+    wina_performance_router,
+    prefix="/api/v1/wina/performance",
+    tags=["WINA Performance Monitoring"],
+)
+app.include_router(
+    advanced_wina_oversight_router,
+    prefix="/api/v1/advanced-wina",
+    tags=["Advanced WINA Oversight - Task #4"],
+)
 
 # Add metrics endpoint
 app.get("/metrics")(create_metrics_endpoint())
@@ -207,39 +243,57 @@ app.get("/metrics")(create_metrics_endpoint())
 async def health_check():
     """Health check endpoint with WINA coordinator status."""
     global wina_coordinator
-    
+
     coordinator_status = "unknown"
     if wina_coordinator:
         try:
             # Check coordinator health
-            coordinator_status = "healthy" if wina_coordinator.enable_wina else "disabled"
+            coordinator_status = (
+                "healthy" if wina_coordinator.enable_wina else "disabled"
+            )
         except Exception as e:
             coordinator_status = f"error: {str(e)}"
-    
+
     return {
         "status": "healthy",
         "service": "evolutionary_computation",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": config.get('api_version', 'v1'),
+        "version": config.get("api_version", "v1"),
         "wina_coordinator": coordinator_status,
         "features": {
-            "wina_optimization": wina_coordinator.enable_wina if wina_coordinator else False,
+            "wina_optimization": (
+                wina_coordinator.enable_wina if wina_coordinator else False
+            ),
             "constitutional_oversight": True,
             "alphaevolve_integration": True,
             "performance_monitoring": True,
             "wina_performance_api": True,
             "real_time_metrics": True,
-            "performance_dashboard": True
+            "performance_dashboard": True,
         },
         "performance_monitoring": {
-            "collector_available": hasattr(wina_coordinator, 'performance_collector') if wina_coordinator else False,
-            "monitoring_active": wina_coordinator.performance_collector.monitoring_active if (
-                wina_coordinator and hasattr(wina_coordinator, 'performance_collector')
-            ) else False,
-            "monitoring_level": wina_coordinator.performance_collector.monitoring_level.value if (
-                wina_coordinator and hasattr(wina_coordinator, 'performance_collector')
-            ) else "unknown"
-        }
+            "collector_available": (
+                hasattr(wina_coordinator, "performance_collector")
+                if wina_coordinator
+                else False
+            ),
+            "monitoring_active": (
+                wina_coordinator.performance_collector.monitoring_active
+                if (
+                    wina_coordinator
+                    and hasattr(wina_coordinator, "performance_collector")
+                )
+                else False
+            ),
+            "monitoring_level": (
+                wina_coordinator.performance_collector.monitoring_level.value
+                if (
+                    wina_coordinator
+                    and hasattr(wina_coordinator, "performance_collector")
+                )
+                else "unknown"
+            ),
+        },
     }
 
 
@@ -249,7 +303,7 @@ async def root():
     return {
         "message": "ACGS-PGP Evolutionary Computation Service",
         "description": "WINA-optimized oversight and governance for evolutionary computation systems",
-        "version": config.get('api_version', 'v1'),
+        "version": config.get("api_version", "v1"),
         "docs": "/docs",
         "health": "/health",
         "metrics": "/metrics",
@@ -267,7 +321,7 @@ async def root():
             "PGC service integration for governance compliance",
             "Automated alerting for oversight violations",
             "Enterprise-scale performance optimization",
-            "Advanced analytics and reporting capabilities"
+            "Advanced analytics and reporting capabilities",
         ],
         "api_endpoints": {
             "oversight": "/api/v1/oversight/*",
@@ -276,8 +330,8 @@ async def root():
             "reporting": "/api/v1/reporting/*",
             "monitoring": "/api/v1/monitoring/*",
             "wina_performance": "/api/v1/wina/performance/*",
-            "advanced_wina_oversight": "/api/v1/advanced-wina/*"
-        }
+            "advanced_wina_oversight": "/api/v1/advanced-wina/*",
+        },
     }
 
 
@@ -292,15 +346,16 @@ def get_wina_coordinator() -> WINAECOversightCoordinator:
 def get_wina_performance_collector():
     """Get the WINA performance collector from the coordinator."""
     coordinator = get_wina_coordinator()
-    return getattr(coordinator, 'performance_collector', None)
+    return getattr(coordinator, "performance_collector", None)
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
         port=8007,  # EC service port (matches docker-compose internal port)
         reload=True,
-        log_level="info"
+        log_level="info",
     )

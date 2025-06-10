@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 class AmendmentState(Enum):
     """Amendment workflow states."""
+
     PROPOSED = "proposed"
     UNDER_REVIEW = "under_review"
     PUBLIC_CONSULTATION = "public_consultation"
@@ -36,6 +37,7 @@ class AmendmentState(Enum):
 
 class AmendmentEvent(Enum):
     """Amendment workflow events."""
+
     SUBMIT = "submit"
     START_REVIEW = "start_review"
     APPROVE_FOR_CONSULTATION = "approve_for_consultation"
@@ -51,6 +53,7 @@ class AmendmentEvent(Enum):
 @dataclass
 class StateTransition:
     """Represents a state transition."""
+
     from_state: AmendmentState
     to_state: AmendmentState
     event: AmendmentEvent
@@ -61,6 +64,7 @@ class StateTransition:
 @dataclass
 class WorkflowContext:
     """Context for workflow execution."""
+
     amendment_id: int
     user_id: int
     urgency_level: str = "normal"
@@ -79,6 +83,7 @@ class WorkflowContext:
 @dataclass
 class WorkflowEvent:
     """Represents a workflow event with metadata."""
+
     event_type: AmendmentEvent
     context: WorkflowContext
     timestamp: datetime
@@ -94,7 +99,7 @@ class WorkflowEvent:
             "timestamp": self.timestamp.isoformat(),
             "event_id": self.event_id,
             "source": self.source,
-            "metadata": self.context.metadata
+            "metadata": self.context.metadata,
         }
 
 
@@ -102,7 +107,9 @@ class AmendmentStateMachine:
     """Enhanced state machine for amendment workflow management with transaction support."""
 
     def __init__(self):
-        self.transitions: Dict[AmendmentState, Dict[AmendmentEvent, StateTransition]] = {}
+        self.transitions: Dict[
+            AmendmentState, Dict[AmendmentEvent, StateTransition]
+        ] = {}
         self.event_handlers: Dict[AmendmentEvent, List[Callable]] = {}
         self.redis_client = None
         self.metrics = get_metrics("ac_service")
@@ -116,7 +123,7 @@ class AmendmentStateMachine:
         except Exception as e:
             logger.warning(f"Failed to initialize Redis client for state machine: {e}")
             # Continue without Redis if it fails
-    
+
     def _setup_transitions(self):
         """Setup valid state transitions."""
         transitions = [
@@ -124,100 +131,89 @@ class AmendmentStateMachine:
             StateTransition(
                 AmendmentState.PROPOSED,
                 AmendmentState.UNDER_REVIEW,
-                AmendmentEvent.START_REVIEW
+                AmendmentEvent.START_REVIEW,
             ),
-            
             # Review to consultation
             StateTransition(
                 AmendmentState.UNDER_REVIEW,
                 AmendmentState.PUBLIC_CONSULTATION,
                 AmendmentEvent.APPROVE_FOR_CONSULTATION,
-                condition=self._check_review_approval
+                condition=self._check_review_approval,
             ),
-            
             # Consultation to voting
             StateTransition(
                 AmendmentState.PUBLIC_CONSULTATION,
                 AmendmentState.VOTING,
                 AmendmentEvent.START_VOTING,
-                condition=self._check_consultation_complete
+                condition=self._check_consultation_complete,
             ),
-            
             # Voting outcomes
             StateTransition(
                 AmendmentState.VOTING,
                 AmendmentState.APPROVED,
                 AmendmentEvent.APPROVE,
-                condition=self._check_voting_approval
+                condition=self._check_voting_approval,
             ),
-            
             StateTransition(
                 AmendmentState.VOTING,
                 AmendmentState.REJECTED,
                 AmendmentEvent.REJECT,
-                condition=self._check_voting_rejection
+                condition=self._check_voting_rejection,
             ),
-            
             # Implementation
             StateTransition(
                 AmendmentState.APPROVED,
                 AmendmentState.IMPLEMENTED,
                 AmendmentEvent.IMPLEMENT,
-                action=self._implement_amendment
+                action=self._implement_amendment,
             ),
-            
             # Withdrawal (from any state except implemented)
             StateTransition(
                 AmendmentState.PROPOSED,
                 AmendmentState.WITHDRAWN,
-                AmendmentEvent.WITHDRAW
+                AmendmentEvent.WITHDRAW,
             ),
-            
             StateTransition(
                 AmendmentState.UNDER_REVIEW,
                 AmendmentState.WITHDRAWN,
-                AmendmentEvent.WITHDRAW
+                AmendmentEvent.WITHDRAW,
             ),
-            
             StateTransition(
                 AmendmentState.PUBLIC_CONSULTATION,
                 AmendmentState.WITHDRAWN,
-                AmendmentEvent.WITHDRAW
+                AmendmentEvent.WITHDRAW,
             ),
-            
             # Deferral
             StateTransition(
                 AmendmentState.UNDER_REVIEW,
                 AmendmentState.DEFERRED,
-                AmendmentEvent.DEFER
+                AmendmentEvent.DEFER,
             ),
-            
             StateTransition(
                 AmendmentState.PUBLIC_CONSULTATION,
                 AmendmentState.DEFERRED,
-                AmendmentEvent.DEFER
+                AmendmentEvent.DEFER,
             ),
-            
             # Return for revision
             StateTransition(
                 AmendmentState.UNDER_REVIEW,
                 AmendmentState.PROPOSED,
-                AmendmentEvent.RETURN_FOR_REVISION
+                AmendmentEvent.RETURN_FOR_REVISION,
             ),
         ]
-        
+
         # Build transition lookup table
         for transition in transitions:
             if transition.from_state not in self.transitions:
                 self.transitions[transition.from_state] = {}
             self.transitions[transition.from_state][transition.event] = transition
-    
+
     async def trigger_event(
         self,
         db: AsyncSession,
         current_state: AmendmentState,
         event: AmendmentEvent,
-        context: WorkflowContext
+        context: WorkflowContext,
     ) -> Dict[str, Any]:
         """Trigger a workflow event with enhanced transaction management."""
         import uuid
@@ -233,9 +229,13 @@ class AmendmentStateMachine:
         async with db.begin():
             try:
                 # Validate transition
-                validation_result = await self._validate_transition(current_state, event, context)
+                validation_result = await self._validate_transition(
+                    current_state, event, context
+                )
                 if not validation_result["valid"]:
-                    await self._record_failed_transition(context, validation_result["error"])
+                    await self._record_failed_transition(
+                        context, validation_result["error"]
+                    )
                     return validation_result
 
                 transition = self.transitions[current_state][event]
@@ -253,7 +253,9 @@ class AmendmentStateMachine:
                     db, context.amendment_id, transition.to_state, context
                 )
                 if not update_result["success"]:
-                    await self._record_failed_transition(context, update_result["error"])
+                    await self._record_failed_transition(
+                        context, update_result["error"]
+                    )
                     return update_result
 
                 # Execute transition action within transaction
@@ -269,7 +271,7 @@ class AmendmentStateMachine:
                     event_type=event,
                     context=context,
                     timestamp=datetime.utcnow(),
-                    event_id=str(uuid.uuid4())
+                    event_id=str(uuid.uuid4()),
                 )
 
                 # Publish event to Redis for event-driven processing
@@ -285,7 +287,7 @@ class AmendmentStateMachine:
                     "to_state": transition.to_state.value,
                     "event": event.value,
                     "transaction_id": context.transaction_id,
-                    "timestamp": datetime.utcnow().isoformat()
+                    "timestamp": datetime.utcnow().isoformat(),
                 }
 
                 await self._record_successful_transition(context, result)
@@ -295,22 +297,26 @@ class AmendmentStateMachine:
 
             except SQLAlchemyError as e:
                 logger.error(f"Database error in state transition: {e}")
-                await self._record_failed_transition(context, f"Database error: {str(e)}")
+                await self._record_failed_transition(
+                    context, f"Database error: {str(e)}"
+                )
                 self.metrics.record_policy_operation("state_transition", "db_error")
                 return {"success": False, "error": f"Database error: {str(e)}"}
 
             except Exception as e:
                 logger.error(f"Unexpected error in state transition: {e}")
-                await self._record_failed_transition(context, f"Unexpected error: {str(e)}")
+                await self._record_failed_transition(
+                    context, f"Unexpected error: {str(e)}"
+                )
                 self.metrics.record_policy_operation("state_transition", "error")
                 return {"success": False, "error": f"State machine error: {str(e)}"}
-    
+
     def register_event_handler(self, event: AmendmentEvent, handler: Callable):
         """Register an event handler."""
         if event not in self.event_handlers:
             self.event_handlers[event] = []
         self.event_handlers[event].append(handler)
-    
+
     def get_valid_events(self, current_state: AmendmentState) -> List[AmendmentEvent]:
         """Get valid events for current state."""
         if current_state in self.transitions:
@@ -321,19 +327,19 @@ class AmendmentStateMachine:
         self,
         current_state: AmendmentState,
         event: AmendmentEvent,
-        context: WorkflowContext
+        context: WorkflowContext,
     ) -> Dict[str, Any]:
         """Validate if transition is allowed."""
         if current_state not in self.transitions:
             return {
                 "valid": False,
-                "error": f"No transitions defined for state {current_state.value}"
+                "error": f"No transitions defined for state {current_state.value}",
             }
 
         if event not in self.transitions[current_state]:
             return {
                 "valid": False,
-                "error": f"Invalid event {event.value} for state {current_state.value}"
+                "error": f"Invalid event {event.value} for state {current_state.value}",
             }
 
         return {"valid": True}
@@ -343,7 +349,7 @@ class AmendmentStateMachine:
         db: AsyncSession,
         amendment_id: int,
         new_state: AmendmentState,
-        context: WorkflowContext
+        context: WorkflowContext,
     ) -> Dict[str, Any]:
         """Update amendment state with optimistic locking."""
         try:
@@ -356,7 +362,10 @@ class AmendmentStateMachine:
             amendment = result.scalar_one_or_none()
 
             if not amendment:
-                return {"success": False, "error": f"Amendment {amendment_id} not found"}
+                return {
+                    "success": False,
+                    "error": f"Amendment {amendment_id} not found",
+                }
 
             # Update state and increment version
             amendment.workflow_state = new_state.value
@@ -367,14 +376,16 @@ class AmendmentStateMachine:
             if not amendment.state_transitions:
                 amendment.state_transitions = []
 
-            amendment.state_transitions.append({
-                "from_state": amendment.workflow_state,
-                "to_state": new_state.value,
-                "event": context.metadata.get("event", "unknown"),
-                "timestamp": datetime.utcnow().isoformat(),
-                "user_id": context.user_id,
-                "transaction_id": context.transaction_id
-            })
+            amendment.state_transitions.append(
+                {
+                    "from_state": amendment.workflow_state,
+                    "to_state": new_state.value,
+                    "event": context.metadata.get("event", "unknown"),
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "user_id": context.user_id,
+                    "transaction_id": context.transaction_id,
+                }
+            )
 
             await db.flush()
             return {"success": True, "new_version": amendment.version}
@@ -400,7 +411,9 @@ class AmendmentStateMachine:
             history_key = f"acgs:workflow:history:{event.context.amendment_id}"
             await self.redis_client.add_to_list(history_key, event_data, max_length=100)
 
-            logger.info(f"Published workflow event {event.event_id} for amendment {event.context.amendment_id}")
+            logger.info(
+                f"Published workflow event {event.event_id} for amendment {event.context.amendment_id}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to publish workflow event: {e}")
@@ -410,7 +423,7 @@ class AmendmentStateMachine:
         db: AsyncSession,
         event: AmendmentEvent,
         context: WorkflowContext,
-        transition: StateTransition
+        transition: StateTransition,
     ):
         """Execute registered event handlers."""
         if event in self.event_handlers:
@@ -421,7 +434,9 @@ class AmendmentStateMachine:
                     logger.error(f"Event handler failed for {event.value}: {e}")
                     # Continue with other handlers even if one fails
 
-    async def _record_successful_transition(self, context: WorkflowContext, result: Dict[str, Any]):
+    async def _record_successful_transition(
+        self, context: WorkflowContext, result: Dict[str, Any]
+    ):
         """Record successful state transition."""
         if self.redis_client:
             try:
@@ -429,8 +444,12 @@ class AmendmentStateMachine:
                 await self.redis_client.increment(metrics_key)
 
                 # Record transition details
-                transition_key = f"acgs:transitions:{context.amendment_id}:{context.transaction_id}"
-                await self.redis_client.set_json(transition_key, result, ttl=86400)  # 24 hours
+                transition_key = (
+                    f"acgs:transitions:{context.amendment_id}:{context.transaction_id}"
+                )
+                await self.redis_client.set_json(
+                    transition_key, result, ttl=86400
+                )  # 24 hours
 
             except Exception as e:
                 logger.error(f"Failed to record successful transition: {e}")
@@ -443,42 +462,56 @@ class AmendmentStateMachine:
                 await self.redis_client.increment(metrics_key)
 
                 # Record failure details
-                failure_key = f"acgs:failures:{context.amendment_id}:{context.transaction_id}"
+                failure_key = (
+                    f"acgs:failures:{context.amendment_id}:{context.transaction_id}"
+                )
                 failure_data = {
                     "amendment_id": context.amendment_id,
                     "user_id": context.user_id,
                     "error": error,
                     "timestamp": datetime.utcnow().isoformat(),
-                    "transaction_id": context.transaction_id
+                    "transaction_id": context.transaction_id,
                 }
-                await self.redis_client.set_json(failure_key, failure_data, ttl=86400)  # 24 hours
+                await self.redis_client.set_json(
+                    failure_key, failure_data, ttl=86400
+                )  # 24 hours
 
             except Exception as e:
                 logger.error(f"Failed to record failed transition: {e}")
-    
+
     # Condition checkers
-    async def _check_review_approval(self, db: AsyncSession, context: WorkflowContext) -> bool:
+    async def _check_review_approval(
+        self, db: AsyncSession, context: WorkflowContext
+    ) -> bool:
         """Check if amendment passed review."""
         # Simplified - would check actual review criteria
         return True
-    
-    async def _check_consultation_complete(self, db: AsyncSession, context: WorkflowContext) -> bool:
+
+    async def _check_consultation_complete(
+        self, db: AsyncSession, context: WorkflowContext
+    ) -> bool:
         """Check if public consultation period is complete."""
         # Would check consultation period and feedback
         return True
-    
-    async def _check_voting_approval(self, db: AsyncSession, context: WorkflowContext) -> bool:
+
+    async def _check_voting_approval(
+        self, db: AsyncSession, context: WorkflowContext
+    ) -> bool:
         """Check if amendment was approved by voting."""
         # Would check actual vote counts and thresholds
         return True
-    
-    async def _check_voting_rejection(self, db: AsyncSession, context: WorkflowContext) -> bool:
+
+    async def _check_voting_rejection(
+        self, db: AsyncSession, context: WorkflowContext
+    ) -> bool:
         """Check if amendment was rejected by voting."""
         # Would check actual vote counts
         return True
-    
+
     # Action handlers
-    async def _implement_amendment(self, db: AsyncSession, context: WorkflowContext) -> Dict[str, Any]:
+    async def _implement_amendment(
+        self, db: AsyncSession, context: WorkflowContext
+    ) -> Dict[str, Any]:
         """Implement approved amendment."""
         try:
             # Implementation logic would go here

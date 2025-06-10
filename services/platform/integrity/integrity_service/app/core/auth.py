@@ -7,7 +7,7 @@ from services.shared.auth import (
     require_integrity_admin,
     require_internal_service,
     RoleChecker,
-    User
+    User,
 )
 
 # Integrity service specific role checkers
