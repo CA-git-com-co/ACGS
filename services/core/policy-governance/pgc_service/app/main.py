@@ -10,6 +10,7 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 # Local implementations to avoid shared module dependencies
 from fastapi.middleware.cors import CORSMiddleware
 
+
 def add_security_middleware(app: FastAPI):
     """Local implementation of security middleware"""
     app.add_middleware(
@@ -20,52 +21,67 @@ def add_security_middleware(app: FastAPI):
         allow_headers=["*"],
     )
 
+
 class MockSecurityConfig:
     def get(self, key, default=None):
         return default
 
+
 security_config = MockSecurityConfig()
+
 
 class MockMetrics:
     def record_verification_operation(self, verification_type: str, result: str):
         pass
 
+
 def get_metrics(service_name: str) -> MockMetrics:
     return MockMetrics()
+
 
 def metrics_middleware(service_name: str):
     def middleware(request, call_next):
         return call_next(request)
+
     return middleware
+
 
 def create_metrics_endpoint():
     def metrics():
         return {"status": "ok", "metrics": {}}
+
     return metrics
+
 
 # Import core components with error handling
 try:
     from app.core.policy_manager import policy_manager
+
     POLICY_MANAGER_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: Policy manager not available: {e}")
     POLICY_MANAGER_AVAILABLE = False
+
     # Mock policy manager
     class MockPolicyManager:
         async def get_active_rules(self, force_refresh=False):
             return []
+
     policy_manager = MockPolicyManager()
 
 try:
     from app.services.integrity_client import integrity_service_client
+
     INTEGRITY_CLIENT_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: Integrity client not available: {e}")
     INTEGRITY_CLIENT_AVAILABLE = False
+
     # Mock integrity client
     class MockIntegrityClient:
         async def close(self):
             pass
+
     integrity_service_client = MockIntegrityClient()
 
 # Import API routers with error handling
@@ -74,20 +90,27 @@ try:
 except ImportError as e:
     print(f"Warning: Enforcement router not available: {e}")
     from fastapi import APIRouter
+
     enforcement_router = APIRouter()
 
 try:
-    from app.api.v1.alphaevolve_enforcement import router as alphaevolve_enforcement_router
+    from app.api.v1.alphaevolve_enforcement import (
+        router as alphaevolve_enforcement_router,
+    )
 except ImportError as e:
     print(f"Warning: AlphaEvolve enforcement router not available: {e}")
     from fastapi import APIRouter
+
     alphaevolve_enforcement_router = APIRouter()
 
 try:
-    from app.api.v1.incremental_compilation import router as incremental_compilation_router
+    from app.api.v1.incremental_compilation import (
+        router as incremental_compilation_router,
+    )
 except ImportError as e:
     print(f"Warning: Incremental compilation router not available: {e}")
     from fastapi import APIRouter
+
     incremental_compilation_router = APIRouter()
 
 try:
@@ -95,6 +118,7 @@ try:
 except ImportError as e:
     print(f"Warning: Ultra low latency router not available: {e}")
     from fastapi import APIRouter
+
     ultra_low_latency_router = APIRouter()
 
 # Configure logging
@@ -108,6 +132,7 @@ Enhanced PGC service with comprehensive policy governance, lifecycle management,
 multi-stakeholder processes, automated enforcement, and workflow orchestration.
 """
 
+
 # Policy lifecycle states
 class PolicyState:
     DRAFT = "draft"
@@ -116,6 +141,7 @@ class PolicyState:
     ACTIVE = "active"
     SUSPENDED = "suspended"
     DEPRECATED = "deprecated"
+
 
 # Governance workflow states
 class WorkflowState:
@@ -127,8 +153,10 @@ class WorkflowState:
     REJECTED = "rejected"
     COMPLETED = "completed"
 
+
 # Enhanced governance service availability flags
 ENHANCED_GOVERNANCE_AVAILABLE = True
+
 
 # Initialize enhanced governance components
 class PolicyLifecycleManager:
@@ -141,65 +169,124 @@ class PolicyLifecycleManager:
     async def get_policy_status(self, policy_id):
         return {"policy_id": policy_id, "status": "active"}
 
+
 class WorkflowOrchestrator:
     def __init__(self):
         self.workflows = {}
         self.workflow_templates = {
             "policy_creation": {
                 "steps": [
-                    {"step": "stakeholder_review", "status": "pending", "timeout": 3600},
-                    {"step": "constitutional_compliance", "status": "pending", "timeout": 1800},
+                    {
+                        "step": "stakeholder_review",
+                        "status": "pending",
+                        "timeout": 3600,
+                    },
+                    {
+                        "step": "constitutional_compliance",
+                        "status": "pending",
+                        "timeout": 1800,
+                    },
                     {"step": "approval_decision", "status": "pending", "timeout": 7200},
-                    {"step": "policy_activation", "status": "pending", "timeout": 600}
+                    {"step": "policy_activation", "status": "pending", "timeout": 600},
                 ],
                 "required_approvals": 2,
-                "escalation_threshold": 24
+                "escalation_threshold": 24,
             },
             "constitutional_compliance": {
                 "steps": [
-                    {"step": "constitutional_validation", "status": "pending", "timeout": 900},
+                    {
+                        "step": "constitutional_validation",
+                        "status": "pending",
+                        "timeout": 900,
+                    },
                     {"step": "compliance_scoring", "status": "pending", "timeout": 600},
-                    {"step": "violation_detection", "status": "pending", "timeout": 300},
-                    {"step": "remediation_planning", "status": "pending", "timeout": 1800}
+                    {
+                        "step": "violation_detection",
+                        "status": "pending",
+                        "timeout": 300,
+                    },
+                    {
+                        "step": "remediation_planning",
+                        "status": "pending",
+                        "timeout": 1800,
+                    },
                 ],
                 "accuracy_threshold": 0.95,
-                "confidence_threshold": 0.90
+                "confidence_threshold": 0.90,
             },
             "policy_enforcement": {
                 "steps": [
-                    {"step": "violation_detection", "status": "pending", "timeout": 300},
-                    {"step": "severity_classification", "status": "pending", "timeout": 180},
-                    {"step": "remediation_trigger", "status": "pending", "timeout": 600},
-                    {"step": "enforcement_action", "status": "pending", "timeout": 900}
+                    {
+                        "step": "violation_detection",
+                        "status": "pending",
+                        "timeout": 300,
+                    },
+                    {
+                        "step": "severity_classification",
+                        "status": "pending",
+                        "timeout": 180,
+                    },
+                    {
+                        "step": "remediation_trigger",
+                        "status": "pending",
+                        "timeout": 600,
+                    },
+                    {"step": "enforcement_action", "status": "pending", "timeout": 900},
                 ],
                 "auto_remediation": True,
-                "escalation_levels": ["low", "medium", "high", "critical"]
+                "escalation_levels": ["low", "medium", "high", "critical"],
             },
             "wina_oversight": {
                 "steps": [
-                    {"step": "performance_monitoring", "status": "pending", "timeout": 300},
-                    {"step": "optimization_analysis", "status": "pending", "timeout": 600},
+                    {
+                        "step": "performance_monitoring",
+                        "status": "pending",
+                        "timeout": 300,
+                    },
+                    {
+                        "step": "optimization_analysis",
+                        "status": "pending",
+                        "timeout": 600,
+                    },
                     {"step": "alert_generation", "status": "pending", "timeout": 180},
-                    {"step": "stakeholder_notification", "status": "pending", "timeout": 300}
+                    {
+                        "step": "stakeholder_notification",
+                        "status": "pending",
+                        "timeout": 300,
+                    },
                 ],
                 "performance_threshold": 0.95,
-                "response_time_target": 2000
+                "response_time_target": 2000,
             },
             "audit_transparency": {
                 "steps": [
                     {"step": "action_logging", "status": "pending", "timeout": 60},
-                    {"step": "audit_trail_storage", "status": "pending", "timeout": 120},
-                    {"step": "transparency_reporting", "status": "pending", "timeout": 1800},
-                    {"step": "compliance_validation", "status": "pending", "timeout": 600}
+                    {
+                        "step": "audit_trail_storage",
+                        "status": "pending",
+                        "timeout": 120,
+                    },
+                    {
+                        "step": "transparency_reporting",
+                        "status": "pending",
+                        "timeout": 1800,
+                    },
+                    {
+                        "step": "compliance_validation",
+                        "status": "pending",
+                        "timeout": 600,
+                    },
                 ],
                 "immutable_storage": True,
-                "public_transparency": True
-            }
+                "public_transparency": True,
+            },
         }
 
     async def initiate_policy_workflow(self, policy_id, workflow_type, stakeholders):
         workflow_id = f"WF-{int(time.time())}-{policy_id}"
-        template = self.workflow_templates.get(workflow_type, self.workflow_templates["policy_creation"])
+        template = self.workflow_templates.get(
+            workflow_type, self.workflow_templates["policy_creation"]
+        )
 
         self.workflows[workflow_id] = {
             "workflow_id": workflow_id,
@@ -215,8 +302,8 @@ class WorkflowOrchestrator:
             "performance_metrics": {
                 "start_time": time.time(),
                 "step_times": {},
-                "total_processing_time": 0
-            }
+                "total_processing_time": 0,
+            },
         }
         return workflow_id
 
@@ -227,16 +314,27 @@ class WorkflowOrchestrator:
 
         # Calculate progress
         total_steps = len(workflow["steps"])
-        completed_steps = sum(1 for step in workflow["steps"] if step["status"] == "completed")
-        progress_percentage = (completed_steps / total_steps) * 100 if total_steps > 0 else 0
+        completed_steps = sum(
+            1 for step in workflow["steps"] if step["status"] == "completed"
+        )
+        progress_percentage = (
+            (completed_steps / total_steps) * 100 if total_steps > 0 else 0
+        )
 
         return {
             "workflow_id": workflow_id,
             "status": workflow["state"],
             "progress": f"{completed_steps}/{total_steps} ({progress_percentage:.1f}%)",
-            "current_step": next((step["step"] for step in workflow["steps"] if step["status"] == "pending"), "completed"),
+            "current_step": next(
+                (
+                    step["step"]
+                    for step in workflow["steps"]
+                    if step["status"] == "pending"
+                ),
+                "completed",
+            ),
             "stakeholders": workflow["stakeholders"],
-            "performance_metrics": workflow["performance_metrics"]
+            "performance_metrics": workflow["performance_metrics"],
         }
 
     async def advance_workflow_step(self, workflow_id, step_name, result):
@@ -249,7 +347,9 @@ class WorkflowOrchestrator:
 
         for step in workflow["steps"]:
             if step["step"] == step_name and step["status"] == "pending":
-                step["status"] = "completed" if result.get("success", False) else "failed"
+                step["status"] = (
+                    "completed" if result.get("success", False) else "failed"
+                )
                 step["result"] = result
                 step["completed_at"] = time.time()
                 step_found = True
@@ -262,7 +362,9 @@ class WorkflowOrchestrator:
         workflow["updated_at"] = time.time()
 
         # Check if all steps completed
-        all_completed = all(step["status"] in ["completed", "skipped"] for step in workflow["steps"])
+        all_completed = all(
+            step["status"] in ["completed", "skipped"] for step in workflow["steps"]
+        )
         any_failed = any(step["status"] == "failed" for step in workflow["steps"])
 
         if any_failed:
@@ -274,6 +376,7 @@ class WorkflowOrchestrator:
 
         return workflow["state"]
 
+
 class EnforcementEngine:
     def __init__(self):
         self.violation_history = {}
@@ -281,7 +384,7 @@ class EnforcementEngine:
             "total_enforcements": 0,
             "violations_detected": 0,
             "auto_remediations": 0,
-            "escalations": 0
+            "escalations": 0,
         }
 
     async def enforce_policy(self, policy_id, context):
@@ -299,7 +402,9 @@ class EnforcementEngine:
             remediation_plan = await self.plan_remediation(violation_result, severity)
 
             # Step 4: Enforcement Action
-            enforcement_action = await self.execute_enforcement(remediation_plan, context)
+            enforcement_action = await self.execute_enforcement(
+                remediation_plan, context
+            )
 
             # Update metrics
             self.enforcement_metrics["total_enforcements"] += 1
@@ -317,7 +422,7 @@ class EnforcementEngine:
                 "remediation": remediation_plan,
                 "enforcement_action": enforcement_action,
                 "processing_time_ms": round(processing_time, 2),
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
 
         except Exception as e:
@@ -327,7 +432,7 @@ class EnforcementEngine:
                 "decision": "deny",
                 "confidence": 0.0,
                 "error": str(e),
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
 
     async def detect_violations(self, policy_id, context):
@@ -341,26 +446,35 @@ class EnforcementEngine:
 
         # Check for common violation patterns
         if action == "delete" and resource.startswith("critical_"):
-            violations.append({
-                "type": "unauthorized_critical_action",
-                "severity": "high",
-                "description": f"Attempt to delete critical resource {resource}"
-            })
+            violations.append(
+                {
+                    "type": "unauthorized_critical_action",
+                    "severity": "high",
+                    "description": f"Attempt to delete critical resource {resource}",
+                }
+            )
 
         if user_id in self.violation_history:
-            recent_violations = len([v for v in self.violation_history[user_id]
-                                   if time.time() - v["timestamp"] < 3600])
+            recent_violations = len(
+                [
+                    v
+                    for v in self.violation_history[user_id]
+                    if time.time() - v["timestamp"] < 3600
+                ]
+            )
             if recent_violations > 5:
-                violations.append({
-                    "type": "repeated_violations",
-                    "severity": "medium",
-                    "description": f"User {user_id} has {recent_violations} violations in last hour"
-                })
+                violations.append(
+                    {
+                        "type": "repeated_violations",
+                        "severity": "medium",
+                        "description": f"User {user_id} has {recent_violations} violations in last hour",
+                    }
+                )
 
         return {
             "violations_found": len(violations),
             "violations": violations,
-            "scan_timestamp": time.time()
+            "scan_timestamp": time.time(),
         }
 
     async def classify_severity(self, violation_result, context):
@@ -375,7 +489,10 @@ class EnforcementEngine:
                 break
             elif violation["severity"] == "high" and max_severity != "critical":
                 max_severity = "high"
-            elif violation["severity"] == "medium" and max_severity not in ["critical", "high"]:
+            elif violation["severity"] == "medium" and max_severity not in [
+                "critical",
+                "high",
+            ]:
                 max_severity = "medium"
 
         return max_severity
@@ -387,9 +504,21 @@ class EnforcementEngine:
 
         remediation_actions = {
             "low": {"action": "log_warning", "escalate": False, "auto_remediate": True},
-            "medium": {"action": "temporary_restriction", "escalate": True, "auto_remediate": True},
-            "high": {"action": "immediate_block", "escalate": True, "auto_remediate": False},
-            "critical": {"action": "emergency_lockdown", "escalate": True, "auto_remediate": False}
+            "medium": {
+                "action": "temporary_restriction",
+                "escalate": True,
+                "auto_remediate": True,
+            },
+            "high": {
+                "action": "immediate_block",
+                "escalate": True,
+                "auto_remediate": False,
+            },
+            "critical": {
+                "action": "emergency_lockdown",
+                "escalate": True,
+                "auto_remediate": False,
+            },
         }
 
         plan = remediation_actions.get(severity, remediation_actions["low"])
@@ -406,39 +535,95 @@ class EnforcementEngine:
         if action == "none":
             return {"decision": "allow", "confidence": 1.0, "action_taken": "none"}
         elif action == "log_warning":
-            return {"decision": "allow", "confidence": 0.8, "action_taken": "warning_logged"}
+            return {
+                "decision": "allow",
+                "confidence": 0.8,
+                "action_taken": "warning_logged",
+            }
         elif action == "temporary_restriction":
-            return {"decision": "conditional_allow", "confidence": 0.6, "action_taken": "temporary_restriction"}
+            return {
+                "decision": "conditional_allow",
+                "confidence": 0.6,
+                "action_taken": "temporary_restriction",
+            }
         elif action == "immediate_block":
-            return {"decision": "deny", "confidence": 0.9, "action_taken": "immediate_block"}
+            return {
+                "decision": "deny",
+                "confidence": 0.9,
+                "action_taken": "immediate_block",
+            }
         elif action == "emergency_lockdown":
-            return {"decision": "deny", "confidence": 1.0, "action_taken": "emergency_lockdown"}
+            return {
+                "decision": "deny",
+                "confidence": 1.0,
+                "action_taken": "emergency_lockdown",
+            }
         else:
-            return {"decision": "deny", "confidence": 0.5, "action_taken": "default_deny"}
+            return {
+                "decision": "deny",
+                "confidence": 0.5,
+                "action_taken": "default_deny",
+            }
+
 
 class StakeholderManager:
     def __init__(self):
         self.stakeholder_registry = {
-            "governance_team": {"role": "governance", "priority": "high", "contact": "governance@acgs.ai"},
-            "policy_reviewers": {"role": "review", "priority": "medium", "contact": "reviewers@acgs.ai"},
-            "compliance_officers": {"role": "compliance", "priority": "high", "contact": "compliance@acgs.ai"},
-            "technical_leads": {"role": "technical", "priority": "medium", "contact": "tech@acgs.ai"},
-            "security_team": {"role": "security", "priority": "critical", "contact": "security@acgs.ai"},
-            "legal_team": {"role": "legal", "priority": "high", "contact": "legal@acgs.ai"},
-            "executive_team": {"role": "executive", "priority": "critical", "contact": "exec@acgs.ai"}
+            "governance_team": {
+                "role": "governance",
+                "priority": "high",
+                "contact": "governance@acgs.ai",
+            },
+            "policy_reviewers": {
+                "role": "review",
+                "priority": "medium",
+                "contact": "reviewers@acgs.ai",
+            },
+            "compliance_officers": {
+                "role": "compliance",
+                "priority": "high",
+                "contact": "compliance@acgs.ai",
+            },
+            "technical_leads": {
+                "role": "technical",
+                "priority": "medium",
+                "contact": "tech@acgs.ai",
+            },
+            "security_team": {
+                "role": "security",
+                "priority": "critical",
+                "contact": "security@acgs.ai",
+            },
+            "legal_team": {
+                "role": "legal",
+                "priority": "high",
+                "contact": "legal@acgs.ai",
+            },
+            "executive_team": {
+                "role": "executive",
+                "priority": "critical",
+                "contact": "exec@acgs.ai",
+            },
         }
         self.notification_history = []
         self.concurrent_sessions = {}
 
-    async def notify_stakeholders(self, stakeholders, message, workflow_id=None, priority="medium"):
+    async def notify_stakeholders(
+        self, stakeholders, message, workflow_id=None, priority="medium"
+    ):
         """Enhanced stakeholder notification with role-based routing and tracking."""
         start_time = time.time()
         notification_results = []
 
         for stakeholder in stakeholders:
-            stakeholder_info = self.stakeholder_registry.get(stakeholder, {
-                "role": "unknown", "priority": "low", "contact": f"{stakeholder}@acgs.ai"
-            })
+            stakeholder_info = self.stakeholder_registry.get(
+                stakeholder,
+                {
+                    "role": "unknown",
+                    "priority": "low",
+                    "contact": f"{stakeholder}@acgs.ai",
+                },
+            )
 
             notification_result = await self._send_notification(
                 stakeholder, stakeholder_info, message, workflow_id, priority
@@ -453,21 +638,29 @@ class StakeholderManager:
             "priority": priority,
             "results": notification_results,
             "timestamp": time.time(),
-            "processing_time_ms": round((time.time() - start_time) * 1000, 2)
+            "processing_time_ms": round((time.time() - start_time) * 1000, 2),
         }
         self.notification_history.append(notification_event)
 
-        successful_notifications = sum(1 for result in notification_results if result["status"] == "success")
+        successful_notifications = sum(
+            1 for result in notification_results if result["status"] == "success"
+        )
 
         return {
             "notified": successful_notifications,
             "total_stakeholders": len(stakeholders),
-            "status": "success" if successful_notifications == len(stakeholders) else "partial",
+            "status": (
+                "success"
+                if successful_notifications == len(stakeholders)
+                else "partial"
+            ),
             "results": notification_results,
-            "notification_id": f"NOTIF-{int(time.time())}"
+            "notification_id": f"NOTIF-{int(time.time())}",
         }
 
-    async def _send_notification(self, stakeholder, stakeholder_info, message, workflow_id, priority):
+    async def _send_notification(
+        self, stakeholder, stakeholder_info, message, workflow_id, priority
+    ):
         """Send individual notification with delivery confirmation."""
         try:
             # Simulate notification delivery (email, Slack, etc.)
@@ -480,17 +673,19 @@ class StakeholderManager:
                 "delivery_method": "email",
                 "delivery_time_ms": round(delivery_time * 1000, 2),
                 "contact": stakeholder_info["contact"],
-                "priority": stakeholder_info["priority"]
+                "priority": stakeholder_info["priority"],
             }
         except Exception as e:
             return {
                 "stakeholder": stakeholder,
                 "status": "failed",
                 "error": str(e),
-                "contact": stakeholder_info.get("contact", "unknown")
+                "contact": stakeholder_info.get("contact", "unknown"),
             }
 
-    async def coordinate_multi_stakeholder_process(self, workflow_id, stakeholders, process_type):
+    async def coordinate_multi_stakeholder_process(
+        self, workflow_id, stakeholders, process_type
+    ):
         """Coordinate concurrent multi-stakeholder governance processes."""
         session_id = f"SESSION-{workflow_id}-{int(time.time())}"
 
@@ -502,7 +697,7 @@ class StakeholderManager:
             "participants": {},
             "decisions": {},
             "start_time": time.time(),
-            "concurrent_count": len(stakeholders)
+            "concurrent_count": len(stakeholders),
         }
 
         # Initialize participant tracking
@@ -511,7 +706,7 @@ class StakeholderManager:
                 "status": "invited",
                 "joined_at": None,
                 "last_activity": None,
-                "decisions_made": 0
+                "decisions_made": 0,
             }
 
         return {
@@ -519,10 +714,14 @@ class StakeholderManager:
             "status": "initiated",
             "concurrent_participants": len(stakeholders),
             "process_type": process_type,
-            "estimated_duration": self._estimate_process_duration(process_type, len(stakeholders))
+            "estimated_duration": self._estimate_process_duration(
+                process_type, len(stakeholders)
+            ),
         }
 
-    async def record_stakeholder_decision(self, session_id, stakeholder, decision, rationale=None):
+    async def record_stakeholder_decision(
+        self, session_id, stakeholder, decision, rationale=None
+    ):
         """Record stakeholder decision in multi-stakeholder process."""
         if session_id not in self.concurrent_sessions:
             raise ValueError(f"Session {session_id} not found")
@@ -530,14 +729,16 @@ class StakeholderManager:
         session = self.concurrent_sessions[session_id]
 
         if stakeholder not in session["participants"]:
-            raise ValueError(f"Stakeholder {stakeholder} not part of session {session_id}")
+            raise ValueError(
+                f"Stakeholder {stakeholder} not part of session {session_id}"
+            )
 
         # Record decision
         session["decisions"][stakeholder] = {
             "decision": decision,
             "rationale": rationale,
             "timestamp": time.time(),
-            "decision_id": f"DEC-{stakeholder}-{int(time.time())}"
+            "decision_id": f"DEC-{stakeholder}-{int(time.time())}",
         }
 
         # Update participant status
@@ -557,7 +758,7 @@ class StakeholderManager:
             "stakeholder": stakeholder,
             "decision_recorded": True,
             "consensus_progress": f"{decisions_made}/{total_participants}",
-            "session_status": session["status"]
+            "session_status": session["status"],
         }
 
     def _estimate_process_duration(self, process_type, participant_count):
@@ -566,14 +767,17 @@ class StakeholderManager:
             "policy_review": 3600,  # 1 hour
             "compliance_validation": 1800,  # 30 minutes
             "approval_decision": 7200,  # 2 hours
-            "emergency_response": 900   # 15 minutes
+            "emergency_response": 900,  # 15 minutes
         }
 
         base_time = base_times.get(process_type, 3600)
         # Add time for coordination overhead
-        coordination_overhead = min(participant_count * 300, 1800)  # Max 30 min overhead
+        coordination_overhead = min(
+            participant_count * 300, 1800
+        )  # Max 30 min overhead
 
         return base_time + coordination_overhead
+
 
 class AuditTrail:
     def __init__(self):
@@ -585,7 +789,7 @@ class AuditTrail:
             "policy_events": 0,
             "workflow_events": 0,
             "enforcement_events": 0,
-            "compliance_events": 0
+            "compliance_events": 0,
         }
 
     async def log_policy_creation(self, policy_id, record):
@@ -596,8 +800,10 @@ class AuditTrail:
             "policy_id": policy_id,
             "timestamp": time.time(),
             "record": record,
-            "immutable_hash": self._generate_event_hash(policy_id, "policy_creation", record),
-            "blockchain_ready": True
+            "immutable_hash": self._generate_event_hash(
+                policy_id, "policy_creation", record
+            ),
+            "blockchain_ready": True,
         }
 
         self.events.append(event)
@@ -616,8 +822,10 @@ class AuditTrail:
             "timestamp": time.time(),
             "record": record,
             "stakeholders": record.get("stakeholders", []),
-            "immutable_hash": self._generate_event_hash(workflow_id, "workflow_initiation", record),
-            "blockchain_ready": True
+            "immutable_hash": self._generate_event_hash(
+                workflow_id, "workflow_initiation", record
+            ),
+            "blockchain_ready": True,
         }
 
         self.events.append(event)
@@ -637,8 +845,10 @@ class AuditTrail:
             "action_details": action_details,
             "severity": action_details.get("severity", "unknown"),
             "decision": action_details.get("decision", "unknown"),
-            "immutable_hash": self._generate_event_hash(enforcement_id, "enforcement_action", action_details),
-            "blockchain_ready": True
+            "immutable_hash": self._generate_event_hash(
+                enforcement_id, "enforcement_action", action_details
+            ),
+            "blockchain_ready": True,
         }
 
         self.events.append(event)
@@ -658,8 +868,10 @@ class AuditTrail:
             "check_results": check_results,
             "constitutional_hash": "cdd01ef066bc6cf2",  # Reference constitutional hash
             "compliance_score": check_results.get("compliance_score", 0.0),
-            "immutable_hash": self._generate_event_hash(compliance_id, "compliance_check", check_results),
-            "blockchain_ready": True
+            "immutable_hash": self._generate_event_hash(
+                compliance_id, "compliance_check", check_results
+            ),
+            "blockchain_ready": True,
         }
 
         self.events.append(event)
@@ -669,26 +881,36 @@ class AuditTrail:
 
         return event["event_id"]
 
-    async def generate_transparency_report(self, report_type="comprehensive", time_range=None):
+    async def generate_transparency_report(
+        self, report_type="comprehensive", time_range=None
+    ):
         """Generate public transparency report with privacy controls."""
         start_time = time.time()
 
         if time_range is None:
-            time_range = {"start": start_time - 86400, "end": start_time}  # Last 24 hours
+            time_range = {
+                "start": start_time - 86400,
+                "end": start_time,
+            }  # Last 24 hours
 
         # Filter events by time range
         filtered_events = [
-            event for event in self.events
+            event
+            for event in self.events
             if time_range["start"] <= event["timestamp"] <= time_range["end"]
         ]
 
         # Generate report based on type
         if report_type == "comprehensive":
-            report = await self._generate_comprehensive_report(filtered_events, time_range)
+            report = await self._generate_comprehensive_report(
+                filtered_events, time_range
+            )
         elif report_type == "compliance":
             report = await self._generate_compliance_report(filtered_events, time_range)
         elif report_type == "enforcement":
-            report = await self._generate_enforcement_report(filtered_events, time_range)
+            report = await self._generate_enforcement_report(
+                filtered_events, time_range
+            )
         else:
             report = await self._generate_summary_report(filtered_events, time_range)
 
@@ -701,13 +923,13 @@ class AuditTrail:
             "events_included": len(filtered_events),
             "generation_time_ms": round((time.time() - start_time) * 1000, 2),
             "public_transparency": True,
-            "privacy_compliant": True
+            "privacy_compliant": True,
         }
 
         final_report = {
             "metadata": report_metadata,
             "report": report,
-            "audit_metrics": self.audit_metrics.copy()
+            "audit_metrics": self.audit_metrics.copy(),
         }
 
         self.transparency_reports.append(final_report)
@@ -725,22 +947,42 @@ class AuditTrail:
         return {
             "summary": {
                 "total_events": len(events),
-                "policy_events": len([e for e in events if e["type"] == "policy_creation"]),
-                "workflow_events": len([e for e in events if e["type"] == "workflow_initiation"]),
-                "enforcement_events": len([e for e in events if e["type"] == "enforcement_action"]),
-                "compliance_events": len([e for e in events if e["type"] == "compliance_check"])
+                "policy_events": len(
+                    [e for e in events if e["type"] == "policy_creation"]
+                ),
+                "workflow_events": len(
+                    [e for e in events if e["type"] == "workflow_initiation"]
+                ),
+                "enforcement_events": len(
+                    [e for e in events if e["type"] == "enforcement_action"]
+                ),
+                "compliance_events": len(
+                    [e for e in events if e["type"] == "compliance_check"]
+                ),
             },
             "governance_activity": {
-                "policies_created": len([e for e in events if e["type"] == "policy_creation"]),
-                "workflows_initiated": len([e for e in events if e["type"] == "workflow_initiation"]),
-                "enforcement_actions": len([e for e in events if e["type"] == "enforcement_action"]),
-                "compliance_checks": len([e for e in events if e["type"] == "compliance_check"])
+                "policies_created": len(
+                    [e for e in events if e["type"] == "policy_creation"]
+                ),
+                "workflows_initiated": len(
+                    [e for e in events if e["type"] == "workflow_initiation"]
+                ),
+                "enforcement_actions": len(
+                    [e for e in events if e["type"] == "enforcement_action"]
+                ),
+                "compliance_checks": len(
+                    [e for e in events if e["type"] == "compliance_check"]
+                ),
             },
             "transparency_metrics": {
-                "public_events": len(events),  # All events are public in this implementation
+                "public_events": len(
+                    events
+                ),  # All events are public in this implementation
                 "immutable_records": len(self.immutable_storage),
-                "blockchain_ready_events": len([e for e in events if e.get("blockchain_ready", False)])
-            }
+                "blockchain_ready_events": len(
+                    [e for e in events if e.get("blockchain_ready", False)]
+                ),
+            },
         }
 
     async def _generate_compliance_report(self, events, time_range):
@@ -750,13 +992,26 @@ class AuditTrail:
         return {
             "compliance_summary": {
                 "total_checks": len(compliance_events),
-                "average_score": sum(e.get("compliance_score", 0) for e in compliance_events) / max(len(compliance_events), 1),
-                "constitutional_references": len(set(e.get("constitutional_hash") for e in compliance_events if e.get("constitutional_hash")))
+                "average_score": sum(
+                    e.get("compliance_score", 0) for e in compliance_events
+                )
+                / max(len(compliance_events), 1),
+                "constitutional_references": len(
+                    set(
+                        e.get("constitutional_hash")
+                        for e in compliance_events
+                        if e.get("constitutional_hash")
+                    )
+                ),
             },
             "compliance_trends": {
-                "checks_per_hour": len(compliance_events) / max((time_range["end"] - time_range["start"]) / 3600, 1),
-                "compliance_rate": len([e for e in compliance_events if e.get("compliance_score", 0) > 0.8]) / max(len(compliance_events), 1)
-            }
+                "checks_per_hour": len(compliance_events)
+                / max((time_range["end"] - time_range["start"]) / 3600, 1),
+                "compliance_rate": len(
+                    [e for e in compliance_events if e.get("compliance_score", 0) > 0.8]
+                )
+                / max(len(compliance_events), 1),
+            },
         }
 
     async def _generate_enforcement_report(self, events, time_range):
@@ -767,16 +1022,38 @@ class AuditTrail:
             "enforcement_summary": {
                 "total_actions": len(enforcement_events),
                 "decisions": {
-                    "allow": len([e for e in enforcement_events if e.get("decision") == "allow"]),
-                    "deny": len([e for e in enforcement_events if e.get("decision") == "deny"]),
-                    "conditional": len([e for e in enforcement_events if "conditional" in e.get("decision", "")])
+                    "allow": len(
+                        [e for e in enforcement_events if e.get("decision") == "allow"]
+                    ),
+                    "deny": len(
+                        [e for e in enforcement_events if e.get("decision") == "deny"]
+                    ),
+                    "conditional": len(
+                        [
+                            e
+                            for e in enforcement_events
+                            if "conditional" in e.get("decision", "")
+                        ]
+                    ),
                 },
                 "severity_distribution": {
-                    "low": len([e for e in enforcement_events if e.get("severity") == "low"]),
-                    "medium": len([e for e in enforcement_events if e.get("severity") == "medium"]),
-                    "high": len([e for e in enforcement_events if e.get("severity") == "high"]),
-                    "critical": len([e for e in enforcement_events if e.get("severity") == "critical"])
-                }
+                    "low": len(
+                        [e for e in enforcement_events if e.get("severity") == "low"]
+                    ),
+                    "medium": len(
+                        [e for e in enforcement_events if e.get("severity") == "medium"]
+                    ),
+                    "high": len(
+                        [e for e in enforcement_events if e.get("severity") == "high"]
+                    ),
+                    "critical": len(
+                        [
+                            e
+                            for e in enforcement_events
+                            if e.get("severity") == "critical"
+                        ]
+                    ),
+                },
             }
         }
 
@@ -786,10 +1063,12 @@ class AuditTrail:
             "summary": {
                 "total_events": len(events),
                 "time_range_hours": (time_range["end"] - time_range["start"]) / 3600,
-                "events_per_hour": len(events) / max((time_range["end"] - time_range["start"]) / 3600, 1),
-                "event_types": list(set(e["type"] for e in events))
+                "events_per_hour": len(events)
+                / max((time_range["end"] - time_range["start"]) / 3600, 1),
+                "event_types": list(set(e["type"] for e in events)),
             }
         }
+
 
 class GovernanceMonitor:
     async def get_governance_metrics(self):
@@ -797,8 +1076,9 @@ class GovernanceMonitor:
             "active_policies": 15,
             "active_workflows": 3,
             "enforcement_rate": 0.98,
-            "compliance_score": 0.95
+            "compliance_score": 0.95,
         }
+
 
 # Initialize governance components
 policy_lifecycle_manager = PolicyLifecycleManager()
@@ -813,7 +1093,7 @@ app = FastAPI(
     description="Comprehensive policy governance with lifecycle management, enforcement, and workflow orchestration",
     version="3.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # Initialize metrics for PGC service
@@ -826,10 +1106,25 @@ app.middleware("http")(metrics_middleware("pgc_service"))
 add_security_middleware(app)
 
 # Include the API router for policy enforcement
-app.include_router(enforcement_router, prefix="/api/v1/enforcement", tags=["Policy Enforcement"])
-app.include_router(alphaevolve_enforcement_router, prefix="/api/v1/alphaevolve", tags=["AlphaEvolve Enforcement"]) # Added Phase 2
-app.include_router(incremental_compilation_router, prefix="/api/v1/incremental", tags=["Incremental Compilation"]) # Added Task 8
-app.include_router(ultra_low_latency_router, prefix="/api/v1/ultra-low-latency", tags=["Ultra Low Latency Optimization"]) # Added AlphaEvolve Enhancement
+app.include_router(
+    enforcement_router, prefix="/api/v1/enforcement", tags=["Policy Enforcement"]
+)
+app.include_router(
+    alphaevolve_enforcement_router,
+    prefix="/api/v1/alphaevolve",
+    tags=["AlphaEvolve Enforcement"],
+)  # Added Phase 2
+app.include_router(
+    incremental_compilation_router,
+    prefix="/api/v1/incremental",
+    tags=["Incremental Compilation"],
+)  # Added Task 8
+app.include_router(
+    ultra_low_latency_router,
+    prefix="/api/v1/ultra-low-latency",
+    tags=["Ultra Low Latency Optimization"],
+)  # Added AlphaEvolve Enhancement
+
 
 @app.on_event("startup")
 async def on_startup():
@@ -846,6 +1141,7 @@ async def on_startup():
         print("PGC Service: Using mock Policy Manager.")
     # Other startup tasks if any
 
+
 @app.on_event("shutdown")
 async def on_shutdown():
     # Gracefully close HTTPX clients
@@ -857,6 +1153,7 @@ async def on_shutdown():
             print(f"PGC Service shutdown error: {e}")
     else:
         print("PGC Service shutdown: Mock clients closed.")
+
 
 @app.get("/")
 async def root():
@@ -874,7 +1171,7 @@ async def root():
             "Workflow Orchestration",
             "Real-time Governance Monitoring",
             "Constitutional Compliance Integration",
-            "Comprehensive Audit Trail"
+            "Comprehensive Audit Trail",
         ],
         "enhanced_governance": ENHANCED_GOVERNANCE_AVAILABLE,
         "governance_workflows": {
@@ -882,10 +1179,11 @@ async def root():
             "stakeholder_review": "Multi-stakeholder review processes",
             "compliance_validation": "Integration with AC service",
             "enforcement": "Real-time policy enforcement",
-            "monitoring": "Continuous governance monitoring"
+            "monitoring": "Continuous governance monitoring",
         },
-        "api_documentation": "/docs"
+        "api_documentation": "/docs",
     }
+
 
 @app.get("/health")
 async def health_check():
@@ -908,70 +1206,95 @@ async def health_check():
             "enforcement_engine": enforcement_engine is not None,
             "stakeholder_manager": stakeholder_manager is not None,
             "audit_trail": audit_trail is not None,
-            "governance_monitor": governance_monitor is not None
+            "governance_monitor": governance_monitor is not None,
         },
         "performance": {
             "response_time_target": "<100ms for governance operations",
             "workflow_processing_target": "<500ms for workflow steps",
             "enforcement_target": "<50ms for policy enforcement",
-            "availability_target": ">99.9%"
-        }
+            "availability_target": ">99.9%",
+        },
     }
 
     try:
         # Check policy manager status
-        if hasattr(policy_manager, '_last_refresh_time') and policy_manager._last_refresh_time:
+        if (
+            hasattr(policy_manager, "_last_refresh_time")
+            and policy_manager._last_refresh_time
+        ):
             health_status["components"]["policy_manager"] = {
                 "status": "healthy",
                 "last_refresh": str(policy_manager._last_refresh_time),
-                "policies_loaded": True
+                "policies_loaded": True,
             }
         else:
             health_status["components"]["policy_manager"] = {
                 "status": "degraded",
                 "policies_loaded": False,
-                "message": "Policies have not been loaded yet"
+                "message": "Policies have not been loaded yet",
             }
 
         # Check OPA connectivity
         try:
             import httpx
-            opa_url = os.getenv('OPA_SERVER_URL', 'http://opa:8181')
+
+            opa_url = os.getenv("OPA_SERVER_URL", "http://opa:8181")
             async with httpx.AsyncClient(timeout=5.0) as client:
                 opa_response = await client.get(f"{opa_url}/health")
                 health_status["dependencies"]["opa"] = {
-                    "status": "healthy" if opa_response.status_code == 200 else "unhealthy",
-                    "response_time_ms": opa_response.elapsed.total_seconds() * 1000 if hasattr(opa_response, 'elapsed') else 0
+                    "status": (
+                        "healthy" if opa_response.status_code == 200 else "unhealthy"
+                    ),
+                    "response_time_ms": (
+                        opa_response.elapsed.total_seconds() * 1000
+                        if hasattr(opa_response, "elapsed")
+                        else 0
+                    ),
                 }
         except Exception as e:
             health_status["dependencies"]["opa"] = {
                 "status": "unhealthy",
-                "error": str(e)
+                "error": str(e),
             }
 
         # Check Integrity Service connectivity
         try:
-            integrity_url = os.getenv('INTEGRITY_SERVICE_URL', 'http://integrity_service:8002')
+            integrity_url = os.getenv(
+                "INTEGRITY_SERVICE_URL", "http://integrity_service:8002"
+            )
             async with httpx.AsyncClient(timeout=5.0) as client:
                 integrity_response = await client.get(f"{integrity_url}/health")
                 health_status["dependencies"]["integrity_service"] = {
-                    "status": "healthy" if integrity_response.status_code == 200 else "unhealthy",
-                    "response_time_ms": integrity_response.elapsed.total_seconds() * 1000 if hasattr(integrity_response, 'elapsed') else 0
+                    "status": (
+                        "healthy"
+                        if integrity_response.status_code == 200
+                        else "unhealthy"
+                    ),
+                    "response_time_ms": (
+                        integrity_response.elapsed.total_seconds() * 1000
+                        if hasattr(integrity_response, "elapsed")
+                        else 0
+                    ),
                 }
         except Exception as e:
             health_status["dependencies"]["integrity_service"] = {
                 "status": "unhealthy",
-                "error": str(e)
+                "error": str(e),
             }
 
         # Determine overall health status
         critical_deps = ["opa"]
-        unhealthy_critical = [dep for dep in critical_deps
-                            if health_status["dependencies"].get(dep, {}).get("status") == "unhealthy"]
+        unhealthy_critical = [
+            dep
+            for dep in critical_deps
+            if health_status["dependencies"].get(dep, {}).get("status") == "unhealthy"
+        ]
 
         if unhealthy_critical:
             health_status["status"] = "degraded"
-            health_status["message"] = f"Critical dependencies unhealthy: {', '.join(unhealthy_critical)}"
+            health_status["message"] = (
+                f"Critical dependencies unhealthy: {', '.join(unhealthy_critical)}"
+            )
         elif not health_status["components"]["policy_manager"]["policies_loaded"]:
             health_status["status"] = "degraded"
             health_status["message"] = "PGC Service operational but policies not loaded"
@@ -985,7 +1308,9 @@ async def health_check():
 
     return health_status
 
+
 # Enhanced Governance API Endpoints
+
 
 @app.get("/api/v1/status")
 async def api_status():
@@ -1002,20 +1327,20 @@ async def api_status():
                 "/api/v1/governance/policies",
                 "/api/v1/governance/workflows",
                 "/api/v1/governance/enforcement",
-                "/api/v1/governance/stakeholders"
+                "/api/v1/governance/stakeholders",
             ],
             "lifecycle": [
                 "/api/v1/lifecycle/create",
                 "/api/v1/lifecycle/review",
                 "/api/v1/lifecycle/approve",
-                "/api/v1/lifecycle/activate"
+                "/api/v1/lifecycle/activate",
             ],
             "monitoring": [
                 "/api/v1/monitoring/governance",
                 "/api/v1/monitoring/compliance",
-                "/api/v1/monitoring/audit-trail"
+                "/api/v1/monitoring/audit-trail",
             ],
-            "enforcement": ["/api/v1/enforcement", "/api/v1/alphaevolve"]
+            "enforcement": ["/api/v1/enforcement", "/api/v1/alphaevolve"],
         },
         "capabilities": {
             "policy_lifecycle_management": True,
@@ -1023,9 +1348,10 @@ async def api_status():
             "automated_enforcement": True,
             "workflow_orchestration": ENHANCED_GOVERNANCE_AVAILABLE,
             "real_time_monitoring": ENHANCED_GOVERNANCE_AVAILABLE,
-            "audit_trail": ENHANCED_GOVERNANCE_AVAILABLE
-        }
+            "audit_trail": ENHANCED_GOVERNANCE_AVAILABLE,
+        },
     }
+
 
 @app.post("/api/v1/governance/policies")
 async def create_policy(request: Dict[str, Any]):
@@ -1047,12 +1373,8 @@ async def create_policy(request: Dict[str, Any]):
         "stakeholders": stakeholders,
         "workflow_type": workflow_type,
         "lifecycle_events": [
-            {
-                "event": "created",
-                "timestamp": time.time(),
-                "state": PolicyState.DRAFT
-            }
-        ]
+            {"event": "created", "timestamp": time.time(), "state": PolicyState.DRAFT}
+        ],
     }
 
     # Log audit trail
@@ -1082,11 +1404,12 @@ async def create_policy(request: Dict[str, Any]):
         "next_steps": [
             "Submit for stakeholder review",
             "Perform constitutional compliance check",
-            "Await approval workflow completion"
+            "Await approval workflow completion",
         ],
         "processing_time_ms": round(processing_time, 2),
-        "timestamp": time.time()
+        "timestamp": time.time(),
     }
+
 
 @app.get("/api/v1/governance/policies/{policy_id}")
 async def get_policy_status(policy_id: str):
@@ -1102,23 +1425,40 @@ async def get_policy_status(policy_id: str):
         "compliance_status": {
             "constitutional_compliance": True,
             "stakeholder_approval": True,
-            "technical_validation": True
+            "technical_validation": True,
         },
         "lifecycle_events": [
-            {"event": "created", "timestamp": time.time() - 86400, "state": PolicyState.DRAFT},
-            {"event": "submitted_for_review", "timestamp": time.time() - 82800, "state": PolicyState.UNDER_REVIEW},
-            {"event": "approved", "timestamp": time.time() - 7200, "state": PolicyState.APPROVED},
-            {"event": "activated", "timestamp": time.time() - 3600, "state": PolicyState.ACTIVE}
+            {
+                "event": "created",
+                "timestamp": time.time() - 86400,
+                "state": PolicyState.DRAFT,
+            },
+            {
+                "event": "submitted_for_review",
+                "timestamp": time.time() - 82800,
+                "state": PolicyState.UNDER_REVIEW,
+            },
+            {
+                "event": "approved",
+                "timestamp": time.time() - 7200,
+                "state": PolicyState.APPROVED,
+            },
+            {
+                "event": "activated",
+                "timestamp": time.time() - 3600,
+                "state": PolicyState.ACTIVE,
+            },
         ],
         "enforcement_metrics": {
             "total_evaluations": 1247,
             "permit_decisions": 1156,
             "deny_decisions": 91,
-            "average_response_time_ms": 23.5
-        }
+            "average_response_time_ms": 23.5,
+        },
     }
 
     return policy_status
+
 
 @app.post("/api/v1/governance/workflows")
 async def initiate_governance_workflow(request: Dict[str, Any]):
@@ -1145,8 +1485,8 @@ async def initiate_governance_workflow(request: Dict[str, Any]):
             {"step": "constitutional_compliance_check", "status": "pending"},
             {"step": "stakeholder_review", "status": "pending"},
             {"step": "approval_decision", "status": "pending"},
-            {"step": "policy_activation", "status": "pending"}
-        ]
+            {"step": "policy_activation", "status": "pending"},
+        ],
     }
 
     # Log audit trail
@@ -1166,10 +1506,12 @@ async def initiate_governance_workflow(request: Dict[str, Any]):
         "estimated_completion_time": time.time() + 86400,  # 24 hours
         "next_step": "stakeholder_notification",
         "processing_time_ms": round(processing_time, 2),
-        "timestamp": time.time()
+        "timestamp": time.time(),
     }
 
+
 # Enhanced Policy Governance Endpoints for Task #3
+
 
 @app.post("/policy/create")
 async def create_policy_endpoint(request: Dict[str, Any]):
@@ -1188,11 +1530,14 @@ async def create_policy_endpoint(request: Dict[str, Any]):
         compliance_result = await check_constitutional_compliance(policy_data)
 
         # Log audit trail
-        await audit_trail.log_policy_creation(policy_id, {
-            "policy_data": policy_data,
-            "stakeholders": stakeholders,
-            "compliance_result": compliance_result
-        })
+        await audit_trail.log_policy_creation(
+            policy_id,
+            {
+                "policy_data": policy_data,
+                "stakeholders": stakeholders,
+                "compliance_result": compliance_result,
+            },
+        )
 
         processing_time = (time.time() - start_time) * 1000
 
@@ -1203,12 +1548,13 @@ async def create_policy_endpoint(request: Dict[str, Any]):
             "stakeholders": stakeholders,
             "processing_time_ms": round(processing_time, 2),
             "timestamp": time.time(),
-            "next_steps": ["stakeholder_review", "workflow_initiation"]
+            "next_steps": ["stakeholder_review", "workflow_initiation"],
         }
 
     except Exception as e:
         logger.error(f"Policy creation failed: {e}")
         raise HTTPException(status_code=500, detail=f"Policy creation failed: {str(e)}")
+
 
 @app.post("/workflow/initiate")
 async def initiate_workflow_endpoint(request: Dict[str, Any]):
@@ -1235,12 +1581,15 @@ async def initiate_workflow_endpoint(request: Dict[str, Any]):
         )
 
         # Log workflow initiation
-        await audit_trail.log_workflow_initiation(workflow_id, {
-            "policy_id": policy_id,
-            "workflow_type": workflow_type,
-            "stakeholders": stakeholders,
-            "priority": priority
-        })
+        await audit_trail.log_workflow_initiation(
+            workflow_id,
+            {
+                "policy_id": policy_id,
+                "workflow_type": workflow_type,
+                "stakeholders": stakeholders,
+                "priority": priority,
+            },
+        )
 
         processing_time = (time.time() - start_time) * 1000
 
@@ -1256,13 +1605,16 @@ async def initiate_workflow_endpoint(request: Dict[str, Any]):
                 {"step": "stakeholder_review", "status": "pending"},
                 {"step": "compliance_validation", "status": "pending"},
                 {"step": "approval_decision", "status": "pending"},
-                {"step": "implementation", "status": "pending"}
-            ]
+                {"step": "implementation", "status": "pending"},
+            ],
         }
 
     except Exception as e:
         logger.error(f"Workflow initiation failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Workflow initiation failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Workflow initiation failed: {str(e)}"
+        )
+
 
 @app.get("/governance/status")
 async def governance_status_endpoint():
@@ -1284,27 +1636,32 @@ async def governance_status_endpoint():
             "metrics": governance_metrics,
             "system_health": {
                 "status": health_data["status"],
-                "governance_services": health_data["governance_services"]
+                "governance_services": health_data["governance_services"],
             },
             "policy_lifecycle": {
                 "total_policies": governance_metrics["active_policies"],
                 "active_workflows": governance_metrics["active_workflows"],
                 "enforcement_rate": governance_metrics["enforcement_rate"],
-                "compliance_score": governance_metrics["compliance_score"]
+                "compliance_score": governance_metrics["compliance_score"],
             },
             "performance": {
                 "response_time_ms": round(processing_time, 2),
                 "target_response_time": "<50ms",
-                "availability": "100%"
+                "availability": "100%",
             },
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
     except Exception as e:
         logger.error(f"Governance status check failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Governance status check failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Governance status check failed: {str(e)}"
+        )
 
-async def check_constitutional_compliance(policy_data: Dict[str, Any]) -> Dict[str, Any]:
+
+async def check_constitutional_compliance(
+    policy_data: Dict[str, Any],
+) -> Dict[str, Any]:
     """Check policy against constitutional framework (AC service integration)."""
     try:
         # Mock constitutional compliance check
@@ -1326,7 +1683,7 @@ async def check_constitutional_compliance(policy_data: Dict[str, Any]) -> Dict[s
             "compliance_score": max(0.0, compliance_score),
             "violations": violations,
             "constitutional_framework_version": "v1.0.0",
-            "validation_timestamp": time.time()
+            "validation_timestamp": time.time(),
         }
 
     except Exception as e:
@@ -1336,10 +1693,12 @@ async def check_constitutional_compliance(policy_data: Dict[str, Any]) -> Dict[s
             "compliance_score": 0.0,
             "violations": [f"Compliance check failed: {str(e)}"],
             "constitutional_framework_version": "v1.0.0",
-            "validation_timestamp": time.time()
+            "validation_timestamp": time.time(),
         }
 
+
 # Complete Governance Workflows Implementation - Task #5
+
 
 @app.post("/api/v1/workflows/policy-creation")
 async def policy_creation_workflow(request: Dict[str, Any]):
@@ -1348,7 +1707,9 @@ async def policy_creation_workflow(request: Dict[str, Any]):
 
     try:
         policy_data = request.get("policy", {})
-        stakeholders = request.get("stakeholders", ["governance_team", "policy_reviewers", "legal_team"])
+        stakeholders = request.get(
+            "stakeholders", ["governance_team", "policy_reviewers", "legal_team"]
+        )
         priority = request.get("priority", "medium")
 
         # Step 1: Initiate workflow
@@ -1365,12 +1726,15 @@ async def policy_creation_workflow(request: Dict[str, Any]):
         compliance_result = await check_constitutional_compliance(policy_data)
 
         # Step 4: Log comprehensive audit trail
-        audit_event_id = await audit_trail.log_policy_creation(workflow_id, {
-            "policy_data": policy_data,
-            "stakeholders": stakeholders,
-            "compliance_result": compliance_result,
-            "session_id": session_result["session_id"]
-        })
+        audit_event_id = await audit_trail.log_policy_creation(
+            workflow_id,
+            {
+                "policy_data": policy_data,
+                "stakeholders": stakeholders,
+                "compliance_result": compliance_result,
+                "session_id": session_result["session_id"],
+            },
+        )
 
         processing_time = (time.time() - start_time) * 1000
 
@@ -1387,16 +1751,19 @@ async def policy_creation_workflow(request: Dict[str, Any]):
                 "Stakeholder review and approval",
                 "Constitutional compliance validation",
                 "Final approval decision",
-                "Policy activation"
+                "Policy activation",
             ],
             "processing_time_ms": round(processing_time, 2),
             "performance_target": "<500ms",
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
     except Exception as e:
         logger.error(f"Policy creation workflow failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Policy creation workflow failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Policy creation workflow failed: {str(e)}"
+        )
+
 
 @app.post("/api/v1/workflows/constitutional-compliance")
 async def constitutional_compliance_workflow(request: Dict[str, Any]):
@@ -1413,7 +1780,9 @@ async def constitutional_compliance_workflow(request: Dict[str, Any]):
 
         # Step 1: Initiate compliance workflow
         workflow_id = await workflow_orchestrator.initiate_policy_workflow(
-            policy_id, "constitutional_compliance", ["compliance_officers", "legal_team"]
+            policy_id,
+            "constitutional_compliance",
+            ["compliance_officers", "legal_team"],
         )
 
         # Step 2: Real-time policy validation against constitutional hash
@@ -1430,15 +1799,18 @@ async def constitutional_compliance_workflow(request: Dict[str, Any]):
 
         # Step 5: Log compliance check
         compliance_id = f"COMP-{workflow_id}-{int(time.time())}"
-        audit_event_id = await audit_trail.log_compliance_check(compliance_id, {
-            "policy_id": policy_id,
-            "constitutional_hash": constitutional_hash,
-            "compliance_score": compliance_score,
-            "confidence_score": confidence_score,
-            "violations": violations,
-            "severity_classification": severity_classification,
-            "validation_level": validation_level
-        })
+        audit_event_id = await audit_trail.log_compliance_check(
+            compliance_id,
+            {
+                "policy_id": policy_id,
+                "constitutional_hash": constitutional_hash,
+                "compliance_score": compliance_score,
+                "confidence_score": confidence_score,
+                "violations": violations,
+                "severity_classification": severity_classification,
+                "validation_level": validation_level,
+            },
+        )
 
         processing_time = (time.time() - start_time) * 1000
 
@@ -1452,22 +1824,26 @@ async def constitutional_compliance_workflow(request: Dict[str, Any]):
                 "compliance_score": compliance_score,
                 "confidence_score": confidence_score,
                 "accuracy_achieved": compliance_score >= 0.95,
-                "confidence_threshold_met": confidence_score >= 0.90
+                "confidence_threshold_met": confidence_score >= 0.90,
             },
             "violations": {
                 "total_violations": len(violations),
                 "violations": violations,
-                "severity_classification": severity_classification
+                "severity_classification": severity_classification,
             },
             "audit_event_id": audit_event_id,
             "processing_time_ms": round(processing_time, 2),
             "performance_target": "<500ms",
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
     except Exception as e:
         logger.error(f"Constitutional compliance workflow failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Constitutional compliance workflow failed: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Constitutional compliance workflow failed: {str(e)}",
+        )
+
 
 @app.post("/api/v1/workflows/policy-enforcement")
 async def policy_enforcement_workflow(request: Dict[str, Any]):
@@ -1488,7 +1864,9 @@ async def policy_enforcement_workflow(request: Dict[str, Any]):
         )
 
         # Step 2: Enhanced policy enforcement with violation detection
-        enforcement_result = await enforcement_engine.enforce_policy(policy_id, enforcement_context)
+        enforcement_result = await enforcement_engine.enforce_policy(
+            policy_id, enforcement_context
+        )
 
         # Step 3: Automated violation detection and remediation triggers
         violations = enforcement_result.get("violations", {})
@@ -1501,13 +1879,16 @@ async def policy_enforcement_workflow(request: Dict[str, Any]):
 
         # Step 5: Log enforcement action
         enforcement_id = f"ENF-{workflow_id}-{int(time.time())}"
-        audit_event_id = await audit_trail.log_enforcement_action(enforcement_id, {
-            "policy_id": policy_id,
-            "enforcement_context": enforcement_context,
-            "enforcement_result": enforcement_result,
-            "escalation_result": escalation_result,
-            "auto_remediation": auto_remediation
-        })
+        audit_event_id = await audit_trail.log_enforcement_action(
+            enforcement_id,
+            {
+                "policy_id": policy_id,
+                "enforcement_context": enforcement_context,
+                "enforcement_result": enforcement_result,
+                "escalation_result": escalation_result,
+                "auto_remediation": auto_remediation,
+            },
+        )
 
         processing_time = (time.time() - start_time) * 1000
 
@@ -1521,12 +1902,15 @@ async def policy_enforcement_workflow(request: Dict[str, Any]):
             "automated_remediation": auto_remediation,
             "processing_time_ms": round(processing_time, 2),
             "performance_target": "<500ms",
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
     except Exception as e:
         logger.error(f"Policy enforcement workflow failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Policy enforcement workflow failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Policy enforcement workflow failed: {str(e)}"
+        )
+
 
 @app.post("/api/v1/workflows/wina-oversight")
 async def wina_oversight_workflow(request: Dict[str, Any]):
@@ -1547,7 +1931,9 @@ async def wina_oversight_workflow(request: Dict[str, Any]):
         performance_metrics = await _collect_wina_performance_metrics(system_id)
 
         # Step 3: Integration with EC service advanced coordination features
-        ec_integration_result = await _integrate_with_ec_service(workflow_id, performance_metrics)
+        ec_integration_result = await _integrate_with_ec_service(
+            workflow_id, performance_metrics
+        )
 
         # Step 4: Automated alert generation for performance degradation
         alert_result = await _generate_performance_alerts(
@@ -1560,7 +1946,7 @@ async def wina_oversight_workflow(request: Dict[str, Any]):
                 ["technical_leads", "governance_team"],
                 f"WINA oversight alerts generated for {system_id}",
                 workflow_id,
-                "high"
+                "high",
             )
         else:
             notification_result = {"notified": 0, "status": "no_alerts"}
@@ -1576,15 +1962,19 @@ async def wina_oversight_workflow(request: Dict[str, Any]):
             "ec_integration": ec_integration_result,
             "alerts": alert_result,
             "stakeholder_notifications": notification_result,
-            "performance_threshold_met": performance_metrics.get("overall_score", 0) >= performance_threshold,
+            "performance_threshold_met": performance_metrics.get("overall_score", 0)
+            >= performance_threshold,
             "processing_time_ms": round(processing_time, 2),
             "performance_target": "<500ms",
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
     except Exception as e:
         logger.error(f"WINA oversight workflow failed: {e}")
-        raise HTTPException(status_code=500, detail=f"WINA oversight workflow failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"WINA oversight workflow failed: {str(e)}"
+        )
+
 
 @app.post("/api/v1/workflows/audit-transparency")
 async def audit_transparency_workflow(request: Dict[str, Any]):
@@ -1603,18 +1993,22 @@ async def audit_transparency_workflow(request: Dict[str, Any]):
 
         # Step 1: Initiate audit and transparency workflow
         workflow_id = await workflow_orchestrator.initiate_policy_workflow(
-            f"AUDIT-{int(time.time())}", "audit_transparency", ["governance_team", "compliance_officers"]
+            f"AUDIT-{int(time.time())}",
+            "audit_transparency",
+            ["governance_team", "compliance_officers"],
         )
 
         # Step 2: Comprehensive logging of all governance actions
         audit_summary = {
             "total_events": len(audit_trail.events),
             "immutable_records": len(audit_trail.immutable_storage),
-            "audit_metrics": audit_trail.audit_metrics.copy()
+            "audit_metrics": audit_trail.audit_metrics.copy(),
         }
 
         # Step 3: Immutable audit trail storage with blockchain integration
-        blockchain_preparation = await _prepare_blockchain_storage(audit_trail.immutable_storage)
+        blockchain_preparation = await _prepare_blockchain_storage(
+            audit_trail.immutable_storage
+        )
 
         # Step 4: Public transparency reporting with privacy controls
         transparency_report = await audit_trail.generate_transparency_report(
@@ -1641,12 +2035,15 @@ async def audit_transparency_workflow(request: Dict[str, Any]):
             "immutable_storage": True,
             "processing_time_ms": round(processing_time, 2),
             "performance_target": "<500ms",
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
     except Exception as e:
         logger.error(f"Audit and transparency workflow failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Audit and transparency workflow failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Audit and transparency workflow failed: {str(e)}"
+        )
+
 
 @app.get("/api/v1/workflows/status/{workflow_id}")
 async def get_workflow_status(workflow_id: str):
@@ -1655,20 +2052,25 @@ async def get_workflow_status(workflow_id: str):
         workflow_status = await workflow_orchestrator.get_workflow_status(workflow_id)
 
         if workflow_status.get("status") == "not_found":
-            raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Workflow {workflow_id} not found"
+            )
 
         return {
             "workflow_status": workflow_status,
             "real_time_tracking": True,
             "performance_metrics": workflow_status.get("performance_metrics", {}),
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Workflow status retrieval failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Workflow status retrieval failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Workflow status retrieval failed: {str(e)}"
+        )
+
 
 @app.get("/api/v1/governance/metrics")
 async def get_governance_metrics():
@@ -1696,23 +2098,27 @@ async def get_governance_metrics():
                 "response_time_ms": round(processing_time, 2),
                 "target_response_time": "<500ms",
                 "availability": "99.9%",
-                "concurrent_workflows_supported": ">1000"
+                "concurrent_workflows_supported": ">1000",
             },
             "workflow_capabilities": {
                 "policy_creation": True,
                 "constitutional_compliance": True,
                 "policy_enforcement": True,
                 "wina_oversight": True,
-                "audit_transparency": True
+                "audit_transparency": True,
             },
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
     except Exception as e:
         logger.error(f"Governance metrics retrieval failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Governance metrics retrieval failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Governance metrics retrieval failed: {str(e)}"
+        )
+
 
 # Helper functions for workflow implementations
+
 
 async def _classify_compliance_violations(violations):
     """Classify compliance violations by severity."""
@@ -1730,14 +2136,17 @@ async def _classify_compliance_violations(violations):
 
     return severity_classification
 
-async def _handle_enforcement_escalation(workflow_id, violations, severity, auto_remediation):
+
+async def _handle_enforcement_escalation(
+    workflow_id, violations, severity, auto_remediation
+):
     """Handle enforcement escalation procedures."""
     escalation_result = {
         "escalation_triggered": severity in ["high", "critical"],
         "auto_remediation_applied": auto_remediation and severity in ["low", "medium"],
         "manual_intervention_required": severity == "critical",
         "escalation_level": severity,
-        "escalation_timestamp": time.time()
+        "escalation_timestamp": time.time(),
     }
 
     if escalation_result["escalation_triggered"]:
@@ -1746,6 +2155,7 @@ async def _handle_enforcement_escalation(workflow_id, violations, severity, auto
             escalation_result["escalated_to"].append("executive_team")
 
     return escalation_result
+
 
 async def _collect_wina_performance_metrics(system_id):
     """Collect WINA performance metrics for oversight."""
@@ -1757,8 +2167,9 @@ async def _collect_wina_performance_metrics(system_id):
         "error_rate": 0.015,
         "optimization_efficiency": 0.92,
         "resource_utilization": 0.68,
-        "collection_timestamp": time.time()
+        "collection_timestamp": time.time(),
     }
+
 
 async def _integrate_with_ec_service(workflow_id, performance_metrics):
     """Integrate with EC service for advanced coordination."""
@@ -1769,34 +2180,40 @@ async def _integrate_with_ec_service(workflow_id, performance_metrics):
         "performance_shared": True,
         "optimization_recommendations": [
             "Increase cache size for better performance",
-            "Consider load balancing for high traffic periods"
+            "Consider load balancing for high traffic periods",
         ],
-        "integration_timestamp": time.time()
+        "integration_timestamp": time.time(),
     }
+
 
 async def _generate_performance_alerts(performance_metrics, threshold, workflow_id):
     """Generate performance alerts based on thresholds."""
     alerts = []
 
     if performance_metrics.get("overall_score", 0) < threshold:
-        alerts.append({
-            "type": "performance_degradation",
-            "severity": "medium",
-            "message": f"Overall performance score {performance_metrics['overall_score']} below threshold {threshold}"
-        })
+        alerts.append(
+            {
+                "type": "performance_degradation",
+                "severity": "medium",
+                "message": f"Overall performance score {performance_metrics['overall_score']} below threshold {threshold}",
+            }
+        )
 
     if performance_metrics.get("error_rate", 0) > 0.05:
-        alerts.append({
-            "type": "high_error_rate",
-            "severity": "high",
-            "message": f"Error rate {performance_metrics['error_rate']} exceeds 5% threshold"
-        })
+        alerts.append(
+            {
+                "type": "high_error_rate",
+                "severity": "high",
+                "message": f"Error rate {performance_metrics['error_rate']} exceeds 5% threshold",
+            }
+        )
 
     return {
         "alerts_generated": len(alerts),
         "alerts": alerts,
-        "alert_timestamp": time.time()
+        "alert_timestamp": time.time(),
     }
+
 
 async def _prepare_blockchain_storage(immutable_records):
     """Prepare audit records for blockchain storage."""
@@ -1805,8 +2222,9 @@ async def _prepare_blockchain_storage(immutable_records):
         "blockchain_ready": True,
         "hash_verification": "passed",
         "storage_format": "immutable_json",
-        "preparation_timestamp": time.time()
+        "preparation_timestamp": time.time(),
     }
+
 
 async def _generate_regulatory_compliance_report(transparency_report, time_range):
     """Generate regulatory compliance report."""
@@ -1817,8 +2235,9 @@ async def _generate_regulatory_compliance_report(transparency_report, time_range
         "regulatory_requirements_met": True,
         "audit_trail_complete": True,
         "transparency_score": 0.98,
-        "report_timestamp": time.time()
+        "report_timestamp": time.time(),
     }
+
 
 # Add Prometheus metrics endpoint
 @app.get("/metrics")

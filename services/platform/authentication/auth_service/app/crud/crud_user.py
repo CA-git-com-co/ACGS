@@ -1,10 +1,15 @@
 from typing import Any, Dict, List, Optional, Union
 
-from ..core.password import get_password_hash, verify_password  # Import from password module to avoid circular imports
+from ..core.password import (
+    get_password_hash,
+    verify_password,
+)  # Import from password module to avoid circular imports
 from ..models import User
+
 # Create simple schemas locally since shared ones are not available
 from pydantic import BaseModel
 from typing import Optional
+
 
 class UserCreate(BaseModel):
     username: str
@@ -14,6 +19,7 @@ class UserCreate(BaseModel):
     last_name: Optional[str] = None
     full_name: Optional[str] = None
 
+
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[str] = None
@@ -22,6 +28,8 @@ class UserUpdate(BaseModel):
     last_name: Optional[str] = None
     full_name: Optional[str] = None
     is_active: Optional[bool] = None
+
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -44,11 +52,7 @@ async def get_user_by_email(db: AsyncSession, *, email: str) -> Optional[User]:
     return result.scalars().first()
 
 
-async def get_users(
-    db: AsyncSession, skip: int = 0, limit: int = 100
-) -> List[
-    User
-]:
+async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[User]:
     """Retrieve a list of users with pagination."""
     result = await db.execute(select(User).offset(skip).limit(limit))
     return result.scalars().all()
@@ -59,9 +63,9 @@ async def create_user(db: AsyncSession, *, obj_in: UserCreate) -> User:
     db_obj = User(
         email=obj_in.email,
         hashed_password=get_password_hash(obj_in.password),
-        full_name=getattr(obj_in, 'full_name', None), # Handle optional fields
+        full_name=getattr(obj_in, "full_name", None),  # Handle optional fields
         username=obj_in.username,
-        is_active=True  # New users active by default
+        is_active=True,  # New users active by default
     )
     db.add(db_obj)
     await db.commit()
@@ -69,11 +73,11 @@ async def create_user(db: AsyncSession, *, obj_in: UserCreate) -> User:
     return db_obj
 
 
-async def update_user(
-    db: AsyncSession, *, db_obj: User, obj_in: UserUpdate
-) -> User:
+async def update_user(db: AsyncSession, *, db_obj: User, obj_in: UserUpdate) -> User:
     """Update an existing user's information."""
-    update_data = obj_in.model_dump(exclude_unset=True) # Use model_dump for Pydantic V2
+    update_data = obj_in.model_dump(
+        exclude_unset=True
+    )  # Use model_dump for Pydantic V2
 
     if "password" in update_data and update_data["password"]:
         hashed_password = get_password_hash(update_data["password"])

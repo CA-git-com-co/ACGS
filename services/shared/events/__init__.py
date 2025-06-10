@@ -26,5 +26,5 @@ __all__ = [
     "DatabaseEventStore",
     "EventType",
     "EventPriority",
-    "EventStatus"
+    "EventStatus",
 ]

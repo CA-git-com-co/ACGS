@@ -16,20 +16,21 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+
 def dispatch_test_package(test_package_dict: dict):
     """
     Dispatches a test package to a node agent via gRPC.
     """
     logger.info(f"Dispatching test package: {test_package_dict}")
     try:
-        with grpc.insecure_channel('localhost:50051') as channel:
+        with grpc.insecure_channel("localhost:50051") as channel:
             stub = evaluation_pb2_grpc.NodeAgentServiceStub(channel)
-            
+
             test_package = evaluation_pb2.TestPackage(
                 test_id=test_package_dict.get("test_id", ""),
-                test_content=test_package_dict.get("test_content", "")
+                test_content=test_package_dict.get("test_content", ""),
             )
-            
+
             response = stub.DispatchTest(test_package)
             logger.info(f"Received response from agent: {response}")
             return response
@@ -51,13 +52,19 @@ async def receive_test(payload: dict = Body(...)):
     dispatch_response = dispatch_test_package(payload)
 
     if dispatch_response:
-        return {"status": "test dispatched", "task_id": task_id, "agent_response": {
-            "task_id": dispatch_response.task_id,
-            "status": dispatch_response.status
-        }}
+        return {
+            "status": "test dispatched",
+            "task_id": task_id,
+            "agent_response": {
+                "task_id": dispatch_response.task_id,
+                "status": dispatch_response.status,
+            },
+        }
     else:
         return {"status": "failed to dispatch test", "task_id": task_id}
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

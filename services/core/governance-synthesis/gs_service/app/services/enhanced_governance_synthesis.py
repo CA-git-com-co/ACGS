@@ -21,13 +21,13 @@ from .policy_validator import (
     PolicyValidationResponse,
     ValidationLevel,
     PolicyType,
-    get_policy_validator
+    get_policy_validator,
 )
 from ..core.wina_rego_synthesis import (
     WINARegoSynthesizer,
     WINARegoSynthesisResult,
     get_wina_rego_synthesizer,
-    synthesize_rego_policy_with_wina
+    synthesize_rego_policy_with_wina,
 )
 from .alphaevolve_bridge import AlphaEvolveBridge
 from ..workflows.policy_synthesis_workflow import PolicySynthesisWorkflow
@@ -39,24 +39,25 @@ logger = logging.getLogger(__name__)
 @dataclass
 class EnhancedSynthesisRequest:
     """Enhanced synthesis request with OPA validation options."""
+
     synthesis_goal: str
     constitutional_principles: List[Dict[str, Any]]
     constraints: Optional[List[str]] = None
     context_data: Optional[Dict[str, Any]] = None
     target_format: str = "rego"
     policy_type: str = "governance_rule"
-    
+
     # Validation options
     validation_level: ValidationLevel = ValidationLevel.STANDARD
     enable_opa_validation: bool = True
     enable_conflict_detection: bool = True
     enable_compliance_checking: bool = True
     enable_constitutional_validation: bool = True
-    
+
     # Performance options
     enable_parallel_validation: bool = True
     max_validation_latency_ms: int = 50
-    
+
     # Integration options
     enable_wina_optimization: bool = True
     enable_alphaevolve_synthesis: bool = True
@@ -66,28 +67,29 @@ class EnhancedSynthesisRequest:
 @dataclass
 class EnhancedSynthesisResponse:
     """Enhanced synthesis response with comprehensive validation results."""
+
     synthesis_id: str
     synthesis_time_ms: float
-    
+
     # Synthesis results
     synthesized_policy: str
     policy_metadata: Dict[str, Any]
-    
+
     # Validation results
     validation_response: Optional[PolicyValidationResponse]
     is_valid: bool
     validation_score: float
-    
+
     # Performance metrics
     synthesis_latency_ms: float
     validation_latency_ms: float
     total_latency_ms: float
-    
+
     # Integration results
     wina_result: Optional[WINARegoSynthesisResult]
     alphaevolve_metadata: Optional[Dict[str, Any]]
     langgraph_metadata: Optional[Dict[str, Any]]
-    
+
     # Recommendations and warnings
     errors: List[str]
     warnings: List[str]
@@ -137,9 +139,9 @@ class EnhancedGovernanceSynthesis:
             "constitutional_fidelity_score": 0.0,
             "svd_transformation_count": 0,
             "multi_model_ensemble_usage": 0,
-            "target_performance_achieved": False
+            "target_performance_achieved": False,
         }
-    
+
     async def initialize(self):
         """Initialize all synthesis and validation components including Phase 2 WINA optimization."""
         if self._initialized:
@@ -161,7 +163,9 @@ class EnhancedGovernanceSynthesis:
             await self._initialize_phase2_components()
 
             self._initialized = True
-            logger.info("Enhanced governance synthesis service initialized with Phase 2 WINA optimization")
+            logger.info(
+                "Enhanced governance synthesis service initialized with Phase 2 WINA optimization"
+            )
 
         except Exception as e:
             logger.error(f"Failed to initialize enhanced governance synthesis: {e}")
@@ -172,7 +176,9 @@ class EnhancedGovernanceSynthesis:
         try:
             # Import Phase 2 components
             from ...shared.wina.svd_transformation import SVDTransformation, WINAConfig
-            from ...shared.wina.constitutional_integration import ConstitutionalWINAIntegration
+            from ...shared.wina.constitutional_integration import (
+                ConstitutionalWINAIntegration,
+            )
             from ..core.multi_model_coordinator import MultiModelCoordinator
             from ..core.performance_optimizer import WINAPerformanceOptimizer
 
@@ -182,7 +188,7 @@ class EnhancedGovernanceSynthesis:
                 accuracy_threshold=0.95,  # Maintain >95% accuracy
                 constitutional_compliance_threshold=0.85,
                 enable_runtime_gating=True,
-                enable_performance_monitoring=True
+                enable_performance_monitoring=True,
             )
             self.wina_svd_transformer = SVDTransformation(wina_config)
 
@@ -191,20 +197,24 @@ class EnhancedGovernanceSynthesis:
             await self.constitutional_fidelity_monitor.initialize()
 
             # Initialize multi-model coordinator for ensemble synthesis
-            self.multi_model_coordinator = MultiModelCoordinator({
-                "primary_model": "gemini-2.5-pro",
-                "fallback_models": ["gemini-2.0-flash", "gemini-2.5-flash"],
-                "ensemble_strategy": "weighted_voting",
-                "wina_optimization_enabled": True
-            })
+            self.multi_model_coordinator = MultiModelCoordinator(
+                {
+                    "primary_model": "gemini-2.5-pro",
+                    "fallback_models": ["gemini-2.0-flash", "gemini-2.5-flash"],
+                    "ensemble_strategy": "weighted_voting",
+                    "wina_optimization_enabled": True,
+                }
+            )
 
             # Initialize performance optimizer
-            self.performance_optimizer = WINAPerformanceOptimizer({
-                "target_gflops_reduction": 0.5,  # 50% GFLOPs reduction target
-                "accuracy_retention_threshold": 0.95,
-                "constitutional_compliance_threshold": 0.85,
-                "optimization_strategy": "adaptive"
-            })
+            self.performance_optimizer = WINAPerformanceOptimizer(
+                {
+                    "target_gflops_reduction": 0.5,  # 50% GFLOPs reduction target
+                    "accuracy_retention_threshold": 0.95,
+                    "constitutional_compliance_threshold": 0.85,
+                    "optimization_strategy": "adaptive",
+                }
+            )
 
             logger.info("Phase 2 WINA optimization components initialized successfully")
 
@@ -218,71 +228,77 @@ class EnhancedGovernanceSynthesis:
         except Exception as e:
             logger.error(f"Failed to initialize Phase 2 components: {e}")
             raise
-    
-    async def synthesize_policy(self, request: EnhancedSynthesisRequest) -> EnhancedSynthesisResponse:
+
+    async def synthesize_policy(
+        self, request: EnhancedSynthesisRequest
+    ) -> EnhancedSynthesisResponse:
         """
         Synthesize governance policy with comprehensive validation and optimization.
-        
+
         Args:
             request: Enhanced synthesis request
-            
+
         Returns:
             Enhanced synthesis response with validation results
-            
+
         Raises:
             Exception: If synthesis or validation fails
         """
         if not self._initialized:
             await self.initialize()
-        
+
         synthesis_id = f"synthesis_{int(time.time() * 1000)}"
         start_time = time.time()
-        
+
         errors = []
         warnings = []
         recommendations = []
-        
+
         try:
             logger.info(f"Starting enhanced policy synthesis: {synthesis_id}")
-            
+
             # Phase 1: Policy Synthesis
             synthesis_start = time.time()
             synthesis_result = await self._execute_synthesis(request)
             synthesis_time_ms = (time.time() - synthesis_start) * 1000
-            
+
             if not synthesis_result:
                 raise Exception("Policy synthesis failed to produce results")
-            
+
             # Phase 2: OPA-based Validation (if enabled)
             validation_response = None
             validation_time_ms = 0.0
-            
+
             if request.enable_opa_validation:
                 validation_start = time.time()
                 validation_response = await self._validate_synthesized_policy(
                     synthesis_result, request
                 )
                 validation_time_ms = (time.time() - validation_start) * 1000
-                
+
                 # Check validation latency threshold
                 if validation_time_ms > request.max_validation_latency_ms:
-                    warnings.append(f"Validation latency {validation_time_ms:.2f}ms exceeded threshold")
+                    warnings.append(
+                        f"Validation latency {validation_time_ms:.2f}ms exceeded threshold"
+                    )
                     self.metrics["performance_threshold_violations"] += 1
-                
+
                 # Extract validation results
                 if validation_response:
                     errors.extend(validation_response.errors)
                     warnings.extend(validation_response.warnings)
                     recommendations.extend(validation_response.recommendations)
-            
+
             # Phase 3: Calculate overall results
             total_time_ms = (time.time() - start_time) * 1000
             is_valid = validation_response.is_valid if validation_response else True
-            validation_score = validation_response.overall_score if validation_response else 1.0
-            
+            validation_score = (
+                validation_response.overall_score if validation_response else 1.0
+            )
+
             # Update metrics
             self._update_metrics(synthesis_time_ms, validation_time_ms, is_valid)
-            
+
             # Create response
             response = EnhancedSynthesisResponse(
                 synthesis_id=synthesis_id,
@@ -300,20 +316,22 @@ class EnhancedGovernanceSynthesis:
                 langgraph_metadata=synthesis_result.get("langgraph_metadata"),
                 errors=errors,
                 warnings=warnings,
-                recommendations=recommendations
+                recommendations=recommendations,
             )
-            
-            logger.info(f"Enhanced synthesis completed: {synthesis_id} "
-                       f"(valid: {is_valid}, score: {validation_score:.2f}, "
-                       f"time: {total_time_ms:.2f}ms)")
-            
+
+            logger.info(
+                f"Enhanced synthesis completed: {synthesis_id} "
+                f"(valid: {is_valid}, score: {validation_score:.2f}, "
+                f"time: {total_time_ms:.2f}ms)"
+            )
+
             return response
-            
+
         except Exception as e:
             total_time_ms = (time.time() - start_time) * 1000
             self.metrics["failed_syntheses"] += 1
             logger.error(f"Enhanced synthesis failed: {synthesis_id} - {e}")
-            
+
             # Return error response
             return EnhancedSynthesisResponse(
                 synthesis_id=synthesis_id,
@@ -331,24 +349,28 @@ class EnhancedGovernanceSynthesis:
                 langgraph_metadata=None,
                 errors=[str(e)],
                 warnings=warnings,
-                recommendations=["Fix synthesis errors and retry"]
+                recommendations=["Fix synthesis errors and retry"],
             )
-    
-    async def _execute_synthesis(self, request: EnhancedSynthesisRequest) -> Dict[str, Any]:
+
+    async def _execute_synthesis(
+        self, request: EnhancedSynthesisRequest
+    ) -> Dict[str, Any]:
         """Execute policy synthesis using available synthesis methods with Phase 2 enhancements."""
         synthesis_results = {}
 
         # Phase 2: Multi-model ensemble synthesis (if available)
         if self.multi_model_coordinator and request.enable_wina_optimization:
             try:
-                ensemble_result = await self.multi_model_coordinator.coordinate_synthesis(
-                    synthesis_request={
-                        "goal": request.synthesis_goal,
-                        "principles": request.constitutional_principles,
-                        "constraints": request.constraints,
-                        "context": request.context_data
-                    },
-                    enable_wina=True
+                ensemble_result = (
+                    await self.multi_model_coordinator.coordinate_synthesis(
+                        synthesis_request={
+                            "goal": request.synthesis_goal,
+                            "principles": request.constitutional_principles,
+                            "constraints": request.constraints,
+                            "context": request.context_data,
+                        },
+                        enable_wina=True,
+                    )
                 )
 
                 if ensemble_result.synthesized_policy:
@@ -358,15 +380,17 @@ class EnhancedGovernanceSynthesis:
                             synthesis_context=request.context_data or {},
                             current_metrics={
                                 "accuracy": ensemble_result.confidence_score,
-                                "constitutional_compliance": ensemble_result.constitutional_fidelity
-                            }
+                                "constitutional_compliance": ensemble_result.constitutional_fidelity,
+                            },
                         )
 
                         synthesis_results["optimization_result"] = optimization_result
                         synthesis_results["phase2_enhanced"] = True
 
                     synthesis_results["ensemble_result"] = ensemble_result
-                    synthesis_results["policy_content"] = ensemble_result.synthesized_policy
+                    synthesis_results["policy_content"] = (
+                        ensemble_result.synthesized_policy
+                    )
                     synthesis_results["metadata"] = {
                         "synthesis_method": "phase2_multi_model_ensemble",
                         "contributing_models": ensemble_result.contributing_models,
@@ -374,13 +398,20 @@ class EnhancedGovernanceSynthesis:
                         "confidence_score": ensemble_result.confidence_score,
                         "constitutional_fidelity": ensemble_result.constitutional_fidelity,
                         "wina_optimization_applied": ensemble_result.wina_optimization_applied,
-                        "phase2_features": ["multi_model_coordination", "performance_optimization"]
+                        "phase2_features": [
+                            "multi_model_coordination",
+                            "performance_optimization",
+                        ],
                     }
-                    logger.info("Phase 2 multi-model ensemble synthesis completed successfully")
+                    logger.info(
+                        "Phase 2 multi-model ensemble synthesis completed successfully"
+                    )
                     return synthesis_results
 
             except Exception as e:
-                logger.warning(f"Phase 2 ensemble synthesis failed, falling back to Phase 1: {e}")
+                logger.warning(
+                    f"Phase 2 ensemble synthesis failed, falling back to Phase 1: {e}"
+                )
 
         # Method 1: WINA-optimized Rego synthesis (Phase 1 fallback)
         if request.enable_wina_optimization:
@@ -390,7 +421,7 @@ class EnhancedGovernanceSynthesis:
                     constitutional_principles=request.constitutional_principles,
                     constraints=request.constraints,
                     context_data=request.context_data,
-                    apply_wina=True
+                    apply_wina=True,
                 )
 
                 if wina_result and wina_result.rego_content:
@@ -399,37 +430,48 @@ class EnhancedGovernanceSynthesis:
                     synthesis_results["metadata"] = {
                         "synthesis_method": "wina_rego",
                         "optimization_applied": wina_result.optimization_applied,
-                        "performance_metrics": wina_result.performance_metrics
+                        "performance_metrics": wina_result.performance_metrics,
                     }
                     logger.info("WINA synthesis completed successfully")
                     return synthesis_results
 
             except Exception as e:
                 logger.warning(f"WINA synthesis failed: {e}")
-        
+
         # Method 2: AlphaEvolve synthesis (if enabled and available)
-        if request.enable_alphaevolve_synthesis and self.alphaevolve_bridge.is_available():
+        if (
+            request.enable_alphaevolve_synthesis
+            and self.alphaevolve_bridge.is_available()
+        ):
             try:
-                alphaevolve_result = await self.alphaevolve_bridge.synthesize_ec_governance_rules(
-                    ec_context=request.context_data.get("ec_context", "general"),
-                    optimization_objective=request.synthesis_goal,
-                    constitutional_constraints=request.constraints or [],
-                    target_format=request.target_format
+                alphaevolve_result = (
+                    await self.alphaevolve_bridge.synthesize_ec_governance_rules(
+                        ec_context=request.context_data.get("ec_context", "general"),
+                        optimization_objective=request.synthesis_goal,
+                        constitutional_constraints=request.constraints or [],
+                        target_format=request.target_format,
+                    )
                 )
-                
+
                 if alphaevolve_result.get("rules"):
-                    synthesis_results["alphaevolve_metadata"] = alphaevolve_result.get("metadata", {})
-                    synthesis_results["policy_content"] = alphaevolve_result["rules"][0] if alphaevolve_result["rules"] else ""
+                    synthesis_results["alphaevolve_metadata"] = alphaevolve_result.get(
+                        "metadata", {}
+                    )
+                    synthesis_results["policy_content"] = (
+                        alphaevolve_result["rules"][0]
+                        if alphaevolve_result["rules"]
+                        else ""
+                    )
                     synthesis_results["metadata"] = {
                         "synthesis_method": "alphaevolve",
-                        "rule_count": len(alphaevolve_result["rules"])
+                        "rule_count": len(alphaevolve_result["rules"]),
                     }
                     logger.info("AlphaEvolve synthesis completed successfully")
                     return synthesis_results
-                    
+
             except Exception as e:
                 logger.warning(f"AlphaEvolve synthesis failed: {e}")
-        
+
         # Method 3: LangGraph workflow synthesis (if enabled)
         if request.enable_langgraph_workflow:
             try:
@@ -455,19 +497,19 @@ class EnhancedGovernanceSynthesis:
                     """,
                     "metadata": {
                         "synthesis_method": "langgraph_workflow",
-                        "workflow_version": "1.0"
-                    }
+                        "workflow_version": "1.0",
+                    },
                 }
-                
+
                 synthesis_results["langgraph_metadata"] = langgraph_result["metadata"]
                 synthesis_results["policy_content"] = langgraph_result["policy_content"]
                 synthesis_results["metadata"] = langgraph_result["metadata"]
                 logger.info("LangGraph synthesis completed successfully")
                 return synthesis_results
-                
+
             except Exception as e:
                 logger.warning(f"LangGraph synthesis failed: {e}")
-        
+
         # Fallback: Basic template-based synthesis
         logger.warning("All advanced synthesis methods failed, using fallback")
         return {
@@ -485,12 +527,13 @@ class EnhancedGovernanceSynthesis:
             """,
             "metadata": {
                 "synthesis_method": "fallback",
-                "warning": "Advanced synthesis methods unavailable"
-            }
+                "warning": "Advanced synthesis methods unavailable",
+            },
         }
-    
-    async def _validate_synthesized_policy(self, synthesis_result: Dict[str, Any], 
-                                         request: EnhancedSynthesisRequest) -> Optional[PolicyValidationResponse]:
+
+    async def _validate_synthesized_policy(
+        self, synthesis_result: Dict[str, Any], request: EnhancedSynthesisRequest
+    ) -> Optional[PolicyValidationResponse]:
         """Validate synthesized policy using OPA integration."""
         try:
             # Convert synthesis request to validation request
@@ -504,38 +547,42 @@ class EnhancedGovernanceSynthesis:
                 check_conflicts=request.enable_conflict_detection,
                 check_compliance=request.enable_compliance_checking,
                 check_constitutional=request.enable_constitutional_validation,
-                target_format=request.target_format
+                target_format=request.target_format,
             )
-            
+
             # Execute validation
-            validation_response = await self.policy_validator.validate_policy(validation_request)
-            
+            validation_response = await self.policy_validator.validate_policy(
+                validation_request
+            )
+
             if request.enable_opa_validation:
                 self.metrics["opa_validation_enabled_count"] += 1
-            
+
             return validation_response
-            
+
         except Exception as e:
             logger.error(f"Policy validation failed: {e}")
             return None
-    
-    async def batch_synthesize(self, requests: List[EnhancedSynthesisRequest]) -> List[EnhancedSynthesisResponse]:
+
+    async def batch_synthesize(
+        self, requests: List[EnhancedSynthesisRequest]
+    ) -> List[EnhancedSynthesisResponse]:
         """Synthesize multiple policies in batch for improved performance."""
         if not requests:
             return []
-        
+
         if len(requests) == 1:
             # Single request - use regular synthesis
             return [await self.synthesize_policy(requests[0])]
-        
+
         # Batch processing with parallel execution
         if requests[0].enable_parallel_validation:
             semaphore = asyncio.Semaphore(4)  # Limit concurrent syntheses
-            
+
             async def synthesize_with_semaphore(request):
                 async with semaphore:
                     return await self.synthesize_policy(request)
-            
+
             tasks = [synthesize_with_semaphore(request) for request in requests]
             return await asyncio.gather(*tasks, return_exceptions=True)
         else:
@@ -545,49 +592,57 @@ class EnhancedGovernanceSynthesis:
                 result = await self.synthesize_policy(request)
                 results.append(result)
             return results
-    
-    def _update_metrics(self, synthesis_time_ms: float, validation_time_ms: float, success: bool):
+
+    def _update_metrics(
+        self, synthesis_time_ms: float, validation_time_ms: float, success: bool
+    ):
         """Update performance metrics."""
         self.metrics["total_syntheses"] += 1
-        
+
         if success:
             self.metrics["successful_syntheses"] += 1
         else:
             self.metrics["failed_syntheses"] += 1
-        
+
         # Update average times
         total = self.metrics["total_syntheses"]
         current_avg_synthesis = self.metrics["average_synthesis_time_ms"]
         current_avg_validation = self.metrics["average_validation_time_ms"]
-        
+
         self.metrics["average_synthesis_time_ms"] = (
             (current_avg_synthesis * (total - 1)) + synthesis_time_ms
         ) / total
-        
+
         self.metrics["average_validation_time_ms"] = (
             (current_avg_validation * (total - 1)) + validation_time_ms
         ) / total
-    
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get performance and usage metrics including Phase 2 enhancements."""
         base_metrics = self.metrics.copy()
 
         # Add Phase 2 metrics if components are available
         if self.multi_model_coordinator:
-            base_metrics["multi_model_performance"] = self.multi_model_coordinator.get_performance_summary()
+            base_metrics["multi_model_performance"] = (
+                self.multi_model_coordinator.get_performance_summary()
+            )
 
         if self.performance_optimizer:
-            base_metrics["wina_optimization_performance"] = self.performance_optimizer.get_performance_summary()
+            base_metrics["wina_optimization_performance"] = (
+                self.performance_optimizer.get_performance_summary()
+            )
 
         if self.constitutional_fidelity_monitor:
             try:
-                current_fidelity = self.constitutional_fidelity_monitor.get_current_fidelity()
+                current_fidelity = (
+                    self.constitutional_fidelity_monitor.get_current_fidelity()
+                )
                 if current_fidelity:
                     base_metrics["constitutional_fidelity"] = {
                         "composite_score": current_fidelity.composite_score,
                         "principle_coverage": current_fidelity.principle_coverage,
                         "synthesis_success": current_fidelity.synthesis_success,
-                        "enforcement_reliability": current_fidelity.enforcement_reliability
+                        "enforcement_reliability": current_fidelity.enforcement_reliability,
                     }
             except Exception as e:
                 logger.warning(f"Failed to get constitutional fidelity metrics: {e}")
@@ -603,7 +658,7 @@ class EnhancedGovernanceSynthesis:
             "gflops_reduction_target": 0.5,  # 50% target
             "accuracy_retention_target": 0.95,  # 95% target
             "constitutional_compliance_target": 0.85,  # 85% target
-            "reliability_target": 0.999  # 99.9% target
+            "reliability_target": 0.999,  # 99.9% target
         }
 
         achievements = {}
@@ -611,76 +666,86 @@ class EnhancedGovernanceSynthesis:
         # Check current performance against targets
         current_gflops = self.metrics.get("gflops_reduction_achieved", 0.0)
         current_fidelity = self.metrics.get("constitutional_fidelity_score", 0.0)
-        current_success_rate = (
-            self.metrics["successful_syntheses"] / max(self.metrics["total_syntheses"], 1)
+        current_success_rate = self.metrics["successful_syntheses"] / max(
+            self.metrics["total_syntheses"], 1
         )
 
-        achievements["gflops_reduction_achieved"] = current_gflops >= targets["gflops_reduction_target"]
-        achievements["constitutional_compliance_achieved"] = current_fidelity >= targets["constitutional_compliance_target"]
-        achievements["reliability_achieved"] = current_success_rate >= targets["reliability_target"]
+        achievements["gflops_reduction_achieved"] = (
+            current_gflops >= targets["gflops_reduction_target"]
+        )
+        achievements["constitutional_compliance_achieved"] = (
+            current_fidelity >= targets["constitutional_compliance_target"]
+        )
+        achievements["reliability_achieved"] = (
+            current_success_rate >= targets["reliability_target"]
+        )
 
         # Overall Phase 2 achievement
-        achievements["phase2_targets_met"] = all([
-            achievements["gflops_reduction_achieved"],
-            achievements["constitutional_compliance_achieved"],
-            achievements["reliability_achieved"]
-        ])
+        achievements["phase2_targets_met"] = all(
+            [
+                achievements["gflops_reduction_achieved"],
+                achievements["constitutional_compliance_achieved"],
+                achievements["reliability_achieved"],
+            ]
+        )
 
         achievements["targets"] = targets
         achievements["current_values"] = {
             "gflops_reduction": current_gflops,
             "constitutional_fidelity": current_fidelity,
-            "success_rate": current_success_rate
+            "success_rate": current_success_rate,
         }
 
         return achievements
-    
+
     async def health_check(self) -> Dict[str, Any]:
         """Perform health check on all components."""
         health_status = {
             "service": "enhanced_governance_synthesis",
             "status": "healthy",
             "components": {},
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
-        
+
         try:
             # Check policy validator
             if self.policy_validator:
                 validator_metrics = self.policy_validator.get_metrics()
                 health_status["components"]["policy_validator"] = {
                     "status": "healthy",
-                    "metrics": validator_metrics
+                    "metrics": validator_metrics,
                 }
-            
+
             # Check OPA client
             opa_client = await get_opa_client()
             opa_metrics = opa_client.get_metrics()
             health_status["components"]["opa_client"] = {
                 "status": "healthy",
-                "metrics": opa_metrics
+                "metrics": opa_metrics,
             }
-            
+
             # Check WINA synthesizer
             if self.wina_synthesizer:
-                health_status["components"]["wina_synthesizer"] = {
-                    "status": "healthy"
-                }
-            
+                health_status["components"]["wina_synthesizer"] = {"status": "healthy"}
+
             # Check AlphaEvolve bridge
             if self.alphaevolve_bridge:
                 health_status["components"]["alphaevolve_bridge"] = {
-                    "status": "healthy" if self.alphaevolve_bridge.is_available() else "unavailable"
+                    "status": (
+                        "healthy"
+                        if self.alphaevolve_bridge.is_available()
+                        else "unavailable"
+                    )
                 }
-            
+
             # Overall service metrics
             health_status["service_metrics"] = self.get_metrics()
-            
+
         except Exception as e:
             health_status["status"] = "unhealthy"
             health_status["error"] = str(e)
             logger.error(f"Health check failed: {e}")
-        
+
         return health_status
 
 

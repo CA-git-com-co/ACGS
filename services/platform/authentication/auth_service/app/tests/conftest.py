@@ -1,22 +1,25 @@
 # acgs-pgp/auth_service/app/tests/conftest.py
 import asyncio
 import os
-from typing import AsyncGenerator, Generator # AsyncGenerator for async fixture
+from typing import AsyncGenerator, Generator  # AsyncGenerator for async fixture
 
 import pytest
+
 try:
     from ..core.config import settings
     from ..db.base_class import Base
     from ..db.session import get_async_db
-    from ..main import app as fastapi_app # Your FastAPI application, aliased
+    from ..main import app as fastapi_app  # Your FastAPI application, aliased
 except ImportError:
     # Mock imports for testing when modules are not available
     class MockSettings:
         SQLALCHEMY_DATABASE_URI = "sqlite+aiosqlite:///./test_auth_app.db"
+
     settings = MockSettings()
 
     class MockBase:
         metadata = None
+
     Base = MockBase()
 
     async def get_async_db():
@@ -24,8 +27,9 @@ except ImportError:
 
     class MockApp:
         dependency_overrides = {}
+
     fastapi_app = MockApp()
-from httpx import AsyncClient # Use httpx.AsyncClient
+from httpx import AsyncClient  # Use httpx.AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -80,7 +84,7 @@ async def override_get_async_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest.fixture()
-async def client() -> AsyncGenerator[AsyncClient, None]: # Changed to async generator
+async def client() -> AsyncGenerator[AsyncClient, None]:  # Changed to async generator
     """Get a TestClient that uses the overridden async DB session."""
     fastapi_app.dependency_overrides[get_async_db] = override_get_async_db
     # Use httpx.AsyncClient for testing async FastAPI app

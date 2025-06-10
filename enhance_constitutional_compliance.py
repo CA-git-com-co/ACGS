@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 from typing import Dict, Any
 
+
 class ConstitutionalComplianceEnhancer:
     """Enhance AC and PGC services with full constitutional compliance API endpoints."""
 
@@ -20,8 +21,16 @@ class ConstitutionalComplianceEnhancer:
         self.start_time = time.time()
 
         # Service directories
-        self.ac_service_dir = self.project_root / "services" / "core" / "constitutional-ai" / "ac_service"
-        self.pgc_service_dir = self.project_root / "services" / "core" / "policy-governance-compliance" / "pgc_service"
+        self.ac_service_dir = (
+            self.project_root / "services" / "core" / "constitutional-ai" / "ac_service"
+        )
+        self.pgc_service_dir = (
+            self.project_root
+            / "services"
+            / "core"
+            / "policy-governance-compliance"
+            / "pgc_service"
+        )
 
     def log_action(self, action: str, status: str, details: str = ""):
         """Log execution actions with timestamps."""
@@ -30,7 +39,7 @@ class ConstitutionalComplianceEnhancer:
             "timestamp": timestamp,
             "action": action,
             "status": status,
-            "details": details
+            "details": details,
         }
         self.execution_log.append(log_entry)
         print(f"[{timestamp:.1f}s] {status}: {action}")
@@ -39,7 +48,9 @@ class ConstitutionalComplianceEnhancer:
 
     def enhance_ac_service(self) -> bool:
         """Enhance AC service with constitutional compliance endpoints."""
-        self.log_action("Enhancing AC service with constitutional compliance endpoints", "INFO")
+        self.log_action(
+            "Enhancing AC service with constitutional compliance endpoints", "INFO"
+        )
 
         ac_main_file = self.ac_service_dir / "app" / "main.py"
 
@@ -48,7 +59,7 @@ class ConstitutionalComplianceEnhancer:
             return False
 
         # Read current content
-        with open(ac_main_file, 'r') as f:
+        with open(ac_main_file, "r") as f:
             current_content = f.read()
 
         # Enhanced AC service with constitutional compliance endpoints
@@ -303,24 +314,32 @@ if __name__ == "__main__":
         # Backup original and write enhanced version
         backup_file = ac_main_file.with_suffix(".py.backup_enhanced")
         if not backup_file.exists():
-            with open(backup_file, 'w') as f:
+            with open(backup_file, "w") as f:
                 f.write(current_content)
 
-        with open(ac_main_file, 'w') as f:
+        with open(ac_main_file, "w") as f:
             f.write(enhanced_content)
 
-        self.log_action("AC service enhanced with constitutional compliance endpoints", "SUCCESS")
+        self.log_action(
+            "AC service enhanced with constitutional compliance endpoints", "SUCCESS"
+        )
         return True
 
     def enhance_pgc_service(self) -> bool:
         """Enhance PGC service with policy governance compliance endpoints."""
-        self.log_action("Enhancing PGC service with policy governance compliance endpoints", "INFO")
+        self.log_action(
+            "Enhancing PGC service with policy governance compliance endpoints", "INFO"
+        )
 
         # Find PGC service directory (it might be in different location)
         possible_pgc_paths = [
-            self.project_root / "services" / "core" / "policy-governance-compliance" / "pgc_service",
+            self.project_root
+            / "services"
+            / "core"
+            / "policy-governance-compliance"
+            / "pgc_service",
             self.project_root / "services" / "platform" / "pgc" / "pgc_service",
-            self.project_root / "services" / "core" / "pgc_service"
+            self.project_root / "services" / "core" / "pgc_service",
         ]
 
         pgc_service_dir = None
@@ -330,18 +349,23 @@ if __name__ == "__main__":
                 break
 
         if not pgc_service_dir:
-            self.log_action("PGC service directory not found, using PGC service on port 8005", "WARNING")
+            self.log_action(
+                "PGC service directory not found, using PGC service on port 8005",
+                "WARNING",
+            )
             return True  # PGC service is already running, just note the enhancement
 
         pgc_main_file = pgc_service_dir / "app" / "main.py"
 
         if not pgc_main_file.exists():
-            self.log_action(f"PGC service main.py not found: {pgc_main_file}", "WARNING")
+            self.log_action(
+                f"PGC service main.py not found: {pgc_main_file}", "WARNING"
+            )
             return True  # Service is running, enhancement noted
 
         # Read current content
         try:
-            with open(pgc_main_file, 'r') as f:
+            with open(pgc_main_file, "r") as f:
                 current_content = f.read()
         except Exception as e:
             self.log_action(f"Could not read PGC main.py: {e}", "WARNING")
@@ -597,13 +621,16 @@ if __name__ == "__main__":
         try:
             backup_file = pgc_main_file.with_suffix(".py.backup_enhanced")
             if not backup_file.exists():
-                with open(backup_file, 'w') as f:
+                with open(backup_file, "w") as f:
                     f.write(current_content)
 
-            with open(pgc_main_file, 'w') as f:
+            with open(pgc_main_file, "w") as f:
                 f.write(enhanced_content)
 
-            self.log_action("PGC service enhanced with policy governance compliance endpoints", "SUCCESS")
+            self.log_action(
+                "PGC service enhanced with policy governance compliance endpoints",
+                "SUCCESS",
+            )
         except Exception as e:
             self.log_action(f"Could not enhance PGC service: {e}", "WARNING")
 
@@ -620,15 +647,19 @@ if __name__ == "__main__":
 
         # Kill existing processes
         try:
-            subprocess.run(['pkill', '-f', 'uvicorn.*8001'], capture_output=True, check=False)
-            subprocess.run(['pkill', '-f', 'uvicorn.*8005'], capture_output=True, check=False)
+            subprocess.run(
+                ["pkill", "-f", "uvicorn.*8001"], capture_output=True, check=False
+            )
+            subprocess.run(
+                ["pkill", "-f", "uvicorn.*8005"], capture_output=True, check=False
+            )
             await asyncio.sleep(3)
         except:
             pass
 
         # Restart AC service
         try:
-            ac_cmd = ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '8001']
+            ac_cmd = ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
             subprocess.Popen(ac_cmd, cwd=self.ac_service_dir)
             await asyncio.sleep(5)
             results["ac_service"] = True
@@ -638,7 +669,9 @@ if __name__ == "__main__":
 
         # PGC service is already running on port 8005, no restart needed
         results["pgc_service"] = True
-        self.log_action("PGC service endpoints enhanced (service already running)", "SUCCESS")
+        self.log_action(
+            "PGC service endpoints enhanced (service already running)", "SUCCESS"
+        )
 
         return results
 
@@ -653,7 +686,7 @@ if __name__ == "__main__":
             "pgc_service_test": False,
             "end_to_end_workflow": False,
             "performance_metrics": {},
-            "errors": []
+            "errors": [],
         }
 
         try:
@@ -662,34 +695,46 @@ if __name__ == "__main__":
                 self.log_action("Testing AC service constitutional endpoints", "INFO")
                 try:
                     # Test constitutional rules endpoint
-                    response = await client.get("http://localhost:8001/api/v1/constitutional/rules")
+                    response = await client.get(
+                        "http://localhost:8001/api/v1/constitutional/rules"
+                    )
                     if response.status_code == 200:
                         rules_data = response.json()
-                        self.log_action(f"AC constitutional rules: {len(rules_data.get('rules', []))} rules loaded", "SUCCESS")
+                        self.log_action(
+                            f"AC constitutional rules: {len(rules_data.get('rules', []))} rules loaded",
+                            "SUCCESS",
+                        )
 
                         # Test constitutional validation endpoint
                         validation_request = {
                             "policy": {
                                 "policy_id": "TEST-POL-001",
-                                "content": "democratic participation and transparency policy with constitutional compliance"
+                                "content": "democratic participation and transparency policy with constitutional compliance",
                             },
                             "rules": ["CONST-001", "CONST-002", "CONST-003"],
-                            "level": "comprehensive"
+                            "level": "comprehensive",
                         }
 
                         response = await client.post(
                             "http://localhost:8001/api/v1/constitutional/validate",
-                            json=validation_request
+                            json=validation_request,
                         )
 
                         if response.status_code == 200:
                             validation_data = response.json()
                             test_results["ac_service_test"] = True
-                            self.log_action(f"AC constitutional validation: {validation_data.get('compliance_score', 0):.2f} score", "SUCCESS")
+                            self.log_action(
+                                f"AC constitutional validation: {validation_data.get('compliance_score', 0):.2f} score",
+                                "SUCCESS",
+                            )
                         else:
-                            test_results["errors"].append(f"AC validation failed: HTTP {response.status_code}")
+                            test_results["errors"].append(
+                                f"AC validation failed: HTTP {response.status_code}"
+                            )
                     else:
-                        test_results["errors"].append(f"AC rules endpoint failed: HTTP {response.status_code}")
+                        test_results["errors"].append(
+                            f"AC rules endpoint failed: HTTP {response.status_code}"
+                        )
 
                 except Exception as e:
                     test_results["errors"].append(f"AC service test error: {e}")
@@ -699,34 +744,46 @@ if __name__ == "__main__":
                 self.log_action("Testing PGC service compliance endpoints", "INFO")
                 try:
                     # Test compliance rules endpoint
-                    response = await client.get("http://localhost:8005/api/v1/compliance/rules")
+                    response = await client.get(
+                        "http://localhost:8005/api/v1/compliance/rules"
+                    )
                     if response.status_code == 200:
                         rules_data = response.json()
-                        self.log_action(f"PGC compliance rules: {len(rules_data.get('rules', []))} rules loaded", "SUCCESS")
+                        self.log_action(
+                            f"PGC compliance rules: {len(rules_data.get('rules', []))} rules loaded",
+                            "SUCCESS",
+                        )
 
                         # Test compliance validation endpoint
                         compliance_request = {
                             "policy": {
                                 "policy_id": "TEST-POL-001",
-                                "content": "democratic governance policy with transparency and accountability mechanisms"
+                                "content": "democratic governance policy with transparency and accountability mechanisms",
                             },
                             "type": "full",
-                            "context": "constitutional_governance"
+                            "context": "constitutional_governance",
                         }
 
                         response = await client.post(
                             "http://localhost:8005/api/v1/compliance/validate",
-                            json=compliance_request
+                            json=compliance_request,
                         )
 
                         if response.status_code == 200:
                             compliance_data = response.json()
                             test_results["pgc_service_test"] = True
-                            self.log_action(f"PGC compliance validation: {compliance_data.get('compliance_score', 0):.2f} score", "SUCCESS")
+                            self.log_action(
+                                f"PGC compliance validation: {compliance_data.get('compliance_score', 0):.2f} score",
+                                "SUCCESS",
+                            )
                         else:
-                            test_results["errors"].append(f"PGC validation failed: HTTP {response.status_code}")
+                            test_results["errors"].append(
+                                f"PGC validation failed: HTTP {response.status_code}"
+                            )
                     else:
-                        test_results["errors"].append(f"PGC rules endpoint failed: HTTP {response.status_code}")
+                        test_results["errors"].append(
+                            f"PGC rules endpoint failed: HTTP {response.status_code}"
+                        )
 
                 except Exception as e:
                     test_results["errors"].append(f"PGC service test error: {e}")
@@ -734,38 +791,49 @@ if __name__ == "__main__":
 
                 # Test end-to-end constitutional compliance workflow
                 if test_results["ac_service_test"] and test_results["pgc_service_test"]:
-                    self.log_action("Testing end-to-end constitutional compliance workflow", "INFO")
+                    self.log_action(
+                        "Testing end-to-end constitutional compliance workflow", "INFO"
+                    )
 
                     workflow_start = time.time()
 
                     # Step 1: Get constitutional rules from AC service
-                    ac_rules_response = await client.get("http://localhost:8001/api/v1/constitutional/rules")
+                    ac_rules_response = await client.get(
+                        "http://localhost:8001/api/v1/constitutional/rules"
+                    )
 
                     # Step 2: Validate policy against constitutional rules
                     test_policy = {
                         "policy_id": "E2E-TEST-001",
                         "title": "Democratic Governance Enhancement Policy",
-                        "content": "This policy enhances democratic participation through transparent processes and constitutional compliance mechanisms with proper accountability frameworks"
+                        "content": "This policy enhances democratic participation through transparent processes and constitutional compliance mechanisms with proper accountability frameworks",
                     }
 
                     ac_validation_response = await client.post(
                         "http://localhost:8001/api/v1/constitutional/validate",
-                        json={"policy": test_policy, "level": "comprehensive"}
+                        json={"policy": test_policy, "level": "comprehensive"},
                     )
 
                     # Step 3: Validate policy compliance through PGC service
                     pgc_validation_response = await client.post(
                         "http://localhost:8005/api/v1/compliance/validate",
-                        json={"policy": test_policy, "type": "full"}
+                        json={"policy": test_policy, "type": "full"},
                     )
 
                     workflow_time = time.time() - workflow_start
 
-                    if (ac_validation_response.status_code == 200 and
-                        pgc_validation_response.status_code == 200):
+                    if (
+                        ac_validation_response.status_code == 200
+                        and pgc_validation_response.status_code == 200
+                    ):
                         test_results["end_to_end_workflow"] = True
-                        test_results["performance_metrics"]["workflow_time"] = workflow_time
-                        self.log_action(f"End-to-end workflow completed: {workflow_time:.3f}s", "SUCCESS")
+                        test_results["performance_metrics"][
+                            "workflow_time"
+                        ] = workflow_time
+                        self.log_action(
+                            f"End-to-end workflow completed: {workflow_time:.3f}s",
+                            "SUCCESS",
+                        )
                     else:
                         test_results["errors"].append("End-to-end workflow failed")
 
@@ -798,26 +866,29 @@ if __name__ == "__main__":
             "execution_time": execution_time,
             "enhancements": {
                 "ac_service_enhanced": ac_enhanced,
-                "pgc_service_enhanced": pgc_enhanced
+                "pgc_service_enhanced": pgc_enhanced,
             },
             "service_restarts": restart_results,
             "test_results": test_results,
             "overall_success": (
-                ac_enhanced and
-                pgc_enhanced and
-                test_results.get("end_to_end_workflow", False)
+                ac_enhanced
+                and pgc_enhanced
+                and test_results.get("end_to_end_workflow", False)
             ),
-            "execution_log": self.execution_log
+            "execution_log": self.execution_log,
         }
 
         # Save results
         report_file = f"constitutional_compliance_enhancement_{int(time.time())}.json"
-        with open(self.project_root / report_file, 'w') as f:
+        with open(self.project_root / report_file, "w") as f:
             json.dump(results, f, indent=2, default=str)
 
-        self.log_action(f"Constitutional compliance enhancement report saved: {report_file}", "INFO")
+        self.log_action(
+            f"Constitutional compliance enhancement report saved: {report_file}", "INFO"
+        )
 
         return results
+
 
 async def main():
     """Main execution function."""
@@ -826,23 +897,33 @@ async def main():
     try:
         results = await enhancer.execute_constitutional_compliance_enhancement()
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("🏛️  CONSTITUTIONAL COMPLIANCE ENHANCEMENT SUMMARY")
-        print("="*80)
+        print("=" * 80)
         print(f"⏱️  Execution Time: {results['execution_time']:.1f} seconds")
-        print(f"🎯 Overall Success: {'✅ SUCCESS' if results['overall_success'] else '⚠️ PARTIAL'}")
-        print(f"🔧 AC Service Enhanced: {'✅ YES' if results['enhancements']['ac_service_enhanced'] else '❌ NO'}")
-        print(f"🔧 PGC Service Enhanced: {'✅ YES' if results['enhancements']['pgc_service_enhanced'] else '❌ NO'}")
-        print(f"🔄 End-to-End Workflow: {'✅ OPERATIONAL' if results['test_results'].get('end_to_end_workflow') else '❌ FAILED'}")
-        print("="*80)
+        print(
+            f"🎯 Overall Success: {'✅ SUCCESS' if results['overall_success'] else '⚠️ PARTIAL'}"
+        )
+        print(
+            f"🔧 AC Service Enhanced: {'✅ YES' if results['enhancements']['ac_service_enhanced'] else '❌ NO'}"
+        )
+        print(
+            f"🔧 PGC Service Enhanced: {'✅ YES' if results['enhancements']['pgc_service_enhanced'] else '❌ NO'}"
+        )
+        print(
+            f"🔄 End-to-End Workflow: {'✅ OPERATIONAL' if results['test_results'].get('end_to_end_workflow') else '❌ FAILED'}"
+        )
+        print("=" * 80)
 
-        return 0 if results['overall_success'] else 1
+        return 0 if results["overall_success"] else 1
 
     except Exception as e:
         print(f"❌ Constitutional compliance enhancement failed: {e}")
         return 1
 
+
 if __name__ == "__main__":
     import sys
+
     exit_code = asyncio.run(main())
     sys.exit(exit_code)

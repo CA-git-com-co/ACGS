@@ -23,6 +23,7 @@ try:
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
     from sqlalchemy.orm import sessionmaker
+
     ASYNC_DEPS_AVAILABLE = True
 except ImportError:
     ASYNC_DEPS_AVAILABLE = False
@@ -69,6 +70,7 @@ async def initialize_test_database():
 @pytest.fixture()
 def mock_client():
     """Provide a mock client for basic testing."""
+
     class MockClient:
         def __init__(self):
             self.base_url = "http://testserver"

@@ -26,6 +26,7 @@ import httpx
 # Import test dependencies
 import sys
 import os
+
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend'))  # Removed during reorganization
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend', 'ac_service'))  # Removed during reorganization
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend', 'shared'))  # Removed during reorganization
@@ -41,14 +42,15 @@ try:
         RecoveryStrategyDispatcher,
         FailureType,
         SynthesisAttemptLog,
-        RecoveryStrategy
+        RecoveryStrategy,
     )
     from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
         ConstitutionalFidelityMonitor,
         FidelityComponents,
         FidelityAlert,
-        FidelityThresholds
+        FidelityThresholds,
     )
+
     QEC_AVAILABLE = True
 except ImportError:
     QEC_AVAILABLE = False
@@ -58,6 +60,7 @@ try:
     from app.main import app
     from app.services.qec_conflict_resolver import QECConflictResolver
     from models import ACPrinciple, ACConflictResolution
+
     SERVICE_AVAILABLE = True
 except ImportError:
     SERVICE_AVAILABLE = False
@@ -65,31 +68,31 @@ except ImportError:
 
 class TestQECComprehensiveIntegration:
     """Comprehensive integration test suite for QEC-enhanced system."""
-    
+
     @pytest.fixture(autouse=True)
     def setup_test_environment(self):
         """Setup test environment and check prerequisites."""
         if not QEC_AVAILABLE:
             pytest.skip("QEC enhancement components not available")
-        
+
         # Initialize test metrics
         self.performance_metrics = {
             "constitutional_distance_times": [],
             "error_prediction_times": [],
             "recovery_strategy_times": [],
             "fidelity_calculation_times": [],
-            "end_to_end_times": []
+            "end_to_end_times": [],
         }
-        
+
         # Target performance metrics
         self.target_metrics = {
             "first_pass_synthesis_success": 0.88,  # 88%
             "failure_resolution_time": 8.5 * 60,  # 8.5 minutes in seconds
             "constitutional_fidelity_threshold": 0.85,  # Green threshold
             "api_response_time": 0.2,  # 200ms
-            "concurrent_users": 50
+            "concurrent_users": 50,
         }
-    
+
     @pytest.fixture
     def sample_principles(self):
         """Create sample constitutional principles for testing."""
@@ -106,14 +109,14 @@ class TestQECComprehensiveIntegration:
                 "rationale": "Privacy is fundamental",
                 "validation_criteria_structured": {
                     "type": "privacy_check",
-                    "criteria": ["encryption", "access_control", "data_minimization"]
+                    "criteria": ["encryption", "access_control", "data_minimization"],
                 },
                 "distance_score": 0.75,
                 "error_prediction_metadata": {
                     "historical_failures": 2,
-                    "success_rate": 0.85
+                    "success_rate": 0.85,
                 },
-                "recovery_strategies": ["enhanced_validation", "fallback_policy"]
+                "recovery_strategies": ["enhanced_validation", "fallback_policy"],
             },
             {
                 "id": 2,
@@ -127,14 +130,14 @@ class TestQECComprehensiveIntegration:
                 "rationale": "Security prevents threats",
                 "validation_criteria_structured": {
                     "type": "security_check",
-                    "criteria": ["authentication", "monitoring", "threat_detection"]
+                    "criteria": ["authentication", "monitoring", "threat_detection"],
                 },
                 "distance_score": 0.82,
                 "error_prediction_metadata": {
                     "historical_failures": 1,
-                    "success_rate": 0.92
+                    "success_rate": 0.92,
                 },
-                "recovery_strategies": ["incremental_refinement", "expert_review"]
+                "recovery_strategies": ["incremental_refinement", "expert_review"],
             },
             {
                 "id": 3,
@@ -148,17 +151,17 @@ class TestQECComprehensiveIntegration:
                 "rationale": "Transparency builds trust",
                 "validation_criteria_structured": {
                     "type": "transparency_check",
-                    "criteria": ["explainability", "auditability", "documentation"]
+                    "criteria": ["explainability", "auditability", "documentation"],
                 },
                 "distance_score": 0.68,
                 "error_prediction_metadata": {
                     "historical_failures": 3,
-                    "success_rate": 0.78
+                    "success_rate": 0.78,
                 },
-                "recovery_strategies": ["enhanced_documentation", "expert_review"]
-            }
+                "recovery_strategies": ["enhanced_documentation", "expert_review"],
+            },
         ]
-    
+
     @pytest.fixture
     def sample_conflicts(self):
         """Create sample conflict scenarios for testing."""
@@ -172,7 +175,7 @@ class TestQECComprehensiveIntegration:
                 "severity": "high",
                 "resolution_strategy": "weighted_priority",
                 "resolution_details": {},
-                "status": "identified"
+                "status": "identified",
             },
             {
                 "id": 2,
@@ -183,7 +186,7 @@ class TestQECComprehensiveIntegration:
                 "severity": "medium",
                 "resolution_strategy": "contextual_balancing",
                 "resolution_details": {},
-                "status": "identified"
+                "status": "identified",
             },
             {
                 "id": 3,
@@ -194,37 +197,37 @@ class TestQECComprehensiveIntegration:
                 "severity": "low",
                 "resolution_strategy": "stakeholder_consultation",
                 "resolution_details": {},
-                "status": "identified"
-            }
+                "status": "identified",
+            },
         ]
-    
+
     @pytest.mark.asyncio
     async def test_end_to_end_qec_workflow(self, sample_principles, sample_conflicts):
         """Test complete QEC-enhanced conflict resolution workflow."""
         if not QEC_AVAILABLE:
             pytest.skip("QEC components not available")
-        
+
         start_time = time.time()
-        
+
         # Step 1: Initialize QEC components
         distance_calculator = ConstitutionalDistanceCalculator()
         validation_parser = ValidationDSLParser()
         error_predictor = ErrorPredictionModel()
         recovery_dispatcher = RecoveryStrategyDispatcher()
         fidelity_monitor = ConstitutionalFidelityMonitor()
-        
+
         # Step 2: Process each conflict through complete pipeline
         results = []
-        
+
         for conflict_data in sample_conflicts:
             conflict_start = time.time()
-            
+
             # Convert to constitutional principles
             constitutional_principles = []
             for principle_data in sample_principles:
                 if principle_data["id"] in conflict_data["principle_ids"]:
                     constitutional_principles.append(principle_data)
-            
+
             # Step 2a: Calculate constitutional distances
             distance_start = time.time()
             distances = []
@@ -232,27 +235,31 @@ class TestQECComprehensiveIntegration:
                 distance = await distance_calculator.calculate_distance(principle)
                 distances.append(distance)
             distance_time = time.time() - distance_start
-            self.performance_metrics["constitutional_distance_times"].append(distance_time)
-            
+            self.performance_metrics["constitutional_distance_times"].append(
+                distance_time
+            )
+
             # Step 2b: Predict potential errors
             prediction_start = time.time()
             error_predictions = []
             for principle in constitutional_principles:
-                prediction = await error_predictor.predict_synthesis_challenges(principle)
+                prediction = await error_predictor.predict_synthesis_challenges(
+                    principle
+                )
                 error_predictions.append(prediction)
             prediction_time = time.time() - prediction_start
             self.performance_metrics["error_prediction_times"].append(prediction_time)
-            
+
             # Step 2c: Recommend recovery strategy
             strategy_start = time.time()
             recovery_strategy = await recovery_dispatcher.recommend_strategy(
                 conflict_type=conflict_data["conflict_type"],
                 severity=conflict_data["severity"],
-                error_predictions=error_predictions
+                error_predictions=error_predictions,
             )
             strategy_time = time.time() - strategy_start
             self.performance_metrics["recovery_strategy_times"].append(strategy_time)
-            
+
             # Step 2d: Generate validation scenarios
             validation_scenarios = []
             for principle in constitutional_principles:
@@ -261,9 +268,9 @@ class TestQECComprehensiveIntegration:
                         principle["validation_criteria_structured"]
                     )
                     validation_scenarios.append(scenario)
-            
+
             conflict_time = time.time() - conflict_start
-            
+
             # Compile results
             result = {
                 "conflict_id": conflict_data["id"],
@@ -275,67 +282,79 @@ class TestQECComprehensiveIntegration:
                 "processing_time": conflict_time,
                 "priority_score": self._calculate_priority_score(
                     distances, error_predictions, conflict_data["severity"]
-                )
+                ),
             }
             results.append(result)
-        
+
         # Step 3: Calculate system-wide fidelity
         fidelity_start = time.time()
         system_metrics = {
             "total_principles": len(sample_principles),
             "total_conflicts": len(sample_conflicts),
-            "average_distance": statistics.mean([r["average_distance"] for r in results]),
-            "high_severity_conflicts": sum(1 for c in sample_conflicts if c["severity"] == "high")
+            "average_distance": statistics.mean(
+                [r["average_distance"] for r in results]
+            ),
+            "high_severity_conflicts": sum(
+                1 for c in sample_conflicts if c["severity"] == "high"
+            ),
         }
-        
-        fidelity = await fidelity_monitor.calculate_fidelity(sample_principles, system_metrics)
+
+        fidelity = await fidelity_monitor.calculate_fidelity(
+            sample_principles, system_metrics
+        )
         fidelity_time = time.time() - fidelity_start
         self.performance_metrics["fidelity_calculation_times"].append(fidelity_time)
-        
+
         total_time = time.time() - start_time
         self.performance_metrics["end_to_end_times"].append(total_time)
-        
+
         # Validate results
         assert len(results) == len(sample_conflicts)
         assert fidelity.composite_score >= 0.0
         assert fidelity.composite_score <= 1.0
-        
+
         # Check performance targets
-        assert total_time < 30.0, f"End-to-end processing took {total_time:.2f}s, target <30s"
-        
+        assert (
+            total_time < 30.0
+        ), f"End-to-end processing took {total_time:.2f}s, target <30s"
+
         # Validate QEC enhancement effectiveness
         high_priority_conflicts = [r for r in results if r["priority_score"] > 0.7]
-        assert len(high_priority_conflicts) > 0, "QEC should identify high-priority conflicts"
-        
+        assert (
+            len(high_priority_conflicts) > 0
+        ), "QEC should identify high-priority conflicts"
+
         return {
             "results": results,
             "fidelity": fidelity,
             "performance_metrics": self.performance_metrics,
-            "total_processing_time": total_time
+            "total_processing_time": total_time,
         }
-    
+
     def _calculate_priority_score(self, distances, error_predictions, severity):
         """Calculate priority score for conflict resolution."""
         # Base score from severity
         severity_scores = {"high": 0.8, "medium": 0.5, "low": 0.2}
         base_score = severity_scores.get(severity, 0.3)
-        
+
         # Adjust based on constitutional distances (lower distance = higher priority)
         if distances:
             avg_distance = statistics.mean(distances)
             distance_factor = 1.0 - avg_distance  # Invert distance
         else:
             distance_factor = 0.5
-        
+
         # Adjust based on error predictions
         if error_predictions:
-            avg_risk = statistics.mean([p.get("overall_risk", 0.5) for p in error_predictions])
+            avg_risk = statistics.mean(
+                [p.get("overall_risk", 0.5) for p in error_predictions]
+            )
             risk_factor = avg_risk
         else:
             risk_factor = 0.5
-        
+
         # Weighted combination
-        priority_score = (0.4 * base_score + 0.3 * distance_factor + 0.3 * risk_factor)
+        priority_score = 0.4 * base_score + 0.3 * distance_factor + 0.3 * risk_factor
         return min(1.0, max(0.0, priority_score))
 
     @pytest.mark.asyncio
@@ -359,7 +378,9 @@ class TestQECComprehensiveIntegration:
             distance_times.append(time.time() - start_time)
 
         avg_distance_time = statistics.mean(distance_times)
-        assert avg_distance_time < 1.0, f"Distance calculation too slow: {avg_distance_time:.3f}s"
+        assert (
+            avg_distance_time < 1.0
+        ), f"Distance calculation too slow: {avg_distance_time:.3f}s"
 
         # Benchmark error prediction
         prediction_times = []
@@ -370,7 +391,9 @@ class TestQECComprehensiveIntegration:
             prediction_times.append(time.time() - start_time)
 
         avg_prediction_time = statistics.mean(prediction_times)
-        assert avg_prediction_time < 2.0, f"Error prediction too slow: {avg_prediction_time:.3f}s"
+        assert (
+            avg_prediction_time < 2.0
+        ), f"Error prediction too slow: {avg_prediction_time:.3f}s"
 
         # Benchmark recovery strategy selection
         strategy_times = []
@@ -379,12 +402,14 @@ class TestQECComprehensiveIntegration:
             await recovery_dispatcher.recommend_strategy(
                 conflict_type="principle_contradiction",
                 severity="high",
-                error_predictions=[]
+                error_predictions=[],
             )
             strategy_times.append(time.time() - start_time)
 
         avg_strategy_time = statistics.mean(strategy_times)
-        assert avg_strategy_time < 0.5, f"Strategy selection too slow: {avg_strategy_time:.3f}s"
+        assert (
+            avg_strategy_time < 0.5
+        ), f"Strategy selection too slow: {avg_strategy_time:.3f}s"
 
         # Benchmark fidelity calculation
         fidelity_times = []
@@ -395,13 +420,15 @@ class TestQECComprehensiveIntegration:
             fidelity_times.append(time.time() - start_time)
 
         avg_fidelity_time = statistics.mean(fidelity_times)
-        assert avg_fidelity_time < 3.0, f"Fidelity calculation too slow: {avg_fidelity_time:.3f}s"
+        assert (
+            avg_fidelity_time < 3.0
+        ), f"Fidelity calculation too slow: {avg_fidelity_time:.3f}s"
 
         return {
             "distance_calculation_time": avg_distance_time,
             "error_prediction_time": avg_prediction_time,
             "strategy_selection_time": avg_strategy_time,
-            "fidelity_calculation_time": avg_fidelity_time
+            "fidelity_calculation_time": avg_fidelity_time,
         }
 
     @pytest.mark.asyncio
@@ -421,7 +448,7 @@ class TestQECComprehensiveIntegration:
             return {
                 "conflict_id": conflict_data["id"],
                 "processing_time": time.time() - start_time,
-                "status": "processed"
+                "status": "processed",
             }
 
         # Process conflicts concurrently
@@ -439,28 +466,34 @@ class TestQECComprehensiveIntegration:
 
         async def calculate_fidelity_subset(principles_subset):
             system_metrics = {"total_principles": len(principles_subset)}
-            return await fidelity_monitor.calculate_fidelity(principles_subset, system_metrics)
+            return await fidelity_monitor.calculate_fidelity(
+                principles_subset, system_metrics
+            )
 
         # Split principles into subsets for concurrent processing
         principle_subsets = [
             sample_principles[:2],
             sample_principles[1:3],
-            sample_principles[2:]
+            sample_principles[2:],
         ]
 
         start_time = time.time()
-        fidelity_tasks = [calculate_fidelity_subset(subset) for subset in principle_subsets]
+        fidelity_tasks = [
+            calculate_fidelity_subset(subset) for subset in principle_subsets
+        ]
         fidelity_results = await asyncio.gather(*fidelity_tasks)
         fidelity_time = time.time() - start_time
 
         assert len(fidelity_results) == len(principle_subsets)
-        assert fidelity_time < 5.0, f"Concurrent fidelity calculation too slow: {fidelity_time:.3f}s"
+        assert (
+            fidelity_time < 5.0
+        ), f"Concurrent fidelity calculation too slow: {fidelity_time:.3f}s"
 
         return {
             "concurrent_conflicts": len(results),
             "conflict_processing_time": total_time,
             "concurrent_fidelity_calculations": len(fidelity_results),
-            "fidelity_processing_time": fidelity_time
+            "fidelity_processing_time": fidelity_time,
         }
 
     @pytest.mark.asyncio
@@ -492,21 +525,26 @@ class TestQECComprehensiveIntegration:
 
         # Validate linear or sub-linear scaling
         for i in range(1, len(processing_times)):
-            scaling_factor = processing_times[i] / processing_times[i-1]
-            principle_factor = principle_counts[i] / principle_counts[i-1]
+            scaling_factor = processing_times[i] / processing_times[i - 1]
+            principle_factor = principle_counts[i] / principle_counts[i - 1]
 
             # Should scale better than linearly (sub-linear due to optimizations)
-            assert scaling_factor <= principle_factor * 1.5, \
-                f"Poor scaling: {scaling_factor:.2f}x time for {principle_factor:.2f}x principles"
+            assert (
+                scaling_factor <= principle_factor * 1.5
+            ), f"Poor scaling: {scaling_factor:.2f}x time for {principle_factor:.2f}x principles"
 
         return {
             "principle_counts": principle_counts,
             "processing_times": processing_times,
-            "scaling_efficiency": "sub-linear" if all(
-                processing_times[i] / processing_times[i-1] <=
-                principle_counts[i] / principle_counts[i-1] * 1.2
-                for i in range(1, len(processing_times))
-            ) else "linear"
+            "scaling_efficiency": (
+                "sub-linear"
+                if all(
+                    processing_times[i] / processing_times[i - 1]
+                    <= principle_counts[i] / principle_counts[i - 1] * 1.2
+                    for i in range(1, len(processing_times))
+                )
+                else "linear"
+            ),
         }
 
     @pytest.mark.asyncio
@@ -518,7 +556,7 @@ class TestQECComprehensiveIntegration:
             resolver = QECConflictResolver()
 
             # Test fallback behavior when QEC is disabled
-            with patch.object(resolver, 'qec_available', False):
+            with patch.object(resolver, "qec_available", False):
                 for conflict_data in sample_conflicts:
                     # Create mock conflict and principles
                     conflict = Mock()
@@ -526,8 +564,11 @@ class TestQECComprehensiveIntegration:
                     conflict.conflict_type = conflict_data["conflict_type"]
                     conflict.severity = conflict_data["severity"]
 
-                    principles = [Mock(**p) for p in sample_principles
-                                if p["id"] in conflict_data["principle_ids"]]
+                    principles = [
+                        Mock(**p)
+                        for p in sample_principles
+                        if p["id"] in conflict_data["principle_ids"]
+                    ]
 
                     # Should work without QEC enhancement
                     analysis = await resolver.analyze_conflict(conflict, principles)
@@ -535,7 +576,9 @@ class TestQECComprehensiveIntegration:
                     assert analysis.qec_metadata.get("fallback_used") is True
 
                     # Patch generation should also work
-                    patch_result = await resolver.generate_patch(conflict, principles, analysis)
+                    patch_result = await resolver.generate_patch(
+                        conflict, principles, analysis
+                    )
                     assert patch_result.confidence_score >= 0
 
         # Test 2: Graceful degradation when QEC components fail
@@ -546,7 +589,9 @@ class TestQECComprehensiveIntegration:
             invalid_principle = {"id": 999, "title": "Invalid"}
 
             try:
-                distance = await distance_calculator.calculate_distance(invalid_principle)
+                distance = await distance_calculator.calculate_distance(
+                    invalid_principle
+                )
                 # Should return default/fallback value
                 assert isinstance(distance, (int, float))
                 assert 0 <= distance <= 1
@@ -560,7 +605,7 @@ class TestQECComprehensiveIntegration:
             "title": "Legacy Principle",
             "description": "Old format principle",
             "category": "legacy",
-            "priority_weight": 0.5
+            "priority_weight": 0.5,
             # Missing QEC fields - should work with defaults
         }
 
@@ -572,7 +617,7 @@ class TestQECComprehensiveIntegration:
         return {
             "fallback_behavior": "functional",
             "error_handling": "graceful",
-            "legacy_compatibility": "maintained"
+            "legacy_compatibility": "maintained",
         }
 
     @pytest.mark.asyncio
@@ -584,19 +629,19 @@ class TestQECComprehensiveIntegration:
             "ac_service": "http://localhost:8001",
             "gs_service": "http://localhost:8004",
             "fv_service": "http://localhost:8003",
-            "pgc_service": "http://localhost:8005"
+            "pgc_service": "http://localhost:8005",
         }
 
         # Test 1: AC to GS service communication
         async def test_ac_to_gs_communication():
             """Test AC service sending principles to GS service for synthesis."""
-            with patch('httpx.AsyncClient.post') as mock_post:
+            with patch("httpx.AsyncClient.post") as mock_post:
                 mock_response = Mock()
                 mock_response.status_code = 200
                 mock_response.json.return_value = {
                     "synthesis_result": "success",
                     "qec_enhanced": True,
-                    "constitutional_distance": 0.75
+                    "constitutional_distance": 0.75,
                 }
                 mock_post.return_value = mock_response
 
@@ -606,8 +651,8 @@ class TestQECComprehensiveIntegration:
                         f"{service_endpoints['gs_service']}/api/v1/synthesis/qec-enhanced",
                         json={
                             "principles": sample_principles[:2],
-                            "context": "cross_service_test"
-                        }
+                            "context": "cross_service_test",
+                        },
                     )
 
                 mock_post.assert_called_once()
@@ -616,15 +661,15 @@ class TestQECComprehensiveIntegration:
         # Test 2: GS to FV service communication
         async def test_gs_to_fv_communication():
             """Test GS service sending policies to FV service for verification."""
-            with patch('httpx.AsyncClient.post') as mock_post:
+            with patch("httpx.AsyncClient.post") as mock_post:
                 mock_response = Mock()
                 mock_response.status_code = 200
                 mock_response.json.return_value = {
                     "verification_result": "passed",
                     "qec_insights": {
                         "constitutional_fidelity": 0.88,
-                        "validation_scenarios_passed": 5
-                    }
+                        "validation_scenarios_passed": 5,
+                    },
                 }
                 mock_post.return_value = mock_response
 
@@ -635,8 +680,8 @@ class TestQECComprehensiveIntegration:
                         json={
                             "policy": "test_policy",
                             "principles": sample_principles[:1],
-                            "qec_metadata": {"distance_score": 0.75}
-                        }
+                            "qec_metadata": {"distance_score": 0.75},
+                        },
                     )
 
                 mock_post.assert_called_once()
@@ -655,29 +700,28 @@ class TestQECComprehensiveIntegration:
                 "ac_service": {
                     "total_principles": len(sample_principles),
                     "active_conflicts": 2,
-                    "resolution_success_rate": 0.85
+                    "resolution_success_rate": 0.85,
                 },
                 "gs_service": {
                     "synthesis_attempts": 50,
                     "synthesis_success_rate": 0.88,
-                    "average_synthesis_time": 2.3
+                    "average_synthesis_time": 2.3,
                 },
                 "fv_service": {
                     "verification_attempts": 45,
                     "verification_success_rate": 0.92,
-                    "average_verification_time": 1.8
+                    "average_verification_time": 1.8,
                 },
                 "pgc_service": {
                     "policy_enforcements": 100,
                     "enforcement_success_rate": 0.95,
-                    "average_enforcement_time": 0.5
-                }
+                    "average_enforcement_time": 0.5,
+                },
             }
 
             # Calculate cross-service fidelity
             fidelity = await fidelity_monitor.calculate_fidelity(
-                sample_principles,
-                system_metrics
+                sample_principles, system_metrics
             )
 
             assert fidelity.composite_score >= 0.0
@@ -688,7 +732,7 @@ class TestQECComprehensiveIntegration:
         results = await asyncio.gather(
             test_ac_to_gs_communication(),
             test_gs_to_fv_communication(),
-            test_fidelity_monitor_integration()
+            test_fidelity_monitor_integration(),
         )
 
         assert all(results), "Some cross-service integration tests failed"
@@ -697,7 +741,7 @@ class TestQECComprehensiveIntegration:
             "ac_to_gs_communication": "functional",
             "gs_to_fv_communication": "functional",
             "fidelity_monitor_integration": "functional",
-            "cross_service_data_flow": "validated"
+            "cross_service_data_flow": "validated",
         }
 
     @pytest.mark.asyncio
@@ -716,9 +760,9 @@ class TestQECComprehensiveIntegration:
                     "synthesis_success_rate": 0.95,
                     "enforcement_reliability": 0.92,
                     "stakeholder_satisfaction": 0.88,
-                    "appeal_frequency": 0.05
+                    "appeal_frequency": 0.05,
                 },
-                "expected_level": "green"
+                "expected_level": "green",
             },
             {
                 "name": "medium_fidelity",
@@ -726,9 +770,9 @@ class TestQECComprehensiveIntegration:
                     "synthesis_success_rate": 0.78,
                     "enforcement_reliability": 0.75,
                     "stakeholder_satisfaction": 0.72,
-                    "appeal_frequency": 0.15
+                    "appeal_frequency": 0.15,
                 },
-                "expected_level": "amber"
+                "expected_level": "amber",
             },
             {
                 "name": "low_fidelity",
@@ -736,18 +780,17 @@ class TestQECComprehensiveIntegration:
                     "synthesis_success_rate": 0.60,
                     "enforcement_reliability": 0.58,
                     "stakeholder_satisfaction": 0.45,
-                    "appeal_frequency": 0.35
+                    "appeal_frequency": 0.35,
                 },
-                "expected_level": "red"
-            }
+                "expected_level": "red",
+            },
         ]
 
         alert_results = []
 
         for scenario in test_scenarios:
             fidelity = await fidelity_monitor.calculate_fidelity(
-                sample_principles,
-                scenario["system_metrics"]
+                sample_principles, scenario["system_metrics"]
             )
 
             # Determine alert level based on composite score
@@ -758,13 +801,15 @@ class TestQECComprehensiveIntegration:
             else:
                 alert_level = "red"
 
-            alert_results.append({
-                "scenario": scenario["name"],
-                "composite_score": fidelity.composite_score,
-                "alert_level": alert_level,
-                "expected_level": scenario["expected_level"],
-                "matches_expected": alert_level == scenario["expected_level"]
-            })
+            alert_results.append(
+                {
+                    "scenario": scenario["name"],
+                    "composite_score": fidelity.composite_score,
+                    "alert_level": alert_level,
+                    "expected_level": scenario["expected_level"],
+                    "matches_expected": alert_level == scenario["expected_level"],
+                }
+            )
 
         # Validate alert system
         for result in alert_results:
@@ -775,7 +820,9 @@ class TestQECComprehensiveIntegration:
         return {
             "alert_scenarios_tested": len(test_scenarios),
             "alert_results": alert_results,
-            "alert_system_functional": all(r["matches_expected"] for r in alert_results)
+            "alert_system_functional": all(
+                r["matches_expected"] for r in alert_results
+            ),
         }
 
     @pytest.mark.asyncio
@@ -785,48 +832,62 @@ class TestQECComprehensiveIntegration:
             pytest.skip("QEC components not available")
 
         # Run comprehensive workflow and measure against targets
-        workflow_result = await self.test_end_to_end_qec_workflow(sample_principles, sample_conflicts)
+        workflow_result = await self.test_end_to_end_qec_workflow(
+            sample_principles, sample_conflicts
+        )
 
         # Calculate success metrics
         total_conflicts = len(sample_conflicts)
-        high_priority_conflicts = sum(1 for r in workflow_result["results"] if r["priority_score"] > 0.7)
-        first_pass_success_rate = high_priority_conflicts / total_conflicts if total_conflicts > 0 else 0
+        high_priority_conflicts = sum(
+            1 for r in workflow_result["results"] if r["priority_score"] > 0.7
+        )
+        first_pass_success_rate = (
+            high_priority_conflicts / total_conflicts if total_conflicts > 0 else 0
+        )
 
         # Calculate average resolution time (simulated)
-        avg_resolution_time = statistics.mean([r["processing_time"] for r in workflow_result["results"]])
+        avg_resolution_time = statistics.mean(
+            [r["processing_time"] for r in workflow_result["results"]]
+        )
 
         # Validate against targets
         target_validations = {
             "first_pass_synthesis_success": {
                 "actual": first_pass_success_rate,
                 "target": self.target_metrics["first_pass_synthesis_success"],
-                "meets_target": first_pass_success_rate >= self.target_metrics["first_pass_synthesis_success"]
+                "meets_target": first_pass_success_rate
+                >= self.target_metrics["first_pass_synthesis_success"],
             },
             "constitutional_fidelity": {
                 "actual": workflow_result["fidelity"].composite_score,
                 "target": self.target_metrics["constitutional_fidelity_threshold"],
-                "meets_target": workflow_result["fidelity"].composite_score >= self.target_metrics["constitutional_fidelity_threshold"]
+                "meets_target": workflow_result["fidelity"].composite_score
+                >= self.target_metrics["constitutional_fidelity_threshold"],
             },
             "processing_time": {
                 "actual": workflow_result["total_processing_time"],
                 "target": 30.0,  # 30 seconds for end-to-end processing
-                "meets_target": workflow_result["total_processing_time"] < 30.0
-            }
+                "meets_target": workflow_result["total_processing_time"] < 30.0,
+            },
         }
 
         # Log performance metrics
         performance_summary = {
             "target_validations": target_validations,
             "performance_metrics": self.performance_metrics,
-            "overall_success": all(v["meets_target"] for v in target_validations.values())
+            "overall_success": all(
+                v["meets_target"] for v in target_validations.values()
+            ),
         }
 
         # Assert critical targets are met
-        assert target_validations["constitutional_fidelity"]["meets_target"], \
-            f"Constitutional fidelity {target_validations['constitutional_fidelity']['actual']:.3f} below target {target_validations['constitutional_fidelity']['target']}"
+        assert target_validations["constitutional_fidelity"][
+            "meets_target"
+        ], f"Constitutional fidelity {target_validations['constitutional_fidelity']['actual']:.3f} below target {target_validations['constitutional_fidelity']['target']}"
 
-        assert target_validations["processing_time"]["meets_target"], \
-            f"Processing time {target_validations['processing_time']['actual']:.3f}s exceeds target {target_validations['processing_time']['target']}s"
+        assert target_validations["processing_time"][
+            "meets_target"
+        ], f"Processing time {target_validations['processing_time']['actual']:.3f}s exceeds target {target_validations['processing_time']['target']}s"
 
         return performance_summary
 

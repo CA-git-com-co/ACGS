@@ -13,13 +13,16 @@ from enum import Enum
 
 # Import schemas and models
 from services.core.constitutional_ai.app.schemas import (
-    ACAmendmentCreate, ACAmendmentVoteCreate, ACAmendmentCommentCreate
+    ACAmendmentCreate,
+    ACAmendmentVoteCreate,
+    ACAmendmentCommentCreate,
 )
 from services.shared.models import ACAmendment, ACAmendmentVote, User
 
 
 class VotingBehavior(Enum):
     """Voting behavior patterns for mock Constitutional Council members."""
+
     SYNCHRONOUS = "synchronous"
     ASYNCHRONOUS = "asynchronous"
     WEIGHTED = "weighted"
@@ -28,6 +31,7 @@ class VotingBehavior(Enum):
 
 class CoEvolutionScenario(Enum):
     """Co-evolution scenarios for testing."""
+
     RAPID_24H = "rapid_24h"
     EMERGENCY_6H = "emergency_6h"
     STANDARD_7D = "standard_7d"
@@ -37,6 +41,7 @@ class CoEvolutionScenario(Enum):
 @dataclass
 class MockCouncilMember:
     """Mock Constitutional Council member with configurable behavior."""
+
     id: int
     name: str
     role: str = "constitutional_council"
@@ -54,6 +59,7 @@ class MockCouncilMember:
 @dataclass
 class MockAmendmentScenario:
     """Mock amendment scenario for testing."""
+
     principle_id: int
     amendment_type: str
     urgency_level: str
@@ -77,7 +83,7 @@ class ConstitutionalCouncilFixtures:
                 voting_behavior=VotingBehavior.SYNCHRONOUS,
                 response_delay_seconds=30,
                 bias_tendency=0.1,
-                expertise_areas=["ai_ethics", "privacy_rights"]
+                expertise_areas=["ai_ethics", "privacy_rights"],
             ),
             MockCouncilMember(
                 id=2,
@@ -85,7 +91,7 @@ class ConstitutionalCouncilFixtures:
                 voting_behavior=VotingBehavior.ASYNCHRONOUS,
                 response_delay_seconds=3600,  # 1 hour
                 bias_tendency=-0.1,
-                expertise_areas=["constitutional_law", "democratic_governance"]
+                expertise_areas=["constitutional_law", "democratic_governance"],
             ),
             MockCouncilMember(
                 id=3,
@@ -93,7 +99,7 @@ class ConstitutionalCouncilFixtures:
                 voting_behavior=VotingBehavior.WEIGHTED,
                 response_delay_seconds=1800,  # 30 minutes
                 bias_tendency=0.0,
-                expertise_areas=["algorithmic_fairness", "transparency"]
+                expertise_areas=["algorithmic_fairness", "transparency"],
             ),
             MockCouncilMember(
                 id=4,
@@ -101,7 +107,7 @@ class ConstitutionalCouncilFixtures:
                 voting_behavior=VotingBehavior.SYNCHRONOUS,
                 response_delay_seconds=60,
                 bias_tendency=0.2,
-                expertise_areas=["legal_compliance", "judicial_review"]
+                expertise_areas=["legal_compliance", "judicial_review"],
             ),
             MockCouncilMember(
                 id=5,
@@ -109,8 +115,8 @@ class ConstitutionalCouncilFixtures:
                 voting_behavior=VotingBehavior.DELEGATED,
                 response_delay_seconds=7200,  # 2 hours
                 bias_tendency=-0.2,
-                expertise_areas=["public_policy", "stakeholder_engagement"]
-            )
+                expertise_areas=["public_policy", "stakeholder_engagement"],
+            ),
         ]
         return members[:count]
 
@@ -128,9 +134,13 @@ class ConstitutionalCouncilFixtures:
                 co_evolution_context={
                     "trigger_event": "regulatory_update",
                     "timeline": "24_hours",
-                    "stakeholders": ["citizens", "privacy_advocates", "regulatory_bodies"]
+                    "stakeholders": [
+                        "citizens",
+                        "privacy_advocates",
+                        "regulatory_bodies",
+                    ],
                 },
-                expected_voting_window_hours=24
+                expected_voting_window_hours=24,
             ),
             "emergency_security_patch": MockAmendmentScenario(
                 principle_id=2,
@@ -142,9 +152,13 @@ class ConstitutionalCouncilFixtures:
                 co_evolution_context={
                     "trigger_event": "security_incident",
                     "timeline": "6_hours",
-                    "stakeholders": ["constitutional_council", "security_experts", "system_administrators"]
+                    "stakeholders": [
+                        "constitutional_council",
+                        "security_experts",
+                        "system_administrators",
+                    ],
                 },
-                expected_voting_window_hours=6
+                expected_voting_window_hours=6,
             ),
             "standard_fairness_enhancement": MockAmendmentScenario(
                 principle_id=3,
@@ -156,9 +170,13 @@ class ConstitutionalCouncilFixtures:
                 co_evolution_context={
                     "trigger_event": "community_feedback",
                     "timeline": "7_days",
-                    "stakeholders": ["citizens", "advocacy_groups", "technical_experts"]
+                    "stakeholders": [
+                        "citizens",
+                        "advocacy_groups",
+                        "technical_experts",
+                    ],
                 },
-                expected_voting_window_hours=168
+                expected_voting_window_hours=168,
             ),
             "continuous_transparency_improvement": MockAmendmentScenario(
                 principle_id=4,
@@ -170,18 +188,20 @@ class ConstitutionalCouncilFixtures:
                 co_evolution_context={
                     "trigger_event": "ongoing_optimization",
                     "timeline": "continuous",
-                    "stakeholders": ["all_stakeholders"]
+                    "stakeholders": ["all_stakeholders"],
                 },
-                expected_voting_window_hours=24
-            )
+                expected_voting_window_hours=24,
+            ),
         }
 
     @staticmethod
-    def create_test_amendment_data(scenario_name: str = "rapid_privacy_update") -> ACAmendmentCreate:
+    def create_test_amendment_data(
+        scenario_name: str = "rapid_privacy_update",
+    ) -> ACAmendmentCreate:
         """Create test amendment data based on scenario."""
         scenarios = ConstitutionalCouncilFixtures.create_amendment_scenarios()
         scenario = scenarios.get(scenario_name, scenarios["rapid_privacy_update"])
-        
+
         return ACAmendmentCreate(
             principle_id=scenario.principle_id,
             amendment_type=scenario.amendment_type,
@@ -191,22 +211,26 @@ class ConstitutionalCouncilFixtures:
             proposed_status="active",
             consultation_period_days=7 if scenario.urgency_level == "normal" else 1,
             public_comment_enabled=True,
-            stakeholder_groups=scenario.co_evolution_context.get("stakeholders", ["general_public"]),
+            stakeholder_groups=scenario.co_evolution_context.get(
+                "stakeholders", ["general_public"]
+            ),
             rapid_processing_requested=scenario.rapid_processing_requested,
             constitutional_significance=scenario.constitutional_significance,
             urgency_level=scenario.urgency_level,
             co_evolution_context=scenario.co_evolution_context,
-            expected_impact=scenario.expected_impact
+            expected_impact=scenario.expected_impact,
         )
 
     @staticmethod
-    def create_mock_voting_data(amendment_id: int, voter_id: int, vote: str = "for") -> ACAmendmentVoteCreate:
+    def create_mock_voting_data(
+        amendment_id: int, voter_id: int, vote: str = "for"
+    ) -> ACAmendmentVoteCreate:
         """Create mock voting data."""
         return ACAmendmentVoteCreate(
             amendment_id=amendment_id,
             voter_id=voter_id,
             vote=vote,
-            reasoning=f"Voting {vote} based on constitutional analysis and expertise evaluation"
+            reasoning=f"Voting {vote} based on constitutional analysis and expertise evaluation",
         )
 
 
@@ -225,19 +249,25 @@ def amendment_scenarios():
 @pytest.fixture
 def rapid_amendment_data():
     """Fixture for rapid processing amendment."""
-    return ConstitutionalCouncilFixtures.create_test_amendment_data("rapid_privacy_update")
+    return ConstitutionalCouncilFixtures.create_test_amendment_data(
+        "rapid_privacy_update"
+    )
 
 
 @pytest.fixture
 def emergency_amendment_data():
     """Fixture for emergency amendment."""
-    return ConstitutionalCouncilFixtures.create_test_amendment_data("emergency_security_patch")
+    return ConstitutionalCouncilFixtures.create_test_amendment_data(
+        "emergency_security_patch"
+    )
 
 
 @pytest.fixture
 def standard_amendment_data():
     """Fixture for standard amendment."""
-    return ConstitutionalCouncilFixtures.create_test_amendment_data("standard_fairness_enhancement")
+    return ConstitutionalCouncilFixtures.create_test_amendment_data(
+        "standard_fairness_enhancement"
+    )
 
 
 @pytest.fixture
@@ -245,7 +275,7 @@ def mock_constitutional_council():
     """Fixture providing a complete mock Constitutional Council setup."""
     members = ConstitutionalCouncilFixtures.create_mock_council_members()
     scenarios = ConstitutionalCouncilFixtures.create_amendment_scenarios()
-    
+
     return {
         "members": members,
         "scenarios": scenarios,
@@ -255,8 +285,8 @@ def mock_constitutional_council():
             VotingBehavior.SYNCHRONOUS: {"timeout_seconds": 300},
             VotingBehavior.ASYNCHRONOUS: {"timeout_seconds": 86400},
             VotingBehavior.WEIGHTED: {"weight_multiplier": 1.5},
-            VotingBehavior.DELEGATED: {"delegation_timeout": 3600}
-        }
+            VotingBehavior.DELEGATED: {"delegation_timeout": 3600},
+        },
     }
 
 
@@ -273,12 +303,15 @@ async def mock_database_with_council_data(mock_database):
             username=member.name.lower().replace(" ", "_").replace(".", ""),
             email=f"{member.name.lower().replace(' ', '.')}@constitutional.council",
             role=member.role,
-            is_active=member.is_active
-        ) for member in mock_members
+            is_active=member.is_active,
+        )
+        for member in mock_members
     ]
 
     # Mock amendment queries
-    mock_database.execute.return_value.scalar.return_value = 0  # No active amendments initially
+    mock_database.execute.return_value.scalar.return_value = (
+        0  # No active amendments initially
+    )
     mock_database.get.return_value = None  # No existing amendment
 
     return mock_database
@@ -295,7 +328,7 @@ class MockVotingSimulator:
         self,
         amendment_id: int,
         scenario: MockAmendmentScenario,
-        voting_behavior: VotingBehavior = VotingBehavior.SYNCHRONOUS
+        voting_behavior: VotingBehavior = VotingBehavior.SYNCHRONOUS,
     ) -> List[Dict[str, Any]]:
         """Simulate a complete voting round."""
         votes = []
@@ -312,6 +345,7 @@ class MockVotingSimulator:
 
             # Determine vote
             import random
+
             vote = "for" if random.random() < vote_probability else "against"
             if random.random() < 0.1:  # 10% chance of abstention
                 vote = "abstain"
@@ -321,16 +355,18 @@ class MockVotingSimulator:
                 "vote": vote,
                 "reasoning": f"Vote based on {member.expertise_areas[0]} expertise",
                 "response_time": member.response_delay_seconds,
-                "voting_behavior": member.voting_behavior.value
+                "voting_behavior": member.voting_behavior.value,
             }
 
             votes.append(vote_data)
-            self.voting_history.append({
-                "amendment_id": amendment_id,
-                "voter_id": member.id,
-                "vote": vote,
-                "timestamp": datetime.now(timezone.utc)
-            })
+            self.voting_history.append(
+                {
+                    "amendment_id": amendment_id,
+                    "voter_id": member.id,
+                    "vote": vote,
+                    "timestamp": datetime.now(timezone.utc),
+                }
+            )
 
         return votes
 
@@ -352,7 +388,7 @@ class MockVotingSimulator:
             "total_votes": total_votes,
             "for_percentage": for_percentage,
             "outcome": outcome,
-            "quorum_met": total_votes >= 3  # Minimum quorum
+            "quorum_met": total_votes >= 3,  # Minimum quorum
         }
 
 
@@ -372,7 +408,7 @@ def co_evolution_test_scenarios():
             "required_quorum": 3,
             "voting_strategy": VotingBehavior.ASYNCHRONOUS,
             "notification_urgency": "high",
-            "stakeholder_engagement": "expedited"
+            "stakeholder_engagement": "expedited",
         },
         "emergency_6h_scenario": {
             "timeline": timedelta(hours=6),
@@ -380,7 +416,7 @@ def co_evolution_test_scenarios():
             "required_quorum": 5,  # All members for emergency
             "voting_strategy": VotingBehavior.SYNCHRONOUS,
             "notification_urgency": "critical",
-            "stakeholder_engagement": "minimal"
+            "stakeholder_engagement": "minimal",
         },
         "standard_7d_scenario": {
             "timeline": timedelta(days=7),
@@ -388,7 +424,7 @@ def co_evolution_test_scenarios():
             "required_quorum": 3,
             "voting_strategy": VotingBehavior.WEIGHTED,
             "notification_urgency": "normal",
-            "stakeholder_engagement": "full"
+            "stakeholder_engagement": "full",
         },
         "stress_test_scenario": {
             "timeline": timedelta(hours=1),
@@ -398,7 +434,7 @@ def co_evolution_test_scenarios():
             "notification_urgency": "critical",
             "stakeholder_engagement": "minimal",
             "concurrent_amendments": 10,
-            "load_factor": 5.0
+            "load_factor": 5.0,
         },
         "byzantine_fault_scenario": {
             "timeline": timedelta(hours=12),
@@ -408,8 +444,8 @@ def co_evolution_test_scenarios():
             "notification_urgency": "high",
             "stakeholder_engagement": "expedited",
             "faulty_members": 1,
-            "byzantine_behavior": "random_votes"
-        }
+            "byzantine_behavior": "random_votes",
+        },
     }
 
 
@@ -435,20 +471,20 @@ class ConstitutionalCouncilTestUtils:
                 "available_members": 2,
                 "required_quorum": 3,
                 "expected_outcome": "voting_failed",
-                "error_type": "QuorumNotMet"
+                "error_type": "QuorumNotMet",
             },
             "tie_vote": {
                 "description": "Equal votes for and against",
                 "votes": {"for": 2, "against": 2, "abstain": 1},
                 "expected_outcome": "tie_resolution_required",
-                "resolution_mechanism": "chair_vote"
+                "resolution_mechanism": "chair_vote",
             },
             "timeout_scenario": {
                 "description": "Voting timeout exceeded",
                 "voting_window_hours": 24,
                 "elapsed_hours": 25,
                 "expected_outcome": "voting_timeout",
-                "fallback_action": "extend_voting_period"
+                "fallback_action": "extend_voting_period",
             },
             "invalid_amendment": {
                 "description": "Amendment with invalid content",
@@ -458,15 +494,15 @@ class ConstitutionalCouncilTestUtils:
                     "proposed_changes": "",  # Empty content
                 },
                 "expected_outcome": "validation_failed",
-                "error_type": "InvalidAmendmentData"
+                "error_type": "InvalidAmendmentData",
             },
             "concurrent_amendments": {
                 "description": "Multiple amendments to same principle",
                 "principle_id": 1,
                 "amendment_count": 3,
                 "expected_outcome": "conflict_resolution_required",
-                "resolution_strategy": "sequential_processing"
-            }
+                "resolution_strategy": "sequential_processing",
+            },
         }
 
     @staticmethod
@@ -477,35 +513,35 @@ class ConstitutionalCouncilTestUtils:
                 "member_id": 999,  # Non-existent member
                 "action": "vote",
                 "expected_error": "UnauthorizedMember",
-                "error_message": "Member not found in Constitutional Council"
+                "error_message": "Member not found in Constitutional Council",
             },
             "duplicate_vote": {
                 "member_id": 1,
                 "amendment_id": 1,
                 "vote_attempts": 2,
                 "expected_error": "DuplicateVote",
-                "error_message": "Member has already voted on this amendment"
+                "error_message": "Member has already voted on this amendment",
             },
             "vote_after_deadline": {
                 "member_id": 1,
                 "amendment_id": 1,
                 "voting_deadline": datetime.now(timezone.utc) - timedelta(hours=1),
                 "expected_error": "VotingDeadlineExceeded",
-                "error_message": "Voting period has ended"
+                "error_message": "Voting period has ended",
             },
             "malformed_vote": {
                 "member_id": 1,
                 "amendment_id": 1,
                 "vote": "invalid_vote_option",
                 "expected_error": "InvalidVoteOption",
-                "error_message": "Vote must be 'for', 'against', or 'abstain'"
+                "error_message": "Vote must be 'for', 'against', or 'abstain'",
             },
             "amendment_not_found": {
                 "amendment_id": 999,  # Non-existent amendment
                 "action": "vote",
                 "expected_error": "AmendmentNotFound",
-                "error_message": "Amendment not found"
-            }
+                "error_message": "Amendment not found",
+            },
         }
 
     @staticmethod
@@ -518,27 +554,27 @@ class ConstitutionalCouncilTestUtils:
                 "members_count": 10,
                 "votes_per_second": 100,
                 "duration_seconds": 60,
-                "expected_throughput": 5000
+                "expected_throughput": 5000,
             },
             "stress_test_council": {
                 "description": "Stress test with maximum council size",
                 "members_count": 100,
                 "concurrent_amendments": 20,
                 "voting_window_minutes": 5,
-                "expected_completion_rate": 0.95
+                "expected_completion_rate": 0.95,
             },
             "memory_pressure": {
                 "description": "Test under memory pressure",
                 "large_amendment_content_kb": 1024,
                 "amendment_count": 100,
-                "expected_memory_usage_mb": 500
+                "expected_memory_usage_mb": 500,
             },
             "network_latency": {
                 "description": "Test with simulated network delays",
                 "simulated_latency_ms": 500,
                 "timeout_multiplier": 2.0,
-                "retry_attempts": 3
-            }
+                "retry_attempts": 3,
+            },
         }
 
     @staticmethod
@@ -550,7 +586,7 @@ class ConstitutionalCouncilTestUtils:
                 "always_oppose": "Member always votes against proposals",
                 "delayed_response": "Member responds after deadline",
                 "malformed_data": "Member sends invalid vote data",
-                "double_voting": "Member attempts to vote multiple times"
+                "double_voting": "Member attempts to vote multiple times",
             },
             "fault_scenarios": [
                 {
@@ -558,41 +594,47 @@ class ConstitutionalCouncilTestUtils:
                     "faulty_members": 1,
                     "total_members": 5,
                     "fault_type": "random_votes",
-                    "expected_outcome": "consensus_achieved"
+                    "expected_outcome": "consensus_achieved",
                 },
                 {
                     "name": "multiple_byzantine_members",
                     "faulty_members": 2,
                     "total_members": 7,
                     "fault_type": "always_oppose",
-                    "expected_outcome": "consensus_achieved"
+                    "expected_outcome": "consensus_achieved",
                 },
                 {
                     "name": "byzantine_threshold",
                     "faulty_members": 2,
                     "total_members": 5,
                     "fault_type": "malformed_data",
-                    "expected_outcome": "consensus_failed"
-                }
-            ]
+                    "expected_outcome": "consensus_failed",
+                },
+            ],
         }
 
     @staticmethod
     def generate_test_amendment_with_validation(
-        scenario_name: str = "rapid_privacy_update"
+        scenario_name: str = "rapid_privacy_update",
     ) -> ACAmendmentCreate:
         """Generate test amendment with Pydantic v2.0+ validation."""
-        amendment_data = ConstitutionalCouncilFixtures.create_test_amendment_data(scenario_name)
+        amendment_data = ConstitutionalCouncilFixtures.create_test_amendment_data(
+            scenario_name
+        )
 
         # Validate the data
         try:
-            validated_amendment = ACAmendmentCreate.model_validate(amendment_data.model_dump())
+            validated_amendment = ACAmendmentCreate.model_validate(
+                amendment_data.model_dump()
+            )
             return validated_amendment
         except Exception as e:
             raise ValueError(f"Amendment validation failed: {e}")
 
     @staticmethod
-    def create_optimistic_locking_test_data(base_version: int = 1) -> List[Dict[str, Any]]:
+    def create_optimistic_locking_test_data(
+        base_version: int = 1,
+    ) -> List[Dict[str, Any]]:
         """Create test data for optimistic locking scenarios."""
         return [
             {
@@ -600,7 +642,7 @@ class ConstitutionalCouncilTestUtils:
                 "amendment_id": 1,
                 "current_version": base_version,
                 "update_version": base_version,
-                "expected_outcome": "success"
+                "expected_outcome": "success",
             },
             {
                 "scenario": "version_conflict",
@@ -608,7 +650,7 @@ class ConstitutionalCouncilTestUtils:
                 "current_version": base_version + 1,
                 "update_version": base_version,
                 "expected_outcome": "version_conflict",
-                "error_type": "OptimisticLockingError"
+                "error_type": "OptimisticLockingError",
             },
             {
                 "scenario": "concurrent_updates",
@@ -616,8 +658,8 @@ class ConstitutionalCouncilTestUtils:
                 "concurrent_updates": 3,
                 "base_version": base_version,
                 "expected_successful_updates": 1,
-                "expected_failed_updates": 2
-            }
+                "expected_failed_updates": 2,
+            },
         ]
 
 
@@ -659,7 +701,7 @@ def comprehensive_council_test_suite(
     edge_case_scenarios,
     negative_test_cases,
     performance_test_scenarios,
-    byzantine_fault_test_data
+    byzantine_fault_test_data,
 ):
     """Comprehensive test suite combining all Constitutional Council test fixtures."""
     return {
@@ -671,10 +713,10 @@ def comprehensive_council_test_suite(
         "byzantine_fault_data": byzantine_fault_test_data,
         "test_metadata": {
             "total_scenarios": (
-                len(co_evolution_test_scenarios) +
-                len(edge_case_scenarios) +
-                len(negative_test_cases) +
-                len(performance_test_scenarios)
+                len(co_evolution_test_scenarios)
+                + len(edge_case_scenarios)
+                + len(negative_test_cases)
+                + len(performance_test_scenarios)
             ),
             "coverage_areas": [
                 "voting_mechanisms",
@@ -682,9 +724,9 @@ def comprehensive_council_test_suite(
                 "fault_tolerance",
                 "performance_optimization",
                 "error_handling",
-                "edge_case_management"
-            ]
-        }
+                "edge_case_management",
+            ],
+        },
     }
 
 

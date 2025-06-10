@@ -9,6 +9,7 @@ from scripts.load_testing import (
     DatabasePerformanceMetrics,
 )
 
+
 @pytest.mark.asyncio
 async def test_database_metrics_in_report(monkeypatch):
     async def mock_service_health(self, service, port):
@@ -35,7 +36,9 @@ async def test_database_metrics_in_report(monkeypatch):
         )
 
     monkeypatch.setattr(LoadTester, "test_service_health", mock_service_health)
-    monkeypatch.setattr(LoadTester, "test_cross_service_communication", mock_cross_service)
+    monkeypatch.setattr(
+        LoadTester, "test_cross_service_communication", mock_cross_service
+    )
     monkeypatch.setattr(LoadTester, "test_alphaevolve_integration", mock_alpha)
     monkeypatch.setattr(LoadTester, "test_database_performance", mock_db_perf)
 

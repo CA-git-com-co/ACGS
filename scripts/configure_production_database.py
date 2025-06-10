@@ -13,6 +13,7 @@ import psycopg2
 from datetime import datetime
 from typing import Dict, Any, Optional
 
+
 class ProductionDatabaseConfig:
     def __init__(self):
         self.db_config = {
@@ -20,44 +21,44 @@ class ProductionDatabaseConfig:
             "port": os.getenv("DB_PORT", "5433"),
             "database": os.getenv("DB_NAME", "acgs_pgp_db"),
             "username": os.getenv("DB_USER", "acgs_user"),
-            "password": os.getenv("DB_PASSWORD", "acgs_password")
+            "password": os.getenv("DB_PASSWORD", "acgs_password"),
         }
-        
+
         self.database_url = f"postgresql+asyncpg://{self.db_config['username']}:{self.db_config['password']}@{self.db_config['host']}:{self.db_config['port']}/{self.db_config['database']}"
         self.sync_database_url = f"postgresql://{self.db_config['username']}:{self.db_config['password']}@{self.db_config['host']}:{self.db_config['port']}/{self.db_config['database']}"
-    
+
     def test_database_connection(self) -> bool:
         """Test database connectivity"""
         print("🔌 Testing Database Connection...")
-        
+
         try:
             conn = psycopg2.connect(
                 host=self.db_config["host"],
                 port=self.db_config["port"],
                 database=self.db_config["database"],
                 user=self.db_config["username"],
-                password=self.db_config["password"]
+                password=self.db_config["password"],
             )
-            
+
             cursor = conn.cursor()
             cursor.execute("SELECT version();")
             version = cursor.fetchone()
-            
+
             cursor.close()
             conn.close()
-            
+
             print(f"  ✅ Database connection successful")
             print(f"  📊 PostgreSQL version: {version[0]}")
             return True
-            
+
         except Exception as e:
             print(f"  ❌ Database connection failed: {str(e)}")
             return False
-    
+
     def create_production_env_file(self):
         """Create production environment configuration"""
         print("\n📝 Creating Production Environment Configuration...")
-        
+
         env_content = f"""# ACGS-PGP Production Database Configuration
 # Generated on {datetime.now().isoformat()}
 
@@ -96,35 +97,54 @@ HEALTH_CHECK_INTERVAL=30
 STATEMENT_TIMEOUT=30000
 IDLE_IN_TRANSACTION_SESSION_TIMEOUT=60000
 """
-        
+
         with open(".env.production", "w") as f:
             f.write(env_content)
-        
+
         print("  ✅ Production environment file created: .env.production")
-    
+
     def run_database_migrations(self) -> bool:
         """Run Alembic database migrations"""
         print("\n🔄 Running Database Migrations...")
-        
+
         try:
             # Set environment variable for migrations
             os.environ["DATABASE_URL"] = self.sync_database_url
-            
+
             # Check current migration status
-            result = subprocess.run([
-                "docker-compose", "exec", "-T", "alembic-runner",
-                "alembic", "current"
-            ], capture_output=True, text=True, timeout=30)
-            
+            result = subprocess.run(
+                [
+                    "docker-compose",
+                    "exec",
+                    "-T",
+                    "alembic-runner",
+                    "alembic",
+                    "current",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+
             if result.returncode == 0:
                 print(f"  📊 Current migration: {result.stdout.strip()}")
-            
+
             # Run migrations
-            result = subprocess.run([
-                "docker-compose", "exec", "-T", "alembic-runner", 
-                "alembic", "upgrade", "head"
-            ], capture_output=True, text=True, timeout=120)
-            
+            result = subprocess.run(
+                [
+                    "docker-compose",
+                    "exec",
+                    "-T",
+                    "alembic-runner",
+                    "alembic",
+                    "upgrade",
+                    "head",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+
             if result.returncode == 0:
                 print("  ✅ Database migrations completed successfully")
                 print(f"  📝 Migration output: {result.stdout}")
@@ -133,19 +153,19 @@ IDLE_IN_TRANSACTION_SESSION_TIMEOUT=60000
                 print("  ❌ Database migrations failed")
                 print(f"  📝 Error: {result.stderr}")
                 return False
-                
+
         except subprocess.TimeoutExpired:
             print("  ❌ Migration timeout - database may be slow")
             return False
         except Exception as e:
             print(f"  ❌ Migration error: {str(e)}")
             return False
-    
+
     def create_database_monitoring_script(self):
         """Create database monitoring script"""
         print("\n📊 Creating Database Monitoring Script...")
-        
-        monitoring_script = f'''#!/bin/bash
+
+        monitoring_script = f"""#!/bin/bash
 # ACGS-PGP Database Monitoring Script
 
 DB_HOST="{self.db_config["host"]}"
@@ -206,19 +226,19 @@ echo -e "\\n5. Migration status..."
 docker-compose exec -T alembic-runner alembic current
 
 echo -e "\\n✅ Database health check complete"
-'''
-        
+"""
+
         with open("monitor_database.sh", "w") as f:
             f.write(monitoring_script)
-        
+
         os.chmod("monitor_database.sh", 0o755)
         print("  ✅ Database monitoring script created: monitor_database.sh")
-    
+
     def create_backup_script(self):
         """Create database backup script"""
         print("\n💾 Creating Database Backup Script...")
-        
-        backup_script = f'''#!/bin/bash
+
+        backup_script = f"""#!/bin/bash
 # ACGS-PGP Database Backup Script
 
 DB_HOST="{self.db_config["host"]}"
@@ -257,19 +277,19 @@ else
     echo "❌ Backup failed"
     exit 1
 fi
-'''
-        
+"""
+
         with open("backup_database.sh", "w") as f:
             f.write(backup_script)
-        
+
         os.chmod("backup_database.sh", 0o755)
         print("  ✅ Database backup script created: backup_database.sh")
-    
+
     def create_performance_tuning_config(self):
         """Create PostgreSQL performance tuning configuration"""
         print("\n⚡ Creating Performance Tuning Configuration...")
-        
-        perf_config = '''# PostgreSQL Performance Tuning for ACGS-PGP
+
+        perf_config = """# PostgreSQL Performance Tuning for ACGS-PGP
 # Add these settings to postgresql.conf
 
 # Memory Settings
@@ -300,32 +320,32 @@ track_activities = on
 track_counts = on
 track_io_timing = on
 track_functions = all
-'''
-        
+"""
+
         with open("postgresql_performance.conf", "w") as f:
             f.write(perf_config)
-        
+
         print("  ✅ Performance tuning config created: postgresql_performance.conf")
-    
+
     async def configure_production_database(self):
         """Main configuration function"""
         print("🚀 Configuring Production Database for ACGS-PGP")
         print("=" * 60)
-        
+
         # Test connection
         if not self.test_database_connection():
             print("❌ Cannot proceed without database connection")
             return False
-        
+
         # Create configuration files
         self.create_production_env_file()
         self.create_database_monitoring_script()
         self.create_backup_script()
         self.create_performance_tuning_config()
-        
+
         # Run migrations
         migration_success = self.run_database_migrations()
-        
+
         print("\n" + "=" * 60)
         print("✅ Production Database Configuration Complete!")
         print("\nCreated files:")
@@ -338,12 +358,14 @@ track_functions = all
         print("2. Set up automated backups: crontab -e")
         print("3. Apply performance settings to PostgreSQL")
         print("4. Monitor database: ./monitor_database.sh")
-        
+
         return migration_success
+
 
 async def main():
     config = ProductionDatabaseConfig()
     await config.configure_production_database()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -22,35 +22,50 @@ try:
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.primitives.asymmetric import rsa, padding
     from cryptography.hazmat.primitives import serialization
+
     CRYPTOGRAPHY_AVAILABLE = True
 except ImportError:
     CRYPTOGRAPHY_AVAILABLE = False
+
     # Define dummy classes or functions if cryptography is not available
     # This allows the module to be imported but will raise errors on use.
     class rsa:
         @staticmethod
-        def generate_private_key(public_exponent, key_size): pass
+        def generate_private_key(public_exponent, key_size):
+            pass
+
     class padding:
         @staticmethod
-        def PSS(mgf, salt_length): pass
+        def PSS(mgf, salt_length):
+            pass
+
         @staticmethod
-        def MGF1(algorithm): pass
+        def MGF1(algorithm):
+            pass
+
     class hashes:
-        class SHA256: pass
+        class SHA256:
+            pass
+
     class serialization:
         class Encoding:
             PEM = "pem"
+
         class PrivateFormat:
             PKCS8 = "pkcs8"
+
         class PublicFormat:
             SubjectPublicKeyInfo = "spki"
+
         @staticmethod
-        def NoEncryption(): pass
+        def NoEncryption():
+            pass
 
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
 logger = setup_logger(__name__)
+
 
 def hash_data(data: str, algorithm: str = "sha256") -> str:
     """
@@ -63,21 +78,23 @@ def hash_data(data: str, algorithm: str = "sha256") -> str:
 
     Returns:
         str: The hexadecimal representation of the hash.
-    
+
     Raises:
         ValueError: If an unsupported algorithm is specified.
     """
-    data_bytes = data.encode('utf-8')
+    data_bytes = data.encode("utf-8")
     if algorithm == "sha256":
         hasher = hashlib.sha256()
     elif algorithm == "sha512":
         hasher = hashlib.sha512()
-    elif algorithm == "md5": # MD5 is generally not recommended for new security uses
-        logger.warning("MD5 is used for hashing, which is not secure for many applications.")
+    elif algorithm == "md5":  # MD5 is generally not recommended for new security uses
+        logger.warning(
+            "MD5 is used for hashing, which is not secure for many applications."
+        )
         hasher = hashlib.md5()
     else:
         raise ValueError(f"Unsupported hashing algorithm: {algorithm}")
-    
+
     hasher.update(data_bytes)
     return hasher.hexdigest()
 
@@ -88,7 +105,11 @@ class CryptoService:
     Requires the 'cryptography' library.
     """
 
-    def __init__(self, private_key_pem: Optional[bytes] = None, public_key_pem: Optional[bytes] = None):
+    def __init__(
+        self,
+        private_key_pem: Optional[bytes] = None,
+        public_key_pem: Optional[bytes] = None,
+    ):
         """
         Initializes the CryptoService.
         Can be initialized with existing keys or keys can be generated.
@@ -98,8 +119,12 @@ class CryptoService:
             public_key_pem (Optional[bytes]): PEM encoded public key.
         """
         if not CRYPTOGRAPHY_AVAILABLE:
-            logger.error("Cryptography library not found. Signing and verification will not work.")
-            raise ImportError("Cryptography library is required for CryptoService. Please install 'cryptography'.")
+            logger.error(
+                "Cryptography library not found. Signing and verification will not work."
+            )
+            raise ImportError(
+                "Cryptography library is required for CryptoService. Please install 'cryptography'."
+            )
 
         self.private_key = None
         self.public_key = None
@@ -108,28 +133,25 @@ class CryptoService:
             try:
                 self.private_key = serialization.load_pem_private_key(
                     private_key_pem,
-                    password=None # Assuming no password for simplicity
+                    password=None,  # Assuming no password for simplicity
                 )
                 logger.info("Private key loaded successfully.")
             except Exception as e:
                 logger.error(f"Failed to load private key: {e}", exc_info=True)
                 raise
-        
+
         if public_key_pem:
             try:
-                self.public_key = serialization.load_pem_public_key(
-                    public_key_pem
-                )
+                self.public_key = serialization.load_pem_public_key(public_key_pem)
                 logger.info("Public key loaded successfully.")
             except Exception as e:
                 logger.error(f"Failed to load public key: {e}", exc_info=True)
                 raise
-        
+
         # If a private key was loaded, derive the public key if not provided
         if self.private_key and not self.public_key:
             self.public_key = self.private_key.public_key()
             logger.info("Public key derived from private key.")
-
 
     @staticmethod
     def generate_key_pair(key_size: int = 2048) -> tuple[bytes, bytes]:
@@ -141,27 +163,26 @@ class CryptoService:
 
         Returns:
             tuple[bytes, bytes]: A tuple containing (private_key_pem, public_key_pem).
-        
+
         Raises:
             ImportError: If 'cryptography' library is not installed.
         """
         if not CRYPTOGRAPHY_AVAILABLE:
-            raise ImportError("Cryptography library is required to generate key pairs. Please install 'cryptography'.")
+            raise ImportError(
+                "Cryptography library is required to generate key pairs. Please install 'cryptography'."
+            )
 
-        private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=key_size
-        )
+        private_key = rsa.generate_private_key(public_exponent=65537, key_size=key_size)
         public_key = private_key.public_key()
 
         private_key_pem = private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
+            encryption_algorithm=serialization.NoEncryption(),
         )
         public_key_pem = public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
         logger.info(f"Generated new RSA key pair with key size {key_size}.")
         return private_key_pem, public_key_pem
@@ -175,23 +196,25 @@ class CryptoService:
 
         Returns:
             bytes: The signature.
-        
+
         Raises:
             ValueError: If the private key is not available.
             Exception: For errors during the signing process.
         """
         if not self.private_key:
-            raise ValueError("Private key not loaded or generated. Cannot sign message.")
-        
-        message_bytes = message.encode('utf-8')
+            raise ValueError(
+                "Private key not loaded or generated. Cannot sign message."
+            )
+
+        message_bytes = message.encode("utf-8")
         try:
             signature = self.private_key.sign(
                 message_bytes,
-                padding.PSS( # PSS is a recommended padding scheme
+                padding.PSS(  # PSS is a recommended padding scheme
                     mgf=padding.MGF1(hashes.SHA256()),
-                    salt_length=padding.PSS.MAX_LENGTH 
+                    salt_length=padding.PSS.MAX_LENGTH,
                 ),
-                hashes.SHA256() # Hash algorithm for the message itself
+                hashes.SHA256(),  # Hash algorithm for the message itself
             )
             logger.debug(f"Message signed successfully: {message[:50]}...")
             return signature
@@ -199,7 +222,9 @@ class CryptoService:
             logger.error(f"Error signing message: {e}", exc_info=True)
             raise
 
-    def verify_signature(self, message: str, signature: bytes, public_key_pem: Optional[bytes] = None) -> bool:
+    def verify_signature(
+        self, message: str, signature: bytes, public_key_pem: Optional[bytes] = None
+    ) -> bool:
         """
         Verifies a signature against a message using the public key.
 
@@ -211,7 +236,7 @@ class CryptoService:
 
         Returns:
             bool: True if the signature is valid, False otherwise.
-        
+
         Raises:
             ValueError: If no public key is available or provided.
         """
@@ -220,28 +245,39 @@ class CryptoService:
             try:
                 target_public_key = serialization.load_pem_public_key(public_key_pem)
             except Exception as e:
-                logger.error(f"Failed to load provided public key for verification: {e}", exc_info=True)
-                return False # Cannot verify if key loading fails
+                logger.error(
+                    f"Failed to load provided public key for verification: {e}",
+                    exc_info=True,
+                )
+                return False  # Cannot verify if key loading fails
 
         if not target_public_key:
-            raise ValueError("Public key not available or provided. Cannot verify signature.")
+            raise ValueError(
+                "Public key not available or provided. Cannot verify signature."
+            )
 
-        message_bytes = message.encode('utf-8')
+        message_bytes = message.encode("utf-8")
         try:
             target_public_key.verify(
                 signature,
                 message_bytes,
-                padding.PSS( # Must match the padding used for signing
+                padding.PSS(  # Must match the padding used for signing
                     mgf=padding.MGF1(hashes.SHA256()),
-                    salt_length=padding.PSS.MAX_LENGTH
+                    salt_length=padding.PSS.MAX_LENGTH,
                 ),
-                hashes.SHA256()
+                hashes.SHA256(),
             )
-            logger.debug(f"Signature verified successfully for message: {message[:50]}...")
+            logger.debug(
+                f"Signature verified successfully for message: {message[:50]}..."
+            )
             return True
-        except Exception: # Includes InvalidSignature
-            logger.warning(f"Signature verification failed for message: {message[:50]}...", exc_info=False) # No need for stack trace on typical failures
+        except Exception:  # Includes InvalidSignature
+            logger.warning(
+                f"Signature verification failed for message: {message[:50]}...",
+                exc_info=False,
+            )  # No need for stack trace on typical failures
             return False
+
 
 # Example Usage (Illustrative)
 if __name__ == "__main__":
@@ -253,14 +289,13 @@ if __name__ == "__main__":
     print(f"\nOriginal Data: '{data_to_hash}'")
     print(f"SHA-256 Hash: {hashed_data_sha256}")
 
-    hashed_data_md5 = hash_data(data_to_hash, "md5") # Example, but not recommended
+    hashed_data_md5 = hash_data(data_to_hash, "md5")  # Example, but not recommended
     print(f"MD5 Hash: {hashed_data_md5}")
-    
+
     try:
-        hash_data(data_to_hash, "sha3-256") # Example of unsupported
+        hash_data(data_to_hash, "sha3-256")  # Example of unsupported
     except ValueError as e:
         print(f"Error hashing: {e}")
-
 
     if CRYPTOGRAPHY_AVAILABLE:
         print("\n--- Digital Signature Example ---")
@@ -271,7 +306,7 @@ if __name__ == "__main__":
 
         # Initialize service with the generated private key (public key will be derived)
         crypto_service_signer = CryptoService(private_key_pem=priv_key_pem)
-        
+
         # Initialize a separate service for verification (only needs public key)
         crypto_service_verifier = CryptoService(public_key_pem=pub_key_pem)
 
@@ -292,26 +327,31 @@ if __name__ == "__main__":
         )
         print(f"Signature valid (with direct key)? {is_valid_direct_key}")
 
-
         # Tamper with the message and try to verify
         tampered_message = "This is a very important policy document. (tampered)"
-        is_valid_tampered = crypto_service_verifier.verify_signature(tampered_message, signature)
+        is_valid_tampered = crypto_service_verifier.verify_signature(
+            tampered_message, signature
+        )
         print(f"Signature valid for tampered message? {is_valid_tampered}")
 
         # Example with external keys (e.g. loaded from files/env)
         # crypto_service_external = CryptoService(private_key_pem=b"...", public_key_pem=b"...")
     else:
-        print("\nSkipping digital signature examples as 'cryptography' library is not installed.")
+        print(
+            "\nSkipping digital signature examples as 'cryptography' library is not installed."
+        )
         print("To run these examples, please install it: pip install cryptography")
 
     # Example of initializing service without keys initially
     if CRYPTOGRAPHY_AVAILABLE:
-        cs_no_keys = CryptoService() # Will raise error if trying to sign/verify without loading keys later
+        cs_no_keys = (
+            CryptoService()
+        )  # Will raise error if trying to sign/verify without loading keys later
         try:
             cs_no_keys.sign_message("test")
         except ValueError as e:
             print(f"\nError when signing without key: {e}")
-    else: # If CRYPTOGRAPHY_AVAILABLE is false, CryptoService() init itself will raise ImportError
+    else:  # If CRYPTOGRAPHY_AVAILABLE is false, CryptoService() init itself will raise ImportError
         try:
             cs_no_keys_fail = CryptoService()
         except ImportError as e:

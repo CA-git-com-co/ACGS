@@ -1,31 +1,34 @@
 import os
 import httpx
 from typing import List, Optional
-from ..schemas import ACPrinciple # Using the schema defined in fv_service
+from ..schemas import ACPrinciple  # Using the schema defined in fv_service
+
 # from services.shared.auth import get_service_token, get_auth_headers
 # from shared import get_config
+
 
 # Local auth and config stubs
 def get_service_token():
     return "mock_service_token"
 
+
 def get_auth_headers():
     return {"Authorization": "Bearer mock_token"}
+
 
 # Local configuration
 class LocalConfig:
     def get_service_url(self, service):
-        urls = {
-            'ac': 'http://localhost:8000',
-            'integrity': 'http://localhost:8002'
-        }
-        return urls.get(service, 'http://localhost:8000')
+        urls = {"ac": "http://localhost:8000", "integrity": "http://localhost:8002"}
+        return urls.get(service, "http://localhost:8000")
+
 
 config = LocalConfig()
 
 # Determine if running in Docker (internal) or external environment
-is_docker_env = os.getenv('DOCKER_ENV', 'false').lower() == 'true'
-AC_SERVICE_URL = config.get_service_url('ac')
+is_docker_env = os.getenv("DOCKER_ENV", "false").lower() == "true"
+AC_SERVICE_URL = config.get_service_url("ac")
+
 
 class ACServiceClient:
     def __init__(self, base_url: str):
@@ -33,7 +36,9 @@ class ACServiceClient:
         timeout_config = httpx.Timeout(10.0, connect=5.0)
         self.client = httpx.AsyncClient(base_url=self.base_url, timeout=timeout_config)
 
-    async def get_principle_by_id(self, principle_id: int, auth_token: Optional[str] = None) -> Optional[ACPrinciple]:
+    async def get_principle_by_id(
+        self, principle_id: int, auth_token: Optional[str] = None
+    ) -> Optional[ACPrinciple]:
         # Use service token if no auth token provided
         if not auth_token:
             auth_token = await get_service_token()
@@ -41,21 +46,31 @@ class ACServiceClient:
         headers = get_auth_headers(auth_token)
 
         try:
-            response = await self.client.get(f"/principles/{principle_id}", headers=headers)
+            response = await self.client.get(
+                f"/principles/{principle_id}", headers=headers
+            )
             response.raise_for_status()
             data = response.json()
             return ACPrinciple(**data)
         except httpx.HTTPStatusError as e:
-            print(f"AC Client: HTTP error fetching principle {principle_id}: {e.response.status_code} - {e.response.text}")
+            print(
+                f"AC Client: HTTP error fetching principle {principle_id}: {e.response.status_code} - {e.response.text}"
+            )
             return None
         except httpx.RequestError as e:
-            print(f"AC Client: Request error fetching principle {principle_id}: {str(e)}")
+            print(
+                f"AC Client: Request error fetching principle {principle_id}: {str(e)}"
+            )
             return None
         except Exception as e:
-            print(f"AC Client: Unexpected error fetching principle {principle_id}: {str(e)}")
+            print(
+                f"AC Client: Unexpected error fetching principle {principle_id}: {str(e)}"
+            )
             return None
 
-    async def list_principles_by_ids(self, principle_ids: List[int], auth_token: Optional[str] = None) -> List[ACPrinciple]:
+    async def list_principles_by_ids(
+        self, principle_ids: List[int], auth_token: Optional[str] = None
+    ) -> List[ACPrinciple]:
         """Fetches multiple principles by their IDs."""
         # Note: This assumes ac_service might not have a batch endpoint.
         # If it did, that would be more efficient.
@@ -66,9 +81,10 @@ class ACServiceClient:
                 principles.append(principle)
             # else: handle error or missing principle as needed
         return principles
-        
+
     async def close(self):
         await self.client.aclose()
+
 
 # Global client instance
 ac_service_client = ACServiceClient(base_url=AC_SERVICE_URL)
@@ -76,6 +92,7 @@ ac_service_client = ACServiceClient(base_url=AC_SERVICE_URL)
 # Example Usage
 if __name__ == "__main__":
     import asyncio
+
     async def test_ac_client_for_fv():
         print(f"Testing AC Client for FV Service against URL: {AC_SERVICE_URL}")
         # test_token = "admin_token" # Placeholder token for ac_service
@@ -88,5 +105,6 @@ if __name__ == "__main__":
         # print(f"Fetched {len(fetched_principles_list)} principles by list.")
         await ac_service_client.close()
         print("Run with a live AC service to see results.")
+
     # asyncio.run(test_ac_client_for_fv())
     print("AC Service client for FV defined.")

@@ -1,3 +1,5 @@
+import os
+
 #!/usr/bin/env python3
 
 """
@@ -8,11 +10,12 @@ Creates the necessary database tables for staging environment
 import psycopg2
 import sys
 
+
 def create_staging_database():
     """Create the staging database tables"""
-    
+
     print("Setting up ACGS staging database...")
-    
+
     try:
         # Connect to database
         conn = psycopg2.connect(
@@ -20,11 +23,11 @@ def create_staging_database():
             port=5435,
             database="acgs_staging",
             user="acgs_user",
-            password="acgs_staging_password_2024_phase3_secure"
+            password=os.getenv("DATABASE_PASSWORD"),
         )
-        
+
         cursor = conn.cursor()
-        
+
         # Drop existing tables if they exist to avoid conflicts
         drop_tables_sql = """
         DROP TABLE IF EXISTS ac_amendments CASCADE;
@@ -176,33 +179,36 @@ def create_staging_database():
         INSERT INTO alembic_version (version_num) VALUES ('staging_manual_setup') 
         ON CONFLICT (version_num) DO NOTHING;
         """
-        
+
         cursor.execute(create_tables_sql)
         conn.commit()
-        
+
         print("✅ Staging database tables created successfully!")
-        
+
         # Verify tables were created
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT table_name 
             FROM information_schema.tables 
             WHERE table_schema = 'public' 
             ORDER BY table_name;
-        """)
-        
+        """
+        )
+
         tables = cursor.fetchall()
         print(f"✅ Created {len(tables)} tables:")
         for table in tables:
             print(f"  - {table[0]}")
-        
+
         cursor.close()
         conn.close()
-        
+
         return True
-        
+
     except Exception as e:
         print(f"❌ Error creating staging database: {e}")
         return False
+
 
 def test_database_connection():
     """Test the database connection"""
@@ -212,32 +218,33 @@ def test_database_connection():
             port=5435,
             database="acgs_staging",
             user="acgs_user",
-            password="acgs_staging_password_2024_phase3_secure"
+            password=os.getenv("DATABASE_PASSWORD"),
         )
-        
+
         cursor = conn.cursor()
         cursor.execute("SELECT version();")
         version = cursor.fetchone()
         print(f"✅ Database connection successful!")
         print(f"PostgreSQL version: {version[0]}")
-        
+
         cursor.close()
         conn.close()
         return True
-        
+
     except Exception as e:
         print(f"❌ Database connection failed: {e}")
         return False
 
+
 if __name__ == "__main__":
     print("ACGS Staging Database Setup")
     print("===========================")
-    
+
     # Test connection first
     if not test_database_connection():
         print("❌ Cannot connect to database. Make sure PostgreSQL is running.")
         sys.exit(1)
-    
+
     # Create tables
     if create_staging_database():
         print("✅ Staging database setup completed successfully!")

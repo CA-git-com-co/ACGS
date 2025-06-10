@@ -5,6 +5,7 @@ from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
+
 class BaseValidator:
     async def validate(self, principle: str, rego_code: str) -> float:
         raise NotImplementedError
@@ -37,7 +38,9 @@ class SBERTSemanticValidator(BaseValidator):
 class HeterogeneousValidator:
     """Combine multiple validators with weighted consensus."""
 
-    def __init__(self, weights: Dict[str, float] | None = None, threshold: float = 0.85) -> None:
+    def __init__(
+        self, weights: Dict[str, float] | None = None, threshold: float = 0.85
+    ) -> None:
         self.validators = {
             "primary": GPT4TurboValidator(),
             "adversarial": ClaudeAdversarialValidator(),
@@ -52,7 +55,9 @@ class HeterogeneousValidator:
         }
         self.threshold = threshold
 
-    async def validate_synthesis(self, principle: str, rego_code: str) -> Dict[str, Any]:
+    async def validate_synthesis(
+        self, principle: str, rego_code: str
+    ) -> Dict[str, Any]:
         results: Dict[str, float] = {}
         for name, validator in self.validators.items():
             try:

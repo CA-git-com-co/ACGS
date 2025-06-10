@@ -22,6 +22,7 @@ import hashlib
 try:
     import requests
     from opa import OPA
+
     OPA_CLIENT_AVAILABLE = True
 except ImportError:
     OPA_CLIENT_AVAILABLE = False
@@ -32,9 +33,13 @@ logger = logging.getLogger(__name__)
 
 # Phase 3: Performance Optimization imports
 try:
-    from ..services.performance_monitor import get_performance_monitor, performance_monitor_decorator
+    from ..services.performance_monitor import (
+        get_performance_monitor,
+        performance_monitor_decorator,
+    )
     from ..services.advanced_cache import MultiTierCache, LRUCache, RedisCache
     import redis.asyncio as redis
+
     PERFORMANCE_MONITORING_AVAILABLE = True
 except ImportError:
     PERFORMANCE_MONITORING_AVAILABLE = False
@@ -43,13 +48,16 @@ except ImportError:
     # Create fallback decorator
     def performance_monitor_decorator(operation_type: str, operation_name: str):
         """Fallback decorator when performance monitoring is not available."""
+
         def decorator(func):
             return func
+
         return decorator
 
     def get_performance_monitor():
         """Fallback function when performance monitoring is not available."""
         return None
+
 
 from ..config.opa_config import get_opa_config, OPAMode
 
@@ -57,6 +65,7 @@ from ..config.opa_config import get_opa_config, OPAMode
 @dataclass
 class PolicyDecisionRequest:
     """Request for OPA policy decision."""
+
     input_data: Dict[str, Any]
     policy_path: str
     query: Optional[str] = None
@@ -69,6 +78,7 @@ class PolicyDecisionRequest:
 @dataclass
 class PolicyDecisionResponse:
     """Response from OPA policy decision."""
+
     result: Any
     decision_id: str
     decision_time_ms: float
@@ -81,6 +91,7 @@ class PolicyDecisionResponse:
 @dataclass
 class PolicyValidationResult:
     """Result of policy validation."""
+
     is_valid: bool
     policy_path: str
     validation_time_ms: float
@@ -93,6 +104,7 @@ class PolicyValidationResult:
 @dataclass
 class BatchPolicyDecision:
     """Batch policy decision request."""
+
     decisions: List[PolicyDecisionRequest]
     batch_id: str
     parallel_execution: bool = True
@@ -100,13 +112,19 @@ class BatchPolicyDecision:
 
 class OPAIntegrationError(Exception):
     """Custom exception for OPA integration errors."""
+
     pass
 
 
 class PolicyDecisionCache:
     """Enhanced policy decision cache with multi-tier support."""
 
-    def __init__(self, max_size: int = 1000, ttl_seconds: int = 300, redis_client: Optional[Any] = None):
+    def __init__(
+        self,
+        max_size: int = 1000,
+        ttl_seconds: int = 300,
+        redis_client: Optional[Any] = None,
+    ):
         self.ttl_seconds = ttl_seconds
 
         if PERFORMANCE_MONITORING_AVAILABLE and redis_client:
@@ -128,11 +146,17 @@ class PolicyDecisionCache:
         key_data = {
             "input_data": request.input_data,
             "policy_path": request.policy_path,
-            "query": request.query
+            "query": request.query,
         }
-        return key_data if self.use_advanced_cache else hashlib.md5(json.dumps(key_data, sort_keys=True).encode()).hexdigest()
+        return (
+            key_data
+            if self.use_advanced_cache
+            else hashlib.md5(json.dumps(key_data, sort_keys=True).encode()).hexdigest()
+        )
 
-    async def get(self, request: PolicyDecisionRequest) -> Optional[PolicyDecisionResponse]:
+    async def get(
+        self, request: PolicyDecisionRequest
+    ) -> Optional[PolicyDecisionResponse]:
         """Get cached decision if available and not expired."""
         key = self._generate_key(request)
 
@@ -149,22 +173,28 @@ class PolicyDecisionCache:
                     del self.cache[key]
             return None
 
-    async def put(self, request: PolicyDecisionRequest, response: PolicyDecisionResponse):
+    async def put(
+        self, request: PolicyDecisionRequest, response: PolicyDecisionResponse
+    ):
         """Cache policy decision response."""
         key = self._generate_key(request)
 
         if self.use_advanced_cache:
-            await self.cache.put(key, response, self.ttl_seconds, tags=["policy_decision"])
+            await self.cache.put(
+                key, response, self.ttl_seconds, tags=["policy_decision"]
+            )
         else:
             # Fallback to simple cache logic
             if len(self.cache) >= self.max_size:
-                oldest_key = min(self.cache.keys(), key=lambda k: self.cache[k]["created_at"])
+                oldest_key = min(
+                    self.cache.keys(), key=lambda k: self.cache[k]["created_at"]
+                )
                 del self.cache[oldest_key]
 
             self.cache[key] = {
                 "response": response,
                 "created_at": datetime.now(),
-                "expires_at": datetime.now() + timedelta(seconds=self.ttl_seconds)
+                "expires_at": datetime.now() + timedelta(seconds=self.ttl_seconds),
             }
             logger.debug(f"Cached policy decision: {key}")
 
@@ -184,7 +214,7 @@ class PolicyDecisionCache:
             return {
                 "simple_cache": {
                     "entry_count": len(self.cache),
-                    "max_size": self.max_size
+                    "max_size": self.max_size,
                 }
             }
 
@@ -205,7 +235,7 @@ class OPAClient:
         self.cache = PolicyDecisionCache(
             max_size=self.config.performance.cache_max_size,
             ttl_seconds=self.config.performance.cache_ttl_seconds,
-            redis_client=redis_client
+            redis_client=redis_client,
         )
         self.opa_client = None
         self.session: Optional[aiohttp.ClientSession] = None
@@ -213,7 +243,9 @@ class OPAClient:
         self._health_check_task: Optional[asyncio.Task] = None
 
         # Performance monitoring
-        self.performance_monitor = get_performance_monitor() if PERFORMANCE_MONITORING_AVAILABLE else None
+        self.performance_monitor = (
+            get_performance_monitor() if PERFORMANCE_MONITORING_AVAILABLE else None
+        )
 
         # Performance metrics
         self.metrics = {
@@ -223,56 +255,55 @@ class OPAClient:
             "average_latency_ms": 0.0,
             "max_latency_ms": 0.0,
             "error_count": 0,
-            "last_health_check": None
+            "last_health_check": None,
         }
-    
+
     async def initialize(self):
         """Initialize OPA client based on configuration mode."""
         if self._initialized:
             return
-        
+
         try:
             if self.config.mode in [OPAMode.EMBEDDED, OPAMode.HYBRID]:
                 await self._initialize_embedded_client()
-            
+
             if self.config.mode in [OPAMode.SERVER, OPAMode.HYBRID]:
                 await self._initialize_server_client()
-            
+
             # Start health check task
             if self.config.mode in [OPAMode.SERVER, OPAMode.HYBRID]:
                 self._health_check_task = asyncio.create_task(self._health_check_loop())
-            
+
             self._initialized = True
             logger.info(f"OPA client initialized in {self.config.mode.value} mode")
-            
+
         except Exception as e:
             logger.error(f"Failed to initialize OPA client: {e}")
             raise OPAIntegrationError(f"OPA client initialization failed: {e}")
-    
+
     async def _initialize_embedded_client(self):
         """Initialize embedded OPA client."""
         if not OPA_CLIENT_AVAILABLE:
             raise OPAIntegrationError("OPA Python client not available")
-        
+
         try:
             self.opa_client = OPA()
             logger.info("Embedded OPA client initialized")
         except Exception as e:
             logger.error(f"Failed to initialize embedded OPA client: {e}")
             raise
-    
+
     async def _initialize_server_client(self):
         """Initialize HTTP client for OPA server."""
         timeout = aiohttp.ClientTimeout(
             total=self.config.server.timeout_seconds,
-            connect=self.config.server.timeout_seconds / 2
+            connect=self.config.server.timeout_seconds / 2,
         )
-        
+
         self.session = aiohttp.ClientSession(
-            timeout=timeout,
-            headers={"Content-Type": "application/json"}
+            timeout=timeout, headers={"Content-Type": "application/json"}
         )
-        
+
         # Test server connectivity
         try:
             await self._check_server_health()
@@ -281,12 +312,12 @@ class OPAClient:
             logger.error(f"Failed to connect to OPA server: {e}")
             if self.config.mode == OPAMode.SERVER:
                 raise OPAIntegrationError(f"OPA server connection failed: {e}")
-    
+
     async def _check_server_health(self) -> bool:
         """Check OPA server health."""
         if not self.session:
             return False
-        
+
         try:
             async with self.session.get(self.config.server.health_url) as response:
                 if response.status == 200:
@@ -298,7 +329,7 @@ class OPAClient:
         except Exception as e:
             logger.warning(f"OPA server health check error: {e}")
             return False
-    
+
     async def _health_check_loop(self):
         """Periodic health check for OPA server."""
         while True:
@@ -309,9 +340,11 @@ class OPAClient:
                 break
             except Exception as e:
                 logger.error(f"Health check loop error: {e}")
-    
+
     @performance_monitor_decorator("opa_policy_evaluation", "policy_decision")
-    async def evaluate_policy(self, request: PolicyDecisionRequest) -> PolicyDecisionResponse:
+    async def evaluate_policy(
+        self, request: PolicyDecisionRequest
+    ) -> PolicyDecisionResponse:
         """
         Evaluate policy with advanced performance optimization and caching.
 
@@ -334,14 +367,18 @@ class OPAClient:
             cached_response = await self.cache.get(request)
             if cached_response:
                 self.metrics["cache_hits"] += 1
-                logger.debug("Policy decision cache hit", policy_path=request.policy_path)
+                logger.debug(
+                    "Policy decision cache hit", policy_path=request.policy_path
+                )
                 return cached_response
             self.metrics["cache_misses"] += 1
 
         try:
             # Use performance monitoring context if available
             if self.performance_monitor:
-                async with self.performance_monitor.monitor_request("opa_policy_evaluation", "policy_decision"):
+                async with self.performance_monitor.monitor_request(
+                    "opa_policy_evaluation", "policy_decision"
+                ):
                     response = await self._evaluate_policy_internal(request)
             else:
                 response = await self._evaluate_policy_internal(request)
@@ -352,7 +389,9 @@ class OPAClient:
 
             # Check latency threshold
             if latency_ms > self.config.performance.max_policy_decision_latency_ms:
-                logger.warning(f"Policy decision exceeded latency threshold: {latency_ms:.2f}ms > {self.config.performance.max_policy_decision_latency_ms}ms for {request.policy_path}")
+                logger.warning(
+                    f"Policy decision exceeded latency threshold: {latency_ms:.2f}ms > {self.config.performance.max_policy_decision_latency_ms}ms for {request.policy_path}"
+                )
 
             # Cache successful response
             if self.config.performance.enable_decision_caching and not response.error:
@@ -362,51 +401,63 @@ class OPAClient:
 
         except Exception as e:
             self.metrics["error_count"] += 1
-            logger.error(f"Policy evaluation failed for {request.policy_path}: {str(e)}")
+            logger.error(
+                f"Policy evaluation failed for {request.policy_path}: {str(e)}"
+            )
             raise OPAIntegrationError(f"Policy evaluation failed: {e}")
-    
-    async def _evaluate_policy_internal(self, request: PolicyDecisionRequest) -> PolicyDecisionResponse:
+
+    async def _evaluate_policy_internal(
+        self, request: PolicyDecisionRequest
+    ) -> PolicyDecisionResponse:
         """Internal policy evaluation with mode-specific handling."""
         decision_id = f"decision_{int(time.time() * 1000)}"
         start_time = time.time()
-        
+
         try:
             # Try server mode first if available
             if self.config.mode in [OPAMode.SERVER, OPAMode.HYBRID] and self.session:
                 try:
-                    return await self._evaluate_via_server(request, decision_id, start_time)
+                    return await self._evaluate_via_server(
+                        request, decision_id, start_time
+                    )
                 except Exception as e:
                     if self.config.mode == OPAMode.SERVER:
                         raise
-                    logger.warning(f"Server evaluation failed, falling back to embedded: {e}")
-            
+                    logger.warning(
+                        f"Server evaluation failed, falling back to embedded: {e}"
+                    )
+
             # Fall back to embedded mode
-            if self.config.mode in [OPAMode.EMBEDDED, OPAMode.HYBRID] and self.opa_client:
-                return await self._evaluate_via_embedded(request, decision_id, start_time)
-            
+            if (
+                self.config.mode in [OPAMode.EMBEDDED, OPAMode.HYBRID]
+                and self.opa_client
+            ):
+                return await self._evaluate_via_embedded(
+                    request, decision_id, start_time
+                )
+
             raise OPAIntegrationError("No available OPA evaluation method")
-            
+
         except Exception as e:
             decision_time_ms = (time.time() - start_time) * 1000
             return PolicyDecisionResponse(
                 result=None,
                 decision_id=decision_id,
                 decision_time_ms=decision_time_ms,
-                error=str(e)
+                error=str(e),
             )
-    
-    async def _evaluate_via_server(self, request: PolicyDecisionRequest, 
-                                 decision_id: str, start_time: float) -> PolicyDecisionResponse:
+
+    async def _evaluate_via_server(
+        self, request: PolicyDecisionRequest, decision_id: str, start_time: float
+    ) -> PolicyDecisionResponse:
         """Evaluate policy via OPA server."""
         url = f"{self.config.server.data_api_url}/{request.policy_path}"
-        
-        payload = {
-            "input": request.input_data
-        }
-        
+
+        payload = {"input": request.input_data}
+
         if request.query:
             payload["query"] = request.query
-        
+
         params = {}
         if request.explain:
             params["explain"] = "full"
@@ -416,61 +467,69 @@ class OPAClient:
             params["instrument"] = "true"
         if request.pretty:
             params["pretty"] = "true"
-        
+
         async with self.session.post(url, json=payload, params=params) as response:
             if response.status == 200:
                 data = await response.json()
                 decision_time_ms = (time.time() - start_time) * 1000
-                
+
                 return PolicyDecisionResponse(
                     result=data.get("result"),
                     decision_id=decision_id,
                     decision_time_ms=decision_time_ms,
                     explanation=data.get("explanation"),
                     metrics=data.get("metrics"),
-                    provenance=data.get("provenance")
+                    provenance=data.get("provenance"),
                 )
             else:
                 error_text = await response.text()
-                raise OPAIntegrationError(f"Server evaluation failed: {response.status} - {error_text}")
-    
-    async def _evaluate_via_embedded(self, request: PolicyDecisionRequest,
-                                   decision_id: str, start_time: float) -> PolicyDecisionResponse:
+                raise OPAIntegrationError(
+                    f"Server evaluation failed: {response.status} - {error_text}"
+                )
+
+    async def _evaluate_via_embedded(
+        self, request: PolicyDecisionRequest, decision_id: str, start_time: float
+    ) -> PolicyDecisionResponse:
         """Evaluate policy via embedded OPA client."""
         # Note: This is a simplified implementation
         # In practice, you would need to load policies and evaluate them
         decision_time_ms = (time.time() - start_time) * 1000
-        
+
         # Placeholder implementation
-        result = {"allowed": True, "message": "Embedded evaluation not fully implemented"}
-        
+        result = {
+            "allowed": True,
+            "message": "Embedded evaluation not fully implemented",
+        }
+
         return PolicyDecisionResponse(
-            result=result,
-            decision_id=decision_id,
-            decision_time_ms=decision_time_ms
+            result=result, decision_id=decision_id, decision_time_ms=decision_time_ms
         )
-    
+
     def _update_metrics(self, latency_ms: float):
         """Update performance metrics."""
         self.metrics["total_decisions"] += 1
-        
+
         # Update average latency
         total = self.metrics["total_decisions"]
         current_avg = self.metrics["average_latency_ms"]
-        self.metrics["average_latency_ms"] = ((current_avg * (total - 1)) + latency_ms) / total
-        
+        self.metrics["average_latency_ms"] = (
+            (current_avg * (total - 1)) + latency_ms
+        ) / total
+
         # Update max latency
         if latency_ms > self.metrics["max_latency_ms"]:
             self.metrics["max_latency_ms"] = latency_ms
-    
-    async def validate_policy(self, policy_content: str, policy_path: str) -> PolicyValidationResult:
+
+    async def validate_policy(
+        self, policy_content: str, policy_path: str
+    ) -> PolicyValidationResult:
         """
         Validate Rego policy syntax and semantics.
-        
+
         Args:
             policy_content: Rego policy content
             policy_path: Policy path/name
-            
+
         Returns:
             Policy validation result
         """
@@ -479,21 +538,21 @@ class OPAClient:
         warnings = []
         syntax_errors = []
         semantic_errors = []
-        
+
         try:
             # Basic syntax validation
             if not policy_content.strip():
                 syntax_errors.append("Policy content is empty")
-            
+
             if not policy_content.strip().startswith("package "):
                 syntax_errors.append("Policy must start with package declaration")
-            
+
             # Additional validation would go here
             # This is a simplified implementation
-            
+
             validation_time_ms = (time.time() - start_time) * 1000
             is_valid = len(syntax_errors) == 0 and len(semantic_errors) == 0
-            
+
             return PolicyValidationResult(
                 is_valid=is_valid,
                 policy_path=policy_path,
@@ -501,9 +560,9 @@ class OPAClient:
                 errors=errors,
                 warnings=warnings,
                 syntax_errors=syntax_errors,
-                semantic_errors=semantic_errors
+                semantic_errors=semantic_errors,
             )
-            
+
         except Exception as e:
             validation_time_ms = (time.time() - start_time) * 1000
             return PolicyValidationResult(
@@ -513,30 +572,35 @@ class OPAClient:
                 errors=[str(e)],
                 warnings=warnings,
                 syntax_errors=syntax_errors,
-                semantic_errors=semantic_errors
+                semantic_errors=semantic_errors,
             )
-    
-    async def batch_evaluate(self, batch: BatchPolicyDecision) -> List[PolicyDecisionResponse]:
+
+    async def batch_evaluate(
+        self, batch: BatchPolicyDecision
+    ) -> List[PolicyDecisionResponse]:
         """
         Evaluate multiple policies in batch for improved performance.
-        
+
         Args:
             batch: Batch policy decision request
-            
+
         Returns:
             List of policy decision responses
         """
         if not batch.decisions:
             return []
-        
-        if batch.parallel_execution and self.config.performance.enable_parallel_evaluation:
+
+        if (
+            batch.parallel_execution
+            and self.config.performance.enable_parallel_evaluation
+        ):
             # Parallel execution
             semaphore = asyncio.Semaphore(self.config.performance.max_parallel_workers)
-            
+
             async def evaluate_with_semaphore(request):
                 async with semaphore:
                     return await self.evaluate_policy(request)
-            
+
             tasks = [evaluate_with_semaphore(request) for request in batch.decisions]
             return await asyncio.gather(*tasks, return_exceptions=True)
         else:
@@ -546,11 +610,11 @@ class OPAClient:
                 result = await self.evaluate_policy(request)
                 results.append(result)
             return results
-    
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get performance metrics."""
         return self.metrics.copy()
-    
+
     async def close(self):
         """Clean up resources."""
         if self._health_check_task and not self._health_check_task.done():
@@ -568,7 +632,7 @@ class OPAClient:
             except Exception as e:
                 logger.warning(f"Error closing HTTP session: {e}")
 
-        if hasattr(self, 'cache') and self.cache:
+        if hasattr(self, "cache") and self.cache:
             self.cache.clear()
 
         self._initialized = False

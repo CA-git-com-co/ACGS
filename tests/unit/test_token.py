@@ -7,10 +7,12 @@ import json
 
 import pytest
 
+
 # Mock implementations for testing without full backend setup
 class MockSettings:
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
     SECRET_KEY = "test-secret-key"
+
 
 class MockHTTPException(Exception):
     def __init__(self, status_code, detail=None):
@@ -18,20 +20,20 @@ class MockHTTPException(Exception):
         self.detail = detail
         super().__init__(detail)
 
+
 class MockSecurity:
     HTTPException = MockHTTPException
 
     @staticmethod
     def create_access_token(subject: str, expires_delta: timedelta = None):
         """Mock token creation."""
-        exp = int(time.time()) + (expires_delta.total_seconds() if expires_delta else 1800)
-        token_data = {
-            "sub": subject,
-            "exp": exp,
-            "iat": int(time.time())
-        }
+        exp = int(time.time()) + (
+            expires_delta.total_seconds() if expires_delta else 1800
+        )
+        token_data = {"sub": subject, "exp": exp, "iat": int(time.time())}
         # Simple mock token (not real JWT)
         import base64
+
         return base64.b64encode(json.dumps(token_data).encode()).decode()
 
     @staticmethod
@@ -62,6 +64,7 @@ class MockSecurity:
     def get_password_hash(password: str) -> str:
         """Mock password hashing."""
         import hashlib
+
         return hashlib.sha256(f"salt_{password}".encode()).hexdigest()
 
     @staticmethod
@@ -69,6 +72,7 @@ class MockSecurity:
         """Mock password verification."""
         expected_hash = MockSecurity.get_password_hash(plain_password)
         return expected_hash == hashed_password
+
 
 # Use mock implementations
 security = MockSecurity()

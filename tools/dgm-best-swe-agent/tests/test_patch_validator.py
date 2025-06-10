@@ -1,6 +1,7 @@
 import pytest
 from coding_agent import is_patch_valid
 
+
 def test_empty_patch():
     # Test empty patch
     is_valid, reason = is_patch_valid("")
@@ -11,6 +12,7 @@ def test_empty_patch():
     is_valid, reason = is_patch_valid("   \n   ")
     assert not is_valid
     assert reason == "Empty patch"
+
 
 def test_test_only_patch():
     patch = """
@@ -26,6 +28,7 @@ index abc123..def456 100644
     assert not is_valid
     assert reason == "Only test files were modified"
 
+
 def test_source_file_patch():
     patch = """
 diff --git a/tools/edit.py b/tools/edit.py
@@ -40,6 +43,7 @@ index abc123..def456 100644
     is_valid, reason = is_patch_valid(patch)
     assert is_valid
     assert reason == "Valid patch with source file modifications"
+
 
 def test_mixed_files_patch():
     patch = """
@@ -63,6 +67,7 @@ index abc123..def456 100644
     is_valid, reason = is_patch_valid(patch)
     assert is_valid
     assert reason == "Valid patch with source file modifications"
+
 
 def test_no_files_modified():
     patch = """

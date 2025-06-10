@@ -22,13 +22,24 @@ src_dir = os.path.join(os.path.dirname(os.path.dirname(current_dir)), "src")
 if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
 
-from integrations.alphaevolve_engine.services.llm_service import get_llm_service, MockLLMService
-from integrations.alphaevolve_engine.services.policy_synthesizer import LLMPolicyGenerator, PolicySynthesisInput
+from integrations.alphaevolve_engine.services.llm_service import (
+    get_llm_service,
+    MockLLMService,
+)
+from integrations.alphaevolve_engine.services.policy_synthesizer import (
+    LLMPolicyGenerator,
+    PolicySynthesisInput,
+)
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
-from integrations.alphaevolve_engine.core.constitutional_principle import ConstitutionalPrinciple
+from integrations.alphaevolve_engine.core.constitutional_principle import (
+    ConstitutionalPrinciple,
+)
 
 # Setup logger for the example
-logger = setup_logger("PolicySynthesisExample", level="INFO") # Use "DEBUG" for more verbosity
+logger = setup_logger(
+    "PolicySynthesisExample", level="INFO"
+)  # Use "DEBUG" for more verbosity
+
 
 def run_example():
     """
@@ -40,21 +51,31 @@ def run_example():
     # To use OpenAI, ensure OPENAI_API_KEY is set in your environment or .env file
     # and change "mock" to "openai".
     # llm_service_type = "openai" if os.getenv("OPENAI_API_KEY") else "mock"
-    llm_service_type = "mock" # Force mock for this example to ensure it runs without API key
-    
+    llm_service_type = (
+        "mock"  # Force mock for this example to ensure it runs without API key
+    )
+
     if llm_service_type == "mock":
         logger.info("Using MockLLMService for policy synthesis.")
+
         # Customize mock LLM behavior if needed for more specific example outputs
         # For instance, make the mock LLM actually generate some valid Rego-like code
         class CustomMockLLM(MockLLMService):
-            def generate_text(self, prompt: str, max_tokens: int = 1024, temperature: float = 0.7, model:str=None) -> str:
+            def generate_text(
+                self,
+                prompt: str,
+                max_tokens: int = 1024,
+                temperature: float = 0.7,
+                model: str = None,
+            ) -> str:
                 # Simple mock Rego generation based on keywords in prompt
                 if "operational_rule" in prompt.lower() and "rego" in prompt.lower():
-                    package_name = "company.access_control" # Default
+                    package_name = "company.access_control"  # Default
                     if "package name" in prompt:
                         try:
                             # Attempt to extract package name from prompt (very basic)
                             import re
+
                             match = re.search(r"package named '([^']*)'", prompt)
                             if match:
                                 package_name = match.group(1)
@@ -99,8 +120,8 @@ EXPLANATION_END
 """
                 return super().generate_text(prompt, max_tokens, temperature)
 
-        llm_service = CustomMockLLM(delay=0) # No delay for faster example
-    else: # "openai"
+        llm_service = CustomMockLLM(delay=0)  # No delay for faster example
+    else:  # "openai"
         logger.info("Attempting to use OpenAILLMService. Ensure API key is available.")
         try:
             llm_service = get_llm_service("openai")
@@ -108,9 +129,10 @@ EXPLANATION_END
             llm_service.generate_text("Test: What is 1+1?", max_tokens=10)
             logger.info("OpenAILLMService seems to be working.")
         except Exception as e:
-            logger.error(f"Failed to initialize or use OpenAILLMService: {e}. Falling back to MockLLMService.")
+            logger.error(
+                f"Failed to initialize or use OpenAILLMService: {e}. Falling back to MockLLMService."
+            )
             llm_service = CustomMockLLM(delay=0)
-
 
     # 2. Initialize Policy Synthesizer
     policy_synthesizer = LLMPolicyGenerator(llm_service=llm_service)
@@ -123,30 +145,34 @@ EXPLANATION_END
         "Users with the 'auditor' role should be allowed to access any dataset if the access purpose is 'compliance_check'. "
         "All other access requests should be denied by default. The package should be 'data_access_policy'."
     )
-    
+
     # Define an existing constitutional principle for context
     existing_cp = ConstitutionalPrinciple(
         principle_id="CP001",
         name="Data Minimization",
         description="AI systems should only access data essential for their current task.",
         category="DataPrivacy",
-        policy_code="# Conceptual: data_access_scope == 'minimal'" # Not Rego, just text
+        policy_code="# Conceptual: data_access_scope == 'minimal'",  # Not Rego, just text
     )
 
     operational_rule_input = PolicySynthesisInput(
         synthesis_goal=synthesis_goal_op_rule,
         policy_type="operational_rule",
         desired_format="rego",
-        existing_policies=[existing_cp], # Provide context
+        existing_policies=[existing_cp],  # Provide context
         constraints=[
             "The rule must explicitly default to deny.",
             "Package name must be 'data_access_policy'.",
-            "Consider the 'Data Minimization' principle (CP001)."
+            "Consider the 'Data Minimization' principle (CP001).",
         ],
-        context_data={"available_roles": ["researcher", "auditor", "analyst"],
-                      "dataset_tags": ["anonymized_data", "pii_data", "research_data"]}
+        context_data={
+            "available_roles": ["researcher", "auditor", "analyst"],
+            "dataset_tags": ["anonymized_data", "pii_data", "research_data"],
+        },
     )
-    logger.info(f"Synthesizing new operational rule with goal: '{operational_rule_input.synthesis_goal[:100]}...'")
+    logger.info(
+        f"Synthesizing new operational rule with goal: '{operational_rule_input.synthesis_goal[:100]}...'"
+    )
 
     # 4. Run Synthesis for the Operational Rule
     suggestion_op_rule = policy_synthesizer.synthesize_policy(operational_rule_input)
@@ -156,7 +182,9 @@ EXPLANATION_END
         logger.info("Successfully synthesized an operational rule suggestion:")
         print("\n--- Suggested Operational Rule ---")
         print(f"Source: {suggestion_op_rule.source_synthesizer}")
-        print(f"Confidence: {suggestion_op_rule.confidence_score if suggestion_op_rule.confidence_score is not None else 'N/A'}")
+        print(
+            f"Confidence: {suggestion_op_rule.confidence_score if suggestion_op_rule.confidence_score is not None else 'N/A'}"
+        )
         print("Policy Code (Rego):")
         print(suggestion_op_rule.suggested_policy_code)
         print("\nExplanation:")
@@ -170,31 +198,37 @@ EXPLANATION_END
         "This principle should state that decisions made by AI systems, especially critical ones, "
         "must be explainable to affected parties in an understandable manner."
     )
-    
+
     cp_input = PolicySynthesisInput(
         synthesis_goal=synthesis_goal_cp,
         policy_type="constitutional_principle",
-        desired_format="structured_natural_language", # Requesting natural language
-        constraints=["The principle should be concise, impactful, and include at least two sub-clauses detailing aspects of explainability."]
+        desired_format="structured_natural_language",  # Requesting natural language
+        constraints=[
+            "The principle should be concise, impactful, and include at least two sub-clauses detailing aspects of explainability."
+        ],
     )
-    logger.info(f"\nSynthesizing new constitutional principle with goal: '{cp_input.synthesis_goal[:100]}...'")
-    
+    logger.info(
+        f"\nSynthesizing new constitutional principle with goal: '{cp_input.synthesis_goal[:100]}...'"
+    )
+
     suggestion_cp = policy_synthesizer.synthesize_policy(cp_input)
 
     if suggestion_cp:
         logger.info("Successfully synthesized a constitutional principle suggestion:")
         print("\n--- Suggested Constitutional Principle ---")
         print(f"Source: {suggestion_cp.source_synthesizer}")
-        print(f"Confidence: {suggestion_cp.confidence_score if suggestion_cp.confidence_score is not None else 'N/A'}")
+        print(
+            f"Confidence: {suggestion_cp.confidence_score if suggestion_cp.confidence_score is not None else 'N/A'}"
+        )
         print("Principle Text:")
-        print(suggestion_cp.suggested_policy_code) # This should be natural language
+        print(suggestion_cp.suggested_policy_code)  # This should be natural language
         print("\nExplanation:")
         print(suggestion_cp.explanation)
     else:
         logger.error("Failed to synthesize a constitutional principle suggestion.")
 
-
     logger.info("\nPolicy synthesis example completed.")
+
 
 if __name__ == "__main__":
     run_example()

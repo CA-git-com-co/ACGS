@@ -26,6 +26,7 @@ try:
     from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
     from cryptography.hazmat.backends import default_backend
     import secrets
+
     CRYPTOGRAPHY_AVAILABLE = True
 except ImportError:
     CRYPTOGRAPHY_AVAILABLE = False
@@ -35,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 class AggregationMethod(Enum):
     """Supported secure aggregation methods."""
+
     FEDERATED_AVERAGING = "federated_averaging"
     SECURE_SUM = "secure_sum"
     DIFFERENTIAL_PRIVATE = "differential_private"
@@ -44,6 +46,7 @@ class AggregationMethod(Enum):
 @dataclass
 class SecureShare:
     """Secure share for multi-party computation."""
+
     share_id: str
     encrypted_value: bytes
     participant_id: str
@@ -54,13 +57,14 @@ class SecureShare:
 @dataclass
 class AggregationConfig:
     """Configuration for secure aggregation."""
+
     method: AggregationMethod = AggregationMethod.FEDERATED_AVERAGING
     privacy_budget: float = 1.0  # Epsilon for differential privacy
     byzantine_tolerance: float = 0.33  # Fraction of Byzantine nodes tolerated
     min_participants: int = 2
     max_participants: int = 10
     aggregation_timeout: float = 300.0  # seconds
-    
+
     # Cryptographic parameters
     key_size: int = 2048
     use_homomorphic: bool = False
@@ -70,17 +74,17 @@ class AggregationConfig:
 class SecureAggregator:
     """
     Secure aggregation framework for federated evaluation results.
-    
+
     Provides privacy-preserving aggregation using cryptographic techniques
     and integrates with ACGS-PGP integrity service.
     """
-    
+
     def __init__(self, config: AggregationConfig = None):
         self.config = config or AggregationConfig()
         self.active_aggregations: Dict[str, Dict[str, Any]] = {}
         self.crypto_keys: Dict[str, Any] = {}
         self.aggregation_history: List[Dict[str, Any]] = []
-        
+
         # Performance metrics
         self.aggregation_metrics = {
             "total_aggregations": 0,
@@ -88,26 +92,28 @@ class SecureAggregator:
             "failed_aggregations": 0,
             "average_aggregation_time": 0.0,
             "privacy_violations": 0,
-            "byzantine_attacks_detected": 0
+            "byzantine_attacks_detected": 0,
         }
-        
+
         logger.info("Initialized Secure Aggregator")
-    
+
     async def initialize(self):
         """Initialize the secure aggregator."""
         try:
             if not CRYPTOGRAPHY_AVAILABLE:
-                logger.warning("Cryptography library not available. Using mock implementations.")
-            
+                logger.warning(
+                    "Cryptography library not available. Using mock implementations."
+                )
+
             # Generate aggregation keys
             await self._generate_aggregation_keys()
-            
+
             logger.info("Secure Aggregator initialized successfully")
-            
+
         except Exception as e:
             logger.error(f"Failed to initialize Secure Aggregator: {e}")
             raise
-    
+
     async def _generate_aggregation_keys(self):
         """Generate cryptographic keys for secure aggregation."""
         try:
@@ -116,30 +122,30 @@ class SecureAggregator:
                 private_key = rsa.generate_private_key(
                     public_exponent=65537,
                     key_size=self.config.key_size,
-                    backend=default_backend()
+                    backend=default_backend(),
                 )
-                
+
                 public_key = private_key.public_key()
-                
+
                 # Serialize keys
                 private_pem = private_key.private_bytes(
                     encoding=serialization.Encoding.PEM,
                     format=serialization.PrivateFormat.PKCS8,
-                    encryption_algorithm=serialization.NoEncryption()
+                    encryption_algorithm=serialization.NoEncryption(),
                 )
-                
+
                 public_pem = public_key.public_bytes(
                     encoding=serialization.Encoding.PEM,
-                    format=serialization.PublicFormat.SubjectPublicKeyInfo
+                    format=serialization.PublicFormat.SubjectPublicKeyInfo,
                 )
-                
+
                 self.crypto_keys = {
                     "private_key": private_key,
                     "public_key": public_key,
                     "private_pem": private_pem,
-                    "public_pem": public_pem
+                    "public_pem": public_pem,
                 }
-                
+
                 logger.info("Generated cryptographic keys for secure aggregation")
             else:
                 # Mock keys for testing
@@ -147,128 +153,152 @@ class SecureAggregator:
                     "private_key": "mock_private_key",
                     "public_key": "mock_public_key",
                     "private_pem": b"mock_private_pem",
-                    "public_pem": b"mock_public_pem"
+                    "public_pem": b"mock_public_pem",
                 }
-                
+
         except Exception as e:
             logger.error(f"Failed to generate aggregation keys: {e}")
             raise
-    
+
     async def aggregate_results(
         self,
         node_results: Dict[str, Dict[str, Any]],
-        evaluation_criteria: Dict[str, Any]
+        evaluation_criteria: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
         Aggregate federated evaluation results using secure protocols.
-        
+
         Args:
             node_results: Results from each federated node
             evaluation_criteria: Criteria for evaluation aggregation
-            
+
         Returns:
             Aggregated results with privacy guarantees
         """
         try:
             aggregation_id = hashlib.md5(f"agg_{time.time()}".encode()).hexdigest()[:16]
             start_time = time.time()
-            
+
             logger.info(f"Starting secure aggregation: {aggregation_id}")
-            
+
             # Filter successful results
             successful_results = {
-                node_id: result for node_id, result in node_results.items()
+                node_id: result
+                for node_id, result in node_results.items()
                 if result.get("success", False)
             }
-            
+
             if len(successful_results) < self.config.min_participants:
-                raise ValueError(f"Insufficient participants: {len(successful_results)} < {self.config.min_participants}")
-            
+                raise ValueError(
+                    f"Insufficient participants: {len(successful_results)} < {self.config.min_participants}"
+                )
+
             # Detect and handle Byzantine nodes
             filtered_results = await self._detect_byzantine_nodes(successful_results)
-            
+
             # Apply secure aggregation method
             if self.config.method == AggregationMethod.FEDERATED_AVERAGING:
                 aggregated = await self._federated_averaging(filtered_results)
             elif self.config.method == AggregationMethod.SECURE_SUM:
                 aggregated = await self._secure_sum(filtered_results)
             elif self.config.method == AggregationMethod.DIFFERENTIAL_PRIVATE:
-                aggregated = await self._differential_private_aggregation(filtered_results)
+                aggregated = await self._differential_private_aggregation(
+                    filtered_results
+                )
             elif self.config.method == AggregationMethod.BYZANTINE_ROBUST:
                 aggregated = await self._byzantine_robust_aggregation(filtered_results)
             else:
-                raise ValueError(f"Unsupported aggregation method: {self.config.method}")
-            
+                raise ValueError(
+                    f"Unsupported aggregation method: {self.config.method}"
+                )
+
             # Add aggregation metadata
-            aggregated.update({
-                "aggregation_id": aggregation_id,
-                "aggregation_method": self.config.method.value,
-                "participant_count": len(filtered_results),
-                "aggregation_time": time.time() - start_time,
-                "privacy_budget_used": self.config.privacy_budget,
-                "byzantine_nodes_detected": len(successful_results) - len(filtered_results)
-            })
-            
+            aggregated.update(
+                {
+                    "aggregation_id": aggregation_id,
+                    "aggregation_method": self.config.method.value,
+                    "participant_count": len(filtered_results),
+                    "aggregation_time": time.time() - start_time,
+                    "privacy_budget_used": self.config.privacy_budget,
+                    "byzantine_nodes_detected": len(successful_results)
+                    - len(filtered_results),
+                }
+            )
+
             # Update metrics
-            await self._update_aggregation_metrics(aggregation_id, time.time() - start_time, True)
-            
+            await self._update_aggregation_metrics(
+                aggregation_id, time.time() - start_time, True
+            )
+
             logger.info(f"Secure aggregation completed: {aggregation_id}")
             return aggregated
-            
+
         except Exception as e:
-            await self._update_aggregation_metrics("failed", time.time() - start_time, False)
+            await self._update_aggregation_metrics(
+                "failed", time.time() - start_time, False
+            )
             logger.error(f"Secure aggregation failed: {e}")
             raise
-    
-    async def _detect_byzantine_nodes(self, results: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+
+    async def _detect_byzantine_nodes(
+        self, results: Dict[str, Dict[str, Any]]
+    ) -> Dict[str, Dict[str, Any]]:
         """Detect and filter out Byzantine (malicious) nodes."""
         try:
             if len(results) < 3:
                 # Cannot detect Byzantine nodes with less than 3 participants
                 return results
-            
+
             # Extract key metrics for Byzantine detection
             metrics_by_node = {}
             for node_id, result in results.items():
                 metrics_by_node[node_id] = {
-                    "policy_compliance_score": result.get("policy_compliance_score", 0.0),
+                    "policy_compliance_score": result.get(
+                        "policy_compliance_score", 0.0
+                    ),
                     "execution_time_ms": result.get("execution_time_ms", 0.0),
-                    "success": result.get("success", False)
+                    "success": result.get("success", False),
                 }
-            
+
             # Calculate statistical outliers
             filtered_results = {}
             for metric_name in ["policy_compliance_score", "execution_time_ms"]:
                 values = [metrics[metric_name] for metrics in metrics_by_node.values()]
-                
+
                 if len(values) > 2:
                     mean_val = np.mean(values)
                     std_val = np.std(values)
                     threshold = 2.0  # 2 standard deviations
-                    
+
                     for node_id, metrics in metrics_by_node.items():
                         value = metrics[metric_name]
                         if abs(value - mean_val) <= threshold * std_val:
                             if node_id not in filtered_results:
                                 filtered_results[node_id] = results[node_id]
                         else:
-                            logger.warning(f"Byzantine node detected: {node_id} (outlier in {metric_name})")
+                            logger.warning(
+                                f"Byzantine node detected: {node_id} (outlier in {metric_name})"
+                            )
                             self.aggregation_metrics["byzantine_attacks_detected"] += 1
-            
+
             # If no nodes pass all checks, use majority voting
             if not filtered_results:
                 # Use nodes that pass at least one metric check
                 for node_id in results:
                     filtered_results[node_id] = results[node_id]
-            
-            logger.info(f"Byzantine detection: {len(results)} -> {len(filtered_results)} nodes")
+
+            logger.info(
+                f"Byzantine detection: {len(results)} -> {len(filtered_results)} nodes"
+            )
             return filtered_results
-            
+
         except Exception as e:
             logger.error(f"Byzantine detection failed: {e}")
             return results  # Return original results if detection fails
 
-    async def _federated_averaging(self, results: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    async def _federated_averaging(
+        self, results: Dict[str, Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Perform federated averaging of evaluation results."""
         try:
             if not results:
@@ -276,14 +306,16 @@ class SecureAggregator:
 
             # Extract numeric metrics for averaging
             numeric_metrics = [
-                "policy_compliance_score", "execution_time_ms",
-                "success_rate", "consistency_score"
+                "policy_compliance_score",
+                "execution_time_ms",
+                "success_rate",
+                "consistency_score",
             ]
 
             aggregated = {
                 "success": True,
                 "aggregation_method": "federated_averaging",
-                "participant_nodes": list(results.keys())
+                "participant_nodes": list(results.keys()),
             }
 
             # Average numeric metrics
@@ -305,13 +337,17 @@ class SecureAggregator:
                 aggregated["consistency_score"] = max(0.0, 1.0 - std_score)
 
             # Calculate overall success rate
-            success_count = sum(1 for result in results.values() if result.get("success", False))
+            success_count = sum(
+                1 for result in results.values() if result.get("success", False)
+            )
             aggregated["success_rate"] = success_count / len(results)
 
             # Add privacy score (placeholder - would implement actual privacy metrics)
             aggregated["privacy_score"] = 0.95  # High privacy due to secure aggregation
 
-            logger.debug(f"Federated averaging completed with {len(results)} participants")
+            logger.debug(
+                f"Federated averaging completed with {len(results)} participants"
+            )
             return aggregated
 
         except Exception as e:
@@ -327,7 +363,7 @@ class SecureAggregator:
             aggregated = {
                 "success": True,
                 "aggregation_method": "secure_sum",
-                "participant_nodes": list(results.keys())
+                "participant_nodes": list(results.keys()),
             }
 
             # Sum numeric metrics securely
@@ -359,7 +395,9 @@ class SecureAggregator:
             logger.error(f"Secure sum failed: {e}")
             raise
 
-    async def _differential_private_aggregation(self, results: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    async def _differential_private_aggregation(
+        self, results: Dict[str, Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Perform differential private aggregation."""
         try:
             # Apply differential privacy with Laplace noise
@@ -370,7 +408,7 @@ class SecureAggregator:
                 "success": True,
                 "aggregation_method": "differential_private",
                 "participant_nodes": list(results.keys()),
-                "privacy_budget": epsilon
+                "privacy_budget": epsilon,
             }
 
             # Add noise to aggregated metrics
@@ -405,13 +443,15 @@ class SecureAggregator:
             logger.error(f"Differential private aggregation failed: {e}")
             raise
 
-    async def _byzantine_robust_aggregation(self, results: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    async def _byzantine_robust_aggregation(
+        self, results: Dict[str, Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Perform Byzantine-robust aggregation using median-based methods."""
         try:
             aggregated = {
                 "success": True,
                 "aggregation_method": "byzantine_robust",
-                "participant_nodes": list(results.keys())
+                "participant_nodes": list(results.keys()),
             }
 
             # Use median instead of mean for robustness
@@ -425,13 +465,17 @@ class SecureAggregator:
 
                 if values:
                     aggregated[metric] = np.median(values)
-                    aggregated[f"{metric}_mad"] = np.median(np.abs(values - np.median(values)))  # Median Absolute Deviation
+                    aggregated[f"{metric}_mad"] = np.median(
+                        np.abs(values - np.median(values))
+                    )  # Median Absolute Deviation
                     aggregated[f"{metric}_range"] = np.max(values) - np.min(values)
 
             # Calculate robustness score
             byzantine_tolerance = len(results) * self.config.byzantine_tolerance
             aggregated["byzantine_tolerance"] = byzantine_tolerance
-            aggregated["robustness_score"] = min(1.0, len(results) / (2 * byzantine_tolerance + 1))
+            aggregated["robustness_score"] = min(
+                1.0, len(results) / (2 * byzantine_tolerance + 1)
+            )
 
             # Moderate privacy score (robustness vs privacy tradeoff)
             aggregated["privacy_score"] = 0.85
@@ -443,7 +487,9 @@ class SecureAggregator:
             logger.error(f"Byzantine robust aggregation failed: {e}")
             raise
 
-    async def _update_aggregation_metrics(self, aggregation_id: str, execution_time: float, success: bool):
+    async def _update_aggregation_metrics(
+        self, aggregation_id: str, execution_time: float, success: bool
+    ):
         """Update aggregation performance metrics."""
         try:
             self.aggregation_metrics["total_aggregations"] += 1
@@ -455,19 +501,21 @@ class SecureAggregator:
                 total_aggs = self.aggregation_metrics["total_aggregations"]
                 current_avg = self.aggregation_metrics["average_aggregation_time"]
                 self.aggregation_metrics["average_aggregation_time"] = (
-                    (current_avg * (total_aggs - 1) + execution_time) / total_aggs
-                )
+                    current_avg * (total_aggs - 1) + execution_time
+                ) / total_aggs
             else:
                 self.aggregation_metrics["failed_aggregations"] += 1
 
             # Store in aggregation history
-            self.aggregation_history.append({
-                "aggregation_id": aggregation_id,
-                "timestamp": datetime.now(timezone.utc),
-                "execution_time": execution_time,
-                "success": success,
-                "method": self.config.method.value
-            })
+            self.aggregation_history.append(
+                {
+                    "aggregation_id": aggregation_id,
+                    "timestamp": datetime.now(timezone.utc),
+                    "execution_time": execution_time,
+                    "success": success,
+                    "method": self.config.method.value,
+                }
+            )
 
             # Keep only last 100 entries
             if len(self.aggregation_history) > 100:
@@ -485,12 +533,14 @@ class SecureAggregator:
                 "privacy_budget": self.config.privacy_budget,
                 "byzantine_tolerance": self.config.byzantine_tolerance,
                 "min_participants": self.config.min_participants,
-                "max_participants": self.config.max_participants
+                "max_participants": self.config.max_participants,
             },
-            "recent_history": self.aggregation_history[-10:]  # Last 10 aggregations
+            "recent_history": self.aggregation_history[-10:],  # Last 10 aggregations
         }
 
-    async def create_secure_shares(self, data: Dict[str, Any], num_shares: int) -> List[SecureShare]:
+    async def create_secure_shares(
+        self, data: Dict[str, Any], num_shares: int
+    ) -> List[SecureShare]:
         """Create secure shares for multi-party computation."""
         try:
             if not CRYPTOGRAPHY_AVAILABLE:
@@ -501,14 +551,16 @@ class SecureAggregator:
                         share_id=f"share_{i}",
                         encrypted_value=f"mock_encrypted_{i}".encode(),
                         participant_id=f"participant_{i}",
-                        verification_hash=hashlib.md5(f"share_{i}".encode()).hexdigest()
+                        verification_hash=hashlib.md5(
+                            f"share_{i}".encode()
+                        ).hexdigest(),
                     )
                     shares.append(share)
                 return shares
 
             # Real implementation would use secret sharing schemes
             data_json = json.dumps(data, sort_keys=True)
-            data_bytes = data_json.encode('utf-8')
+            data_bytes = data_json.encode("utf-8")
 
             shares = []
             for i in range(num_shares):
@@ -522,7 +574,7 @@ class SecureAggregator:
                     share_id=f"share_{i}_{int(time.time())}",
                     encrypted_value=encrypted_share,
                     participant_id=f"participant_{i}",
-                    verification_hash=hashlib.sha256(share_data).hexdigest()
+                    verification_hash=hashlib.sha256(share_data).hexdigest(),
                 )
                 shares.append(share)
 
@@ -548,8 +600,8 @@ class SecureAggregator:
                 padding.OAEP(
                     mgf=padding.MGF1(algorithm=hashes.SHA256()),
                     algorithm=hashes.SHA256(),
-                    label=None
-                )
+                    label=None,
+                ),
             )
 
             return encrypted
@@ -558,7 +610,9 @@ class SecureAggregator:
             logger.error(f"Failed to encrypt share: {e}")
             return b"encryption_failed"
 
-    async def verify_aggregation_integrity(self, aggregated_result: Dict[str, Any]) -> bool:
+    async def verify_aggregation_integrity(
+        self, aggregated_result: Dict[str, Any]
+    ) -> bool:
         """Verify the integrity of aggregated results."""
         try:
             # Check required fields

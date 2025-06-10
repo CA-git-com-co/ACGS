@@ -11,7 +11,10 @@ Classes:
 
 from typing import Dict, Any, List, Optional
 from datetime import datetime
-from .constitutional_principle import ConstitutionalPrinciple # Assuming relative import
+from .constitutional_principle import (
+    ConstitutionalPrinciple,
+)  # Assuming relative import
+
 
 class OperationalRule:
     """
@@ -35,21 +38,26 @@ class OperationalRule:
         metadata (Dict[str, Any]): Additional metadata (e.g., author, tags).
         priority (int): Execution priority of the rule (lower numbers mean higher priority).
     """
-    def __init__(self,
-                 rule_id: str,
-                 name: str,
-                 description: str,
-                 policy_code: str, # e.g., Rego code
-                 derived_from_principles: List[str],
-                 version: int = 1,
-                 is_active: bool = True,
-                 metadata: Optional[Dict[str, Any]] = None,
-                 priority: int = 100): # Default priority
+
+    def __init__(
+        self,
+        rule_id: str,
+        name: str,
+        description: str,
+        policy_code: str,  # e.g., Rego code
+        derived_from_principles: List[str],
+        version: int = 1,
+        is_active: bool = True,
+        metadata: Optional[Dict[str, Any]] = None,
+        priority: int = 100,
+    ):  # Default priority
         """
         Initializes an OperationalRule instance.
         """
         if not all([rule_id, name, description, policy_code, derived_from_principles]):
-            raise ValueError("Core attributes (id, name, description, policy_code, derived_from_principles) cannot be empty.")
+            raise ValueError(
+                "Core attributes (id, name, description, policy_code, derived_from_principles) cannot be empty."
+            )
 
         self.rule_id = rule_id
         self.name = name
@@ -67,17 +75,21 @@ class OperationalRule:
         """
         Returns a string representation of the OperationalRule.
         """
-        return (f"OperationalRule(id='{self.rule_id}', name='{self.name}', "
-                f"version={self.version}, active={self.is_active}, priority={self.priority})")
+        return (
+            f"OperationalRule(id='{self.rule_id}', name='{self.name}', "
+            f"version={self.version}, active={self.is_active}, priority={self.priority})"
+        )
 
-    def update(self,
-               name: Optional[str] = None,
-               description: Optional[str] = None,
-               policy_code: Optional[str] = None,
-               derived_from_principles: Optional[List[str]] = None,
-               is_active: Optional[bool] = None,
-               metadata: Optional[Dict[str, Any]] = None,
-               priority: Optional[int] = None) -> None:
+    def update(
+        self,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        policy_code: Optional[str] = None,
+        derived_from_principles: Optional[List[str]] = None,
+        is_active: Optional[bool] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        priority: Optional[int] = None,
+    ) -> None:
         """
         Updates the attributes of the rule and increments its version.
         """
@@ -95,7 +107,7 @@ class OperationalRule:
             self.metadata.update(metadata)
         if priority is not None:
             self.priority = priority
-        
+
         self.version += 1
         self.last_modified = datetime.now()
         print(f"Rule '{self.rule_id}' updated to version {self.version}.")
@@ -131,11 +143,11 @@ class OperationalRule:
             "last_modified": self.last_modified.isoformat(),
             "is_active": self.is_active,
             "metadata": self.metadata,
-            "priority": self.priority
+            "priority": self.priority,
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'OperationalRule':
+    def from_dict(cls, data: Dict[str, Any]) -> "OperationalRule":
         """
         Creates an OperationalRule instance from a dictionary.
         """
@@ -148,7 +160,7 @@ class OperationalRule:
             version=data.get("version", 1),
             is_active=data.get("is_active", True),
             metadata=data.get("metadata"),
-            priority=data.get("priority", 100)
+            priority=data.get("priority", 100),
         )
         # Preserve original timestamps if available
         if "creation_date" in data:
@@ -157,8 +169,9 @@ class OperationalRule:
             rule.last_modified = datetime.fromisoformat(data["last_modified"])
         return rule
 
+
 # Example Usage (Illustrative)
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Assume cp1 is an existing ConstitutionalPrinciple
     cp1_id = "CP001_HarmPrevention"
 
@@ -183,12 +196,14 @@ if __name__ == '__main__':
         policy_code=op_rule_rego,
         derived_from_principles=[cp1_id],
         metadata={"author": "FinanceComplianceTeam", "complexity": "medium"},
-        priority=50 # Higher priority than default
+        priority=50,  # Higher priority than default
     )
     print(f"Created Rule: {op_rule1}")
     print(f"Details: {op_rule1.to_dict()}")
 
-    op_rule1.update(description="Limits high-risk actions (risk_score >= 0.5) within the financial domain, requires audit trail.")
+    op_rule1.update(
+        description="Limits high-risk actions (risk_score >= 0.5) within the financial domain, requires audit trail."
+    )
     op_rule1.deactivate()
     print(f"Updated Rule Details: {op_rule1.to_dict()}")
 

@@ -617,7 +617,7 @@ if __name__ == "__main__":
 
         # To test RealLLMClient, ensure OPENAI_API_KEY is set in your environment
         # and set LLM_PROVIDER="real" (or comment out the os.getenv default for LLM_PROVIDER for testing)
-        # For example, you might run: LLM_PROVIDER="real" OPENAI_API_KEY="your_key" python -m app.core.llm_integration
+        # For example, you might run: LLM_PROVIDER="real" OPENAI_api_key = os.getenv("API_KEY") python -m app.core.llm_integration
         print("\n--- Testing with RealLLMClient (will be mocked if API key is missing) ---")
         # Temporarily set provider to real for this test, assuming API key might be available
         os.environ["LLM_PROVIDER"] = "real" 

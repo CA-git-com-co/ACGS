@@ -1,13 +1,13 @@
 
-import * as anchor from "@project-serum/anchor";
-import { Program } from "@project-serum/anchor";
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
 import { expect } from "chai";
 
 describe("appeals", () => {
   // Configure the client to use the local cluster
   anchor.setProvider(anchor.AnchorProvider.env());
 
-  const program = anchor.workspace.appeals_CAMEL as Program<appeals_CAMEL>;
+  const program = anchor.workspace.Appeals as Program<any>;
 
   // Test accounts
   let authority: anchor.web3.Keypair;

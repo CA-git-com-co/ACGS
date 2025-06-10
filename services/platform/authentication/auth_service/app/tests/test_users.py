@@ -93,10 +93,11 @@ async def test_read_current_user_success(
     # but /auth/register expects 'username', 'email', 'password', 'full_name'
     # We'll adapt random_user_payload or create a new one.
     user_data_for_registration = {
-        "username": random_user_payload["email"].split("@")[0] + "_usr", # Create a unique username
+        "username": random_user_payload["email"].split("@")[0]
+        + "_usr",  # Create a unique username
         "email": random_user_payload["email"],
         "password": random_user_payload["password"],
-        "full_name": "Test User Me"
+        "full_name": "Test User Me",
     }
     register_url = f"{API_V1_AUTH_PREFIX}/register"
     response = await async_client.post(register_url, json=user_data_for_registration)
@@ -120,7 +121,9 @@ async def test_read_current_user_success(
     user_me_data = response.json()
 
     assert user_me_data["email"] == user_data_for_registration["email"]
-    assert user_me_data["username"] == user_data_for_registration["username"] # Assuming /me returns username
+    assert (
+        user_me_data["username"] == user_data_for_registration["username"]
+    )  # Assuming /me returns username
     assert user_me_data["full_name"] == user_data_for_registration["full_name"]
     assert user_me_data["id"] == created_user_data["id"]
     assert user_me_data["is_active"] is True
@@ -142,6 +145,7 @@ async def test_read_current_user_unauthenticated(async_client: TestClient):
     # If token is invalid (e.g. bad JTI), it's "Could not validate credentials".
     # If no cookie, it's "Access token missing or invalid".
     assert "Access token missing or invalid" in response.json()["detail"]
+
 
 # Note on user update tests:
 # The current `auth_service/app/api/v1/endpoints.py` does not define

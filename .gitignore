@@ -208,3 +208,29 @@ ACGS.zip
 .taskmaster/config.json
 .taskmaster/logs/
 .taskmaster/cache/
+# Security and sensitive files
+*.env
+*.env.local
+*.env.production
+auth_tokens.json
+auth_tokens.env
+cookies.txt
+private/
+# Database and backup files
+*.sqlite
+*.sqlite3
+backup_*/
+*.backup
+# Log files with potential sensitive data
+# Build artifacts and caches
+*.pyc
+*.pyo
+*.pyd
+# Node.js
+# Rust
+Cargo.lock
+# IDE files
+.idea/
+*.swp
+*.swo
+*~

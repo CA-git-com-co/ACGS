@@ -1,6 +1,7 @@
 import numpy as np
 from typing import Tuple
 
+
 def perform_svd(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Performs Singular Value Decomposition (SVD) on a given matrix.
@@ -22,7 +23,10 @@ def perform_svd(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]
     U, s, Vh = np.linalg.svd(matrix, full_matrices=False)
     return U, s, Vh
 
-def reconstruct_from_svd(U: np.ndarray, s: np.ndarray, Vh: np.ndarray, k: int = None) -> np.ndarray:
+
+def reconstruct_from_svd(
+    U: np.ndarray, s: np.ndarray, Vh: np.ndarray, k: int = None
+) -> np.ndarray:
     """
     Reconstructs a matrix from its SVD components, optionally reducing dimensionality.
 
@@ -41,18 +45,21 @@ def reconstruct_from_svd(U: np.ndarray, s: np.ndarray, Vh: np.ndarray, k: int = 
     elif not isinstance(k, int) or k <= 0:
         raise ValueError("Number of components k must be a positive integer.")
     elif k > len(s):
-        raise ValueError(f"Number of components k ({k}) cannot exceed the number of singular values ({len(s)}).")
+        raise ValueError(
+            f"Number of components k ({k}) cannot exceed the number of singular values ({len(s)})."
+        )
 
     # Create a diagonal matrix from the top k singular values
     Sigma_k = np.diag(s[:k])
-    
+
     # Select the top k singular vectors
     U_k = U[:, :k]
     Vh_k = Vh[:k, :]
-    
+
     # Reconstruct the matrix
     reconstructed_matrix = U_k @ Sigma_k @ Vh_k
     return reconstructed_matrix
+
 
 def apply_svd_transformation(matrix: np.ndarray, k: int) -> np.ndarray:
     """
@@ -76,11 +83,12 @@ def apply_svd_transformation(matrix: np.ndarray, k: int) -> np.ndarray:
     if not isinstance(k, int) or k <= 0:
         raise ValueError("Number of components k must be a positive integer.")
     if k > min(matrix.shape):
-         raise ValueError(f"Number of components k ({k}) cannot exceed the smallest dimension of the matrix ({min(matrix.shape)}).")
-
+        raise ValueError(
+            f"Number of components k ({k}) cannot exceed the smallest dimension of the matrix ({min(matrix.shape)})."
+        )
 
     U, s, Vh = perform_svd(matrix)
-    
+
     # The "transformed" matrix in this context is the reconstruction using top k components.
     # Alternatively, one might return U_k, Sigma_k, Vh_k or just U_k @ Sigma_k if the goal
     # is to get a lower-dimensional representation rather than a full reconstruction.
@@ -88,12 +96,15 @@ def apply_svd_transformation(matrix: np.ndarray, k: int) -> np.ndarray:
     # For now, we return the reconstructed matrix of the same original shape but lower rank.
     # The actual application (e.g., replacing original weights or using components)
     # will depend on how WINA integrates this.
-    
+
     transformed_matrix = reconstruct_from_svd(U, s, Vh, k)
     return transformed_matrix
 
+
 # Placeholder for a function that might return the components for further use
-def get_svd_reduced_components(matrix: np.ndarray, k: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def get_svd_reduced_components(
+    matrix: np.ndarray, k: int
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Performs SVD and returns the top k components (U_k, s_k, Vh_k).
 
@@ -112,12 +123,14 @@ def get_svd_reduced_components(matrix: np.ndarray, k: int) -> Tuple[np.ndarray, 
     if not isinstance(k, int) or k <= 0:
         raise ValueError("Number of components k must be a positive integer.")
     if k > min(matrix.shape):
-         raise ValueError(f"Number of components k ({k}) cannot exceed the smallest dimension of the matrix ({min(matrix.shape)}).")
+        raise ValueError(
+            f"Number of components k ({k}) cannot exceed the smallest dimension of the matrix ({min(matrix.shape)})."
+        )
 
     U, s, Vh = perform_svd(matrix)
-    
+
     U_k = U[:, :k]
-    s_k = s[:k] # s is already 1D
+    s_k = s[:k]  # s is already 1D
     Vh_k = Vh[:k, :]
-    
+
     return U_k, s_k, Vh_k

@@ -17,8 +17,8 @@ import json
 from datetime import datetime, timedelta
 
 # Add shared modules to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../services/shared'))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../src/backend/shared'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../services/shared"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../src/backend/shared"))
 
 try:
     from services.shared.utils import get_config, reset_config
@@ -30,10 +30,12 @@ except ImportError:
         def get_config():
             class MockConfig:
                 def __init__(self):
-                    self.environment = 'testing'
+                    self.environment = "testing"
                     self.debug = False
+
                 def get_database_config(self):
-                    return {'url': 'sqlite:///:memory:'}
+                    return {"url": "sqlite:///:memory:"}
+
             return MockConfig()
 
         def reset_config():
@@ -44,24 +46,27 @@ except ImportError:
 # Configuration and Environment Setup
 # =============================================================================
 
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Setup test environment with proper configuration."""
     # Set test environment variables
-    os.environ.update({
-        'ENVIRONMENT': 'testing',
-        'TEST_MODE': 'true',
-        'DEBUG': 'false',
-        'DATABASE_URL': 'postgresql+asyncpg://test_user:test_password@localhost:5433/test_acgs_db',
-        'JWT_SECRET_KEY': 'test-secret-key-for-testing-only',
-        'CSRF_SECRET_KEY': 'test-csrf-secret-key-for-testing-only',
-    })
-    
+    os.environ.update(
+        {
+            "ENVIRONMENT": "testing",
+            "TEST_MODE": "true",
+            "DEBUG": "false",
+            "DATABASE_URL": "postgresql+asyncpg://test_user:test_password@localhost:5433/test_acgs_db",
+            "JWT_SECRET_KEY": "test-secret-key-for-testing-only",
+            "CSRF_SECRET_KEY": "test-csrf-secret-key-for-testing-only",
+        }
+    )
+
     # Reset configuration to pick up test environment
     reset_config()
-    
+
     yield
-    
+
     # Cleanup
     reset_config()
 
@@ -75,6 +80,7 @@ def test_config():
 # =============================================================================
 # Database Mocking and Fixtures
 # =============================================================================
+
 
 @pytest_asyncio.fixture
 async def mock_database():
@@ -182,6 +188,7 @@ async def db_session():
 # HTTP Client Mocking
 # =============================================================================
 
+
 @pytest.fixture
 def mock_httpx_client():
     """Mock HTTPX client for external service calls with cleanup."""
@@ -209,49 +216,53 @@ def mock_httpx_client():
 def mock_service_responses():
     """Predefined mock responses for different services."""
     return {
-        'auth_service': {
-            'health': {'status': 'ok', 'service': 'auth'},
-            'login': {'access_token': 'mock_token', 'token_type': 'bearer'},
-            'verify': {'valid': True, 'user_id': 'test_user'},
+        "auth_service": {
+            "health": {"status": "ok", "service": "auth"},
+            "login": {"access_token": "mock_token", "token_type": "bearer"},
+            "verify": {"valid": True, "user_id": "test_user"},
         },
-        'ac_service': {
-            'health': {'status': 'ok', 'service': 'ac'},
-            'principles': [
-                {'id': 1, 'title': 'Test Principle', 'content': 'Test content'},
-                {'id': 2, 'title': 'Another Principle', 'content': 'More content'},
+        "ac_service": {
+            "health": {"status": "ok", "service": "ac"},
+            "principles": [
+                {"id": 1, "title": "Test Principle", "content": "Test content"},
+                {"id": 2, "title": "Another Principle", "content": "More content"},
             ],
-            'create_principle': {'id': 3, 'title': 'New Principle', 'content': 'New content'},
+            "create_principle": {
+                "id": 3,
+                "title": "New Principle",
+                "content": "New content",
+            },
         },
-        'fv_service': {
-            'health': {'status': 'ok', 'service': 'fv'},
-            'bias_detection': {
-                'overall_bias_score': 0.15,
-                'risk_level': 'low',
-                'results': [
+        "fv_service": {
+            "health": {"status": "ok", "service": "fv"},
+            "bias_detection": {
+                "overall_bias_score": 0.15,
+                "risk_level": "low",
+                "results": [
                     {
-                        'metric_id': 'demographic_parity',
-                        'bias_detected': False,
-                        'bias_score': 0.15,
-                        'explanation': 'Low bias detected'
+                        "metric_id": "demographic_parity",
+                        "bias_detected": False,
+                        "bias_score": 0.15,
+                        "explanation": "Low bias detected",
                     }
-                ]
+                ],
             },
         },
-        'gs_service': {
-            'health': {'status': 'ok', 'service': 'gs'},
-            'synthesis': {
-                'synthesized_policy': 'Generated policy content',
-                'confidence_score': 0.85,
-                'reasoning': 'Policy synthesized based on principles'
+        "gs_service": {
+            "health": {"status": "ok", "service": "gs"},
+            "synthesis": {
+                "synthesized_policy": "Generated policy content",
+                "confidence_score": 0.85,
+                "reasoning": "Policy synthesized based on principles",
             },
         },
-        'integrity_service': {
-            'health': {'status': 'ok', 'service': 'integrity'},
-            'verify': {'valid': True, 'signature': 'mock_signature'},
+        "integrity_service": {
+            "health": {"status": "ok", "service": "integrity"},
+            "verify": {"valid": True, "signature": "mock_signature"},
         },
-        'pgc_service': {
-            'health': {'status': 'ok', 'service': 'pgc'},
-            'compile': {'compiled_policy': 'package main\nallow = true'},
+        "pgc_service": {
+            "health": {"status": "ok", "service": "pgc"},
+            "compile": {"compiled_policy": "package main\nallow = true"},
         },
     }
 
@@ -260,19 +271,20 @@ def mock_service_responses():
 # External Service Mocking
 # =============================================================================
 
+
 @pytest.fixture
 def mock_llm_service():
     """Mock LLM service responses."""
     from unittest.mock import AsyncMock
-    
+
     mock_llm = AsyncMock()
     mock_llm.generate.return_value = {
-        'generated_text': 'Mock LLM response',
-        'confidence': 0.95,
-        'tokens_used': 150,
+        "generated_text": "Mock LLM response",
+        "confidence": 0.95,
+        "tokens_used": 150,
     }
     mock_llm.embed.return_value = [0.1, 0.2, 0.3, 0.4, 0.5] * 100  # Mock embedding
-    
+
     return mock_llm
 
 
@@ -280,14 +292,14 @@ def mock_llm_service():
 def mock_z3_solver():
     """Mock Z3 solver for formal verification."""
     from unittest.mock import MagicMock
-    
+
     mock_solver = MagicMock()
-    mock_solver.check.return_value = 'sat'  # satisfiable
+    mock_solver.check.return_value = "sat"  # satisfiable
     mock_solver.model.return_value = MagicMock()
     mock_solver.add = MagicMock()
     mock_solver.push = MagicMock()
     mock_solver.pop = MagicMock()
-    
+
     return mock_solver
 
 
@@ -295,13 +307,13 @@ def mock_z3_solver():
 def mock_fairlearn_metrics():
     """Mock fairlearn metrics for bias detection."""
     from unittest.mock import MagicMock
-    
+
     mock_metrics = {
-        'demographic_parity_difference': MagicMock(return_value=0.15),
-        'selection_rate': MagicMock(return_value={'group_a': 0.7, 'group_b': 0.55}),
-        'equalized_odds_difference': MagicMock(return_value=0.08),
+        "demographic_parity_difference": MagicMock(return_value=0.15),
+        "selection_rate": MagicMock(return_value={"group_a": 0.7, "group_b": 0.55}),
+        "equalized_odds_difference": MagicMock(return_value=0.08),
     }
-    
+
     return mock_metrics
 
 
@@ -309,15 +321,16 @@ def mock_fairlearn_metrics():
 # Authentication and Security Mocking
 # =============================================================================
 
+
 @pytest.fixture
 def mock_jwt_token():
     """Mock JWT token for authentication testing."""
     return {
-        'access_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.mock_payload.mock_signature',
-        'token_type': 'bearer',
-        'expires_in': 3600,
-        'user_id': 'test_user_123',
-        'roles': ['user', 'policy_manager'],
+        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.mock_payload.mock_signature",
+        "token_type": "bearer",
+        "expires_in": 3600,
+        "user_id": "test_user_123",
+        "roles": ["user", "policy_manager"],
     }
 
 
@@ -325,27 +338,27 @@ def mock_jwt_token():
 def mock_auth_headers(mock_jwt_token):
     """Mock authentication headers."""
     return {
-        'Authorization': f"Bearer {mock_jwt_token['access_token']}",
-        'Content-Type': 'application/json',
+        "Authorization": f"Bearer {mock_jwt_token['access_token']}",
+        "Content-Type": "application/json",
     }
 
 
 @pytest.fixture
 def mock_csrf_token():
     """Mock CSRF token for security testing."""
-    return 'mock_csrf_token_for_testing'
+    return "mock_csrf_token_for_testing"
 
 
 @pytest.fixture
 def test_user():
     """Test user data for authentication tests."""
     return {
-        'id': 'test_user_123',
-        'username': 'test_user',
-        'email': 'test@example.com',
-        'roles': ['user', 'policy_manager'],
-        'is_active': True,
-        'created_at': '2024-01-01T00:00:00Z'
+        "id": "test_user_123",
+        "username": "test_user",
+        "email": "test@example.com",
+        "roles": ["user", "policy_manager"],
+        "is_active": True,
+        "created_at": "2024-01-01T00:00:00Z",
     }
 
 
@@ -353,44 +366,52 @@ def test_user():
 def test_admin_user():
     """Test admin user data for authentication tests."""
     return {
-        'id': 'admin_user_456',
-        'username': 'admin_user',
-        'email': 'admin@example.com',
-        'roles': ['admin', 'policy_manager', 'system_admin'],
-        'is_active': True,
-        'created_at': '2024-01-01T00:00:00Z'
+        "id": "admin_user_456",
+        "username": "admin_user",
+        "email": "admin@example.com",
+        "roles": ["admin", "policy_manager", "system_admin"],
+        "is_active": True,
+        "created_at": "2024-01-01T00:00:00Z",
     }
 
 
 @pytest.fixture
 def create_test_principle():
     """Factory function to create test principles."""
-    def _create_principle(title="Test Principle", content="Test content", priority_weight=0.8):
+
+    def _create_principle(
+        title="Test Principle", content="Test content", priority_weight=0.8
+    ):
         return {
-            'title': title,
-            'content': content,
-            'priority_weight': priority_weight,
-            'scope': 'global',
-            'normative_statement': 'Test normative statement',
-            'constraints': ['test_constraint'],
-            'rationale': 'Test rationale',
+            "title": title,
+            "content": content,
+            "priority_weight": priority_weight,
+            "scope": "global",
+            "normative_statement": "Test normative statement",
+            "constraints": ["test_constraint"],
+            "rationale": "Test rationale",
         }
+
     return _create_principle
 
 
 @pytest.fixture
 def create_test_policy():
     """Factory function to create test policies."""
-    def _create_policy(title="Test Policy", content="Test policy content", version="1.0.0"):
+
+    def _create_policy(
+        title="Test Policy", content="Test policy content", version="1.0.0"
+    ):
         return {
-            'title': title,
-            'content': content,
-            'version': version,
-            'status': 'active',
-            'created_by': 'test_user',
-            'policy_type': 'rego',
-            'enforcement_level': 'strict',
+            "title": title,
+            "content": content,
+            "version": version,
+            "status": "active",
+            "created_by": "test_user",
+            "policy_type": "rego",
+            "enforcement_level": "strict",
         }
+
     return _create_policy
 
 
@@ -398,20 +419,21 @@ def create_test_policy():
 # Test Data Factories
 # =============================================================================
 
+
 @pytest.fixture
 def test_principle_data():
     """Test data for AC principles."""
     return {
-        'id': 1,
-        'title': 'Test Principle',
-        'content': 'This is a test principle for validation',
-        'priority_weight': 0.8,
-        'scope': 'global',
-        'normative_statement': 'Users should be treated fairly',
-        'constraints': ['no_discrimination', 'privacy_protection'],
-        'rationale': 'Ensures fair treatment of all users',
-        'created_at': datetime.utcnow().isoformat(),
-        'updated_at': datetime.utcnow().isoformat(),
+        "id": 1,
+        "title": "Test Principle",
+        "content": "This is a test principle for validation",
+        "priority_weight": 0.8,
+        "scope": "global",
+        "normative_statement": "Users should be treated fairly",
+        "constraints": ["no_discrimination", "privacy_protection"],
+        "rationale": "Ensures fair treatment of all users",
+        "created_at": datetime.utcnow().isoformat(),
+        "updated_at": datetime.utcnow().isoformat(),
     }
 
 
@@ -419,13 +441,13 @@ def test_principle_data():
 def test_policy_data():
     """Test data for policies."""
     return {
-        'id': 1,
-        'title': 'Test Policy',
-        'content': 'This is a test policy',
-        'version': '1.0.0',
-        'status': 'active',
-        'created_by': 'test_user',
-        'created_at': datetime.utcnow().isoformat(),
+        "id": 1,
+        "title": "Test Policy",
+        "content": "This is a test policy",
+        "version": "1.0.0",
+        "status": "active",
+        "created_by": "test_user",
+        "created_at": datetime.utcnow().isoformat(),
     }
 
 
@@ -433,22 +455,22 @@ def test_policy_data():
 def test_bias_detection_data():
     """Test data for bias detection."""
     return {
-        'policy_rule_ids': ['rule_1', 'rule_2'],
-        'bias_metrics': [
+        "policy_rule_ids": ["rule_1", "rule_2"],
+        "bias_metrics": [
             {
-                'metric_id': 'demographic_parity',
-                'metric_name': 'Demographic Parity',
-                'metric_description': 'Tests for demographic parity',
-                'metric_type': 'statistical',
-                'threshold': 0.1,
+                "metric_id": "demographic_parity",
+                "metric_name": "Demographic Parity",
+                "metric_description": "Tests for demographic parity",
+                "metric_type": "statistical",
+                "threshold": 0.1,
             }
         ],
-        'protected_attributes': ['ethnicity', 'gender'],
-        'dataset': [
-            {'age': 25, 'income': 50000, 'ethnicity': 'group_a', 'gender': 'female'},
-            {'age': 35, 'income': 75000, 'ethnicity': 'group_b', 'gender': 'male'},
-            {'age': 28, 'income': 60000, 'ethnicity': 'group_a', 'gender': 'male'},
-            {'age': 45, 'income': 90000, 'ethnicity': 'group_b', 'gender': 'female'},
+        "protected_attributes": ["ethnicity", "gender"],
+        "dataset": [
+            {"age": 25, "income": 50000, "ethnicity": "group_a", "gender": "female"},
+            {"age": 35, "income": 75000, "ethnicity": "group_b", "gender": "male"},
+            {"age": 28, "income": 60000, "ethnicity": "group_a", "gender": "male"},
+            {"age": 45, "income": 90000, "ethnicity": "group_b", "gender": "female"},
         ],
     }
 
@@ -456,6 +478,7 @@ def test_bias_detection_data():
 # =============================================================================
 # Async Testing Utilities
 # =============================================================================
+
 
 @pytest.fixture
 def event_loop():
@@ -486,30 +509,31 @@ async def async_client():
 # Mock Context Managers
 # =============================================================================
 
+
 @pytest.fixture
 def mock_service_clients(mock_httpx_client, mock_service_responses):
     """Comprehensive mock for all service clients."""
-    
+
     def create_service_mock(service_name: str):
         """Create a mock for a specific service."""
         mock = AsyncMock()
         responses = mock_service_responses.get(service_name, {})
-        
+
         # Setup method responses based on service
         for method, response in responses.items():
             if hasattr(mock, method):
                 getattr(mock, method).return_value = response
-        
+
         mock.close = AsyncMock()
         return mock
-    
+
     return {
-        'auth': create_service_mock('auth_service'),
-        'ac': create_service_mock('ac_service'),
-        'fv': create_service_mock('fv_service'),
-        'gs': create_service_mock('gs_service'),
-        'integrity': create_service_mock('integrity_service'),
-        'pgc': create_service_mock('pgc_service'),
+        "auth": create_service_mock("auth_service"),
+        "ac": create_service_mock("ac_service"),
+        "fv": create_service_mock("fv_service"),
+        "gs": create_service_mock("gs_service"),
+        "integrity": create_service_mock("integrity_service"),
+        "pgc": create_service_mock("pgc_service"),
     }
 
 
@@ -517,29 +541,31 @@ def mock_service_clients(mock_httpx_client, mock_service_responses):
 # Performance and Monitoring Mocks
 # =============================================================================
 
+
 @pytest.fixture
 def mock_prometheus_metrics():
     """Mock Prometheus metrics for monitoring tests."""
     from unittest.mock import MagicMock
-    
+
     mock_counter = MagicMock()
     mock_histogram = MagicMock()
     mock_gauge = MagicMock()
-    
+
     mock_counter.inc = MagicMock()
     mock_histogram.observe = MagicMock()
     mock_gauge.set = MagicMock()
-    
+
     return {
-        'counter': mock_counter,
-        'histogram': mock_histogram,
-        'gauge': mock_gauge,
+        "counter": mock_counter,
+        "histogram": mock_histogram,
+        "gauge": mock_gauge,
     }
 
 
 # =============================================================================
 # Cleanup and Teardown
 # =============================================================================
+
 
 @pytest.fixture(autouse=True)
 def cleanup_after_test():
@@ -551,7 +577,10 @@ def cleanup_after_test():
 
     # Clear any cached modules
     import sys
-    modules_to_clear = [m for m in sys.modules.keys() if m.startswith('app.') or m.startswith('shared.')]
+
+    modules_to_clear = [
+        m for m in sys.modules.keys() if m.startswith("app.") or m.startswith("shared.")
+    ]
     for module in modules_to_clear:
         if module in sys.modules:
             del sys.modules[module]
@@ -572,25 +601,33 @@ async def comprehensive_test_teardown():
     http_clients = []
 
     yield {
-        'cleanup_tasks': cleanup_tasks,
-        'temp_files': temp_files,
-        'temp_dirs': temp_dirs,
-        'db_connections': db_connections,
-        'http_clients': http_clients
+        "cleanup_tasks": cleanup_tasks,
+        "temp_files": temp_files,
+        "temp_dirs": temp_dirs,
+        "db_connections": db_connections,
+        "http_clients": http_clients,
     }
 
     # Comprehensive cleanup
     await _perform_comprehensive_cleanup(
-        cleanup_tasks, temp_files, temp_dirs,
-        db_connections, http_clients,
-        initial_modules, initial_env
+        cleanup_tasks,
+        temp_files,
+        temp_dirs,
+        db_connections,
+        http_clients,
+        initial_modules,
+        initial_env,
     )
 
 
 async def _perform_comprehensive_cleanup(
-    cleanup_tasks, temp_files, temp_dirs,
-    db_connections, http_clients,
-    initial_modules, initial_env
+    cleanup_tasks,
+    temp_files,
+    temp_dirs,
+    db_connections,
+    http_clients,
+    initial_modules,
+    initial_env,
 ):
     """Perform comprehensive cleanup of all test resources."""
     import gc
@@ -611,9 +648,9 @@ async def _perform_comprehensive_cleanup(
     # 2. Close HTTP clients
     for client in http_clients:
         try:
-            if hasattr(client, 'aclose'):
+            if hasattr(client, "aclose"):
                 await client.aclose()
-            elif hasattr(client, 'close'):
+            elif hasattr(client, "close"):
                 if asyncio.iscoroutinefunction(client.close):
                     await client.close()
                 else:
@@ -624,12 +661,12 @@ async def _perform_comprehensive_cleanup(
     # 3. Close database connections
     for conn in db_connections:
         try:
-            if hasattr(conn, 'close'):
+            if hasattr(conn, "close"):
                 if asyncio.iscoroutinefunction(conn.close):
                     await conn.close()
                 else:
                     conn.close()
-            elif hasattr(conn, 'aclose'):
+            elif hasattr(conn, "aclose"):
                 await conn.aclose()
         except Exception as e:
             print(f"Warning: Failed to close database connection: {e}")
@@ -652,8 +689,11 @@ async def _perform_comprehensive_cleanup(
 
     # 6. Clean up test database files
     test_db_patterns = [
-        "test_*.db", "test_*.db-*", "*.test.db",
-        "test_acgs_pgp.db*", "test_auth_app.db*"
+        "test_*.db",
+        "test_*.db-*",
+        "*.test.db",
+        "test_acgs_pgp.db*",
+        "test_auth_app.db*",
     ]
 
     for pattern in test_db_patterns:
@@ -665,8 +705,10 @@ async def _perform_comprehensive_cleanup(
 
     # 7. Clean up test result files
     result_patterns = [
-        "*_test_results.json", "test_*.json",
-        "phase*_test_results.json", "*.test.json"
+        "*_test_results.json",
+        "test_*.json",
+        "phase*_test_results.json",
+        "*.test.json",
     ]
 
     for pattern in result_patterns:
@@ -705,6 +747,7 @@ async def _perform_comprehensive_cleanup(
 # Temporary File and Directory Management
 # =============================================================================
 
+
 @pytest.fixture
 def temp_file_manager():
     """Manage temporary files with automatic cleanup."""
@@ -733,10 +776,10 @@ def temp_file_manager():
         return path
 
     yield {
-        'create_file': create_temp_file,
-        'create_dir': create_temp_dir,
-        'files': created_files,
-        'dirs': created_dirs
+        "create_file": create_temp_file,
+        "create_dir": create_temp_dir,
+        "files": created_files,
+        "dirs": created_dirs,
     }
 
     # Cleanup after test
@@ -763,15 +806,15 @@ def isolated_test_environment(temp_file_manager):
     from pathlib import Path
 
     # Create isolated workspace
-    workspace = temp_file_manager['create_dir'](prefix="acgs_test_workspace_")
+    workspace = temp_file_manager["create_dir"](prefix="acgs_test_workspace_")
     workspace_path = Path(workspace)
 
     # Create standard test directories
     test_dirs = {
-        'data': workspace_path / "data",
-        'logs': workspace_path / "logs",
-        'temp': workspace_path / "temp",
-        'config': workspace_path / "config"
+        "data": workspace_path / "data",
+        "logs": workspace_path / "logs",
+        "temp": workspace_path / "temp",
+        "config": workspace_path / "config",
     }
 
     for dir_path in test_dirs.values():
@@ -780,22 +823,18 @@ def isolated_test_environment(temp_file_manager):
     # Set environment variables for isolated testing
     original_env = {}
     test_env_vars = {
-        'ACGS_TEST_WORKSPACE': str(workspace_path),
-        'ACGS_TEST_DATA_DIR': str(test_dirs['data']),
-        'ACGS_TEST_LOG_DIR': str(test_dirs['logs']),
-        'ACGS_TEST_TEMP_DIR': str(test_dirs['temp']),
-        'ACGS_TEST_CONFIG_DIR': str(test_dirs['config']),
+        "ACGS_TEST_WORKSPACE": str(workspace_path),
+        "ACGS_TEST_DATA_DIR": str(test_dirs["data"]),
+        "ACGS_TEST_LOG_DIR": str(test_dirs["logs"]),
+        "ACGS_TEST_TEMP_DIR": str(test_dirs["temp"]),
+        "ACGS_TEST_CONFIG_DIR": str(test_dirs["config"]),
     }
 
     for key, value in test_env_vars.items():
         original_env[key] = os.environ.get(key)
         os.environ[key] = value
 
-    yield {
-        'workspace': workspace_path,
-        'dirs': test_dirs,
-        'env': test_env_vars
-    }
+    yield {"workspace": workspace_path, "dirs": test_dirs, "env": test_env_vars}
 
     # Restore environment variables
     for key, original_value in original_env.items():

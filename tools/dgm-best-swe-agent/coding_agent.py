@@ -13,12 +13,14 @@ from utils.git_utils import diff_versus_commit, reset_to_commit, apply_patch
 # Thread-local storage for logger instances
 thread_local = threading.local()
 
+
 def get_thread_logger():
     """
     Get the logger instance specific to the current thread.
     Returns None if no logger has been set for this thread.
     """
-    return getattr(thread_local, 'logger', None)
+    return getattr(thread_local, "logger", None)
+
 
 def set_thread_logger(logger):
     """
@@ -26,33 +28,37 @@ def set_thread_logger(logger):
     """
     thread_local.logger = logger
 
-def setup_logger(log_file='./chat_history.md', level=logging.INFO):
+
+def setup_logger(log_file="./chat_history.md", level=logging.INFO):
     """
     Set up a logger with both file and console handlers.
     """
     # Create logger with a unique name based on thread ID
-    logger = logging.getLogger(f'AgenticSystem-{threading.get_ident()}')
+    logger = logging.getLogger(f"AgenticSystem-{threading.get_ident()}")
     logger.setLevel(level)
-    
+
     # Remove existing handlers to avoid duplicates
     logger.handlers = []
-    
+
     # Create formatters
-    file_formatter = logging.Formatter('%(message)s')
-    
+    file_formatter = logging.Formatter("%(message)s")
+
     # Create and set up file handler
     os.makedirs(os.path.dirname(log_file), exist_ok=True)
-    file_handler = RotatingFileHandler(log_file, maxBytes=10*1024*1024, backupCount=5)
+    file_handler = RotatingFileHandler(
+        log_file, maxBytes=10 * 1024 * 1024, backupCount=5
+    )
     file_handler.setLevel(level)
     file_handler.setFormatter(file_formatter)
-    
+
     # Add handlers to logger
     logger.addHandler(file_handler)
-    
+
     # Store logger in thread-local storage
     set_thread_logger(logger)
-    
+
     return logger
+
 
 def safe_log(message, level=logging.INFO):
     """
@@ -64,6 +70,7 @@ def safe_log(message, level=logging.INFO):
     else:
         print(f"Warning: No logger found for thread {threading.get_ident()}")
 
+
 def is_patch_valid(patch_str):
     """
     Parse the patch to check if any non-test source files are modified.
@@ -74,10 +81,10 @@ def is_patch_valid(patch_str):
 
     # Parse the patch to find modified files
     modified_files = []
-    diff_header_pattern = re.compile(r'^\+\+\+ b/(.+)$', re.MULTILINE)
+    diff_header_pattern = re.compile(r"^\+\+\+ b/(.+)$", re.MULTILINE)
     for match in diff_header_pattern.finditer(patch_str):
         filepath = match.group(1)
-        if filepath != '/dev/null':  # Skip deleted files
+        if filepath != "/dev/null":  # Skip deleted files
             modified_files.append(filepath)
 
     if not modified_files:
@@ -85,14 +92,13 @@ def is_patch_valid(patch_str):
 
     # Check if any non-test files are modified
     test_patterns = (
-        lambda f: f.startswith('tests/'),
-        lambda f: f.startswith('test_'),
-        lambda f: f.endswith('_test.py')
+        lambda f: f.startswith("tests/"),
+        lambda f: f.startswith("test_"),
+        lambda f: f.endswith("_test.py"),
     )
 
     source_files = [
-        f for f in modified_files
-        if not any(pattern(f) for pattern in test_patterns)
+        f for f in modified_files if not any(pattern(f) for pattern in test_patterns)
     ]
 
     if not source_files:
@@ -100,36 +106,37 @@ def is_patch_valid(patch_str):
 
     return True, "Valid patch with source file modifications"
 
+
 class AgenticSystem:
     def __init__(
-            self,
-            problem_statement,
-            git_tempdir,
-            base_commit,
-            chat_history_file='./chat_history.md',
-            test_description=None,
-            self_improve=False,
-            instance_id=None,
-            max_retries=3,
-            num_candidates=3,
-        ):
+        self,
+        problem_statement,
+        git_tempdir,
+        base_commit,
+        chat_history_file="./chat_history.md",
+        test_description=None,
+        self_improve=False,
+        instance_id=None,
+        max_retries=3,
+        num_candidates=3,
+    ):
         self.problem_statement = problem_statement
         self.git_tempdir = git_tempdir
         self.base_commit = base_commit
         self.chat_history_file = chat_history_file
         self.test_description = test_description
         self.self_improve = self_improve
-        self.instance_id = instance_id if not self_improve else 'dgm'
+        self.instance_id = instance_id if not self_improve else "dgm"
         self.code_model = CLAUDE_MODEL
         self.max_retries = max_retries
         self.num_candidates = num_candidates
 
         # Initialize logger and store it in thread-local storage
         self.logger = setup_logger(chat_history_file)
-        
+
         # Clear the log file
-        with open(chat_history_file, 'w') as f:
-            f.write('')
+        with open(chat_history_file, "w") as f:
+            f.write("")
 
     def get_current_edits(self):
         diff = str(diff_versus_commit(self.git_tempdir, self.base_commit))
@@ -153,10 +160,12 @@ Your task is to identify regression tests in the {self.git_tempdir} directory th
 At the end, please provide a summary that includes where the regression tests are located, what they are testing, and how they can be executed.
 """
 
-        new_msg_history = chat_with_agent(instruction, model=self.code_model, msg_history=[], logging=safe_log)
+        new_msg_history = chat_with_agent(
+            instruction, model=self.code_model, msg_history=[], logging=safe_log
+        )
         regression_tests_summary = new_msg_history[-1]
         try:
-            regression_tests_summary = regression_tests_summary['content'][-1]['text']
+            regression_tests_summary = regression_tests_summary["content"][-1]["text"]
         except:
             pass
         return regression_tests_summary
@@ -186,8 +195,12 @@ At the end, please provide a summary that includes where the regression tests ar
 
 Your task is to run the regression tests in the {self.git_tempdir} directory to ensure that the changes made to the code address the <problem_description>.
 """
-        new_msg_history = chat_with_agent(instruction, model=self.code_model, msg_history=[], logging=safe_log)
-        test_report = msg_history_to_report(self.instance_id, new_msg_history, model=self.code_model)
+        new_msg_history = chat_with_agent(
+            instruction, model=self.code_model, msg_history=[], logging=safe_log
+        )
+        test_report = msg_history_to_report(
+            self.instance_id, new_msg_history, model=self.code_model
+        )
         return test_report
 
     def forward(self):
@@ -206,9 +219,13 @@ Your task is to run the regression tests in the {self.git_tempdir} directory to 
         best_patches_indices = []  # Indices of patches that share the best score
 
         retry_count = 0
-        while retry_count < self.max_retries and len(valid_patches) < self.num_candidates:
+        while (
+            retry_count < self.max_retries and len(valid_patches) < self.num_candidates
+        ):
             safe_log(f"\n=== Attempt {retry_count + 1} of {self.max_retries} ===")
-            safe_log(f"Valid solutions so far: {len(valid_patches)} of {self.num_candidates} desired")
+            safe_log(
+                f"Valid solutions so far: {len(valid_patches)} of {self.num_candidates} desired"
+            )
             safe_log(f"Current best test score: {best_score}")
 
             # Reset to base commit before each attempt
@@ -229,16 +246,22 @@ Your task is to run the regression tests in the {self.git_tempdir} directory to 
             # Add previous solutions context if available
             if valid_patches and retry_count > 0:
                 previous_solutions = []
-                for i, (patch, report, score) in enumerate(zip(valid_patches, valid_reports, valid_scores)):
-                    previous_solutions.append(f"""
+                for i, (patch, report, score) in enumerate(
+                    zip(valid_patches, valid_reports, valid_scores)
+                ):
+                    previous_solutions.append(
+                        f"""
 Previous Solution {i+1}:
 <code_changes>
 {patch}
 </code_changes>
 Test Score: {score}
 Test Report: {report}
-""")
-                instruction += "\n\nPrevious solution attempts:\n" + "\n".join(previous_solutions)
+"""
+                    )
+                instruction += "\n\nPrevious solution attempts:\n" + "\n".join(
+                    previous_solutions
+                )
                 instruction += "\nPlease provide a new solution that addresses any limitations in the previous attempts or explores a different approach."
             elif retry_count > 0:
                 instruction += """\nNOTE: Previous attempt(s) did not produce enough valid solutions.
@@ -247,7 +270,9 @@ Please provide a different approach to solve the problem. Your solution must inc
             instruction += f"\n\nYour task is to make changes to the files in the {self.git_tempdir} directory to address the <problem_description>. I have already taken care of the required dependencies."
 
             # Run the agent
-            new_msg_history = chat_with_agent(instruction, model=self.code_model, msg_history=[], logging=safe_log)
+            new_msg_history = chat_with_agent(
+                instruction, model=self.code_model, msg_history=[], logging=safe_log
+            )
 
             # Check the patch
             patch = self.get_current_edits()
@@ -283,14 +308,18 @@ Please provide a different approach to solve the problem. Your solution must inc
             return
 
         # Only use tie-breaker if we have multiple patches with the best score
-        safe_log(f"\n=== Selecting Best Solution from {len(valid_patches)} Candidates ===")
+        safe_log(
+            f"\n=== Selecting Best Solution from {len(valid_patches)} Candidates ==="
+        )
         if len(best_patches_indices) > 1:
-            safe_log(f"Multiple solutions ({len(best_patches_indices)}) tied for best score {best_score}. Using tie-breaker.")
+            safe_log(
+                f"Multiple solutions ({len(best_patches_indices)}) tied for best score {best_score}. Using tie-breaker."
+            )
             best_index = score_tie_breaker(
                 self.problem_statement,
                 [valid_patches[i] for i in best_patches_indices],
                 [valid_reports[i] for i in best_patches_indices],
-                logging=safe_log
+                logging=safe_log,
             )
             best_index = best_patches_indices[best_index]
         else:
@@ -299,7 +328,9 @@ Please provide a different approach to solve the problem. Your solution must inc
         # Reset to base and apply the best patch
         reset_to_commit(self.git_tempdir, self.base_commit)
         best_patch = valid_patches[best_index]
-        safe_log(f"\n=== Applying Best Solution (Candidate {best_index + 1}) with score {valid_scores[best_index]} ===")
+        safe_log(
+            f"\n=== Applying Best Solution (Candidate {best_index + 1}) with score {valid_scores[best_index]} ==="
+        )
         apply_patch(self.git_tempdir, best_patch)
 
         # Final validation of the selected patch
@@ -307,18 +338,51 @@ Please provide a different approach to solve the problem. Your solution must inc
         final_score = get_report_score(final_test_report)
         safe_log(f"Final validation test score: {final_score}")
 
+
 def main():
-    parser = argparse.ArgumentParser(description='Process repository with an agentic system.')
-    parser.add_argument('--problem_statement', required=True, help='The problem statement to process')
-    parser.add_argument('--git_dir', required=True, help='Path to git repository directory')
-    parser.add_argument('--base_commit', required=True, help='Base commit hash to compare against')
-    parser.add_argument('--chat_history_file', required=True, help='Path to chat history file')
-    parser.add_argument('--outdir', required=False, default="/dgm/", help='Output directory')
-    parser.add_argument('--test_description', default=None, required=False, help='Description of how to test the repository')
-    parser.add_argument('--self_improve', default=False, action='store_true', help='Whether to self-improve the repository or solving swe')
-    parser.add_argument('--instance_id', default=None, help='Instance ID for SWE issue')
-    parser.add_argument('--max_retries', type=int, default=3, help='Maximum number of patch generation attempts')
-    parser.add_argument('--num_candidates', type=int, default=3, help='Number of candidate solutions to generate')
+    parser = argparse.ArgumentParser(
+        description="Process repository with an agentic system."
+    )
+    parser.add_argument(
+        "--problem_statement", required=True, help="The problem statement to process"
+    )
+    parser.add_argument(
+        "--git_dir", required=True, help="Path to git repository directory"
+    )
+    parser.add_argument(
+        "--base_commit", required=True, help="Base commit hash to compare against"
+    )
+    parser.add_argument(
+        "--chat_history_file", required=True, help="Path to chat history file"
+    )
+    parser.add_argument(
+        "--outdir", required=False, default="/dgm/", help="Output directory"
+    )
+    parser.add_argument(
+        "--test_description",
+        default=None,
+        required=False,
+        help="Description of how to test the repository",
+    )
+    parser.add_argument(
+        "--self_improve",
+        default=False,
+        action="store_true",
+        help="Whether to self-improve the repository or solving swe",
+    )
+    parser.add_argument("--instance_id", default=None, help="Instance ID for SWE issue")
+    parser.add_argument(
+        "--max_retries",
+        type=int,
+        default=3,
+        help="Maximum number of patch generation attempts",
+    )
+    parser.add_argument(
+        "--num_candidates",
+        type=int,
+        default=3,
+        help="Number of candidate solutions to generate",
+    )
     args = parser.parse_args()
 
     # Process the repository
@@ -339,9 +403,14 @@ def main():
 
     # Get code diff and save to model_patch.diff
     model_patch = diff_versus_commit(args.git_dir, args.base_commit)
-    model_patch_outfile = os.path.join(args.outdir, 'model_patch.diff') if args.outdir else 'model_patch.diff'
-    with open(model_patch_outfile, 'w') as f:
+    model_patch_outfile = (
+        os.path.join(args.outdir, "model_patch.diff")
+        if args.outdir
+        else "model_patch.diff"
+    )
+    with open(model_patch_outfile, "w") as f:
         f.write(model_patch)
+
 
 if __name__ == "__main__":
     main()

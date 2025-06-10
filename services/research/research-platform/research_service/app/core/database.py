@@ -49,14 +49,14 @@ async def init_database():
     try:
         from ..models.experiment import Base as ExperimentBase
         from ..models.research_data import Base as ResearchDataBase
-        
+
         # Create all tables
         async with engine.begin() as conn:
             await conn.run_sync(ExperimentBase.metadata.create_all)
             await conn.run_sync(ResearchDataBase.metadata.create_all)
-        
+
         logger.info("Database tables created successfully")
-        
+
     except Exception as e:
         logger.error(f"Error initializing database: {e}")
         raise

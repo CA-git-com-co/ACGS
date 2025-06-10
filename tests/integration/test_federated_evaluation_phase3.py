@@ -20,6 +20,7 @@ import concurrent.futures
 # Add the federated service to the path
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
+
 # Test fixtures
 @pytest.fixture
 async def comprehensive_test_teardown():
@@ -28,6 +29,7 @@ async def comprehensive_test_teardown():
     # Cleanup any test resources
     await asyncio.sleep(0.1)
 
+
 @pytest.fixture
 async def integration_test_cleanup():
     """Integration test cleanup fixture."""
@@ -35,47 +37,49 @@ async def integration_test_cleanup():
     # Cleanup integration test resources
     await asyncio.sleep(0.1)
 
+
 @pytest.fixture
 def acgs_service_urls():
     """ACGS-PGP service URLs for integration testing."""
     return {
         "auth_service": "http://localhost:8000",
-        "ac_service": "http://localhost:8001", 
+        "ac_service": "http://localhost:8001",
         "integrity_service": "http://localhost:8002",
         "fv_service": "http://localhost:8003",
         "gs_service": "http://localhost:8004",
-        "pgc_service": "http://localhost:8005"
+        "pgc_service": "http://localhost:8005",
     }
+
 
 @pytest.fixture
 def mock_api_keys():
     """Mock API keys for testing platform adapters."""
     return {
         "openai": "sk-test-openai-key-12345",
-        "anthropic": "sk-ant-test-key-12345", 
+        "anthropic": "sk-ant-test-key-12345",
         "cohere": "test-cohere-key-12345",
-        "groq": "gsk_test-groq-key-12345"
+        "groq": "gsk_test-groq-key-12345",
     }
 
 
 def test_phase3_service_structure():
     """Test that Phase 3 integration components are properly structured."""
     import os
-    
+
     base_path = "src/backend/federated_service"
-    
+
     # Check Phase 3 integration files exist
     required_files = [
         "app/core/federated_evaluator.py",
         "app/core/cross_platform_coordinator.py",
         "app/core/cross_platform_adapters.py",
-        "app/api/v1/federated_evaluation.py"
+        "app/api/v1/federated_evaluation.py",
     ]
-    
+
     for file_path in required_files:
         full_path = os.path.join(base_path, file_path)
         assert os.path.exists(full_path), f"Required Phase 3 file missing: {full_path}"
-    
+
     print("✅ Phase 3 service structure validation successful")
 
 
@@ -85,47 +89,56 @@ async def test_acgs_service_health_checks(acgs_service_urls):
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             health_results = {}
-            
+
             for service_name, base_url in acgs_service_urls.items():
                 try:
                     # Try common health check endpoints
                     health_endpoints = ["/health", "/api/v1/health", "/"]
                     service_healthy = False
-                    
+
                     for endpoint in health_endpoints:
                         try:
                             response = await client.get(f"{base_url}{endpoint}")
-                            if response.status_code in [200, 404]:  # 404 is OK for root endpoint
+                            if response.status_code in [
+                                200,
+                                404,
+                            ]:  # 404 is OK for root endpoint
                                 service_healthy = True
                                 break
                         except:
                             continue
-                    
+
                     health_results[service_name] = {
                         "healthy": service_healthy,
-                        "url": base_url
+                        "url": base_url,
                     }
-                    
+
                 except Exception as e:
                     health_results[service_name] = {
                         "healthy": False,
                         "url": base_url,
-                        "error": str(e)
+                        "error": str(e),
                     }
-            
+
             # Report results
-            healthy_services = sum(1 for result in health_results.values() if result["healthy"])
+            healthy_services = sum(
+                1 for result in health_results.values() if result["healthy"]
+            )
             total_services = len(health_results)
-            
-            print(f"✅ ACGS Service Health Check: {healthy_services}/{total_services} services accessible")
+
+            print(
+                f"✅ ACGS Service Health Check: {healthy_services}/{total_services} services accessible"
+            )
             for service, result in health_results.items():
                 status = "✅" if result["healthy"] else "❌"
                 print(f"  {status} {service}: {result['url']}")
-            
+
             # Test passes if at least 30% of services are accessible (for CI/CD environments)
             # This is more lenient for testing environments where services may not be running
-            assert healthy_services >= total_services * 0.3, f"Too many services unavailable: {healthy_services}/{total_services}"
-        
+            assert (
+                healthy_services >= total_services * 0.3
+            ), f"Too many services unavailable: {healthy_services}/{total_services}"
+
     except Exception as e:
         pytest.fail(f"ACGS service health checks failed: {e}")
 
@@ -136,57 +149,64 @@ async def test_federated_evaluation_acgs_integration():
     try:
         from app.core.federated_evaluator import FederatedEvaluator, PlatformType
         from app.core.cross_platform_coordinator import CrossPlatformCoordinator
-        
+
         # Create federated evaluator
         evaluator = FederatedEvaluator()
         await evaluator.initialize()
-        
+
         # Create cross-platform coordinator
         coordinator = CrossPlatformCoordinator()
         await coordinator.initialize()
-        
+
         # Test ACGS-PGP service integration
         acgs_integration_config = {
             "ac_service_url": "http://localhost:8001/api/v1",
-            "gs_service_url": "http://localhost:8004/api/v1", 
+            "gs_service_url": "http://localhost:8004/api/v1",
             "fv_service_url": "http://localhost:8003/api/v1",
             "integrity_service_url": "http://localhost:8002/api/v1",
-            "pgc_service_url": "http://localhost:8005/api/v1"
+            "pgc_service_url": "http://localhost:8005/api/v1",
         }
-        
+
         # Test service discovery and configuration
         assert evaluator is not None
         assert coordinator is not None
-        
+
         # Test mock evaluation with ACGS integration context
-        mock_request = type('MockRequest', (), {
-            'policy_content': 'package acgs_test\nallow { input.user.role == "admin" }',
-            'evaluation_criteria': {
-                'category': 'acgs_integration',
-                'safety_level': 'high',
-                'compliance_framework': 'constitutional',
-                'acgs_services': acgs_integration_config
+        mock_request = type(
+            "MockRequest",
+            (),
+            {
+                "policy_content": 'package acgs_test\nallow { input.user.role == "admin" }',
+                "evaluation_criteria": {
+                    "category": "acgs_integration",
+                    "safety_level": "high",
+                    "compliance_framework": "constitutional",
+                    "acgs_services": acgs_integration_config,
+                },
+                "target_platforms": [
+                    PlatformType.CLOUD_OPENAI,
+                    PlatformType.EDGE_LOCAL,
+                ],
+                "privacy_requirements": {"epsilon": 0.5, "mechanism": "laplace"},
             },
-            'target_platforms': [PlatformType.CLOUD_OPENAI, PlatformType.EDGE_LOCAL],
-            'privacy_requirements': {'epsilon': 0.5, 'mechanism': 'laplace'}
-        })()
-        
+        )()
+
         # Submit evaluation
         task_id = await evaluator.submit_evaluation(mock_request)
         assert isinstance(task_id, str)
         assert len(task_id) == 16
-        
+
         # Check integration status
         status = await evaluator.get_evaluation_status(task_id)
         assert status is not None
-        assert status['task_id'] == task_id
-        
+        assert status["task_id"] == task_id
+
         # Cleanup
         await evaluator.shutdown()
         await coordinator.shutdown()
-        
+
         print("✅ Federated evaluation ACGS-PGP integration successful")
-        
+
     except Exception as e:
         pytest.fail(f"ACGS-PGP integration test failed: {e}")
 
@@ -204,33 +224,33 @@ async def test_cross_service_communication_validation():
                 "endpoint": "/api/v1/federated/submit",
                 "payload": {
                     "policy_content": "package test\nallow { true }",
-                    "evaluation_criteria": {"category": "principle_validation"}
-                }
+                    "evaluation_criteria": {"category": "principle_validation"},
+                },
             },
             {
-                "name": "GS Service → Federated Evaluation", 
+                "name": "GS Service → Federated Evaluation",
                 "source": "gs_service",
                 "target": "federated_service",
                 "endpoint": "/api/v1/federated/submit",
                 "payload": {
                     "policy_content": "package constitutional\nallow { input.constitutional_check }",
-                    "evaluation_criteria": {"category": "constitutional_prompting"}
-                }
+                    "evaluation_criteria": {"category": "constitutional_prompting"},
+                },
             },
             {
                 "name": "FV Service → Federated Evaluation",
-                "source": "fv_service", 
+                "source": "fv_service",
                 "target": "federated_service",
                 "endpoint": "/api/v1/federated/submit",
                 "payload": {
                     "policy_content": "package verification\nallow { input.verified }",
-                    "evaluation_criteria": {"category": "formal_verification"}
-                }
-            }
+                    "evaluation_criteria": {"category": "formal_verification"},
+                },
+            },
         ]
-        
+
         successful_communications = 0
-        
+
         for test_case in service_communication_tests:
             try:
                 # Simulate cross-service communication
@@ -238,24 +258,32 @@ async def test_cross_service_communication_validation():
                 communication_result = {
                     "success": True,
                     "response_time_ms": 150.0,  # Mock response time
-                    "status_code": 200
+                    "status_code": 200,
                 }
-                
+
                 assert communication_result["success"]
-                assert communication_result["response_time_ms"] < 200  # Performance requirement
-                
+                assert (
+                    communication_result["response_time_ms"] < 200
+                )  # Performance requirement
+
                 successful_communications += 1
-                print(f"✅ {test_case['name']}: {communication_result['response_time_ms']}ms")
-                
+                print(
+                    f"✅ {test_case['name']}: {communication_result['response_time_ms']}ms"
+                )
+
             except Exception as e:
                 print(f"❌ {test_case['name']}: {e}")
-        
+
         # Require at least 80% success rate
         success_rate = successful_communications / len(service_communication_tests)
-        assert success_rate >= 0.8, f"Cross-service communication success rate too low: {success_rate:.1%}"
-        
-        print(f"✅ Cross-service communication validation: {success_rate:.1%} success rate")
-        
+        assert (
+            success_rate >= 0.8
+        ), f"Cross-service communication success rate too low: {success_rate:.1%}"
+
+        print(
+            f"✅ Cross-service communication validation: {success_rate:.1%} success rate"
+        )
+
     except Exception as e:
         pytest.fail(f"Cross-service communication validation failed: {e}")
 
@@ -265,43 +293,48 @@ async def test_platform_adapter_configuration(mock_api_keys):
     """Test platform adapter configuration with mock API keys."""
     try:
         from app.core.cross_platform_adapters import (
-            OpenAIPlatformAdapter, AnthropicPlatformAdapter,
-            CoherePlatformAdapter, GroqPlatformAdapter, AdapterStatus
+            OpenAIPlatformAdapter,
+            AnthropicPlatformAdapter,
+            CoherePlatformAdapter,
+            GroqPlatformAdapter,
+            AdapterStatus,
         )
-        
+
         # Test adapter configuration
         adapters = {
             "openai": OpenAIPlatformAdapter(mock_api_keys["openai"]),
             "anthropic": AnthropicPlatformAdapter(mock_api_keys["anthropic"]),
             "cohere": CoherePlatformAdapter(mock_api_keys["cohere"]),
-            "groq": GroqPlatformAdapter(mock_api_keys["groq"])
+            "groq": GroqPlatformAdapter(mock_api_keys["groq"]),
         }
-        
+
         configured_adapters = 0
-        
+
         for platform_name, adapter in adapters.items():
             try:
                 # Test adapter configuration
                 assert adapter.api_key == mock_api_keys[platform_name]
                 assert adapter.status == AdapterStatus.INACTIVE  # Not initialized yet
                 assert adapter.capabilities is not None
-                
+
                 # Test adapter metrics initialization
                 assert adapter.metrics["total_requests"] == 0
                 assert adapter.metrics["successful_requests"] == 0
                 assert adapter.metrics["failed_requests"] == 0
-                
+
                 configured_adapters += 1
                 print(f"✅ {platform_name.title()} adapter configured successfully")
-                
+
             except Exception as e:
                 print(f"❌ {platform_name.title()} adapter configuration failed: {e}")
-        
+
         # Require all adapters to be configured
-        assert configured_adapters == len(adapters), f"Not all adapters configured: {configured_adapters}/{len(adapters)}"
-        
+        assert configured_adapters == len(
+            adapters
+        ), f"Not all adapters configured: {configured_adapters}/{len(adapters)}"
+
         print("✅ Platform adapter configuration successful")
-        
+
     except Exception as e:
         pytest.fail(f"Platform adapter configuration failed: {e}")
 
@@ -321,26 +354,33 @@ async def test_concurrent_federated_evaluations():
 
         async def submit_evaluation(request_id: int):
             """Submit a single evaluation request."""
-            mock_request = type('MockRequest', (), {
-                'policy_content': f'package test_{request_id}\nallow {{ input.request_id == {request_id} }}',
-                'evaluation_criteria': {
-                    'category': 'load_test',
-                    'safety_level': 'standard',
-                    'request_id': request_id
+            mock_request = type(
+                "MockRequest",
+                (),
+                {
+                    "policy_content": f"package test_{request_id}\nallow {{ input.request_id == {request_id} }}",
+                    "evaluation_criteria": {
+                        "category": "load_test",
+                        "safety_level": "standard",
+                        "request_id": request_id,
+                    },
+                    "target_platforms": [
+                        PlatformType.CLOUD_OPENAI,
+                        PlatformType.EDGE_LOCAL,
+                    ],
+                    "privacy_requirements": {"epsilon": 0.5, "mechanism": "laplace"},
                 },
-                'target_platforms': [PlatformType.CLOUD_OPENAI, PlatformType.EDGE_LOCAL],
-                'privacy_requirements': {'epsilon': 0.5, 'mechanism': 'laplace'}
-            })()
+            )()
 
             start_time = time.time()
             task_id = await evaluator.submit_evaluation(mock_request)
             end_time = time.time()
 
             return {
-                'task_id': task_id,
-                'request_id': request_id,
-                'submission_time_ms': (end_time - start_time) * 1000,
-                'success': True
+                "task_id": task_id,
+                "request_id": request_id,
+                "submission_time_ms": (end_time - start_time) * 1000,
+                "success": True,
             }
 
         # Submit concurrent evaluations
@@ -354,9 +394,9 @@ async def test_concurrent_federated_evaluations():
         total_submission_time = 0
 
         for result in results:
-            if isinstance(result, dict) and result.get('success'):
+            if isinstance(result, dict) and result.get("success"):
                 successful_submissions += 1
-                total_submission_time += result['submission_time_ms']
+                total_submission_time += result["submission_time_ms"]
 
         # Performance metrics
         success_rate = successful_submissions / concurrent_requests
@@ -364,8 +404,12 @@ async def test_concurrent_federated_evaluations():
         total_time = (end_time - start_time) * 1000
 
         # Performance assertions
-        assert success_rate >= 0.9, f"Concurrent submission success rate too low: {success_rate:.1%}"
-        assert avg_submission_time < 200, f"Average submission time too high: {avg_submission_time:.1f}ms"
+        assert (
+            success_rate >= 0.9
+        ), f"Concurrent submission success rate too low: {success_rate:.1%}"
+        assert (
+            avg_submission_time < 200
+        ), f"Average submission time too high: {avg_submission_time:.1f}ms"
 
         # Cleanup
         await evaluator.shutdown()
@@ -394,26 +438,26 @@ async def test_byzantine_fault_tolerance_under_load():
                 "name": "Normal Load",
                 "platforms": 3,
                 "byzantine_ratio": 0.0,
-                "expected_detection": False
+                "expected_detection": False,
             },
             {
                 "name": "Light Byzantine Load",
                 "platforms": 5,
                 "byzantine_ratio": 0.2,
-                "expected_detection": True
+                "expected_detection": True,
             },
             {
                 "name": "Heavy Byzantine Load",
                 "platforms": 7,
                 "byzantine_ratio": 0.33,
-                "expected_detection": True
-            }
+                "expected_detection": True,
+            },
         ]
 
         for scenario in load_test_scenarios:
             # Generate mock metrics for scenario
             mock_metrics = {}
-            platforms = list(PlatformType)[:scenario["platforms"]]
+            platforms = list(PlatformType)[: scenario["platforms"]]
             byzantine_count = int(scenario["platforms"] * scenario["byzantine_ratio"])
 
             for i, platform in enumerate(platforms):
@@ -423,7 +467,7 @@ async def test_byzantine_fault_tolerance_under_load():
                         "policy_compliance_score": 0.15,
                         "constitutional_alignment": 0.20,
                         "safety_score": 0.18,
-                        "fairness_score": 0.22
+                        "fairness_score": 0.22,
                     }
                 else:
                     # Normal node - consistent scores
@@ -431,26 +475,30 @@ async def test_byzantine_fault_tolerance_under_load():
                         "policy_compliance_score": 0.85 + (i * 0.02),
                         "constitutional_alignment": 0.88 + (i * 0.01),
                         "safety_score": 0.90 - (i * 0.01),
-                        "fairness_score": 0.87 + (i * 0.015)
+                        "fairness_score": 0.87 + (i * 0.015),
                     }
 
             # Test Byzantine detection under load
             start_time = time.time()
             byzantine_nodes = coordinator._detect_byzantine_nodes_statistical(
-                mock_metrics,
-                0.33  # tolerance parameter
+                mock_metrics, 0.33  # tolerance parameter
             )
             detection_time = (time.time() - start_time) * 1000
 
             # Validate detection results
             detected_byzantine = len(byzantine_nodes) > 0
-            assert detected_byzantine == scenario["expected_detection"], \
-                f"Byzantine detection mismatch in {scenario['name']}: expected {scenario['expected_detection']}, got {detected_byzantine}"
+            assert (
+                detected_byzantine == scenario["expected_detection"]
+            ), f"Byzantine detection mismatch in {scenario['name']}: expected {scenario['expected_detection']}, got {detected_byzantine}"
 
             # Performance assertion
-            assert detection_time < 100, f"Byzantine detection too slow: {detection_time:.1f}ms"
+            assert (
+                detection_time < 100
+            ), f"Byzantine detection too slow: {detection_time:.1f}ms"
 
-            print(f"✅ {scenario['name']}: {len(byzantine_nodes)} Byzantine nodes detected in {detection_time:.1f}ms")
+            print(
+                f"✅ {scenario['name']}: {len(byzantine_nodes)} Byzantine nodes detected in {detection_time:.1f}ms"
+            )
 
         print("✅ Byzantine fault tolerance under load test successful")
 
@@ -476,12 +524,16 @@ async def test_resource_utilization_monitoring():
         # Simulate evaluation workload
         workload_tasks = []
         for i in range(5):  # Moderate workload for testing
-            mock_request = type('MockRequest', (), {
-                'policy_content': f'package resource_test_{i}\nallow {{ true }}',
-                'evaluation_criteria': {'category': 'resource_monitoring'},
-                'target_platforms': [PlatformType.EDGE_LOCAL],
-                'privacy_requirements': {'epsilon': 0.5, 'mechanism': 'laplace'}
-            })()
+            mock_request = type(
+                "MockRequest",
+                (),
+                {
+                    "policy_content": f"package resource_test_{i}\nallow {{ true }}",
+                    "evaluation_criteria": {"category": "resource_monitoring"},
+                    "target_platforms": [PlatformType.EDGE_LOCAL],
+                    "privacy_requirements": {"epsilon": 0.5, "mechanism": "laplace"},
+                },
+            )()
 
             task_id = await evaluator.submit_evaluation(mock_request)
             workload_tasks.append(task_id)
@@ -498,8 +550,12 @@ async def test_resource_utilization_monitoring():
         memory_increase = load_memory - baseline_memory
 
         # Resource utilization assertions (reasonable limits for testing)
-        assert cpu_increase < 50, f"CPU utilization increase too high: {cpu_increase:.1f}%"
-        assert memory_increase < 20, f"Memory utilization increase too high: {memory_increase:.1f}%"
+        assert (
+            cpu_increase < 50
+        ), f"CPU utilization increase too high: {cpu_increase:.1f}%"
+        assert (
+            memory_increase < 20
+        ), f"Memory utilization increase too high: {memory_increase:.1f}%"
 
         # Cleanup
         await evaluator.shutdown()
@@ -520,8 +576,16 @@ async def test_monitoring_integration():
     try:
         # Test Prometheus metrics endpoint availability
         monitoring_endpoints = [
-            {"name": "Prometheus", "url": "http://localhost:9090", "endpoint": "/metrics"},
-            {"name": "Grafana", "url": "http://localhost:3001", "endpoint": "/api/health"}
+            {
+                "name": "Prometheus",
+                "url": "http://localhost:9090",
+                "endpoint": "/metrics",
+            },
+            {
+                "name": "Grafana",
+                "url": "http://localhost:3001",
+                "endpoint": "/api/health",
+            },
         ]
 
         monitoring_results = {}
@@ -529,17 +593,20 @@ async def test_monitoring_integration():
         async with httpx.AsyncClient(timeout=5.0) as client:
             for monitor in monitoring_endpoints:
                 try:
-                    response = await client.get(f"{monitor['url']}{monitor['endpoint']}")
-                    monitoring_results[monitor['name']] = {
-                        "available": response.status_code in [200, 404],  # 404 acceptable for some endpoints
+                    response = await client.get(
+                        f"{monitor['url']}{monitor['endpoint']}"
+                    )
+                    monitoring_results[monitor["name"]] = {
+                        "available": response.status_code
+                        in [200, 404],  # 404 acceptable for some endpoints
                         "status_code": response.status_code,
-                        "url": monitor['url']
+                        "url": monitor["url"],
                     }
                 except Exception as e:
-                    monitoring_results[monitor['name']] = {
+                    monitoring_results[monitor["name"]] = {
                         "available": False,
                         "error": str(e),
-                        "url": monitor['url']
+                        "url": monitor["url"],
                     }
 
         # Test federated evaluation metrics collection
@@ -563,14 +630,18 @@ async def test_monitoring_integration():
         await evaluator.shutdown()
 
         # Report monitoring integration results
-        available_monitors = sum(1 for result in monitoring_results.values() if result["available"])
+        available_monitors = sum(
+            1 for result in monitoring_results.values() if result["available"]
+        )
         total_monitors = len(monitoring_results)
 
         for name, result in monitoring_results.items():
             status = "✅" if result["available"] else "❌"
             print(f"  {status} {name}: {result['url']}")
 
-        print(f"✅ Monitoring integration test: {available_monitors}/{total_monitors} endpoints accessible")
+        print(
+            f"✅ Monitoring integration test: {available_monitors}/{total_monitors} endpoints accessible"
+        )
 
     except Exception as e:
         pytest.fail(f"Monitoring integration test failed: {e}")
@@ -582,8 +653,12 @@ async def test_real_world_api_validation():
     try:
         import os
         from app.core.cross_platform_adapters import (
-            OpenAIPlatformAdapter, AnthropicPlatformAdapter,
-            CoherePlatformAdapter, GroqPlatformAdapter, EvaluationRequest, EvaluationMode
+            OpenAIPlatformAdapter,
+            AnthropicPlatformAdapter,
+            CoherePlatformAdapter,
+            GroqPlatformAdapter,
+            EvaluationRequest,
+            EvaluationMode,
         )
 
         # Check for real API keys in environment
@@ -591,7 +666,7 @@ async def test_real_world_api_validation():
             "openai": os.getenv("OPENAI_API_KEY"),
             "anthropic": os.getenv("ANTHROPIC_API_KEY"),
             "cohere": os.getenv("COHERE_API_KEY"),
-            "groq": os.getenv("GROQ_API_KEY")
+            "groq": os.getenv("GROQ_API_KEY"),
         }
 
         available_platforms = {k: v for k, v in api_keys.items() if v}
@@ -600,16 +675,36 @@ async def test_real_world_api_validation():
             print("⚠️  No real API keys available, testing with mock validation")
             # Test mock API validation
             mock_validation_results = {
-                "openai": {"valid": True, "response_time_ms": 120.0, "cost_estimate": 0.002},
-                "anthropic": {"valid": True, "response_time_ms": 150.0, "cost_estimate": 0.003},
-                "cohere": {"valid": True, "response_time_ms": 100.0, "cost_estimate": 0.001},
-                "groq": {"valid": True, "response_time_ms": 80.0, "cost_estimate": 0.0005}
+                "openai": {
+                    "valid": True,
+                    "response_time_ms": 120.0,
+                    "cost_estimate": 0.002,
+                },
+                "anthropic": {
+                    "valid": True,
+                    "response_time_ms": 150.0,
+                    "cost_estimate": 0.003,
+                },
+                "cohere": {
+                    "valid": True,
+                    "response_time_ms": 100.0,
+                    "cost_estimate": 0.001,
+                },
+                "groq": {
+                    "valid": True,
+                    "response_time_ms": 80.0,
+                    "cost_estimate": 0.0005,
+                },
             }
 
             for platform, result in mock_validation_results.items():
                 assert result["valid"], f"Mock validation failed for {platform}"
-                assert result["response_time_ms"] < 200, f"Mock response time too high for {platform}"
-                print(f"✅ Mock {platform.title()} validation: {result['response_time_ms']}ms")
+                assert (
+                    result["response_time_ms"] < 200
+                ), f"Mock response time too high for {platform}"
+                print(
+                    f"✅ Mock {platform.title()} validation: {result['response_time_ms']}ms"
+                )
 
             print("✅ Mock real-world API validation successful")
             return
@@ -640,9 +735,12 @@ async def test_real_world_api_validation():
                 test_request = EvaluationRequest(
                     request_id=f"real_api_test_{platform_name}",
                     policy_content="package test\nallow { input.test == true }",
-                    evaluation_criteria={"category": "api_validation", "safety_level": "low"},
+                    evaluation_criteria={
+                        "category": "api_validation",
+                        "safety_level": "low",
+                    },
                     mode=EvaluationMode.CONSTITUTIONAL,
-                    timeout_seconds=30.0
+                    timeout_seconds=30.0,
                 )
 
                 # Test evaluation (with timeout)
@@ -655,31 +753,36 @@ async def test_real_world_api_validation():
                     "response_time_ms": (end_time - start_time) * 1000,
                     "tokens_used": response.tokens_used,
                     "cost_estimate": response.cost_estimate,
-                    "error": response.error_message if not response.success else None
+                    "error": response.error_message if not response.success else None,
                 }
 
                 # Cleanup
                 await adapter.shutdown()
 
             except Exception as e:
-                validation_results[platform_name] = {
-                    "success": False,
-                    "error": str(e)
-                }
+                validation_results[platform_name] = {"success": False, "error": str(e)}
 
         # Analyze real API validation results
-        successful_validations = sum(1 for result in validation_results.values() if result.get("success"))
+        successful_validations = sum(
+            1 for result in validation_results.values() if result.get("success")
+        )
         total_validations = len(validation_results)
 
         for platform, result in validation_results.items():
             if result.get("success"):
-                print(f"✅ {platform.title()} real API validation: {result['response_time_ms']:.1f}ms, {result['tokens_used']} tokens, ${result['cost_estimate']:.4f}")
+                print(
+                    f"✅ {platform.title()} real API validation: {result['response_time_ms']:.1f}ms, {result['tokens_used']} tokens, ${result['cost_estimate']:.4f}"
+                )
             else:
-                print(f"❌ {platform.title()} real API validation failed: {result.get('error', 'Unknown error')}")
+                print(
+                    f"❌ {platform.title()} real API validation failed: {result.get('error', 'Unknown error')}"
+                )
 
         # Require at least 50% success rate for real API testing
         success_rate = successful_validations / max(1, total_validations)
-        assert success_rate >= 0.5, f"Real API validation success rate too low: {success_rate:.1%}"
+        assert (
+            success_rate >= 0.5
+        ), f"Real API validation success rate too low: {success_rate:.1%}"
 
         print(f"✅ Real-world API validation: {success_rate:.1%} success rate")
 
@@ -692,8 +795,10 @@ async def test_cost_estimation_accuracy():
     """Test cost estimation accuracy and token usage tracking."""
     try:
         from app.core.cross_platform_adapters import (
-            OpenAIPlatformAdapter, AnthropicPlatformAdapter,
-            CoherePlatformAdapter, GroqPlatformAdapter
+            OpenAIPlatformAdapter,
+            AnthropicPlatformAdapter,
+            CoherePlatformAdapter,
+            GroqPlatformAdapter,
         )
 
         # Test cost estimation with mock data
@@ -702,26 +807,26 @@ async def test_cost_estimation_accuracy():
                 "platform": "openai",
                 "adapter_class": OpenAIPlatformAdapter,
                 "tokens": 100,
-                "expected_cost_range": (0.001, 0.01)
+                "expected_cost_range": (0.001, 0.01),
             },
             {
                 "platform": "anthropic",
                 "adapter_class": AnthropicPlatformAdapter,
                 "tokens": 150,
-                "expected_cost_range": (0.002, 0.015)
+                "expected_cost_range": (0.002, 0.015),
             },
             {
                 "platform": "cohere",
                 "adapter_class": CoherePlatformAdapter,
                 "tokens": 80,
-                "expected_cost_range": (0.0005, 0.008)
+                "expected_cost_range": (0.0005, 0.008),
             },
             {
                 "platform": "groq",
                 "adapter_class": GroqPlatformAdapter,
                 "tokens": 120,
-                "expected_cost_range": (0.0001, 0.005)
-            }
+                "expected_cost_range": (0.0001, 0.005),
+            },
         ]
 
         cost_estimation_results = {}
@@ -741,32 +846,47 @@ async def test_cost_estimation_accuracy():
                     "tokens": scenario["tokens"],
                     "estimated_cost": estimated_cost,
                     "cost_in_range": cost_in_range,
-                    "expected_range": scenario["expected_cost_range"]
+                    "expected_range": scenario["expected_cost_range"],
                 }
 
-                assert cost_in_range, f"Cost estimation out of range for {scenario['platform']}: ${estimated_cost:.6f}"
+                assert (
+                    cost_in_range
+                ), f"Cost estimation out of range for {scenario['platform']}: ${estimated_cost:.6f}"
 
-                print(f"✅ {scenario['platform'].title()} cost estimation: {scenario['tokens']} tokens → ${estimated_cost:.6f}")
+                print(
+                    f"✅ {scenario['platform'].title()} cost estimation: {scenario['tokens']} tokens → ${estimated_cost:.6f}"
+                )
 
             except Exception as e:
                 cost_estimation_results[scenario["platform"]] = {
                     "error": str(e),
-                    "cost_in_range": False
+                    "cost_in_range": False,
                 }
 
         # Validate overall cost estimation accuracy
-        accurate_estimations = sum(1 for result in cost_estimation_results.values() if result.get("cost_in_range"))
+        accurate_estimations = sum(
+            1
+            for result in cost_estimation_results.values()
+            if result.get("cost_in_range")
+        )
         total_estimations = len(cost_estimation_results)
 
         accuracy_rate = accurate_estimations / total_estimations
         # More lenient for testing - require at least 25% accuracy or all tests to have attempted estimation
         min_accuracy = 0.25
-        all_attempted = all("error" not in result or "estimate_cost" in str(result.get("error", "")) for result in cost_estimation_results.values())
+        all_attempted = all(
+            "error" not in result or "estimate_cost" in str(result.get("error", ""))
+            for result in cost_estimation_results.values()
+        )
 
         if all_attempted or accuracy_rate >= min_accuracy:
-            print(f"✅ Cost estimation accuracy test: {accuracy_rate:.1%} accuracy rate (target: {min_accuracy:.1%})")
+            print(
+                f"✅ Cost estimation accuracy test: {accuracy_rate:.1%} accuracy rate (target: {min_accuracy:.1%})"
+            )
         else:
-            assert accuracy_rate >= min_accuracy, f"Cost estimation accuracy too low: {accuracy_rate:.1%}"
+            assert (
+                accuracy_rate >= min_accuracy
+            ), f"Cost estimation accuracy too low: {accuracy_rate:.1%}"
 
     except Exception as e:
         pytest.fail(f"Cost estimation accuracy test failed: {e}")
@@ -783,7 +903,7 @@ async def test_production_deployment_readiness():
             "acgs_integrity_service",
             "acgs_fv_service",
             "acgs_gs_service",
-            "acgs_pgc_service"
+            "acgs_pgc_service",
         ]
 
         # Test service discovery and health checks
@@ -798,7 +918,7 @@ async def test_production_deployment_readiness():
                     "healthy": True,
                     "response_time_ms": 50.0,
                     "memory_usage_mb": 128.0,
-                    "cpu_usage_percent": 5.0
+                    "cpu_usage_percent": 5.0,
                 }
 
                 service_readiness[service] = health_check_result
@@ -806,9 +926,13 @@ async def test_production_deployment_readiness():
                 # Validate service health metrics
                 assert health_check_result["running"], f"Service not running: {service}"
                 assert health_check_result["healthy"], f"Service not healthy: {service}"
-                assert health_check_result["response_time_ms"] < 100, f"Service response too slow: {service}"
+                assert (
+                    health_check_result["response_time_ms"] < 100
+                ), f"Service response too slow: {service}"
 
-                print(f"✅ {service}: {health_check_result['response_time_ms']}ms, {health_check_result['memory_usage_mb']}MB")
+                print(
+                    f"✅ {service}: {health_check_result['response_time_ms']}ms, {health_check_result['memory_usage_mb']}MB"
+                )
 
             except Exception as e:
                 service_readiness[service] = {"error": str(e), "healthy": False}
@@ -819,7 +943,7 @@ async def test_production_deployment_readiness():
             "database_connections": True,
             "api_endpoints": True,
             "monitoring_integration": True,
-            "security_configuration": True
+            "security_configuration": True,
         }
 
         for config_item, status in config_validation.items():
@@ -830,20 +954,26 @@ async def test_production_deployment_readiness():
             "database_backup_configured": True,
             "log_retention_policy": True,
             "failover_mechanisms": True,
-            "data_recovery_procedures": True
+            "data_recovery_procedures": True,
         }
 
         for dr_check, status in disaster_recovery_checks.items():
             assert status, f"Disaster recovery check failed: {dr_check}"
 
         # Calculate overall readiness score
-        healthy_services = sum(1 for result in service_readiness.values() if result.get("healthy"))
+        healthy_services = sum(
+            1 for result in service_readiness.values() if result.get("healthy")
+        )
         total_services = len(service_readiness)
         readiness_score = healthy_services / total_services
 
-        assert readiness_score >= 0.9, f"Production readiness score too low: {readiness_score:.1%}"
+        assert (
+            readiness_score >= 0.9
+        ), f"Production readiness score too low: {readiness_score:.1%}"
 
-        print(f"✅ Production deployment readiness: {readiness_score:.1%} services ready")
+        print(
+            f"✅ Production deployment readiness: {readiness_score:.1%} services ready"
+        )
         print("✅ Configuration validation successful")
         print("✅ Disaster recovery checks passed")
 
@@ -856,23 +986,31 @@ if __name__ == "__main__":
     test_phase3_service_structure()
 
     # Run async integration tests
-    asyncio.run(test_acgs_service_health_checks({
-        "auth_service": "http://localhost:8000",
-        "ac_service": "http://localhost:8001",
-        "integrity_service": "http://localhost:8002",
-        "fv_service": "http://localhost:8003",
-        "gs_service": "http://localhost:8004",
-        "pgc_service": "http://localhost:8005"
-    }))
+    asyncio.run(
+        test_acgs_service_health_checks(
+            {
+                "auth_service": "http://localhost:8000",
+                "ac_service": "http://localhost:8001",
+                "integrity_service": "http://localhost:8002",
+                "fv_service": "http://localhost:8003",
+                "gs_service": "http://localhost:8004",
+                "pgc_service": "http://localhost:8005",
+            }
+        )
+    )
 
     asyncio.run(test_federated_evaluation_acgs_integration())
     asyncio.run(test_cross_service_communication_validation())
-    asyncio.run(test_platform_adapter_configuration({
-        "openai": "sk-test-openai-key-12345",
-        "anthropic": "sk-ant-test-key-12345",
-        "cohere": "test-cohere-key-12345",
-        "groq": "gsk_test-groq-key-12345"
-    }))
+    asyncio.run(
+        test_platform_adapter_configuration(
+            {
+                "openai": "sk-test-openai-key-12345",
+                "anthropic": "sk-ant-test-key-12345",
+                "cohere": "test-cohere-key-12345",
+                "groq": "gsk_test-groq-key-12345",
+            }
+        )
+    )
 
     # Run performance and load tests
     asyncio.run(test_concurrent_federated_evaluations())
@@ -885,7 +1023,9 @@ if __name__ == "__main__":
     asyncio.run(test_cost_estimation_accuracy())
     asyncio.run(test_production_deployment_readiness())
 
-    print("\n🎉 Phase 3 ACGS-PGP Integration and Production Validation Tests Completed!")
+    print(
+        "\n🎉 Phase 3 ACGS-PGP Integration and Production Validation Tests Completed!"
+    )
     print("✅ ACGS-PGP service integration framework ready")
     print("✅ Cross-service communication patterns validated")
     print("✅ Platform adapter configuration successful")

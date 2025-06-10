@@ -22,6 +22,7 @@ from unittest.mock import Mock, patch, AsyncMock
 # Add project root to path for imports
 import sys
 from pathlib import Path
+
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(project_root / "src/backend"))
@@ -34,15 +35,17 @@ try:
         WINAModelIntegrator,
         MockModelWeightExtractor,
         ModelWeightInfo,
-        WINAOptimizationResult
+        WINAOptimizationResult,
     )
     from services.shared.wina.model_integration import WINAModelIntegrator
     from services.shared.wina.svd_transformation import SVDTransformation
     from services.shared.wina.exceptions import WINAError, WINAOptimizationError
+
     WINA_AVAILABLE = True
 except ImportError:
     # Mock WINA components for testing when not available
     from unittest.mock import Mock
+
     WINAConfig = Mock
     WINAIntegrationConfig = Mock
     WINAModelIntegrator = Mock
@@ -60,13 +63,18 @@ try:
         WINAOptimizedLLMClient,
         WINAOptimizedSynthesisResult,
         get_wina_optimized_llm_client,
-        query_llm_with_wina_optimization
+        query_llm_with_wina_optimization,
     )
-    from services.core.governance_synthesis.app.schemas import LLMInterpretationInput, ConstitutionalSynthesisInput
+    from services.core.governance_synthesis.app.schemas import (
+        LLMInterpretationInput,
+        ConstitutionalSynthesisInput,
+    )
+
     GS_WINA_AVAILABLE = True
 except ImportError:
     # Mock GS Engine components for testing when not available
     from unittest.mock import Mock
+
     WINAOptimizedLLMClient = Mock
     WINAOptimizedSynthesisResult = Mock
     get_wina_optimized_llm_client = Mock
@@ -101,9 +109,9 @@ class TestWINASVDTransformation:
             enable_svd_transformation=True,
             enable_runtime_gating=True,
             svd_rank_reduction=0.8,
-            cache_transformed_weights=True
+            cache_transformed_weights=True,
         )
-    
+
     @pytest.fixture
     def integration_config(self):
         """Create WINA integration configuration for testing."""
@@ -120,7 +128,7 @@ class TestWINASVDTransformation:
             gs_engine_optimization=True,
             constitutional_compliance_strict=True,
             enable_prometheus_metrics=False,  # Disable for testing
-            metrics_collection_interval=60
+            metrics_collection_interval=60,
         )
 
     @pytest.fixture
@@ -136,7 +144,7 @@ class TestWINASVDTransformation:
         if not WINA_AVAILABLE:
             return Mock()
         return MockModelWeightExtractor()
-    
+
     @pytest.mark.skipif(not WINA_AVAILABLE, reason="WINA components not available")
     def test_svd_transformation_basic(self, wina_config):
         """Test basic SVD transformation functionality."""
@@ -155,7 +163,7 @@ class TestWINASVDTransformation:
         assert 0 < result.compression_ratio <= 1.0
         assert result.numerical_stability > 0.9
         assert result.transformation_time > 0
-    
+
     @pytest.mark.skipif(not WINA_AVAILABLE, reason="WINA components not available")
     def test_computational_invariance_verification(self, wina_config):
         """Test computational invariance verification."""
@@ -191,7 +199,7 @@ class TestWINASVDTransformation:
         assert mock_config is not None
         assert mock_integrator is not None
         assert mock_extractor is not None
-    
+
     @pytest.mark.asyncio
     @pytest.mark.skipif(not WINA_AVAILABLE, reason="WINA components not available")
     async def test_mock_weight_extraction(self, mock_weight_extractor):
@@ -206,7 +214,9 @@ class TestWINASVDTransformation:
         assert all(isinstance(info, ModelWeightInfo) for info in weight_infos)
         assert all(info.weight_matrix.numel() > 0 for info in weight_infos)
         assert all(info.layer_type in ["attention", "mlp"] for info in weight_infos)
-        assert all(info.matrix_type in ["W_k", "W_q", "W_v", "W_gate"] for info in weight_infos)
+        assert all(
+            info.matrix_type in ["W_k", "W_q", "W_v", "W_gate"] for info in weight_infos
+        )
 
     @pytest.mark.asyncio
     @pytest.mark.skipif(not WINA_AVAILABLE, reason="WINA components not available")
@@ -220,7 +230,7 @@ class TestWINASVDTransformation:
             model_identifier=model_identifier,
             model_type=model_type,
             target_layers=None,
-            force_recompute=True
+            force_recompute=True,
         )
 
         # Verify optimization result
@@ -231,7 +241,7 @@ class TestWINASVDTransformation:
         assert 0.85 <= result.accuracy_preservation <= 1.0
         assert result.constitutional_compliance is True
         assert result.optimization_time > 0
-    
+
     @pytest.mark.asyncio
     @pytest.mark.skipif(not WINA_AVAILABLE, reason="WINA components not available")
     async def test_performance_metrics_collection(self, model_integrator):
@@ -244,7 +254,7 @@ class TestWINASVDTransformation:
             result = await model_integrator.optimize_model(
                 model_identifier=f"{model_identifier}_{i}",
                 model_type="mock",
-                force_recompute=True
+                force_recompute=True,
             )
             results.append(result)
 
@@ -267,11 +277,7 @@ class TestWINASVDTransformation:
         await model_integrator.optimize_model(model_identifier, "mock")
 
         # Create test inputs
-        test_inputs = [
-            torch.randn(10, 512),
-            torch.randn(5, 512),
-            torch.randn(15, 512)
-        ]
+        test_inputs = [torch.randn(10, 512), torch.randn(5, 512), torch.randn(15, 512)]
 
         # Verify computational invariance
         verification_result = await model_integrator.verify_computational_invariance(
@@ -282,7 +288,7 @@ class TestWINASVDTransformation:
         assert "layer_results" in verification_result
         assert "test_inputs_count" in verification_result
         assert verification_result["test_inputs_count"] == len(test_inputs)
-    
+
     @pytest.mark.skipif(not WINA_AVAILABLE, reason="WINA components not available")
     def test_gflops_estimation(self, model_integrator):
         """Test GFLOPs estimation for different layer types."""
@@ -292,7 +298,7 @@ class TestWINASVDTransformation:
             weight_matrix=torch.randn(1024, 4096),
             layer_type="mlp",
             matrix_type="W_gate",
-            original_shape=(1024, 4096)
+            original_shape=(1024, 4096),
         )
 
         # Estimate GFLOPs
@@ -319,7 +325,7 @@ class TestWINASVDTransformation:
         assert isinstance(compliance, bool)
         # Should be True for well-formed transformations
         assert compliance is True
-    
+
     @pytest.mark.skipif(not WINA_AVAILABLE, reason="WINA components not available")
     def test_caching_functionality(self, model_integrator):
         """Test transformation caching functionality."""
@@ -345,15 +351,11 @@ class TestWINASVDTransformation:
         """Test error handling in model optimization."""
         # Test with unsupported model type
         with pytest.raises(WINAError):
-            await model_integrator.optimize_model(
-                "test-model", "unsupported_type"
-            )
+            await model_integrator.optimize_model("test-model", "unsupported_type")
 
         # Test with invalid model identifier
         with pytest.raises(WINAError):
-            await model_integrator.optimize_model(
-                "invalid-model", "mock"
-            )
+            await model_integrator.optimize_model("invalid-model", "mock")
 
 
 class TestWINALLMIntegration:
@@ -367,18 +369,22 @@ class TestWINALLMIntegration:
         return WINAOptimizedLLMClient(enable_wina=True)
 
     @pytest.mark.asyncio
-    @pytest.mark.skipif(not GS_WINA_AVAILABLE, reason="GS WINA components not available")
+    @pytest.mark.skipif(
+        not GS_WINA_AVAILABLE, reason="GS WINA components not available"
+    )
     async def test_wina_optimized_client_initialization(self):
         """Test WINA-optimized client initialization."""
         client = WINAOptimizedLLMClient(enable_wina=True)
 
         assert client.enable_wina is True
-        assert hasattr(client, 'wina_config')
-        assert hasattr(client, 'wina_integrator')
-        assert hasattr(client, 'constitutional_engine')
+        assert hasattr(client, "wina_config")
+        assert hasattr(client, "wina_integrator")
+        assert hasattr(client, "constitutional_engine")
 
     @pytest.mark.asyncio
-    @pytest.mark.skipif(not GS_WINA_AVAILABLE, reason="GS WINA components not available")
+    @pytest.mark.skipif(
+        not GS_WINA_AVAILABLE, reason="GS WINA components not available"
+    )
     async def test_structured_interpretation_with_wina(self, wina_client):
         """Test structured interpretation with WINA optimization."""
         # Create test input
@@ -386,15 +392,19 @@ class TestWINALLMIntegration:
             principle_id=1,
             principle_text="Test principle for fairness",
             context="policy_generation",
-            environmental_factors={"domain": "healthcare"}
+            environmental_factors={"domain": "healthcare"},
         )
 
         # Mock the underlying LLM call
-        with patch('src.backend.gs_service.app.core.llm_integration.query_llm_for_structured_output') as mock_query:
+        with patch(
+            "src.backend.gs_service.app.core.llm_integration.query_llm_for_structured_output"
+        ) as mock_query:
             mock_query.return_value = Mock(interpretations=["test interpretation"])
 
             # Perform optimized interpretation
-            result = await wina_client.get_structured_interpretation_optimized(test_input)
+            result = await wina_client.get_structured_interpretation_optimized(
+                test_input
+            )
 
             # Verify result structure
             assert isinstance(result, WINAOptimizedSynthesisResult)
@@ -402,7 +412,9 @@ class TestWINALLMIntegration:
             assert "synthesis_time" in result.performance_metrics
             assert isinstance(result.constitutional_compliance, bool)
 
-    @pytest.mark.skipif(not GS_WINA_AVAILABLE, reason="GS WINA components not available")
+    @pytest.mark.skipif(
+        not GS_WINA_AVAILABLE, reason="GS WINA components not available"
+    )
     def test_performance_summary(self, wina_client):
         """Test performance summary generation."""
         summary = wina_client.get_performance_summary()

@@ -28,6 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root(request: Request):
     """Root GET endpoint. Provides basic service information."""
@@ -41,10 +42,11 @@ async def root(request: Request):
             "api_keys": "API Key Management",
             "security_audit": "Security Audit Logging",
             "intrusion_detection": "Intrusion Detection",
-            "session_management": "Enterprise Session Management"
+            "session_management": "Enterprise Session Management",
         },
-        "status": "operational"
+        "status": "operational",
     }
+
 
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
@@ -56,15 +58,17 @@ async def health_check():
         "enterprise_features_enabled": True,
         "components": {
             "mfa_service": "operational",
-            "oauth_service": "operational", 
+            "oauth_service": "operational",
             "api_key_manager": "operational",
             "security_audit": "operational",
             "intrusion_detection": "operational",
-            "session_manager": "operational"
-        }
+            "session_manager": "operational",
+        },
     }
 
+
 # Enterprise Authentication Endpoints
+
 
 @app.get("/auth/enterprise/status")
 async def enterprise_auth_status():
@@ -75,40 +79,60 @@ async def enterprise_auth_status():
             "multi_factor_authentication": {
                 "enabled": True,
                 "methods": ["totp", "backup_codes"],
-                "setup_required": False
+                "setup_required": False,
             },
             "oauth_providers": {
                 "enabled": True,
                 "supported_providers": ["github", "google", "microsoft"],
-                "configuration_required": True
+                "configuration_required": True,
             },
             "api_key_management": {
                 "enabled": True,
-                "features": ["scoped_access", "rate_limiting", "ip_restrictions", "expiration"],
-                "max_keys_per_user": 10
+                "features": [
+                    "scoped_access",
+                    "rate_limiting",
+                    "ip_restrictions",
+                    "expiration",
+                ],
+                "max_keys_per_user": 10,
             },
             "security_audit_logging": {
                 "enabled": True,
-                "events_tracked": ["login", "logout", "mfa", "api_access", "security_events"],
-                "retention_days": 90
+                "events_tracked": [
+                    "login",
+                    "logout",
+                    "mfa",
+                    "api_access",
+                    "security_events",
+                ],
+                "retention_days": 90,
             },
             "intrusion_detection": {
                 "enabled": True,
-                "features": ["brute_force_protection", "suspicious_activity", "rate_limiting"],
-                "auto_blocking": True
+                "features": [
+                    "brute_force_protection",
+                    "suspicious_activity",
+                    "rate_limiting",
+                ],
+                "auto_blocking": True,
             },
             "session_management": {
                 "enabled": True,
-                "features": ["concurrent_sessions", "device_tracking", "session_timeout"],
-                "max_concurrent_sessions": 5
-            }
+                "features": [
+                    "concurrent_sessions",
+                    "device_tracking",
+                    "session_timeout",
+                ],
+                "max_concurrent_sessions": 5,
+            },
         },
         "performance_targets": {
             "concurrent_users": ">1000",
             "response_time": "<500ms",
-            "availability": ">99.9%"
-        }
+            "availability": ">99.9%",
+        },
     }
+
 
 # MFA Endpoints
 @app.get("/auth/mfa/status")
@@ -119,15 +143,16 @@ async def mfa_status():
         "supported_methods": ["totp", "backup_codes"],
         "setup_endpoints": [
             "/auth/mfa/setup",
-            "/auth/mfa/enable", 
+            "/auth/mfa/enable",
             "/auth/mfa/disable",
-            "/auth/mfa/verify"
+            "/auth/mfa/verify",
         ],
         "backup_codes": {
             "supported": True,
-            "regeneration_endpoint": "/auth/mfa/backup-codes/regenerate"
-        }
+            "regeneration_endpoint": "/auth/mfa/backup-codes/regenerate",
+        },
     }
+
 
 @app.post("/auth/mfa/setup")
 async def setup_mfa():
@@ -137,8 +162,9 @@ async def setup_mfa():
         "secret": "DEMO_SECRET_KEY_FOR_TOTP",
         "qr_code": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
         "backup_codes": ["DEMO-CODE-1", "DEMO-CODE-2", "DEMO-CODE-3"],
-        "provisioning_uri": "otpauth://totp/ACGS-1:demo@example.com?secret=DEMO_SECRET_KEY_FOR_TOTP&issuer=ACGS-1"
+        "provisioning_uri": "otpauth://totp/ACGS-1:demo@example.com?secret=DEMO_SECRET_KEY_FOR_TOTP&issuer=ACGS-1",
     }
+
 
 # OAuth Endpoints
 @app.get("/auth/oauth/providers")
@@ -149,15 +175,16 @@ async def oauth_providers():
         "configuration_status": {
             "github": "configured",
             "google": "requires_setup",
-            "microsoft": "requires_setup"
+            "microsoft": "requires_setup",
         },
         "endpoints": {
             "authorization": "/auth/oauth/authorize",
             "callback": "/auth/oauth/callback",
             "link": "/auth/oauth/link",
-            "unlink": "/auth/oauth/unlink/{provider}"
-        }
+            "unlink": "/auth/oauth/unlink/{provider}",
+        },
     }
+
 
 # API Key Management Endpoints
 @app.get("/auth/api-keys/")
@@ -173,7 +200,7 @@ async def list_api_keys():
                 "rate_limit_per_minute": 1000,
                 "is_active": True,
                 "created_at": "2024-01-01T00:00:00Z",
-                "last_used_at": "2024-01-20T12:00:00Z"
+                "last_used_at": "2024-01-20T12:00:00Z",
             }
         ],
         "total_keys": 1,
@@ -182,9 +209,10 @@ async def list_api_keys():
             "create": "POST /auth/api-keys/",
             "update": "PUT /auth/api-keys/{key_id}",
             "revoke": "POST /auth/api-keys/{key_id}/revoke",
-            "delete": "DELETE /auth/api-keys/{key_id}"
-        }
+            "delete": "DELETE /auth/api-keys/{key_id}",
+        },
     }
+
 
 # Security Audit Endpoints
 @app.get("/auth/security/audit/summary")
@@ -195,33 +223,31 @@ async def security_audit_summary():
             "total_events": 1250,
             "successful_events": 1180,
             "failed_events": 70,
-            "success_rate": 0.944
+            "success_rate": 0.944,
         },
         "event_categories": {
             "authentication": 800,
             "authorization": 200,
             "security": 150,
-            "api": 100
+            "api": 100,
         },
         "recent_security_events": [
             {
                 "event_type": "login_success",
                 "user_id": 1,
                 "timestamp": "2024-01-20T12:00:00Z",
-                "ip_address": "192.168.1.100"
+                "ip_address": "192.168.1.100",
             },
             {
-                "event_type": "mfa_verification_success", 
+                "event_type": "mfa_verification_success",
                 "user_id": 1,
                 "timestamp": "2024-01-20T12:00:30Z",
-                "ip_address": "192.168.1.100"
-            }
+                "ip_address": "192.168.1.100",
+            },
         ],
-        "performance": {
-            "response_time_ms": 45,
-            "target_response_time": "<500ms"
-        }
+        "performance": {"response_time_ms": 45, "target_response_time": "<500ms"},
     }
+
 
 # Session Management Endpoints
 @app.get("/auth/sessions/status")
@@ -236,14 +262,15 @@ async def session_status():
             "device_tracking": True,
             "concurrent_session_limit": True,
             "session_timeout": True,
-            "forced_logout": True
+            "forced_logout": True,
         },
         "endpoints": {
             "list_sessions": "/auth/sessions/",
             "terminate_session": "DELETE /auth/sessions/{session_id}",
-            "terminate_all": "DELETE /auth/sessions/all"
-        }
+            "terminate_all": "DELETE /auth/sessions/all",
+        },
     }
+
 
 # Intrusion Detection Endpoints
 @app.get("/auth/security/intrusion/status")
@@ -255,20 +282,22 @@ async def intrusion_detection_status():
             "brute_force_protection": True,
             "rate_limiting": True,
             "suspicious_activity_detection": True,
-            "auto_ip_blocking": True
+            "auto_ip_blocking": True,
         },
         "current_status": {
             "blocked_ips": 5,
             "suspicious_activities_detected": 12,
-            "auto_blocks_today": 3
+            "auto_blocks_today": 3,
         },
         "thresholds": {
             "failed_login_attempts": 5,
             "rate_limit_per_minute": 100,
-            "block_duration_minutes": 15
-        }
+            "block_duration_minutes": 15,
+        },
     }
+
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8001)

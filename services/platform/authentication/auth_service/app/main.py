@@ -19,15 +19,22 @@ from app.core.config import settings
 
 # Import metrics functionality and enhanced security (with fallbacks)
 try:
-    from services.shared.metrics import get_metrics, metrics_middleware, create_metrics_endpoint
+    from services.shared.metrics import (
+        get_metrics,
+        metrics_middleware,
+        create_metrics_endpoint,
+    )
 except ImportError:
     # Fallback for missing shared modules
     def get_metrics(service_name):
         return None
+
     def metrics_middleware(service_name):
         return lambda request, call_next: call_next(request)
+
     def create_metrics_endpoint():
         return lambda: {"metrics": "not_available"}
+
 
 try:
     from services.shared.security_middleware import add_security_middleware
@@ -36,6 +43,7 @@ except ImportError:
     # Fallback for missing security modules
     def add_security_middleware(app):
         pass
+
     security_config = {}
 
 # Import the auth router directly from endpoints to avoid double prefix issue
@@ -74,6 +82,7 @@ metrics = get_metrics("auth_service")
 # Add exception handlers - temporarily disabled for debugging
 # app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
 # CSRF Protection Settings
 class CsrfSettings(BaseModel):
     secret_key: str = settings.CSRF_SECRET_KEY
@@ -81,17 +90,20 @@ class CsrfSettings(BaseModel):
     # cookie_secure: bool = settings.ENVIRONMENT != "development" # Handled by SECURE_COOKIE in endpoints.py for token cookies
     # header_name: str = "X-CSRF-Token" # Default is "X-CSRF-Token"
 
+
 @CsrfProtect.load_config
 def get_csrf_config():
     return CsrfSettings()
+
 
 @app.exception_handler(CsrfProtectError)
 async def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
     logger.warning(f"CSRF protection error: {exc.message} for request: {request.url}")
     return JSONResponse(
-        status_code=exc.status_code, # Typically 403
+        status_code=exc.status_code,  # Typically 403
         content={"detail": exc.message},
     )
+
 
 # Add enhanced security middleware (includes rate limiting, input validation, security headers, audit logging)
 # Use clean middleware pattern like fv_service to avoid conflicts
@@ -136,40 +148,27 @@ add_security_middleware(app)
 #         return await call_next(request)
 
 # Include the test router to debug the issue
-app.include_router(
-    test_router,
-    prefix="/auth",
-    tags=["Test"]
-)
+app.include_router(test_router, prefix="/auth", tags=["Test"])
 
 # Include the authentication router
 # The prefix here should match the path used for refresh token cookie
-app.include_router(
-    auth_router,
-    prefix="/auth",
-    tags=["Authentication & Authorization"]
-)
+app.include_router(auth_router, prefix="/auth", tags=["Authentication & Authorization"])
 
 # Include enterprise authentication routers with error handling
 try:
     app.include_router(
-        mfa_router,
-        prefix="/auth/mfa",
-        tags=["Multi-Factor Authentication"]
+        mfa_router, prefix="/auth/mfa", tags=["Multi-Factor Authentication"]
     )
     app.include_router(
-        oauth_router,
-        prefix="/auth/oauth",
-        tags=["OAuth 2.0 & OpenID Connect"]
+        oauth_router, prefix="/auth/oauth", tags=["OAuth 2.0 & OpenID Connect"]
     )
     app.include_router(
-        api_keys_router,
-        prefix="/auth/api-keys",
-        tags=["API Key Management"]
+        api_keys_router, prefix="/auth/api-keys", tags=["API Key Management"]
     )
     logger.info("Enterprise authentication features enabled")
 except Exception as e:
     logger.warning(f"Enterprise authentication features not available: {e}")
+
     # Create fallback endpoints
     @app.get("/auth/mfa/status")
     async def mfa_status_fallback():
@@ -182,6 +181,7 @@ except Exception as e:
     @app.get("/auth/api-keys/")
     async def api_keys_fallback():
         return {"error": "API key service not available", "enterprise_features": False}
+
 
 # Enterprise authentication features are included above with error handling
 
@@ -203,12 +203,14 @@ async def root(request: Request) -> dict:
     logger.info("Root endpoint was called.")
     return {"message": f"Welcome to {settings.PROJECT_NAME}"}
 
+
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check() -> dict:
     """
     Health check endpoint for service monitoring.
     """
     return {"status": "ok", "message": "Auth Service is operational."}
+
 
 # Add Prometheus metrics endpoint
 app.get("/metrics")(create_metrics_endpoint())

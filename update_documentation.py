@@ -9,13 +9,16 @@ import logging
 from pathlib import Path
 import re
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 class DocumentationUpdater:
     def __init__(self, project_root: str = "/home/dislove/ACGS-1"):
         self.project_root = Path(project_root)
-        
+
         # Path mappings for documentation updates
         self.path_mappings = {
             "src/backend/": "services/",
@@ -35,19 +38,19 @@ class DocumentationUpdater:
     def update_main_readme(self):
         """Update main README.md with new structure"""
         logger.info("Updating main README.md...")
-        
+
         readme_file = self.project_root / "README.md"
         if not readme_file.exists():
             logger.warning("Main README.md not found")
             return False
-        
-        with open(readme_file, 'r') as f:
+
+        with open(readme_file, "r") as f:
             content = f.read()
-        
+
         # Update path references
         for old_path, new_path in self.path_mappings.items():
             content = content.replace(old_path, new_path)
-        
+
         # Update service port mappings
         service_ports = """
 ### Core Services (Ports 8000-8006)
@@ -62,179 +65,182 @@ class DocumentationUpdater:
 | **Integrity** | 8005 | `services/platform/integrity/` | Data integrity & audit trails |
 | **Evolutionary Computation** | 8006 | `services/core/evolutionary-computation/` | WINA optimization & oversight |
 """
-        
+
         # Insert service ports section if it doesn't exist
         if "### Core Services" not in content:
             # Find a good place to insert it (after main description)
             insertion_point = content.find("## 🏛️ Architecture Overview")
             if insertion_point != -1:
-                content = content[:insertion_point] + service_ports + "\n" + content[insertion_point:]
-        
-        with open(readme_file, 'w') as f:
+                content = (
+                    content[:insertion_point]
+                    + service_ports
+                    + "\n"
+                    + content[insertion_point:]
+                )
+
+        with open(readme_file, "w") as f:
             f.write(content)
-        
+
         logger.info("✅ Updated main README.md")
         return True
 
     def update_service_readmes(self):
         """Update README files in service directories"""
         logger.info("Updating service README files...")
-        
+
         service_dirs = [
             "services/core/constitutional-ai",
             "services/core/governance-synthesis",
-            "services/core/policy-governance", 
+            "services/core/policy-governance",
             "services/core/formal-verification",
             "services/platform/authentication",
             "services/platform/integrity",
-            "services/shared"
+            "services/shared",
         ]
-        
+
         updated_count = 0
         for service_dir in service_dirs:
             service_path = self.project_root / service_dir
             readme_files = list(service_path.glob("**/README.md"))
-            
+
             for readme_file in readme_files:
                 try:
-                    with open(readme_file, 'r') as f:
+                    with open(readme_file, "r") as f:
                         content = f.read()
-                    
+
                     # Update path references
                     for old_path, new_path in self.path_mappings.items():
                         content = content.replace(old_path, new_path)
-                    
+
                     # Update relative paths to shared services
                     content = content.replace("../shared", "../../shared")
                     content = content.replace("../../shared/shared", "../../shared")
-                    
-                    with open(readme_file, 'w') as f:
+
+                    with open(readme_file, "w") as f:
                         f.write(content)
-                    
+
                     updated_count += 1
-                    logger.info(f"✅ Updated {readme_file.relative_to(self.project_root)}")
-                    
+                    logger.info(
+                        f"✅ Updated {readme_file.relative_to(self.project_root)}"
+                    )
+
                 except Exception as e:
                     logger.warning(f"Failed to update {readme_file}: {e}")
-        
+
         logger.info(f"✅ Updated {updated_count} service README files")
         return updated_count > 0
 
     def update_api_documentation(self):
         """Update API documentation"""
         logger.info("Updating API documentation...")
-        
+
         api_docs_dir = self.project_root / "docs/api"
         if not api_docs_dir.exists():
             logger.warning("API docs directory not found")
             return False
-        
+
         api_files = list(api_docs_dir.glob("**/*.md"))
         updated_count = 0
-        
+
         for api_file in api_files:
             try:
-                with open(api_file, 'r') as f:
+                with open(api_file, "r") as f:
                     content = f.read()
-                
+
                 # Update service endpoint references
                 endpoint_mappings = {
                     "localhost:8001": "localhost:8001  # Constitutional AI Service",
-                    "localhost:8002": "localhost:8002  # Governance Synthesis Service", 
+                    "localhost:8002": "localhost:8002  # Governance Synthesis Service",
                     "localhost:8003": "localhost:8003  # Policy Governance Service",
                     "localhost:8004": "localhost:8004  # Formal Verification Service",
                     "localhost:8005": "localhost:8005  # Integrity Service",
                     "localhost:8006": "localhost:8006  # Evolutionary Computation Service",
                 }
-                
+
                 for old_endpoint, new_endpoint in endpoint_mappings.items():
                     if old_endpoint in content and "# " not in content:
                         content = content.replace(old_endpoint, new_endpoint)
-                
+
                 # Update path references
                 for old_path, new_path in self.path_mappings.items():
                     content = content.replace(old_path, new_path)
-                
-                with open(api_file, 'w') as f:
+
+                with open(api_file, "w") as f:
                     f.write(content)
-                
+
                 updated_count += 1
                 logger.info(f"✅ Updated {api_file.relative_to(self.project_root)}")
-                
+
             except Exception as e:
                 logger.warning(f"Failed to update {api_file}: {e}")
-        
+
         logger.info(f"✅ Updated {updated_count} API documentation files")
         return updated_count > 0
 
     def update_deployment_guides(self):
         """Update deployment documentation"""
         logger.info("Updating deployment guides...")
-        
+
         deployment_docs_dir = self.project_root / "docs/deployment"
         if not deployment_docs_dir.exists():
             logger.warning("Deployment docs directory not found")
             return False
-        
+
         deployment_files = list(deployment_docs_dir.glob("**/*.md"))
         updated_count = 0
-        
+
         for deploy_file in deployment_files:
             try:
-                with open(deploy_file, 'r') as f:
+                with open(deploy_file, "r") as f:
                     content = f.read()
-                
+
                 # Update Docker Compose references
                 content = content.replace(
                     "docker-compose -f docker-compose.yml",
-                    "docker-compose -f infrastructure/docker/docker-compose.yml"
+                    "docker-compose -f infrastructure/docker/docker-compose.yml",
                 )
-                
+
                 # Update service build contexts
-                content = content.replace(
-                    "./src/backend/",
-                    "./services/"
-                )
-                
+                content = content.replace("./src/backend/", "./services/")
+
                 # Update Quantumagi deployment references
                 content = content.replace(
-                    "quantumagi_core/deploy",
-                    "blockchain/quantumagi-deployment/deploy"
+                    "quantumagi_core/deploy", "blockchain/quantumagi-deployment/deploy"
                 )
-                
+
                 # Update path references
                 for old_path, new_path in self.path_mappings.items():
                     content = content.replace(old_path, new_path)
-                
-                with open(deploy_file, 'w') as f:
+
+                with open(deploy_file, "w") as f:
                     f.write(content)
-                
+
                 updated_count += 1
                 logger.info(f"✅ Updated {deploy_file.relative_to(self.project_root)}")
-                
+
             except Exception as e:
                 logger.warning(f"Failed to update {deploy_file}: {e}")
-        
+
         logger.info(f"✅ Updated {updated_count} deployment guide files")
         return updated_count > 0
 
     def update_developer_guides(self):
         """Update developer setup and workflow documentation"""
         logger.info("Updating developer guides...")
-        
+
         dev_docs_dir = self.project_root / "docs/development"
         if not dev_docs_dir.exists():
             logger.warning("Development docs directory not found")
             return False
-        
+
         dev_files = list(dev_docs_dir.glob("**/*.md"))
         updated_count = 0
-        
+
         for dev_file in dev_files:
             try:
-                with open(dev_file, 'r') as f:
+                with open(dev_file, "r") as f:
                     content = f.read()
-                
+
                 # Update development workflow instructions
                 workflow_updates = {
                     "cd src/backend/": "cd services/core/ # or services/platform/",
@@ -242,30 +248,30 @@ class DocumentationUpdater:
                     "from src.backend": "from services",
                     "import src.backend": "import services",
                 }
-                
+
                 for old_workflow, new_workflow in workflow_updates.items():
                     content = content.replace(old_workflow, new_workflow)
-                
+
                 # Update path references
                 for old_path, new_path in self.path_mappings.items():
                     content = content.replace(old_path, new_path)
-                
-                with open(dev_file, 'w') as f:
+
+                with open(dev_file, "w") as f:
                     f.write(content)
-                
+
                 updated_count += 1
                 logger.info(f"✅ Updated {dev_file.relative_to(self.project_root)}")
-                
+
             except Exception as e:
                 logger.warning(f"Failed to update {dev_file}: {e}")
-        
+
         logger.info(f"✅ Updated {updated_count} developer guide files")
         return updated_count > 0
 
     def create_architecture_overview(self):
         """Create updated architecture overview documentation"""
         logger.info("Creating architecture overview...")
-        
+
         architecture_content = """# ACGS-1 Architecture Overview
 
 ## Blockchain-Focused Directory Structure
@@ -383,20 +389,20 @@ graph TB
 
 This architecture ensures scalability, maintainability, and clear separation of blockchain and off-chain components while maintaining constitutional governance principles.
 """
-        
+
         arch_file = self.project_root / "docs/architecture/REORGANIZED_ARCHITECTURE.md"
         arch_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(arch_file, 'w') as f:
+
+        with open(arch_file, "w") as f:
             f.write(architecture_content)
-        
+
         logger.info("✅ Created architecture overview documentation")
         return True
 
     def run_documentation_updates(self):
         """Execute all documentation updates"""
         logger.info("Starting documentation structure updates...")
-        
+
         try:
             results = {
                 "main_readme": self.update_main_readme(),
@@ -404,22 +410,25 @@ This architecture ensures scalability, maintainability, and clear separation of 
                 "api_documentation": self.update_api_documentation(),
                 "deployment_guides": self.update_deployment_guides(),
                 "developer_guides": self.update_developer_guides(),
-                "architecture_overview": self.create_architecture_overview()
+                "architecture_overview": self.create_architecture_overview(),
             }
-            
+
             success_count = sum(1 for result in results.values() if result)
             total_count = len(results)
-            
+
             if success_count == total_count:
                 logger.info("✅ All documentation updates completed successfully!")
             else:
-                logger.warning(f"⚠️ {success_count}/{total_count} documentation updates completed")
-            
+                logger.warning(
+                    f"⚠️ {success_count}/{total_count} documentation updates completed"
+                )
+
             return success_count == total_count
-            
+
         except Exception as e:
             logger.error(f"Documentation update failed: {e}")
             return False
+
 
 if __name__ == "__main__":
     updater = DocumentationUpdater()

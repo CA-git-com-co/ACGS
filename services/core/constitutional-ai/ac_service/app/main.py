@@ -1,4 +1,3 @@
-
 """
 ACGS-1 Phase 3: Production-Grade Constitutional AI Service
 
@@ -32,18 +31,20 @@ from datetime import datetime, timedelta
 # Configure enhanced logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler('/tmp/ac_service.log', mode='a')
-    ]
+        logging.FileHandler("/tmp/ac_service.log", mode="a"),
+    ],
 )
 logger = logging.getLogger(__name__)
 
 # Import enhanced services and algorithms
 try:
     from app.services.formal_verification_client import FormalVerificationClient
-    from app.services.constitutional_compliance_engine import ConstitutionalComplianceEngine
+    from app.services.constitutional_compliance_engine import (
+        ConstitutionalComplianceEngine,
+    )
     from app.services.violation_detection_service import ViolationDetectionService
     from app.services.audit_logging_service import AuditLoggingService
     from app.core.compliance_algorithms import AdvancedComplianceAlgorithms
@@ -51,7 +52,9 @@ try:
     ENHANCED_SERVICES_AVAILABLE = True
     logger.info("Enhanced constitutional compliance services imported successfully")
 except ImportError as e:
-    logger.warning(f"Enhanced services not available: {e}. Running with basic compliance.")
+    logger.warning(
+        f"Enhanced services not available: {e}. Running with basic compliance."
+    )
     ENHANCED_SERVICES_AVAILABLE = False
 
 # Global service instances
@@ -59,6 +62,7 @@ compliance_engine: Optional[Any] = None
 violation_detector: Optional[Any] = None
 audit_logger: Optional[Any] = None
 fv_client: Optional[Any] = None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -94,6 +98,7 @@ async def lifespan(app: FastAPI):
     finally:
         logger.info("🔄 Shutting down AC service")
 
+
 # Create FastAPI application with enhanced configuration
 app = FastAPI(
     title="ACGS-1 Production Constitutional AI Service",
@@ -102,7 +107,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Add security middleware
@@ -115,8 +120,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
-    expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"]
+    expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"],
 )
+
 
 @app.middleware("http")
 async def add_process_time_header(request, call_next):
@@ -132,6 +138,7 @@ async def add_process_time_header(request, call_next):
 
     return response
 
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
     """Global exception handler for production error management."""
@@ -141,10 +148,11 @@ async def global_exception_handler(request, exc):
         content={
             "error": "Internal server error",
             "message": "An unexpected error occurred in constitutional validation",
-            "request_id": getattr(request.state, 'request_id', 'unknown'),
-            "service": "ac_service_production"
-        }
+            "request_id": getattr(request.state, "request_id", "unknown"),
+            "service": "ac_service_production",
+        },
     )
+
 
 @app.get("/")
 async def root():
@@ -161,7 +169,7 @@ async def root():
             "Real-time Violation Detection",
             "Sophisticated Compliance Scoring",
             "Comprehensive Audit Logging",
-            "Constitutional Impact Analysis"
+            "Constitutional Impact Analysis",
         ],
         "enhanced_services": ENHANCED_SERVICES_AVAILABLE,
         "algorithms": [
@@ -169,9 +177,10 @@ async def root():
             "Multi-dimensional Compliance Analysis",
             "Formal Verification Algorithms",
             "Real-time Violation Detection",
-            "Constitutional Impact Assessment"
-        ]
+            "Constitutional Impact Assessment",
+        ],
     }
+
 
 @app.get("/health")
 async def health_check():
@@ -187,13 +196,13 @@ async def health_check():
             "compliance_engine": compliance_engine is not None,
             "violation_detector": violation_detector is not None,
             "audit_logger": audit_logger is not None,
-            "fv_client": fv_client is not None
+            "fv_client": fv_client is not None,
         },
         "performance": {
             "response_time_target": "<100ms for compliance checks",
             "accuracy_target": ">99% constitutional compliance detection",
-            "availability_target": ">99.9%"
-        }
+            "availability_target": ">99.9%",
+        },
     }
 
     # Check service health
@@ -208,6 +217,7 @@ async def health_check():
             health_status["status"] = "degraded"
 
     return health_status
+
 
 @app.get("/api/v1/status")
 async def api_status():
@@ -225,32 +235,33 @@ async def api_status():
             "validation": [
                 "/api/v1/constitutional/validate",
                 "/api/v1/constitutional/validate-advanced",
-                "/api/v1/constitutional/validate-formal"
+                "/api/v1/constitutional/validate-formal",
             ],
             "analysis": [
                 "/api/v1/constitutional/analyze",
                 "/api/v1/constitutional/impact-analysis",
-                "/api/v1/constitutional/compliance-score"
+                "/api/v1/constitutional/compliance-score",
             ],
             "monitoring": [
                 "/api/v1/constitutional/violations",
                 "/api/v1/constitutional/audit-log",
-                "/api/v1/constitutional/performance"
+                "/api/v1/constitutional/performance",
             ],
-            "management": ["/api/v1/constitutional/rules"]
+            "management": ["/api/v1/constitutional/rules"],
         },
         "algorithms": {
             "compliance_scoring": "Multi-dimensional constitutional fidelity analysis",
             "formal_verification": "Integration with FV service for mathematical proofs",
             "violation_detection": "Real-time constitutional violation monitoring",
-            "impact_analysis": "Constitutional impact assessment algorithms"
+            "impact_analysis": "Constitutional impact assessment algorithms",
         },
         "performance_targets": {
             "response_time": "<100ms for compliance checks",
             "accuracy": ">99% constitutional compliance detection",
-            "availability": ">99.9%"
-        }
+            "availability": ">99.9%",
+        },
     }
+
 
 @app.get("/api/v1/constitutional/rules")
 async def get_constitutional_rules():
@@ -267,8 +278,8 @@ async def get_constitutional_rules():
                 "criteria": [
                     "stakeholder_input_required",
                     "voting_mechanism_present",
-                    "transparency_maintained"
-                ]
+                    "transparency_maintained",
+                ],
             },
             {
                 "id": "CONST-002",
@@ -280,8 +291,8 @@ async def get_constitutional_rules():
                 "criteria": [
                     "public_documentation",
                     "audit_trail_maintained",
-                    "decision_rationale_provided"
-                ]
+                    "decision_rationale_provided",
+                ],
             },
             {
                 "id": "CONST-003",
@@ -293,8 +304,8 @@ async def get_constitutional_rules():
                 "criteria": [
                     "constitutional_review_passed",
                     "fundamental_rights_preserved",
-                    "separation_of_powers_respected"
-                ]
+                    "separation_of_powers_respected",
+                ],
             },
             {
                 "id": "CONST-004",
@@ -306,17 +317,18 @@ async def get_constitutional_rules():
                 "criteria": [
                     "responsibility_assignment",
                     "oversight_mechanism",
-                    "remediation_process"
-                ]
-            }
+                    "remediation_process",
+                ],
+            },
         ],
         "meta": {
             "total_rules": 4,
             "active_rules": 4,
             "last_updated": "2025-06-08T07:00:00Z",
-            "version": "1.0.0"
-        }
+            "version": "1.0.0",
+        },
     }
+
 
 # Advanced constitutional compliance algorithms
 def _advanced_democratic_check(policy) -> Dict[str, Any]:
@@ -324,8 +336,14 @@ def _advanced_democratic_check(policy) -> Dict[str, Any]:
     policy_text = str(policy).lower()
 
     democratic_indicators = [
-        "democratic", "participation", "voting", "consensus", "stakeholder",
-        "public consultation", "citizen engagement", "representative"
+        "democratic",
+        "participation",
+        "voting",
+        "consensus",
+        "stakeholder",
+        "public consultation",
+        "citizen engagement",
+        "representative",
     ]
 
     score = sum(1 for indicator in democratic_indicators if indicator in policy_text)
@@ -337,23 +355,34 @@ def _advanced_democratic_check(policy) -> Dict[str, Any]:
         "analysis": {
             "indicators_found": score,
             "total_indicators": len(democratic_indicators),
-            "democratic_score": score / len(democratic_indicators)
+            "democratic_score": score / len(democratic_indicators),
         },
-        "recommendations": [] if score >= 3 else [
-            "Add explicit democratic participation mechanisms",
-            "Include stakeholder consultation processes",
-            "Specify voting or consensus procedures"
-        ],
-        "severity": "high" if score < 2 else "medium" if score < 3 else "low"
+        "recommendations": (
+            []
+            if score >= 3
+            else [
+                "Add explicit democratic participation mechanisms",
+                "Include stakeholder consultation processes",
+                "Specify voting or consensus procedures",
+            ]
+        ),
+        "severity": "high" if score < 2 else "medium" if score < 3 else "low",
     }
+
 
 def _advanced_transparency_check(policy) -> Dict[str, Any]:
     """Advanced transparency requirement analysis."""
     policy_text = str(policy).lower()
 
     transparency_indicators = [
-        "transparent", "audit", "public", "disclosure", "accountability",
-        "reporting", "documentation", "accessible"
+        "transparent",
+        "audit",
+        "public",
+        "disclosure",
+        "accountability",
+        "reporting",
+        "documentation",
+        "accessible",
     ]
 
     score = sum(1 for indicator in transparency_indicators if indicator in policy_text)
@@ -366,26 +395,39 @@ def _advanced_transparency_check(policy) -> Dict[str, Any]:
             "indicators_found": score,
             "transparency_score": score / len(transparency_indicators),
             "audit_mechanisms": "audit" in policy_text,
-            "public_access": "public" in policy_text
+            "public_access": "public" in policy_text,
         },
-        "recommendations": [] if score >= 3 else [
-            "Add transparency requirements",
-            "Include audit mechanisms",
-            "Specify public disclosure procedures"
-        ],
-        "severity": "high" if score < 2 else "medium" if score < 3 else "low"
+        "recommendations": (
+            []
+            if score >= 3
+            else [
+                "Add transparency requirements",
+                "Include audit mechanisms",
+                "Specify public disclosure procedures",
+            ]
+        ),
+        "severity": "high" if score < 2 else "medium" if score < 3 else "low",
     }
+
 
 def _advanced_constitutional_check(policy) -> Dict[str, Any]:
     """Advanced constitutional compliance analysis."""
     policy_text = str(policy).lower()
 
     constitutional_indicators = [
-        "constitutional", "compliance", "legal", "lawful", "legitimate",
-        "authorized", "constitutional review", "legal framework"
+        "constitutional",
+        "compliance",
+        "legal",
+        "lawful",
+        "legitimate",
+        "authorized",
+        "constitutional review",
+        "legal framework",
     ]
 
-    score = sum(1 for indicator in constitutional_indicators if indicator in policy_text)
+    score = sum(
+        1 for indicator in constitutional_indicators if indicator in policy_text
+    )
     confidence = min(0.98, 0.7 + (score * 0.035))
 
     return {
@@ -395,26 +437,39 @@ def _advanced_constitutional_check(policy) -> Dict[str, Any]:
             "indicators_found": score,
             "constitutional_score": score / len(constitutional_indicators),
             "legal_framework": "legal" in policy_text,
-            "review_process": "review" in policy_text
+            "review_process": "review" in policy_text,
         },
-        "recommendations": [] if score >= 2 else [
-            "Add constitutional compliance verification",
-            "Include legal framework references",
-            "Specify constitutional review process"
-        ],
-        "severity": "critical" if score < 1 else "high" if score < 2 else "low"
+        "recommendations": (
+            []
+            if score >= 2
+            else [
+                "Add constitutional compliance verification",
+                "Include legal framework references",
+                "Specify constitutional review process",
+            ]
+        ),
+        "severity": "critical" if score < 1 else "high" if score < 2 else "low",
     }
+
 
 def _advanced_accountability_check(policy) -> Dict[str, Any]:
     """Advanced accountability framework analysis."""
     policy_text = str(policy).lower()
 
     accountability_indicators = [
-        "accountability", "oversight", "responsibility", "monitoring",
-        "enforcement", "remediation", "sanctions", "review"
+        "accountability",
+        "oversight",
+        "responsibility",
+        "monitoring",
+        "enforcement",
+        "remediation",
+        "sanctions",
+        "review",
     ]
 
-    score = sum(1 for indicator in accountability_indicators if indicator in policy_text)
+    score = sum(
+        1 for indicator in accountability_indicators if indicator in policy_text
+    )
     confidence = min(0.92, 0.6 + (score * 0.04))
 
     return {
@@ -424,23 +479,34 @@ def _advanced_accountability_check(policy) -> Dict[str, Any]:
             "indicators_found": score,
             "accountability_score": score / len(accountability_indicators),
             "oversight_mechanisms": "oversight" in policy_text,
-            "enforcement_provisions": "enforcement" in policy_text
+            "enforcement_provisions": "enforcement" in policy_text,
         },
-        "recommendations": [] if score >= 3 else [
-            "Add accountability mechanisms",
-            "Include oversight procedures",
-            "Specify enforcement measures"
-        ],
-        "severity": "high" if score < 2 else "medium" if score < 3 else "low"
+        "recommendations": (
+            []
+            if score >= 3
+            else [
+                "Add accountability mechanisms",
+                "Include oversight procedures",
+                "Specify enforcement measures",
+            ]
+        ),
+        "severity": "high" if score < 2 else "medium" if score < 3 else "low",
     }
+
 
 def _advanced_rights_check(policy) -> Dict[str, Any]:
     """Advanced rights protection analysis."""
     policy_text = str(policy).lower()
 
     rights_indicators = [
-        "rights", "protection", "privacy", "freedom", "liberty",
-        "due process", "fair treatment", "non-discrimination"
+        "rights",
+        "protection",
+        "privacy",
+        "freedom",
+        "liberty",
+        "due process",
+        "fair treatment",
+        "non-discrimination",
     ]
 
     score = sum(1 for indicator in rights_indicators if indicator in policy_text)
@@ -453,15 +519,20 @@ def _advanced_rights_check(policy) -> Dict[str, Any]:
             "indicators_found": score,
             "rights_score": score / len(rights_indicators),
             "privacy_protection": "privacy" in policy_text,
-            "due_process": "due process" in policy_text
+            "due_process": "due process" in policy_text,
         },
-        "recommendations": [] if score >= 2 else [
-            "Add rights protection provisions",
-            "Include privacy safeguards",
-            "Specify due process procedures"
-        ],
-        "severity": "critical" if score < 1 else "high" if score < 2 else "low"
+        "recommendations": (
+            []
+            if score >= 2
+            else [
+                "Add rights protection provisions",
+                "Include privacy safeguards",
+                "Specify due process procedures",
+            ]
+        ),
+        "severity": "critical" if score < 1 else "high" if score < 2 else "low",
     }
+
 
 def _calculate_average_severity(validation_results) -> str:
     """Calculate average severity across all validation results."""
@@ -470,7 +541,9 @@ def _calculate_average_severity(validation_results) -> str:
     if not validation_results:
         return "unknown"
 
-    total_weight = sum(severity_weights.get(r.get("severity", "medium"), 2) for r in validation_results)
+    total_weight = sum(
+        severity_weights.get(r.get("severity", "medium"), 2) for r in validation_results
+    )
     average_weight = total_weight / len(validation_results)
 
     if average_weight <= 1.5:
@@ -482,22 +555,29 @@ def _calculate_average_severity(validation_results) -> str:
     else:
         return "critical"
 
+
 @app.post("/api/v1/constitutional/validate")
 async def validate_constitutional_compliance(request: Dict[str, Any]):
     """Enhanced constitutional compliance validation with sophisticated algorithms."""
     start_time = time.time()
 
     policy = request.get("policy", {})
-    rules_to_check = request.get("rules", ["CONST-001", "CONST-002", "CONST-003", "CONST-004", "CONST-005"])
+    rules_to_check = request.get(
+        "rules", ["CONST-001", "CONST-002", "CONST-003", "CONST-004", "CONST-005"]
+    )
     validation_level = request.get("level", "comprehensive")
     enable_formal_verification = request.get("enable_formal_verification", False)
 
-    validation_id = f"VAL-{int(time.time())}-{hashlib.md5(str(policy).encode()).hexdigest()[:8]}"
+    validation_id = (
+        f"VAL-{int(time.time())}-{hashlib.md5(str(policy).encode()).hexdigest()[:8]}"
+    )
 
     # Log audit trail
     if audit_logger:
         try:
-            await audit_logger.log_validation_request(validation_id, policy, rules_to_check, validation_level)
+            await audit_logger.log_validation_request(
+                validation_id, policy, rules_to_check, validation_level
+            )
         except Exception as e:
             logger.warning(f"Audit logging failed: {e}")
 
@@ -513,36 +593,36 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
             "algorithm": "multi_dimensional_analysis",
             "check": _advanced_democratic_check,
             "weight": 0.20,
-            "formal_verification": True
+            "formal_verification": True,
         },
         "CONST-002": {
             "name": "Transparency Requirement",
             "algorithm": "transparency_scoring",
             "check": _advanced_transparency_check,
             "weight": 0.20,
-            "formal_verification": True
+            "formal_verification": True,
         },
         "CONST-003": {
             "name": "Constitutional Compliance",
             "algorithm": "constitutional_fidelity_analysis",
             "check": _advanced_constitutional_check,
             "weight": 0.25,
-            "formal_verification": True
+            "formal_verification": True,
         },
         "CONST-004": {
             "name": "Accountability Framework",
             "algorithm": "accountability_assessment",
             "check": _advanced_accountability_check,
             "weight": 0.20,
-            "formal_verification": False
+            "formal_verification": False,
         },
         "CONST-005": {
             "name": "Rights Protection",
             "algorithm": "rights_preservation_analysis",
             "check": _advanced_rights_check,
             "weight": 0.15,
-            "formal_verification": True
-        }
+            "formal_verification": True,
+        },
     }
 
     # Perform enhanced validation
@@ -566,7 +646,7 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
                 "detailed_analysis": detailed_analysis,
                 "recommendations": compliance_result.get("recommendations", []),
                 "severity": compliance_result.get("severity", "medium"),
-                "formal_verification_eligible": rule_info["formal_verification"]
+                "formal_verification_eligible": rule_info["formal_verification"],
             }
 
             if not is_compliant:
@@ -575,7 +655,9 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
                 # Real-time violation detection
                 if violation_detector:
                     try:
-                        await violation_detector.detect_violation(validation_id, rule_id, compliance_check)
+                        await violation_detector.detect_violation(
+                            validation_id, rule_id, compliance_check
+                        )
                     except Exception as e:
                         logger.warning(f"Violation detection failed: {e}")
 
@@ -585,8 +667,10 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
     # Formal verification integration if requested and available
     if enable_formal_verification and fv_client and overall_compliant:
         try:
-            formal_verification_results = await fv_client.verify_constitutional_compliance(
-                policy, validation_results
+            formal_verification_results = (
+                await fv_client.verify_constitutional_compliance(
+                    policy, validation_results
+                )
             )
         except Exception as e:
             logger.warning(f"Formal verification failed: {e}")
@@ -605,21 +689,33 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
             "total_rules_checked": len(validation_results),
             "rules_passed": sum(1 for r in validation_results if r["compliant"]),
             "rules_failed": sum(1 for r in validation_results if not r["compliant"]),
-            "overall_confidence": round(sum(r["confidence"] for r in validation_results) / len(validation_results), 4) if validation_results else 0,
-            "average_severity": _calculate_average_severity(validation_results)
+            "overall_confidence": (
+                round(
+                    sum(r["confidence"] for r in validation_results)
+                    / len(validation_results),
+                    4,
+                )
+                if validation_results
+                else 0
+            ),
+            "average_severity": _calculate_average_severity(validation_results),
         },
-        "next_steps": [
-            "Review failed rule compliance",
-            "Implement recommended changes",
-            "Re-validate after modifications",
-            "Consider formal verification"
-        ] if not overall_compliant else [
-            "Proceed to policy governance compliance check",
-            "Submit for stakeholder review",
-            "Consider production deployment"
-        ],
+        "next_steps": (
+            [
+                "Review failed rule compliance",
+                "Implement recommended changes",
+                "Re-validate after modifications",
+                "Consider formal verification",
+            ]
+            if not overall_compliant
+            else [
+                "Proceed to policy governance compliance check",
+                "Submit for stakeholder review",
+                "Consider production deployment",
+            ]
+        ),
         "timestamp": time.time(),
-        "processing_time_ms": round(processing_time, 2)
+        "processing_time_ms": round(processing_time, 2),
     }
 
     # Log audit trail
@@ -631,6 +727,7 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
 
     return result
 
+
 @app.post("/api/v1/constitutional/validate-advanced")
 async def validate_constitutional_compliance_advanced(request: Dict[str, Any]):
     """Advanced constitutional validation with formal verification and comprehensive analysis."""
@@ -640,7 +737,7 @@ async def validate_constitutional_compliance_advanced(request: Dict[str, Any]):
     enhanced_request = {
         **request,
         "enable_formal_verification": True,
-        "level": "comprehensive"
+        "level": "comprehensive",
     }
 
     # Get base validation results
@@ -648,10 +745,12 @@ async def validate_constitutional_compliance_advanced(request: Dict[str, Any]):
 
     # Add advanced analysis
     advanced_analysis = {
-        "constitutional_fidelity_score": _calculate_constitutional_fidelity(base_result),
+        "constitutional_fidelity_score": _calculate_constitutional_fidelity(
+            base_result
+        ),
         "risk_assessment": _assess_constitutional_risk(base_result),
         "compliance_trends": _analyze_compliance_trends(base_result),
-        "stakeholder_impact": _assess_stakeholder_impact(request.get("policy", {}))
+        "stakeholder_impact": _assess_stakeholder_impact(request.get("policy", {})),
     }
 
     processing_time = (time.time() - start_time) * 1000
@@ -660,8 +759,9 @@ async def validate_constitutional_compliance_advanced(request: Dict[str, Any]):
         **base_result,
         "advanced_analysis": advanced_analysis,
         "validation_type": "advanced",
-        "total_processing_time_ms": round(processing_time, 2)
+        "total_processing_time_ms": round(processing_time, 2),
     }
+
 
 @app.post("/api/v1/constitutional/compliance-score")
 async def calculate_compliance_score(request: Dict[str, Any]):
@@ -680,11 +780,11 @@ async def calculate_compliance_score(request: Dict[str, Any]):
             "transparency": 0.0,
             "constitutional_adherence": 0.0,
             "accountability": 0.0,
-            "rights_protection": 0.0
+            "rights_protection": 0.0,
         },
         "score_breakdown": [],
         "improvement_potential": 0.0,
-        "confidence_interval": [0.0, 1.0]
+        "confidence_interval": [0.0, 1.0],
     }
 
     # Calculate dimensional scores
@@ -703,23 +803,28 @@ async def calculate_compliance_score(request: Dict[str, Any]):
         elif rule_id == "CONST-005":
             detailed_score["dimensional_scores"]["rights_protection"] = score
 
-        detailed_score["score_breakdown"].append({
-            "dimension": result["rule_name"],
-            "score": score,
-            "weight": result["weight"],
-            "confidence": result["confidence"]
-        })
+        detailed_score["score_breakdown"].append(
+            {
+                "dimension": result["rule_name"],
+                "score": score,
+                "weight": result["weight"],
+                "confidence": result["confidence"],
+            }
+        )
 
     # Calculate improvement potential
     max_possible_score = sum(r["weight"] for r in validation_result["results"])
-    detailed_score["improvement_potential"] = max_possible_score - detailed_score["overall_score"]
+    detailed_score["improvement_potential"] = (
+        max_possible_score - detailed_score["overall_score"]
+    )
 
     return {
         "policy_id": policy.get("policy_id", "unknown"),
         "detailed_score": detailed_score,
         "validation_summary": validation_result["summary"],
-        "timestamp": time.time()
+        "timestamp": time.time(),
     }
+
 
 def _calculate_constitutional_fidelity(validation_result) -> float:
     """Calculate constitutional fidelity score."""
@@ -733,6 +838,7 @@ def _calculate_constitutional_fidelity(validation_result) -> float:
         fv_factor = 1.0
 
     return round(base_score * confidence_factor * fv_factor, 4)
+
 
 def _assess_constitutional_risk(validation_result) -> Dict[str, Any]:
     """Assess constitutional risk based on validation results."""
@@ -749,26 +855,38 @@ def _assess_constitutional_risk(validation_result) -> Dict[str, Any]:
     return {
         "risk_level": risk_level,
         "risk_score": failed_rules / total_rules if total_rules > 0 else 0,
-        "critical_violations": sum(1 for r in validation_result["results"]
-                                 if not r["compliant"] and r.get("severity") == "critical"),
-        "mitigation_required": failed_rules > 0
+        "critical_violations": sum(
+            1
+            for r in validation_result["results"]
+            if not r["compliant"] and r.get("severity") == "critical"
+        ),
+        "mitigation_required": failed_rules > 0,
     }
+
 
 def _analyze_compliance_trends(validation_result) -> Dict[str, Any]:
     """Analyze compliance trends (simplified for demo)."""
     return {
         "trend": "stable",
-        "improvement_areas": [r["rule_name"] for r in validation_result["results"] if not r["compliant"]],
-        "strong_areas": [r["rule_name"] for r in validation_result["results"] if r["compliant"] and r["confidence"] > 0.9]
+        "improvement_areas": [
+            r["rule_name"] for r in validation_result["results"] if not r["compliant"]
+        ],
+        "strong_areas": [
+            r["rule_name"]
+            for r in validation_result["results"]
+            if r["compliant"] and r["confidence"] > 0.9
+        ],
     }
+
 
 def _assess_stakeholder_impact(policy) -> Dict[str, Any]:
     """Assess stakeholder impact (simplified for demo)."""
     return {
         "affected_stakeholders": ["citizens", "government", "organizations"],
         "impact_level": "medium",
-        "consultation_required": True
+        "consultation_required": True,
     }
+
 
 @app.post("/api/v1/constitutional/analyze")
 async def analyze_constitutional_impact(request: Dict[str, Any]):
@@ -784,13 +902,13 @@ async def analyze_constitutional_impact(request: Dict[str, Any]):
         "risk_assessment": {
             "overall_risk": "low",
             "risk_factors": [],
-            "mitigation_strategies": []
+            "mitigation_strategies": [],
         },
         "recommendations": [
             "Conduct stakeholder consultation",
             "Implement gradual rollout",
-            "Monitor constitutional compliance metrics"
-        ]
+            "Monitor constitutional compliance metrics",
+        ],
     }
 
     # Simulate constitutional impact analysis
@@ -801,12 +919,14 @@ async def analyze_constitutional_impact(request: Dict[str, Any]):
             "constitutional_domains_affected": ["democratic_process", "transparency"],
             "impact_severity": "medium",
             "compliance_risk": "low",
-            "required_safeguards": ["oversight_review", "public_consultation"]
+            "required_safeguards": ["oversight_review", "public_consultation"],
         }
         impact_analysis["constitutional_impacts"].append(impact)
 
     return impact_analysis
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8001)

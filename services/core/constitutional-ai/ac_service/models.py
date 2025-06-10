@@ -6,7 +6,7 @@ from services.shared.models import (
     ACAmendmentVote,
     ACAmendmentComment,
     ACConflictResolution,
-    User
+    User,
 )
 
 # Re-export models for use in this service
@@ -17,5 +17,5 @@ __all__ = [
     "ACAmendmentVote",
     "ACAmendmentComment",
     "ACConflictResolution",
-    "User"
+    "User",
 ]
