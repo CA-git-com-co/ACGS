@@ -128,7 +128,7 @@ app.add_middleware(
 async def add_process_time_header(request, call_next):
     """Add response time tracking and request ID."""
     start_time = time.time()
-    request_id = hashlib.md5(f"{time.time()}{request.url}".encode()).hexdigest()[:8]
+    request_id = hashlib.sha256(f"{time.time()}{request.url}".encode()).hexdigest()[:8]
 
     response = await call_next(request)
     process_time = time.time() - start_time

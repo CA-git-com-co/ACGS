@@ -25,6 +25,9 @@
     "ts-mocha": "^10.1.0",
     "typescript": "^4.9.5"
   },
+  "overrides": {
+    "serialize-javascript": ">=6.0.2"
+  },
   "keywords": [
     "solana",
     "blockchain",

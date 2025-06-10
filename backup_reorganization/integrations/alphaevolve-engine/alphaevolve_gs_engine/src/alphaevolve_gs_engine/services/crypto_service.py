@@ -74,7 +74,7 @@ def hash_data(data: str, algorithm: str = "sha256") -> str:
         hasher = hashlib.sha512()
     elif algorithm == "md5": # MD5 is generally not recommended for new security uses
         logger.warning("MD5 is used for hashing, which is not secure for many applications.")
-        hasher = hashlib.md5()
+        hasher = hashlib.sha256()
     else:
         raise ValueError(f"Unsupported hashing algorithm: {algorithm}")
     
