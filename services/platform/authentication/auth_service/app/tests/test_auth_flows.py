@@ -5,7 +5,7 @@ from fastapi import status
 import uuid
 
 from ..core.config import settings # For API prefixes
-from shared.schemas.user import UserCreate # For type hinting if needed, though client sends JSON
+from services.shared.schemas.user import UserCreate # For type hinting if needed, though client sends JSON
 from ..core import security # For direct calls if needed for test setup, e.g. password hashing
 
 # Pytest marker for async tests
@@ -127,7 +127,7 @@ async def test_login_inactive_user(client: AsyncClient):
     # For a full integration test, one might directly manipulate the DB here if using a test DB session.
     # from sqlalchemy.ext.asyncio import AsyncSession
     # from app.api.v1.deps import get_db # This would be the overridden one
-    # from shared.models import User as UserModel
+    # from services.shared.models import User as UserModel
     # from sqlalchemy import update
     # async for db_session in fastapi_app.dependency_overrides[get_db](): # Get the overridden session
     #     await db_session.execute(update(UserModel).where(UserModel.id == user_id).values(is_active=False))

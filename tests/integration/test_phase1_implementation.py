@@ -26,7 +26,7 @@ async def test_enhanced_principle_management():
     try:
         # Import the enhanced schemas and models
         from backend.ac_service.app import schemas
-        from backend.shared.models import Principle
+        from services.shared.models import Principle
         
         # Test enhanced principle schema
         print("✓ Testing enhanced principle schema...")

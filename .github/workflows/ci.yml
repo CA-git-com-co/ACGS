@@ -353,7 +353,7 @@ jobs:
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.python_changed == 'true'
     strategy:
       matrix:
-        service: ['ec_service']  # Only build services that actually exist
+        service: ['evolutionary-computation']  # Only build services that actually exist
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -382,8 +382,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: src/backend/${{ matrix.service }}
-          file: src/backend/${{ matrix.service }}/Dockerfile
+          context: services/core/${{ matrix.service }}
+          file: services/core/${{ matrix.service }}/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

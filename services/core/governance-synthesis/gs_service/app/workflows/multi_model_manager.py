@@ -57,7 +57,7 @@ try:
 except ImportError:
     NVIDIA_API_AVAILABLE = False
 
-from shared.langgraph_config import (
+from services.shared.langgraph_config import (
     get_langgraph_config,
     ModelRole,
     PolicySynthesisConfig

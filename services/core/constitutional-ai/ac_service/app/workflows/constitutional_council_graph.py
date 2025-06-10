@@ -36,13 +36,13 @@ except ImportError:
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field, ValidationError
 
-from shared.langgraph_states import (
+from services.shared.langgraph_states import (
     ConstitutionalCouncilState,
     WorkflowStatus,
     create_workflow_metadata,
     update_workflow_status
 )
-from shared.langgraph_config import (
+from services.shared.langgraph_config import (
     get_langgraph_config,
     ConstitutionalCouncilConfig,
     ModelRole

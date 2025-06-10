@@ -1,0 +1,35 @@
+applications:
+- governance-dashboard
+- constitutional-council
+- public-consultation
+- admin-panel
+blockchain:
+  deployment_artifacts: blockchain/quantumagi-deployment/
+  programs:
+  - quantumagi-core
+  - appeals
+  - logging
+docker_contexts:
+  applications: applications/
+  blockchain: blockchain/
+  services: services/
+services:
+  core:
+  - constitutional-ai
+  - governance-synthesis
+  - policy-governance
+  - formal-verification
+  platform:
+  - authentication
+  - integrity
+  - workflow
+  research:
+  - federated-evaluation
+  - research-platform
+structure: blockchain-focused
+test_paths:
+  e2e: tests/e2e/
+  integration: tests/integration/
+  performance: tests/performance/
+  unit: tests/unit/
+version: '2.0'

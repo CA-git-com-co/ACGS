@@ -26,7 +26,7 @@ from app.services.stakeholder_engagement import (
     NotificationChannel,
     StakeholderRole
 )
-from shared.langgraph_config import ConstitutionalCouncilConfig
+from services.shared.langgraph_config import ConstitutionalCouncilConfig
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

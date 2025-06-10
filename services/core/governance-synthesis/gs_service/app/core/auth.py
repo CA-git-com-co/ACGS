@@ -17,4 +17,4 @@ require_synthesis_triggerer = RoleChecker(allowed_roles=["gs_admin", "internal_s
 get_current_user_placeholder = get_current_user_from_token
 get_current_active_user_placeholder = get_current_active_user
 
-# Role checkers are imported from shared.auth above
+# Role checkers are imported from services.shared.auth above

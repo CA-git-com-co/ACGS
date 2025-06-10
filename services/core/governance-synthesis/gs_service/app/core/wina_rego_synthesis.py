@@ -25,11 +25,11 @@ from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
 
 # Import WINA components
-from shared.wina import WINACore, WINAConfig, WINAIntegrationConfig
-from shared.wina.model_integration import WINAModelIntegrator, WINAOptimizationResult
-from shared.wina.config import load_wina_config_from_env
-from shared.wina.exceptions import WINAError, WINAOptimizationError
-from shared.wina.metrics import WINAMetrics
+from services.shared.wina import WINACore, WINAConfig, WINAIntegrationConfig
+from services.shared.wina.model_integration import WINAModelIntegrator, WINAOptimizationResult
+from services.shared.wina.config import load_wina_config_from_env
+from services.shared.wina.exceptions import WINAError, WINAOptimizationError
+from services.shared.wina.metrics import WINAMetrics
 
 # Import GS Engine components
 from .wina_llm_integration import WINAOptimizedLLMClient, WINAOptimizedSynthesisResult

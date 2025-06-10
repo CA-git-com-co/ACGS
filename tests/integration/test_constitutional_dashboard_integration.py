@@ -26,7 +26,7 @@ try:
         ReportType,
         ReportFormat
     )
-    from shared.metrics import get_metrics
+    from services.shared.metrics import get_metrics
 except ImportError:
     # Mock implementations for testing when modules are not available
     from unittest.mock import MagicMock

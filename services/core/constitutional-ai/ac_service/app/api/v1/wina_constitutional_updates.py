@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.database import get_async_db
-from shared.wina.constitutional_integration import (
+from services.shared.wina.constitutional_integration import (
     WINAConstitutionalPrincipleAnalyzer,
     WINAConstitutionalUpdateService,
     ConstitutionalPrincipleUpdate

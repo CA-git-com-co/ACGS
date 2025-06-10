@@ -29,7 +29,7 @@ from app.workflows.structured_output_models import (
     ModelSpecializationConfig
 )
 from app.workflows.multi_model_manager import get_multi_model_manager
-from shared.langgraph_config import ModelRole
+from services.shared.langgraph_config import ModelRole
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

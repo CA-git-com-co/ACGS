@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements_staging.txt
 COPY pgc_service/ ./
 
 # Set Python path to include shared module
-ENV PYTHONPATH="/app:/app/shared:$PYTHONPATH"
+ENV PYTHONPATH="/app:/app/services/shared:$PYTHONPATH"
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash acgs

@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir -r requirements_simple.txt
 COPY . /app
 
 # Set Python path to include shared module
-ENV PYTHONPATH="/app:/app/shared:$PYTHONPATH"
+ENV PYTHONPATH="/app:/app/services/shared:$PYTHONPATH"
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash acgs

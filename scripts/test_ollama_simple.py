@@ -66,7 +66,7 @@ async def test_multi_model_manager():
     
     try:
         from gs_service.app.workflows.multi_model_manager import MultiModelManager
-        from shared.langgraph_config import ModelRole
+        from services.shared.langgraph_config import ModelRole
         
         print("1. Initializing MultiModelManager...")
         manager = MultiModelManager()

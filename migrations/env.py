@@ -39,12 +39,12 @@ try:
     from services.shared import models # This import is crucial to ensure models are registered
 
     target_metadata = SharedBase.metadata
-    print(f"Successfully imported Base.metadata from src.backend.shared.database. Number of tables: {len(target_metadata.tables)}")
+    print(f"Successfully imported Base.metadata from services.shared.database. Number of tables: {len(target_metadata.tables)}")
     table_names = list(target_metadata.tables.keys())
     print(f"Tables found in src.backend.shared.models.Base.metadata: {table_names}")
 
 except ImportError as e:
-    print(f"Error: Could not import Base or models from src.backend.shared package: {e}")
+    print(f"Error: Could not import Base or models from services.shared package: {e}")
     print(f"Current working directory: {os.getcwd()}")
     print(f"Python path: {sys.path}")
     # Fallback to empty metadata if import fails, to allow some Alembic commands to run
@@ -71,7 +71,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# target_metadata should now be correctly set from shared.database.Base.metadata
+# target_metadata should now be correctly set from services.shared.database.Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

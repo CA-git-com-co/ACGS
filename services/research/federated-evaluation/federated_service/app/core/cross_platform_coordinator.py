@@ -22,7 +22,7 @@ from .cross_platform_adapters import (
 )
 from .secure_aggregation import SecureAggregator, AggregationMethod
 from .federated_evaluator import FederatedNode
-from shared.metrics import get_metrics
+from services.shared.metrics import get_metrics
 from shared import get_config
 
 logger = logging.getLogger(__name__)

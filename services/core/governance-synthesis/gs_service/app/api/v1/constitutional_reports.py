@@ -22,7 +22,7 @@ from pydantic import BaseModel, Field
 from services.shared.database import get_async_db
 from services.shared.auth import get_current_active_user, require_admin
 from services.shared.models import User
-from shared.metrics import get_metrics
+from services.shared.metrics import get_metrics
 
 from app.services.constitutional_reporting_service import (
     ConstitutionalReportingService,

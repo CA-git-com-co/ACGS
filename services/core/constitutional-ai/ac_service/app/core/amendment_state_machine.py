@@ -15,8 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, update
 from sqlalchemy.exc import SQLAlchemyError
 
-# from shared.redis_client import get_redis_client
-from shared.metrics import get_metrics
+# from services.shared.redis_client import get_redis_client
+from services.shared.metrics import get_metrics
 
 logger = logging.getLogger(__name__)
 

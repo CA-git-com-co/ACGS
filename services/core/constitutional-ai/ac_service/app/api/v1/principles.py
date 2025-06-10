@@ -159,7 +159,7 @@ async def validate_constitutional_endpoint(
     try:
         # Import caching components
         from app.services.advanced_cache import MultiTierCache, LRUCache, RedisCache, CACHE_TTL_POLICIES
-        from shared.redis_client import ACGSRedisClient
+        from services.shared.redis_client import ACGSRedisClient
         import hashlib
         import json
         import time

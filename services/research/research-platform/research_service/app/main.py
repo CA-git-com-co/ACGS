@@ -26,8 +26,8 @@ from .services.experiment_tracker import ExperimentTracker
 from .services.research_automation import ResearchAutomationService
 
 # Import security middleware
-from shared.security_middleware import add_security_middleware
-from shared.security_config import security_config
+from services.shared.security_middleware import add_security_middleware
+from services.shared.security_config import security_config
 
 # Configure logging
 logging.basicConfig(

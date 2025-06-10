@@ -120,7 +120,7 @@ jobs:
     if: needs.pre-deployment-checks.outputs.should_deploy == 'true'
     strategy:
       matrix:
-        service: ['ec_service']  # Only include services that actually exist
+        service: ['evolutionary-computation']  # Only include services that actually exist
     steps:
       - name: Check out repository
         uses: actions/checkout@v4

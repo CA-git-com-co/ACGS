@@ -1,0 +1,127 @@
+{
+  "timestamp": "2025-06-09 22:59:43",
+  "tests": {
+    "anchor_programs": {
+      "success": false,
+      "output": "Deploying cluster: https://api.devnet.solana.com\nUpgrade authority: /home/dislove/.config/solana/id.json\nDeploying program \"quantumagi_core\"...\nProgram path: /home/dislove/ACGS-1/blockchain/target/deploy/quantumagi_core.so...\nThere was a problem deploying: Output { status: ExitStatus(unix_wait_status(256)), stdout: \"\", stderr: \"\" }.\n",
+      "errors": "    Finished release [optimized] target(s) in 0.16s\n    Finished release [optimized] target(s) in 0.10s\n    Finished release [optimized] target(s) in 0.10s\n==========================================================================\nRecover the intermediate account's ephemeral keypair file with\n`solana-keygen recover` and the following 12-word seed phrase:\n==========================================================================\nindoor current tilt awesome debate board acid general spot candy icon tilt\n==========================================================================\nTo resume a deploy, pass the recovered keypair as the\n[BUFFER_SIGNER] to `solana program deploy` or `solana program write-buffer'.\nOr to recover the account's lamports, pass it as the\n[BUFFER_ACCOUNT_ADDRESS] argument to `solana program close`.\n==========================================================================\nError: Account 7iKRdG8szp2VUCZDKG4mNeYqo8stQHdoZWfHWY35RZgG has insufficient funds for spend (2.0412636 SOL) + fee (0.00147 SOL)\n"
+    },
+    "python_unit": {
+      "success": false,
+      "output": "",
+      "errors": "/home/dislove/ACGS-1/.venv/lib/python3.12/site-packages/pytest_postgresql/executor.py:31: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n  from pkg_resources import parse_version\nImportError while loading conftest '/home/dislove/ACGS-1/tests/unit/conftest.py'.\ntests/unit/conftest.py:37: in <module>\n    async_test_engine = create_async_engine(TEST_DB_URL, echo=False)\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/engine.py:120: in create_async_engine\n    sync_engine = _create_engine(url, **kw)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.12/site-packages/sqlalchemy/util/deprecations.py:281: in warned\n    return fn(*args, **kwargs)  # type: ignore[no-any-return]\n           ^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py:602: in create_engine\n    dbapi = dbapi_meth(**dbapi_args)\n            ^^^^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.12/site-packages/sqlalchemy/dialects/sqlite/aiosqlite.py:376: in import_dbapi\n    __import__(\"aiosqlite\"), __import__(\"sqlite3\")\n    ^^^^^^^^^^^^^^^^^^^^^^^\nE   ModuleNotFoundError: No module named 'aiosqlite'\n"
+    },
+    "integration": {
+      "success": false,
+      "output": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-8.4.0, pluggy-1.6.0 -- /home/dislove/ACGS-1/.venv/bin/python\ncachedir: .pytest_cache\nmetadata: {'Python': '3.12.3', 'Platform': 'Linux-6.8.0-60-generic-x86_64-with-glibc2.39', 'Packages': {'pytest': '8.4.0', 'pluggy': '1.6.0'}, 'Plugins': {'mock': '3.14.1', 'sugar': '0.9.7', 'requests-mock': '1.11.0', 'metadata': '3.1.1', 'cov': '4.1.0', 'alembic': '0.12.1', 'xdist': '3.3.1', 'hypothesis': '6.88.1', 'clarity': '1.0.1', 'Faker': '20.1.0', 'html': '4.1.1', 'timeout': '2.4.0', 'trio': '0.8.0', 'postgresql': '5.0.0', 'json-report': '1.5.0', 'pyfakefs': '5.8.0', 'benchmark': '5.1.0', 'asyncio': '0.21.1', 'anyio': '4.9.0', 'pytest_httpserver': '1.1.3'}}\nhypothesis profile 'default' -> database=DirectoryBasedExampleDatabase(PosixPath('/home/dislove/ACGS-1/.hypothesis/examples'))\nbenchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /home/dislove/ACGS-1\nconfigfile: pytest.ini\nplugins: mock-3.14.1, sugar-0.9.7, requests-mock-1.11.0, metadata-3.1.1, cov-4.1.0, alembic-0.12.1, xdist-3.3.1, hypothesis-6.88.1, clarity-1.0.1, Faker-20.1.0, html-4.1.1, timeout-2.4.0, trio-0.8.0, postgresql-5.0.0, json-report-1.5.0, pyfakefs-5.8.0, benchmark-5.1.0, asyncio-0.21.1, anyio-4.9.0, pytest_httpserver-1.1.3\nasyncio: mode=Mode.STRICT\ncollecting ... collected 171 items / 5 errors / 20 skipped\n\n==================================== ERRORS ====================================\n___ ERROR collecting tests/integration/test_alphaevolve_advanced_features.py ___\ntests/integration/test_alphaevolve_advanced_features.py:219: in <module>\n    class MockCollectiveConstitutionalAI(CollectiveConstitutionalAI):\n                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   NameError: name 'CollectiveConstitutionalAI' is not defined\n------------------------------- Captured stdout --------------------------------\nWarning: Could not import CollectiveConstitutionalAI: No module named 'services.core.constitutional_ai'\n_ ERROR collecting tests/integration/test_constitutional_council_workflows.py __\nImportError while importing test module '/home/dislove/ACGS-1/tests/integration/test_constitutional_council_workflows.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/integration/test_constitutional_council_workflows.py:31: in <module>\n    import websockets\nE   ModuleNotFoundError: No module named 'websockets'\n____ ERROR collecting tests/integration/test_enhanced_dependency_mocking.py ____\nImportError while importing test module '/home/dislove/ACGS-1/tests/integration/test_enhanced_dependency_mocking.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/integration/test_enhanced_dependency_mocking.py:18: in <module>\n    from mock_services import (\nE   ModuleNotFoundError: No module named 'mock_services'\n_ ERROR collecting tests/integration/test_federated_evaluation_communication.py _\nImportError while importing test module '/home/dislove/ACGS-1/tests/integration/test_federated_evaluation_communication.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/integration/test_federated_evaluation_communication.py:7: in <module>\n    import grpc\nE   ModuleNotFoundError: No module named 'grpc'\n_ ERROR collecting tests/integration/test_qec_error_correction_integration.py __\nImportError while importing test module '/home/dislove/ACGS-1/tests/integration/test_qec_error_correction_integration.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/integration/test_qec_error_correction_integration.py:42: in <module>\n    from services.shared.models import ConstitutionalPrinciple, Policy, User\nE   ImportError: cannot import name 'ConstitutionalPrinciple' from 'services.shared.models' (/home/dislove/ACGS-1/services/shared/models/__init__.py)\n=============================== warnings summary ===============================\n.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:323\n  /home/dislove/ACGS-1/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:323: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/\n    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)\n\n.venv/lib/python3.12/site-packages/_hypothesis_pytestplugin.py:417\n  /home/dislove/ACGS-1/.venv/lib/python3.12/site-packages/_hypothesis_pytestplugin.py:417: PytestRemovedIn9Warning: Marks applied to fixtures have no effect\n  See docs: https://docs.pytest.org/en/stable/deprecations.html#applying-a-mark-to-a-fixture-function\n    return _orig_call(self, function)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/integration/test_alphaevolve_advanced_features.py - NameError: na...\nERROR tests/integration/test_constitutional_council_workflows.py\nERROR tests/integration/test_enhanced_dependency_mocking.py\nERROR tests/integration/test_federated_evaluation_communication.py\nERROR tests/integration/test_qec_error_correction_integration.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 5 errors during collection !!!!!!!!!!!!!!!!!!!!\n================== 20 skipped, 2 warnings, 5 errors in 1.02s ===================\n",
+      "errors": "/home/dislove/ACGS-1/.venv/lib/python3.12/site-packages/pytest_postgresql/executor.py:31: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n  from pkg_resources import parse_version\n"
+    }
+  },
+  "performance": {
+    "service_health": {
+      "governance-synthesis": {
+        "service": "governance-synthesis",
+        "healthy": false,
+        "error": "HTTPConnectionPool(host='localhost', port=8002): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x739787e72c90>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+        "response_time": null
+      },
+      "constitutional-ai": {
+        "service": "constitutional-ai",
+        "healthy": false,
+        "error": "HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x739787e72360>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+        "response_time": null
+      },
+      "policy-governance": {
+        "service": "policy-governance",
+        "healthy": false,
+        "error": "HTTPConnectionPool(host='localhost', port=8003): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x739787e735c0>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+        "response_time": null
+      },
+      "formal-verification": {
+        "service": "formal-verification",
+        "healthy": false,
+        "error": "HTTPConnectionPool(host='localhost', port=8004): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x739785c642c0>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+        "response_time": null
+      },
+      "evolutionary-computation": {
+        "service": "evolutionary-computation",
+        "healthy": true,
+        "response_time": 0.002631,
+        "status_code": 200
+      },
+      "authentication": {
+        "service": "authentication",
+        "healthy": true,
+        "response_time": 0.031721,
+        "status_code": 200
+      },
+      "integrity": {
+        "service": "integrity",
+        "healthy": true,
+        "response_time": 0.112152,
+        "status_code": 200
+      }
+    },
+    "summary": {
+      "healthy_services": 3,
+      "total_services": 7,
+      "availability_percentage": 42.857142857142854,
+      "average_response_time": 0.048834666666666665,
+      "meets_availability_target": false,
+      "meets_response_time_target": true
+    }
+  },
+  "governance_workflows": {
+    "Policy Creation": {
+      "validated": true,
+      "note": "Basic validation - endpoints accessible"
+    },
+    "Constitutional Compliance": {
+      "validated": true,
+      "note": "Basic validation - endpoints accessible"
+    },
+    "Policy Enforcement": {
+      "validated": true,
+      "note": "Basic validation - endpoints accessible"
+    },
+    "WINA Oversight": {
+      "validated": true,
+      "note": "Basic validation - endpoints accessible"
+    },
+    "Audit & Transparency": {
+      "validated": true,
+      "note": "Basic validation - endpoints accessible"
+    }
+  },
+  "blockchain": {
+    "solana_connection": {
+      "success": true,
+      "output": "2.2.15"
+    },
+    "deployment_verification": {
+      "success": false,
+      "output": "\ud83d\udd0d QUANTUMAGI DEPLOYMENT STATUS VERIFICATION\n=============================================\n\n\ud83d\udccb Network Configuration:\nConfig File: /home/dislove/.config/solana/cli/config.yml\nRPC URL: https://api.devnet.solana.com \nWebSocket URL: wss://api.devnet.solana.com/ (computed)\nKeypair Path: /home/dislove/.config/solana/id.json \nCommitment: confirmed \n\n\ud83d\udcb0 Current SOL Balance:\n1.03771936 SOL\n\n\ud83d\udd0d Program Deployment Status:\n------------------------------\n1. Quantumagi Core Program:\n   \u2705 DEPLOYED: 8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4\n   \ud83d\udcca Program Info:\n      \n      Program Id: 8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4\n      Owner: BPFLoaderUpgradeab1e11111111111111111111111\n      ProgramData Address: 39wCnQABRHRwAxZ8Aieiys6gWv5eVcYJQdv2SYov9cRw\n      Authority: 7iKRdG8szp2VUCZDKG4mNeYqo8stQHdoZWfHWY35RZgG\n\n2. Appeals Program:\n   \u2705 DEPLOYED: CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ\n   \ud83d\udcca Program Info:\n      \n      Program Id: CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ\n      Owner: BPFLoaderUpgradeab1e11111111111111111111111\n      ProgramData Address: HmPtLaaVzZaCjXBBi7d3YacEgQtQm6sbCTFnpRxkzc8H\n      Authority: 7iKRdG8szp2VUCZDKG4mNeYqo8stQHdoZWfHWY35RZgG\n\n3. Logging Program:\n   \u23f3 PENDING DEPLOYMENT: 4rEgetuUsuf3PEDcPCpKH4ndjbfnCReRbmdiEKMkMUxo\n      Status: Ready for deployment (requires ~2.1 SOL)\n\n\ud83d\udcc4 Constitution & Governance Status:\n------------------------------------\n\u2705 Constitution Data: Found\n   \ud83d\udccb Hash: cdd01ef066bc6cf2\n   \ud83d\udd22 Version: 1.0.0\n\u2705 Initial Policies: Found\n   \ud83d\udcca Policy Count: 3\n\u2705 Governance Accounts: Configured\n\n\ud83e\uddea Test Results Status:\n-----------------------\n\u2705 End-to-End Tests: Completed\n   \ud83d\udcc4 Latest Report: quantumagi_demo_report_20250607_182457.json\n   \ud83d\udcca Policies Created: 3\n   \ud83d\udd0d Compliance Checks: 5\n   \u2696\ufe0f  Appeals Processed: 1\n\n\ud83d\udcca DEPLOYMENT SUMMARY:\n======================\n",
+      "errors": ""
+    },
+    "programs": {
+      "quantumagi_core": {
+        "success": true,
+        "program_id": "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4",
+        "deployed": true
+      },
+      "appeals_program": {
+        "success": true,
+        "program_id": "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ",
+        "deployed": true
+      }
+    }
+  },
+  "overall_success": false,
+  "summary": {
+    "test_success": false,
+    "performance_success": false,
+    "blockchain_success": true,
+    "governance_success": true,
+    "overall_success": false
+  }
+}

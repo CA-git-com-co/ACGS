@@ -22,7 +22,7 @@ from abc import ABC, abstractmethod
 
 # Core dependencies
 from services.shared.database import get_async_db
-from shared.redis_client import get_redis_client
+from services.shared.redis_client import get_redis_client
 
 logger = logging.getLogger(__name__)
 

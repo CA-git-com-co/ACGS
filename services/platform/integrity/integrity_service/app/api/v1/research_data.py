@@ -14,7 +14,7 @@ from sqlalchemy import select, and_
 from pydantic import BaseModel, Field
 
 from app.database import get_async_db
-# from shared.models import ResearchDataExport
+# from services.shared.models import ResearchDataExport
 # from app.core.auth import require_integrity_admin, require_internal_service, User
 
 # Local auth stubs and model stubs

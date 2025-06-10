@@ -19,7 +19,7 @@ COPY shared/ ./shared/
 COPY app/ ./app/
 
 # Set Python path to include shared modules
-ENV PYTHONPATH=/app/shared:/app:$PYTHONPATH
+ENV PYTHONPATH=/app/services/shared:/app:$PYTHONPATH
 
 # Expose port for federated evaluation service
 EXPOSE 8006

@@ -5,12 +5,12 @@ on:
     branches: [ main, master ]
     paths:
       - 'blockchain/**'
-      - 'quantumagi_core/**'
+      - 
   pull_request:
     branches: [ main, master ]
     paths:
       - 'blockchain/**'
-      - 'quantumagi_core/**'
+      - 
 
 permissions:
   contents: read
@@ -28,7 +28,7 @@ jobs:
     name: Anchor Program Tests
     strategy:
       matrix:
-        project: ['blockchain', 'quantumagi_core']
+        project: ['blockchain']
     steps:
       - name: Check out repository
         uses: actions/checkout@v4

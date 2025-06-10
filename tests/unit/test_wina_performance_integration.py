@@ -19,7 +19,7 @@ import os
 try:
     from ec_service.app.main import app, get_wina_coordinator, get_wina_performance_collector
     from ec_service.app.core.wina_oversight_coordinator import WINAECOversightCoordinator
-    from shared.wina.performance_monitoring import (
+    from services.shared.wina.performance_monitoring import (
         WINAPerformanceCollector,
         WINAMonitoringLevel,
         WINAComponentType,
@@ -29,7 +29,7 @@ try:
         WINASystemHealthMetrics,
         WINAIntegrationPerformanceMetrics
     )
-    from shared.wina.performance_api import set_collector_getter
+    from services.shared.wina.performance_api import set_collector_getter
     WINA_AVAILABLE = True
 except ImportError:
     WINA_AVAILABLE = False

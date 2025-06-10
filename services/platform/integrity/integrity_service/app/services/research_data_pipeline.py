@@ -18,7 +18,7 @@ from enum import Enum
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, func
 
-# from shared.models import (
+# from services.shared.models import (
 #     CrossDomainTestResult, DomainContext, Principle, ResearchDataExport
 # )
 
