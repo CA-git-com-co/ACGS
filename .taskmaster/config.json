@@ -1,0 +1,53 @@
+{
+  "models": {
+    "main": {
+      "provider": "Anthropic",
+      "modelId": "claude-4-sonet-20250514",
+      "maxTokens": 64000,
+      "temperature": 0.2
+    },
+    "research": {
+      "provider": "google",
+      "modelId": "google/gemini-2.5-pro-preview-06-05",
+      "maxTokens": 64000,
+      "temperature": 0.1
+    },
+    "fallback": {
+      "provider": "google",
+      "modelId": "google/gemini-2.5-flash-preview-05-20",
+      "maxTokens": 64000,
+      "temperature": 0.2
+    }
+  },
+  "global": {
+    "logLevel": "info",
+    "debug": false,
+    "defaultSubtasks": 5,
+    "defaultPriority": "medium",
+    "projectName": "Task Master",
+    "ollamaBaseURL": "http://localhost:11434/api",
+    "ollamaBaseUrl": "http://localhost:11434/api",
+    "userId": "1234567890"
+  },
+  "mcpServers": {
+    "task-master-ai": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "--package=task-master-ai",
+        "task-master-ai"
+      ],
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "PERPLEXITY_API_KEY": "${PERPLEXITY_API_KEY}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
+        "XAI_API_KEY": "${XAI_API_KEY}",
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+        "MISTRAL_API_KEY": "${MISTRAL_API_KEY}",
+        "AZURE_OPENAI_API_KEY": "${AZURE_OPENAI_API_KEY}",
+        "OLLAMA_API_KEY": "${OLLAMA_API_KEY}"
+      }
+    }
+  }
+}
