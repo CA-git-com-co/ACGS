@@ -14,9 +14,34 @@ from ...core import security
 from ...core.config import settings
 from . import deps # Assuming deps.get_db is correctly defined for AsyncSession
 from ...crud import crud_refresh_token, crud_user # crud_refresh_token was created earlier
-from services.shared.models import User # RefreshToken model not directly used here, but in crud
-from shared.schemas.token import Token # Token schema now includes refresh_token
-from shared.schemas.user import UserCreate, UserInDB
+from ...models import User # RefreshToken model not directly used here, but in crud
+# Create simple schemas locally since shared ones are not available
+from pydantic import BaseModel
+from typing import Optional
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    refresh_token: Optional[str] = None
+
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    password: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+
+class UserInDB(BaseModel):
+    id: int
+    username: str
+    email: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    is_active: bool
+    is_superuser: bool
+
+    class Config:
+        from_attributes = True
 
 router = APIRouter()
 

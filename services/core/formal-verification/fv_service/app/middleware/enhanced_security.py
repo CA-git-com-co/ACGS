@@ -86,3 +86,7 @@ class EnhancedSecurityMiddleware:
                 return allowed_methods
         
         return ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+
+def add_enhanced_security_middleware(app):
+    """Add enhanced security middleware to FastAPI app."""
+    app.middleware("http")(EnhancedSecurityMiddleware(app))

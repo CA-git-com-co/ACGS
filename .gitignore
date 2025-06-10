@@ -203,3 +203,8 @@ ACGS.zip
 **/config/**/credentials/
 **/.secrets/
 **/.credentials/
+
+# Task Master configuration with potential API keys
+.taskmaster/config.json
+.taskmaster/logs/
+.taskmaster/cache/

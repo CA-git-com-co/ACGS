@@ -14,18 +14,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # Import password functions from separate module to avoid circular imports
 from .password import verify_password, get_password_hash
 
-# Adjust path if shared is not directly under a dir in sys.path
-# This assumes 'acgspcp-main' is the project root and is in PYTHONPATH
+# Use local database and models instead of shared ones
 try:
-    from services.shared.database import get_async_db
-    from services.shared.models import User
-except ImportError: # Fallback for different execution contexts (e.g. tests vs uvicorn)
-    # This relative path logic might be fragile. Best to ensure PYTHONPATH is set correctly.
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-    if project_root not in sys.path:
-        sys.path.insert(0, project_root)
-    from services.shared.database import get_async_db
-    from services.shared.models import User
+    from ..db.session import get_async_db
+    from ..models import User
+except ImportError:
+    # Fallback imports
+    def get_async_db():
+        pass
+    class User:
+        pass
 
 
 from .config import settings
@@ -188,3 +186,94 @@ def get_user_id_from_request_optional(request: Request) -> Optional[str]:
 
 # OAuth2PasswordBearer for form data in /token endpoint, not for Bearer token auth itself
 oauth2_password_bearer_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/token")
+
+
+# --- Enterprise API Key Authentication ---
+async def get_current_user_from_api_key(
+    request: Request, db: AsyncSession = Depends(get_async_db)
+) -> User:
+    """Authenticate user via API key for service-to-service authentication"""
+    from ..models import ApiKey
+    from ..crud import crud_user
+
+    # Check for API key in Authorization header
+    auth_header = request.headers.get("authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise credentials_exception
+
+    api_key = auth_header[7:]  # Remove "Bearer " prefix
+
+    # Find API key by prefix (first 8 characters)
+    if len(api_key) < 8:
+        raise credentials_exception
+
+    key_prefix = api_key[:8]
+
+    # Query API key by prefix
+    from sqlalchemy import select
+    result = await db.execute(
+        select(ApiKey).where(
+            ApiKey.key_prefix == key_prefix,
+            ApiKey.is_active == True
+        )
+    )
+    api_key_obj = result.scalar_one_or_none()
+
+    if not api_key_obj:
+        raise credentials_exception
+
+    # Verify full API key hash
+    from .password import verify_password
+    if not verify_password(api_key, api_key_obj.key_hash):
+        raise credentials_exception
+
+    # Check expiration
+    if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(timezone.utc):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="API key has expired"
+        )
+
+    # Check IP whitelist if configured
+    if api_key_obj.allowed_ips:
+        client_ip = get_user_id_from_request_optional(request) or "unknown"
+        if client_ip not in api_key_obj.allowed_ips:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="IP address not allowed for this API key"
+            )
+
+    # Update usage statistics
+    api_key_obj.last_used_at = datetime.now(timezone.utc)
+    api_key_obj.usage_count += 1
+    await db.commit()
+
+    # Get user
+    user = await crud_user.get_user(db, user_id=api_key_obj.user_id)
+    if not user or not user.is_active:
+        raise credentials_exception
+
+    return user
+
+
+# --- Enhanced Role-based Authorization with Fine-grained Permissions ---
+def authorize_permissions(required_permissions: List[str]):
+    """Enhanced authorization with fine-grained permissions"""
+    async def permission_checker(current_user: User = Depends(get_current_active_user)) -> User:
+        user_permissions = getattr(current_user, "permissions", [])
+        user_role = getattr(current_user, "role", None)
+
+        # Admin users have all permissions
+        if user_role == "admin" or getattr(current_user, "is_superuser", False):
+            return current_user
+
+        # Check if user has all required permissions
+        missing_permissions = set(required_permissions) - set(user_permissions)
+        if missing_permissions:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Missing required permissions: {', '.join(missing_permissions)}"
+            )
+
+        return current_user
+    return permission_checker

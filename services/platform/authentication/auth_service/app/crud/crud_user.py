@@ -1,8 +1,27 @@
 from typing import Any, Dict, List, Optional, Union
 
 from ..core.password import get_password_hash, verify_password  # Import from password module to avoid circular imports
-from services.shared.models import User
-from shared.schemas.user import UserCreate, UserUpdate
+from ..models import User
+# Create simple schemas locally since shared ones are not available
+from pydantic import BaseModel
+from typing import Optional
+
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    password: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    full_name: Optional[str] = None
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    full_name: Optional[str] = None
+    is_active: Optional[bool] = None
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
