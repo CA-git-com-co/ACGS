@@ -1,8 +1,10 @@
 # ACGS-1: AI Compliance Governance System
 
 [![Build Status](https://github.com/CA-git-com-co/ACGS/workflows/CI/badge.svg)](https://github.com/CA-git-com-co/ACGS/actions)
+[![Security Scan](https://github.com/CA-git-com-co/ACGS/workflows/Secret%20Scanning%20and%20Security%20Validation/badge.svg)](https://github.com/CA-git-com-co/ACGS/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Solana](https://img.shields.io/badge/Solana-Devnet-purple)](https://explorer.solana.com/?cluster=devnet)
+[![CI/CD Health](https://img.shields.io/badge/CI%2FCD%20Health-100%25-brightgreen)](https://github.com/CA-git-com-co/ACGS/actions)
 
 **AI Compliance Governance System (ACGS)** with **Quantumagi** integration - A comprehensive constitutional AI governance framework deployed on Solana blockchain.
 
@@ -233,6 +235,44 @@ Access monitoring dashboards at:
 - **Zero-knowledge proofs**: Privacy-preserving governance participation
 - **Formal verification**: Mathematical proof of policy correctness
 - **Audit trails**: Comprehensive logging of all governance actions
+- **Automated secret scanning**: 4-tool security validation (detect-secrets, TruffleHog, GitLeaks, Semgrep)
+- **SARIF integration**: Security findings uploaded to GitHub Security tab
+- **Custom ACGS rules**: Constitutional governance and Solana-specific security patterns
+
+## 🔄 CI/CD Pipeline
+
+ACGS-1 features a comprehensive CI/CD pipeline with **100% health score** and enterprise-grade security:
+
+### **Automated Workflows**
+- **🔧 Main CI/CD** (`ci.yml`): Comprehensive testing across Rust, Python, TypeScript, and Docker
+- **⛓️ Solana/Anchor** (`solana-anchor.yml`): Dedicated blockchain program testing and validation
+- **🔒 Security Scanning** (`secret-scanning.yml`): Multi-tool secret detection with custom ACGS rules
+- **🏭 Production Deploy** (`production-deploy.yml`): Blue-green deployment with health checks
+- **🔍 CodeQL Analysis** (`codeql.yml`): Advanced static analysis for multiple languages
+- **🐳 Image Building** (`image-build.yml`): Docker image validation for all services
+- **🛡️ Microsoft Security** (`defender-for-devops.yml`): Microsoft Security DevOps integration
+- **⚙️ Config Validation** (`workflow-config-validation.yml`): Workflow structure validation
+
+### **Security Features**
+- **Multi-tool scanning**: detect-secrets, TruffleHog, GitLeaks, Semgrep
+- **Custom security rules**: ACGS-1 governance secrets, Solana keypairs, constitutional patterns
+- **SARIF reporting**: Automated upload to GitHub Security tab
+- **Daily security scans**: Scheduled comprehensive security validation
+- **Configuration validation**: Automated workflow structure and syntax checking
+
+### **Performance Optimization**
+- **Intelligent caching**: GitHub Actions cache for dependencies and build artifacts
+- **Parallel execution**: Optimized job dependencies for faster builds
+- **Path-based triggers**: Workflows only run when relevant files change
+- **Matrix strategies**: Parallel testing across multiple environments
+- **Conditional execution**: Smart change detection to minimize unnecessary runs
+
+### **Constitutional Governance Integration**
+- **Quantumagi deployment**: Automated Solana devnet deployment validation
+- **Service health checks**: All 7 core services validation (Auth, AC, Integrity, FV, GS, PGC, EC)
+- **Governance workflow testing**: 5 constitutional workflows validation
+- **Blockchain security**: Solana keypair and program security validation
+- **Policy compliance**: Constitutional compliance checking in CI/CD
 
 ## 🌐 Deployment
 

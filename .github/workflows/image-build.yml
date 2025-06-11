@@ -3,7 +3,23 @@
 # These images are NOT pushed to a container registry by this workflow. Image pushing is handled by the main ci.yml workflow.
 name: Docker images
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'services/**'
+      - 'applications/**'
+      - 'integrations/**'
+      - '**/Dockerfile'
+      - '.github/workflows/image-build.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'services/**'
+      - 'applications/**'
+      - 'integrations/**'
+      - '**/Dockerfile'
+      - '.github/workflows/image-build.yml'
 permissions:
   contents: read
 
