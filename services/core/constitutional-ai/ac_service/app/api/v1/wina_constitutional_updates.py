@@ -6,20 +6,20 @@ integrating with the Constitutional Council and AC service for governance workfl
 """
 
 import logging
-from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.database import get_async_db
 from services.shared.wina.constitutional_integration import (
     WINAConstitutionalPrincipleAnalyzer,
     WINAConstitutionalUpdateService,
-    ConstitutionalPrincipleUpdate,
 )
+
 from ...core.auth import require_admin_role, require_constitutional_council_role
-from ...models import User
-from ...schemas import Principle
 from ...crud import get_principle, get_principles
+from ...models import User
 
 logger = logging.getLogger(__name__)
 

@@ -13,16 +13,13 @@ Key Features:
 - Constitutional compliance validation with fidelity scoring
 """
 
-import asyncio
-import json
 import logging
 import time
-import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
 from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 from sklearn.cluster import KMeans

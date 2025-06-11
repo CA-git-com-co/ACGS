@@ -4,13 +4,11 @@ Staging validation script for mimesis upgrade (PR #104)
 Tests data generation functionality before merge
 """
 
-import sys
 import logging
-import time
-from typing import Dict, Any, List
 import subprocess
-import tempfile
-import os
+import sys
+import time
+from typing import Any, Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -40,7 +38,7 @@ class MimesisValidationSuite:
         logger.info("🎲 Testing basic data generation...")
 
         try:
-            from mimesis import Person, Address, Text
+            from mimesis import Address, Person, Text
 
             person = Person()
             address = Address()

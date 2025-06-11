@@ -1,14 +1,14 @@
 # Enterprise API Key Management for Service-to-Service Authentication
 import secrets
-import hashlib
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timezone, timedelta
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
-from fastapi import HTTPException, status
+from datetime import datetime, timedelta, timezone
+from typing import List, Optional
 
-from ..models import ApiKey, User
+from fastapi import HTTPException
+from sqlalchemy import and_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from ..crud import crud_user
+from ..models import ApiKey
 from .password import get_password_hash, verify_password
 
 

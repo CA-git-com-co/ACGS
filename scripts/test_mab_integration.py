@@ -10,10 +10,8 @@ Usage:
 """
 
 import asyncio
-import sys
 import os
-import json
-from datetime import datetime, timezone
+import sys
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
@@ -33,9 +31,9 @@ async def test_mab_prompt_optimizer():
 
     try:
         from gs_service.app.core.mab_prompt_optimizer import (
-            MABPromptOptimizer,
-            MABConfig,
             MABAlgorithm,
+            MABConfig,
+            MABPromptOptimizer,
             PromptTemplate,
         )
 
@@ -95,8 +93,8 @@ async def test_mab_prompt_optimizer():
         # Test reward calculation with mock LLM output
         from gs_service.app.schemas import (
             LLMStructuredOutput,
-            LLMSuggestedRule,
             LLMSuggestedAtom,
+            LLMSuggestedRule,
         )
 
         mock_rule = LLMSuggestedRule(

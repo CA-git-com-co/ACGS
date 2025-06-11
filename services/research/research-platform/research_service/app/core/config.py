@@ -2,11 +2,11 @@
 Configuration settings for Research Infrastructure Service
 """
 
-import os
+from functools import lru_cache
 from typing import List, Optional
+
 from pydantic import Field
 from pydantic_settings import BaseSettings
-from functools import lru_cache
 
 
 class Settings(BaseSettings):

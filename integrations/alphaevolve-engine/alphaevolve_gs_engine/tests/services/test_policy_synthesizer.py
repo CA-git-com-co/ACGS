@@ -5,10 +5,10 @@ This module contains unit tests for the policy synthesis services,
 primarily focusing on the LLMPolicyGenerator.
 """
 
-import unittest
 import os
-import sys
 import re  # For checking prompt/response contents
+import sys
+import unittest
 
 # Adjust import path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -19,20 +19,19 @@ src_path = os.path.join(project_root, "src")
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
 
-from integrations.alphaevolve_engine.services.llm_service import (
-    MockLLMService,
-    get_llm_service,
-    LLMService,
-)
-from integrations.alphaevolve_engine.services.policy_synthesizer import (
-    LLMPolicyGenerator,
-    PolicySynthesisInput,
-    PolicySuggestion,
-)
 from integrations.alphaevolve_engine.core.constitutional_principle import (
     ConstitutionalPrinciple,
 )
 from integrations.alphaevolve_engine.core.operational_rule import OperationalRule
+from integrations.alphaevolve_engine.services.llm_service import (
+    LLMService,
+    MockLLMService,
+)
+from integrations.alphaevolve_engine.services.policy_synthesizer import (
+    LLMPolicyGenerator,
+    PolicySuggestion,
+    PolicySynthesisInput,
+)
 
 
 class TestLLMPolicyGenerator(unittest.TestCase):

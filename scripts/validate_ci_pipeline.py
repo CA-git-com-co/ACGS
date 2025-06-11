@@ -6,12 +6,11 @@ This script validates the GitHub Actions CI/CD pipeline configuration
 and ensures all workflows are properly configured for the project structure.
 """
 
-import os
 import sys
-import yaml
-import json
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict
+
+import yaml
 
 
 class CIPipelineValidator:
@@ -250,7 +249,7 @@ class CIPipelineValidator:
 
         # Validate project structure
         print("\n📁 Validating Project Structure...")
-        structure = self.validate_project_structure()
+        self.validate_project_structure()
 
         # Find all workflow files
         workflow_files = list(self.workflows_dir.glob("*.yml")) + list(

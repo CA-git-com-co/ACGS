@@ -11,11 +11,12 @@ Task 18.3: Structured Output Validation
 - Target constitutional fidelity score >0.85
 """
 
-from typing import Dict, List, Optional, Any, Union
+import re
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field, validator
-import re
 
 
 class PolicyType(str, Enum):

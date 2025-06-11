@@ -1,11 +1,13 @@
 import os
-import httpx
 from typing import List, Optional
-from ..schemas import (
+
+import httpx
+
+from ..schemas import (  # Schemas from gs_service
+    FVPolicyRuleRef,
     FVVerificationRequest,
     FVVerificationResponse,
-    FVPolicyRuleRef,
-)  # Schemas from gs_service
+)
 
 # Load environment variables
 FV_SERVICE_URL = os.getenv(
@@ -71,7 +73,7 @@ fv_service_client = FVServiceClient(base_url=FV_SERVICE_URL)
 
 # Example Usage (for testing this file)
 if __name__ == "__main__":
-    import asyncio
+    pass
 
     async def test_fv_client():
         print(f"Testing FV Client against URL: {FV_SERVICE_URL}")
@@ -80,7 +82,6 @@ if __name__ == "__main__":
 
         # Placeholder token for FV Service (if its placeholder auth expects one)
         # The fv_service placeholder auth uses "internal_caller_token"
-        test_auth_token = "internal_caller_token"
 
         # Example: Request verification for some policy rule IDs
         # rule_ids_to_verify = [1, 2] # Assuming these rule IDs exist in integrity_service

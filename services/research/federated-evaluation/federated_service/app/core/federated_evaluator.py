@@ -9,19 +9,17 @@ Based on Task 6 requirements and AlphaEvolve-ACGS Integration System research.
 """
 
 import asyncio
+import hashlib
 import logging
 import time
-import json
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple, Union
 from dataclasses import dataclass, field
-from enum import Enum
-import hashlib
 from datetime import datetime, timezone
-from abc import ABC, abstractmethod
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import numpy as np
 
 # Core dependencies
-from services.shared.database import get_async_db
 from services.shared.redis_client import get_redis_client
 
 logger = logging.getLogger(__name__)
@@ -114,9 +112,9 @@ class FederatedEvaluator:
         """Initialize the federated evaluator with enhanced multi-node support."""
         try:
             # Import here to avoid circular imports
-            from .secure_aggregation import SecureAggregator
-            from .privacy_metrics import DifferentialPrivacyManager
             from .cross_platform_coordinator import CrossPlatformCoordinator
+            from .privacy_metrics import DifferentialPrivacyManager
+            from .secure_aggregation import SecureAggregator
 
             # Initialize components
             self.secure_aggregator = SecureAggregator()
@@ -515,8 +513,8 @@ class FederatedEvaluator:
         try:
             from services.shared.database import get_async_db
             from services.shared.models import (
-                FederatedEvaluation,
                 EvaluationNodeAssignment,
+                FederatedEvaluation,
             )
 
             async with get_async_db() as db:

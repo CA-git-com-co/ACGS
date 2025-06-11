@@ -7,32 +7,32 @@ enabling uncertainty assessment, human oversight triggering, and feedback proces
 
 import logging
 import time
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.shared.database import get_async_db as get_db
-from ..schemas import (
-    HITLSamplingRequest,
-    HITLSamplingResult,
-    HITLFeedbackRequest,
-    HITLPerformanceMetrics,
-    UncertaintyMetrics,
-)
-from ..services.human_in_the_loop_sampler import (
-    HumanInTheLoopSampler,
-    UncertaintyAssessment,
-)
-from ..services.hitl_cross_service_integration import (
-    HITLCrossServiceIntegrator,
-    CrossServiceConfidenceMetrics,
-)
+from services.shared.auth import get_current_active_user as get_current_user
 from services.shared.auth import (
-    get_current_active_user as get_current_user,
     require_admin,
     require_policy_manager,
 )
+from services.shared.database import get_async_db as get_db
 from services.shared.models import User
+
+from ..schemas import (
+    HITLFeedbackRequest,
+    HITLPerformanceMetrics,
+    HITLSamplingRequest,
+    HITLSamplingResult,
+    UncertaintyMetrics,
+)
+from ..services.hitl_cross_service_integration import (
+    HITLCrossServiceIntegrator,
+)
+from ..services.human_in_the_loop_sampler import (
+    HumanInTheLoopSampler,
+)
 
 logger = logging.getLogger(__name__)
 

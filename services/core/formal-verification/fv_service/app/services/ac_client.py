@@ -1,6 +1,8 @@
 import os
-import httpx
 from typing import List, Optional
+
+import httpx
+
 from ..schemas import ACPrinciple  # Using the schema defined in fv_service
 
 # from services.shared.auth import get_service_token, get_auth_headers
@@ -91,7 +93,7 @@ ac_service_client = ACServiceClient(base_url=AC_SERVICE_URL)
 
 # Example Usage
 if __name__ == "__main__":
-    import asyncio
+    pass
 
     async def test_ac_client_for_fv():
         print(f"Testing AC Client for FV Service against URL: {AC_SERVICE_URL}")

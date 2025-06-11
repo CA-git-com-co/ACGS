@@ -1,4 +1,3 @@
-
 """
 ACGS-1 Phase A3: Production-Grade Security Middleware
 
@@ -15,29 +14,27 @@ Key Features:
 - IP-based blocking for abuse prevention
 """
 
-import asyncio
-import hashlib
-import json
 import logging
 import os
 import re
 import secrets
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 from urllib.parse import unquote
 
 from fastapi import Request, Response, status
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from starlette.middleware.sessions import SessionMiddleware
+from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 
 # Import shared components
 try:
-    from .api_models import create_error_response, ErrorCode
+    from .api_models import ErrorCode, create_error_response
     from .rate_limiting import RateLimiter, SecurityThreatLevel
+
     SHARED_COMPONENTS_AVAILABLE = True
 except ImportError:
     # Fallback for services that don't have shared components yet
@@ -54,10 +51,13 @@ except ImportError:
         HIGH = "high"
         CRITICAL = "critical"
 
+
 logger = logging.getLogger(__name__)
 
 
-def add_security_middleware(app, service_name: str = "acgs_service", redis_url: str = "redis://localhost:6379"):
+def add_security_middleware(
+    app, service_name: str = "acgs_service", redis_url: str = "redis://localhost:6379"
+):
     """
     Add comprehensive production-grade security middleware to FastAPI app.
 
@@ -73,18 +73,18 @@ def add_security_middleware(app, service_name: str = "acgs_service", redis_url: 
         allow_origins=[
             "https://localhost:3000",
             "https://127.0.0.1:3000",
-            "https://*.acgs.local"
+            "https://*.acgs.local",
         ],
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["*"],
-        expose_headers=["X-Request-ID", "X-Correlation-ID", "X-Response-Time"]
+        expose_headers=["X-Request-ID", "X-Correlation-ID", "X-Response-Time"],
     )
 
     # Trusted Host Middleware
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["localhost", "127.0.0.1", "*.acgs.local", "*.acgs.com"]
+        allowed_hosts=["localhost", "127.0.0.1", "*.acgs.local", "*.acgs.com"],
     )
 
     # Session Middleware with secure settings
@@ -93,12 +93,14 @@ def add_security_middleware(app, service_name: str = "acgs_service", redis_url: 
         secret_key=os.environ.get("SESSION_SECRET_KEY", secrets.token_urlsafe(32)),
         max_age=3600,  # 1 hour
         same_site="strict",
-        https_only=True
+        https_only=True,
     )
 
     # Add comprehensive security middleware if components are available
     if SHARED_COMPONENTS_AVAILABLE:
-        app.add_middleware(SecurityMiddleware, service_name=service_name, redis_url=redis_url)
+        app.add_middleware(
+            SecurityMiddleware, service_name=service_name, redis_url=redis_url
+        )
     else:
         # Add basic security headers middleware
         @app.middleware("http")
@@ -109,10 +111,16 @@ def add_security_middleware(app, service_name: str = "acgs_service", redis_url: 
             response.headers["X-Content-Type-Options"] = "nosniff"
             response.headers["X-Frame-Options"] = "DENY"
             response.headers["X-XSS-Protection"] = "1; mode=block"
-            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-            response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+            )
             response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-            response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+            response.headers["Permissions-Policy"] = (
+                "geolocation=(), microphone=(), camera=()"
+            )
 
             return response
 
@@ -162,13 +170,22 @@ class SecurityConfig:
             "multipart/form-data",
             "text/plain",
             "application/pdf",
-            "text/csv"
+            "text/csv",
         }
 
         # Blocked user agents (bots, scanners, etc.)
         self.blocked_user_agents = {
-            "sqlmap", "nikto", "nmap", "masscan", "zap", "burp",
-            "acunetix", "nessus", "openvas", "w3af", "skipfish"
+            "sqlmap",
+            "nikto",
+            "nmap",
+            "masscan",
+            "zap",
+            "burp",
+            "acunetix",
+            "nessus",
+            "openvas",
+            "w3af",
+            "skipfish",
         }
 
         # Suspicious patterns for threat detection
@@ -207,7 +224,7 @@ class SecurityConfig:
                 r"&&\s*(cat|ls|pwd|whoami|id|uname)",
                 r"`.*`",
                 r"\$\(.*\)",
-            ]
+            ],
         }
 
 
@@ -260,7 +277,7 @@ class ThreatDetector:
             "threat_level": threat_level,
             "threats": threats,
             "threat_count": len(threats),
-            "analysis_timestamp": datetime.now(timezone.utc).isoformat()
+            "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def _analyze_url(self, url: str) -> List[Dict[str, Any]]:
@@ -270,24 +287,32 @@ class ThreatDetector:
 
         # Check URL length
         if len(url) > self.config.max_url_length:
-            threats.append({
-                "type": "url_length",
-                "severity": "medium",
-                "description": f"URL length ({len(url)}) exceeds limit",
-                "pattern": f"Length: {len(url)}"
-            })
+            threats.append(
+                {
+                    "type": "url_length",
+                    "severity": "medium",
+                    "description": f"URL length ({len(url)}) exceeds limit",
+                    "pattern": f"Length: {len(url)}",
+                }
+            )
 
         # Check for threat patterns
         for threat_type, patterns in self.compiled_patterns.items():
             for pattern in patterns:
                 if pattern.search(decoded_url):
-                    severity = "high" if threat_type in ["sql_injection", "command_injection"] else "medium"
-                    threats.append({
-                        "type": threat_type,
-                        "severity": severity,
-                        "description": f"Suspicious {threat_type} pattern in URL",
-                        "pattern": pattern.pattern
-                    })
+                    severity = (
+                        "high"
+                        if threat_type in ["sql_injection", "command_injection"]
+                        else "medium"
+                    )
+                    threats.append(
+                        {
+                            "type": threat_type,
+                            "severity": severity,
+                            "description": f"Suspicious {threat_type} pattern in URL",
+                            "pattern": pattern.pattern,
+                        }
+                    )
 
         return threats
 
@@ -298,12 +323,14 @@ class ThreatDetector:
         # Check header size
         total_header_size = sum(len(k) + len(v) for k, v in headers.items())
         if total_header_size > self.config.max_header_size:
-            threats.append({
-                "type": "header_size",
-                "severity": "medium",
-                "description": f"Total header size ({total_header_size}) exceeds limit",
-                "pattern": f"Size: {total_header_size}"
-            })
+            threats.append(
+                {
+                    "type": "header_size",
+                    "severity": "medium",
+                    "description": f"Total header size ({total_header_size}) exceeds limit",
+                    "pattern": f"Size: {total_header_size}",
+                }
+            )
 
         return threats
 
@@ -312,24 +339,28 @@ class ThreatDetector:
         threats = []
 
         if not user_agent:
-            threats.append({
-                "type": "missing_user_agent",
-                "severity": "low",
-                "description": "Missing User-Agent header",
-                "pattern": "empty"
-            })
+            threats.append(
+                {
+                    "type": "missing_user_agent",
+                    "severity": "low",
+                    "description": "Missing User-Agent header",
+                    "pattern": "empty",
+                }
+            )
             return threats
 
         # Check for blocked user agents
         user_agent_lower = user_agent.lower()
         for blocked_agent in self.config.blocked_user_agents:
             if blocked_agent in user_agent_lower:
-                threats.append({
-                    "type": "blocked_user_agent",
-                    "severity": "critical",
-                    "description": f"Blocked user agent detected: {blocked_agent}",
-                    "pattern": blocked_agent
-                })
+                threats.append(
+                    {
+                        "type": "blocked_user_agent",
+                        "severity": "critical",
+                        "description": f"Blocked user agent detected: {blocked_agent}",
+                        "pattern": blocked_agent,
+                    }
+                )
 
         return threats
 
@@ -352,7 +383,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         app,
         service_name: str,
         redis_url: str = "redis://localhost:6379",
-        config: Optional[SecurityConfig] = None
+        config: Optional[SecurityConfig] = None,
     ):
         super().__init__(app)
         self.service_name = service_name
@@ -377,8 +408,8 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         """Main middleware dispatch method."""
         await self._ensure_initialized()
 
-        start_time = time.time()
-        correlation_id = getattr(request.state, 'correlation_id', 'unknown')
+        time.time()
+        correlation_id = getattr(request.state, "correlation_id", "unknown")
 
         try:
             # 1. Request size validation
@@ -399,12 +430,14 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 return self._create_security_error_response(
                     "Request blocked due to security policy",
                     correlation_id,
-                    status.HTTP_403_FORBIDDEN
+                    status.HTTP_403_FORBIDDEN,
                 )
 
             # 3. Rate limiting (if available)
             if self.rate_limiter:
-                rate_limit_allowed, rate_limit_info = await self.rate_limiter.check_rate_limit(request)
+                rate_limit_allowed, rate_limit_info = (
+                    await self.rate_limiter.check_rate_limit(request)
+                )
                 if not rate_limit_allowed:
                     await self._log_security_event(
                         request, "rate_limit_exceeded", rate_limit_info
@@ -432,7 +465,10 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 self._add_rate_limit_headers(response, rate_limit_info)
 
             # 8. Log security events for high threats
-            if threat_analysis["threat_level"] in [SecurityThreatLevel.HIGH, SecurityThreatLevel.MEDIUM]:
+            if threat_analysis["threat_level"] in [
+                SecurityThreatLevel.HIGH,
+                SecurityThreatLevel.MEDIUM,
+            ]:
                 await self._log_security_event(
                     request, "threat_detected", threat_analysis
                 )
@@ -442,12 +478,12 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         except Exception as e:
             logger.error(
                 f"Security middleware error: {e}",
-                extra={"correlation_id": correlation_id}
+                extra={"correlation_id": correlation_id},
             )
             return self._create_security_error_response(
                 "Security processing error",
                 correlation_id,
-                status.HTTP_500_INTERNAL_SERVER_ERROR
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
     async def _validate_request_size(self, request: Request) -> Optional[Response]:
@@ -458,11 +494,11 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             try:
                 size = int(content_length)
                 if size > self.config.max_request_size:
-                    correlation_id = getattr(request.state, 'correlation_id', 'unknown')
+                    correlation_id = getattr(request.state, "correlation_id", "unknown")
                     return self._create_security_error_response(
                         f"Request size ({size} bytes) exceeds limit ({self.config.max_request_size} bytes)",
                         correlation_id,
-                        status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+                        status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
                     )
             except ValueError:
                 pass
@@ -474,11 +510,11 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         content_type = request.headers.get("content-type", "").split(";")[0].strip()
 
         if content_type and content_type not in self.config.allowed_content_types:
-            correlation_id = getattr(request.state, 'correlation_id', 'unknown')
+            correlation_id = getattr(request.state, "correlation_id", "unknown")
             return self._create_security_error_response(
                 f"Content type '{content_type}' not allowed",
                 correlation_id,
-                status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+                status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             )
 
         return None
@@ -488,28 +524,35 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         for header, value in self.config.security_headers.items():
             response.headers[header] = value
 
-    def _add_rate_limit_headers(self, response: Response, rate_limit_info: Dict[str, Any]):
+    def _add_rate_limit_headers(
+        self, response: Response, rate_limit_info: Dict[str, Any]
+    ):
         """Add rate limiting headers to response."""
         if "limit" in rate_limit_info:
             response.headers["X-RateLimit-Limit"] = str(rate_limit_info["limit"])
         if "remaining" in rate_limit_info:
-            response.headers["X-RateLimit-Remaining"] = str(rate_limit_info["remaining"])
+            response.headers["X-RateLimit-Remaining"] = str(
+                rate_limit_info["remaining"]
+            )
         if "reset_time" in rate_limit_info:
-            response.headers["X-RateLimit-Reset"] = str(int(rate_limit_info["reset_time"]))
+            response.headers["X-RateLimit-Reset"] = str(
+                int(rate_limit_info["reset_time"])
+            )
 
     def _create_security_error_response(
-        self,
-        message: str,
-        correlation_id: str,
-        status_code: int
+        self, message: str, correlation_id: str, status_code: int
     ) -> JSONResponse:
         """Create standardized security error response."""
         if SHARED_COMPONENTS_AVAILABLE:
             error_response = create_error_response(
-                error_code=ErrorCode.AUTHORIZATION_ERROR if status_code == 403 else ErrorCode.VALIDATION_ERROR,
+                error_code=(
+                    ErrorCode.AUTHORIZATION_ERROR
+                    if status_code == 403
+                    else ErrorCode.VALIDATION_ERROR
+                ),
                 message=message,
                 service_name=self.service_name,
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
             content = error_response.dict()
         else:
@@ -518,19 +561,17 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 "error": message,
                 "service": self.service_name,
                 "correlation_id": correlation_id,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         return JSONResponse(
             status_code=status_code,
             content=content,
-            headers={"X-Correlation-ID": correlation_id}
+            headers={"X-Correlation-ID": correlation_id},
         )
 
     def _create_rate_limit_error_response(
-        self,
-        rate_limit_info: Dict[str, Any],
-        correlation_id: str
+        self, rate_limit_info: Dict[str, Any], correlation_id: str
     ) -> JSONResponse:
         """Create rate limit error response."""
         retry_after = rate_limit_info.get("reset_time", time.time() + 60) - time.time()
@@ -541,7 +582,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 message="Rate limit exceeded",
                 service_name=self.service_name,
                 details=rate_limit_info,
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
             content = error_response.dict()
         else:
@@ -551,12 +592,12 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 "service": self.service_name,
                 "correlation_id": correlation_id,
                 "details": rate_limit_info,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         headers = {
             "X-Correlation-ID": correlation_id,
-            "Retry-After": str(int(retry_after))
+            "Retry-After": str(int(retry_after)),
         }
 
         if "limit" in rate_limit_info:
@@ -567,14 +608,11 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         return JSONResponse(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             content=content,
-            headers=headers
+            headers=headers,
         )
 
     async def _log_security_event(
-        self,
-        request: Request,
-        event_type: str,
-        details: Dict[str, Any]
+        self, request: Request, event_type: str, details: Dict[str, Any]
     ):
         """Log security events for audit and monitoring."""
         event = {
@@ -585,8 +623,8 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             "user_agent": request.headers.get("user-agent", ""),
             "method": request.method,
             "path": request.url.path,
-            "correlation_id": getattr(request.state, 'correlation_id', 'unknown'),
-            "details": details
+            "correlation_id": getattr(request.state, "correlation_id", "unknown"),
+            "details": details,
         }
 
         # Log to structured logger

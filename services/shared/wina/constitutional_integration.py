@@ -5,12 +5,10 @@ Implements constitutional principle support and governance integration
 for WINA (Weight Informed Neuron Activation) within the ACGS-PGP framework.
 """
 
-import asyncio
 import logging
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
 from datetime import datetime, timezone
-import json
+from typing import Any, Dict, List, Optional
 
 from .config import WINAConfig, WINAIntegrationConfig
 from .exceptions import WINAConstitutionalError

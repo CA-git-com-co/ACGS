@@ -1,16 +1,15 @@
 # Enterprise API Key Management Endpoints
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
 
-from ...core.security import get_current_active_user, authorize_permissions
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from ...core.api_key_manager import api_key_manager
+from ...core.security import authorize_permissions
 from ...core.security_audit import security_audit
-from ...models import User
 from ...db.session import get_async_db
-
+from ...models import User
 
 router = APIRouter()
 
@@ -133,7 +132,7 @@ async def get_api_keys(
         api_keys = await api_key_manager.get_api_keys(db, current_user.id)
         return [ApiKeyResponse(**key) for key in api_keys]
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve API keys",
@@ -161,7 +160,7 @@ async def get_api_key(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve API key",
@@ -343,7 +342,7 @@ async def get_api_key_usage_statistics(
         stats = await api_key_manager.get_usage_statistics(db, current_user.id)
         return ApiKeyUsageResponse(**stats)
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve usage statistics",

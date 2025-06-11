@@ -6,32 +6,27 @@ AlertManager integration, and distributed tracing capabilities.
 """
 
 import asyncio
-import time
-import psutil
 import os
-import httpx
-from typing import Dict, Any, List, Optional, Callable
-from datetime import datetime, timedelta
-from dataclasses import dataclass, asdict
-import json
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from prometheus_client import (
-    Counter,
-    Histogram,
-    Gauge,
-    Summary,
-    Info,
-    CollectorRegistry,
-    generate_latest,
-    CONTENT_TYPE_LATEST,
-)
+import httpx
+import psutil
 import structlog
+from prometheus_client import (
+    CollectorRegistry,
+    Counter,
+    Gauge,
+    Histogram,
+    generate_latest,
+)
 
 from .cache_manager import get_cache_manager
 from .performance_monitor import (
-    get_performance_monitor,
     ERROR_RATE,
     THROUGHPUT,
+    get_performance_monitor,
 )
 
 logger = structlog.get_logger(__name__)

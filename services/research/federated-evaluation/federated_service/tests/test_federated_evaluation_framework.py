@@ -5,18 +5,17 @@ Tests multi-node scaling, Byzantine fault tolerance, MAB integration,
 and constitutional compliance validation.
 """
 
-import pytest
 import asyncio
-import json
 from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock, patch
-from typing import Dict, List, Any
+from unittest.mock import patch
+
+import pytest
 
 # Test imports
 try:
     from ..app.core.federated_evaluator import (
-        FederatedEvaluator,
         EvaluationTask,
+        FederatedEvaluator,
         FederatedNode,
     )
     from ..app.schemas import FederatedEvaluationRequest, PlatformType
@@ -50,14 +49,6 @@ except ImportError:
     class PlatformType:
         CLOUD_OPENAI = "cloud_openai"
         CLOUD_ANTHROPIC = "cloud_anthropic"
-
-
-from services.shared.models import (
-    FederatedEvaluation,
-    FederatedNode as DBFederatedNode,
-    EvaluationNodeResult,
-    SecureAggregationSession,
-)
 
 
 class TestFederatedEvaluationFramework:
@@ -417,19 +408,16 @@ class TestFederatedEvaluationAPI:
         """Test the submit evaluation API endpoint."""
         # This would require FastAPI test client setup
         # Placeholder for API endpoint testing
-        pass
 
     async def test_node_health_endpoint(self):
         """Test the node health status API endpoint."""
         # This would require FastAPI test client setup
         # Placeholder for API endpoint testing
-        pass
 
     async def test_quarantine_node_endpoint(self):
         """Test the quarantine node API endpoint."""
         # This would require FastAPI test client setup
         # Placeholder for API endpoint testing
-        pass
 
 
 if __name__ == "__main__":

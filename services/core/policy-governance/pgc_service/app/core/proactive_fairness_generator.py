@@ -7,14 +7,12 @@ to ensure fairness is built into policies from the ground up.
 Based on AlphaEvolve-ACGS Integration System research paper improvements.
 """
 
-import asyncio
 import logging
-import time
-import json
 import statistics
-from typing import Dict, List, Optional, Any, Tuple, Set
+import time
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any, Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
 

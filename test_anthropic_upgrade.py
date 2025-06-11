@@ -4,14 +4,11 @@ Comprehensive testing suite for anthropic upgrade (PR #107)
 CRITICAL: Do not merge until all tests pass
 """
 
+import logging
 import os
 import sys
-import logging
 import time
-import asyncio
-import json
-from typing import Dict, Any, List
-import subprocess
+from typing import Any, Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -145,7 +142,7 @@ class AnthropicUpgradeValidator:
             # Test import of DGM agent modules
             # sys.path.append('src/dgm-best_swe_agent')  # Removed during reorganization
 
-            from llm import create_client, AVAILABLE_LLMS
+            from llm import AVAILABLE_LLMS, create_client
 
             # Test client creation for Claude models
             claude_models = [model for model in AVAILABLE_LLMS if "claude" in model]

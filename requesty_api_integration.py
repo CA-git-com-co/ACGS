@@ -5,8 +5,8 @@ RequestyAPI Integration for Darwin Gödel Machine
 This module provides a simplified interface for the DGM to interact with the Requesty API.
 """
 
-import os
 from typing import Optional
+
 from requesty_example import RequestyAPIClient
 
 

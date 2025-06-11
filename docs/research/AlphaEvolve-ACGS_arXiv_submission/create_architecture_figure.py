@@ -7,9 +7,7 @@ of the AlphaEvolve-ACGS framework with WINA integration components.
 """
 
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from matplotlib.patches import FancyBboxPatch, ConnectionPatch
-import numpy as np
+from matplotlib.patches import FancyBboxPatch
 
 
 def create_architecture_figure():

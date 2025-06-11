@@ -11,16 +11,15 @@ Production Requirements:
 - Alerting thresholds: 25ms latency, 80% cache hit rate, 85% memory/80% CPU
 """
 
-import asyncio
-import subprocess
-import json
-import os
-import sys
-import time
-from datetime import datetime, timezone
-from typing import Dict, List, Optional
 import argparse
+import asyncio
+import json
 import logging
+import os
+import subprocess
+import sys
+from datetime import datetime, timezone
+
 import psutil
 
 # Configure logging

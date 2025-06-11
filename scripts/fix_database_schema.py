@@ -5,12 +5,12 @@ This script applies the necessary database migrations to resolve foreign key con
 """
 
 import asyncio
-import asyncpg
 import logging
 import os
 import sys
-from pathlib import Path
 from typing import Optional
+
+import asyncpg
 
 # Configure logging
 logging.basicConfig(

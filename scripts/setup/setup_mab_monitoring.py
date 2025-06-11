@@ -13,12 +13,12 @@ Usage:
 """
 
 import asyncio
-import sys
-import os
 import json
-import yaml
-from datetime import datetime, timezone
+import os
+import sys
 from pathlib import Path
+
+import yaml
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))

@@ -11,16 +11,16 @@ Security Targets:
 - Input sanitization testing
 """
 
-import asyncio
-import aiohttp
-import subprocess
-import json
-import sys
-import os
-from datetime import datetime, timezone
-from typing import Dict, List, Tuple, Optional
 import argparse
+import asyncio
+import json
 import logging
+import subprocess
+import sys
+from datetime import datetime, timezone
+from typing import Dict
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(
@@ -302,7 +302,7 @@ class ACGSSecurityValidator:
 
             # Test rate limiting
             try:
-                start_time = asyncio.get_event_loop().time()
+                asyncio.get_event_loop().time()
                 requests_made = 0
                 rate_limited = False
 
@@ -532,7 +532,7 @@ async def main():
         help="Run quick security test (skip some scans)",
     )
 
-    args = parser.parse_args()
+    parser.parse_args()
 
     validator = ACGSSecurityValidator()
     success = await validator.run_security_validation()

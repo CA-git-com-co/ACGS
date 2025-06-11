@@ -5,32 +5,29 @@ This module contains integration tests for the WINA-optimized policy enforcement
 endpoints and their integration with the PGC service infrastructure.
 """
 
-import pytest
-import asyncio
-from unittest.mock import Mock, AsyncMock, patch
-from fastapi.testclient import TestClient
-from datetime import datetime, timedelta
+from unittest.mock import AsyncMock, patch
 
-import sys
-import os
+import pytest
+from fastapi.testclient import TestClient
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))  # Removed during reorganization
 
 try:
-    from services.core.policy_governance.app.main import app
+    from services.core.policy_governance.app import schemas
     from services.core.policy_governance.app.core.wina_enforcement_optimizer import (
-        WINAEnforcementOptimizer,
         EnforcementContext,
         EnforcementStrategy,
-        WINAEnforcementResult,
         WINAEnforcementMetrics,
+        WINAEnforcementOptimizer,
+        WINAEnforcementResult,
     )
-    from services.core.policy_governance.app import schemas
+    from services.core.policy_governance.app.main import app
 except ImportError:
     # Mock implementations for testing when modules are not available
-    from enum import Enum
     from dataclasses import dataclass
-    from typing import Dict, List, Any, Optional
+    from enum import Enum
+    from typing import Any, Dict, List, Optional
+
     from fastapi import FastAPI
 
     app = FastAPI()  # Mock FastAPI app

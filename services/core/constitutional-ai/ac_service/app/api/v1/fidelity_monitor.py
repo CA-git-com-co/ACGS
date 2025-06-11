@@ -3,28 +3,26 @@ Constitutional Fidelity Monitor API endpoints for the AC Service.
 Provides system-wide health monitoring with real-time fidelity calculation and alerts.
 """
 
-from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.ext.asyncio import AsyncSession
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from services.shared.database import get_async_db as get_db
-from ... import crud
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.auth import get_current_active_user as get_current_user
 from services.shared.auth import (
-    get_current_active_user as get_current_user,
     require_admin,
     require_policy_manager,
 )
+from services.shared.database import get_async_db as get_db
 from services.shared.models import User
+
+from ... import crud
 
 # Import QEC enhancement components
 try:
     from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
         ConstitutionalFidelityMonitor,
-        FidelityComponents,
-        FidelityAlert,
-        FidelityLevel,
     )
 
     QEC_AVAILABLE = True

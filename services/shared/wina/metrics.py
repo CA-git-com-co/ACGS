@@ -7,16 +7,15 @@ for WINA (Weight Informed Neuron Activation) optimization.
 
 import asyncio
 import logging
-import time
-from typing import Dict, List, Optional, Any, Tuple
-import numpy as np
-from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
 from collections import defaultdict, deque
-import json
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
+
+import numpy as np
 
 try:
-    from prometheus_client import Counter, Histogram, Gauge, CollectorRegistry
+    from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram
 
     PROMETHEUS_AVAILABLE = True
 except ImportError:

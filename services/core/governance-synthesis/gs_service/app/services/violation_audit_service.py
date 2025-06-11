@@ -12,27 +12,23 @@ Classes:
     ComplianceReport: Compliance reporting structure
 """
 
-import asyncio
 import logging
 import time
-import json
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
+from sqlalchemy import and_, desc, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func, desc, text
-from sqlalchemy.orm import selectinload
 
-from services.shared.models import (
-    ConstitutionalViolation,
-    ViolationAlert,
-    ViolationEscalation,
-    AuditLog,
-    User,
-)
 from services.shared.database import get_async_db
+from services.shared.models import (
+    AuditLog,
+    ConstitutionalViolation,
+    User,
+    ViolationEscalation,
+)
 
 logger = logging.getLogger(__name__)
 

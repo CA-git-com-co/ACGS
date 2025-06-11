@@ -23,28 +23,19 @@ Usage:
     >>> optimized_output = await wina.optimize_inference(model, input_data)
 """
 
+from .config import WINAConfig, WINAIntegrationConfig
+from .constitutional_integration import ConstitutionalWINASupport
 from .core import WINACore, WINAOptimizer
-from .svd_transformation import SVDTransformation, OrthogonalityProtocol
+from .exceptions import WINAConfigurationError, WINAError, WINAOptimizationError
 from .gating import (
-    RuntimeGating,
-    NeuronGate,
-    GatingStrategy,
     GatingDecision,
     GatingPerformance,
+    GatingStrategy,
+    NeuronGate,
+    RuntimeGating,
 )
-from .config import WINAConfig, WINAIntegrationConfig
-from .metrics import WINAMetrics, GFLOPsTracker, PerformanceMonitor
-from .constitutional_integration import ConstitutionalWINASupport
-from .model_integration import (
-    WINAModelIntegrator,
-    ModelWeightExtractor,
-    MockModelWeightExtractor,
-    OpenAIModelWeightExtractor,
-    GroqModelWeightExtractor,
-    ModelWeightInfo,
-    WINAOptimizationResult,
-)
-from .exceptions import WINAError, WINAConfigurationError, WINAOptimizationError
+from .metrics import GFLOPsTracker, PerformanceMonitor, WINAMetrics
+from .svd_transformation import OrthogonalityProtocol, SVDTransformation
 
 __version__ = "1.0.0"
 __author__ = "ACGS-PGP Development Team"

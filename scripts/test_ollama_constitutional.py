@@ -6,10 +6,9 @@ This script tests constitutional prompting workflows with Ollama integration.
 """
 
 import asyncio
-import sys
 import os
+import sys
 import time
-import json
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))

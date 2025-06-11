@@ -7,14 +7,11 @@ Provides fixtures and utilities for reliable integration testing.
 import asyncio
 import os
 import sys
-import tempfile
-from typing import Dict, Any, AsyncGenerator, Generator
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import datetime
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient
-import json
-from datetime import datetime, timedelta
 
 # Add shared modules to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../services/shared"))
@@ -113,7 +110,7 @@ async def isolated_database_session():
     os.close(db_fd)
 
     try:
-        from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+        from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
         from sqlalchemy.orm import sessionmaker
 
         # Create isolated test database
@@ -630,9 +627,9 @@ async def _perform_comprehensive_cleanup(
     initial_env,
 ):
     """Perform comprehensive cleanup of all test resources."""
+    import asyncio
     import gc
     import shutil
-    import asyncio
     from pathlib import Path
 
     # 1. Execute custom cleanup tasks
@@ -751,8 +748,8 @@ async def _perform_comprehensive_cleanup(
 @pytest.fixture
 def temp_file_manager():
     """Manage temporary files with automatic cleanup."""
-    import tempfile
     import shutil
+    import tempfile
     from pathlib import Path
 
     created_files = []
@@ -801,8 +798,6 @@ def temp_file_manager():
 @pytest.fixture
 def isolated_test_environment(temp_file_manager):
     """Create an isolated test environment with temporary workspace."""
-    import tempfile
-    import shutil
     from pathlib import Path
 
     # Create isolated workspace

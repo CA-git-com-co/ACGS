@@ -8,8 +8,7 @@ import asyncio
 import json
 import subprocess
 import sys
-from typing import Dict, List, Any, Optional
-from pathlib import Path
+from typing import Any, Dict
 
 # Service configuration - using nginx gateway on port 8000
 SERVICES = {

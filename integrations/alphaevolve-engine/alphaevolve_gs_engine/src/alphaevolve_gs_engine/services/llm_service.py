@@ -17,7 +17,7 @@ Functions:
 
 import os
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional, Literal
+from typing import Any, Dict, Literal, Optional
 
 # Placeholder for actual LLM client libraries like 'openai'
 # Ensure these are added to requirements.txt if you implement a specific service
@@ -27,7 +27,6 @@ except ImportError:
     openai = None  # Allows the module to be imported even if openai is not installed
 
 from dotenv import load_dotenv
-
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
 # Load environment variables from .env file
@@ -66,7 +65,6 @@ class LLMService(ABC):
             NotImplementedError: If the method is not implemented by a subclass.
             Exception: For LLM API errors or other issues.
         """
-        pass
 
     @abstractmethod
     def generate_structured_output(
@@ -95,7 +93,6 @@ class LLMService(ABC):
             NotImplementedError: If the method is not implemented by a subclass.
             Exception: For LLM API errors or parsing issues.
         """
-        pass
 
 
 class OpenAILLMService(LLMService):

@@ -1,13 +1,15 @@
 import os
-import httpx
 from typing import List, Optional
+
+import httpx
+
 from ..schemas import ACPrinciple  # Using the schema defined in gs_service
 
 try:
-    from services.shared.auth import get_service_token, get_auth_headers
+    from services.shared.auth import get_auth_headers, get_service_token
 except ImportError:
     # Fallback for different import contexts
-    from services.shared.auth import get_service_token, get_auth_headers
+    from services.shared.auth import get_auth_headers, get_service_token
 
 # Load environment variables
 AC_SERVICE_URL = os.getenv(
@@ -201,7 +203,7 @@ ac_service_client = ACServiceClient(base_url=AC_SERVICE_URL)
 
 # Example Usage (for testing this file)
 if __name__ == "__main__":
-    import asyncio
+    pass
 
     async def test_ac_client():
         print(f"Testing AC Client against URL: {AC_SERVICE_URL}")

@@ -7,26 +7,23 @@ policy evaluation, and performance requirements.
 Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 """
 
-import pytest
 import asyncio
 import time
-import json
-from unittest.mock import patch, AsyncMock, MagicMock
-from typing import Dict, Any
+from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+from services.core.governance_synthesis.app.config.opa_config import (
+    OPAMode,
+)
 from services.core.governance_synthesis.app.core.opa_integration import (
+    BatchPolicyDecision,
     OPAClient,
+    OPAIntegrationError,
     PolicyDecisionRequest,
     PolicyDecisionResponse,
     PolicyValidationResult,
-    BatchPolicyDecision,
-    OPAIntegrationError,
-    get_opa_client,
     close_opa_client,
-)
-from services.core.governance_synthesis.app.config.opa_config import (
-    OPAMode,
-    get_opa_config,
+    get_opa_client,
 )
 
 

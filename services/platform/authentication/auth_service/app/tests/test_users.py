@@ -1,8 +1,9 @@
 from uuid import uuid4  # For generating unique emails
 
 import pytest
-from ..core.config import settings
 from fastapi.testclient import TestClient  # Use TestClient from FastAPI
+
+from ..core.config import settings
 
 # The client fixture and DB setup are now handled by conftest.py
 # No need for override_get_async_db_users or local client fixture here.
@@ -168,4 +169,3 @@ async def test_read_current_user_unauthenticated(async_client: TestClient):
 #     # assert updated_data["full_name"] == "Updated Test User"
 #     # assert updated_data["email"] == registered_user_cookies["email"] # Ensure other fields are not changed unless specified
 # Pass for now as no update endpoint for users defined in endpoints.py
-pass

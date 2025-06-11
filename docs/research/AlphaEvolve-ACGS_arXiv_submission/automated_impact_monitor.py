@@ -4,16 +4,14 @@ Automated Impact Monitoring Script for AlphaEvolve-ACGS arXiv Preprint
 Tracks various metrics and generates reports for community engagement assessment.
 """
 
-import requests
-import json
 import csv
 import datetime
-import time
 import logging
-from typing import Dict, List, Optional
-from dataclasses import dataclass
 import os
-from pathlib import Path
+from dataclasses import dataclass
+from typing import Optional
+
+import requests
 
 # Configure logging
 logging.basicConfig(

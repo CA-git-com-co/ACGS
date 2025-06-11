@@ -6,37 +6,34 @@ functionality, including strategy selection, performance optimization, and
 constitutional compliance verification.
 """
 
-import pytest
-import asyncio
-from unittest.mock import Mock, AsyncMock, patch
 from datetime import datetime, timedelta
+from unittest.mock import AsyncMock, patch
 
-import sys
-import os
+import pytest
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))  # Removed during reorganization
 
 try:
-    from services.core.policy_governance.app.core.wina_enforcement_optimizer import (
-        WINAEnforcementOptimizer,
-        EnforcementContext,
-        EnforcementStrategy,
-        WINAEnforcementResult,
-        WINAEnforcementMetrics,
-        get_wina_enforcement_optimizer,
-    )
     from services.core.policy_governance.app.core.opa_client import (
         PolicyEvaluationRequest,
         PolicyEvaluationResponse,
+    )
+    from services.core.policy_governance.app.core.wina_enforcement_optimizer import (
+        EnforcementContext,
+        EnforcementStrategy,
+        WINAEnforcementMetrics,
+        WINAEnforcementOptimizer,
+        WINAEnforcementResult,
+        get_wina_enforcement_optimizer,
     )
     from services.core.policy_governance.app.models.policy_models import (
         IntegrityPolicyRule,
     )
 except ImportError:
     # Mock implementations for testing when modules are not available
-    from enum import Enum
     from dataclasses import dataclass
-    from typing import Dict, List, Any, Optional
+    from enum import Enum
+    from typing import Any, Dict, List, Optional
 
     class EnforcementStrategy(Enum):
         STANDARD = "standard"

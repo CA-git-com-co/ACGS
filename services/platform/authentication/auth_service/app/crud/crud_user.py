@@ -1,14 +1,13 @@
-from typing import Any, Dict, List, Optional, Union
-
-from ..core.password import (
-    get_password_hash,
-    verify_password,
-)  # Import from password module to avoid circular imports
-from ..models import User
+from typing import List, Optional
 
 # Create simple schemas locally since shared ones are not available
 from pydantic import BaseModel
-from typing import Optional
+
+from ..core.password import (  # Import from password module to avoid circular imports
+    get_password_hash,
+    verify_password,
+)
+from ..models import User
 
 
 class UserCreate(BaseModel):

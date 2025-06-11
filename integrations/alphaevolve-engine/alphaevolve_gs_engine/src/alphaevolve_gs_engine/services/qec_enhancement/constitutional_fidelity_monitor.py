@@ -12,13 +12,13 @@ Classes:
     FidelityThresholds: Threshold configuration for alerts
 """
 
+import asyncio
 import logging
 import time
-import asyncio
-from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 from ...core.constitutional_principle import ConstitutionalPrinciple
 from .constitutional_distance_calculator import ConstitutionalDistanceCalculator

@@ -21,21 +21,19 @@ Target Performance:
 
 import logging
 import time
-import asyncio
-from typing import Dict, List, Optional, Any, Tuple, Union
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
 # WINA imports
 try:
-    import sys
-    import os
+    pass
 
     # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'shared'))  # Removed during reorganization
-    from wina.config import WINAConfig, load_wina_config_from_env
-    from wina.metrics import WINAMetrics
+    from wina.config import load_wina_config_from_env
     from wina.constitutional_integration import ConstitutionalWINAIntegration
+    from wina.metrics import WINAMetrics
 
     WINA_AVAILABLE = True
 except ImportError as e:
@@ -44,11 +42,9 @@ except ImportError as e:
 
     logging.getLogger(__name__).warning(f"WINA modules not available: {e}")
 
-from .opa_client import OPAClient, PolicyEvaluationRequest, PolicyEvaluationResponse
-from .incremental_compiler import IncrementalCompiler, CompilationMetrics
-from .wina_policy_compiler import WINAPolicyCompiler, WINACompilationResult
 from ..schemas import IntegrityPolicyRule
-from .. import schemas
+from .opa_client import OPAClient, PolicyEvaluationRequest, PolicyEvaluationResponse
+from .wina_policy_compiler import WINAPolicyCompiler
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
+import asyncio
 import sys
 import types
-import asyncio
 
 tenacity_mod = types.ModuleType("tenacity")
 tenacity_mod.retry = lambda *a, **k: (lambda f: f)
@@ -24,8 +24,8 @@ sys.modules.setdefault("shared", shared_mod)
 sys.modules.setdefault("shared.auth", auth_mod)
 
 try:
-    import sys
     import os
+    import sys
 
     sys.path.insert(
         0,

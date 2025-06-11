@@ -3,12 +3,13 @@ RFC 3161 Timestamping Service for ACGS-PGP Framework
 Implements trusted timestamping for audit logs and policy rules
 """
 
-import hashlib
 import base64
-import requests
-from datetime import datetime, timezone
-from typing import Optional, Dict, Any, Tuple
+import hashlib
 import logging
+from datetime import datetime, timezone
+from typing import Any, Dict, Optional
+
+import requests
 
 logger = logging.getLogger(__name__)
 

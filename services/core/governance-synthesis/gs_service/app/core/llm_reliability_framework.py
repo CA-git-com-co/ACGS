@@ -8,49 +8,46 @@ Based on AlphaEvolve-ACGS Integration System research paper improvements.
 """
 
 import asyncio
-import logging
-import time
-from typing import Dict, List, Optional, Any, Tuple, Union
-from math import sqrt
-from integrations.alphaevolve_engine.services.validation.formal_verifier import (
-    MockFormalVerifier,
-    FormalVerificationProperty,
-)
-from dataclasses import dataclass, field
-from enum import Enum
-import numpy as np
-import json
 import hashlib
-import re
-from datetime import datetime, timezone
+import json
+import logging
 import statistics
+import time
 from collections import defaultdict, deque
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
+from math import sqrt
+from typing import Any, Dict, List, Optional, Tuple
+
+import numpy as np
+from integrations.alphaevolve_engine.services.validation.formal_verifier import (
+    FormalVerificationProperty,
+    MockFormalVerifier,
+)
+
+from ..models.reliability_models import ConstitutionalPrinciple, SynthesisContext
 
 # Core dependencies
 from ..schemas import (
     LLMInterpretationInput,
     LLMStructuredOutput,
-    ConstitutionalSynthesisInput,
-    ConstitutionalSynthesisOutput,
 )
-from ..models.reliability_models import ConstitutionalPrinciple, SynthesisContext
 from .llm_integration import get_llm_client
 
 # Enhanced dependencies for reliability framework
 try:
     import redis
-    from langchain.llms import OpenAI, Cohere
-    from langchain.chat_models import (
+    import torch
+    from langchain.chat_models import (  # Assuming ChatCohere might exist or Cohere uses base LLM
         ChatAnthropic,
-    )  # Assuming ChatCohere might exist or Cohere uses base LLM
+    )
+    from langchain.llms import Cohere, OpenAI
 
     # For Gemini, we might need a specific LangChain integration or a custom client via get_llm_client
     # from langchain_google_genai import ChatGoogleGenerativeAI # Example if using langchain-google-genai
-    from langchain.prompts import PromptTemplate
-    from jinja2 import Template
     from sentence_transformers import SentenceTransformer
     from transformers import pipeline
-    import torch
 
     ENHANCED_DEPENDENCIES_AVAILABLE = True
 except ImportError as e:
@@ -59,7 +56,7 @@ except ImportError as e:
 
 # Prometheus metrics
 try:
-    from prometheus_client import Counter, Histogram, Gauge, CollectorRegistry
+    from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram
 
     PROMETHEUS_AVAILABLE = True
 except ImportError:
@@ -1195,7 +1192,7 @@ class TrendAnalyzer:
             return 0.0
 
         history = list(self.metric_history[metric_name])
-        timestamps = [item[0] for item in history]
+        [item[0] for item in history]
         values = [item[1] for item in history]
 
         # Simple linear regression for trend prediction
@@ -2123,7 +2120,6 @@ class EnhancedMultiModelValidator:
             w_semantic = 0.50
             w_cross_val = 0.30
             w_base_model = 0.05
-            w_formal_verif = 0.15
 
             combined_score = (
                 semantic_consistency_score * w_semantic
@@ -2309,7 +2305,7 @@ class EnhancedMultiModelValidator:
         start_time: float,
         request_id: str,
     ) -> ReliabilityMetrics:
-        total_time = time.time() - start_time
+        time.time() - start_time
         total_attempts = metrics_details.get(
             "synthesis_attempts", len(synthesis_results) + len(errors)
         )
@@ -3044,8 +3040,7 @@ class EnhancedSemanticFaithfulnessValidator:
 
         try:
             # Create entailment prompt
-            premise = principle_text
-            hypothesis = policy_output
+            pass
 
             # For now, use a simple heuristic since we don't have a proper NLI model
             # In practice, would use models like RoBERTa-large-MNLI
@@ -4052,8 +4047,6 @@ class EnhancedLLMReliabilityFramework:
 # Backward compatibility alias
 class LLMReliabilityFramework(EnhancedLLMReliabilityFramework):
     """Backward compatibility alias for the enhanced framework."""
-
-    pass
 
 
 @dataclass

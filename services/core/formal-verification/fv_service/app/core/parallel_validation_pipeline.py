@@ -5,17 +5,17 @@ Implements high-performance concurrent validation with 60-70% latency reduction
 
 import asyncio
 import logging
-import time
-import httpx
-import psutil
 import threading
-from typing import Dict, List, Any, Optional, Callable, Union
-from datetime import datetime, timezone, timedelta
-from dataclasses import dataclass, asdict
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta, timezone
 
 # Local implementations to avoid shared module dependencies
 from enum import Enum
-from typing import Tuple
+from typing import Any, Dict, List, Optional
+
+import httpx
+import psutil
 
 
 # Mock classes for parallel processing
@@ -163,12 +163,6 @@ from ..schemas import (
     VerificationRequest,
     VerificationResponse,
     VerificationResult,
-    BiasDetectionRequest,
-    BiasDetectionResponse,
-    SafetyCheckRequest,
-    SafetyCheckResponse,
-    TieredVerificationRequest,
-    TieredVerificationResponse,
 )
 
 logger = logging.getLogger(__name__)
@@ -997,9 +991,9 @@ class ParallelValidationPipeline:
     ) -> Dict[str, Any]:
         """Execute policy verification task."""
         # Import verification logic
-        from .verification_logic import verify_policy_rules
         from ...services.ac_client import ac_service_client
         from ...services.integrity_client import integrity_service_client
+        from .verification_logic import verify_policy_rules
 
         try:
             rule_id = task.payload["rule_id"]
@@ -1063,9 +1057,9 @@ class ParallelValidationPipeline:
         self, request: VerificationRequest, request_id: str
     ) -> VerificationResponse:
         """Process verification using sequential pipeline (fallback)."""
-        from .verification_logic import verify_policy_rules
         from ...services.ac_client import ac_service_client
         from ...services.integrity_client import integrity_service_client
+        from .verification_logic import verify_policy_rules
 
         try:
             # Fetch policy rules

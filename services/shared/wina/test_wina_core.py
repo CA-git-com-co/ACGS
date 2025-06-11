@@ -7,8 +7,8 @@ core library to ensure proper setup and integration.
 
 import asyncio
 import logging
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add the shared directory to Python path
@@ -16,16 +16,15 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
     from wina import (
-        WINACore,
-        WINAOptimizer,
-        WINAConfig,
-        WINAIntegrationConfig,
-        SVDTransformation,
-        RuntimeGating,
-        WINAMetrics,
         ConstitutionalWINASupport,
+        RuntimeGating,
+        SVDTransformation,
+        WINAConfig,
+        WINACore,
+        WINAIntegrationConfig,
+        WINAOptimizer,
     )
-    from wina.exceptions import WINAError, WINAConfigurationError
+    from wina.exceptions import WINAConfigurationError
 except ImportError as e:
     print(f"Failed to import WINA modules: {e}")
     sys.exit(1)

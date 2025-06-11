@@ -15,15 +15,15 @@ Success Criteria:
 - 100% service availability
 """
 
-import asyncio
 import argparse
+import asyncio
 import json
 import logging
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 # Import our custom modules
 sys.path.append(str(Path(__file__).parent))

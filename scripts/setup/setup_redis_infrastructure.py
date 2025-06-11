@@ -10,8 +10,7 @@ import os
 import subprocess
 import sys
 import time
-from typing import Dict, List, Optional, Any
-import json
+from typing import Any, Dict
 
 # Configure logging
 logging.basicConfig(
@@ -22,7 +21,6 @@ logger = logging.getLogger(__name__)
 # Try to import redis with fallback
 try:
     import redis
-    import redis.asyncio as aioredis
 
     REDIS_AVAILABLE = True
 except ImportError:
@@ -250,7 +248,7 @@ appendfsync everysec
                         # Test basic operations
                         test_key = f"health_check:{int(time.time())}"
                         client.set(test_key, "test_value", ex=60)
-                        retrieved_value = client.get(test_key)
+                        client.get(test_key)
                         client.delete(test_key)
 
                         # Check memory usage

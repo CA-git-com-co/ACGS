@@ -7,58 +7,43 @@ and threshold configuration management.
 """
 
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any
+from datetime import datetime, timezone
+from typing import Any, Dict, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func, desc
-from sqlalchemy.orm import selectinload
-
-from services.shared.database import get_async_db
-from services.shared.models import (
-    ConstitutionalViolation,
-    ViolationAlert,
-    ViolationEscalation,
-    ViolationThreshold,
-    User,
-    ConstitutionalPrinciple,
-    Policy,
+# Import WebSocket broadcasting
+from app.api.v1.fidelity_monitoring_websocket import ViolationAlert as WSViolationAlert
+from app.api.v1.fidelity_monitoring_websocket import (
+    monitoring_manager,
 )
-from services.shared.auth import get_current_active_user
+from app.core.violation_config import (
+    get_violation_config_manager,
+)
+from app.services.violation_audit_service import (
+    AnalyticsPeriod,
+    AuditEventType,
+    ViolationAuditService,
+)
 
 # Import violation services
 from app.services.violation_detection_service import (
     ViolationDetectionService,
-    ViolationType,
-    ViolationSeverity,
-    ViolationDetectionResult,
-    BatchViolationResult,
 )
 from app.services.violation_escalation_service import (
-    ViolationEscalationService,
     EscalationLevel,
-    EscalationResult,
+    ViolationEscalationService,
 )
-from app.services.violation_audit_service import (
-    ViolationAuditService,
-    AuditEventType,
-    AnalyticsPeriod,
-    ViolationAnalytics,
-    ComplianceReport,
-)
-from app.core.violation_config import (
-    ViolationConfigManager,
-    ThresholdConfig,
-    get_violation_config_manager,
-)
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from sqlalchemy import and_, desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-# Import WebSocket broadcasting
-from app.api.v1.fidelity_monitoring_websocket import (
-    monitoring_manager,
-    ViolationAlert as WSViolationAlert,
+from services.shared.auth import get_current_active_user
+from services.shared.database import get_async_db
+from services.shared.models import (
+    ConstitutionalViolation,
+    User,
+    ViolationEscalation,
 )
 
 logger = logging.getLogger(__name__)

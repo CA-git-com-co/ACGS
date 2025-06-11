@@ -16,13 +16,12 @@ Usage:
 
 import argparse
 import json
+import logging
 import subprocess
 import sys
-from pathlib import Path
-from typing import Dict, List, Tuple, Optional
-import logging
 from datetime import datetime
-import re
+from pathlib import Path
+from typing import Dict, List, Optional
 
 # Configure logging
 logging.basicConfig(
@@ -332,7 +331,7 @@ class SecurityAuditor:
         self.scan_dependencies()
 
         # Generate report
-        report_file = self.generate_report()
+        self.generate_report()
 
         # Print summary
         self._print_summary()

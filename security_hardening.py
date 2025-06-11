@@ -5,15 +5,13 @@ Performs security assessment and hardening recommendations
 """
 
 import asyncio
-import aiohttp
 import json
-import sys
 import os
 import re
-import subprocess
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
-from pathlib import Path
+from typing import Dict, List
+
+import aiohttp
 
 
 class SecurityHardener:

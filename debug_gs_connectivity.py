@@ -6,10 +6,11 @@ This script debugs the exact connectivity issues between GS Service and its depe
 """
 
 import asyncio
-import httpx
 import os
 import sys
 from pathlib import Path
+
+import httpx
 
 # Add project root to path
 project_root = Path(__file__).parent

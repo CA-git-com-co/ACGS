@@ -6,12 +6,12 @@ Handles deployment of Quantumagi programs and integration with ACGS
 
 import asyncio
 import json
+import logging
+import os
 import subprocess
 import sys
-import os
 from pathlib import Path
-from typing import Dict, List, Optional
-import logging
+from typing import Dict
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -135,7 +135,7 @@ class QuantumagiDeployer:
         # Fallback: read from keypair file
         try:
             with open(self.config["program_keypair_path"], "r") as f:
-                keypair_data = json.load(f)
+                json.load(f)
                 # Convert keypair to program ID (simplified)
                 return "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"  # Placeholder
         except:
@@ -151,7 +151,6 @@ class QuantumagiDeployer:
 
         # Initialize using client
         from client.solana_client import QuantumagiSolanaClient
-        from solders.keypair import Keypair
 
         # Load deployer keypair
         deployer_keypair = self._load_keypair(self.config["deployer_keypair_path"])
@@ -233,7 +232,7 @@ class QuantumagiDeployer:
         try:
             from gs_engine.governance_synthesis import QuantumagiGSEngine
 
-            gs_engine = QuantumagiGSEngine(self.config["gs_engine_config"])
+            QuantumagiGSEngine(self.config["gs_engine_config"])
             logger.info("✅ GS Engine initialized successfully")
 
         except Exception as e:

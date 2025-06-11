@@ -4,59 +4,61 @@ ACGS-1 Phase A2: Critical Security Issues Remediation
 Automatically fixes critical security vulnerabilities identified by Bandit
 """
 
-import os
-import re
 import json
+import os
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
 
 class SecurityRemediator:
     def __init__(self):
         self.fixes_applied = []
         self.errors = []
         self.files_modified = set()
-        
+
     def fix_md5_usage(self, file_path, line_number):
         """Replace MD5 hash usage with SHA-256."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-            
+
             if line_number <= len(lines):
                 original_line = lines[line_number - 1]
-                
+
                 # Replace MD5 with SHA-256
-                if 'hashlib.md5()' in original_line:
-                    new_line = original_line.replace('hashlib.md5()', 'hashlib.sha256()')
+                if "hashlib.md5()" in original_line:
+                    new_line = original_line.replace(
+                        "hashlib.md5()", "hashlib.sha256()"
+                    )
                     lines[line_number - 1] = new_line
-                    
-                    with open(file_path, 'w', encoding='utf-8') as f:
+
+                    with open(file_path, "w", encoding="utf-8") as f:
                         f.writelines(lines)
-                    
-                    self.fixes_applied.append({
-                        'type': 'MD5_to_SHA256',
-                        'file': file_path,
-                        'line': line_number,
-                        'original': original_line.strip(),
-                        'fixed': new_line.strip()
-                    })
+
+                    self.fixes_applied.append(
+                        {
+                            "type": "MD5_to_SHA256",
+                            "file": file_path,
+                            "line": line_number,
+                            "original": original_line.strip(),
+                            "fixed": new_line.strip(),
+                        }
+                    )
                     self.files_modified.add(file_path)
                     return True
-                    
+
         except Exception as e:
-            self.errors.append({
-                'file': file_path,
-                'line': line_number,
-                'error': str(e)
-            })
+            self.errors.append(
+                {"file": file_path, "line": line_number, "error": str(e)}
+            )
             return False
-        
+
         return False
-    
+
     def add_security_headers_middleware(self):
         """Add security headers middleware to FastAPI services."""
-        
+
         security_middleware_code = '''
 # Security Headers Middleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -110,25 +112,27 @@ def add_security_middleware(app):
     
     return app
 '''
-        
+
         # Create security middleware file
         security_file = Path("services/shared/security_middleware.py")
         security_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(security_file, 'w') as f:
+
+        with open(security_file, "w") as f:
             f.write(security_middleware_code)
-        
-        self.fixes_applied.append({
-            'type': 'Security_Middleware',
-            'file': str(security_file),
-            'description': 'Added comprehensive security headers middleware'
-        })
-        
+
+        self.fixes_applied.append(
+            {
+                "type": "Security_Middleware",
+                "file": str(security_file),
+                "description": "Added comprehensive security headers middleware",
+            }
+        )
+
         return str(security_file)
-    
+
     def fix_input_validation(self):
         """Add input validation utilities."""
-        
+
         validation_code = '''
 # Input Validation Utilities
 import re
@@ -175,124 +179,128 @@ class InputValidator:
         filename = filename.replace('..', '')
         return filename[:255]  # Limit length
 '''
-        
+
         validation_file = Path("services/shared/input_validation.py")
         validation_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(validation_file, 'w') as f:
+
+        with open(validation_file, "w") as f:
             f.write(validation_code)
-        
-        self.fixes_applied.append({
-            'type': 'Input_Validation',
-            'file': str(validation_file),
-            'description': 'Added secure input validation utilities'
-        })
-        
+
+        self.fixes_applied.append(
+            {
+                "type": "Input_Validation",
+                "file": str(validation_file),
+                "description": "Added secure input validation utilities",
+            }
+        )
+
         return str(validation_file)
-    
+
     def process_remediation_plan(self, plan_file):
         """Process the remediation plan and apply fixes."""
-        
+
         try:
-            with open(plan_file, 'r') as f:
+            with open(plan_file, "r") as f:
                 data = json.load(f)
         except FileNotFoundError:
             print(f"❌ Error: Remediation plan file {plan_file} not found")
             return False
-        
-        critical_actions = data.get('remediation_plan', {}).get('critical_actions', [])
-        
+
+        critical_actions = data.get("remediation_plan", {}).get("critical_actions", [])
+
         print(f"🔧 Processing {len(critical_actions)} critical security issues...")
-        
+
         for i, action in enumerate(critical_actions, 1):
-            if action['type'] == 'Weak Cryptography':
-                file_path = action['file']
-                line_number = action['line']
-                
+            if action["type"] == "Weak Cryptography":
+                file_path = action["file"]
+                line_number = action["line"]
+
                 # Skip virtual environment files (not our code)
-                if '/venv/' in file_path or '/site-packages/' in file_path:
+                if "/venv/" in file_path or "/site-packages/" in file_path:
                     print(f"  ⏭️  Skipping venv file: {file_path}")
                     continue
-                
+
                 print(f"  {i}. Fixing MD5 usage in {file_path}:{line_number}")
-                
+
                 if self.fix_md5_usage(file_path, line_number):
                     print(f"     ✅ Fixed MD5 → SHA-256")
                 else:
                     print(f"     ❌ Failed to fix")
-        
+
         return True
-    
+
     def generate_report(self):
         """Generate remediation report."""
-        
+
         report = {
-            'timestamp': datetime.now().isoformat(),
-            'fixes_applied': len(self.fixes_applied),
-            'files_modified': len(self.files_modified),
-            'errors': len(self.errors),
-            'details': {
-                'fixes': self.fixes_applied,
-                'errors': self.errors,
-                'modified_files': list(self.files_modified)
-            }
+            "timestamp": datetime.now().isoformat(),
+            "fixes_applied": len(self.fixes_applied),
+            "files_modified": len(self.files_modified),
+            "errors": len(self.errors),
+            "details": {
+                "fixes": self.fixes_applied,
+                "errors": self.errors,
+                "modified_files": list(self.files_modified),
+            },
         }
-        
+
         return report
+
 
 def main():
     """Main execution function."""
-    
+
     print("🔒 ACGS-1 Phase A2: Critical Security Issues Remediation")
     print("=" * 60)
-    
+
     remediator = SecurityRemediator()
-    
+
     # Process critical issues from remediation plan
-    plan_file = 'security_remediation_plan.json'
+    plan_file = "security_remediation_plan.json"
     if os.path.exists(plan_file):
         print("📋 Processing critical security issues...")
         remediator.process_remediation_plan(plan_file)
     else:
         print("⚠️  No remediation plan found, skipping automated fixes")
-    
+
     # Add security infrastructure
     print("\n🛡️  Adding security infrastructure...")
-    
+
     print("  • Adding security headers middleware...")
     remediator.add_security_headers_middleware()
-    
+
     print("  • Adding input validation utilities...")
     remediator.fix_input_validation()
-    
+
     # Generate report
     report = remediator.generate_report()
-    
+
     # Save report
-    report_file = 'security_fixes_report.json'
-    with open(report_file, 'w') as f:
+    report_file = "security_fixes_report.json"
+    with open(report_file, "w") as f:
         json.dump(report, f, indent=2)
-    
+
     # Print summary
     print(f"\n📊 Remediation Summary:")
     print(f"  ✅ Fixes Applied: {report['fixes_applied']}")
     print(f"  📁 Files Modified: {report['files_modified']}")
     print(f"  ❌ Errors: {report['errors']}")
-    
-    if report['errors'] > 0:
+
+    if report["errors"] > 0:
         print(f"\n⚠️  Errors encountered:")
         for error in remediator.errors:
             print(f"    • {error['file']}:{error['line']} - {error['error']}")
-    
+
     print(f"\n💾 Detailed report saved to: {report_file}")
-    
-    if report['fixes_applied'] > 0:
+
+    if report["fixes_applied"] > 0:
         print("\n✅ Critical security issues remediation completed!")
         print("🔄 Re-run security scan to validate improvements")
     else:
         print("\n⚠️  No fixes were applied")
-    
-    return 0 if report['errors'] == 0 else 1
+
+    return 0 if report["errors"] == 0 else 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

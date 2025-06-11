@@ -850,7 +850,6 @@ class DemocraticGovernanceOrchestrator:
     ):
         """Trigger actions when all approvals are complete."""
         # Implement approval completion trigger logic
-        pass
 
     async def _validate_finalization_authority(
         self, db: AsyncSession, finalizer_id: str, proposal: GovernanceProposal
@@ -868,7 +867,6 @@ class DemocraticGovernanceOrchestrator:
     ):
         """Execute stage-specific actions."""
         # Implement stage-specific action execution logic
-        pass
 
     async def _generate_audit_report(
         self, db: AsyncSession, proposal: GovernanceProposal
@@ -904,7 +902,6 @@ class DemocraticGovernanceOrchestrator:
     ):
         """Archive approved proposal for future reference."""
         # Implement proposal archival logic
-        pass
 
 
 # Global orchestrator instance

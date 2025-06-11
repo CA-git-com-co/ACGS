@@ -3,21 +3,22 @@ Tiered Validation Pipeline for ACGS-PGP Phase 3
 Implements three-tier validation: Automated, Human-in-the-Loop (HITL), and Rigorous
 """
 
-import time
 import logging
-from typing import List, Dict, Any, Optional, Tuple
+import time
+from typing import List
+
 from ..schemas import (
+    ACPrinciple,
+    PolicyRule,
+    SafetyProperty,
     TieredVerificationRequest,
     TieredVerificationResponse,
     TieredVerificationResult,
-    ValidationTier,
     ValidationLevel,
-    SafetyProperty,
-    PolicyRule,
-    ACPrinciple,
+    ValidationTier,
 )
-from .smt_solver_integration import verify_rules_against_obligations
 from .proof_obligations import generate_proof_obligations_from_principles
+from .smt_solver_integration import verify_rules_against_obligations
 
 logger = logging.getLogger(__name__)
 

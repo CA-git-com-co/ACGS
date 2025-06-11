@@ -5,20 +5,19 @@ This module implements adversarial tests targeting cross-service communication
 vulnerabilities in the ACGS-PGP microservices architecture.
 """
 
-import asyncio
+import json
 import logging
 import time
-import json
-import random
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime, timezone
+from typing import Dict, List
+
 import aiohttp
 
 from .adversarial_framework import (
-    VulnerabilityResult,
-    AttackCategory,
-    VulnerabilitySeverity,
     AdversarialTestConfig,
+    AttackCategory,
+    VulnerabilityResult,
+    VulnerabilitySeverity,
 )
 
 logger = logging.getLogger(__name__)

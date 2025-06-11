@@ -8,36 +8,22 @@ email/webhook notifications for critical compliance issues.
 Task 19.4: Performance Dashboard Integration - Automated Reporting System
 """
 
-import asyncio
 import logging
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Any, Optional, Union
-from dataclasses import dataclass, asdict
 from enum import Enum
-import json
-import smtplib
+from typing import Any, Dict, List, Optional
 
 try:
-    from email.mime.text import MimeText
     from email.mime.multipart import MimeMultipart
+    from email.mime.text import MimeText
 except ImportError:
     # Fallback for environments where email.mime is not available
     MimeText = None
     MimeMultipart = None
-import aiohttp
 from jinja2 import Template
-
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_, or_
-from services.shared.models import (
-    ConstitutionalViolation,
-    ViolationAlert,
-    ViolationEscalation,
-    Principle,
-    User,
-    ACAmendment,
-    ACAmendmentVote,
-)
+
 from services.shared.metrics import get_metrics
 
 logger = logging.getLogger(__name__)

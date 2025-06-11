@@ -5,12 +5,12 @@ Detailed analysis of why services are failing health checks
 """
 
 import asyncio
+import json
+import os
 import subprocess
 import time
-import json
-import sys
-import os
 from pathlib import Path
+
 import httpx
 
 
@@ -83,7 +83,7 @@ class ServiceStartupDebugger:
 
     def check_python_dependencies(self, service_name: str):
         """Check if Python dependencies are available."""
-        service_dir = self.service_dirs[service_name]
+        self.service_dirs[service_name]
         print(f"\n🐍 Checking Python dependencies for {service_name}:")
 
         # Try importing key modules

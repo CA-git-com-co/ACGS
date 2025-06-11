@@ -6,15 +6,12 @@ This script coordinates the comprehensive test infrastructure enhancement
 for achieving 80%+ test coverage across Anchor programs and Python services.
 """
 
-import os
-import sys
 import json
-import subprocess
-import time
+import sys
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
+from typing import Dict, List
 
 
 @dataclass

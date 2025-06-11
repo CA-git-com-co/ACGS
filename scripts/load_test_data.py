@@ -6,11 +6,11 @@ Loads comprehensive test datasets for all Phase 1-3 components
 
 import asyncio
 import json
-import requests
-import sys
 import os
-from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from datetime import datetime
+from typing import Dict
+
+import requests
 
 
 class TestDataLoader:

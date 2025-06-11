@@ -19,16 +19,16 @@ Usage:
     python comprehensive_cleanup_plan.py --phase dependencies
 """
 
-import os
-import sys
+import argparse
 import json
+import logging
+import os
 import shutil
 import subprocess
-import logging
-import argparse
-from pathlib import Path
-from typing import Dict, List, Set, Optional
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Dict
 
 # Configure logging
 logging.basicConfig(

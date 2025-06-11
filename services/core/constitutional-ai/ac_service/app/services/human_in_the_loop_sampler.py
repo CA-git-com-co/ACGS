@@ -14,16 +14,16 @@ Key Features:
 - Real-time monitoring and performance metrics tracking
 """
 
-import asyncio
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 try:
-    from services.shared.models import Principle, User, ACConflictResolution
+    from services.shared.models import ACConflictResolution, Principle, User
 except ImportError:
     # Fallback for testing
     from typing import Any
@@ -40,21 +40,18 @@ except ImportError:
     HITLSamplingResult = Any
     UncertaintyMetrics = Any
 from .human_escalation_system import (
-    HumanEscalationSystem,
     EscalationLevel,
     EscalationRequest,
+    HumanEscalationSystem,
 )
 from .intelligent_conflict_detector import (
     IntelligentConflictDetector,
-    ConflictDetectionResult,
 )
 
 # Import QEC enhancement components
 try:
     from integrations.alphaevolve_engine.services.qec_enhancement import (
         ConstitutionalFidelityMonitor,
-        FidelityComponents,
-        FidelityLevel,
     )
 
     QEC_AVAILABLE = True

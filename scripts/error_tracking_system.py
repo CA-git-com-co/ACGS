@@ -6,13 +6,13 @@ This system tracks, categorizes, and manages the resolution of errors identified
 in the ACGS-PGP framework research workflow enhancement analysis.
 """
 
-import json
 import datetime
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
-from enum import Enum
+import json
 import logging
+from dataclasses import asdict, dataclass
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Configure logging
 logging.basicConfig(

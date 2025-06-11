@@ -9,16 +9,16 @@ Usage:
     python scripts/security_validation.py [--service SERVICE] [--verbose]
 """
 
-import asyncio
-import aiohttp
-import json
-import time
 import argparse
-import sys
+import asyncio
+import json
 import logging
-from typing import Dict, List, Optional, Tuple
+import time
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Dict, List, Optional
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

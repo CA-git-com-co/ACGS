@@ -7,12 +7,13 @@ integrating with the Constitutional Council StateGraph workflows.
 
 import logging
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
-from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
 
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.auth import User
 from services.shared.database import get_async_db
-from services.shared.auth import get_current_active_user, User
 
 
 # Placeholder function for current user
@@ -26,15 +27,13 @@ async def get_current_active_user_placeholder() -> User:
     )
 
 
-from services.shared.langgraph_config import ConstitutionalCouncilConfig
 from app.services.stakeholder_engagement import (
-    StakeholderNotificationService,
     StakeholderEngagementInput,
     StakeholderEngagementStatus,
-    NotificationRecord,
-    FeedbackRecord,
     get_stakeholder_engagement_service,
 )
+
+from services.shared.langgraph_config import ConstitutionalCouncilConfig
 
 logger = logging.getLogger(__name__)
 

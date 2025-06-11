@@ -8,20 +8,53 @@ service URLs and enable flexible deployment configurations.
 import asyncio
 import logging
 import time
-from typing import Dict, List, Optional, Set, Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
+
 import httpx
 
-from .registry import ServiceType, ServiceConfig, get_service_registry
-from ..common.error_handling import ServiceUnavailableError, log_error
+from ..common.error_handling import ServiceUnavailableError
+from .failover_circuit_breaker import FailoverConfig, FailoverManager
+from .governance_session_manager import GovernanceSessionManager, GovernanceWorkflowType
+from .infrastructure_integration import (
+    InfrastructureIntegrationManager,
+    get_infrastructure_manager,
+)
+from .load_balancer import LoadBalancer, SessionAffinityManager
+from .performance_monitor import (
+    PerformanceMetrics,
+    PerformanceMonitor,
+    get_performance_monitor,
+)
+from .registry import ServiceType, get_service_registry
 
 logger = logging.getLogger(__name__)
 
 
+class LoadBalancingStrategy(Enum):
+    """Load balancing strategies for service selection."""
+
+    ROUND_ROBIN = "round_robin"
+    LEAST_CONNECTIONS = "least_connections"
+    WEIGHTED_ROUND_ROBIN = "weighted_round_robin"
+    LEAST_RESPONSE_TIME = "least_response_time"
+    CONSISTENT_HASH = "consistent_hash"
+    RANDOM = "random"
+
+
+class ServiceWeight(Enum):
+    """Service weight categories for load balancing."""
+
+    LOW = 50
+    NORMAL = 100
+    HIGH = 150
+    CRITICAL = 200
+
+
 @dataclass
 class ServiceInstance:
-    """Represents a discovered service instance."""
+    """Represents a discovered service instance with load balancing capabilities."""
 
     service_type: ServiceType
     instance_id: str
@@ -32,6 +65,14 @@ class ServiceInstance:
     last_check: Optional[float] = None
     response_time: Optional[float] = None
     metadata: Dict[str, str] = field(default_factory=dict)
+
+    # Load balancing attributes
+    weight: int = ServiceWeight.NORMAL.value
+    current_connections: int = 0
+    total_requests: int = 0
+    failed_requests: int = 0
+    last_selected: Optional[float] = None
+    priority: int = 1  # Lower number = higher priority
 
     @property
     def is_healthy(self) -> bool:
@@ -45,27 +86,75 @@ class ServiceInstance:
             return float("inf")
         return time.time() - self.last_check
 
+    @property
+    def failure_rate(self) -> float:
+        """Calculate failure rate as percentage."""
+        if self.total_requests == 0:
+            return 0.0
+        return (self.failed_requests / self.total_requests) * 100.0
+
+    @property
+    def load_score(self) -> float:
+        """Calculate load score for load balancing (lower is better)."""
+        base_score = self.current_connections / max(self.weight, 1)
+
+        # Penalty for high failure rate
+        failure_penalty = self.failure_rate * 0.1
+
+        # Penalty for slow response time
+        response_penalty = (self.response_time or 0) * 0.001
+
+        return base_score + failure_penalty + response_penalty
+
+    def increment_connections(self):
+        """Increment current connection count."""
+        self.current_connections += 1
+        self.total_requests += 1
+        self.last_selected = time.time()
+
+    def decrement_connections(self):
+        """Decrement current connection count."""
+        self.current_connections = max(0, self.current_connections - 1)
+
+    def record_failure(self):
+        """Record a failed request."""
+        self.failed_requests += 1
+
 
 class ServiceDiscovery:
     """
     Service discovery implementation for ACGS-PGP microservices.
 
     Provides dynamic service discovery, health monitoring, and
-    load balancing capabilities.
+    advanced load balancing capabilities for high availability.
     """
 
-    def __init__(self, health_check_interval: float = 30.0):
+    def __init__(
+        self,
+        health_check_interval: float = 30.0,
+        default_strategy: LoadBalancingStrategy = LoadBalancingStrategy.LEAST_RESPONSE_TIME,
+    ):
         """
-        Initialize service discovery.
+        Initialize service discovery with load balancing.
 
         Args:
             health_check_interval: Interval between health checks (seconds)
+            default_strategy: Default load balancing strategy
         """
         self.health_check_interval = health_check_interval
+        self.default_strategy = default_strategy
         self.registry = get_service_registry()
 
         # Service instances by type
         self.instances: Dict[ServiceType, List[ServiceInstance]] = {}
+
+        # Load balancing components
+        self.load_balancer = LoadBalancer(default_strategy)
+        self.session_manager = SessionAffinityManager()
+        self.failover_manager = FailoverManager()
+        self.governance_session_manager = GovernanceSessionManager()
+        self.infrastructure_manager: Optional[InfrastructureIntegrationManager] = None
+        self.performance_monitor: Optional[PerformanceMonitor] = None
 
         # Health check state
         self._health_check_task: Optional[asyncio.Task] = None
@@ -88,6 +177,18 @@ class ServiceDiscovery:
 
         # Initialize service instances from registry
         await self._initialize_services()
+
+        # Initialize failover circuit breakers
+        await self._initialize_failover_breakers()
+
+        # Start governance session manager
+        await self.governance_session_manager.start()
+
+        # Initialize infrastructure integration
+        self.infrastructure_manager = await get_infrastructure_manager()
+
+        # Initialize performance monitoring
+        self.performance_monitor = await get_performance_monitor()
 
         # Start health check task
         self._health_check_task = asyncio.create_task(self._health_check_loop())
@@ -139,6 +240,19 @@ class ServiceDiscovery:
             f"Initialized {sum(len(instances) for instances in self.instances.values())} service instances"
         )
 
+    async def _initialize_failover_breakers(self):
+        """Initialize failover circuit breakers for all services."""
+        for service_type, instances in self.instances.items():
+            if instances:
+                # Register instances with failover manager
+                self.failover_manager.register_service_instances(
+                    service_type, instances
+                )
+
+                logger.info(
+                    f"Initialized failover circuit breaker for {service_type.value}"
+                )
+
     async def _health_check_loop(self):
         """Main health check loop."""
         while self._running:
@@ -187,6 +301,16 @@ class ServiceDiscovery:
                 # Notify if service came back up
                 if old_status != "healthy":
                     self._notify_service_up(instance)
+
+                # Record metrics in infrastructure manager
+                if self.infrastructure_manager:
+                    await self.infrastructure_manager.record_load_balancing_metrics(
+                        instance.service_type, instance
+                    )
+
+                # Record performance metrics
+                if self.performance_monitor:
+                    await self._record_performance_metrics(instance)
             else:
                 instance.status = "unhealthy"
 
@@ -206,6 +330,47 @@ class ServiceDiscovery:
 
         finally:
             instance.last_check = time.time()
+
+    async def _record_performance_metrics(self, instance: ServiceInstance):
+        """Record performance metrics for monitoring."""
+        if not self.performance_monitor:
+            return
+
+        # Calculate service-level metrics
+        service_instances = self.instances.get(instance.service_type, [])
+        healthy_instances = [inst for inst in service_instances if inst.is_healthy]
+
+        # Calculate availability percentage
+        availability = (len(healthy_instances) / max(len(service_instances), 1)) * 100
+
+        # Calculate error rate
+        total_requests = sum(inst.total_requests for inst in service_instances)
+        failed_requests = sum(inst.failed_requests for inst in service_instances)
+        error_rate = (failed_requests / max(total_requests, 1)) * 100
+
+        # Calculate throughput (simplified)
+        current_connections = sum(
+            inst.current_connections for inst in service_instances
+        )
+
+        # Create performance metrics
+        metrics = PerformanceMetrics(
+            timestamp=time.time(),
+            service_type=instance.service_type.value,
+            instance_id=instance.instance_id,
+            response_time_ms=instance.response_time or 0.0,
+            availability_percent=availability,
+            throughput_rps=0.0,  # Would need request rate calculation
+            error_rate_percent=error_rate,
+            concurrent_connections=current_connections,
+            active_instances=len(service_instances),
+            healthy_instances=len(healthy_instances),
+            total_requests=total_requests,
+            failed_requests=failed_requests,
+        )
+
+        # Record metrics
+        self.performance_monitor.record_metrics(metrics)
 
     def _notify_service_up(self, instance: ServiceInstance):
         """Notify callbacks that a service came up."""
@@ -250,27 +415,43 @@ class ServiceDiscovery:
         instances = self.instances.get(service_type, [])
         return [instance for instance in instances if instance.is_healthy]
 
-    def get_best_instance(self, service_type: ServiceType) -> Optional[ServiceInstance]:
+    def get_best_instance(
+        self,
+        service_type: ServiceType,
+        strategy: Optional[LoadBalancingStrategy] = None,
+        session_id: Optional[str] = None,
+        hash_key: Optional[str] = None,
+    ) -> Optional[ServiceInstance]:
         """
-        Get the best available instance of a service type.
-
-        Uses response time as the primary metric for selection.
+        Get the best available instance using load balancing strategy.
 
         Args:
             service_type: Type of service to get instance for
+            strategy: Load balancing strategy to use
+            session_id: Session ID for session affinity
+            hash_key: Hash key for consistent hashing
 
         Returns:
             Best available service instance or None
         """
-        healthy_instances = self.get_healthy_instances(service_type)
+        instances = self.instances.get(service_type, [])
 
-        if not healthy_instances:
-            return None
+        # Use load balancer to select instance
+        selected = self.load_balancer.select_instance(
+            instances=instances,
+            strategy=strategy,
+            session_id=session_id,
+            hash_key=hash_key,
+        )
 
-        # Sort by response time (fastest first)
-        healthy_instances.sort(key=lambda x: x.response_time or float("inf"))
+        if selected and session_id:
+            # Set session affinity for governance workflow continuity
+            self.session_manager.set_affinity(
+                session_id, service_type, selected.instance_id
+            )
+            selected.increment_connections()
 
-        return healthy_instances[0]
+        return selected
 
     def get_service_url(self, service_type: ServiceType) -> Optional[str]:
         """
@@ -399,6 +580,233 @@ class ServiceDiscovery:
                 if instance.instance_id != instance_id
             ]
             logger.info(f"Removed service instance: {instance_id}")
+
+    def release_instance_connection(self, service_type: ServiceType, instance_id: str):
+        """
+        Release a connection from a service instance.
+
+        Args:
+            service_type: Type of service
+            instance_id: ID of instance to release connection from
+        """
+        instances = self.instances.get(service_type, [])
+        for instance in instances:
+            if instance.instance_id == instance_id:
+                instance.decrement_connections()
+                break
+
+    def record_instance_failure(self, service_type: ServiceType, instance_id: str):
+        """
+        Record a failure for a service instance.
+
+        Args:
+            service_type: Type of service
+            instance_id: ID of instance that failed
+        """
+        instances = self.instances.get(service_type, [])
+        for instance in instances:
+            if instance.instance_id == instance_id:
+                instance.record_failure()
+                break
+
+    def get_load_balancing_stats(self, service_type: ServiceType) -> Dict[str, any]:
+        """
+        Get load balancing statistics for a service type.
+
+        Args:
+            service_type: Type of service
+
+        Returns:
+            Load balancing statistics
+        """
+        instances = self.instances.get(service_type, [])
+        return self.load_balancer.get_load_balancing_stats(instances)
+
+    def cleanup_expired_sessions(self):
+        """Clean up expired session affinities."""
+        self.session_manager.cleanup_expired_sessions()
+
+    def get_session_stats(self) -> Dict[str, any]:
+        """Get session affinity statistics."""
+        return self.session_manager.get_session_stats()
+
+    def set_instance_weight(
+        self, service_type: ServiceType, instance_id: str, weight: int
+    ):
+        """
+        Set weight for a service instance.
+
+        Args:
+            service_type: Type of service
+            instance_id: ID of instance
+            weight: New weight value
+        """
+        instances = self.instances.get(service_type, [])
+        for instance in instances:
+            if instance.instance_id == instance_id:
+                instance.weight = weight
+                logger.info(f"Updated weight for {instance_id} to {weight}")
+                break
+
+    async def execute_with_failover(
+        self,
+        service_type: ServiceType,
+        operation: Callable,
+        instance_id: Optional[str] = None,
+        *args,
+        **kwargs,
+    ) -> Any:
+        """
+        Execute operation with automatic failover.
+
+        Args:
+            service_type: Type of service
+            operation: Async operation to execute
+            instance_id: Specific instance ID (optional)
+            *args: Operation arguments
+            **kwargs: Operation keyword arguments
+
+        Returns:
+            Operation result
+        """
+        # Get failover circuit breaker for service
+        failover_breaker = self.failover_manager.get_failover_breaker(service_type)
+
+        # If no specific instance, select best available
+        if not instance_id:
+            instance = self.get_best_instance(service_type)
+            if not instance:
+                raise ServiceUnavailableError(
+                    f"No healthy instances for {service_type.value}"
+                )
+            instance_id = instance.instance_id
+
+        # Execute with failover protection
+        return await failover_breaker.execute_with_failover(
+            operation, instance_id, *args, **kwargs
+        )
+
+    def get_failover_status(self, service_type: ServiceType) -> Dict[str, Any]:
+        """Get failover status for a service type."""
+        failover_breaker = self.failover_manager.get_failover_breaker(service_type)
+        return failover_breaker.get_status()
+
+    def get_system_failover_status(self) -> Dict[str, Any]:
+        """Get overall system failover status."""
+        return self.failover_manager.get_system_status()
+
+    def configure_failover(self, service_type: ServiceType, config: FailoverConfig):
+        """Configure failover settings for a service type."""
+        failover_breaker = self.failover_manager.get_failover_breaker(
+            service_type, config
+        )
+
+        # Re-register instances with new configuration
+        instances = self.instances.get(service_type, [])
+        if instances:
+            failover_breaker.register_instances(instances)
+
+    async def get_instance_for_governance_session(
+        self,
+        service_type: ServiceType,
+        session_id: str,
+        workflow_type: GovernanceWorkflowType,
+        user_id: str,
+    ) -> Optional[ServiceInstance]:
+        """
+        Get service instance for governance workflow with session affinity.
+
+        Args:
+            service_type: Type of service
+            session_id: Governance session ID
+            workflow_type: Type of governance workflow
+            user_id: User identifier
+
+        Returns:
+            Service instance with session affinity
+        """
+        # Check if session already has affinity for this service
+        affinity_instance_id = (
+            await self.governance_session_manager.get_service_affinity(
+                session_id, service_type
+            )
+        )
+
+        if affinity_instance_id:
+            # Find the specific instance
+            instances = self.instances.get(service_type, [])
+            for instance in instances:
+                if instance.instance_id == affinity_instance_id and instance.is_healthy:
+                    return instance
+
+        # No existing affinity or instance unhealthy, select new instance
+        instance = self.get_best_instance(
+            service_type=service_type,
+            strategy=LoadBalancingStrategy.CONSISTENT_HASH,
+            session_id=session_id,
+            hash_key=f"{session_id}:{workflow_type.value}",
+        )
+
+        if instance:
+            # Set session affinity for governance workflow continuity
+            await self.governance_session_manager.set_service_affinity(
+                session_id, service_type, instance.instance_id
+            )
+
+        return instance
+
+    async def create_governance_session(
+        self,
+        workflow_type: GovernanceWorkflowType,
+        user_id: str,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        """
+        Create a new governance session.
+
+        Args:
+            workflow_type: Type of governance workflow
+            user_id: User identifier
+            metadata: Optional session metadata
+
+        Returns:
+            Session ID
+        """
+        session = await self.governance_session_manager.create_session(
+            workflow_type, user_id, metadata
+        )
+        return session.session_id
+
+    async def advance_governance_workflow(
+        self,
+        session_id: str,
+        step_name: str,
+        step_data: Optional[Dict[str, Any]] = None,
+    ):
+        """
+        Advance governance workflow to next step.
+
+        Args:
+            session_id: Session identifier
+            step_name: Name of the next step
+            step_data: Optional step data
+        """
+        await self.governance_session_manager.advance_workflow_step(
+            session_id, step_name, step_data
+        )
+
+    async def complete_governance_session(self, session_id: str):
+        """
+        Complete governance session.
+
+        Args:
+            session_id: Session identifier
+        """
+        await self.governance_session_manager.complete_session(session_id)
+
+    async def get_governance_session_stats(self) -> Dict[str, Any]:
+        """Get governance session statistics."""
+        return await self.governance_session_manager.get_session_stats()
 
 
 # Global service discovery instance

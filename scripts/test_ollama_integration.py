@@ -11,20 +11,21 @@ Usage:
 """
 
 import asyncio
-import logging
-import sys
-import os
-import time
 import json
-from typing import Dict, Any, List
+import logging
+import os
+import sys
+import time
 from datetime import datetime, timezone
+from typing import Any, Dict, List
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
 
 from gs_service.app.core.ollama_client import OllamaLLMClient, get_ollama_client
 from gs_service.app.workflows.multi_model_manager import MultiModelManager
-from services.shared.langgraph_config import get_langgraph_config, ModelRole
+
+from services.shared.langgraph_config import ModelRole
 
 # Configure logging
 logging.basicConfig(

@@ -6,11 +6,11 @@ duplicate formatting logic across services.
 """
 
 import json
-from typing import Any, Dict, List, Optional, Union
+import logging
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
-import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

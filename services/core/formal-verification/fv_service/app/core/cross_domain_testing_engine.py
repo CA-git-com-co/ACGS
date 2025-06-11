@@ -9,20 +9,18 @@ import asyncio
 import logging
 import time
 import uuid
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
+from typing import Any, Dict, List, Tuple
 
 from ..schemas import (
     CrossDomainTestRequest,
     CrossDomainTestResponse,
     CrossDomainTestResult,
-    DomainContext,
     CrossDomainTestScenario,
+    DomainContext,
 )
-from .smt_solver_integration import smt_solver_client
-from .proof_obligations import generate_proof_obligations_from_principles
 
 logger = logging.getLogger(__name__)
 

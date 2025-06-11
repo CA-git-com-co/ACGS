@@ -6,13 +6,14 @@ This script starts the GS Service directly on the host machine with proper confi
 to resolve the dependency connectivity issues.
 """
 
-import os
-import sys
-import subprocess
-import time
 import asyncio
-import httpx
+import os
+import subprocess
+import sys
+import time
 from pathlib import Path
+
+import httpx
 
 # Set up environment variables for localhost connectivity
 os.environ["AC_SERVICE_URL"] = "http://localhost:8001"

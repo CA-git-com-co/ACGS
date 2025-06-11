@@ -6,15 +6,15 @@ measurements and provides precise benchmarking for PGP operations.
 """
 
 import asyncio
-import time
-import logging
-import statistics
-from typing import Dict, List, Tuple, Optional, Any
-from dataclasses import dataclass
-import json
 import hashlib
+import json
+import logging
 import os
+import statistics
+import time
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -264,7 +264,7 @@ class CryptoBenchmarker:
         max_time = max(measurements)
 
         # Calculate confidence interval
-        alpha = 1 - self.config.confidence_level
+        1 - self.config.confidence_level
         z_score = 1.96  # For 95% confidence
         margin_error = z_score * std_dev / (len(measurements) ** 0.5)
         ci_lower = mean_time - margin_error

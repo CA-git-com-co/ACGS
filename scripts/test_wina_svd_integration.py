@@ -18,7 +18,8 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict
+
 import numpy as np
 import torch
 
@@ -26,26 +27,23 @@ import torch
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-# Import WINA components
-from services.shared.wina import (
-    WINAConfig,
-    WINAIntegrationConfig,
-    WINAModelIntegrator,
-    MockModelWeightExtractor,
-    SVDTransformation,
-)
-from services.shared.wina.config import load_wina_config_from_env
-
 # Import GS Engine components
 from services.core.governance_synthesis.app.core.wina_llm_integration import (
     WINAOptimizedLLMClient,
-    get_wina_optimized_llm_client,
-    query_llm_with_wina_optimization,
 )
 from services.core.governance_synthesis.app.schemas import (
     LLMInterpretationInput,
-    ConstitutionalSynthesisInput,
 )
+
+# Import WINA components
+from services.shared.wina import (
+    MockModelWeightExtractor,
+    SVDTransformation,
+    WINAConfig,
+    WINAIntegrationConfig,
+    WINAModelIntegrator,
+)
+from services.shared.wina.config import load_wina_config_from_env
 
 # Configure logging
 logging.basicConfig(

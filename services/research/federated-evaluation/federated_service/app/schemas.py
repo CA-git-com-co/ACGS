@@ -4,10 +4,11 @@ Pydantic schemas for Federated Evaluation Service
 Defines request/response models for federated evaluation API endpoints.
 """
 
-from pydantic import BaseModel, Field, field_validator
-from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, field_validator
 
 
 class PlatformType(str, Enum):

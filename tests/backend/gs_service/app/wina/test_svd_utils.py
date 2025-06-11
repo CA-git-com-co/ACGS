@@ -1,10 +1,10 @@
-import pytest
 import numpy as np
+import pytest
 from services.core.governance_synthesis.app.wina.svd_utils import (
-    perform_svd,
-    reconstruct_from_svd,
     apply_svd_transformation,
     get_svd_reduced_components,
+    perform_svd,
+    reconstruct_from_svd,
 )
 
 

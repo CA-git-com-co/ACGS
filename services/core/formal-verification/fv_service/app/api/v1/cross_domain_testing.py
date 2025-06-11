@@ -10,31 +10,34 @@ Provides REST API for cross-domain principle testing framework including:
 
 import logging
 from datetime import datetime, timezone
-from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_
+from typing import List, Optional
 
-from services.shared.database import get_async_db
-from services.shared.models import (
-    DomainContext,
-    CrossDomainTestScenario,
-    CrossDomainTestResult,
-    Principle,
-)
-from app.core.auth import require_verification_triggerer, User
+from app.core.auth import User, require_verification_triggerer
 from app.core.cross_domain_testing_engine import cross_domain_testing_engine
-from app.services.ac_client import ac_service_client
+from app.schemas import (
+    CrossDomainTestRequest,
+    CrossDomainTestResponse,
+)
+from app.schemas import CrossDomainTestResult as CrossDomainTestResultSchema
+from app.schemas import CrossDomainTestScenario as CrossDomainTestScenarioSchema
+from app.schemas import (
+    CrossDomainTestScenarioCreate,
+)
+from app.schemas import DomainContext as DomainContextSchema
 from app.schemas import (
     DomainContextCreate,
     DomainContextUpdate,
-    DomainContext as DomainContextSchema,
-    CrossDomainTestScenarioCreate,
-    CrossDomainTestScenarioUpdate,
-    CrossDomainTestScenario as CrossDomainTestScenarioSchema,
-    CrossDomainTestRequest,
-    CrossDomainTestResponse,
-    CrossDomainTestResult as CrossDomainTestResultSchema,
+)
+from app.services.ac_client import ac_service_client
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.database import get_async_db
+from services.shared.models import (
+    CrossDomainTestResult,
+    CrossDomainTestScenario,
+    DomainContext,
 )
 
 logger = logging.getLogger(__name__)

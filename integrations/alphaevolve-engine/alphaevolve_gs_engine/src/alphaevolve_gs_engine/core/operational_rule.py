@@ -9,11 +9,12 @@ Classes:
     OperationalRule: Represents a single operational rule.
 """
 
-from typing import Dict, Any, List, Optional
 from datetime import datetime
-from .constitutional_principle import (
+from typing import Any, Dict, List, Optional
+
+from .constitutional_principle import (  # Assuming relative import
     ConstitutionalPrinciple,
-)  # Assuming relative import
+)
 
 
 class OperationalRule:

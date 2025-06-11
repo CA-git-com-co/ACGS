@@ -5,22 +5,15 @@ Implements digital signatures, hash functions, Merkle trees, and RFC 3161 timest
 
 import hashlib
 import json
-import secrets
-import base64
-from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any, Tuple
 import logging
+from typing import Any, Dict, List, Tuple
 
 # Cryptography library imports
 try:
-    from cryptography.hazmat.primitives import hashes, serialization
-    from cryptography.hazmat.primitives.asymmetric import rsa, padding
-    from cryptography.hazmat.primitives.asymmetric.rsa import (
-        RSAPrivateKey,
-        RSAPublicKey,
-    )
-    from cryptography.hazmat.backends import default_backend
     from cryptography.exceptions import InvalidSignature
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
     CRYPTOGRAPHY_AVAILABLE = True
 except ImportError:

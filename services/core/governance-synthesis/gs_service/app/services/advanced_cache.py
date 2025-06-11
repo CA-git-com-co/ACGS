@@ -8,21 +8,19 @@ Phase 3: Performance Optimization and Security Compliance
 """
 
 import asyncio
-import time
-import logging
 import hashlib
 import json
 import pickle
-from typing import Dict, Any, Optional, Union, List, Callable, TypeVar, Generic
-from dataclasses import dataclass, asdict
+import threading
+from collections import OrderedDict
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import wraps
-from collections import OrderedDict
-import threading
+from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
 
 import redis.asyncio as redis
-from redis.exceptions import RedisError
 import structlog
+from redis.exceptions import RedisError
 
 logger = structlog.get_logger(__name__)
 

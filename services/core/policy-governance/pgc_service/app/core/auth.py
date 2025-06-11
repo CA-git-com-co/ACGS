@@ -1,12 +1,9 @@
 # Import shared authentication utilities
 from services.shared.auth import (
-    get_current_user_from_token,
-    get_current_active_user,
-    require_admin,
-    require_pgc_admin,
-    require_internal_service,
     RoleChecker,
-    User,
+    get_current_active_user,
+    get_current_user_from_token,
+    require_pgc_admin,
 )
 
 # PGC service specific role checkers

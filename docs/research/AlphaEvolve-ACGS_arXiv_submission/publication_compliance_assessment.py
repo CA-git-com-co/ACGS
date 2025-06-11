@@ -5,10 +5,9 @@ Validates compliance with ACM FAccT 2025 submission requirements
 """
 
 import re
-import os
-from pathlib import Path
-from typing import Dict, List, Tuple
 import subprocess
+from pathlib import Path
+from typing import Dict
 
 
 class PublicationComplianceAssessment:

@@ -6,7 +6,6 @@ This script generates simple placeholder figures that are referenced in the docu
 
 try:
     import matplotlib.pyplot as plt
-    import matplotlib.patches as mpatches
     import numpy as np
     from matplotlib.patches import FancyBboxPatch, Rectangle
 

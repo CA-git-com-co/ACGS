@@ -5,13 +5,14 @@ Validates all services, dependencies, and infrastructure components.
 """
 
 import asyncio
-import aiohttp
 import json
+import logging
 import sys
 import time
-from typing import Dict, List, Any, Optional
 from datetime import datetime
-import logging
+from typing import Any, Dict, List
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(

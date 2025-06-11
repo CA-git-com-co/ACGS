@@ -4,9 +4,9 @@ Direct middleware testing script to debug input validation issues.
 """
 
 import asyncio
-import aiohttp
-import json
 from datetime import datetime
+
+import aiohttp
 
 
 async def test_single_service(service_name: str, port: int):

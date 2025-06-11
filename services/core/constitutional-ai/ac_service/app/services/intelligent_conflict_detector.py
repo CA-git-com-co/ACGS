@@ -13,19 +13,19 @@ Key Features:
 - Dynamic priority adjustment based on context
 """
 
-import asyncio
 import logging
-import numpy as np
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Set
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_
+from typing import Any, Dict, List, Optional, Set
 
-from services.shared.models import Principle, ACConflictResolution
+import numpy as np
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.models import ACConflictResolution, Principle
+
 from ..schemas import ACConflictResolutionCreate
-from .qec_conflict_resolver import QECConflictResolver, ConflictAnalysis
+from .qec_conflict_resolver import QECConflictResolver
 
 logger = logging.getLogger(__name__)
 
@@ -279,7 +279,7 @@ class IntelligentConflictDetector:
 
         try:
             # Simplified embedding generation (in real implementation, use transformer models)
-            text = f"{principle.title} {principle.description}"
+            f"{principle.title} {principle.description}"
             # This would use actual NLP models like sentence-transformers
             # For now, return a random embedding as placeholder
             return np.random.rand(384)  # Typical sentence embedding size

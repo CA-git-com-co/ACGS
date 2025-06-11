@@ -10,22 +10,19 @@ Based on AlphaEvolve-ACGS Integration System research paper improvements.
 import asyncio
 import logging
 import time
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
-from enum import Enum
-import json
 from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List
 
+from prometheus_client import Counter, Gauge, Histogram
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_, or_
-from sqlalchemy.exc import SQLAlchemyError
-from prometheus_client import Counter, Histogram, Gauge
 
-from ..models import ACAmendment, ACAmendmentVote, ACAmendmentComment, User
-from ..schemas import ACAmendmentCreate, ACAmendmentVoteCreate, ACAmendmentCommentCreate
+from ..models import ACAmendment, ACAmendmentVote, User
+from ..schemas import ACAmendmentCreate, ACAmendmentVoteCreate
 
 # from services.shared.redis_client import get_redis_client
-from services.shared.metrics import ACGSMetrics
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +144,6 @@ class RapidCoEvolutionHandler:
         except Exception as e:
             logger.error(f"Failed to initialize rapid co-evolution handler: {e}")
             # Continue without Redis if it fails
-            pass
 
     async def process_rapid_amendment(
         self,
@@ -675,7 +671,7 @@ class AsyncVotingManager:
             # Calculate results
             for_votes = counts.get("for", 0)
             against_votes = counts.get("against", 0)
-            abstain_votes = counts.get("abstain", 0)
+            counts.get("abstain", 0)
 
             # 60% supermajority required
             if for_votes / total_votes >= 0.6:

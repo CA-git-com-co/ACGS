@@ -5,17 +5,18 @@ REST API endpoints for managing secure aggregation protocols,
 configuration, and monitoring.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from typing import Dict, List, Optional, Any
 import logging
+from typing import Any, Dict
 
-from services.shared.auth import get_current_user_from_token, get_current_active_user
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from services.shared.auth import get_current_active_user
+
 from ...core.secure_aggregation import secure_aggregator
 from ...schemas import (
     AggregationConfigRequest,
     SecureShareRequest,
     SecureShareResponse,
-    ErrorResponse,
 )
 
 router = APIRouter()

@@ -22,30 +22,23 @@ import logging
 import sys
 import time
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-
-from fastapi import FastAPI, Request, status, HTTPException
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from pydantic import BaseModel
 
 from app.core.config import settings
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 # Import shared components
-sys.path.append('/home/dislove/ACGS-1/services/shared')
-from api_models import (
-    APIResponse, ServiceInfo, HealthCheckResponse,
-    create_success_response, create_error_response, ErrorCode
-)
+sys.path.append("/home/dislove/ACGS-1/services/shared")
+from api_models import HealthCheckResponse, ServiceInfo, create_success_response
 from middleware import add_production_middleware, create_exception_handlers
 
 # Import metrics functionality and enhanced security (with fallbacks)
 try:
     from services.shared.metrics import (
+        create_metrics_endpoint,
         get_metrics,
         metrics_middleware,
-        create_metrics_endpoint,
     )
 except ImportError:
     # Fallback for missing shared modules
@@ -60,8 +53,8 @@ except ImportError:
 
 
 try:
-    from services.shared.security_middleware import add_security_middleware
     from services.shared.security_config import security_config
+    from services.shared.security_middleware import add_security_middleware
 except ImportError:
     # Fallback for missing security modules
     def add_security_middleware(app):
@@ -69,13 +62,14 @@ except ImportError:
 
     security_config = {}
 
+from app.api.v1.api_keys import router as api_keys_router
+
 # Import the auth router directly from endpoints to avoid double prefix issue
 from app.api.v1.endpoints import router as auth_router
 
 # Import enterprise authentication routers
 from app.api.v1.mfa import router as mfa_router
 from app.api.v1.oauth import router as oauth_router
-from app.api.v1.api_keys import router as api_keys_router
 
 # Configure structured logging
 logging.basicConfig(
@@ -111,6 +105,33 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["X-Request-ID", "X-Response-Time", "X-Correlation-ID"],
 )
+
+# Add enhanced Prometheus metrics middleware
+try:
+    from services.shared.prometheus_middleware import (
+        add_prometheus_middleware,
+        create_enhanced_metrics_endpoint,
+    )
+
+    add_prometheus_middleware(app, SERVICE_NAME)
+
+    # Add metrics endpoint
+    @app.get("/metrics")
+    async def metrics():
+        """Prometheus metrics endpoint for authentication service."""
+        endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
+        return await endpoint_func()
+
+    logger.info("✅ Enhanced Prometheus metrics enabled for Authentication Service")
+except ImportError as e:
+    logger.warning(f"⚠️ Prometheus metrics not available: {e}")
+
+    # Fallback metrics endpoint
+    @app.get("/metrics")
+    async def fallback_metrics():
+        """Fallback metrics endpoint."""
+        return {"status": "metrics_not_available", "service": SERVICE_NAME}
+
 
 # Add production middleware
 add_production_middleware(app, SERVICE_NAME)
@@ -191,10 +212,11 @@ add_security_middleware(app)
 
 # Import API routers
 try:
+    from app.api.v1.api_keys import router as api_keys_router
     from app.api.v1.endpoints import router as auth_router
     from app.api.v1.mfa import router as mfa_router
     from app.api.v1.oauth import router as oauth_router
-    from app.api.v1.api_keys import router as api_keys_router
+
     ROUTERS_AVAILABLE = True
     logger.info("All API routers imported successfully")
 except ImportError as e:
@@ -206,26 +228,18 @@ if ROUTERS_AVAILABLE:
     try:
         # Include the authentication router
         app.include_router(
-            auth_router,
-            prefix="/auth",
-            tags=["Authentication & Authorization"]
+            auth_router, prefix="/auth", tags=["Authentication & Authorization"]
         )
 
         # Include enterprise authentication routers
         app.include_router(
-            mfa_router,
-            prefix="/auth/mfa",
-            tags=["Multi-Factor Authentication"]
+            mfa_router, prefix="/auth/mfa", tags=["Multi-Factor Authentication"]
         )
         app.include_router(
-            oauth_router,
-            prefix="/auth/oauth",
-            tags=["OAuth 2.0 & OpenID Connect"]
+            oauth_router, prefix="/auth/oauth", tags=["OAuth 2.0 & OpenID Connect"]
         )
         app.include_router(
-            api_keys_router,
-            prefix="/auth/api-keys",
-            tags=["API Key Management"]
+            api_keys_router, prefix="/auth/api-keys", tags=["API Key Management"]
         )
         logger.info("✅ All API routers included successfully")
     except Exception as e:
@@ -234,6 +248,7 @@ if ROUTERS_AVAILABLE:
 
 # Create fallback endpoints if routers not available
 if not ROUTERS_AVAILABLE:
+
     @app.get("/auth/mfa/status")
     async def mfa_status_fallback():
         return {"error": "MFA service not available", "enterprise_features": False}
@@ -261,8 +276,8 @@ if not ROUTERS_AVAILABLE:
 @app.get("/", response_model=ServiceInfo)
 async def root(request: Request):
     """Root endpoint with comprehensive service information."""
-    correlation_id = getattr(request.state, 'correlation_id', None)
-    response_time_ms = getattr(request.state, 'response_time_ms', None)
+    correlation_id = getattr(request.state, "correlation_id", None)
+    response_time_ms = getattr(request.state, "response_time_ms", None)
 
     service_info = ServiceInfo(
         service="ACGS-1 Production Authentication Service",
@@ -281,21 +296,21 @@ async def root(request: Request):
             "Security Audit Logging",
         ],
         api_documentation="/docs",
-        health_check="/health"
+        health_check="/health",
     )
 
     return create_success_response(
         data=service_info.dict(),
         service_name=SERVICE_NAME,
         correlation_id=correlation_id,
-        response_time_ms=response_time_ms
+        response_time_ms=response_time_ms,
     )
 
 
 @app.get("/health", response_model=HealthCheckResponse)
 async def health_check(request: Request):
     """Enhanced health check endpoint with comprehensive service status."""
-    correlation_id = getattr(request.state, 'correlation_id', None)
+    correlation_id = getattr(request.state, "correlation_id", None)
     uptime_seconds = time.time() - service_start_time
 
     health_info = HealthCheckResponse(
@@ -315,13 +330,13 @@ async def health_check(request: Request):
             "routers_available": ROUTERS_AVAILABLE,
             "enterprise_features": ROUTERS_AVAILABLE,
             "api_endpoints": 12 if ROUTERS_AVAILABLE else 3,
-        }
+        },
     )
 
     return create_success_response(
         data=health_info.dict(),
         service_name=SERVICE_NAME,
-        correlation_id=correlation_id
+        correlation_id=correlation_id,
     )
 
 
@@ -334,7 +349,9 @@ async def startup_event():
     logger.info(f"🔌 Port: {SERVICE_PORT}")
     logger.info(f"📚 API Documentation: http://localhost:{SERVICE_PORT}/docs")
     logger.info(f"🔍 Health Check: http://localhost:{SERVICE_PORT}/health")
-    logger.info(f"🔐 Enterprise Features: {'Enabled' if ROUTERS_AVAILABLE else 'Minimal Mode'}")
+    logger.info(
+        f"🔐 Enterprise Features: {'Enabled' if ROUTERS_AVAILABLE else 'Minimal Mode'}"
+    )
 
 
 # Add shutdown event

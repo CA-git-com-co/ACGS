@@ -6,23 +6,22 @@ This script tests the stakeholder engagement system classes and models
 without requiring database connections.
 """
 
-import sys
 import os
-from datetime import datetime, timezone, timedelta
-from typing import List
+import sys
+from datetime import datetime, timedelta, timezone
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from app.services.stakeholder_engagement import (
-    NotificationChannel,
-    StakeholderRole,
-    NotificationStatus,
-    FeedbackStatus,
-    NotificationRecord,
     FeedbackRecord,
+    FeedbackStatus,
+    NotificationChannel,
+    NotificationRecord,
+    NotificationStatus,
     StakeholderEngagementInput,
     StakeholderEngagementStatus,
+    StakeholderRole,
 )
 
 

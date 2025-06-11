@@ -5,13 +5,11 @@ Validates and configures production-ready environment settings
 """
 
 import os
-import sys
-import json
 import secrets
 import subprocess
-from pathlib import Path
-from typing import Dict, List, Optional
+import sys
 from datetime import datetime
+from typing import Dict
 
 
 class ProductionConfigManager:

@@ -5,13 +5,15 @@ REST API endpoints for managing differential privacy,
 privacy budget, and privacy metrics monitoring.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from typing import Dict, List, Optional, Any
 import logging
+from typing import Any, Dict, Optional
 
-from services.shared.auth import get_current_user_from_token, get_current_active_user
-from ...core.privacy_metrics import differential_privacy_manager, PrivacyMechanism
-from ...schemas import PrivacyMetricsResponse, ErrorResponse
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from services.shared.auth import get_current_active_user
+
+from ...core.privacy_metrics import PrivacyMechanism, differential_privacy_manager
+from ...schemas import PrivacyMetricsResponse
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

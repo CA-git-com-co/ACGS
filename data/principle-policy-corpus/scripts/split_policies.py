@@ -5,11 +5,8 @@ Policy Corpus Splitter
 This script splits the all_policies.jsonl file into multiple smaller files.
 """
 
-import json
-import os
 import math
 from pathlib import Path
-from typing import List, Dict, Any
 
 
 def split_policies(input_file: str, num_parts: int = 10) -> None:

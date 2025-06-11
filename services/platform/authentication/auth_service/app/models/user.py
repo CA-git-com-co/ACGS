@@ -1,7 +1,8 @@
-from app.db.base_class import Base
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, Text, JSON
-from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
+
+from app.db.base_class import Base
+from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship
 
 
 class User(Base):

@@ -11,21 +11,17 @@ Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 import asyncio
 import logging
 import time
-from typing import Dict, Any, List, Optional, Union, Tuple
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from enum import Enum
-from datetime import datetime
-import json
+from typing import Any, Dict, List, Optional
 
-from ..core.opa_integration import (
-    get_opa_client,
-    PolicyDecisionRequest,
-    PolicyDecisionResponse,
-    BatchPolicyDecision,
-    PolicyValidationResult,
-    OPAIntegrationError,
-)
 from ..config.opa_config import get_opa_config
+from ..core.opa_integration import (
+    OPAIntegrationError,
+    PolicyDecisionRequest,
+    PolicyValidationResult,
+    get_opa_client,
+)
 
 logger = logging.getLogger(__name__)
 

@@ -1,18 +1,17 @@
 import asyncio
-import hashlib
-import re
 import os
-from typing import List, Optional, Dict, Any
+import re
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from ..services.integrity_client import integrity_service_client, IntegrityPolicyRule
+from ..services.integrity_client import IntegrityPolicyRule, integrity_service_client
 from .datalog_engine import datalog_engine  # Use the global engine instance
-from .policy_format_router import PolicyFormatRouter, PolicyFramework
-from .manifest_manager import ManifestManager
 
 # Task 8: Import incremental compilation components
-from .incremental_compiler import get_incremental_compiler, IncrementalCompiler
-from .opa_client import get_opa_client, OPAClient
+from .incremental_compiler import IncrementalCompiler, get_incremental_compiler
+from .manifest_manager import ManifestManager
+from .opa_client import OPAClient, get_opa_client
+from .policy_format_router import PolicyFormatRouter, PolicyFramework
 
 
 # Local mock implementation to avoid blocking imports

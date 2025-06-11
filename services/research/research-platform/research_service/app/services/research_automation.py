@@ -6,21 +6,17 @@ and intelligent research pipeline management for constitutional AI research.
 """
 
 import asyncio
-import logging
 import json
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any, Callable
-from dataclasses import dataclass, field
-from enum import Enum
+import logging
 import uuid
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
 from pathlib import Path
-
-import aiohttp
-import numpy as np
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any, Dict, List, Optional
 
 from ..core.config import get_settings
-from .experiment_tracker import ExperimentTracker, ExperimentConfig, ExperimentStatus
+from .experiment_tracker import ExperimentTracker
 
 # Note: These will be implemented in separate files
 # from .statistical_analyzer import StatisticalAnalyzer
@@ -496,7 +492,6 @@ class ResearchAutomationService:
     async def _execute_rule_actions(self, rule: AutomationRule):
         """Execute automation rule actions."""
         # Placeholder implementation
-        pass
 
     async def _should_run_pipeline(
         self, pipeline: ResearchPipeline, current_time: datetime
@@ -510,32 +505,27 @@ class ResearchAutomationService:
     ):
         """Execute experiment stage."""
         # Placeholder implementation
-        pass
 
     async def _execute_analysis_stage(
         self, config: Dict[str, Any], execution_id: str, parameters: Dict[str, Any]
     ):
         """Execute analysis stage."""
         # Placeholder implementation
-        pass
 
     async def _execute_monitoring_stage(
         self, config: Dict[str, Any], execution_id: str, parameters: Dict[str, Any]
     ):
         """Execute monitoring stage."""
         # Placeholder implementation
-        pass
 
     async def _execute_optimization_stage(
         self, config: Dict[str, Any], execution_id: str, parameters: Dict[str, Any]
     ):
         """Execute optimization stage."""
         # Placeholder implementation
-        pass
 
     async def _execute_reporting_stage(
         self, config: Dict[str, Any], execution_id: str, parameters: Dict[str, Any]
     ):
         """Execute reporting stage."""
         # Placeholder implementation
-        pass

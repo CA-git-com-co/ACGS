@@ -8,17 +8,18 @@ Integrates with ACGS backend for principle retrieval and policy management
 import asyncio
 import json
 import logging
-import websockets
-from typing import Dict, List, Optional, Callable
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import datetime
+from typing import Callable, Dict, List, Optional
+
 import aiohttp
-from solana.rpc.websocket_api import connect
-from solana.rpc.commitment import Confirmed
-from solders.pubkey import Pubkey
+import websockets
 
 # Import our GS Engine
-from governance_synthesis import QuantumagiGSEngine, PolicyCategory
+from governance_synthesis import PolicyCategory, QuantumagiGSEngine
+from solana.rpc.commitment import Confirmed
+from solana.rpc.websocket_api import connect
+from solders.pubkey import Pubkey
 
 
 @dataclass

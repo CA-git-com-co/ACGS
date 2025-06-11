@@ -5,19 +5,18 @@ This module generates security hardening recommendations based on vulnerability
 assessment results and implements attack surface reduction measures.
 """
 
-import logging
 import json
+import logging
 import time
-from typing import Dict, List, Optional, Any, Tuple
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from dataclasses import dataclass, asdict
 from enum import Enum
+from typing import Any, Dict, List
 
 from .adversarial_framework import (
-    VulnerabilityResult,
-    AttackCategory,
-    VulnerabilitySeverity,
     AdversarialTestReport,
+    AttackCategory,
+    VulnerabilityResult,
 )
 
 logger = logging.getLogger(__name__)

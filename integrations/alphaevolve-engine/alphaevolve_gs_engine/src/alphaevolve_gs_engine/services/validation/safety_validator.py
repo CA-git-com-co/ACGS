@@ -12,9 +12,9 @@ Classes:
     SimulationBasedSafetyValidator: Simulates policy effects in safety-critical scenarios.
 """
 
-from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Tuple, Optional
 import re  # For pattern matching
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Tuple
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
@@ -126,7 +126,6 @@ class SafetyValidator(ABC):
                 Each tuple contains: (assertion_id, passed, message).
                 'passed' is True if the policy satisfies the safety assertion.
         """
-        pass
 
 
 class PatternBasedSafetyValidator(SafetyValidator):

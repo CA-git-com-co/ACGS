@@ -5,13 +5,12 @@ Provides factory classes and providers for creating service instances
 with proper configuration and lifecycle management.
 """
 
-import asyncio
 import logging
-from typing import Dict, Any, Optional, Type, TypeVar, Callable
 from abc import ABC, abstractmethod
+from typing import Any, Dict, Optional, Type, TypeVar
 
-from .interfaces import ServiceInterface, DatabaseInterface, CacheInterface
 from ..common.error_handling import ACGSException
+from .interfaces import CacheInterface, DatabaseInterface
 
 logger = logging.getLogger(__name__)
 
@@ -24,17 +23,14 @@ class ServiceProvider(ABC):
     @abstractmethod
     async def create_instance(self, *args, **kwargs) -> Any:
         """Create a service instance."""
-        pass
 
     @abstractmethod
     async def configure_instance(self, instance: Any, config: Dict[str, Any]) -> Any:
         """Configure a service instance."""
-        pass
 
     @abstractmethod
     async def dispose_instance(self, instance: Any) -> None:
         """Dispose of a service instance."""
-        pass
 
 
 class DatabaseProvider(ServiceProvider):
@@ -54,7 +50,7 @@ class DatabaseProvider(ServiceProvider):
     async def create_instance(self, *args, **kwargs) -> DatabaseInterface:
         """Create a database service instance."""
         # This would create actual database connection in production
-        from ..database.pool_manager import ConnectionPool, PoolConfig
+        from ..database.pool_manager import PoolConfig
 
         pool_config = PoolConfig(
             min_connections=self.config.get("min_connections", 5),

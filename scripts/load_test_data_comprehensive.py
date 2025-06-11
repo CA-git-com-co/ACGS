@@ -9,9 +9,8 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Any
+
 import asyncpg
-from datetime import datetime, timezone
 
 # Add the project root to the Python path
 project_root = Path(__file__).parent.parent

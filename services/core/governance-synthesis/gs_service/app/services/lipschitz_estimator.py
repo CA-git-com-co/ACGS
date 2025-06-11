@@ -7,15 +7,14 @@ finding that fixed values were asserted without derivation.
 """
 
 import asyncio
-import logging
-import time
+import hashlib
 import json
-from typing import Dict, List, Tuple, Optional, Any
-from dataclasses import dataclass
+import logging
 
 # Use built-in math instead of external dependencies
 import math
-import hashlib
+from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
 
 # Import schemas with fallback
 try:
@@ -343,7 +342,7 @@ class LipschitzEstimator:
         max_ratio = max(ratios)
 
         # Compute confidence interval
-        alpha = 1 - self.config.confidence_level
+        1 - self.config.confidence_level
         z_score = 1.96  # For 95% confidence
         margin_error = z_score * std_ratio / math.sqrt(len(ratios))
 

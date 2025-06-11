@@ -5,17 +5,14 @@ REST API endpoints for managing MAB prompt optimization,
 viewing performance metrics, and configuring optimization parameters.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Dict, List, Optional, Any
 import logging
+from typing import Any, Dict, List, Optional
 
 # Fix the import paths to use the full package path
-from services.shared.database import get_async_db
-from services.shared.auth import get_current_user_from_token, get_current_active_user
 from app.core.mab_integration import MABIntegratedGSService
-from app.core.mab_prompt_optimizer import MABConfig, MABAlgorithm, PromptTemplate
-from app.schemas import ConstitutionalSynthesisInput, ConstitutionalSynthesisOutput
+from app.core.mab_prompt_optimizer import MABAlgorithm, MABConfig, PromptTemplate
+from app.schemas import ConstitutionalSynthesisInput
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)

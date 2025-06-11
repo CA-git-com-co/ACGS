@@ -1,22 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request  # Added Request
-from typing import List, Optional
 from datetime import datetime
 
+from fastapi import APIRouter, Depends, HTTPException, Request, status  # Added Request
+
 from ... import schemas  # Relative imports for app directory
-from ...core.policy_manager import policy_manager  # Global policy manager instance
+from ...core.auth import User, require_policy_evaluation_triggerer  # Placeholder auth
 from ...core.datalog_engine import datalog_engine  # Global Datalog engine instance
-from ...core.secure_execution import (
+from ...core.limiter import limiter  # Import the limiter
+from ...core.opa_client import get_opa_client
+from ...core.policy_manager import policy_manager  # Global policy manager instance
+from ...core.secure_execution import (  # Mock PET/TEE
     apply_pet_transformation,
     execute_in_mock_tee,
-)  # Mock PET/TEE
-from ...core.auth import require_policy_evaluation_triggerer, User  # Placeholder auth
-from ...core.limiter import limiter  # Import the limiter
-from ...core.wina_enforcement_optimizer import (
-    get_wina_enforcement_optimizer,
-    EnforcementContext,
-    WINAEnforcementOptimizer,
 )
-from ...core.opa_client import get_opa_client
+from ...core.wina_enforcement_optimizer import (
+    EnforcementContext,
+    get_wina_enforcement_optimizer,
+)
 from ...core.wina_policy_compiler import WINAPolicyCompiler
 
 router = APIRouter()

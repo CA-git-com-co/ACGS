@@ -13,23 +13,22 @@ This module handles:
 
 import logging
 import time
-import asyncio
-from typing import Dict, List, Optional, Any, Tuple, Union, Protocol
-from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 import torch
-from pathlib import Path
 
 from .config import WINAConfig, WINAIntegrationConfig
+from .exceptions import WINAError, WINAOptimizationError
+from .metrics import GFLOPsTracker, PerformanceMonitor, WINAMetrics
 from .svd_transformation import (
-    SVDTransformation,
     OrthogonalityProtocol,
+    SVDTransformation,
     SVDTransformationResult,
 )
-from .metrics import WINAMetrics, GFLOPsTracker, PerformanceMonitor
-from .exceptions import WINAError, WINAOptimizationError
 
 logger = logging.getLogger(__name__)
 
@@ -79,12 +78,10 @@ class ModelWeightExtractor(ABC):
         Returns:
             List of ModelWeightInfo objects containing extracted weights
         """
-        pass
 
     @abstractmethod
     def get_supported_models(self) -> List[str]:
         """Get list of supported model identifiers."""
-        pass
 
 
 class MockModelWeightExtractor(ModelWeightExtractor):

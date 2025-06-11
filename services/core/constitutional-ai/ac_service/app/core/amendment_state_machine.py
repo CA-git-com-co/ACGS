@@ -6,14 +6,14 @@ for Constitutional Council amendment processing.
 """
 
 import logging
-from enum import Enum
-from typing import Dict, List, Optional, Any, Callable
-from datetime import datetime, timedelta
 from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, update
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # from services.shared.redis_client import get_redis_client
 from services.shared.metrics import get_metrics

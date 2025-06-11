@@ -1,10 +1,11 @@
-from typing import List, Tuple
+from typing import List
+
 from ..schemas import (
     ACPrinciple,
     PolicyRule,
     ProofObligation,
-    VerificationResult,
     SMTSolverOutput,
+    VerificationResult,
 )
 from .proof_obligations import generate_proof_obligations_from_principles
 from .smt_solver_integration import verify_rules_against_obligations

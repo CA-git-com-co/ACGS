@@ -6,17 +6,12 @@ and intelligent invalidation strategies for optimal performance.
 """
 
 import asyncio
-import logging
-from typing import Dict, Any, List, Optional, Union
-from datetime import datetime, timedelta
-import json
+from typing import Any, Dict, List, Optional
 
 import redis.asyncio as redis
-from redis.exceptions import RedisError
 import structlog
 
-from .advanced_cache import MultiTierCache, LRUCache, RedisCache, CACHE_TTL_POLICIES
-from ..config.opa_config import OPAConfig
+from .advanced_cache import CACHE_TTL_POLICIES, LRUCache, MultiTierCache, RedisCache
 
 logger = structlog.get_logger(__name__)
 

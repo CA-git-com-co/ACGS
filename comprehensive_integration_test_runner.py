@@ -23,14 +23,14 @@ Test Categories:
 
 import asyncio
 import json
-import time
-import sys
 import os
 import subprocess
+import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Tuple
-import httpx
 from pathlib import Path
+from typing import Any, Dict
+
+import httpx
 
 # Add project paths
 project_root = Path(__file__).parent
@@ -1042,7 +1042,7 @@ class ComprehensiveIntegrationTestRunner:
         }
 
         # Evaluate target achievements
-        targets = self.results["target_metrics"]
+        self.results["target_metrics"]
 
         # Integration test success rate target (>95%)
         if (

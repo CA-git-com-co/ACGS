@@ -6,14 +6,13 @@ AC service, including workflow initialization, state management, and integration
 with the existing Constitutional Council infrastructure.
 """
 
-import asyncio
 import logging
-from typing import Dict, Any, Optional, List
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
 
 try:
-    from langgraph.graph import StateGraph, START, END
+    from langgraph.graph import END, START, StateGraph
     from langgraph.types import Send
 
     LANGGRAPH_AVAILABLE = True
@@ -25,16 +24,14 @@ except ImportError:
     END = "END"
     Send = None
 
+from services.shared.langgraph_config import (
+    ConstitutionalCouncilConfig,
+    get_langgraph_config,
+)
 from services.shared.langgraph_states import (
     ConstitutionalCouncilState,
     WorkflowStatus,
     create_workflow_metadata,
-    update_workflow_status,
-)
-from services.shared.langgraph_config import (
-    get_langgraph_config,
-    ConstitutionalCouncilConfig,
-    ModelRole,
 )
 
 logger = logging.getLogger(__name__)

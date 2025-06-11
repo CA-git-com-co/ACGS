@@ -9,15 +9,14 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, Optional, Set
 from uuid import uuid4
 
+from app.models import ACAmendment, ACAmendmentComment, ACAmendmentVote
 from fastapi import WebSocket, WebSocketDisconnect
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_, or_
 
-from app import crud
-from app.models import ACAmendment, ACAmendmentVote, ACAmendmentComment, User
 from services.shared.constitutional_metrics import get_constitutional_metrics
 from services.shared.metrics import get_metrics
 

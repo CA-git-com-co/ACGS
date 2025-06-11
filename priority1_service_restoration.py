@@ -5,12 +5,13 @@ Optimized approach with correct service configurations
 """
 
 import asyncio
-import subprocess
-import time
 import json
-import sys
 import os
+import subprocess
+import sys
+import time
 from pathlib import Path
+
 import httpx
 
 
@@ -311,7 +312,7 @@ class Priority1ServiceRestoration:
         self.stop_existing_services()
 
         # Step 2: Setup environment
-        env_vars = self.setup_environment()
+        self.setup_environment()
 
         # Step 3: Start services one by one
         restored_services = []

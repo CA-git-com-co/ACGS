@@ -5,24 +5,20 @@ Provides standardized evaluation interface across different LLM platforms
 with platform-specific optimizations and Byzantine fault tolerance.
 """
 
-import asyncio
+import json
 import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any, Union, Tuple
 from enum import Enum
-import json
-import hashlib
+from typing import Any, Dict, Optional
 
 import httpx
-import numpy as np
-from pydantic import BaseModel, Field
 
-from .federated_evaluator import PlatformType, FederatedNode
-from .secure_aggregation import SecureAggregator, AggregationMethod
 from services.services.shared.metrics import get_metrics
+
+from .federated_evaluator import PlatformType
 
 logger = logging.getLogger(__name__)
 
@@ -178,17 +174,14 @@ class BasePlatformAdapter(ABC):
     @abstractmethod
     async def _platform_specific_init(self) -> None:
         """Platform-specific initialization logic."""
-        pass
 
     @abstractmethod
     async def _platform_specific_shutdown(self) -> None:
         """Platform-specific shutdown logic."""
-        pass
 
     @abstractmethod
     async def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         """Evaluate policy using platform-specific implementation."""
-        pass
 
     async def health_check(self) -> Dict[str, Any]:
         """Perform health check for the platform."""
@@ -289,7 +282,6 @@ class OpenAIPlatformAdapter(BasePlatformAdapter):
 
     async def _platform_specific_shutdown(self) -> None:
         """OpenAI-specific shutdown logic."""
-        pass
 
     async def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         """Evaluate policy using OpenAI GPT-4."""
@@ -476,7 +468,6 @@ class AnthropicPlatformAdapter(BasePlatformAdapter):
 
     async def _platform_specific_shutdown(self) -> None:
         """Anthropic-specific shutdown logic."""
-        pass
 
     async def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         """Evaluate policy using Anthropic Claude with Constitutional AI."""
@@ -709,7 +700,6 @@ class CoherePlatformAdapter(BasePlatformAdapter):
 
     async def _platform_specific_shutdown(self) -> None:
         """Cohere-specific shutdown logic."""
-        pass
 
     async def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         """Evaluate policy using Cohere Command model."""
@@ -807,7 +797,7 @@ Recommendations:
         """Parse Cohere API response into standardized format."""
         try:
             content = result["generations"][0]["text"]
-            meta = result.get("meta", {})
+            result.get("meta", {})
 
             # Parse structured response from Cohere
             scores = self._extract_scores_from_text(content)
@@ -936,7 +926,6 @@ class GroqPlatformAdapter(BasePlatformAdapter):
 
     async def _platform_specific_shutdown(self) -> None:
         """Groq-specific shutdown logic."""
-        pass
 
     async def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         """Evaluate policy using Groq's fast inference."""

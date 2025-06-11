@@ -5,9 +5,6 @@ Tests all implemented Phase 1-3 components with actual service endpoints
 """
 
 import requests
-import json
-import sys
-from typing import Dict, Any, List
 
 # Service Configuration
 SERVICES = {

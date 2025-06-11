@@ -1,6 +1,5 @@
 from fastapi import Request
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
+from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 # from ..auth import get_current_user_optional # Hypothetical: if pgc has its own auth user lookup

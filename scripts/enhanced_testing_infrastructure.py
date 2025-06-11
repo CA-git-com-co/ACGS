@@ -5,16 +5,13 @@ Implements comprehensive end-to-end testing with >80% coverage target
 and performance benchmarking for governance workflows.
 """
 
-import asyncio
 import json
 import logging
 import subprocess
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
-import pytest
-import coverage
+from typing import Any, Dict
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

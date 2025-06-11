@@ -12,12 +12,11 @@ Classes:
 """
 
 import logging
-import hashlib
 import time
-from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 from ...core.constitutional_principle import ConstitutionalPrinciple
 
@@ -375,7 +374,7 @@ class ErrorPredictionModel:
 
         # Simple complexity metrics
         word_count = len(text.split())
-        sentence_count = len([s for s in text.split(".") if s.strip()])
+        len([s for s in text.split(".") if s.strip()])
         avg_word_length = sum(len(word) for word in text.split()) / max(word_count, 1)
 
         # Normalize to 0-1 range

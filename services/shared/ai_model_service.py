@@ -6,13 +6,13 @@ Supports Google Gemini 2.5 Flash, DeepSeek-R1, and other AI models for various o
 """
 
 import asyncio
-import httpx
-import json
-import logging
-from typing import Dict, List, Optional, Any, Union
-from enum import Enum
-from dataclasses import dataclass
 import dataclasses
+import logging
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Dict, Optional
+
+import httpx
 
 try:
     from .utils import get_config

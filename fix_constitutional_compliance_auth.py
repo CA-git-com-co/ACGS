@@ -7,10 +7,11 @@ require authentication configuration to enable validation workflows.
 """
 
 import asyncio
-import httpx
 import json
 import time
-from typing import Dict, Any
+from typing import Any, Dict
+
+import httpx
 
 
 class ConstitutionalComplianceAuthFixer:

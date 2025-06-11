@@ -6,13 +6,13 @@ This script implements memory optimization to maintain <85% memory usage under l
 
 import asyncio
 import gc
+import json
 import logging
 import os
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-import json
+from typing import Any, Dict
 
 # Configure logging
 logging.basicConfig(
@@ -25,7 +25,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root / "src" / "backend" / "shared"))
 
 try:
-    from memory_optimizer import MemoryOptimizer, MemoryThresholds, get_memory_optimizer
+    from memory_optimizer import MemoryThresholds, get_memory_optimizer
 
     MEMORY_OPTIMIZER_AVAILABLE = True
 except ImportError as e:

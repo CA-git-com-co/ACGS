@@ -7,12 +7,13 @@ Tests enhanced security middleware implementation across all services.
 """
 
 import asyncio
-import aiohttp
 import json
 import time
-from typing import Dict, List, Any
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, List
+
+import aiohttp
 
 
 @dataclass

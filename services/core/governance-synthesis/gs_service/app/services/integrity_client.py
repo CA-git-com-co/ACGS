@@ -1,10 +1,12 @@
 import os
+from typing import Optional
+
 import httpx
-from typing import List, Optional
-from ..schemas import (
-    PolicyRuleCreate,
+
+from ..schemas import (  # Using schemas defined in gs_service
     PolicyRule,
-)  # Using schemas defined in gs_service
+    PolicyRuleCreate,
+)
 
 # Load environment variables
 INTEGRITY_SERVICE_URL = os.getenv(
@@ -98,7 +100,7 @@ integrity_service_client = IntegrityServiceClient(base_url=INTEGRITY_SERVICE_URL
 
 # Example Usage (for testing this file)
 if __name__ == "__main__":
-    import asyncio
+    pass
 
     async def test_integrity_client():
         print(f"Testing Integrity Client against URL: {INTEGRITY_SERVICE_URL}")
@@ -107,7 +109,6 @@ if __name__ == "__main__":
 
         # Placeholder token for Integrity Service (if its placeholder auth expects one)
         # The integrity_service placeholder auth uses "internal_service_token" for POST /policies/
-        test_auth_token = "internal_service_token"
 
         # Example: Store a new rule
         new_rule_data = PolicyRuleCreate(

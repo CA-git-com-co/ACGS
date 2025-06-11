@@ -6,12 +6,10 @@ Sets up production-ready database connections, migrations, and monitoring
 
 import asyncio
 import os
-import sys
 import subprocess
-import json
-import psycopg2
 from datetime import datetime
-from typing import Dict, Any, Optional
+
+import psycopg2
 
 
 class ProductionDatabaseConfig:

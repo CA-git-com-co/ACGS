@@ -3,18 +3,18 @@ Explainability and Rule Provenance Module for ACGS-PGP Phase 3
 Provides decision explanations and rule traceability
 """
 
-import time
 import logging
-import asyncio
-from typing import List, Dict, Any, Optional, Tuple
-from datetime import datetime, timedelta
+import time
+from datetime import datetime
+from typing import Any, Dict, List
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from ..schemas import (
     ExplainabilityRequest,
     ExplainabilityResponse,
     RuleProvenanceResponse,
 )
-from .. import crud, models
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 

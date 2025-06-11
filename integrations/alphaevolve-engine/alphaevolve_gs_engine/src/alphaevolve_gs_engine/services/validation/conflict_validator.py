@@ -13,12 +13,12 @@ Classes:
                          queries, or `opa test`) to find conflicts.
 """
 
-from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Tuple, Optional
-import subprocess
 import json
 import os
+import subprocess
 import tempfile
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional, Tuple
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
@@ -96,7 +96,6 @@ class ConflictValidator(ABC):
                 - "details": Specifics of the conflict (e.g., problematic input).
                 - "severity": Severity of the conflict.
         """
-        pass
 
 
 class OPAConflictDetector(ConflictValidator):

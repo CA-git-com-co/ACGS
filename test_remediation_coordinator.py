@@ -7,14 +7,14 @@ Systematically fixes and executes tests with proper error handling and reporting
 
 import asyncio
 import json
+import logging
 import os
 import subprocess
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-import logging
+from typing import Any, Dict, List
 
 # Setup logging
 logging.basicConfig(
@@ -138,7 +138,7 @@ class TestRemediationCoordinator:
         issues = []
 
         stderr = test_result.get("stderr", "")
-        stdout = test_result.get("stdout", "")
+        test_result.get("stdout", "")
 
         # Check for common import errors
         if "ModuleNotFoundError" in stderr:

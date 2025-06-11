@@ -18,16 +18,16 @@ Based on research: arXiv:2505.22954v1 - "Darwin Gödel Machine"
 """
 
 import argparse
-import subprocess
-import logging
-from logging.handlers import RotatingFileHandler
-import os
-import threading
 import json
+import logging
+import os
+import subprocess
+import threading
 import time
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Tuple, Any
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 # Import Requesty API integration
 try:
@@ -688,7 +688,7 @@ Your task is to make changes to the files in the {self.git_tempdir} directory to
                 instruction += "\n\nPlease analyze the problem description carefully. Then make edits to the code files to complete the instruction."
 
             # Get solution attempt from agent
-            response = self.chat_with_agent(instruction, strategy)
+            self.chat_with_agent(instruction, strategy)
 
             # Capture current patch
             current_patch = self.get_current_patch()

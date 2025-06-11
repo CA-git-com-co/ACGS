@@ -1,29 +1,69 @@
+version: '3.8'
+
 networks:
   acgs_monitoring:
     driver: bridge
+    name: acgs_monitoring_network
+
 services:
   alertmanager:
     container_name: acgs_alertmanager
-    image: prom/alertmanager:latest
+    image: prom/alertmanager:v0.25.0
     networks:
     - acgs_monitoring
     ports:
     - 9093:9093
     volumes:
-    - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    - alertmanager_data:/alertmanager
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+      - '--cluster.listen-address=0.0.0.0:9094'
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
   grafana:
     container_name: acgs_grafana
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: acgs_admin_2024
-    image: grafana/grafana:latest
+      - GF_SECURITY_ADMIN_PASSWORD=acgs_admin_2024
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_USERS_ALLOW_ORG_CREATE=false
+      - GF_USERS_AUTO_ASSIGN_ORG=true
+      - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Viewer
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel
+      - GF_FEATURE_TOGGLES_ENABLE=ngalert
+      - GF_ALERTING_ENABLED=true
+      - GF_UNIFIED_ALERTING_ENABLED=true
+      - GF_RENDERING_SERVER_URL=http://renderer:8081/render
+      - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
+      - GF_LOG_FILTERS=rendering:debug
+    image: grafana/grafana:9.3.8
     networks:
     - acgs_monitoring
     ports:
     - 3000:3000
     volumes:
     - grafana_data:/var/lib/grafana
-    - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
-    - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    - ./grafana/alerting:/etc/grafana/provisioning/alerting:ro
+    restart: unless-stopped
+    user: "472:472"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - prometheus
   node-exporter:
     command:
     - --path.procfs=/host/proc
@@ -48,17 +88,82 @@ services:
     - --web.console.templates=/etc/prometheus/consoles
     - --storage.tsdb.retention.time=200h
     - --web.enable-lifecycle
+    - --web.enable-admin-api
+    - --storage.tsdb.max-block-duration=2h
+    - --storage.tsdb.min-block-duration=2h
+    - --query.max-concurrency=50
+    - --query.timeout=2m
     container_name: acgs_prometheus
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.40.7
     networks:
     - acgs_monitoring
     ports:
     - 9090:9090
     volumes:
-    - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    - ./prometheus/rules:/etc/prometheus/rules
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    - ./rules:/etc/prometheus/rules:ro
     - prometheus_data:/prometheus
-version: '3.8'
+    restart: unless-stopped
+    user: "65534:65534"
+    environment:
+      - PROMETHEUS_RETENTION_TIME=200h
+      - PROMETHEUS_STORAGE_PATH=/prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+  # Additional monitoring services for comprehensive coverage
+  # Redis Exporter for cache monitoring
+  redis-exporter:
+    container_name: acgs_redis_exporter
+    image: oliver006/redis_exporter:latest
+    networks:
+      - acgs_monitoring
+    ports:
+      - 9121:9121
+    environment:
+      - REDIS_ADDR=redis://redis:6379
+      - REDIS_EXPORTER_LOG_FORMAT=txt
+    restart: unless-stopped
+    command:
+      - '--redis.addr=redis://redis:6379'
+      - '--web.listen-address=0.0.0.0:9121'
+      - '--web.telemetry-path=/metrics'
+
+  # PostgreSQL Exporter for database monitoring
+  postgres-exporter:
+    container_name: acgs_postgres_exporter
+    image: prometheuscommunity/postgres-exporter:latest
+    networks:
+      - acgs_monitoring
+    ports:
+      - 9187:9187
+    environment:
+      - DATA_SOURCE_NAME=postgresql://postgres:password@postgres:5432/acgs?sslmode=disable
+      - PG_EXPORTER_EXTEND_QUERY_PATH=/etc/postgres_exporter/queries.yaml
+    restart: unless-stopped
+    volumes:
+      - ./postgres_exporter/queries.yaml:/etc/postgres_exporter/queries.yaml:ro
+
+  # Grafana Image Renderer for PDF reports
+  grafana-renderer:
+    container_name: acgs_grafana_renderer
+    image: grafana/grafana-image-renderer:latest
+    networks:
+      - acgs_monitoring
+    ports:
+      - 8081:8081
+    environment:
+      - ENABLE_METRICS=true
+      - HTTP_PORT=8081
+    restart: unless-stopped
+
 volumes:
-  grafana_data: {}
-  prometheus_data: {}
+  grafana_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  alertmanager_data:
+    driver: local

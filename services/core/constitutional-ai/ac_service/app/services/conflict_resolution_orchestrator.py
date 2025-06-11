@@ -17,25 +17,24 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.shared.models import ACConflictResolution, Principle
-from ..schemas import ACConflictResolutionCreate, ACConflictResolutionUpdate
-from .intelligent_conflict_detector import (
-    IntelligentConflictDetector,
-    ConflictDetectionResult,
-)
+from ..schemas import ACConflictResolutionUpdate
 from .automated_resolution_engine import (
     AutomatedResolutionEngine,
     ResolutionResult,
-    ResolutionStatus,
 )
+from .conflict_audit_system import ConflictAuditSystem
 from .human_escalation_system import (
-    HumanEscalationSystem,
     EscalationRequest,
     EscalationResponse,
+    HumanEscalationSystem,
 )
-from .conflict_audit_system import ConflictAuditSystem, AuditLevel, PerformanceMetrics
+from .intelligent_conflict_detector import (
+    ConflictDetectionResult,
+    IntelligentConflictDetector,
+)
 
 logger = logging.getLogger(__name__)
 

@@ -154,3 +154,4 @@ watchfiles==1.0.5
 websockets==15.0.1
 wrapt==1.17.2
 z3-solver==4.12.2.0
+redis[hiredis]>=5.0.0

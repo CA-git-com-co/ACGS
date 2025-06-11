@@ -16,11 +16,7 @@ Targets:
 """
 
 import asyncio
-import json
-import sys
-import time
 from pathlib import Path
-from typing import Dict, Any, List
 
 # Add project root to path
 project_root = Path(__file__).parent
@@ -32,8 +28,8 @@ async def test_wina_core_functionality():
     print("🔧 Testing WINA Core Functionality...")
 
     try:
-        from wina.core import WINACore
         from wina.config import WINAConfig
+        from wina.core import WINACore
 
         # Initialize WINA with Phase 2 configuration (corrected parameters)
         config = WINAConfig(
@@ -66,8 +62,8 @@ async def test_svd_transformation():
     print("🔧 Testing SVD Transformation...")
 
     try:
-        from wina.svd_transformation import SVDTransformation, WINAConfig
         import torch
+        from wina.svd_transformation import SVDTransformation, WINAConfig
 
         # Initialize SVD transformer
         config = WINAConfig(
@@ -195,7 +191,7 @@ async def test_multi_model_coordination():
         # Test if multi-model coordinator is available
         # sys.path.append(str(project_root / "src" / "backend" / "gs_service" / "app"))  # Removed during reorganization
 
-        from core.multi_model_coordinator import MultiModelCoordinator, EnsembleStrategy
+        from core.multi_model_coordinator import EnsembleStrategy, MultiModelCoordinator
 
         # Initialize coordinator (corrected with required config)
         config = {

@@ -5,14 +5,13 @@ Validates 25% quality improvement target and convergence within 100 iterations.
 Provides real-time monitoring and benchmarking capabilities.
 """
 
-import asyncio
 import logging
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-import json
+from typing import Any, Dict, List, Optional, Tuple
+
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -416,7 +415,7 @@ class PerformanceValidator:
             return "stable", 0.0
 
         # Calculate trend using linear regression
-        rewards = [s.average_reward for s in snapshots]
+        [s.average_reward for s in snapshots]
         slope = self._calculate_improvement_rate(snapshots)
 
         # Determine trend direction and strength

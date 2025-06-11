@@ -1,8 +1,9 @@
+from datetime import datetime
+from typing import List, Optional
+
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import func
-from typing import List, Optional
-from datetime import datetime
 
 from . import models, schemas
 
@@ -233,15 +234,13 @@ async def create_ac_amendment(
     db: AsyncSession, amendment: schemas.ACAmendmentCreate, user_id: int
 ) -> models.ACAmendment:
     """Create AC amendment with co-evolution and scalability support."""
+    from .core.amendment_state_machine import (
+        WorkflowContext,
+    )
     from .core.constitutional_council_scalability import (
+        CoEvolutionMode,
         RapidCoEvolutionHandler,
         ScalabilityConfig,
-        CoEvolutionMode,
-    )
-    from .core.amendment_state_machine import (
-        amendment_state_machine,
-        WorkflowContext,
-        AmendmentEvent,
     )
 
     # Determine urgency level

@@ -1,12 +1,12 @@
-import pytest
 from typing import Dict
 
-from services.core.governance_synthesis.app.wina.models import (
-    WINAWeightOutput,
-    GatingThresholdConfig,
-    GatingDecision,
-)
+import pytest
 from services.core.governance_synthesis.app.wina.gating import determine_gating_decision
+from services.core.governance_synthesis.app.wina.models import (
+    GatingDecision,
+    GatingThresholdConfig,
+    WINAWeightOutput,
+)
 
 
 @pytest.mark.asyncio

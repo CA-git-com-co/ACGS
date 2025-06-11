@@ -6,27 +6,24 @@ integrated with the EC oversight coordinator.
 """
 
 import asyncio
-import json
 from datetime import datetime, timezone
-from typing import Dict, Any
+
+from services.shared.wina.performance_monitoring import (
+    WINAConstitutionalComplianceMetrics,
+    WINADynamicGatingMetrics,
+    WINAIntegrationPerformanceMetrics,
+    WINALearningFeedbackMetrics,
+    WINAMonitoringLevel,
+    WINANeuronActivationMetrics,
+    WINAPerformanceCollector,
+    WINASVDTransformationMetrics,
+    WINASystemHealthMetrics,
+)
 
 # Mock imports for demonstration
-import sys
-import os
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))  # Removed during reorganization
 
-from services.shared.wina.performance_monitoring import (
-    WINAPerformanceCollector,
-    WINAMonitoringLevel,
-    WINANeuronActivationMetrics,
-    WINADynamicGatingMetrics,
-    WINAConstitutionalComplianceMetrics,
-    WINASystemHealthMetrics,
-    WINAIntegrationPerformanceMetrics,
-    WINALearningFeedbackMetrics,
-    WINASVDTransformationMetrics,
-)
 
 
 async def demonstrate_performance_monitoring():

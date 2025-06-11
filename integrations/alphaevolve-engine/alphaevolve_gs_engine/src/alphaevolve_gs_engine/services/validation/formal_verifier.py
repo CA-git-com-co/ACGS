@@ -14,7 +14,7 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-from typing import Tuple, List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
@@ -87,7 +87,6 @@ class FormalVerifier(ABC):
                                          values are tuples of (verification_passed, message/details).
                                          'verification_passed' is True if the property holds as expected.
         """
-        pass
 
 
 class MockFormalVerifier(FormalVerifier):

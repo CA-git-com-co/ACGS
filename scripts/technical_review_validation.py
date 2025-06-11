@@ -7,24 +7,24 @@ of the AlphaEvolve-ACGS paper and validates the corrective actions.
 """
 
 import asyncio
-import sys
-import os
 import json
 import logging
+import sys
 from pathlib import Path
+
+from app.core.crypto_benchmarking import CryptoBenchmarkConfig, CryptoBenchmarker
+from app.core.verification_completeness_tester import VerificationCompletenessTester
+from app.services.fairness_evaluation_framework import (
+    DomainType,
+    FairnessEvaluationFramework,
+)
+from app.services.lipschitz_estimator import LipschitzEstimator
 
 # Add backend paths to Python path
 # sys.path.append(str(Path(__file__).parent.parent / "backend" / "gs_service"))  # Removed during reorganization
 # sys.path.append(str(Path(__file__).parent.parent / "backend" / "fv_service"))  # Removed during reorganization
 # sys.path.append(str(Path(__file__).parent.parent / "backend" / "integrity_service"))  # Removed during reorganization
 
-from app.services.lipschitz_estimator import LipschitzEstimator, MetricSpaceValidator
-from app.services.fairness_evaluation_framework import (
-    FairnessEvaluationFramework,
-    DomainType,
-)
-from app.core.verification_completeness_tester import VerificationCompletenessTester
-from app.core.crypto_benchmarking import CryptoBenchmarker, CryptoBenchmarkConfig
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

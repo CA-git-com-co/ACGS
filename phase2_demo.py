@@ -8,27 +8,23 @@ requirements.
 """
 
 import asyncio
-import time
 import logging
-from typing import Dict, Any
-from datetime import datetime
+import time
+from typing import Any, Dict
+
+from services.shared.database import PoolConfig, get_pool_manager
 
 # Import Phase 2 components
 from services.shared.di import (
     DIContainer,
     injectable,
-    singleton,
-    transient,
-    get_container,
 )
 from services.shared.events import (
-    EventBus,
     Event,
+    EventBus,
     EventType,
-    EventPriority,
     get_event_bus,
 )
-from services.shared.database import DatabasePoolManager, PoolConfig, get_pool_manager
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -244,7 +240,7 @@ class Phase2Demo:
         print("\n✅ AFTER: Optimized connection pooling and management")
 
         # Get pool manager
-        pool_manager = get_pool_manager()
+        get_pool_manager()
 
         # Configure optimized pool
         config = PoolConfig(

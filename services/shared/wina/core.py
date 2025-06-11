@@ -5,18 +5,18 @@ Core algorithm for Weight Informed Neuron Activation (WINA) optimization
 within the ACGS-PGP framework.
 """
 
-import asyncio
 import logging
 import time
-from typing import Dict, List, Optional, Any, Tuple, Union
-import numpy as np
-import torch
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Tuple
 
-from .config import WINAConfig, WINAIntegrationConfig, WINAMode, SparsityStrategy
-from .exceptions import WINAError, WINAOptimizationError, WINAConfigurationError
-from .metrics import WINAMetrics, GFLOPsTracker
+import numpy as np
+import torch
+
+from .config import WINAConfig, WINAIntegrationConfig
+from .exceptions import WINAOptimizationError
+from .metrics import GFLOPsTracker, WINAMetrics
 
 logger = logging.getLogger(__name__)
 

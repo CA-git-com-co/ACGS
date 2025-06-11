@@ -1,7 +1,9 @@
-from typing import List, Dict, Any, Optional, Tuple
-import z3
-import re
 import logging
+import re
+from typing import List, Optional
+
+import z3
+
 from ..schemas import SMTSolverInput, SMTSolverOutput
 
 # Configure logging
@@ -162,7 +164,7 @@ class Z3SMTSolverClient:
         if match:
             pred_name = match.group(1)
             args_str = match.group(2)
-            args = [arg.strip() for arg in args_str.split(",") if arg.strip()]
+            [arg.strip() for arg in args_str.split(",") if arg.strip()]
 
             # Create unique variable name
             var_name = f"{pred_name}_{hash(predicate) % 10000}"

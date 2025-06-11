@@ -9,15 +9,12 @@ Tests the complete API functionality including:
 - Configuration management
 """
 
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
-import asyncio
-from unittest.mock import Mock, AsyncMock, patch
+from app.main import app
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.main import app
-from app.schemas import HITLSamplingRequest, HITLFeedbackRequest
-from services.shared.models import User
 
 
 class TestHITLSamplingAPI:
@@ -66,13 +63,14 @@ class TestHITLSamplingAPI:
                     "app.api.hitl_sampling.hitl_sampler.assess_uncertainty"
                 ) as mock_assess:
                     # Mock assessment result
+                    from datetime import datetime
+
+                    from app.services.human_escalation_system import EscalationLevel
                     from app.services.human_in_the_loop_sampler import (
+                        SamplingTrigger,
                         UncertaintyAssessment,
                         UncertaintyDimension,
-                        SamplingTrigger,
                     )
-                    from app.services.human_escalation_system import EscalationLevel
-                    from datetime import datetime
 
                     mock_assessment = UncertaintyAssessment(
                         decision_id="test_decision_001",
@@ -139,15 +137,15 @@ class TestHITLSamplingAPI:
                         "app.api.hitl_sampling.hitl_sampler.trigger_human_oversight"
                     ) as mock_trigger:
                         # Mock assessment and escalation
-                        from app.services.human_in_the_loop_sampler import (
-                            UncertaintyAssessment,
-                            SamplingTrigger,
-                        )
+                        from datetime import datetime
+
                         from app.services.human_escalation_system import (
                             EscalationLevel,
-                            EscalationRequest,
                         )
-                        from datetime import datetime
+                        from app.services.human_in_the_loop_sampler import (
+                            SamplingTrigger,
+                            UncertaintyAssessment,
+                        )
 
                         mock_assessment = UncertaintyAssessment(
                             decision_id="test_decision_001",
@@ -377,12 +375,13 @@ class TestHITLIntegrationWorkflow:
                     "app.api.hitl_sampling.hitl_sampler.assess_uncertainty"
                 ) as mock_assess:
                     # Mock high uncertainty assessment
-                    from app.services.human_in_the_loop_sampler import (
-                        UncertaintyAssessment,
-                        SamplingTrigger,
-                    )
-                    from app.services.human_escalation_system import EscalationLevel
                     from datetime import datetime
+
+                    from app.services.human_escalation_system import EscalationLevel
+                    from app.services.human_in_the_loop_sampler import (
+                        SamplingTrigger,
+                        UncertaintyAssessment,
+                    )
 
                     mock_assessment = UncertaintyAssessment(
                         decision_id="workflow_test_001",

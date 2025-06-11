@@ -17,14 +17,12 @@ Usage:
 
 import argparse
 import json
+import logging
 import subprocess
 import sys
-from pathlib import Path
-from typing import Dict, List, Optional
-import logging
 from datetime import datetime
-import shutil
-import os
+from pathlib import Path
+from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(

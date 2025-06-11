@@ -17,12 +17,10 @@ Execution Plan:
 import asyncio
 import json
 import logging
-import os
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
 
 # Add project root to path
 project_root = Path(__file__).parent

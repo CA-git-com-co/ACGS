@@ -8,10 +8,8 @@ for constitutional governance tasks in the ACGS-PGP framework.
 """
 
 import asyncio
-import os
-import sys
 import logging
-from typing import Dict, Any
+import os
 
 # Add the backend path to sys.path for imports
 # sys.path.append('/home/dislove/ACGS-master/src/backend')  # Removed during reorganization
@@ -19,8 +17,6 @@ from typing import Dict, Any
 try:
     from gs_service.app.core.nvidia_qwen_client import (
         NVIDIAQwenClient,
-        QwenModelConfig,
-        get_nvidia_qwen_client,
     )
 
     NVIDIA_CLIENT_AVAILABLE = True

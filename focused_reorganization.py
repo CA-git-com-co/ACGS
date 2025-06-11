@@ -4,11 +4,9 @@ Focused ACGS-1 Codebase Reorganization Script
 Addresses key reorganization issues without extensive backups
 """
 
-import os
-import shutil
 import logging
+import shutil
 from pathlib import Path
-import re
 
 # Configure logging
 logging.basicConfig(

@@ -4,11 +4,10 @@ Monitoring and Alerting Setup for ACGS-PGP
 Sets up comprehensive monitoring, metrics collection, and alerting
 """
 
-import os
 import json
+import os
+
 import yaml
-from datetime import datetime
-from typing import Dict, List, Any
 
 
 class MonitoringSetup:

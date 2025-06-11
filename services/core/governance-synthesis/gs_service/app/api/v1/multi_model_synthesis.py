@@ -13,23 +13,21 @@ Task 18: GS Engine Multi-Model Enhancement
 """
 
 import logging
-from typing import Dict, Any, List, Optional
-from datetime import datetime
 import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-
+from app.workflows.multi_model_manager import get_multi_model_manager
 from app.workflows.policy_synthesis_workflow import get_policy_synthesis_workflow
 from app.workflows.structured_output_models import (
+    ModelSpecializationConfig,
     PolicySynthesisRequest,
     PolicySynthesisResponse,
     PolicyType,
-    ModelSpecializationConfig,
 )
-from app.workflows.multi_model_manager import get_multi_model_manager
-from services.shared.langgraph_config import ModelRole
+from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

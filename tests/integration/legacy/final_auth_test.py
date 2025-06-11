@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -9,11 +11,11 @@ ACGS-PGP Authentication Service - Final Comprehensive Test
 Tests all authentication workflows including CSRF protection, token refresh, and logout.
 """
 
-import requests
-import json
-import re
 import base64
+import re
 from urllib.parse import unquote
+
+import requests
 
 BASE_URL = "http://localhost:8000/api/auth"
 
@@ -223,8 +225,9 @@ def test_complete_auth_workflow():
 if __name__ == "__main__":
     test_complete_auth_workflow()
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

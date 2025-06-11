@@ -7,15 +7,16 @@ as part of the WINA (Weight Informed Neuron Activation) system.
 
 import logging
 import time
-from typing import Dict, List, Optional, Tuple, Any, Callable
-import numpy as np
-import torch
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
+import numpy as np
+import torch
+
+from .config import SparsityStrategy, WINAConfig
 from .exceptions import WINAGatingError
-from .config import WINAConfig, SparsityStrategy
 
 logger = logging.getLogger(__name__)
 

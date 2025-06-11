@@ -4,12 +4,10 @@ Comprehensive validation script for the AlphaEvolve-ACGS paper.
 Validates bibliography, cross-references, figures, and metadata.
 """
 
-import os
 import re
-import sys
 import subprocess
+import sys
 from pathlib import Path
-from typing import List, Dict, Set, Tuple
 
 
 class PaperValidator:

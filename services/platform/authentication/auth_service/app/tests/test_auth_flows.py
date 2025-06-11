@@ -1,16 +1,18 @@
 # ACGS/auth_service/app/tests/test_auth_flows.py
-import pytest
-from httpx import AsyncClient
-from fastapi import status
 import uuid
 
-from ..core.config import settings  # For API prefixes
-from services.shared.schemas.user import (
+import pytest
+from fastapi import status
+from httpx import AsyncClient
+
+from services.shared.schemas.user import (  # For type hinting if needed, though client sends JSON
     UserCreate,
-)  # For type hinting if needed, though client sends JSON
-from ..core import (
+)
+
+from ..core import (  # For direct calls if needed for test setup, e.g. password hashing
     security,
-)  # For direct calls if needed for test setup, e.g. password hashing
+)
+from ..core.config import settings  # For API prefixes
 
 # Pytest marker for async tests
 pytestmark = pytest.mark.asyncio
@@ -143,7 +145,7 @@ async def test_login_inactive_user(client: AsyncClient):
     user_data = get_unique_user_data("login_inactive")
     # Register user (by default is_active=True)
     reg_response = await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
-    user_id = reg_response.json()["id"]
+    reg_response.json()["id"]
 
     # This test requires a way to make the user inactive.
     # Since there's no admin endpoint to do this, we'll skip direct testing of this

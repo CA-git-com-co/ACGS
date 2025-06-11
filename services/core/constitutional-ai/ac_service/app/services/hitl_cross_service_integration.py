@@ -16,15 +16,15 @@ Key Features:
 
 import asyncio
 import logging
-import httpx
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
+
+import httpx
+from shared import get_config
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shared import get_config
 from .human_in_the_loop_sampler import HumanInTheLoopSampler, UncertaintyAssessment
-from .human_escalation_system import EscalationLevel
 
 logger = logging.getLogger(__name__)
 config = get_config()

@@ -5,14 +5,14 @@ ACGS Phase 3 Deployment Orchestrator
 Coordinates the complete Phase 3 production deployment workflow
 """
 
+import argparse
 import asyncio
 import json
 import subprocess
 import sys
 import time
 from datetime import datetime
-from typing import Dict, List, Any
-import argparse
+from typing import Any, Dict
 
 
 class DeploymentOrchestrator:

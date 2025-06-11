@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import base64
-import json
 
 # The CSRF cookie value from the login response
 csrf_cookie = "ImZkZTliODljNjVkZTRlZWRmZmIwMmI4ZTRlZWUyNTRhZWQ5NGIwYmIi.aDpI2Q._40Qru_FQeSqKc9xkkX_VuSzoqY"

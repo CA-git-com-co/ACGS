@@ -6,9 +6,8 @@ Tests the service mesh health monitoring system functionality.
 """
 
 import asyncio
-import sys
-import os
 import json
+import sys
 from pathlib import Path
 
 # Add the services directory to Python path
@@ -110,7 +109,7 @@ async def test_performance_monitoring():
         from app.services.performance_monitor import PerformanceMonitor
 
         # Initialize performance monitor
-        monitor = PerformanceMonitor()
+        PerformanceMonitor()
 
         # Test performance summary
         print("📊 Getting performance summary...")

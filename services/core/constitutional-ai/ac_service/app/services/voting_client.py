@@ -4,18 +4,15 @@ Implements httpx async client with proper error handling, rate limiting, and ret
 """
 
 import asyncio
-import time
 import logging
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
+import time
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 import httpx
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
-from ..models import ACAmendment, ACAmendmentVote, User
 from ..schemas import ACAmendmentVoteCreate
 
 # from services.shared.redis_client import get_redis_client
@@ -25,8 +22,6 @@ logger = logging.getLogger(__name__)
 
 class VotingClientError(Exception):
     """Custom exception for voting client errors."""
-
-    pass
 
 
 class RetryStrategy(Enum):

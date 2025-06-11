@@ -18,22 +18,22 @@ Usage:
 import argparse
 import asyncio
 import json
-import sys
-import os
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 import logging
+import sys
+from pathlib import Path
+from typing import Any, Dict
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+
+from backend.pgc_service.app.core.manifest_manager import ManifestManager
 
 # Import our enhanced components
 from backend.pgc_service.app.core.policy_format_router import (
     PolicyFormatRouter,
     PolicyFramework,
 )
-from backend.pgc_service.app.core.manifest_manager import ManifestManager
 
 # Setup logging
 logging.basicConfig(

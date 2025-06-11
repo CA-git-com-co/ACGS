@@ -7,17 +7,13 @@ metrics for the federated evaluation framework.
 Based on Task 6 requirements and privacy-preserving techniques.
 """
 
-import asyncio
 import logging
-import time
-import json
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
-from enum import Enum
-import hashlib
 from datetime import datetime, timezone
-from abc import ABC, abstractmethod
+from enum import Enum
+from typing import Any, Dict, List, Tuple
+
+import numpy as np
 
 logger = logging.getLogger(__name__)
 

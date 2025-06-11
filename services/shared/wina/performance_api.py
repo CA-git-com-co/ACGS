@@ -13,29 +13,28 @@ Key Features:
 - Alert and notification endpoints
 """
 
-import logging
 import json
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timezone, timedelta
+import logging
 from dataclasses import asdict
-from fastapi import APIRouter, HTTPException, Query, Depends, BackgroundTasks
-from fastapi.responses import PlainTextResponse, JSONResponse
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
 from .performance_monitoring import (
-    WINAPerformanceCollector,
-    WINAMonitoringLevel,
     WINAComponentType,
-    WINANeuronActivationMetrics,
-    WINASVDTransformationMetrics,
-    WINADynamicGatingMetrics,
     WINAConstitutionalComplianceMetrics,
-    WINALearningFeedbackMetrics,
+    WINADynamicGatingMetrics,
     WINAIntegrationMetrics,
+    WINALearningFeedbackMetrics,
+    WINAMonitoringLevel,
+    WINANeuronActivationMetrics,
+    WINAPerformanceCollector,
+    WINASVDTransformationMetrics,
     WINASystemHealthMetrics,
-    get_wina_performance_collector,
 )
-from .exceptions import WINAMetricsError
 
 logger = logging.getLogger(__name__)
 

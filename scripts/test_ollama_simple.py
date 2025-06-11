@@ -6,9 +6,9 @@ This script performs basic validation of Ollama integration.
 """
 
 import asyncio
-import sys
-import os
 import json
+import os
+import sys
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
@@ -66,7 +66,6 @@ async def test_multi_model_manager():
 
     try:
         from gs_service.app.workflows.multi_model_manager import MultiModelManager
-        from services.shared.langgraph_config import ModelRole
 
         print("1. Initializing MultiModelManager...")
         manager = MultiModelManager()

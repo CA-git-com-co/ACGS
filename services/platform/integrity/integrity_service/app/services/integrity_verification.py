@@ -3,15 +3,16 @@ Comprehensive Integrity Verification Service for ACGS-PGP Framework
 Orchestrates digital signatures, Merkle trees, timestamps, and chain integrity
 """
 
-import json
 import base64
-from datetime import datetime, timezone
-from typing import Dict, Any, Optional, List
+import json
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
+from datetime import datetime, timezone
+from typing import Any, Dict, Optional
 
-from ..models import PolicyRule, AuditLog, CryptoKey, MerkleTreeNode, TimestampToken
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..models import AuditLog, PolicyRule
 from .crypto_service import crypto_service, merkle_service
 from .key_management import key_manager
 from .timestamp_service import timestamp_manager

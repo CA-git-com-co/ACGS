@@ -8,17 +8,15 @@ Tests the comprehensive Policy Synthesis Enhancement system including:
 - Performance optimization and tracking
 """
 
-import pytest
-import asyncio
-from unittest.mock import Mock, AsyncMock, patch
-from datetime import datetime, timezone
-from typing import Dict, Any, List
+from unittest.mock import Mock
 
-from app.services.qec_error_correction_service import QECErrorCorrectionService
+import pytest
 from app.core.performance_optimizer import (
-    WINAPerformanceOptimizer,
     SynthesisPerformanceMetrics,
+    WINAPerformanceOptimizer,
 )
+from app.services.qec_error_correction_service import QECErrorCorrectionService
+
 from services.shared.models import Principle
 
 

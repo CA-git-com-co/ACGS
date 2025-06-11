@@ -12,37 +12,31 @@ Key Features:
 - Production-ready API endpoints with comprehensive validation
 """
 
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Request
+import logging
+import sys
+import time
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
-from contextlib import asynccontextmanager
-import logging
-import time
-import asyncio
-from typing import Dict, Any, Optional
-import os
-import sys
 
 # Import shared components for Phase A3 production-grade implementation
-sys.path.append('/home/dislove/ACGS-1/services/shared')
+sys.path.append("/home/dislove/ACGS-1/services/shared")
 try:
-    from api_models import (
-        APIResponse, ServiceInfo, HealthCheckResponse,
-        create_success_response, create_error_response, ErrorCode
-    )
+    from api_models import create_success_response
     from middleware import add_production_middleware, create_exception_handlers
-    from validation_models import (
-        SynthesisRequest, MultiModelConsensusRequest, PerformanceMetricsRequest
-    )
-    from validation_helpers import ValidationHelper, handle_validation_errors
+
     SHARED_COMPONENTS_AVAILABLE = True
     logger_shared = logging.getLogger("shared_components")
     logger_shared.info("Phase A3 shared components imported successfully")
 except ImportError as e:
     SHARED_COMPONENTS_AVAILABLE = False
     logger_shared = logging.getLogger("shared_components")
-    logger_shared.warning(f"Shared components not available: {e}. Using fallback implementations.")
+    logger_shared.warning(
+        f"Shared components not available: {e}. Using fallback implementations."
+    )
 
 # Configure enhanced logging for Phase A3 production
 logging.basicConfig(
@@ -83,32 +77,34 @@ PolicySynthesisWorkflow = None
 SecurityMiddleware = None
 
 try:
-    from app.api.v1.synthesize import router as synthesize_router
-    from app.api.v1.policy_management import router as policy_management_router
+    from app.api.v1.alphaevolve_integration import router as alphaevolve_router
     from app.api.v1.constitutional_synthesis import (
         router as constitutional_synthesis_router,
     )
-    from app.api.v1.alphaevolve_integration import router as alphaevolve_router
-    from app.api.v1.mab_optimization import router as mab_router
-    from app.api.v1.wina_rego_synthesis import router as wina_rego_router
     from app.api.v1.enhanced_synthesis import router as enhanced_synthesis_router
-    from app.api.v1.reliability_metrics import router as reliability_metrics_router
+
+    # Import Phase A3 governance workflows router
+    from app.api.v1.governance_workflows import router as governance_workflows_router
+    from app.api.v1.mab_optimization import router as mab_router
     from app.api.v1.multi_model_synthesis import router as multi_model_synthesis_router
 
     # Import Phase A3 production synthesis router
     from app.api.v1.phase_a3_synthesis import router as phase_a3_synthesis_router
-
-    # Import Phase A3 governance workflows router
-    from app.api.v1.governance_workflows import router as governance_workflows_router
+    from app.api.v1.policy_management import router as policy_management_router
+    from app.api.v1.reliability_metrics import router as reliability_metrics_router
+    from app.api.v1.synthesize import router as synthesize_router
+    from app.api.v1.wina_rego_synthesis import router as wina_rego_router
+    from app.core.multi_model_coordinator import MultiModelCoordinator
+    from app.middleware.enhanced_security import SecurityMiddleware
 
     # Import core services
     from app.services.enhanced_governance_synthesis import EnhancedGovernanceSynthesis
-    from app.core.multi_model_coordinator import MultiModelCoordinator
     from app.workflows.policy_synthesis_workflow import PolicySynthesisWorkflow
-    from app.middleware.enhanced_security import SecurityMiddleware
 
     ROUTERS_AVAILABLE = True
-    logger.info("All API routers and services imported successfully (including Phase A3)")
+    logger.info(
+        "All API routers and services imported successfully (including Phase A3)"
+    )
 except ImportError as e:
     logger.warning(f"Some routers not available: {e}. Running in minimal mode.")
     phase_a3_synthesis_router = None
@@ -194,6 +190,37 @@ else:
         except Exception as e:
             logger.warning(f"Security middleware not available: {e}")
 
+# Add enhanced Prometheus metrics middleware
+try:
+    import sys
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    from prometheus_middleware import (
+        add_prometheus_middleware,
+        create_enhanced_metrics_endpoint,
+    )
+
+    add_prometheus_middleware(app, SERVICE_NAME)
+
+    # Add metrics endpoint
+    @app.get("/metrics")
+    async def metrics():
+        """Prometheus metrics endpoint for Governance Synthesis service."""
+        endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
+        return await endpoint_func()
+
+    logger.info(
+        "✅ Enhanced Prometheus metrics enabled for Governance Synthesis Service"
+    )
+except ImportError as e:
+    logger.warning(f"⚠️ Prometheus metrics not available: {e}")
+
+    # Fallback metrics endpoint
+    @app.get("/metrics")
+    async def fallback_metrics():
+        """Fallback metrics endpoint."""
+        return {"status": "metrics_not_available", "service": SERVICE_NAME}
+
 
 @app.middleware("http")
 async def add_process_time_header(request, call_next):
@@ -222,8 +249,8 @@ async def global_exception_handler(request, exc):
 @app.get("/")
 async def root(request: Request):
     """Root endpoint with comprehensive service information."""
-    correlation_id = getattr(request.state, 'correlation_id', None)
-    response_time_ms = getattr(request.state, 'response_time_ms', None)
+    correlation_id = getattr(request.state, "correlation_id", None)
+    response_time_ms = getattr(request.state, "response_time_ms", None)
 
     service_info = {
         "service": "ACGS-1 Phase A3 Production Governance Synthesis Service",
@@ -245,23 +272,23 @@ async def root(request: Request):
             "Constitutional Compliance (Validation → Assessment → Enforcement)",
             "Policy Enforcement (Monitoring → Violation Detection → Remediation)",
             "WINA Oversight (Performance Monitoring → Optimization → Reporting)",
-            "Audit/Transparency (Data Collection → Analysis → Public Reporting)"
+            "Audit/Transparency (Data Collection → Analysis → Public Reporting)",
         ],
         "routers_available": ROUTERS_AVAILABLE,
         "synthesis_strategies": [
             "standard",
             "enhanced_validation",
             "multi_model_consensus",
-            "human_review"
+            "human_review",
         ],
         "performance_targets": {
             "response_time": "<2s for 95% operations",
             "accuracy": ">95%",
             "error_reduction": ">50%",
-            "availability": ">99.9%"
+            "availability": ">99.9%",
         },
         "api_documentation": "/docs",
-        "health_check": "/health"
+        "health_check": "/health",
     }
 
     if SHARED_COMPONENTS_AVAILABLE:
@@ -269,7 +296,7 @@ async def root(request: Request):
             data=service_info,
             service_name=SERVICE_NAME,
             correlation_id=correlation_id,
-            response_time_ms=response_time_ms
+            response_time_ms=response_time_ms,
         )
     else:
         return service_info
@@ -278,7 +305,7 @@ async def root(request: Request):
 @app.get("/health")
 async def health_check(request: Request):
     """Enhanced health check with comprehensive service status."""
-    correlation_id = getattr(request.state, 'correlation_id', None)
+    correlation_id = getattr(request.state, "correlation_id", None)
     uptime_seconds = time.time() - service_start_time
 
     health_info = {
@@ -288,10 +315,20 @@ async def health_check(request: Request):
         "port": SERVICE_PORT,
         "uptime_seconds": uptime_seconds,
         "dependencies": {
-            "enhanced_synthesis": "operational" if enhanced_synthesis_service is not None else "unavailable",
-            "multi_model_coordinator": "operational" if multi_model_coordinator is not None else "unavailable",
-            "policy_workflow": "operational" if policy_workflow is not None else "unavailable",
-            "shared_components": "operational" if SHARED_COMPONENTS_AVAILABLE else "fallback_mode",
+            "enhanced_synthesis": (
+                "operational"
+                if enhanced_synthesis_service is not None
+                else "unavailable"
+            ),
+            "multi_model_coordinator": (
+                "operational" if multi_model_coordinator is not None else "unavailable"
+            ),
+            "policy_workflow": (
+                "operational" if policy_workflow is not None else "unavailable"
+            ),
+            "shared_components": (
+                "operational" if SHARED_COMPONENTS_AVAILABLE else "fallback_mode"
+            ),
         },
         "performance_metrics": {
             "uptime_seconds": uptime_seconds,
@@ -302,10 +339,11 @@ async def health_check(request: Request):
         "synthesis_capabilities": {
             "standard_synthesis": True,
             "enhanced_validation": ROUTERS_AVAILABLE,
-            "multi_model_consensus": ROUTERS_AVAILABLE and multi_model_coordinator is not None,
+            "multi_model_consensus": ROUTERS_AVAILABLE
+            and multi_model_coordinator is not None,
             "human_review_integration": ROUTERS_AVAILABLE,
             "proactive_error_prediction": ROUTERS_AVAILABLE,
-        }
+        },
     }
 
     # Check service health
@@ -320,9 +358,7 @@ async def health_check(request: Request):
 
     if SHARED_COMPONENTS_AVAILABLE:
         return create_success_response(
-            data=health_info,
-            service_name=SERVICE_NAME,
-            correlation_id=correlation_id
+            data=health_info, service_name=SERVICE_NAME, correlation_id=correlation_id
         )
     else:
         return health_info
@@ -341,7 +377,7 @@ async def api_status():
             "phase_a3_synthesis": [
                 "/api/v1/phase-a3/synthesize",
                 "/api/v1/phase-a3/consensus",
-                "/api/v1/phase-a3/strategies"
+                "/api/v1/phase-a3/strategies",
             ],
             "governance_workflows": [
                 "/api/v1/governance/workflows",
@@ -349,7 +385,7 @@ async def api_status():
                 "/api/v1/governance/workflows/{workflow_id}/start",
                 "/api/v1/governance/workflows/{workflow_id}/cancel",
                 "/api/v1/governance/workflows/types",
-                "/api/v1/governance/workflows/metrics"
+                "/api/v1/governance/workflows/metrics",
             ],
             "synthesis": [
                 "/api/v1/synthesize",

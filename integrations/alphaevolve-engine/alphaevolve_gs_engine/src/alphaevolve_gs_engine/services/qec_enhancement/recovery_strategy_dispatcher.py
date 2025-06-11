@@ -13,12 +13,13 @@ Classes:
 """
 
 import logging
-import yaml
-from typing import Dict, Any, List, Optional, Tuple
+from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from collections import defaultdict
+from typing import Any, Dict, Optional
+
+import yaml
 
 from .error_prediction_model import FailureType, SynthesisAttemptLog
 

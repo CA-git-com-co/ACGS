@@ -1,8 +1,8 @@
-import math
-from typing import List, Dict, Tuple
+from typing import Dict, List
+
 import numpy as np  # Added for type hinting and example matrix
 
-from .models import NeuronActivationInput, AnalyzedNeuronActivation, WINAWeightOutput
+from .models import AnalyzedNeuronActivation, NeuronActivationInput, WINAWeightOutput
 from .svd_utils import apply_svd_transformation  # Added SVD import
 
 

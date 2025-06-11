@@ -5,9 +5,8 @@ Master script that orchestrates all production setup components
 """
 
 import asyncio
-import subprocess
-import sys
 import os
+import subprocess
 from datetime import datetime
 
 

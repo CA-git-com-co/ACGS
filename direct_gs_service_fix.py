@@ -6,7 +6,6 @@ This script creates a more aggressive fix by directly modifying the GS service
 to hardcode the localhost URLs and bypass environment variable issues.
 """
 
-import os
 import sys
 from pathlib import Path
 
@@ -156,6 +155,7 @@ def create_service_restart_command():
 def test_fix_immediately():
     """Test if the fix worked by making a direct request."""
     import asyncio
+
     import httpx
 
     async def test():

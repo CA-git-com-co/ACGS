@@ -3,20 +3,21 @@ Shared Prometheus metrics collection module for ACGS-PGP microservices.
 Provides standardized metrics collection across all services.
 """
 
+import logging
 import time
-from typing import Dict, Any, Optional
 from functools import wraps
+from typing import Dict
+
+from fastapi import Request
+from fastapi.responses import PlainTextResponse
 from prometheus_client import (
+    CONTENT_TYPE_LATEST,
     Counter,
-    Histogram,
     Gauge,
+    Histogram,
     Info,
     generate_latest,
-    CONTENT_TYPE_LATEST,
 )
-from fastapi import Request, Response
-from fastapi.responses import PlainTextResponse
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -278,7 +279,7 @@ def database_metrics_decorator(operation: str):
                 duration = time.time() - start_time
                 metrics.record_db_query(operation, duration)
                 return result
-            except Exception as e:
+            except Exception:
                 duration = time.time() - start_time
                 metrics.record_db_query(f"{operation}_failed", duration)
                 metrics.record_error(f"db_{operation}_error")
@@ -314,7 +315,7 @@ def service_call_decorator(target_service: str, endpoint: str):
                 )
 
                 return result
-            except Exception as e:
+            except Exception:
                 duration = time.time() - start_time
                 metrics.record_service_call(
                     target_service=target_service,

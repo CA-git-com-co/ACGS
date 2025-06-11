@@ -12,17 +12,16 @@ Endpoints:
 """
 
 import logging
-from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, HTTPException, status, Depends
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
 from ...core.wina_rego_synthesis import (
-    synthesize_rego_policy_with_wina,
     batch_synthesize_rego_policies_with_wina,
-    get_wina_rego_synthesis_performance_summary,
     clear_wina_rego_synthesis_cache,
-    WINARegoSynthesisResult,
-    WINARegoSynthesisMetrics,
+    get_wina_rego_synthesis_performance_summary,
+    synthesize_rego_policy_with_wina,
 )
 
 logger = logging.getLogger(__name__)

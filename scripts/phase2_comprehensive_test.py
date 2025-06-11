@@ -12,14 +12,14 @@ Tests all Phase 2 components:
 """
 
 import asyncio
-import aiohttp
-import json
-import time
 import logging
-from typing import Dict, List, Any, Optional
+import statistics
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-import statistics
+from typing import Any, Dict, List, Optional
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(

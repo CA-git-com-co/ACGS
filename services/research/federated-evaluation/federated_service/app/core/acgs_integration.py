@@ -5,20 +5,17 @@ Provides integration layer between federated evaluation framework and
 all 6 ACGS-PGP microservices for seamless policy validation workflows.
 """
 
-import asyncio
 import logging
 import time
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-import json
-import httpx
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
-from .federated_evaluator import FederatedEvaluator, EvaluationTask, EvaluationStatus
+import httpx
+
 from .cross_platform_coordinator import CrossPlatformCoordinator
-from services.shared.auth import get_auth_headers, get_service_token
-from services.shared.metrics import get_metrics
+from .federated_evaluator import FederatedEvaluator
 
 logger = logging.getLogger(__name__)
 
@@ -230,7 +227,7 @@ class ACGSServiceIntegrator:
             raise RuntimeError("ACGS service integrator not initialized")
 
         try:
-            start_time = time.time()
+            time.time()
 
             # Create federated evaluation task
             federated_task = type(

@@ -18,17 +18,16 @@ Key Features:
 
 import asyncio
 import hashlib
-import json
 import logging
 import time
-from typing import Dict, List, Optional, Set, Tuple, Any
 from dataclasses import dataclass, field
 from enum import Enum
-from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Set
+
 import networkx as nx
 
-from .opa_client import OPAClient, PolicyBundle, CompilationMetrics, get_opa_client
 from ..services.integrity_client import IntegrityPolicyRule
+from .opa_client import CompilationMetrics, OPAClient, PolicyBundle, get_opa_client
 
 
 # Local mock implementations to avoid shared module dependencies

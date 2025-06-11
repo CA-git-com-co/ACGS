@@ -6,14 +6,14 @@ with PGP-signed integrity for external validation.
 """
 
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
-from pydantic import BaseModel, Field
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
 
 from app.database import get_async_db
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # from services.shared.models import ResearchDataExport
 # from app.core.auth import require_integrity_admin, require_internal_service, User
@@ -38,9 +38,9 @@ class ResearchDataExport:
 
 
 from app.services.research_data_pipeline import (
-    research_data_pipeline,
-    AnonymizationMethod,
     AnonymizationConfig,
+    AnonymizationMethod,
+    research_data_pipeline,
 )
 
 logger = logging.getLogger(__name__)
@@ -466,8 +466,8 @@ async def verify_export_integrity(
             )
 
         # Verify data hash
-        import json
         import hashlib
+        import json
 
         export_data_str = json.dumps(export.export_data, indent=2, default=str)
         calculated_hash = hashlib.sha256(export_data_str.encode("utf-8")).hexdigest()

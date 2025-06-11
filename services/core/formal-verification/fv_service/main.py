@@ -1,11 +1,11 @@
 # ACGS-1 Enhanced Formal Verification Service - Task #7 Implementation
+import hashlib
 import logging
 import time
-import hashlib
-from typing import Dict, Any, List
-from fastapi import FastAPI, Request, HTTPException, status
+from typing import Any, Dict, List
+
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 # Configure structured logging first
@@ -59,6 +59,38 @@ app.add_middleware(
 # Add enhanced security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
     add_enhanced_security_middleware(app)
+
+# Add enhanced Prometheus metrics middleware
+try:
+    import sys
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    from prometheus_middleware import (
+        add_prometheus_middleware,
+        create_enhanced_metrics_endpoint,
+    )
+
+    add_prometheus_middleware(app, "fv_service")
+
+    # Add metrics endpoint
+    @app.get("/metrics")
+    async def metrics():
+        """Prometheus metrics endpoint for Formal Verification service."""
+        endpoint_func = create_enhanced_metrics_endpoint("fv_service")
+        return await endpoint_func()
+
+    logger.info(
+        "✅ Enhanced Prometheus metrics enabled for Formal Verification Service"
+    )
+except ImportError as e:
+    logger.warning(f"⚠️ Prometheus metrics not available: {e}")
+
+    # Fallback metrics endpoint
+    @app.get("/metrics")
+    async def fallback_metrics():
+        """Fallback metrics endpoint."""
+        return {"status": "metrics_not_available", "service": "fv_service"}
+
 
 # Note: API routers temporarily disabled due to import issues
 # Will be re-enabled once dependencies are resolved
@@ -116,7 +148,6 @@ async def health_check():
         z3_status = "operational" if smt_solver_client else "unavailable"
 
         # Check validation pipeline status
-        pipeline_status = "operational"
 
         return {
             "status": "healthy",

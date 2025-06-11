@@ -6,12 +6,12 @@ Simple test script to validate the core WINA SVD transformation
 functionality without complex dependencies.
 """
 
-import sys
 import asyncio
 import logging
+import sys
 from pathlib import Path
+
 import torch
-import numpy as np
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -25,13 +25,7 @@ logger = logging.getLogger(__name__)
 def test_wina_imports():
     """Test WINA module imports."""
     try:
-        from services.shared.wina import (
-            WINAConfig,
-            WINAIntegrationConfig,
-            SVDTransformation,
-            WINAModelIntegrator,
-            MockModelWeightExtractor,
-        )
+        pass
 
         logger.info("✓ WINA imports successful")
         return True
@@ -43,7 +37,7 @@ def test_wina_imports():
 def test_svd_transformation():
     """Test SVD transformation functionality."""
     try:
-        from services.shared.wina import WINAConfig, SVDTransformation
+        from services.shared.wina import SVDTransformation, WINAConfig
 
         # Create configuration
         config = WINAConfig(

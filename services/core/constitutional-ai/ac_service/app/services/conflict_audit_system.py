@@ -13,21 +13,19 @@ Key Features:
 - Compliance reporting and validation
 """
 
-import asyncio
-import hashlib
-import json
 import logging
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, func
+from typing import Any, Dict, List, Optional
 
-from services.shared.models import ACConflictResolution, User
-from .intelligent_conflict_detector import ConflictDetectionResult
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.models import ACConflictResolution
+
 from .automated_resolution_engine import ResolutionResult
 from .human_escalation_system import EscalationRequest, EscalationResponse
+from .intelligent_conflict_detector import ConflictDetectionResult
 
 logger = logging.getLogger(__name__)
 

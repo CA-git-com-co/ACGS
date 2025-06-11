@@ -3,21 +3,18 @@ Bias Detection and Algorithmic Fairness Module for ACGS-PGP Phase 3
 Integrates bias detection algorithms from AlphaEvolve system
 """
 
-import time
 import logging
-import asyncio
+import time
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 import pandas as pd
-from typing import List, Dict, Any, Optional, Tuple
 
 try:
     from fairlearn.metrics import (
         demographic_parity_difference,
-        equalized_odds_difference,
         selection_rate,
-        MetricFrame,
     )
-    from sklearn.metrics import accuracy_score, precision_score, recall_score
 
     FAIRLEARN_AVAILABLE = True
 except ImportError:
@@ -32,11 +29,11 @@ from ..schemas import (
     BiasDetectionRequest,
     BiasDetectionResponse,
     BiasDetectionResult,
+    BiasMetric,
+    FairnessProperty,
     FairnessValidationRequest,
     FairnessValidationResponse,
     FairnessValidationResult,
-    BiasMetric,
-    FairnessProperty,
     PolicyRule,
 )
 

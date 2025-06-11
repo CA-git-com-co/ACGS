@@ -14,17 +14,16 @@ Features:
 - Validates improvements after execution
 """
 
-import os
-import sys
-import subprocess
 import json
-import time
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 import logging
-from dataclasses import dataclass, asdict
+import os
+import subprocess
+import sys
+import time
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from typing import List, Optional
 
 # Configure logging
 logging.basicConfig(

@@ -12,23 +12,21 @@ Key Features:
 - Production-grade error handling and logging
 """
 
-import sys
 import logging
+import sys
 from datetime import datetime, timezone
-from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List, Optional
 
 from app.database import get_async_db
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # Import shared validation components
-sys.path.append('/home/dislove/ACGS-1/services/shared')
-from api_models import create_success_response, create_error_response, ErrorCode
-from validation_models import (
-    SignatureRequest, VerificationRequest, AuditLogRequest,
-    SearchRequest, PerformanceMetricsRequest
-)
-from validation_helpers import ValidationHelper, handle_validation_errors
+sys.path.append("/home/dislove/ACGS-1/services/shared")
+from api_models import ErrorCode, create_error_response, create_success_response
+from validation_helpers import handle_validation_errors
+from validation_models import SignatureRequest
+
 
 # Local auth stubs (replace with actual auth in production)
 class User:
@@ -48,6 +46,7 @@ def require_auditor():
 try:
     from app.schemas import IntegrityReport
     from app.services.integrity_verification import integrity_verifier
+
     SERVICES_AVAILABLE = True
 except ImportError:
     # Fallback for missing services
@@ -58,7 +57,10 @@ except ImportError:
 
     class MockIntegrityVerifier:
         async def sign_policy_rule(self, db, rule_id):
-            return {"signature": "mock_signature", "timestamp": datetime.now(timezone.utc)}
+            return {
+                "signature": "mock_signature",
+                "timestamp": datetime.now(timezone.utc),
+            }
 
         async def verify_policy_rule(self, db, rule_id):
             return {"verified": True, "signature_valid": True}
@@ -84,7 +86,7 @@ async def sign_policy_rule(
 
     Enhanced with production-grade validation and standardized responses.
     """
-    correlation_id = getattr(request.state, 'correlation_id', None)
+    correlation_id = getattr(request.state, "correlation_id", None)
 
     # Validate rule_id
     if rule_id <= 0:
@@ -93,7 +95,7 @@ async def sign_policy_rule(
             message="Invalid rule ID",
             service_name="integrity_service",
             details={"rule_id": rule_id, "error": "Rule ID must be positive"},
-            correlation_id=correlation_id
+            correlation_id=correlation_id,
         )
 
     try:
@@ -106,9 +108,7 @@ async def sign_policy_rule(
                 sign_params["algorithm"] = signature_request.algorithm
 
         result = await integrity_verifier.sign_policy_rule(
-            db=db,
-            rule_id=rule_id,
-            **sign_params
+            db=db, rule_id=rule_id, **sign_params
         )
 
         response_data = {
@@ -116,32 +116,38 @@ async def sign_policy_rule(
             "signature_info": result,
             "signed_by": current_user.user_id,
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "message": "Policy rule signed successfully"
+            "message": "Policy rule signed successfully",
         }
 
         return create_success_response(
             data=response_data,
             service_name="integrity_service",
-            correlation_id=correlation_id
+            correlation_id=correlation_id,
         )
 
     except ValueError as e:
-        logger.warning(f"Policy rule not found: {rule_id}", extra={"correlation_id": correlation_id})
+        logger.warning(
+            f"Policy rule not found: {rule_id}",
+            extra={"correlation_id": correlation_id},
+        )
         return create_error_response(
             error_code=ErrorCode.NOT_FOUND,
             message=f"Policy rule {rule_id} not found",
             service_name="integrity_service",
             details={"rule_id": rule_id, "error": str(e)},
-            correlation_id=correlation_id
+            correlation_id=correlation_id,
         )
     except Exception as e:
-        logger.error(f"Failed to sign policy rule {rule_id}: {e}", extra={"correlation_id": correlation_id})
+        logger.error(
+            f"Failed to sign policy rule {rule_id}: {e}",
+            extra={"correlation_id": correlation_id},
+        )
         return create_error_response(
             error_code=ErrorCode.INTERNAL_ERROR,
             message="Failed to sign policy rule",
             service_name="integrity_service",
             details={"rule_id": rule_id, "error": str(e)},
-            correlation_id=correlation_id
+            correlation_id=correlation_id,
         )
 
 
@@ -300,8 +306,8 @@ async def verify_audit_log_chain_integrity(
 ):
     """Verify chain integrity of audit logs within a range"""
     try:
-        from sqlalchemy import select
         from app.models import AuditLog
+        from sqlalchemy import select
 
         # Build query for audit log range
         stmt = select(AuditLog)
@@ -385,8 +391,8 @@ async def generate_system_integrity_report(
 
         # Policy rules integrity check
         if include_policy_rules:
-            from sqlalchemy import select, func
             from app.models import PolicyRule
+            from sqlalchemy import select
 
             # Get sample of policy rules
             stmt = select(PolicyRule).order_by(PolicyRule.id.desc()).limit(sample_size)

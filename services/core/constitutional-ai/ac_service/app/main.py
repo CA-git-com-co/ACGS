@@ -14,19 +14,17 @@ Key Features:
 - Production-grade error handling and monitoring
 """
 
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
+import hashlib
+import logging
+import sys
+import time
+from contextlib import asynccontextmanager
+from typing import Any, Dict, Optional
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
-from contextlib import asynccontextmanager
-import logging
-import time
-import asyncio
-import sys
-from typing import Dict, List, Any, Optional
-import hashlib
-import json
-from datetime import datetime, timedelta
 
 # Configure enhanced logging
 logging.basicConfig(
@@ -41,13 +39,12 @@ logger = logging.getLogger(__name__)
 
 # Import enhanced services and algorithms
 try:
-    from app.services.formal_verification_client import FormalVerificationClient
+    from app.services.audit_logging_service import AuditLoggingService
     from app.services.constitutional_compliance_engine import (
         ConstitutionalComplianceEngine,
     )
+    from app.services.formal_verification_client import FormalVerificationClient
     from app.services.violation_detection_service import ViolationDetectionService
-    from app.services.audit_logging_service import AuditLoggingService
-    from app.core.compliance_algorithms import AdvancedComplianceAlgorithms
 
     ENHANCED_SERVICES_AVAILABLE = True
     logger.info("Enhanced constitutional compliance services imported successfully")
@@ -122,6 +119,32 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["X-Request-ID", "X-Response-Time", "X-Compliance-Score"],
 )
+
+# Add enhanced Prometheus metrics middleware
+try:
+    from services.shared.prometheus_middleware import (
+        add_prometheus_middleware,
+        create_enhanced_metrics_endpoint,
+    )
+
+    add_prometheus_middleware(app, "ac_service")
+
+    # Add metrics endpoint
+    @app.get("/metrics")
+    async def metrics():
+        """Prometheus metrics endpoint for Constitutional AI service."""
+        endpoint_func = create_enhanced_metrics_endpoint("ac_service")
+        return await endpoint_func()
+
+    logger.info("✅ Enhanced Prometheus metrics enabled for Constitutional AI Service")
+except ImportError as e:
+    logger.warning(f"⚠️ Prometheus metrics not available: {e}")
+
+    # Fallback metrics endpoint
+    @app.get("/metrics")
+    async def fallback_metrics():
+        """Fallback metrics endpoint."""
+        return {"status": "metrics_not_available", "service": "ac_service"}
 
 
 @app.middleware("http")

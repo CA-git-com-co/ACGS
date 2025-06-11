@@ -6,12 +6,11 @@ claims in domains without protected attributes, and provides proper fairness
 evaluation for appropriate domains.
 """
 
+import json
 import logging
-import numpy as np
-from typing import Dict, List, Tuple, Optional, Any, Set
 from dataclasses import dataclass
 from enum import Enum
-import json
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
