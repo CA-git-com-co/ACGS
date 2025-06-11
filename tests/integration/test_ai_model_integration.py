@@ -6,10 +6,8 @@ Tests Google Gemini 2.5 Flash and DeepSeek-R1 model integration with ACGS-PGP.
 
 import asyncio
 import json
-import os
 import sys
 from datetime import datetime
-from typing import Dict, List, Any
 
 # Add the shared module to the path
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization

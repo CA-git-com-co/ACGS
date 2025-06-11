@@ -1,14 +1,13 @@
 import argparse
-import subprocess
 import logging
-from logging.handlers import RotatingFileHandler
 import os
-import threading
 import re
+import threading
+from logging.handlers import RotatingFileHandler
 
-from llm_withtools import CLAUDE_MODEL, OPENAI_MODEL, chat_with_agent
+from llm_withtools import CLAUDE_MODEL, chat_with_agent
 from utils.eval_utils import get_report_score, msg_history_to_report, score_tie_breaker
-from utils.git_utils import diff_versus_commit, reset_to_commit, apply_patch
+from utils.git_utils import apply_patch, diff_versus_commit, reset_to_commit
 
 # Thread-local storage for logger instances
 thread_local = threading.local()

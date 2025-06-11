@@ -1,10 +1,13 @@
 # backend/auth_service/app/api/v1/deps.py
-from ...core.security import get_current_active_user
+from typing import AsyncGenerator
+
 from fastapi import Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession  # For type hinting
+
 from services.shared.database import get_async_db
 from services.shared.models import User
-from sqlalchemy.ext.asyncio import AsyncSession  # For type hinting
-from typing import AsyncGenerator
+
+from ...core.security import get_current_active_user
 
 
 # Wrapper for get_async_db to provide the session.

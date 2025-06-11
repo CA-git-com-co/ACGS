@@ -18,13 +18,13 @@ Test Coverage:
 """
 
 import asyncio
-import pytest
-import time
 import json
-import requests
+import time
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
-from unittest.mock import AsyncMock, patch
+from typing import Any, Dict, List
+
+import pytest
+import requests
 
 # Test configuration
 TEST_CONFIG = {

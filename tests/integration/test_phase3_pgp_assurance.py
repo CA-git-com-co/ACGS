@@ -5,10 +5,9 @@ Tests the cryptographic integrity features including digital signatures, Merkle 
 """
 
 import asyncio
-import json
 import sys
 import time
-from typing import Dict, List, Any
+
 import httpx
 
 # Test configuration

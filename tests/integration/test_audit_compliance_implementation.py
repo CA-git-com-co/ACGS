@@ -7,10 +7,9 @@ Tests the enhanced policy management system addressing audit findings.
 
 import asyncio
 import json
-import tempfile
-import os
-from pathlib import Path
 import sys
+import tempfile
+from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -18,11 +17,11 @@ sys.path.insert(0, str(project_root / "src"))
 sys.path.insert(0, str(project_root / "src/backend"))
 
 try:
+    from backend.pgc_service.app.core.manifest_manager import ManifestManager
     from backend.pgc_service.app.core.policy_format_router import (
         PolicyFormatRouter,
         PolicyFramework,
     )
-    from backend.pgc_service.app.core.manifest_manager import ManifestManager
 except ImportError:
     # Fallback for testing without full backend setup
     PolicyFormatRouter = None

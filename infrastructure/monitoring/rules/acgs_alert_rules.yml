@@ -1,0 +1,247 @@
+# ACGS-1 Constitutional Governance System Alert Rules
+# Enterprise-grade alerting for >99.9% availability, <500ms response times, >1000 concurrent users
+
+groups:
+  - name: acgs_service_health
+    rules:
+      # Service Down Alerts
+      - alert: ACGSServiceDown
+        expr: up{job=~"acgs-.*-service"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          component: service_health
+        annotations:
+          summary: "ACGS service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} has been down for more than 30 seconds"
+          runbook_url: "https://docs.acgs.ai/runbooks/service-down"
+
+      # High Error Rate Alerts
+      - alert: ACGSHighErrorRate
+        expr: rate(acgs_request_errors_total[5m]) / rate(acgs_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          component: error_monitoring
+        annotations:
+          summary: "High error rate detected for {{ $labels.service }}"
+          description: "Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
+
+      # Response Time Alerts (Target: <500ms for 95% of requests)
+      - alert: ACGSHighResponseTime
+        expr: histogram_quantile(0.95, rate(acgs_request_duration_seconds_bucket[5m])) > 0.5
+        for: 3m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "High response time for {{ $labels.service }}"
+          description: "95th percentile response time is {{ $value }}s for service {{ $labels.service }}"
+
+      # Critical Response Time Alert
+      - alert: ACGSCriticalResponseTime
+        expr: histogram_quantile(0.95, rate(acgs_request_duration_seconds_bucket[5m])) > 2.0
+        for: 1m
+        labels:
+          severity: critical
+          component: performance
+        annotations:
+          summary: "Critical response time for {{ $labels.service }}"
+          description: "95th percentile response time is {{ $value }}s for service {{ $labels.service }}"
+
+  - name: acgs_load_balancer
+    rules:
+      # HAProxy Backend Down
+      - alert: HAProxyBackendDown
+        expr: haproxy_backend_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: load_balancer
+        annotations:
+          summary: "HAProxy backend {{ $labels.backend }} is down"
+          description: "Backend {{ $labels.backend }} has been down for more than 1 minute"
+
+      # High Session Count
+      - alert: HAProxyHighSessions
+        expr: haproxy_backend_current_sessions > 800
+        for: 5m
+        labels:
+          severity: warning
+          component: load_balancer
+        annotations:
+          summary: "High session count on backend {{ $labels.backend }}"
+          description: "Current sessions: {{ $value }} on backend {{ $labels.backend }}"
+
+      # Circuit Breaker Triggered
+      - alert: HAProxyCircuitBreakerTriggered
+        expr: increase(haproxy_backend_connection_errors_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+          component: load_balancer
+        annotations:
+          summary: "Circuit breaker triggered for {{ $labels.backend }}"
+          description: "{{ $value }} connection errors in the last 5 minutes"
+
+  - name: acgs_governance_workflows
+    rules:
+      # Constitutional Compliance Failure
+      - alert: ConstitutionalComplianceFailure
+        expr: rate(acgs_compliance_failures_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: critical
+          component: constitutional_governance
+        annotations:
+          summary: "Constitutional compliance failures detected"
+          description: "{{ $value }} compliance failures per second in the last 5 minutes"
+
+      # Policy Creation Bottleneck
+      - alert: PolicyCreationBottleneck
+        expr: acgs_policy_creation_queue_size > 50
+        for: 5m
+        labels:
+          severity: warning
+          component: policy_creation
+        annotations:
+          summary: "Policy creation queue is backing up"
+          description: "{{ $value }} policies waiting in creation queue"
+
+      # Voting Anomaly Detection
+      - alert: VotingAnomalyDetected
+        expr: rate(acgs_voting_anomalies_total[10m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          component: voting_system
+        annotations:
+          summary: "Voting anomalies detected"
+          description: "{{ $value }} voting anomalies detected in the last 10 minutes"
+
+      # WINA Oversight Alert
+      - alert: WINAOversightAlert
+        expr: acgs_wina_oversight_score < 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: wina_oversight
+        annotations:
+          summary: "WINA oversight score below threshold"
+          description: "Current WINA oversight score: {{ $value }}"
+
+  - name: acgs_infrastructure
+    rules:
+      # Database Connection Issues
+      - alert: DatabaseConnectionIssues
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "PostgreSQL database is down"
+          description: "Database connection has been down for more than 1 minute"
+
+      # High Database Query Time
+      - alert: HighDatabaseQueryTime
+        expr: rate(pg_stat_activity_max_tx_duration[5m]) > 30
+        for: 3m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "High database query execution time"
+          description: "Maximum transaction duration: {{ $value }}s"
+
+      # Redis Cache Issues
+      - alert: RedisCacheDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: caching
+        annotations:
+          summary: "Redis cache is down"
+          description: "Redis cache has been down for more than 1 minute"
+
+      # Low Cache Hit Rate
+      - alert: LowCacheHitRate
+        expr: redis_keyspace_hits_total / (redis_keyspace_hits_total + redis_keyspace_misses_total) < 0.8
+        for: 10m
+        labels:
+          severity: warning
+          component: caching
+        annotations:
+          summary: "Low Redis cache hit rate"
+          description: "Cache hit rate: {{ $value | humanizePercentage }}"
+
+  - name: acgs_security
+    rules:
+      # Authentication Failures
+      - alert: HighAuthenticationFailures
+        expr: rate(acgs_auth_failures_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value }} authentication failures per second"
+
+      # Rate Limiting Triggered
+      - alert: RateLimitingTriggered
+        expr: rate(acgs_rate_limit_exceeded_total[5m]) > 1
+        for: 1m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "Rate limiting frequently triggered"
+          description: "{{ $value }} rate limit violations per second"
+
+      # Suspicious Activity Detected
+      - alert: SuspiciousActivityDetected
+        expr: rate(acgs_suspicious_activity_total[10m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Suspicious activity detected"
+          description: "{{ $value }} suspicious activities detected in the last 10 minutes"
+
+  - name: acgs_blockchain
+    rules:
+      # Quantumagi Transaction Failures
+      - alert: QuantumagiTransactionFailures
+        expr: rate(quantumagi_transaction_failures_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: blockchain
+        annotations:
+          summary: "High Quantumagi transaction failure rate"
+          description: "{{ $value }} transaction failures per second"
+
+      # Solana Network Issues
+      - alert: SolanaNetworkIssues
+        expr: solana_network_health < 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: blockchain
+        annotations:
+          summary: "Solana network health degraded"
+          description: "Solana network health score: {{ $value }}"
+
+      # High Transaction Costs
+      - alert: HighTransactionCosts
+        expr: quantumagi_avg_transaction_cost > 0.01
+        for: 10m
+        labels:
+          severity: warning
+          component: blockchain
+        annotations:
+          summary: "High Solana transaction costs"
+          description: "Average transaction cost: {{ $value }} SOL"

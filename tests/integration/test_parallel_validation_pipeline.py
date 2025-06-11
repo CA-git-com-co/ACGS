@@ -3,13 +3,11 @@ Integration tests for ACGS-PGP Task 7: Parallel Validation Pipeline
 Tests 60-70% latency reduction, concurrent processing, and WebSocket streaming
 """
 
-import pytest
 import asyncio
 import time
-import json
-import httpx
-from typing import List, Dict, Any
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 # Test the parallel validation pipeline
@@ -48,13 +46,12 @@ async def test_parallel_processing_components():
     """Test core parallel processing components."""
     try:
         from services.shared.parallel_processing import (
-            ParallelTask,
-            ValidationBatch,
-            TaskStatus,
-            TaskPriority,
             DependencyGraphAnalyzer,
+            ParallelTask,
             TaskPartitioner,
-            ParallelExecutor,
+            TaskPriority,
+            TaskStatus,
+            ValidationBatch,
         )
 
         # Test ParallelTask creation
@@ -110,9 +107,9 @@ async def test_result_aggregation_byzantine_fault_tolerance():
     """Test result aggregation with Byzantine fault tolerance."""
     try:
         from services.shared.result_aggregation import (
-            ValidationResult,
-            ByzantineFaultTolerantAggregator,
             AggregationStrategy,
+            ByzantineFaultTolerantAggregator,
+            ValidationResult,
         )
 
         # Create test validation results
@@ -250,8 +247,8 @@ async def test_parallel_validation_performance():
 
             # Create test request with multiple rules
             from services.core.formal_verification.app.schemas import (
-                PolicyRuleRef,
                 ACPrincipleRef,
+                PolicyRuleRef,
             )
 
             request = VerificationRequest(
@@ -373,7 +370,7 @@ async def test_concurrent_request_handling():
             successful_responses = [
                 r for r in responses if not isinstance(r, Exception)
             ]
-            failed_responses = [r for r in responses if isinstance(r, Exception)]
+            [r for r in responses if isinstance(r, Exception)]
 
             success_rate = len(successful_responses) / len(requests) * 100
             avg_response_time = total_time / len(requests) * 1000  # ms per request
@@ -442,13 +439,13 @@ async def test_constitutional_validation_integration():
     """Test Task 7 constitutional validation integration."""
     try:
         from services.core.formal_verification.app.core.parallel_validation_pipeline import (
+            ConstitutionalValidationContext,
             ParallelValidationPipeline,
             PipelineConfig,
-            ConstitutionalValidationContext,
         )
         from services.core.formal_verification.app.schemas import (
-            VerificationRequest,
             PolicyRuleRef,
+            VerificationRequest,
         )
 
         config = PipelineConfig(
@@ -511,9 +508,8 @@ async def test_resource_monitoring_and_adaptive_scaling():
     """Test Task 7 resource monitoring and adaptive scaling."""
     try:
         from services.core.formal_verification.app.core.parallel_validation_pipeline import (
-            ResourceMonitor,
             PipelineConfig,
-            ResourceMetrics,
+            ResourceMonitor,
         )
 
         config = PipelineConfig(
@@ -562,8 +558,8 @@ async def test_federated_validation_integration():
             PipelineConfig,
         )
         from services.core.formal_verification.app.schemas import (
-            VerificationRequest,
             PolicyRuleRef,
+            VerificationRequest,
         )
 
         config = PipelineConfig(

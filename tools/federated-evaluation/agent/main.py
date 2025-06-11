@@ -1,10 +1,7 @@
-import grpc
-from concurrent import futures
-import time
 import logging
-import sys
-import os
+import time
 import uuid
+from concurrent import futures
 
 import docker
 
@@ -12,6 +9,7 @@ import docker
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'proto'))  # Removed during reorganization
 import evaluation_pb2
 import evaluation_pb2_grpc
+import grpc
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

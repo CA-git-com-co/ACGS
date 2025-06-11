@@ -5,13 +5,12 @@ Test Teardown Validation Script
 Validates that test teardown procedures work correctly and prevent test pollution.
 """
 
-import asyncio
 import os
 import sys
-import tempfile
-import pytest
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 # Add project paths
 project_root = Path(__file__).parent.parent
@@ -116,11 +115,11 @@ class TestTeardownValidation:
         # This test should run cleanly regardless of other tests
 
         # Check that no test databases exist
-        test_db_files = list(Path(".").glob("test_*.db*"))
+        list(Path(".").glob("test_*.db*"))
         # Note: Files might exist during test run but should be cleaned up after
 
         # Check that no test result files exist from previous runs
-        result_files = list(Path(".").glob("*_test_results.json"))
+        list(Path(".").glob("*_test_results.json"))
         # Note: Files might exist during test run but should be cleaned up after
 
         # This test passes if it runs without errors

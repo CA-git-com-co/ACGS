@@ -7,13 +7,13 @@ positive vs negative cases.
 """
 
 import asyncio
-import logging
-from typing import Dict, List, Tuple, Optional, Any
-from dataclasses import dataclass
 import json
+import logging
 import time
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
-from .smt_solver_integration import verify_rules_against_obligations, SMTSolverOutput
+from .smt_solver_integration import verify_rules_against_obligations
 
 logger = logging.getLogger(__name__)
 

@@ -5,17 +5,16 @@ Tests cross-service configuration consistency and integration test fixes.
 """
 
 import asyncio
-import httpx
 import json
-import os
 import sys
-from typing import Dict, List, Optional
 from datetime import datetime
+
+import httpx
+from utils import get_config
 
 # Add the shared module to the path
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization
 
-from utils import get_config, reset_config
 
 
 class CentralizedConfigIntegrationTest:
@@ -60,7 +59,7 @@ class CentralizedConfigIntegrationTest:
 
             # Test service URLs
             auth_url = self.config.get_service_url("auth")
-            ac_url = self.config.get_service_url("ac")
+            self.config.get_service_url("ac")
 
             # Test nested configuration access
             cors_origins = self.config.get("cors_origins")
@@ -133,7 +132,7 @@ class CentralizedConfigIntegrationTest:
             # Test environment detection methods
             is_dev = self.config.is_development()
             is_prod = self.config.is_production()
-            is_test = self.config.is_test_mode()
+            self.config.is_test_mode()
 
             # Test database URL selection
             db_url = self.config.get_database_url()

@@ -284,7 +284,7 @@ def get_response_from_llm(
         )
         content = response.choices[0].message.content
         new_msg_history = new_msg_history + [{"role": "assistant", "content": content}]
-        reasoning_content = response.choices[0].message.reasoning_content
+        response.choices[0].message.reasoning_content
     elif model.startswith("llama3.1-"):
         llama_size = model.split("-")[-1]
         client_model = f"meta-llama/llama-3.1-{llama_size}-instruct"
@@ -302,7 +302,7 @@ def get_response_from_llm(
         )
         content = response.choices[0].message.content
         new_msg_history = new_msg_history + [{"role": "assistant", "content": content}]
-        resoning_content = response.choices[0].message.reasoning_content
+        response.choices[0].message.reasoning_content
     else:
         raise ValueError(f"Model {model} not supported.")
     if print_debug:

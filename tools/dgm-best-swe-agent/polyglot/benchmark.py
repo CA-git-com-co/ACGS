@@ -21,14 +21,13 @@ import lox
 import pandas as pd
 import prompts
 import typer
-from dotenv import load_dotenv
-from plots import plot_refactoring
-from rich.console import Console
-
 from aider import models, sendchat
 from aider.coders import Coder, base_coder
 from aider.dump import dump  # noqa: F401
 from aider.io import InputOutput
+from dotenv import load_dotenv
+from plots import plot_refactoring
+from rich.console import Console
 
 BENCHMARK_DNAME = Path(os.environ.get("AIDER_BENCHMARK_DIR", "tmp.benchmarks"))
 

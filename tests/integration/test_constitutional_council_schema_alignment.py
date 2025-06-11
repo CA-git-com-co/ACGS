@@ -5,14 +5,9 @@ Tests the enhanced schema, optimistic locking, Redis caching, and state machine 
 """
 
 import asyncio
-import json
-import pytest
-from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Any, Dict
 
 import aiohttp
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
 # Test configuration
 BASE_URL = "http://localhost:8001"

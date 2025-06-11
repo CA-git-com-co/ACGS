@@ -1,9 +1,9 @@
 import argparse
-from concurrent.futures import ThreadPoolExecutor
 import json
 import os
-from pathlib import Path
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 
 def load_predictions(paths):

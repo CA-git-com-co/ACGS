@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -9,10 +11,10 @@ ACGS-PGP Authentication Service Workflow Testing Script
 Tests the complete authentication workflow including CSRF protection.
 """
 
-import requests
-import json
 import re
 from urllib.parse import unquote
+
+import requests
 
 BASE_URL = "http://localhost:8000/api/auth"
 
@@ -156,7 +158,7 @@ def test_cross_service_integration(auth_data):
         print("   ❌ No authentication data available")
         return False
 
-    cookies = auth_data["cookies"]
+    auth_data["cookies"]
 
     # Test direct service health endpoints (bypassing nginx)
     services = {
@@ -254,8 +256,9 @@ def main():
 if __name__ == "__main__":
     main()
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

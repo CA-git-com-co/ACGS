@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -10,12 +12,10 @@ Tests the 60-70% latency reduction and 50+ concurrent request handling capabilit
 """
 
 import asyncio
-import time
-import statistics
-import sys
 import os
-from typing import List, Dict, Any
+import time
 from dataclasses import dataclass
+from typing import Any, Dict, List
 
 # Add backend path
 # sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'backend'))  # Removed during reorganization
@@ -301,8 +301,9 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

@@ -1,16 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession  # Changed
 from typing import List, Optional
 
 from app import crud, models, schemas  # Import from app directory
-from services.shared.database import (
-    get_async_db,
-)  # Corrected import for async db session
-from app.core.auth import (
+from app.core.auth import (  # Import from app directory
+    User,
     get_current_active_user_placeholder,
     require_admin_role,
-    User,
-)  # Import from app directory
+)
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession  # Changed
+
+from services.shared.database import (  # Corrected import for async db session
+    get_async_db,
+)
 
 router = APIRouter()
 
@@ -227,16 +228,18 @@ async def validate_constitutional_endpoint(
     """
     try:
         # Import caching components
-        from app.services.advanced_cache import (
-            MultiTierCache,
-            LRUCache,
-            RedisCache,
-            CACHE_TTL_POLICIES,
-        )
-        from services.shared.redis_client import ACGSRedisClient
         import hashlib
         import json
         import time
+
+        from app.services.advanced_cache import (
+            CACHE_TTL_POLICIES,
+            LRUCache,
+            MultiTierCache,
+            RedisCache,
+        )
+
+        from services.shared.redis_client import ACGSRedisClient
 
         # Initialize Redis client for caching
         redis_client = ACGSRedisClient("ac_service")

@@ -7,35 +7,32 @@ and <50ms policy decision latency requirements are maintained.
 """
 
 import asyncio
-import pytest
 import time
-from typing import Dict, Any
-from unittest.mock import Mock, AsyncMock, patch
-from datetime import datetime, timezone
+from typing import Any, Dict
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
+
+from services.shared.database import (
+    ConnectionPool,
+    DatabasePoolManager,
+    PoolConfig,
+)
 
 # Import Phase 2 components
 from services.shared.di import (
     DIContainer,
-    inject,
+    get_container,
     injectable,
     singleton,
     transient,
-    ServiceInterface,
-    get_container,
 )
 from services.shared.events import (
-    EventBus,
     Event,
-    EventType,
+    EventBus,
     EventPriority,
     EventStatus,
-    get_event_bus,
-)
-from services.shared.database import (
-    DatabasePoolManager,
-    ConnectionPool,
-    PoolConfig,
-    get_pool_manager,
+    EventType,
 )
 
 

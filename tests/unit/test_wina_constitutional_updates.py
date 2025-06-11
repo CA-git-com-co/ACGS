@@ -5,17 +5,15 @@ This module tests the WINA-informed constitutional principle update functionalit
 including analysis, proposal, approval, and monitoring workflows.
 """
 
-import pytest
-import asyncio
 from datetime import datetime, timezone
-from typing import Dict, List, Any
-from unittest.mock import Mock, AsyncMock, patch
+
+import pytest
 
 # Import WINA constitutional components
 from services.shared.wina.constitutional_integration import (
+    ConstitutionalPrincipleUpdate,
     WINAConstitutionalPrincipleAnalyzer,
     WINAConstitutionalUpdateService,
-    ConstitutionalPrincipleUpdate,
 )
 
 

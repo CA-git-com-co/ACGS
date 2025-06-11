@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -11,12 +13,12 @@ Tests that all services can start and shared modules are accessible
 
 import asyncio
 import subprocess
-import time
-import aiohttp
-import json
 import sys
+import time
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict
+
+import aiohttp
 
 # Service endpoints configuration
 SERVICES = {
@@ -240,8 +242,9 @@ if __name__ == "__main__":
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

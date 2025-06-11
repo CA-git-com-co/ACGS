@@ -12,16 +12,15 @@ Test Coverage:
 - Integration with GS Engine LLM clients
 """
 
-import pytest
 import asyncio
-import numpy as np
-import torch
-from typing import Dict, List, Any
-from unittest.mock import Mock, patch, AsyncMock
 
 # Add project root to path for imports
 import sys
 from pathlib import Path
+from unittest.mock import Mock, patch
+
+import pytest
+import torch
 
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
@@ -30,16 +29,16 @@ sys.path.insert(0, str(project_root / "src/backend"))
 # Import WINA components - using mock implementations for testing
 try:
     from services.shared.wina import (
+        MockModelWeightExtractor,
+        ModelWeightInfo,
         WINAConfig,
         WINAIntegrationConfig,
         WINAModelIntegrator,
-        MockModelWeightExtractor,
-        ModelWeightInfo,
         WINAOptimizationResult,
     )
+    from services.shared.wina.exceptions import WINAError, WINAOptimizationError
     from services.shared.wina.model_integration import WINAModelIntegrator
     from services.shared.wina.svd_transformation import SVDTransformation
-    from services.shared.wina.exceptions import WINAError, WINAOptimizationError
 
     WINA_AVAILABLE = True
 except ImportError:
@@ -66,8 +65,8 @@ try:
         query_llm_with_wina_optimization,
     )
     from services.core.governance_synthesis.app.schemas import (
-        LLMInterpretationInput,
         ConstitutionalSynthesisInput,
+        LLMInterpretationInput,
     )
 
     GS_WINA_AVAILABLE = True

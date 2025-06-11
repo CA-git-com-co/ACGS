@@ -8,11 +8,11 @@ and performance optimization.
 Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 """
 
-import os
 import logging
-from typing import Dict, Any, Optional, List
+import os
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

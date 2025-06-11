@@ -18,15 +18,15 @@ import asyncio
 import json
 import logging
 import os
-import time
-from typing import Dict, List, Any, Optional
-import pytest
-import httpx
-from datetime import datetime
 
 # Add project root to path for imports
 import sys
+import time
+from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List
+
+import httpx
 
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))

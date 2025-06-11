@@ -1,0 +1,408 @@
+# ACGS-1 Docker Compose with Advanced Caching Integration
+# Integrates containerized services with host-based Redis for Task 10 caching
+
+version: '3.8'
+
+networks:
+  acgs-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: acgs-cache-br0
+
+services:
+  # PostgreSQL Database
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: acgs_postgres_cache_integrated
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_password}
+      POSTGRES_DB: ${POSTGRES_DB:-acgs_pgp_db}
+    volumes:
+      - postgres_cache_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - acgs-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs_pgp_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # LangGraph Redis (separate from host Redis)
+  langgraph_redis:
+    image: redis:6
+    container_name: acgs_langgraph_cache_integrated
+    ports:
+      - "6383:6379"  # Different port to avoid conflict
+    volumes:
+      - langgraph_cache_data:/data
+    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
+    networks:
+      - acgs-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+    restart: unless-stopped
+
+  # OPA Policy Engine
+  opa:
+    image: openpolicyagent/opa:0.58.0-envoy
+    container_name: acgs_opa_cache_integrated
+    ports:
+      - "8182:8181"
+    volumes:
+      - opa_cache_policies:/policies
+      - opa_cache_data:/data
+    command: >
+      run --server
+      --addr=0.0.0.0:8181
+      --diagnostic-addr=0.0.0.0:8282
+      --set=decision_logs.console=true
+      --set=status.console=true
+    networks:
+      - acgs-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8181/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Database Migration Runner
+  alembic-runner:
+    build:
+      context: .
+      dockerfile: ./services/shared/Dockerfile.alembic
+    container_name: acgs_alembic_cache_integrated
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_db:5432/${POSTGRES_DB:-acgs_pgp_db}
+      - POSTGRES_USER=${POSTGRES_USER:-acgs_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-acgs_password}
+    networks:
+      - acgs-network
+    command: >
+      sh -c "echo 'Waiting for database...' &&
+             chmod +x /app/shared/wait-for-postgres.sh &&
+             /app/shared/wait-for-postgres.sh postgres_db ${POSTGRES_USER:-acgs_user} ${POSTGRES_PASSWORD:-acgs_password} &&
+             echo 'DB Ready' &&
+             echo 'Running Alembic migrations...' &&
+             alembic -c /app/alembic.ini upgrade head &&
+             echo 'Migrations complete. Container will exit.'"
+
+  # Auth Service (Port 8000)
+  auth_service:
+    build: ./services/platform/authentication
+    container_name: acgs_auth_cache_integrated
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_db:5432/${POSTGRES_DB:-acgs_pgp_db}
+      - SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+      - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+      - ALGORITHM=${AUTH_SERVICE_ALGORITHM:-HS256}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${AUTH_SERVICE_ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      - REFRESH_TOKEN_EXPIRE_DAYS=${AUTH_SERVICE_REFRESH_TOKEN_EXPIRE_DAYS:-7}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - PYTHONPATH=/app:/app/shared
+      # Advanced Caching Integration - Use host Redis
+      - REDIS_URL=redis://host.docker.internal:6379/1
+      - CACHE_ENABLED=true
+      - CACHE_TTL_USER_SESSIONS=1800
+      - CACHE_TTL_AUTH_TOKENS=3600
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - acgs-network
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+      alembic-runner:
+        condition: service_completed_successfully
+    volumes:
+      - ./services/platform/authentication:/app
+      - ./services/shared:/app/shared
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # AC Service (Port 8001)
+  ac_service:
+    build: ./services/core/constitutional-ai
+    container_name: acgs_ac_cache_integrated
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_db:5432/${POSTGRES_DB:-acgs_pgp_db}
+      - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - PYTHONPATH=/app:/app/shared
+      # LangGraph configuration
+      - LANGGRAPH_REDIS_URL=redis://langgraph_redis:6379
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - CONSTITUTIONAL_FIDELITY_THRESHOLD=${CONSTITUTIONAL_FIDELITY_THRESHOLD:-0.85}
+      - MAX_REFINEMENT_ITERATIONS=${MAX_REFINEMENT_ITERATIONS:-5}
+      # Advanced Caching Integration - Use host Redis
+      - REDIS_URL=redis://host.docker.internal:6379/2
+      - CACHE_ENABLED=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - acgs-network
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+      alembic-runner:
+        condition: service_completed_successfully
+      langgraph_redis:
+        condition: service_healthy
+    volumes:
+      - ./services/core/constitutional-ai:/app
+      - ./services/shared:/app/shared
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Integrity Service (Port 8002)
+  integrity_service:
+    build: ./services/platform/integrity
+    container_name: acgs_integrity_cache_integrated
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_db:5432/${POSTGRES_DB:-acgs_pgp_db}
+      - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - PYTHONPATH=/app:/app/shared
+      # Advanced Caching Integration - Use host Redis
+      - REDIS_URL=redis://host.docker.internal:6379/3
+      - CACHE_ENABLED=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - acgs-network
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+      auth_service:
+        condition: service_healthy
+    volumes:
+      - ./services/platform/integrity:/app
+      - ./services/shared:/app/shared
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # FV Service (Port 8003)
+  fv_service:
+    build: ./services/core/formal-verification
+    container_name: acgs_fv_cache_integrated
+    ports:
+      - "8003:8003"
+    environment:
+      - VERIFICATION_TOOL_ENDPOINT=${VERIFICATION_TOOL_ENDPOINT:-http://mock_verification_tool:80/verify}
+      - AC_SERVICE_URL=http://ac_service:8001/api/v1
+      - INTEGRITY_SERVICE_URL=http://integrity_service:8002/api/v1
+      - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - PYTHONPATH=/app:/app/shared
+      # Advanced Caching Integration - Use host Redis
+      - REDIS_URL=redis://host.docker.internal:6379/4
+      - CACHE_ENABLED=true
+      - PARALLEL_MAX_CONCURRENT=${PARALLEL_MAX_CONCURRENT:-50}
+      - PARALLEL_BATCH_SIZE=${PARALLEL_BATCH_SIZE:-25}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - acgs-network
+    depends_on:
+      ac_service:
+        condition: service_healthy
+      integrity_service:
+        condition: service_healthy
+    volumes:
+      - ./services/core/formal-verification:/app
+      - ./services/shared:/app/shared
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # GS Service (Port 8004)
+  gs_service:
+    build: ./services/core/governance-synthesis
+    container_name: acgs_gs_cache_integrated
+    ports:
+      - "8004:8004"
+    environment:
+      - LLM_API_ENDPOINT=${LLM_API_ENDPOINT:-http://mock_llm_service/generate}
+      - AC_SERVICE_URL=http://ac_service:8001/api/v1
+      - INTEGRITY_SERVICE_URL=http://integrity_service:8002/api/v1
+      - FV_SERVICE_URL=http://fv_service:8003/api/v1
+      - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - PYTHONPATH=/app:/app/shared
+      # LangGraph configuration
+      - LANGGRAPH_REDIS_URL=redis://langgraph_redis:6379
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - XAI_API_KEY=${XAI_API_KEY}
+      - POLICY_QUALITY_THRESHOLD=${POLICY_QUALITY_THRESHOLD:-0.80}
+      - MAX_SYNTHESIS_LOOPS=${MAX_SYNTHESIS_LOOPS:-3}
+      # Advanced Caching Integration - Use host Redis
+      - REDIS_URL=redis://host.docker.internal:6379/5
+      - CACHE_ENABLED=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - acgs-network
+    depends_on:
+      ac_service:
+        condition: service_healthy
+      integrity_service:
+        condition: service_healthy
+      fv_service:
+        condition: service_healthy
+      langgraph_redis:
+        condition: service_healthy
+    volumes:
+      - ./services/core/governance-synthesis:/app
+      - ./services/shared:/app/shared
+      - ./integrations/alphaevolve-engine/src/alphaevolve_gs_engine:/app/alphaevolve_gs_engine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PGC Service (Port 8005)
+  pgc_service:
+    build: ./services/core/policy-governance
+    container_name: acgs_pgc_cache_integrated
+    ports:
+      - "8005:8005"
+    environment:
+      - INTEGRITY_SERVICE_URL=http://integrity_service:8002/api/v1
+      - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - PYTHONPATH=/app:/app/shared
+      # OPA integration
+      - OPA_SERVER_URL=http://opa:8181
+      - OPA_BUNDLE_NAME=${OPA_BUNDLE_NAME:-authz}
+      - ENABLE_INCREMENTAL_COMPILATION=${ENABLE_INCREMENTAL_COMPILATION:-true}
+      - POLICY_CACHE_TTL=${POLICY_CACHE_TTL:-300}
+      # Advanced Caching Integration - Use host Redis
+      - REDIS_URL=redis://host.docker.internal:6379/6
+      - CACHE_ENABLED=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - acgs-network
+    depends_on:
+      integrity_service:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+    volumes:
+      - ./services/core/policy-governance:/app
+      - ./services/shared:/app/shared
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # EC Service (Port 8006)
+  ec_service:
+    build: ./services/core/evolutionary-computation/ec_service
+    container_name: acgs_ec_cache_integrated
+    ports:
+      - "8006:8006"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_db:5432/${POSTGRES_DB:-acgs_pgp_db}
+      - AC_SERVICE_URL=http://ac_service:8001/api/v1
+      - GS_SERVICE_URL=http://gs_service:8004/api/v1
+      - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - PYTHONPATH=/app:/app/shared
+      # WINA Optimization Configuration
+      - WINA_ENABLED=${WINA_ENABLED:-true}
+      - WINA_SVD_ENABLED=${WINA_SVD_ENABLED:-true}
+      - WINA_GATING_ENABLED=${WINA_GATING_ENABLED:-true}
+      - WINA_GFLOPS_REDUCTION_TARGET=${WINA_GFLOPS_REDUCTION_TARGET:-0.55}
+      - WINA_SYNTHESIS_ACCURACY_THRESHOLD=${WINA_SYNTHESIS_ACCURACY_THRESHOLD:-0.95}
+      - WINA_CONSTITUTIONAL_COMPLIANCE_ENABLED=${WINA_CONSTITUTIONAL_COMPLIANCE_ENABLED:-true}
+      # AlphaEvolve Configuration
+      - ALPHAEVOLVE_ENABLED=${ALPHAEVOLVE_ENABLED:-true}
+      - EVOLUTIONARY_COMPUTATION_ENABLED=${EVOLUTIONARY_COMPUTATION_ENABLED:-true}
+      - POPULATION_SIZE=${POPULATION_SIZE:-50}
+      - MUTATION_RATE=${MUTATION_RATE:-0.1}
+      - CROSSOVER_RATE=${CROSSOVER_RATE:-0.8}
+      - MAX_GENERATIONS=${MAX_GENERATIONS:-100}
+      # Constitutional Fidelity Monitoring
+      - CFM_ENABLED=${CFM_ENABLED:-true}
+      - CFM_GREEN_THRESHOLD=${CFM_GREEN_THRESHOLD:-0.85}
+      - CFM_AMBER_THRESHOLD=${CFM_AMBER_THRESHOLD:-0.70}
+      - CFM_RED_THRESHOLD=${CFM_RED_THRESHOLD:-0.55}
+      - CFM_MONITORING_INTERVAL_SECONDS=${CFM_MONITORING_INTERVAL_SECONDS:-30}
+      # Advanced Caching Integration - Use host Redis
+      - REDIS_URL=redis://host.docker.internal:6379/7
+      - CACHE_ENABLED=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - acgs-network
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+      ac_service:
+        condition: service_healthy
+      gs_service:
+        condition: service_healthy
+      alembic-runner:
+        condition: service_completed_successfully
+    volumes:
+      - ./services/core/evolutionary-computation/ec_service:/app
+      - ./services/shared:/app/shared
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_cache_data:
+  langgraph_cache_data:
+  opa_cache_policies:
+  opa_cache_data:

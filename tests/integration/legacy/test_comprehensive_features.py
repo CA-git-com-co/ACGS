@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -10,12 +12,11 @@ Tests all Phase 1-3 components with integration scenarios
 """
 
 import asyncio
-import aiohttp
-import json
-import sys
 import os
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict
+
+import aiohttp
 
 # Add project root to path
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)))  # Removed during reorganization
@@ -160,7 +161,7 @@ class ComprehensiveFeatureTester:
                             context_url, json=context_request
                         ) as context_response:
                             if context_response.status == 200:
-                                context_result = await context_response.json()
+                                await context_response.json()
                                 print("✅ Contextual analysis successful")
                                 return True
                             else:
@@ -217,7 +218,7 @@ class ComprehensiveFeatureTester:
                         eval_url, json=eval_request
                     ) as eval_response:
                         if eval_response.status == 200:
-                            eval_result = await eval_response.json()
+                            await eval_response.json()
                             print("✅ Governance evaluation successful")
                             return True
                         else:
@@ -255,7 +256,7 @@ class ComprehensiveFeatureTester:
             url = f"{self.base_urls['fv']}/verify/smt-solver"
             async with self.session.post(url, json=verification_request) as response:
                 if response.status == 200:
-                    verification_result = await response.json()
+                    await response.json()
                     print("✅ Z3 formal verification successful")
 
                     # Test tiered validation
@@ -272,7 +273,7 @@ class ComprehensiveFeatureTester:
                         tiered_url, json=tiered_request
                     ) as tiered_response:
                         if tiered_response.status == 200:
-                            tiered_result = await tiered_response.json()
+                            await tiered_response.json()
                             print("✅ Tiered validation successful")
                             return True
                         else:
@@ -407,8 +408,9 @@ async def main():
 if __name__ == "__main__":
     exit_code = asyncio.run(main())
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

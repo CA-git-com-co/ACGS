@@ -9,12 +9,9 @@ and the main ACGS-PGP services for evolutionary computation governance.
 import asyncio
 import json
 import time
-import uuid
 from datetime import datetime
-from typing import List, Dict, Any
 
 import httpx
-import pytest
 
 # Test configuration
 BASE_URL = "http://localhost:8000"

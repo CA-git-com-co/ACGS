@@ -5,28 +5,24 @@ Tests comprehensive mocking of external dependencies and services.
 """
 
 import asyncio
+from unittest.mock import AsyncMock
+
 import pytest
-import sys
-import os
-from typing import Dict, Any
-from unittest.mock import patch, AsyncMock
+from mock_services import (
+    EnhancedHTTPXMock,
+    MockLLMService,
+    MockServiceManager,
+    MockZ3Solver,
+    create_mock_response,
+    mock_all_services,
+    mock_database_session,
+    mock_service_communication,
+)
 
 # Add test utilities to path
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../utils'))  # Removed during reorganization
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization
 
-from mock_services import (
-    MockServiceManager,
-    EnhancedHTTPXMock,
-    MockLLMService,
-    MockZ3Solver,
-    mock_all_services,
-    mock_service_communication,
-    mock_database_session,
-    create_mock_response,
-    assert_service_called,
-    get_service_call_count,
-)
 
 
 class TestEnhancedDependencyMocking:

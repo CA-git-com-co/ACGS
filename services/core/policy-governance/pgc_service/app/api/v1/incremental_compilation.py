@@ -5,15 +5,17 @@ Provides endpoints for zero-downtime policy deployment, rollback operations,
 and integration with constitutional amendment workflows.
 """
 
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
-from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
 import logging
+from typing import Any, Dict, List, Optional
 
-from ...core.incremental_compiler import get_incremental_compiler, IncrementalCompiler
-from ...services.integrity_client import IntegrityPolicyRule
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from pydantic import BaseModel, Field
+
 from services.shared.auth import get_current_user
 from services.shared.models import User
+
+from ...core.incremental_compiler import IncrementalCompiler, get_incremental_compiler
+from ...services.integrity_client import IntegrityPolicyRule
 
 logger = logging.getLogger(__name__)
 

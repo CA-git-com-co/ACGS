@@ -14,11 +14,9 @@ Usage:
 """
 
 import asyncio
+from typing import Any, Dict, Optional
+
 import aiohttp
-import json
-import sys
-from typing import Dict, Any, Optional
-from datetime import datetime
 
 # Configuration
 SERVICES = {

@@ -9,23 +9,23 @@ and production environments.
 import asyncio
 import inspect
 import logging
+import weakref
+from contextlib import asynccontextmanager
+from dataclasses import dataclass, field
+from enum import Enum
 from typing import (
     Any,
+    Callable,
     Dict,
     List,
     Optional,
     Type,
     TypeVar,
-    Callable,
     Union,
-    get_type_hints,
-    get_origin,
     get_args,
+    get_origin,
+    get_type_hints,
 )
-from enum import Enum
-from dataclasses import dataclass, field
-from contextlib import asynccontextmanager
-import weakref
 
 logger = logging.getLogger(__name__)
 

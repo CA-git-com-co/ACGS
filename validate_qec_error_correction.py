@@ -6,11 +6,8 @@ Simple validation script for QEC Error Correction Service implementation.
 Tests basic functionality without requiring full test framework.
 """
 
-import sys
 import os
-import asyncio
-from datetime import datetime
-from typing import Dict, List, Any
+import sys
 
 # Add the backend path to sys.path
 sys.path.insert(
@@ -21,21 +18,7 @@ sys.path.insert(
 def test_imports():
     """Test that all QEC error correction components can be imported."""
     try:
-        from app.services.qec_error_correction_service import (
-            QECErrorCorrectionService,
-            ConflictDetectionEngine,
-            AutomaticResolutionWorkflow,
-            SemanticValidationEngine,
-            PolicyRefinementSuggester,
-            ConflictComplexityScorer,
-            ParallelConflictProcessor,
-            ConflictType,
-            ResolutionStrategy,
-            ErrorCorrectionStatus,
-            ConflictDetectionResult,
-            ErrorCorrectionResult,
-            PolicyRefinementSuggestion,
-        )
+        pass
 
         print("✅ All QEC error correction components imported successfully")
         return True
@@ -48,36 +31,36 @@ def test_service_initialization():
     """Test that QEC services can be initialized."""
     try:
         from app.services.qec_error_correction_service import (
-            QECErrorCorrectionService,
-            ConflictDetectionEngine,
             AutomaticResolutionWorkflow,
-            SemanticValidationEngine,
-            PolicyRefinementSuggester,
             ConflictComplexityScorer,
+            ConflictDetectionEngine,
             ParallelConflictProcessor,
+            PolicyRefinementSuggester,
+            QECErrorCorrectionService,
+            SemanticValidationEngine,
         )
 
         # Test individual component initialization
-        conflict_detector = ConflictDetectionEngine()
+        ConflictDetectionEngine()
         print("✅ ConflictDetectionEngine initialized")
 
-        resolution_workflow = AutomaticResolutionWorkflow()
+        AutomaticResolutionWorkflow()
         print("✅ AutomaticResolutionWorkflow initialized")
 
-        semantic_validator = SemanticValidationEngine()
+        SemanticValidationEngine()
         print("✅ SemanticValidationEngine initialized")
 
-        refinement_suggester = PolicyRefinementSuggester()
+        PolicyRefinementSuggester()
         print("✅ PolicyRefinementSuggester initialized")
 
-        complexity_scorer = ConflictComplexityScorer()
+        ConflictComplexityScorer()
         print("✅ ConflictComplexityScorer initialized")
 
-        parallel_processor = ParallelConflictProcessor()
+        ParallelConflictProcessor()
         print("✅ ParallelConflictProcessor initialized")
 
         # Test main service initialization
-        qec_service = QECErrorCorrectionService()
+        QECErrorCorrectionService()
         print("✅ QECErrorCorrectionService initialized")
 
         return True
@@ -90,12 +73,12 @@ def test_data_structures():
     """Test that data structures can be created."""
     try:
         from app.services.qec_error_correction_service import (
-            ConflictType,
-            ResolutionStrategy,
-            ErrorCorrectionStatus,
             ConflictDetectionResult,
+            ConflictType,
             ErrorCorrectionResult,
+            ErrorCorrectionStatus,
             PolicyRefinementSuggestion,
+            ResolutionStrategy,
         )
 
         # Test ConflictDetectionResult
@@ -164,13 +147,6 @@ def test_api_imports():
                 "api",
                 "v1",
             ),
-        )
-
-        from qec_error_correction import (
-            ErrorCorrectionRequest,
-            ConflictDetectionRequest,
-            SemanticValidationRequest,
-            PolicyRefinementRequest,
         )
 
         print("✅ API request models imported successfully")

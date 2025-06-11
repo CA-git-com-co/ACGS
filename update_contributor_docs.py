@@ -4,7 +4,6 @@ ACGS-1 Team Onboarding and Contributor Documentation Updates
 Updates contributor guides and onboarding materials for new structure
 """
 
-import os
 import logging
 from pathlib import Path
 

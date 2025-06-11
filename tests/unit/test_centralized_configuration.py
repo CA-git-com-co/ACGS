@@ -1,21 +1,22 @@
 # Tests for Centralized Configuration Management
 
-import pytest
+import json
 import os
 import tempfile
-import json
-from unittest.mock import patch
 from pathlib import Path
+from unittest.mock import patch
+
+import pytest
 
 from services.shared.utils import (
     ACGSConfig,
     ACGSConfigModel,
-    Environment,
-    DatabaseConfig,
-    ServiceUrlsConfig,
-    SecurityConfig,
     AIModelConfig,
+    DatabaseConfig,
+    Environment,
     MonitoringConfig,
+    SecurityConfig,
+    ServiceUrlsConfig,
 )
 
 
@@ -222,7 +223,7 @@ OPENAI_API_KEY=test-openai-key
             with pytest.raises(
                 ValueError, match="JWT secret key must be changed from default value"
             ):
-                config = ACGSConfig()
+                ACGSConfig()
 
     def test_config_template_export(self, temp_env_file):
         """Test configuration template export."""
@@ -343,4 +344,4 @@ OPENAI_API_KEY=test-openai-key
         ):
             # Should fail during construction due to invalid service URLs
             with pytest.raises(ValueError, match="Service URL must start with http"):
-                config = ACGSConfig()
+                ACGSConfig()

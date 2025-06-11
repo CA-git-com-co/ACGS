@@ -1,7 +1,8 @@
 import os
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+
 from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
 
 # Load environment variables from .env file (especially for local development)
 # In a containerized environment, these might be set directly.
@@ -33,7 +34,7 @@ async def create_db_tables():
         from services.shared.database import Base
 
         # Import all models here that should be created
-        from services.shared.models import User, RefreshToken  # noqa
+        from services.shared.models import RefreshToken, User  # noqa
 
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)

@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -12,10 +14,9 @@ and validates that it achieves the >99.9% reliability target.
 """
 
 import asyncio
-import sys
-import os
 import logging
-from typing import Dict, Any
+import os
+import sys
 
 # Add the project root to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
@@ -263,8 +264,9 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

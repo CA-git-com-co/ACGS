@@ -23,10 +23,9 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
 # Import shared components for Phase A3 production-grade implementation
-sys.path.append("/home/dislove/ACGS-1/services/shared")
 try:
-    from api_models import create_success_response
-    from middleware import add_production_middleware, create_exception_handlers
+    from shared.api_models import create_success_response
+    from shared.middleware import add_production_middleware, create_exception_handlers
 
     SHARED_COMPONENTS_AVAILABLE = True
     logger_shared = logging.getLogger("shared_components")

@@ -3,9 +3,10 @@
 Generate valid Solana program IDs for Quantumagi programs
 """
 
-import base58
 import hashlib
 import os
+
+import base58
 
 
 def generate_program_id(program_name: str) -> str:

@@ -11,15 +11,12 @@ Tests:
 - Migration path from existing conflict resolution data
 """
 
-import pytest
-import asyncio
 from datetime import datetime
-from typing import Dict, Any, List
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
 
 # Import test dependencies
-import sys
-import os
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))  # Removed during reorganization
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'ac_service'))  # Removed during reorganization
@@ -27,7 +24,7 @@ import os
 
 # Test imports with fallbacks
 try:
-    from models import Principle, ConflictResolution
+    from models import ConflictResolution, Principle
 
     MODELS_AVAILABLE = True
 except ImportError:

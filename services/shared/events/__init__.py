@@ -5,11 +5,11 @@ This module provides event-driven communication patterns to replace direct
 service calls and reduce coupling between microservices.
 """
 
-from .bus import EventBus, Event, EventHandler, get_event_bus
+from .bus import Event, EventBus, EventHandler, get_event_bus
 from .decorators import event_handler, event_publisher
 from .middleware import EventMiddleware, LoggingMiddleware, MetricsMiddleware
-from .store import EventStore, InMemoryEventStore, DatabaseEventStore
-from .types import EventType, EventPriority, EventStatus
+from .store import DatabaseEventStore, EventStore, InMemoryEventStore
+from .types import EventPriority, EventStatus, EventType
 
 __all__ = [
     "EventBus",

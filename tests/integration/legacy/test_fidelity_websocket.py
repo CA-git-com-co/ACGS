@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -15,10 +17,11 @@ This script tests the enhanced WebSocket implementation for Task 19.1:
 """
 
 import asyncio
-import websockets
 import json
 import time
 from datetime import datetime
+
+import websockets
 
 
 async def test_fidelity_websocket():
@@ -176,8 +179,9 @@ if __name__ == "__main__":
     print("\n" + "=" * 60)
     asyncio.run(test_fidelity_websocket())
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

@@ -5,11 +5,12 @@ Validates HTTP client functionality across all services
 """
 
 import asyncio
-import httpx
 import logging
 import sys
 import time
-from typing import Dict, List, Any
+from typing import Any, Dict
+
+import httpx
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -1,17 +1,18 @@
 # Enterprise Security Event Model
+from datetime import datetime, timezone
+
+from app.db.base_class import Base
 from sqlalchemy import (
+    JSON,
+    Boolean,
     Column,
+    DateTime,
+    ForeignKey,
     Integer,
     String,
-    Boolean,
-    DateTime,
     Text,
-    JSON,
-    ForeignKey,
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime, timezone
-from app.db.base_class import Base
 
 
 class SecurityEvent(Base):

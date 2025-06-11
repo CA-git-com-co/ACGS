@@ -1,31 +1,32 @@
+import logging
+import time
+from datetime import datetime, timezone
+from typing import Dict, List, Optional
+
 from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
-    status,
     WebSocket,
     WebSocketDisconnect,
+    status,
 )
-from typing import List, Optional, Dict
-import time
-import logging
-from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
 from ... import schemas  # Relative imports for app directory
-from ...core.verification_logic import verify_policy_rules
-from ...services.ac_client import ac_service_client, ACPrinciple
-from ...services.integrity_client import integrity_service_client, PolicyRule
-from ...core.auth import require_verification_triggerer, User  # Placeholder auth
-
-# Phase 3 imports
-from ...core.tiered_validation import tiered_validation_pipeline
-from ...core.safety_conflict_checker import safety_property_checker, conflict_detector
+from ...core.auth import User, require_verification_triggerer  # Placeholder auth
 from ...core.bias_detector import bias_detector
 
 # Task 7 imports
 from ...core.parallel_validation_pipeline import parallel_pipeline
+from ...core.safety_conflict_checker import conflict_detector, safety_property_checker
+
+# Phase 3 imports
+from ...core.tiered_validation import tiered_validation_pipeline
+from ...core.verification_logic import verify_policy_rules
+from ...services.ac_client import ACPrinciple, ac_service_client
+from ...services.integrity_client import PolicyRule, integrity_service_client
 
 
 # Local implementations to avoid shared module dependencies

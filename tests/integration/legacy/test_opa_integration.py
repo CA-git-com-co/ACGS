@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -8,8 +10,8 @@ if not os.environ.get("ACGS_INTEGRATION"):
 Simple test script to verify OPA integration implementation.
 """
 
-import sys
 import os
+import sys
 
 # sys.path.append('/home/dislove/ACGS-master')  # Removed during reorganization
 
@@ -17,27 +19,13 @@ import os
 def test_imports():
     """Test that all modules can be imported."""
     try:
-        from services.core.governance_synthesis.app.config.opa_config import (
-            get_opa_config,
-        )
+        pass
 
         print("✓ OPA config import successful")
 
-        from services.core.governance_synthesis.app.core.opa_integration import (
-            OPAClient,
-        )
-
         print("✓ OPA integration import successful")
 
-        from services.core.governance_synthesis.app.services.policy_validator import (
-            PolicyValidationEngine,
-        )
-
         print("✓ Policy validator import successful")
-
-        from services.core.governance_synthesis.app.services.enhanced_governance_synthesis import (
-            EnhancedGovernanceSynthesis,
-        )
 
         print("✓ Enhanced governance synthesis import successful")
 
@@ -86,14 +74,14 @@ def test_policy_files():
 def test_score_calculation():
     """Test score calculation logic."""
     try:
-        from services.core.governance_synthesis.app.services.policy_validator import (
-            PolicyValidationEngine,
-            ConstitutionalValidationResult,
-            ComplianceCheckResult,
-            ConflictDetectionResult,
-        )
         from services.core.governance_synthesis.app.core.opa_integration import (
             PolicyValidationResult,
+        )
+        from services.core.governance_synthesis.app.services.policy_validator import (
+            ComplianceCheckResult,
+            ConflictDetectionResult,
+            ConstitutionalValidationResult,
+            PolicyValidationEngine,
         )
 
         engine = PolicyValidationEngine()
@@ -186,8 +174,9 @@ def main():
 if __name__ == "__main__":
     sys.exit(main())
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

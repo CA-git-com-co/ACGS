@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -12,12 +14,10 @@ requiring the full service infrastructure.
 """
 
 import asyncio
-import sys
-import os
 import logging
-from typing import Dict, Any
+import os
+import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone
 
 # Set up logging
 logging.basicConfig(
@@ -337,8 +337,9 @@ if __name__ == "__main__":
     success = asyncio.run(main())
     sys.exit(0 if success else 1)
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

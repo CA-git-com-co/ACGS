@@ -1,27 +1,28 @@
 # Tests for Enhanced Constitutional Council Test Fixtures
 
+from datetime import timedelta
+
 import pytest
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, List
 
 try:
     from tests.fixtures.constitutional_council import (
-        mock_council_members,
-        co_evolution_test_scenarios,
-        edge_case_scenarios,
-        negative_test_cases,
-        performance_test_scenarios,
-        byzantine_fault_test_data,
-        comprehensive_council_test_suite,
         ConstitutionalCouncilTestUtils,
         VotingBehavior,
+        byzantine_fault_test_data,
+        co_evolution_test_scenarios,
+        comprehensive_council_test_suite,
+        edge_case_scenarios,
+        mock_council_members,
+        negative_test_cases,
+        performance_test_scenarios,
     )
 except ImportError:
     # Mock implementations for testing when modules are not available
-    import pytest
-    from unittest.mock import MagicMock
     from datetime import timedelta
     from enum import Enum
+    from unittest.mock import MagicMock
+
+    import pytest
 
     @pytest.fixture
     def mock_council_members():

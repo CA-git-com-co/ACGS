@@ -6,14 +6,14 @@ Tests ACGSConfig class and configuration loading functionality.
 
 import os
 import tempfile
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, mock_open
-import sys
+from utils import ACGSConfig, get_config, reset_config
 
 # Add the shared module to the path
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization
 
-from utils import ACGSConfig, get_config, reset_config
 
 
 class TestACGSConfig:

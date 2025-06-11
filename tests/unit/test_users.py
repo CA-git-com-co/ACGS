@@ -3,11 +3,10 @@
 User-related unit tests for ACGS-1.
 """
 
-from uuid import uuid4
-import pytest
-from unittest.mock import MagicMock, Mock
 import time
-import json
+from uuid import uuid4
+
+import pytest
 
 
 # Mock settings for testing

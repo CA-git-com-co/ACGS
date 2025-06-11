@@ -3,20 +3,19 @@ import datetime
 import json
 import math
 import os
-import shutil
 import random
+import shutil
 from concurrent.futures import (
     ThreadPoolExecutor,
-    ProcessPoolExecutor,
-    as_completed,
     TimeoutError,
+    as_completed,
 )
 
 from prompts.self_improvement_prompt import find_selfimprove_eval_logs
 from self_improve_step import self_improve
 from utils.common_utils import load_json_file
 from utils.docker_utils import setup_logger
-from utils.evo_utils import load_dgm_metadata, is_compiled_self_improve
+from utils.evo_utils import is_compiled_self_improve, load_dgm_metadata
 
 
 def initialize_run(output_dir, prevrun_dir=None, polyglot=False):

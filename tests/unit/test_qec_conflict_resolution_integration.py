@@ -6,27 +6,23 @@ Tests end-to-end workflows including API endpoints, database operations,
 and Constitutional Fidelity Monitor integration.
 """
 
-import pytest
-import asyncio
-import json
 from datetime import datetime
-from typing import Dict, Any
-from unittest.mock import Mock, AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
 from fastapi.testclient import TestClient
 
 # Import test dependencies
-import sys
-import os
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))  # Removed during reorganization
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'ac_service'))  # Removed during reorganization
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'shared'))  # Removed during reorganization
 
 try:
-    from app.main import app
     from app.api.v1.conflict_resolution import router
+    from app.main import app
     from app.services.qec_conflict_resolver import QECConflictResolver
-    from models import ACPrinciple, ACConflictResolution
+    from models import ACConflictResolution, ACPrinciple
 except ImportError:
     # Fallback for testing without full service setup
     from unittest.mock import Mock

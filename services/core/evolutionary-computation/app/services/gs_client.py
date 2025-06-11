@@ -6,8 +6,9 @@ for AlphaEvolve integration and constitutional governance operations.
 """
 
 import logging
+from typing import Any, Dict, List, Optional
+
 import httpx
-from typing import Dict, List, Any, Optional
 from shared import get_config
 
 logger = logging.getLogger(__name__)

@@ -5,9 +5,9 @@ This script validates the Phase 1 implementation of the Artificial Constitution 
 """
 
 import asyncio
-import json
+from typing import Any, Dict
+
 import aiohttp
-from typing import Dict, Any
 
 # Base URL for the AC service
 BASE_URL = "http://localhost:8001"

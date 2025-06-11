@@ -4,11 +4,10 @@ Phase 3 Monitoring Validation Script
 Validates the monitoring infrastructure and endpoints for ACGS Phase 3 deployment.
 """
 
-import requests
-import json
-import time
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Any, Dict
+
+import requests
 
 
 class Phase3MonitoringValidator:

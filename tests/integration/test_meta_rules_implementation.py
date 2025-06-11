@@ -9,10 +9,10 @@ Usage:
     python test_meta_rules_implementation.py
 """
 
-import requests
-import json
 import sys
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
+import requests
 
 # Configuration
 BASE_URL = "http://localhost:8001"
@@ -211,7 +211,7 @@ def main():
     client.test_meta_rules_list()
 
     if authenticated:
-        created_rule = client.test_meta_rule_creation()
+        client.test_meta_rule_creation()
 
     # Test Conflict Resolution endpoints
     print("\n4. Testing Conflict Resolution Endpoints...")

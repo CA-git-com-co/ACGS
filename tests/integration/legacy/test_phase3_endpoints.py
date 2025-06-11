@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -13,6 +15,7 @@ Test Phase 3 performance monitoring and security endpoints directly.
 import asyncio
 import sys
 import time
+
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -82,10 +85,8 @@ def test_security_compliance_direct():
 
     try:
         from services.core.governance_synthesis.app.services.security_compliance import (
-            SecurityComplianceService,
             JWTManager,
-            InputValidator,
-            RateLimiter,
+            SecurityComplianceService,
         )
 
         # Test JWT Manager
@@ -158,7 +159,6 @@ def test_advanced_cache_performance():
     try:
         from services.core.governance_synthesis.app.services.advanced_cache import (
             LRUCache,
-            MultiTierCache,
         )
 
         # Test LRU Cache performance
@@ -333,8 +333,9 @@ if __name__ == "__main__":
     success = asyncio.run(main())
     sys.exit(0 if success else 1)
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

@@ -11,38 +11,30 @@ This test suite validates:
 - Target metrics validation
 """
 
-import pytest
-import asyncio
-import time
-import json
 import statistics
-from datetime import datetime, timedelta
-from typing import Dict, Any, List
+import time
+from datetime import datetime
+
+import pytest
 
 # QEC Enhancement imports
-import sys
-import os
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'alphaevolve_gs_engine', 'src'))  # Removed during reorganization
 
 try:
+    from integrations.alphaevolve_engine.core.constitutional_principle import (
+        ConstitutionalPrinciple,
+    )
     from integrations.alphaevolve_engine.services.qec_enhancement import (
         ConstitutionalDistanceCalculator,
-        ValidationDSLParser,
         ErrorPredictionModel,
-        RecoveryStrategyDispatcher,
         FailureType,
+        RecoveryStrategyDispatcher,
         SynthesisAttemptLog,
-        RecoveryStrategy,
+        ValidationDSLParser,
     )
     from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
         ConstitutionalFidelityMonitor,
-        FidelityComponents,
-        FidelityAlert,
-        FidelityThresholds,
-    )
-    from integrations.alphaevolve_engine.core.constitutional_principle import (
-        ConstitutionalPrinciple,
     )
 
     QEC_AVAILABLE = True
@@ -301,7 +293,7 @@ class TestQECStandaloneIntegration:
         # Initialize components
         distance_calculator = ConstitutionalDistanceCalculator()
         error_predictor = ErrorPredictionModel()
-        recovery_dispatcher = RecoveryStrategyDispatcher()
+        RecoveryStrategyDispatcher()
         fidelity_monitor = ConstitutionalFidelityMonitor()
 
         # Benchmark constitutional distance calculation

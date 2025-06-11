@@ -3,25 +3,20 @@ import datetime
 import json
 import os
 import shutil
-import docker
 
-from llm import create_client, get_response_from_llm, extract_json_between_markers
+import docker
+from llm import create_client, extract_json_between_markers, get_response_from_llm
+from polyglot.harness import harness as polyglot_harness
+from prompts.diagnose_improvement_prompt import get_diagnose_improvement_prompt
 from prompts.self_improvement_prompt import (
     get_diagnose_prompt_polyglot,
     get_diagnose_prompt_swe,
     get_problem_description_prompt,
 )
-from prompts.diagnose_improvement_prompt import get_diagnose_improvement_prompt
 from prompts.testrepo_prompt import get_test_description
 from swe_bench.harness import harness
-from polyglot.harness import harness as polyglot_harness
 from swe_bench.report import make_report
 from utils.common_utils import load_json_file
-from utils.evo_utils import (
-    get_model_patch_paths,
-    get_all_performance,
-    is_compiled_self_improve,
-)
 from utils.docker_utils import (
     build_dgm_container,
     cleanup_container,
@@ -29,8 +24,13 @@ from utils.docker_utils import (
     copy_to_container,
     log_container_output,
     remove_existing_container,
-    setup_logger,
     safe_log,
+    setup_logger,
+)
+from utils.evo_utils import (
+    get_all_performance,
+    get_model_patch_paths,
+    is_compiled_self_improve,
 )
 
 dataset = None
@@ -340,10 +340,10 @@ def self_improve(
     os.makedirs(output_dir, exist_ok=True)
     metadata["run_id"] = run_id
     metadata["parent_commit"] = parent_commit
-    test_task_list_big = load_json_file("./swe_bench/subsets/big.json")
+    load_json_file("./swe_bench/subsets/big.json")
 
     # Set up logger
-    logger = setup_logger(os.path.join(output_dir, "self_improve.log"))
+    setup_logger(os.path.join(output_dir, "self_improve.log"))
 
     # Create and start the Docker container
     image_name = "dgm"

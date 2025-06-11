@@ -1,0 +1,225 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Integrity Service Dashboard",
+    "tags": ["acgs", "integrity", "cryptography", "audit", "service"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"acgs-integrity-service\"}",
+            "legendFormat": "Service Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Down"}}, "type": "value"},
+              {"options": {"1": {"text": "Up"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Cryptographic Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_cryptographic_operations_total{service=\"integrity\"}[5m])",
+            "legendFormat": "{{operation_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Audit Trail Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_audit_trail_operations_total{service=\"integrity\"}[5m])",
+            "legendFormat": "{{operation_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Data Integrity Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_data_integrity_score{service=\"integrity\"}",
+            "legendFormat": "{{data_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.95},
+                {"color": "green", "value": 0.99}
+              ]
+            },
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 4}
+      },
+      {
+        "id": 5,
+        "title": "Hash Verification Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_hash_verification_operations_total{service=\"integrity\"}[5m])",
+            "legendFormat": "{{hash_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Verifications/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Digital Signature Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_digital_signature_operations_total{service=\"integrity\"}[5m])",
+            "legendFormat": "{{signature_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 7,
+        "title": "Integrity Validation Latency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(acgs_integrity_validation_latency_seconds_bucket{service=\"integrity\"}[5m]))",
+            "legendFormat": "95th percentile - {{validation_type}}"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(acgs_integrity_validation_latency_seconds_bucket{service=\"integrity\"}[5m]))",
+            "legendFormat": "50th percentile - {{validation_type}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 1.0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Tamper Detection Events",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_tamper_detection_events_total{service=\"integrity\"}[5m])",
+            "legendFormat": "{{detection_type}} - {{severity}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Events/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 9,
+        "title": "Blockchain Integrity Checks",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_blockchain_integrity_checks_total{service=\"integrity\"}[5m])",
+            "legendFormat": "{{check_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Checks/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 10,
+        "title": "Response Time Distribution",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(acgs_http_request_duration_seconds_bucket{service=\"integrity\"}[5m]))",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(acgs_http_request_duration_seconds_bucket{service=\"integrity\"}[5m]))",
+            "legendFormat": "50th percentile"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 1.0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      }
+    ]
+  }
+}

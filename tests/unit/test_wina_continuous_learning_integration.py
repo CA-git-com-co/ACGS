@@ -14,44 +14,33 @@ Test Coverage:
 - End-to-end learning feedback loops
 """
 
-import pytest
 import asyncio
-import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Any
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import datetime
+from unittest.mock import patch
+
+import pytest
 
 # WINA imports
 try:
     from services.shared.wina.continuous_learning import (
-        WINAContinuousLearningSystem,
+        ComponentLearningProfile,
         FeedbackSignal,
         FeedbackType,
-        LearningStrategy,
         LearningPhase,
-        ComponentLearningProfile,
-        LearningAction,
+        LearningStrategy,
+        WINAContinuousLearningSystem,
         get_wina_learning_system,
-        process_efficiency_feedback,
-        process_accuracy_feedback,
-        process_constitutional_feedback,
-    )
-    from services.shared.wina.performance_monitoring import (
-        WINAPerformanceCollector,
-        WINAMonitoringLevel,
-        WINAComponentType,
-        WINALearningFeedbackMetrics,
-        WINANeuronActivationMetrics,
-        WINADynamicGatingMetrics,
-        WINAConstitutionalComplianceMetrics,
-        WINAIntegrationPerformanceMetrics,
     )
     from services.shared.wina.learning_api import (
         create_learning_api_router,
-        FeedbackSubmissionRequest,
-        ComponentTypeAPI,
-        FeedbackTypeAPI,
-        integrate_with_performance_monitoring,
+    )
+    from services.shared.wina.performance_monitoring import (
+        WINAComponentType,
+        WINADynamicGatingMetrics,
+        WINALearningFeedbackMetrics,
+        WINAMonitoringLevel,
+        WINANeuronActivationMetrics,
+        WINAPerformanceCollector,
     )
 
     # from services.core.evolutionary_computation.ec_service.app.core.wina_oversight_coordinator import (  # Removed during reorganization
@@ -92,8 +81,8 @@ except ImportError as e:
     WINA_AVAILABLE = False
     print(f"WINA modules not available for testing: {e}")
 
-from fastapi.testclient import TestClient
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
 pytestmark = pytest.mark.skipif(not WINA_AVAILABLE, reason="WINA modules not available")
 
@@ -625,7 +614,7 @@ class TestLearningAlgorithms:
 
     async def test_learning_phase_transitions(self, learning_system):
         """Test learning phase transitions."""
-        initial_phase = learning_system.learning_state["current_phase"]
+        learning_system.learning_state["current_phase"]
 
         # Process feedback to potentially trigger phase transition
         for i in range(20):

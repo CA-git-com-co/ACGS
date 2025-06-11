@@ -4,15 +4,16 @@ import logging
 import os
 from typing import Dict, List, Optional
 
-# Third-party libraries for retry logic and LLM interaction
-from tenacity import retry, stop_after_attempt, wait_exponential, RetryError
 import openai  # Placeholder for actual OpenAI client library
+
+# Third-party libraries for retry logic and LLM interaction
+from tenacity import RetryError, retry, stop_after_attempt, wait_exponential
 
 from ..schemas import (
     LLMInterpretationInput,
+    LLMStructuredOutput,
     LLMSuggestedAtom,
     LLMSuggestedRule,
-    LLMStructuredOutput,
 )
 from .constitutional_prompting import constitutional_prompt_builder
 
@@ -140,9 +141,9 @@ class MockLLMClient:
     ) -> "ConstitutionalSynthesisOutput":
         """Mock implementation of constitutional synthesis."""
         from ..schemas import (
-            ConstitutionalSynthesisOutput,
-            ConstitutionallyCompliantRule,
             ConstitutionalComplianceInfo,
+            ConstitutionallyCompliantRule,
+            ConstitutionalSynthesisOutput,
         )
 
         logger.info(
@@ -598,9 +599,9 @@ Focus on creating logical rules that capture the essence of the constitutional p
             ConstitutionalSynthesisOutput with constitutionally compliant rules
         """
         from ..schemas import (
-            ConstitutionalSynthesisOutput,
-            ConstitutionallyCompliantRule,
             ConstitutionalComplianceInfo,
+            ConstitutionallyCompliantRule,
+            ConstitutionalSynthesisOutput,
         )
 
         if not self.client:

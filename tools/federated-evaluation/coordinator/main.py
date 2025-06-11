@@ -1,14 +1,12 @@
-import uuid
-import sys
-import os
-import grpc
-from fastapi import FastAPI, Body
 import logging
+import uuid
 
 # Add the proto directory to the path
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'proto'))  # Removed during reorganization
 import evaluation_pb2
 import evaluation_pb2_grpc
+import grpc
+from fastapi import Body, FastAPI
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

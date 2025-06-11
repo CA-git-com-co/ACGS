@@ -74,18 +74,18 @@ services:
   # AC Service - Artificial Constitution
   ac_service:
     build:
-      context: ./src/backend
-      dockerfile: ac_service/Dockerfile
+      context: ./services/core/constitutional-ai/ac_service
+      dockerfile: Dockerfile
     container_name: acgs-ac-service-staging
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5432/${POSTGRES_DB:-acgs_staging}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5435/${POSTGRES_DB:-acgs_staging}
       - REDIS_URL=redis://redis:6379/0
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}
       - ENVIRONMENT=staging
       - LOG_LEVEL=INFO
       - PYTHONPATH=/app:/app/shared
     ports:
-      - "8011:8001"
+      - "8001:8001"
     networks:
       - acgs-network
     depends_on:
@@ -109,8 +109,8 @@ services:
   # Integrity Service
   integrity_service:
     build:
-      context: ./src/backend
-      dockerfile: integrity_service/Dockerfile
+      context: ./services/platform/integrity/integrity_service
+      dockerfile: Dockerfile
     container_name: acgs-integrity-service-staging
     environment:
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5432/${POSTGRES_DB:-acgs_staging}
@@ -120,7 +120,7 @@ services:
       - LOG_LEVEL=INFO
       - PYTHONPATH=/app:/app/shared
     ports:
-      - "8012:8002"
+      - "8002:8002"
     networks:
       - acgs-network
     depends_on:
@@ -148,7 +148,7 @@ services:
       dockerfile: Dockerfile
     container_name: acgs-fv-service-staging
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5432/${POSTGRES_DB:-acgs_staging}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5435/${POSTGRES_DB:-acgs_staging}
       - REDIS_URL=redis://redis:6379/2
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}
       - ENVIRONMENT=staging
@@ -208,6 +208,7 @@ services:
       fv_service:
         condition: service_healthy
     volumes:
+      - ./services/core/governance-synthesis/gs_service:/app
       - ./services/shared:/app/shared
     restart: unless-stopped
     # Fix cgroup issues
@@ -226,7 +227,7 @@ services:
       dockerfile: Dockerfile
     container_name: acgs-pgc-service-staging
     environment:
-      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5432/${POSTGRES_DB:-acgs_staging}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5435/${POSTGRES_DB:-acgs_staging}
       - REDIS_URL=redis://redis:6379/4
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}
       - ENVIRONMENT=staging

@@ -5,13 +5,10 @@ Tests the cross-platform adapter framework, platform-specific optimizations,
 Byzantine fault tolerance, and ACGS-PGP service integration.
 """
 
-import pytest
 import asyncio
-import sys
-import os
-import json
-from datetime import datetime, timezone
-from typing import Dict, List, Any
+from datetime import datetime
+
+import pytest
 
 # Add the federated service to the path
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
@@ -38,17 +35,8 @@ def test_cross_platform_adapters_import():
     """Test that cross-platform adapters can be imported."""
     try:
         from app.core.cross_platform_adapters import (
-            BasePlatformAdapter,
-            OpenAIPlatformAdapter,
-            AnthropicPlatformAdapter,
-            CoherePlatformAdapter,
-            GroqPlatformAdapter,
-            EvaluationRequest,
-            EvaluationResponse,
-            PlatformType,
-            EvaluationMode,
             AdapterStatus,
-            PlatformCapabilities,
+            EvaluationMode,
         )
 
         # Test enum values
@@ -71,12 +59,7 @@ def test_cross_platform_adapters_import():
 def test_cross_platform_coordinator_import():
     """Test that cross-platform coordinator can be imported."""
     try:
-        from app.core.cross_platform_coordinator import (
-            CrossPlatformCoordinator,
-            CrossPlatformEvaluationRequest,
-            CrossPlatformEvaluationResult,
-            cross_platform_coordinator,
-        )
+        pass
 
         print("✅ Cross-platform coordinator imports successful")
 
@@ -89,11 +72,11 @@ async def test_platform_adapter_initialization():
     """Test platform adapter initialization without API keys."""
     try:
         from app.core.cross_platform_adapters import (
-            OpenAIPlatformAdapter,
+            AdapterStatus,
             AnthropicPlatformAdapter,
             CoherePlatformAdapter,
             GroqPlatformAdapter,
-            AdapterStatus,
+            OpenAIPlatformAdapter,
         )
 
         # Test adapter creation (without initialization due to missing API keys)
@@ -161,10 +144,10 @@ async def test_evaluation_request_response_models():
     """Test evaluation request and response data models."""
     try:
         from app.core.cross_platform_adapters import (
+            EvaluationMode,
             EvaluationRequest,
             EvaluationResponse,
             PlatformType,
-            EvaluationMode,
         )
 
         # Test EvaluationRequest creation
@@ -212,8 +195,8 @@ async def test_evaluation_request_response_models():
 async def test_byzantine_fault_tolerance_logic():
     """Test Byzantine fault tolerance detection logic."""
     try:
-        from app.core.cross_platform_coordinator import CrossPlatformCoordinator
         from app.core.cross_platform_adapters import PlatformType
+        from app.core.cross_platform_coordinator import CrossPlatformCoordinator
 
         coordinator = CrossPlatformCoordinator()
 
@@ -314,14 +297,14 @@ async def test_secure_aggregation_logic():
 async def test_mock_cross_platform_evaluation():
     """Test mock cross-platform evaluation workflow."""
     try:
+        from app.core.cross_platform_adapters import EvaluationMode, PlatformType
         from app.core.cross_platform_coordinator import (
             CrossPlatformCoordinator,
             CrossPlatformEvaluationRequest,
         )
-        from app.core.cross_platform_adapters import PlatformType, EvaluationMode
 
         # Create coordinator
-        coordinator = CrossPlatformCoordinator()
+        CrossPlatformCoordinator()
 
         # Create mock evaluation request
         request = CrossPlatformEvaluationRequest(

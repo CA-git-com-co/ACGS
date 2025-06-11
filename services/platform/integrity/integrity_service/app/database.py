@@ -3,13 +3,14 @@ Local database configuration for integrity service to avoid shared module depend
 """
 
 import os
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 # Local database configuration
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql+asyncpg://acgs_user:acgs_password@localhost:5434/acgs_db",
+    "postgresql+asyncpg://acgs_user:acgs_password@10.42.0.15:5435/integrity_db",  # use host-mapped port 5435
 )
 async_engine = create_async_engine(DATABASE_URL, echo=True)
 AsyncSessionLocal = sessionmaker(

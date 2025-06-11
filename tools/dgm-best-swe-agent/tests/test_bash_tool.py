@@ -1,5 +1,5 @@
 import pytest
-from tools.bash import tool_function, BashSession
+from tools.bash import BashSession, tool_function
 
 
 @pytest.fixture

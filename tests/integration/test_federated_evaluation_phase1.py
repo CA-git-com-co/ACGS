@@ -5,28 +5,22 @@ Tests the core federated architecture, secure aggregation protocols,
 and differential privacy implementation.
 """
 
-import pytest
 import asyncio
-import json
-from datetime import datetime, timezone
-from typing import Dict, Any
+
+import pytest
 
 
 # Test the core components
 def test_federated_evaluator_import():
     """Test that federated evaluator can be imported."""
     try:
-        import sys
-        import os
+        pass
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.core.federated_evaluator import (
-            FederatedEvaluator,
-            PlatformType,
             EvaluationStatus,
-            FederatedNode,
-            EvaluationTask,
+            PlatformType,
         )
 
         # Test enum values
@@ -47,16 +41,12 @@ def test_federated_evaluator_import():
 def test_secure_aggregation_import():
     """Test that secure aggregation can be imported."""
     try:
-        import sys
-        import os
+        pass
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.core.secure_aggregation import (
-            SecureAggregator,
             AggregationMethod,
-            AggregationConfig,
-            SecureShare,
         )
 
         # Test enum values
@@ -74,16 +64,12 @@ def test_secure_aggregation_import():
 def test_privacy_metrics_import():
     """Test that privacy metrics can be imported."""
     try:
-        import sys
-        import os
+        pass
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
         from app.core.privacy_metrics import (
-            DifferentialPrivacyManager,
             PrivacyMechanism,
-            PrivacyBudget,
-            PrivacyMetrics,
         )
 
         # Test enum values
@@ -101,21 +87,9 @@ def test_privacy_metrics_import():
 def test_federated_schemas_import():
     """Test that federated schemas can be imported."""
     try:
-        import sys
-        import os
+        pass
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
-
-        from app.schemas import (
-            FederatedEvaluationRequest,
-            FederatedEvaluationResponse,
-            NodeConfiguration,
-            EvaluationMetrics,
-            AggregatedResults,
-            PlatformType,
-            EvaluationStatus,
-            AggregationMethod,
-        )
 
         print("✅ Federated schemas imports successful")
 
@@ -127,8 +101,7 @@ def test_federated_schemas_import():
 async def test_federated_evaluator_initialization():
     """Test federated evaluator initialization."""
     try:
-        import sys
-        import os
+        pass
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
@@ -168,8 +141,7 @@ async def test_federated_evaluator_initialization():
 async def test_secure_aggregator_initialization():
     """Test secure aggregator initialization."""
     try:
-        import sys
-        import os
+        pass
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
@@ -203,8 +175,7 @@ async def test_secure_aggregator_initialization():
 async def test_privacy_manager_initialization():
     """Test privacy manager initialization."""
     try:
-        import sys
-        import os
+        pass
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
@@ -240,8 +211,7 @@ async def test_privacy_manager_initialization():
 async def test_mock_federated_evaluation():
     """Test mock federated evaluation workflow."""
     try:
-        import sys
-        import os
+        pass
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 

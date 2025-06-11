@@ -7,8 +7,9 @@ ACGS Staging Database Setup Script
 Creates the necessary database tables for staging environment
 """
 
-import psycopg2
 import sys
+
+import psycopg2
 
 
 def create_staging_database():

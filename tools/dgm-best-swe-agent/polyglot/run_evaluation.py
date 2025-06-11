@@ -1,31 +1,13 @@
 from __future__ import annotations
 
-import docker
 import json
 import resource
 import traceback
-
 from argparse import ArgumentParser
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from tqdm import tqdm
 
-from swebench.harness.constants import (
-    APPLY_PATCH_FAIL,
-    APPLY_PATCH_PASS,
-    INSTANCE_IMAGE_BUILD_DIR,
-    KEY_INSTANCE_ID,
-    RUN_EVALUATION_LOG_DIR,
-)
-from polyglot.docker_utils import (
-    remove_image,
-    copy_to_container,
-    exec_run_with_timeout,
-    cleanup_container,
-    list_images,
-    should_remove,
-    clean_images,
-)
+import docker
 from polyglot.docker_build import (
     BuildImageError,
     build_container,
@@ -33,9 +15,26 @@ from polyglot.docker_build import (
     close_logger,
     setup_logger,
 )
+from polyglot.docker_utils import (
+    clean_images,
+    cleanup_container,
+    copy_to_container,
+    exec_run_with_timeout,
+    list_images,
+    remove_image,
+    should_remove,
+)
+from swebench.harness.constants import (
+    APPLY_PATCH_FAIL,
+    APPLY_PATCH_PASS,
+    INSTANCE_IMAGE_BUILD_DIR,
+    KEY_INSTANCE_ID,
+    RUN_EVALUATION_LOG_DIR,
+)
 from swebench.harness.grading import get_eval_report
-from swebench.harness.test_spec import make_test_spec, TestSpec
+from swebench.harness.test_spec import TestSpec, make_test_spec
 from swebench.harness.utils import load_swebench_dataset, str2bool
+from tqdm import tqdm
 
 
 class EvaluationError(Exception):
@@ -298,7 +297,7 @@ def run_instances(
                 try:
                     # Update progress bar, check if instance ran successfully
                     future.result()
-                except Exception as e:
+                except Exception:
                     traceback.print_exc()
                     continue
     print("All instances run.")

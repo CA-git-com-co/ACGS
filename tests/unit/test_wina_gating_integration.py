@@ -5,23 +5,18 @@ This module provides comprehensive integration tests for the enhanced dynamic
 neuron gating system, demonstrating real-world usage scenarios and performance.
 """
 
-import pytest
-import asyncio
-import numpy as np
-import torch
 import time
-from typing import Dict, List, Any
-from unittest.mock import Mock, patch
+
+import numpy as np
+import pytest
 
 # Import WINA components
 from services.shared.wina import (
+    GatingStrategy,
+    RuntimeGating,
     WINAConfig,
     WINAIntegrationConfig,
-    RuntimeGating,
-    GatingStrategy,
-    WINACore,
 )
-from services.shared.wina.gating import GatingDecision
 
 
 class TestWINAGatingIntegration:
@@ -98,7 +93,7 @@ class TestWINAGatingIntegration:
         assert 0.0 <= overall_sparsity <= 0.9  # Reasonable sparsity range
 
         # Verify different strategies were used appropriately
-        strategies_used = [d.strategy_used for d in gating_decisions]
+        [d.strategy_used for d in gating_decisions]
         attention_strategies = [
             d.strategy_used for d in gating_decisions if "attention" in d.layer_name
         ]

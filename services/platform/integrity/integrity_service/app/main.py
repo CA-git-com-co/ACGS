@@ -23,9 +23,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 # Import shared components
-sys.path.append("/home/dislove/ACGS-1/services/shared")
-from api_models import HealthCheckResponse, ServiceInfo, create_success_response
-from middleware import add_production_middleware, create_exception_handlers
+from shared.api_models import HealthCheckResponse, ServiceInfo, create_success_response
+from shared.middleware import add_production_middleware, create_exception_handlers
 
 # Configure structured logging
 logging.basicConfig(
@@ -160,12 +159,7 @@ async def root(request: Request):
         health_check="/health",
     )
 
-    return create_success_response(
-        data=service_info.dict(),
-        service_name=SERVICE_NAME,
-        correlation_id=correlation_id,
-        response_time_ms=response_time_ms,
-    )
+    return service_info
 
 
 @app.get("/health", response_model=HealthCheckResponse)
@@ -192,11 +186,7 @@ async def health_check(request: Request):
         },
     )
 
-    return create_success_response(
-        data=health_info.dict(),
-        service_name=SERVICE_NAME,
-        correlation_id=correlation_id,
-    )
+    return health_info
 
 
 @app.get("/api/v1/status")

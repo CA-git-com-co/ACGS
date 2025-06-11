@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import docker
-import docker.errors
 import os
 import signal
 import tarfile
@@ -12,6 +10,8 @@ import time
 import traceback
 from pathlib import Path
 
+import docker
+import docker.errors
 from docker.models.containers import Container
 
 HEREDOC_DELIMITER = "EOF_1399519320"  # different from dataset HEREDOC_DELIMITERs!

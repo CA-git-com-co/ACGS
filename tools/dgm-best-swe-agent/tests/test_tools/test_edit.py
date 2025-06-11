@@ -1,5 +1,3 @@
-import pytest
-from pathlib import Path
 from tools.edit import tool_function
 
 

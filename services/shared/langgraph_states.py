@@ -6,10 +6,10 @@ across the ACGS-PGP microservices architecture. It implements patterns from
 the Gemini-LangGraph quickstart for constitutional governance workflows.
 """
 
-from typing import TypedDict, Annotated, List, Dict, Any, Optional
-from datetime import datetime, timezone
 import operator
+from datetime import datetime, timezone
 from enum import Enum
+from typing import Annotated, Any, Dict, List, Optional, TypedDict
 
 try:
     from langgraph.graph import add_messages

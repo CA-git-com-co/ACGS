@@ -5,11 +5,11 @@ Provides centralized service discovery and configuration management
 to eliminate hard-coded service URLs and improve maintainability.
 """
 
+import logging
 import os
-from typing import Dict, Optional, List
 from dataclasses import dataclass, field
 from enum import Enum
-import logging
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

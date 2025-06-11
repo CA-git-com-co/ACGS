@@ -1,11 +1,11 @@
 # Import models from shared module to maintain consistency across services
 from services.shared.models import (
-    Principle,
-    ACMetaRule,
     ACAmendment,
-    ACAmendmentVote,
     ACAmendmentComment,
+    ACAmendmentVote,
     ACConflictResolution,
+    ACMetaRule,
+    Principle,
     User,
 )
 
