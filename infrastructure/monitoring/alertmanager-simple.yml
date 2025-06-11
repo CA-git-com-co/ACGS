@@ -1,0 +1,81 @@
+# ACGS-1 Simplified Alertmanager Configuration
+# Minimal working configuration for production deployment
+
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'acgs-alerts@acgs.ai'
+  smtp_auth_username: 'acgs-alerts@acgs.ai'
+  smtp_auth_password: 'secure_password_here'
+  smtp_require_tls: false
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'severity', 'service']
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: 'default-receiver'
+  
+  routes:
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 5s
+      group_interval: 2m
+      repeat_interval: 5m
+    
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      group_wait: 30s
+      group_interval: 10m
+      repeat_interval: 2h
+
+receivers:
+  - name: 'default-receiver'
+    email_configs:
+      - to: 'ops-team@acgs.ai'
+        subject: '[ACGS-1] {{ .GroupLabels.alertname }} - {{ .Status | toUpper }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Service: {{ .Labels.service }}
+          Component: {{ .Labels.component }}
+          {{ end }}
+
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'critical-alerts@acgs.ai'
+        subject: '[CRITICAL] ACGS-1 {{ .GroupLabels.alertname }}'
+        body: |
+          🚨 CRITICAL ALERT 🚨
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Service: {{ .Labels.service }}
+          Component: {{ .Labels.component }}
+          {{ end }}
+
+  - name: 'warning-alerts'
+    email_configs:
+      - to: 'ops-team@acgs.ai'
+        subject: '[WARNING] ACGS-1 {{ .GroupLabels.alertname }}'
+        body: |
+          ⚠️ WARNING ALERT ⚠️
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Service: {{ .Labels.service }}
+          Component: {{ .Labels.component }}
+          {{ end }}
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'service', 'component']
