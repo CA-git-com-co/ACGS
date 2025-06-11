@@ -1,0 +1,297 @@
+{
+  "timestamp": "2025-06-11T18:20:04.712257",
+  "analysis_type": "Comprehensive CI/CD Pipeline Analysis",
+  "workflow_files": {
+    "defender-for-devops.yml": {
+      "file_path": ".github/workflows/defender-for-devops.yml",
+      "syntax_valid": true,
+      "triggers": {},
+      "jobs": [
+        "MSDO"
+      ],
+      "job_count": 1,
+      "permissions": {
+        "contents": "read",
+        "security-events": "write"
+      },
+      "environment_vars": {},
+      "issues": [
+        "Missing trigger configuration"
+      ]
+    },
+    "production-deploy.yml": {
+      "file_path": ".github/workflows/production-deploy.yml",
+      "syntax_valid": true,
+      "triggers": {},
+      "jobs": [
+        "pre-deployment-checks",
+        "security-scan",
+        "build-and-push",
+        "deploy-blue-green",
+        "notify-deployment-result"
+      ],
+      "job_count": 5,
+      "permissions": {
+        "contents": "read",
+        "packages": "write",
+        "deployments": "write",
+        "actions": "read",
+        "security-events": "write"
+      },
+      "environment_vars": {
+        "REGISTRY": "ghcr.io",
+        "IMAGE_NAME": "${{ github.repository }}",
+        "KUBE_CONFIG_DATA": "${{ secrets.KUBE_CONFIG_DATA }}",
+        "SLACK_WEBHOOK": "${{ secrets.SLACK_WEBHOOK }}"
+      },
+      "issues": [
+        "Missing trigger configuration"
+      ],
+      "security-scan_dependencies": "pre-deployment-checks",
+      "build-and-push_dependencies": [
+        "pre-deployment-checks",
+        "security-scan"
+      ],
+      "deploy-blue-green_dependencies": [
+        "pre-deployment-checks",
+        "build-and-push"
+      ],
+      "notify-deployment-result_dependencies": [
+        "pre-deployment-checks",
+        "deploy-blue-green"
+      ]
+    },
+    "enhanced_ci_config.yml": {
+      "file_path": ".github/workflows/enhanced_ci_config.yml",
+      "syntax_valid": true,
+      "triggers": {},
+      "jobs": [],
+      "job_count": 0,
+      "permissions": {},
+      "environment_vars": {},
+      "issues": [
+        "Missing workflow name",
+        "Missing trigger configuration",
+        "No jobs defined"
+      ]
+    },
+    "solana-anchor.yml": {
+      "file_path": ".github/workflows/solana-anchor.yml",
+      "syntax_valid": true,
+      "triggers": {},
+      "jobs": [
+        "anchor-test",
+        "security-audit",
+        "program-verification",
+        "notify-solana-results"
+      ],
+      "job_count": 4,
+      "permissions": {
+        "contents": "read",
+        "security-events": "write"
+      },
+      "environment_vars": {
+        "SOLANA_CLI_VERSION": "1.18.22",
+        "ANCHOR_CLI_VERSION": "0.29.0",
+        "NODE_VERSION": "18",
+        "RUST_TOOLCHAIN": "1.75.0"
+      },
+      "issues": [
+        "Missing trigger configuration"
+      ],
+      "program-verification_dependencies": "anchor-test",
+      "notify-solana-results_dependencies": [
+        "anchor-test",
+        "security-audit",
+        "program-verification"
+      ]
+    },
+    "image-build.yml": {
+      "file_path": ".github/workflows/image-build.yml",
+      "syntax_valid": true,
+      "triggers": {},
+      "jobs": [
+        "build"
+      ],
+      "job_count": 1,
+      "permissions": {
+        "contents": "read"
+      },
+      "environment_vars": {},
+      "issues": [
+        "Missing trigger configuration"
+      ]
+    },
+    "codeql.yml": {
+      "file_path": ".github/workflows/codeql.yml",
+      "syntax_valid": true,
+      "triggers": {},
+      "jobs": [
+        "analyze"
+      ],
+      "job_count": 1,
+      "permissions": {},
+      "environment_vars": {},
+      "issues": [
+        "Missing trigger configuration"
+      ]
+    },
+    "ci.yml": {
+      "file_path": ".github/workflows/ci.yml",
+      "syntax_valid": true,
+      "triggers": {},
+      "jobs": [
+        "preflight",
+        "rust_build_test",
+        "security_scan",
+        "python_code_quality",
+        "python_unit_tests",
+        "build_images",
+        "notify_results"
+      ],
+      "job_count": 7,
+      "permissions": {
+        "contents": "read",
+        "packages": "write",
+        "security-events": "write",
+        "actions": "read"
+      },
+      "environment_vars": {
+        "REGISTRY": "ghcr.io",
+        "IMAGE_NAME": "${{ github.repository }}",
+        "SOLANA_CLI_VERSION": "1.18.22",
+        "ANCHOR_CLI_VERSION": "0.29.0",
+        "NODE_VERSION": "18",
+        "PYTHON_VERSION": "3.11"
+      },
+      "issues": [
+        "Missing trigger configuration"
+      ],
+      "rust_build_test_dependencies": "preflight",
+      "security_scan_dependencies": "preflight",
+      "python_code_quality_dependencies": "preflight",
+      "python_unit_tests_dependencies": [
+        "preflight",
+        "python_code_quality"
+      ],
+      "build_images_dependencies": [
+        "preflight",
+        "python_unit_tests"
+      ],
+      "notify_results_dependencies": [
+        "preflight",
+        "rust_build_test",
+        "security_scan",
+        "python_code_quality",
+        "python_unit_tests",
+        "build_images"
+      ]
+    }
+  },
+  "technology_coverage": {
+    "rust_anchor": {
+      "workflows": [
+        "solana-anchor.yml",
+        "codeql.yml",
+        "ci.yml"
+      ],
+      "coverage": "comprehensive"
+    },
+    "python_services": {
+      "workflows": [
+        "production-deploy.yml",
+        "codeql.yml",
+        "ci.yml"
+      ],
+      "coverage": "comprehensive"
+    },
+    "typescript_javascript": {
+      "workflows": [
+        "solana-anchor.yml",
+        "codeql.yml",
+        "ci.yml"
+      ],
+      "coverage": "comprehensive"
+    },
+    "docker_containers": {
+      "workflows": [
+        "production-deploy.yml",
+        "enhanced_ci_config.yml",
+        "image-build.yml",
+        "ci.yml"
+      ],
+      "coverage": "comprehensive"
+    },
+    "solana_blockchain": {
+      "workflows": [
+        "enhanced_ci_config.yml",
+        "solana-anchor.yml",
+        "codeql.yml",
+        "ci.yml"
+      ],
+      "coverage": "comprehensive"
+    }
+  },
+  "security_analysis": {
+    "features": {
+      "codeql_scanning": true,
+      "dependency_scanning": true,
+      "container_scanning": true,
+      "secret_scanning": false,
+      "security_permissions": true,
+      "msdo_scanning": true
+    },
+    "security_workflows": [
+      "defender-for-devops.yml",
+      "codeql.yml"
+    ],
+    "security_score": 83.33333333333334
+  },
+  "performance_metrics": {
+    "features": {
+      "caching_enabled": true,
+      "parallel_jobs": true,
+      "conditional_execution": true,
+      "artifact_management": true,
+      "matrix_strategies": true
+    },
+    "total_jobs": 19,
+    "workflows_with_caching": [
+      "production-deploy.yml",
+      "solana-anchor.yml",
+      "ci.yml"
+    ],
+    "performance_score": 100.0
+  },
+  "integration_validation": {
+    "governance_features": {
+      "quantumagi_deployment": true,
+      "service_health_checks": true,
+      "governance_workflow_testing": true,
+      "constitutional_compliance": true,
+      "solana_devnet_integration": true
+    },
+    "integration_score": 100.0
+  },
+  "issues_found": [],
+  "recommendations": [
+    "Fix issues in defender-for-devops.yml: Missing trigger configuration",
+    "Fix issues in production-deploy.yml: Missing trigger configuration",
+    "Fix issues in enhanced_ci_config.yml: Missing workflow name, Missing trigger configuration, No jobs defined",
+    "Fix issues in solana-anchor.yml: Missing trigger configuration",
+    "Fix issues in image-build.yml: Missing trigger configuration",
+    "Fix issues in codeql.yml: Missing trigger configuration",
+    "Fix issues in ci.yml: Missing trigger configuration"
+  ],
+  "overall_health": {
+    "score": 95.8,
+    "status": "excellent",
+    "component_scores": {
+      "syntax_validity": 100.0,
+      "technology_coverage": 100.0,
+      "security_score": 83.3,
+      "performance_score": 100.0,
+      "integration_score": 100.0
+    }
+  }
+}
