@@ -649,8 +649,9 @@ async def mock_database_session():
     """Context manager for mocked database session."""
     session = MockDatabaseSession()
 
-    with patch("shared.database.AsyncSessionLocal", return_value=session), patch(
-        "shared.database.get_async_db", return_value=session
+    with (
+        patch("shared.database.AsyncSessionLocal", return_value=session),
+        patch("shared.database.get_async_db", return_value=session),
     ):
 
         try:

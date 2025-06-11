@@ -48,9 +48,7 @@ class APIError(BaseModel):
     correlation_id: Optional[str] = None
 
     class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
+        json_encoders = {datetime: lambda v: v.isoformat()}
 
 
 class APIMetadata(BaseModel):
@@ -65,9 +63,7 @@ class APIMetadata(BaseModel):
     request_id: Optional[str] = None
 
     class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
+        json_encoders = {datetime: lambda v: v.isoformat()}
 
 
 class APIResponse(BaseModel):
@@ -112,9 +108,7 @@ class HealthCheckResponse(BaseModel):
     performance_metrics: Dict[str, Any] = Field(default_factory=dict)
 
     class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
+        json_encoders = {datetime: lambda v: v.isoformat()}
 
 
 class ServiceInfo(BaseModel):

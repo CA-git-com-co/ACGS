@@ -26,7 +26,12 @@ from .performance_monitor import (
     PerformanceMonitor,
     get_performance_monitor,
 )
-from .common_types import ServiceInstance, ServiceType, ServiceWeight, LoadBalancingStrategy
+from .common_types import (
+    ServiceInstance,
+    ServiceType,
+    ServiceWeight,
+    LoadBalancingStrategy,
+)
 from .registry import get_service_registry
 
 logger = logging.getLogger(__name__)

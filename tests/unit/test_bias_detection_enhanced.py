@@ -22,7 +22,6 @@ from services.core.formal_verification.app.schemas import (
 # sys.path.append('src/backend/fv_service')  # Removed during reorganization
 
 
-
 class TestEnhancedBiasDetection:
     """Test suite for enhanced bias detection with fairlearn integration."""
 

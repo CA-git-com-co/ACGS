@@ -16,7 +16,6 @@ from utils import get_config
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization
 
 
-
 class CentralizedConfigIntegrationTest:
     """Test centralized configuration across ACGS-PGP services."""
 

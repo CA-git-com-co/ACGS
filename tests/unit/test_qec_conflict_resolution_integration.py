@@ -107,17 +107,19 @@ class TestQECConflictResolutionIntegration:
         self, client, sample_conflict_data, sample_principles
     ):
         """Test creating conflict resolution with QEC enhancement."""
-        with patch(
-            "ac_service.app.crud.create_ac_conflict_resolution"
-        ) as mock_create, patch(
-            "ac_service.app.crud.get_ac_principles_by_ids"
-        ) as mock_get_principles, patch(
-            "ac_service.app.crud.update_ac_conflict_resolution"
-        ) as mock_update, patch(
-            "ac_service.app.api.v1.conflict_resolution.get_current_user"
-        ) as mock_user, patch(
-            "ac_service.app.api.v1.conflict_resolution.require_roles"
-        ) as mock_roles:
+        with (
+            patch("ac_service.app.crud.create_ac_conflict_resolution") as mock_create,
+            patch(
+                "ac_service.app.crud.get_ac_principles_by_ids"
+            ) as mock_get_principles,
+            patch("ac_service.app.crud.update_ac_conflict_resolution") as mock_update,
+            patch(
+                "ac_service.app.api.v1.conflict_resolution.get_current_user"
+            ) as mock_user,
+            patch(
+                "ac_service.app.api.v1.conflict_resolution.require_roles"
+            ) as mock_roles,
+        ):
 
             # Setup mocks
             mock_conflict = Mock()
@@ -152,11 +154,14 @@ class TestQECConflictResolutionIntegration:
         self, client, sample_principles
     ):
         """Test listing conflicts with QEC-based prioritization."""
-        with patch(
-            "ac_service.app.crud.get_ac_conflict_resolutions"
-        ) as mock_get_conflicts, patch(
-            "ac_service.app.api.v1.conflict_resolution.get_current_user"
-        ) as mock_user:
+        with (
+            patch(
+                "ac_service.app.crud.get_ac_conflict_resolutions"
+            ) as mock_get_conflicts,
+            patch(
+                "ac_service.app.api.v1.conflict_resolution.get_current_user"
+            ) as mock_user,
+        ):
 
             # Setup mock conflicts with different QEC analysis
             mock_conflicts = [
@@ -188,15 +193,20 @@ class TestQECConflictResolutionIntegration:
     @pytest.mark.asyncio
     async def test_generate_conflict_patch(self, client, sample_principles):
         """Test automated patch generation for conflict resolution."""
-        with patch(
-            "ac_service.app.crud.get_ac_conflict_resolution"
-        ) as mock_get_conflict, patch(
-            "ac_service.app.crud.get_ac_principles_by_ids"
-        ) as mock_get_principles, patch(
-            "ac_service.app.api.v1.conflict_resolution.get_current_user"
-        ) as mock_user, patch(
-            "ac_service.app.api.v1.conflict_resolution.require_roles"
-        ) as mock_roles:
+        with (
+            patch(
+                "ac_service.app.crud.get_ac_conflict_resolution"
+            ) as mock_get_conflict,
+            patch(
+                "ac_service.app.crud.get_ac_principles_by_ids"
+            ) as mock_get_principles,
+            patch(
+                "ac_service.app.api.v1.conflict_resolution.get_current_user"
+            ) as mock_user,
+            patch(
+                "ac_service.app.api.v1.conflict_resolution.require_roles"
+            ) as mock_roles,
+        ):
 
             # Setup mocks
             mock_conflict = Mock()
@@ -239,11 +249,14 @@ class TestQECConflictResolutionIntegration:
     @pytest.mark.asyncio
     async def test_get_qec_insights(self, client):
         """Test retrieving QEC insights for a conflict."""
-        with patch(
-            "ac_service.app.crud.get_ac_conflict_resolution"
-        ) as mock_get_conflict, patch(
-            "ac_service.app.api.v1.conflict_resolution.get_current_user"
-        ) as mock_user:
+        with (
+            patch(
+                "ac_service.app.crud.get_ac_conflict_resolution"
+            ) as mock_get_conflict,
+            patch(
+                "ac_service.app.api.v1.conflict_resolution.get_current_user"
+            ) as mock_user,
+        ):
 
             # Setup mock conflict with QEC analysis
             mock_conflict = Mock()
@@ -294,11 +307,12 @@ class TestQECConflictResolutionIntegration:
     @pytest.mark.asyncio
     async def test_constitutional_fidelity_monitoring(self, client):
         """Test Constitutional Fidelity Monitor endpoints."""
-        with patch(
-            "ac_service.app.crud.get_ac_principles"
-        ) as mock_get_principles, patch(
-            "ac_service.app.api.v1.fidelity_monitor.get_current_user"
-        ) as mock_user:
+        with (
+            patch("ac_service.app.crud.get_ac_principles") as mock_get_principles,
+            patch(
+                "ac_service.app.api.v1.fidelity_monitor.get_current_user"
+            ) as mock_user,
+        ):
 
             mock_principles = [
                 Mock(**p)
@@ -374,11 +388,14 @@ class TestQECConflictResolutionIntegration:
     @pytest.mark.asyncio
     async def test_error_handling_and_fallbacks(self, client):
         """Test error handling and fallback behavior."""
-        with patch(
-            "ac_service.app.crud.get_ac_conflict_resolution"
-        ) as mock_get_conflict, patch(
-            "ac_service.app.api.v1.conflict_resolution.get_current_user"
-        ) as mock_user:
+        with (
+            patch(
+                "ac_service.app.crud.get_ac_conflict_resolution"
+            ) as mock_get_conflict,
+            patch(
+                "ac_service.app.api.v1.conflict_resolution.get_current_user"
+            ) as mock_user,
+        ):
 
             # Test 404 for non-existent conflict
             mock_get_conflict.return_value = None

@@ -36,10 +36,10 @@ jobs:
             context: services/platform/integrity/integrity_service
           - name: federated-evaluation
             file: services/research/federated-evaluation/federated_service/Dockerfile
-            context: services/research/federated-evaluation/federated_service
+            context: services
           - name: research-platform
             file: services/research/research-platform/research_service/Dockerfile
-            context: services/research/research-platform/research_service
+            context: services
           - name: governance-dashboard
             file: applications/governance-dashboard/Dockerfile
             context: applications/governance-dashboard

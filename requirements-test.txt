@@ -9,22 +9,22 @@ pytest-html==4.1.1
 pytest-json-report==1.5.0
 
 # Code Quality Tools
-flake8==6.1.0
-black==23.11.0
-isort==5.12.0
-mypy==1.7.1
+flake8==7.2.0
+black==25.1.0
+isort==6.0.1
+mypy==1.16.0
 
 # Security Tools
-bandit[toml]==1.7.5
-safety==2.3.5
+bandit[toml]==1.8.3
+safety==3.5.2
 
 # Coverage Tools
-coverage==7.3.2
+coverage==7.8.2
 codecov==2.1.13
 
 # HTTP Testing
-httpx==0.25.2
-requests==2.31.0
+httpx==0.28.1
+requests==2.32.4
 responses==0.24.1
 
 # Database Testing

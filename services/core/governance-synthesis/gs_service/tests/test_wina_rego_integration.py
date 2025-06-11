@@ -13,7 +13,6 @@ import pytest
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # Removed during reorganization
 
 
-
 class TestWINARegoIntegration:
     """Integration tests for WINA Rego synthesis."""
 

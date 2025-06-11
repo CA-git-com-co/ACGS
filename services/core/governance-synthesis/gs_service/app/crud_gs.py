@@ -23,7 +23,7 @@ async def create_policy_template(
         created_by_user_id=user_id,
         version=template_data.get("version", 1),  # Default version or from data
         created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc)
+        updated_at=datetime.now(timezone.utc),
     )
     db.add(db_template)
     await db.commit()
@@ -72,7 +72,7 @@ async def update_policy_template(
         .values(
             **update_data,
             updated_at=datetime.now(timezone.utc),
-            version=current_template.version + 1
+            version=current_template.version + 1,
         )
         .returning(PolicyTemplate)
     )
@@ -97,7 +97,7 @@ async def create_direct_policy(
         created_by_user_id=user_id,
         version=policy_data.get("version", 1),
         created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc)
+        updated_at=datetime.now(timezone.utc),
     )
     db.add(db_policy)
     await db.commit()
@@ -193,7 +193,7 @@ async def update_policy(
         .values(
             **update_data,
             updated_at=datetime.now(timezone.utc),
-            version=current_policy.version + 1
+            version=current_policy.version + 1,
         )
         .returning(Policy)
     )

@@ -38,7 +38,6 @@ from core.wina_oversight_coordinator import (
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'shared'))  # Removed during reorganization
 
 
-
 class TestWINAECOversightCoordinator:
     """Test suite for WINA EC oversight coordinator."""
 

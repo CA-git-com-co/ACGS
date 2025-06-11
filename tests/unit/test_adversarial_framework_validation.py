@@ -291,9 +291,10 @@ class TestAdversarialFrameworkValidation:
             )
 
             # Mock psutil for resource monitoring
-            with patch("psutil.cpu_percent", return_value=50.0), patch(
-                "psutil.virtual_memory"
-            ) as mock_memory:
+            with (
+                patch("psutil.cpu_percent", return_value=50.0),
+                patch("psutil.virtual_memory") as mock_memory,
+            ):
                 mock_memory.return_value.percent = 60.0
 
                 results = await protocol.run_tests(
@@ -332,10 +333,12 @@ class TestAdversarialFrameworkValidation:
     async def test_framework_integration(self, framework):
         """Test complete framework integration."""
         # Mock all external dependencies
-        with patch.object(
-            framework, "_check_service_availability", return_value=["auth_service"]
-        ), patch.object(framework, "initialize_testers") as mock_init, patch.object(
-            framework, "_run_category_tests", return_value=[]
+        with (
+            patch.object(
+                framework, "_check_service_availability", return_value=["auth_service"]
+            ),
+            patch.object(framework, "initialize_testers") as mock_init,
+            patch.object(framework, "_run_category_tests", return_value=[]),
         ):
 
             mock_init.return_value = None
@@ -401,10 +404,12 @@ async def test_adversarial_framework_end_to_end():
     framework = AdversarialTestingFramework(config)
 
     # Mock all external dependencies
-    with patch.object(
-        framework, "_check_service_availability", return_value=["auth_service"]
-    ), patch.object(framework, "initialize_testers"), patch.object(
-        framework, "_run_category_tests", return_value=[]
+    with (
+        patch.object(
+            framework, "_check_service_availability", return_value=["auth_service"]
+        ),
+        patch.object(framework, "initialize_testers"),
+        patch.object(framework, "_run_category_tests", return_value=[]),
     ):
 
         # Initialize mock testers

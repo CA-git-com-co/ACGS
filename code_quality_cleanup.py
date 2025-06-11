@@ -17,6 +17,7 @@ Features:
 import json
 import logging
 import subprocess
+import sys
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
@@ -45,8 +46,17 @@ class CodeQualityCleanup:
 
         for tool in tools:
             try:
+                # Use the current Python interpreter to invoke pip for better portability
                 subprocess.run(
-                    ["pip", "install", tool], check=True, capture_output=True
+                    [
+                        sys.executable,
+                        "-m",
+                        "pip",
+                        "install",
+                        tool,
+                    ],
+                    check=True,
+                    capture_output=True,
                 )
                 logger.info(f"Installed {tool}")
             except subprocess.CalledProcessError as e:
@@ -71,9 +81,16 @@ class CodeQualityCleanup:
                     )
 
                     if result.returncode == 0:
-                        # Sort imports with isort
+                        # Sort imports with isort using the current Python interpreter
                         subprocess.run(
-                            ["isort", "--profile", "black", str(py_file)],
+                            [
+                                sys.executable,
+                                "-m",
+                                "isort",
+                                "--profile",
+                                "black",
+                                str(py_file),
+                            ],
                             capture_output=True,
                         )
 

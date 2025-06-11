@@ -15,7 +15,6 @@ from utils import ACGSConfig, get_config, reset_config
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization
 
 
-
 class TestACGSConfig:
     """Test cases for ACGSConfig class."""
 

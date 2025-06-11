@@ -50,6 +50,7 @@ compliance_validator = ConstitutionalComplianceValidator()
 # ACGS-1 Constitutional Governance Schemas
 class ConstitutionalJobRequest(BaseModel):
     """Enhanced job request with constitutional governance requirements"""
+
     workload_id: str
     client_id: str = "acgs_governance"
     constitutional_requirements: Optional[Dict] = None
@@ -59,6 +60,7 @@ class ConstitutionalJobRequest(BaseModel):
 
 class ConstitutionalComplianceResponse(BaseModel):
     """Constitutional compliance validation response"""
+
     job_id: str
     overall_compliance_score: float
     compliant: bool
@@ -69,6 +71,7 @@ class ConstitutionalComplianceResponse(BaseModel):
 
 class ACGSHealthResponse(BaseModel):
     """ACGS-1 services health status response"""
+
     overall_status: str
     services: Dict[str, bool]
     constitutional_validation_available: bool
@@ -106,12 +109,16 @@ async def create_job(request: JobRequest) -> JobResponse:
         workload_id=request.workload_id,
         flywheel_run_id=flywheel_run.id,
         client_id=request.client_id,
-        data_split_config=request.data_split_config.model_dump()
-        if request.data_split_config
-        else None,
+        data_split_config=(
+            request.data_split_config.model_dump()
+            if request.data_split_config
+            else None
+        ),
     )
 
-    return JobResponse(id=flywheel_run.id, status="queued", message="NIM workflow started")
+    return JobResponse(
+        id=flywheel_run.id, status="queued", message="NIM workflow started"
+    )
 
 
 @router.get("/jobs", response_model=JobsListResponse)
@@ -174,6 +181,7 @@ async def cancel_job_endpoint(job_id: str) -> JobCancelResponse:
 
 # ACGS-1 Constitutional Governance Endpoints
 
+
 @router.post("/constitutional/jobs", response_model=JobResponse)
 async def create_constitutional_job(request: ConstitutionalJobRequest) -> JobResponse:
     """
@@ -186,14 +194,18 @@ async def create_constitutional_job(request: ConstitutionalJobRequest) -> JobRes
 
     # Validate ACGS-1 service health before proceeding
     health_status = await acgs_integration.validate_service_health()
-    unhealthy_services = [name for name, healthy in health_status.items() if not healthy]
+    unhealthy_services = [
+        name for name, healthy in health_status.items() if not healthy
+    ]
 
     if unhealthy_services:
         logger.warning(f"Some ACGS-1 services are unhealthy: {unhealthy_services}")
         # Continue with warning but don't fail
 
     # Get constitutional context for the workload
-    constitutional_context = await acgs_integration.get_constitutional_context(request.workload_id)
+    constitutional_context = await acgs_integration.get_constitutional_context(
+        request.workload_id
+    )
 
     # Create enhanced FlywheelRun document with constitutional requirements
     flywheel_run = FlywheelRun(
@@ -208,8 +220,8 @@ async def create_constitutional_job(request: ConstitutionalJobRequest) -> JobRes
             "constitutional_requirements": request.constitutional_requirements or {},
             "governance_context": request.governance_context or {},
             "constitutional_context": constitutional_context,
-            "acgs_service_health": health_status
-        }
+            "acgs_service_health": health_status,
+        },
     )
 
     # Save to MongoDB
@@ -224,18 +236,23 @@ async def create_constitutional_job(request: ConstitutionalJobRequest) -> JobRes
         client_id=request.client_id,
         data_split_config=request.data_split_config,
         constitutional_requirements=request.constitutional_requirements,
-        governance_context=request.governance_context
+        governance_context=request.governance_context,
     )
 
     return JobResponse(
         id=flywheel_run.id,
         status="queued",
-        message="Constitutional governance optimization workflow started"
+        message="Constitutional governance optimization workflow started",
     )
 
 
-@router.get("/constitutional/compliance/{job_id}", response_model=ConstitutionalComplianceResponse)
-async def get_constitutional_compliance(job_id: str) -> ConstitutionalComplianceResponse:
+@router.get(
+    "/constitutional/compliance/{job_id}",
+    response_model=ConstitutionalComplianceResponse,
+)
+async def get_constitutional_compliance(
+    job_id: str,
+) -> ConstitutionalComplianceResponse:
     """
     Get constitutional compliance validation results for a specific job.
     """
@@ -254,7 +271,7 @@ async def get_constitutional_compliance(job_id: str) -> ConstitutionalCompliance
     if not compliance_results:
         raise HTTPException(
             status_code=404,
-            detail="Constitutional compliance results not available yet"
+            detail="Constitutional compliance results not available yet",
         )
 
     return ConstitutionalComplianceResponse(
@@ -263,7 +280,7 @@ async def get_constitutional_compliance(job_id: str) -> ConstitutionalCompliance
         compliant=compliance_results.get("compliant", False),
         principle_scores=compliance_results.get("principle_scores", {}),
         recommendations=compliance_results.get("recommendations", []),
-        validation_timestamp=compliance_results.get("timestamp", "")
+        validation_timestamp=compliance_results.get("timestamp", ""),
     )
 
 
@@ -277,7 +294,9 @@ async def get_acgs_health() -> ACGSHealthResponse:
     # Determine overall status
     all_healthy = all(health_status.values())
     critical_services = ["ac_service", "fv_service", "gs_service", "pgc_service"]
-    critical_healthy = all(health_status.get(service, False) for service in critical_services)
+    critical_healthy = all(
+        health_status.get(service, False) for service in critical_services
+    )
 
     if all_healthy:
         overall_status = "healthy"
@@ -290,7 +309,7 @@ async def get_acgs_health() -> ACGSHealthResponse:
         overall_status=overall_status,
         services=health_status,
         constitutional_validation_available=health_status.get("ac_service", False),
-        governance_workflows_operational=critical_healthy
+        governance_workflows_operational=critical_healthy,
     )
 
 
@@ -307,14 +326,16 @@ async def get_governance_workloads():
         "workload_mapping": workload_mapping,
         "optimization_targets": optimization_targets,
         "evaluation_criteria": evaluation_criteria,
-        "available_workloads": list(workload_mapping.keys())
+        "available_workloads": list(workload_mapping.keys()),
     }
 
 
 @router.post("/constitutional/traffic/collect")
 async def collect_governance_traffic(
     hours: int = Query(24, description="Hours of traffic to collect"),
-    workload_filter: Optional[List[str]] = Query(None, description="Filter by workload IDs")
+    workload_filter: Optional[List[str]] = Query(
+        None, description="Filter by workload IDs"
+    ),
 ):
     """
     Manually trigger collection of governance traffic from ACGS-1 services.
@@ -323,8 +344,7 @@ async def collect_governance_traffic(
 
     try:
         traffic_logs = await acgs_integration.collect_governance_traffic(
-            time_range=timedelta(hours=hours),
-            workload_filter=workload_filter
+            time_range=timedelta(hours=hours), workload_filter=workload_filter
         )
 
         return {
@@ -332,12 +352,14 @@ async def collect_governance_traffic(
             "collected_logs": len(traffic_logs),
             "time_range_hours": hours,
             "workload_filter": workload_filter,
-            "message": f"Collected {len(traffic_logs)} governance traffic logs"
+            "message": f"Collected {len(traffic_logs)} governance traffic logs",
         }
 
     except Exception as e:
         logger.error(f"Failed to collect governance traffic: {e}")
-        raise HTTPException(status_code=500, detail=f"Traffic collection failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Traffic collection failed: {str(e)}"
+        )
 
 
 @router.get("/constitutional/metrics/{job_id}")
@@ -361,16 +383,13 @@ async def get_constitutional_metrics(job_id: str):
         "governance_metrics": metadata.get("governance_metrics", {}),
         "optimization_results": metadata.get("optimization_results", {}),
         "performance_comparison": metadata.get("performance_comparison", {}),
-        "cost_analysis": metadata.get("cost_analysis", {})
+        "cost_analysis": metadata.get("cost_analysis", {}),
     }
 
 
 @router.post("/constitutional/validate")
 async def validate_constitutional_compliance(
-    model_output: str,
-    expected_output: str,
-    governance_context: Dict,
-    workload_id: str
+    model_output: str, expected_output: str, governance_context: Dict, workload_id: str
 ):
     """
     Manually validate constitutional compliance for model outputs.
@@ -380,10 +399,12 @@ async def validate_constitutional_compliance(
             model_output=model_output,
             expected_output=expected_output,
             governance_context=governance_context,
-            workload_id=workload_id
+            workload_id=workload_id,
         )
 
-        compliance_summary = compliance_validator.get_compliance_summary(compliance_results)
+        compliance_summary = compliance_validator.get_compliance_summary(
+            compliance_results
+        )
 
         return {
             "validation_results": [
@@ -392,12 +413,12 @@ async def validate_constitutional_compliance(
                     "score": result.score,
                     "level": result.level.value,
                     "explanation": result.explanation,
-                    "recommendations": result.recommendations
+                    "recommendations": result.recommendations,
                 }
                 for result in compliance_results
             ],
             "summary": compliance_summary,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
 
     except Exception as e:
@@ -414,25 +435,26 @@ async def health_check():
     basic_health = {
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
-        "service": "acgs_data_flywheel"
+        "service": "acgs_data_flywheel",
     }
 
     # Check ACGS-1 integration health
     try:
         acgs_health = await acgs_integration.validate_service_health()
-        constitutional_validator_health = await compliance_validator.check_acgs_service_health()
+        constitutional_validator_health = (
+            await compliance_validator.check_acgs_service_health()
+        )
 
         basic_health["acgs_integration"] = {
             "services": acgs_health,
             "constitutional_validator": constitutional_validator_health,
-            "integration_status": "operational" if any(acgs_health.values()) else "degraded"
+            "integration_status": (
+                "operational" if any(acgs_health.values()) else "degraded"
+            ),
         }
 
     except Exception as e:
         logger.error(f"ACGS-1 health check failed: {e}")
-        basic_health["acgs_integration"] = {
-            "status": "error",
-            "error": str(e)
-        }
+        basic_health["acgs_integration"] = {"status": "error", "error": str(e)}
 
     return basic_health
