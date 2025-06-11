@@ -5,12 +5,16 @@ on:
     branches: [ main, master ]
     paths:
       - 'blockchain/**'
-      - 
+      - 'quantumagi_core/**'
+      - '.github/workflows/solana-anchor.yml'
   pull_request:
     branches: [ main, master ]
     paths:
       - 'blockchain/**'
-      - 
+      - 'quantumagi_core/**'
+      - '.github/workflows/solana-anchor.yml'
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 6 AM for comprehensive blockchain testing
 
 permissions:
   contents: read
