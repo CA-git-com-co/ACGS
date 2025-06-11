@@ -89,8 +89,25 @@ curl http://localhost:8008/health  # Federated Evaluation
 curl http://localhost:8009/health  # Research Platform
 
 # Integration Services
-curl http://localhost:8010/health  # Quantumagi Bridge
-curl http://localhost:8011/health  # AlphaEvolve Engine
+curl http://localhost:8010/health  # Data Flywheel
+curl http://localhost:8011/health  # Quantumagi Bridge
+curl http://localhost:8012/health  # AlphaEvolve Engine
+```
+
+### Integration Services
+```bash
+# Start Data Flywheel integration
+cd integrations/data-flywheel
+./scripts/setup.sh
+python src/demo_app.py
+
+# Start Quantumagi Bridge
+cd integrations/quantumagi-bridge
+npm install && npm start
+
+# Start AlphaEvolve Engine
+cd integrations/alphaevolve-engine
+python -m alphaevolve_gs_engine.main
 ```
 
 ### Frontend Applications

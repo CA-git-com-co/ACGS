@@ -67,6 +67,11 @@ This directory contains comprehensive API documentation for all ACGS-1 services 
 - **Interactive Docs:** `http://localhost:8011/docs`
 - **Features:** AlphaEvolve integration, constitutional AI framework
 
+### Data Flywheel Integration (`data-flywheel`)
+- **Base URL:** `http://localhost:8010/api/data-flywheel/`
+- **Interactive Docs:** `http://localhost:8010/docs`
+- **Features:** NVIDIA AI Blueprints Data Flywheel, autonomous model optimization, constitutional compliance validation
+
 ## Common API Patterns
 
 ### Authentication
@@ -171,8 +176,9 @@ Each service provides Swagger UI documentation at `/docs` endpoint:
 - Research Platform: http://localhost:8009/docs
 
 **Integration Services:**
-- Quantumagi Bridge: http://localhost:8010/docs
-- AlphaEvolve Engine: http://localhost:8011/docs
+- Data Flywheel: http://localhost:8010/docs
+- Quantumagi Bridge: http://localhost:8011/docs
+- AlphaEvolve Engine: http://localhost:8012/docs
 
 ## Security Considerations
 

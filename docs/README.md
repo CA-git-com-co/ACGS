@@ -8,6 +8,7 @@ Welcome to the AI Compliance Governance System (ACGS-1) documentation - a compre
 - **[API Reference](api/README.md)**: Complete API documentation for all services
 - **[AC Service API](api/ac_service_api.md)**: Constitutional AI Service endpoints
 - **[GS Service API](api/gs_service_api.md)**: Governance Synthesis Service endpoints
+- **[Data Flywheel API](api/data_flywheel_api.md)**: NVIDIA AI Blueprints Data Flywheel integration endpoints
 
 ### Architecture Documentation (`architecture/`)
 - **[System Architecture](architecture/REORGANIZED_ARCHITECTURE.md)**: Blockchain-first system design and component interactions
@@ -27,6 +28,12 @@ Welcome to the AI Compliance Governance System (ACGS-1) documentation - a compre
 - **[Roadmap](development/roadmap.md)**: Project roadmap and future plans
 - **[Security Guidelines](development/SECURITY.md)**: Security best practices and guidelines
 - **[File Naming Conventions](development/FILE_NAMING_CONVENTIONS.md)**: Standardized file naming rules
+
+### Integration Documentation (`integrations/`)
+- **[Integration Overview](integrations/README.md)**: Complete integration documentation and architecture
+- **[Data Flywheel Integration](../integrations/data-flywheel/)**: NVIDIA AI Blueprints Data Flywheel implementation
+- **[Quantumagi Bridge](../integrations/quantumagi-bridge/)**: Blockchain-backend integration
+- **[AlphaEvolve Engine](../integrations/alphaevolve-engine/)**: Constitutional AI framework integration
 
 ### Research Documentation (`research/`)
 - **[ACGS-PGP Framework](research/ACGS-PGP_Framework/)**: Core framework research and papers
@@ -49,6 +56,12 @@ Welcome to the AI Compliance Governance System (ACGS-1) documentation - a compre
 - [Governance Dashboard](../applications/governance-dashboard/)
 - [Constitutional Council Interface](../applications/constitutional-council/)
 - [Public Consultation Portal](../applications/public-consultation/)
+
+### For Integration Developers
+- [Data Flywheel Integration](../integrations/data-flywheel/)
+- [Quantumagi Bridge](../integrations/quantumagi-bridge/)
+- [AlphaEvolve Engine](../integrations/alphaevolve-engine/)
+- [Integration Documentation](integrations/README.md)
 
 ### For DevOps/SRE
 - [Infrastructure Setup](../infrastructure/)
@@ -111,6 +124,6 @@ For documentation issues or suggestions:
 
 ---
 
-**Last Updated:** 2025-12-07
-**Documentation Version:** 4.0.0
-**ACGS-1**: Bringing Constitutional AI Governance to Solana 🏛️⚡
+**Last Updated:** 2025-06-11
+**Documentation Version:** 4.1.0
+**ACGS-1**: Bringing Constitutional AI Governance to Solana with AI Optimization 🏛️⚡🤖

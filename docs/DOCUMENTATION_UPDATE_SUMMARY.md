@@ -234,6 +234,39 @@ The documentation now accurately reflects the production-ready ACGS-1 system wit
 
 ---
 
-**Documentation Status**: ✅ **REORGANIZATION COMPLETE**  
-**Last Updated**: 2025-12-07  
-**ACGS-1**: Constitutional AI Governance on Solana 🏛️⚡
+## Data Flywheel Integration Update (2025-06-11)
+
+### **New Integration Documentation Added**
+- **Data Flywheel API Documentation** (`docs/api/data_flywheel_api.md`)
+  - Complete API reference for NVIDIA AI Blueprints Data Flywheel integration
+  - Constitutional governance endpoints documentation
+  - Performance optimization and compliance validation APIs
+  - Integration examples and client code samples
+
+### **Updated Files for Data Flywheel Integration**
+- **Main README** (`README.md`)
+  - Added Data Flywheel to integrations section
+  - Updated architecture overview with autonomous AI optimization
+  - Added constitutional compliance validation features
+
+- **API Documentation** (`docs/api/README.md`)
+  - Added Data Flywheel integration endpoints
+  - Updated port mapping for integration services
+  - Added interactive documentation links
+
+- **Deployment Guide** (`docs/deployment/REORGANIZED_DEPLOYMENT_GUIDE.md`)
+  - Added Data Flywheel deployment instructions
+  - Updated integration services health checks
+  - Added setup and configuration steps
+
+### **Key Features Documented**
+- ✅ **Autonomous Model Optimization**: AI model optimization for governance processes
+- ✅ **Constitutional Compliance Validation**: Real-time compliance checking against constitutional principles
+- ✅ **Performance Targets**: <500ms response times, up to 98.6% cost reduction
+- ✅ **ACGS-1 Integration**: Seamless integration with all 7 core services
+- ✅ **Governance Workflows**: Support for 6 governance workload types
+- ✅ **Enterprise Features**: Monitoring, audit trails, security integration
+
+**Documentation Status**: ✅ **DATA FLYWHEEL INTEGRATION COMPLETE**
+**Last Updated**: 2025-06-11
+**ACGS-1**: Constitutional AI Governance on Solana with AI Optimization 🏛️⚡🤖
