@@ -6,9 +6,9 @@ dependency injection framework.
 """
 
 import logging
-from typing import Dict, Type, Any, List, Optional
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional, Type
 
 logger = logging.getLogger(__name__)
 

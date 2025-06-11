@@ -1,18 +1,18 @@
-import sys
-import os
 import multiprocessing
+import os
+import sys
 import time
+from unittest.mock import MagicMock, patch
+
+import grpc
 import pytest
 from fastapi.testclient import TestClient
-import grpc
-from unittest.mock import patch, MagicMock
 
 # Add the project root to the path to allow imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from federated_evaluation.coordinator.main import app as coordinator_app
 from federated_evaluation.agent.main import serve as serve_agent
-from federated_evaluation.proto import evaluation_pb2, evaluation_pb2_grpc
+from federated_evaluation.coordinator.main import app as coordinator_app
 
 
 # Fixture to manage the agent server lifecycle

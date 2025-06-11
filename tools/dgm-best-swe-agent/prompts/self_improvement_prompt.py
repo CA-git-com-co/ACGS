@@ -1,5 +1,4 @@
 import os
-import json
 
 from utils.common_utils import load_json_file, read_file
 

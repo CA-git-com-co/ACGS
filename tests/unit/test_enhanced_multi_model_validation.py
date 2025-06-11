@@ -1,17 +1,12 @@
 # Tests for Enhanced Multi-Model Validation System
 
 import pytest
-import asyncio
-from unittest.mock import Mock, patch
-from datetime import datetime, timezone
-
 from services.core.formal_verification.app.core.enhanced_multi_model_validation import (
+    AggregatedValidationResult,
     EnhancedMultiModelValidator,
     ValidationContext,
     ValidationError,
     ValidationSeverity,
-    CrossModelValidationType,
-    AggregatedValidationResult,
     create_enhanced_multi_model_validator,
     create_validation_context,
 )
@@ -82,7 +77,7 @@ class TestEnhancedMultiModelValidator:
     @pytest.mark.asyncio
     async def test_individual_model_validation(self, validator, sample_models):
         """Test individual model validation."""
-        context = create_validation_context("test_individual", sample_models)
+        create_validation_context("test_individual", sample_models)
 
         # Test policy rule validation
         policy_results = await validator._validate_policy_rules(

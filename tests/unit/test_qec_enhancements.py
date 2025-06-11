@@ -6,29 +6,27 @@ Tests constitutional distance calculation, error prediction, recovery strategies
 and integration with existing GS service components.
 """
 
-import pytest
-import asyncio
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
-# Import QEC enhancement components
-import sys
-import os
-
-# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'alphaevolve_gs_engine', 'src'))  # Removed during reorganization
-
-from integrations.alphaevolve_engine.services.qec_enhancement import (
-    ConstitutionalDistanceCalculator,
-    ValidationDSLParser,
-    ErrorPredictionModel,
-    RecoveryStrategyDispatcher,
-    FailureType,
-    SynthesisAttemptLog,
-    RecoveryStrategy,
-)
+import pytest
 from integrations.alphaevolve_engine.core.constitutional_principle import (
     ConstitutionalPrinciple,
 )
+from integrations.alphaevolve_engine.services.qec_enhancement import (
+    ConstitutionalDistanceCalculator,
+    ErrorPredictionModel,
+    FailureType,
+    RecoveryStrategy,
+    RecoveryStrategyDispatcher,
+    SynthesisAttemptLog,
+    ValidationDSLParser,
+)
+
+# Import QEC enhancement components
+
+# sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'alphaevolve_gs_engine', 'src'))  # Removed during reorganization
+
 
 
 # Mock GS service components for testing

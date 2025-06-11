@@ -9,20 +9,17 @@ Tests the complete cross-domain testing pipeline including:
 5. Integration with existing ACGS-PGP components
 """
 
-import asyncio
-import pytest
-import json
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any
-from unittest.mock import AsyncMock, patch
-
-# Test framework imports
-from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession
-
 # Add project root to path for imports
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any, Dict, List
+from unittest.mock import patch
+
+import pytest
+
+# Test framework imports
+from sqlalchemy.ext.asyncio import AsyncSession
 
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
@@ -31,11 +28,11 @@ sys.path.insert(0, str(project_root / "src/backend"))
 # ACGS-PGP imports with fallback
 try:
     from services.shared.models import (
-        DomainContext,
-        CrossDomainTestScenario,
         CrossDomainTestResult,
-        ResearchDataExport,
+        CrossDomainTestScenario,
+        DomainContext,
         Principle,
+        ResearchDataExport,
     )
 
     SHARED_MODELS_AVAILABLE = True
@@ -52,10 +49,10 @@ except ImportError:
 
 try:
     from services.core.formal_verification.app.core.cross_domain_testing_engine import (
-        cross_domain_testing_engine,
         DomainType,
-        HealthcareDomainValidator,
         FinanceDomainValidator,
+        HealthcareDomainValidator,
+        cross_domain_testing_engine,
     )
 
     CROSS_DOMAIN_ENGINE_AVAILABLE = True
@@ -71,8 +68,8 @@ except ImportError:
 
 try:
     from services.core.constitutional_ai.app.core.domain_context_manager import (
-        domain_context_manager,
         AdaptationStrategy,
+        domain_context_manager,
     )
 
     DOMAIN_CONTEXT_AVAILABLE = True
@@ -86,9 +83,9 @@ except ImportError:
 
 try:
     from services.platform.integrity.app.services.research_data_pipeline import (
-        research_data_pipeline,
-        AnonymizationMethod,
         AnonymizationConfig,
+        AnonymizationMethod,
+        research_data_pipeline,
     )
 
     RESEARCH_PIPELINE_AVAILABLE = True
@@ -724,8 +721,9 @@ def test_cross_domain_testing_mock_functionality():
     ):
         """Test that the framework meets performance and accuracy targets."""
 
-        from services.core.formal_verification.app.schemas import CrossDomainTestRequest
         import time
+
+        from services.core.formal_verification.app.schemas import CrossDomainTestRequest
 
         # Performance test: <200ms API response times
         start_time = time.time()
@@ -813,8 +811,9 @@ async def benchmark_cross_domain_testing(
 ) -> Dict[str, float]:
     """Benchmark cross-domain testing performance."""
 
-    from services.core.formal_verification.app.schemas import CrossDomainTestRequest
     import time
+
+    from services.core.formal_verification.app.schemas import CrossDomainTestRequest
 
     execution_times = []
     accuracy_scores = []

@@ -1,6 +1,6 @@
 import threading
 import time
-from typing import Any, Optional, Dict
+from typing import Any, Dict, Optional
 
 
 class FallbackCache:

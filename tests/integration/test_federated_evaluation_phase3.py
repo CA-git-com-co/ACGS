@@ -5,17 +5,11 @@ Tests the integration of federated evaluation with all 6 ACGS-PGP microservices,
 real-world API validation, performance benchmarking, and production deployment readiness.
 """
 
-import pytest
 import asyncio
-import sys
-import os
-import json
 import time
+
 import httpx
-from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
-from unittest.mock import AsyncMock, patch, MagicMock
-import concurrent.futures
+import pytest
 
 # Add the federated service to the path
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
@@ -147,8 +141,8 @@ async def test_acgs_service_health_checks(acgs_service_urls):
 async def test_federated_evaluation_acgs_integration():
     """Test federated evaluation integration with ACGS-PGP services."""
     try:
-        from app.core.federated_evaluator import FederatedEvaluator, PlatformType
         from app.core.cross_platform_coordinator import CrossPlatformCoordinator
+        from app.core.federated_evaluator import FederatedEvaluator, PlatformType
 
         # Create federated evaluator
         evaluator = FederatedEvaluator()
@@ -293,11 +287,11 @@ async def test_platform_adapter_configuration(mock_api_keys):
     """Test platform adapter configuration with mock API keys."""
     try:
         from app.core.cross_platform_adapters import (
-            OpenAIPlatformAdapter,
+            AdapterStatus,
             AnthropicPlatformAdapter,
             CoherePlatformAdapter,
             GroqPlatformAdapter,
-            AdapterStatus,
+            OpenAIPlatformAdapter,
         )
 
         # Test adapter configuration
@@ -427,8 +421,8 @@ async def test_concurrent_federated_evaluations():
 async def test_byzantine_fault_tolerance_under_load():
     """Test Byzantine fault tolerance under high load conditions."""
     try:
-        from app.core.cross_platform_coordinator import CrossPlatformCoordinator
         from app.core.cross_platform_adapters import PlatformType
+        from app.core.cross_platform_coordinator import CrossPlatformCoordinator
 
         coordinator = CrossPlatformCoordinator()
 
@@ -652,13 +646,14 @@ async def test_real_world_api_validation():
     """Test real-world API validation with live platform testing (if API keys available)."""
     try:
         import os
+
         from app.core.cross_platform_adapters import (
-            OpenAIPlatformAdapter,
             AnthropicPlatformAdapter,
             CoherePlatformAdapter,
-            GroqPlatformAdapter,
-            EvaluationRequest,
             EvaluationMode,
+            EvaluationRequest,
+            GroqPlatformAdapter,
+            OpenAIPlatformAdapter,
         )
 
         # Check for real API keys in environment
@@ -795,10 +790,10 @@ async def test_cost_estimation_accuracy():
     """Test cost estimation accuracy and token usage tracking."""
     try:
         from app.core.cross_platform_adapters import (
-            OpenAIPlatformAdapter,
             AnthropicPlatformAdapter,
             CoherePlatformAdapter,
             GroqPlatformAdapter,
+            OpenAIPlatformAdapter,
         )
 
         # Test cost estimation with mock data

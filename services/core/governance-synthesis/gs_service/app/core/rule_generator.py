@@ -1,15 +1,16 @@
 # backend/gs_service/app/core/rule_generator.py
-from typing import List, Optional, Dict  # Ensure Dict is imported
+import logging  # Import the logging module
+from typing import Dict, List, Optional  # Ensure Dict is imported
+
 from ..schemas import (
     ACPrinciple,
     GeneratedRuleInfo,
     LLMInterpretationInput,
     LLMStructuredOutput,
-    LLMSuggestedRule,
     LLMSuggestedAtom,
+    LLMSuggestedRule,
 )
 from .llm_integration import query_llm_for_structured_output
-import logging  # Import the logging module
 
 # Datalog templates are no longer used in this new approach based on issue description
 

@@ -9,10 +9,11 @@ Usage:
     python3 test_conflict_resolution_implementation.py
 """
 
-import requests
 import json
 import sys
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List
+
+import requests
 
 # Configuration
 BASE_URL = "http://localhost:8001"
@@ -247,7 +248,7 @@ def main():
 
     # Get principles for testing
     print("\n5. Testing Principles Integration...")
-    principles = client.test_principles_for_conflict_testing()
+    client.test_principles_for_conflict_testing()
 
     # Test conflict types support
     print("\n6. Testing Conflict Types Framework...")

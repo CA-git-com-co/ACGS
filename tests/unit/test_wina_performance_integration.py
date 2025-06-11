@@ -5,38 +5,35 @@ This test suite verifies the complete integration of WINA performance monitoring
 with the EC oversight coordinator and API endpoints.
 """
 
+from datetime import datetime, timedelta, timezone
+from unittest.mock import AsyncMock, Mock
+
 import pytest
-import asyncio
-from datetime import datetime, timezone, timedelta
-from unittest.mock import Mock, AsyncMock, patch
 from fastapi.testclient import TestClient
 
 # We'll use relative imports for the EC service components
-import sys
-import os
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))  # Removed during reorganization
 
 try:
-    from ec_service.app.main import (
-        app,
-        get_wina_coordinator,
-        get_wina_performance_collector,
-    )
     from ec_service.app.core.wina_oversight_coordinator import (
         WINAECOversightCoordinator,
     )
-    from services.shared.wina.performance_monitoring import (
-        WINAPerformanceCollector,
-        WINAMonitoringLevel,
-        WINAComponentType,
-        WINANeuronActivationMetrics,
-        WINADynamicGatingMetrics,
-        WINAConstitutionalComplianceMetrics,
-        WINASystemHealthMetrics,
-        WINAIntegrationPerformanceMetrics,
+    from ec_service.app.main import (
+        app,
+        get_wina_coordinator,
     )
+
     from services.shared.wina.performance_api import set_collector_getter
+    from services.shared.wina.performance_monitoring import (
+        WINAConstitutionalComplianceMetrics,
+        WINADynamicGatingMetrics,
+        WINAIntegrationPerformanceMetrics,
+        WINAMonitoringLevel,
+        WINANeuronActivationMetrics,
+        WINAPerformanceCollector,
+        WINASystemHealthMetrics,
+    )
 
     WINA_AVAILABLE = True
 except ImportError:

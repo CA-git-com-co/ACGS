@@ -1,15 +1,15 @@
 # Enterprise Multi-Factor Authentication API Endpoints
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
 from typing import List, Optional
 
-from ...core.security import get_current_active_user
-from ...core.mfa import mfa_service
-from ...core.security_audit import security_audit
-from ...models import User
-from ...db.session import get_async_db
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from ...core.mfa import mfa_service
+from ...core.security import get_current_active_user
+from ...core.security_audit import security_audit
+from ...db.session import get_async_db
+from ...models import User
 
 router = APIRouter()
 

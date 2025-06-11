@@ -2,8 +2,8 @@
 import asyncio
 import os
 import sys
-from typing import AsyncGenerator, Generator
 from pathlib import Path
+from typing import Generator
 
 import pytest
 import pytest_asyncio

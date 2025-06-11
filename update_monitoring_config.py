@@ -4,11 +4,11 @@ ACGS-1 Monitoring and Observability Configuration Updates
 Updates monitoring configurations for new blockchain-focused directory structure
 """
 
-import os
-import yaml
 import json
 import logging
 from pathlib import Path
+
+import yaml
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

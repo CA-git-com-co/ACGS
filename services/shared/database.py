@@ -1,10 +1,11 @@
 # ACGS/shared/database.py
 import os
+
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import (
-    sessionmaker,
+from sqlalchemy.orm import (  # Updated import for declarative_base
     declarative_base,
-)  # Updated import for declarative_base
+    sessionmaker,
+)
 
 # Import centralized configuration
 try:

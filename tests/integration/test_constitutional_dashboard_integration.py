@@ -8,14 +8,9 @@ Tests the complete performance dashboard integration including:
 - Human intervention escalation mechanisms
 """
 
-import pytest
-import asyncio
-import json
-from datetime import datetime, timedelta, timezone
-from typing import Dict, Any
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
-import httpx
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,13 +18,15 @@ try:
     from services.core.governance_synthesis.app.main import app
     from services.core.governance_synthesis.app.services.constitutional_reporting_service import (
         ConstitutionalReportingService,
-        ReportType,
         ReportFormat,
+        ReportType,
     )
+
     from services.shared.metrics import get_metrics
 except ImportError:
     # Mock implementations for testing when modules are not available
     from unittest.mock import MagicMock
+
     from fastapi import FastAPI
 
     app = FastAPI()

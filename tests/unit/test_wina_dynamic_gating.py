@@ -5,22 +5,19 @@ This module tests the enhanced dynamic neuron gating functionality for Subtask 1
 including new gating strategies, constitutional compliance, and performance adaptation.
 """
 
-import pytest
 import numpy as np
+import pytest
 import torch
-from typing import Dict, List, Any
-from unittest.mock import Mock, patch
+
+from services.shared.wina.config import WINAConfig
+from services.shared.wina.exceptions import WINAGatingError
 
 # Import WINA gating components
 from services.shared.wina.gating import (
-    RuntimeGating,
-    GatingStrategy,
-    GatingDecision,
-    NeuronGate,
     GatingPerformance,
+    GatingStrategy,
+    RuntimeGating,
 )
-from services.shared.wina.config import WINAConfig
-from services.shared.wina.exceptions import WINAGatingError
 
 
 class TestEnhancedDynamicGating:

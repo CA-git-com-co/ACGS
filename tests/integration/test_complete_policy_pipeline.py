@@ -22,12 +22,10 @@ Target Metrics:
 import asyncio
 import json
 import time
-import pytest
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
 from pathlib import Path
+
 import httpx
-from unittest.mock import AsyncMock, patch
 
 # Test configuration
 BASE_URLS = {
@@ -454,8 +452,8 @@ class PolicyPipelineTestSuite:
             await self.setup_test_environment()
 
             # Run test scenarios
-            amendment_id = await self.test_constitutional_amendment_workflow()
-            deployment_id = await self.test_policy_synthesis_pipeline()
+            await self.test_constitutional_amendment_workflow()
+            await self.test_policy_synthesis_pipeline()
             await self.test_conflict_resolution_workflow()
 
             # Generate summary report

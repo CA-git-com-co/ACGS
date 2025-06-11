@@ -6,13 +6,13 @@ This module contains unit tests for the core data structures defined in
 and Amendment.
 """
 
-import unittest
-from datetime import datetime, timedelta
+import os
 
 # Adjust import path if running tests from a different directory structure
 # This assumes tests might be run from the root of the project or within `alphaevolve_gs_engine/tests/`
 import sys
-import os
+import unittest
+from datetime import datetime
 
 # Add the 'src' directory to sys.path to allow direct imports of engine modules
 # This is a common way to handle imports in tests when the package isn't "installed" in the traditional sense
@@ -26,11 +26,11 @@ if src_path not in sys.path:
     sys.path.insert(0, src_path)
 
 
+from integrations.alphaevolve_engine.core.amendment import Amendment
 from integrations.alphaevolve_engine.core.constitutional_principle import (
     ConstitutionalPrinciple,
 )
 from integrations.alphaevolve_engine.core.operational_rule import OperationalRule
-from integrations.alphaevolve_engine.core.amendment import Amendment
 
 
 class TestConstitutionalPrinciple(unittest.TestCase):

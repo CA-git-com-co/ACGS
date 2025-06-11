@@ -5,10 +5,10 @@ Tests the enhanced components without external dependencies.
 """
 
 import asyncio
-import pytest
-import time
-import sys
 import os
+import sys
+
+import pytest
 
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
@@ -66,8 +66,8 @@ def test_llm_reliability_config():
 def test_constitutional_council_scalability_config():
     """Test Constitutional Council scalability configuration."""
     from backend.ac_service.app.core.constitutional_council_scalability import (
-        ScalabilityConfig,
         CoEvolutionMode,
+        ScalabilityConfig,
     )
 
     # Test scalability configuration
@@ -169,8 +169,8 @@ def test_proactive_fairness_config():
 async def test_lipschitz_estimator_initialization():
     """Test Lipschitz estimator initialization with enhanced config."""
     from backend.gs_service.app.services.lipschitz_estimator import (
-        LipschitzEstimator,
         LipschitzEstimationConfig,
+        LipschitzEstimator,
     )
 
     # Create enhanced configuration
@@ -197,8 +197,6 @@ async def test_bias_detection_patterns():
     """Test bias detection pattern loading."""
     from backend.gs_service.app.core.llm_reliability_framework import (
         BiasDetectionFramework,
-    )
-    from backend.gs_service.app.core.llm_reliability_framework import (
         LLMReliabilityConfig,
     )
 
@@ -253,17 +251,17 @@ def test_integration_framework_compatibility():
 
     # Test imports
     try:
-        from backend.gs_service.app.services.lipschitz_estimator import (
-            LipschitzEstimator,
-        )
-        from backend.gs_service.app.core.llm_reliability_framework import (
-            LLMReliabilityFramework,
-        )
         from backend.ac_service.app.core.constitutional_council_scalability import (
             ConstitutionalCouncilScalabilityFramework,
         )
         from backend.fv_service.app.core.adversarial_robustness_tester import (
             AdversarialRobustnessTester,
+        )
+        from backend.gs_service.app.core.llm_reliability_framework import (
+            LLMReliabilityFramework,
+        )
+        from backend.gs_service.app.services.lipschitz_estimator import (
+            LipschitzEstimator,
         )
         from backend.pgc_service.app.core.proactive_fairness_generator import (
             ProactiveFairnessGenerator,

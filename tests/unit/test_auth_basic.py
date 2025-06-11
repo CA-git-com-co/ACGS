@@ -3,12 +3,12 @@
 Basic authentication unit tests for ACGS-1.
 """
 
-import pytest
-from unittest.mock import MagicMock, Mock, patch
-import time
-import hashlib
 import base64
+import hashlib
 import json
+import time
+
+import pytest
 
 
 def test_password_hashing():

@@ -4,13 +4,11 @@ Enhanced service mocking utilities for ACGS-PGP integration tests.
 Provides comprehensive mocking for external dependencies and services.
 """
 
-import asyncio
 import json
-from typing import Dict, Any, List, Optional, Callable
-from unittest.mock import AsyncMock, MagicMock, patch
 from contextlib import asynccontextmanager
-import httpx
-from datetime import datetime, timedelta
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+from unittest.mock import MagicMock, patch
 
 
 class MockServiceManager:
@@ -93,7 +91,6 @@ class EnhancedHTTPXMock:
 
     async def close(self):
         """Mock client close."""
-        pass
 
     def _create_response(self, method: str, url: str, **kwargs) -> MagicMock:
         """Create a mock response based on URL and method."""
@@ -296,7 +293,6 @@ class MockZ3Solver:
 
     def push(self):
         """Mock solver state push."""
-        pass
 
     def pop(self):
         """Mock solver state pop."""
@@ -519,13 +515,11 @@ class MockDatabaseSession:
         """Mock commit operation."""
         self._record_call("commit")
         # In real implementation, this would persist changes
-        pass
 
     async def rollback(self):
         """Mock rollback operation."""
         self._record_call("rollback")
         # In real implementation, this would revert changes
-        pass
 
     async def close(self):
         """Mock session close."""

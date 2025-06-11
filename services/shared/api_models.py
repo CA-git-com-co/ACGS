@@ -47,6 +47,11 @@ class APIError(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     correlation_id: Optional[str] = None
 
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+
 
 class APIMetadata(BaseModel):
     """Metadata for API responses including performance and tracing information."""
@@ -58,6 +63,11 @@ class APIMetadata(BaseModel):
     service_version: str = "3.0.0"
     api_version: str = "v1"
     request_id: Optional[str] = None
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
 
 
 class APIResponse(BaseModel):
@@ -100,6 +110,11 @@ class HealthCheckResponse(BaseModel):
     uptime_seconds: Optional[float] = None
     dependencies: Dict[str, str] = Field(default_factory=dict)
     performance_metrics: Dict[str, Any] = Field(default_factory=dict)
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
 
 
 class ServiceInfo(BaseModel):

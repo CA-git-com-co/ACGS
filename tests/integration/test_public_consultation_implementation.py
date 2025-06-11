@@ -14,12 +14,10 @@ Usage:
     python3 test_public_consultation_implementation.py
 """
 
-import requests
-import json
 import sys
-import time
-from typing import Dict, Any, Optional, List
-from datetime import datetime
+from typing import Optional
+
+import requests
 
 # Configuration
 BASE_URL = "http://localhost:8001"
@@ -265,7 +263,7 @@ class PublicConsultationTestClient:
             )
 
             if response.status_code == 200:
-                dashboard_data = response.json()
+                response.json()
                 print("   ✅ Transparency dashboard endpoint working")
                 return True
             else:

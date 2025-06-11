@@ -5,7 +5,6 @@ from prompts.self_improvement_prompt import (
 )
 from utils.common_utils import read_file
 
-
 diagnose_improvement_system_message = """Here is the relevant code for the LLM Coding agent with the model patch applied.
 
 # LLM Coding Agent Code

@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -10,12 +12,11 @@ Tests cross-service communication and health endpoints
 """
 
 import asyncio
-import aiohttp
-import json
-import sys
 import os
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict
+
+import aiohttp
 
 # Service endpoints configuration
 SERVICES = {
@@ -85,7 +86,7 @@ class ServiceIntegrationTester:
                         gs_url, json=test_request
                     ) as gs_response:
                         if gs_response.status == 200:
-                            synthesis_result = await gs_response.json()
+                            await gs_response.json()
                             print("✅ GS Service: Constitutional synthesis successful")
                             return True
                         else:
@@ -201,8 +202,9 @@ async def main():
 if __name__ == "__main__":
     exit_code = asyncio.run(main())
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -12,14 +14,16 @@ and performance optimization features implemented in Phase 3.
 """
 
 import asyncio
-import time
-import json
 import sys
-from typing import Dict, Any, List
+import time
 from datetime import datetime
+from typing import Any, Dict
 
 # Test imports
 try:
+    from services.core.governance_synthesis.app.services.advanced_cache import (
+        CACHE_TTL_POLICIES,
+    )
     from services.core.governance_synthesis.app.services.cache_manager import (
         get_cache_manager,
         shutdown_cache_manager,
@@ -30,9 +34,6 @@ try:
     )
     from services.core.governance_synthesis.app.services.security_compliance import (
         get_security_service,
-    )
-    from services.core.governance_synthesis.app.services.advanced_cache import (
-        CACHE_TTL_POLICIES,
     )
 
     ENHANCED_SERVICES_AVAILABLE = True
@@ -458,8 +459,9 @@ if __name__ == "__main__":
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

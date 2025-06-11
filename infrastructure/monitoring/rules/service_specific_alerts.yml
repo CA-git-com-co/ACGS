@@ -1,0 +1,364 @@
+# ACGS-1 Service-Specific Alert Rules - Subtask 13.5
+# Comprehensive alerting for all 7 ACGS services with enterprise-grade monitoring
+# Target: >99.9% availability, <500ms response times, >1000 concurrent users
+
+groups:
+  # ============================================================================
+  # AUTHENTICATION SERVICE ALERTS
+  # ============================================================================
+  - name: acgs_authentication_service
+    rules:
+      # Authentication Service Down
+      - alert: AuthenticationServiceDown
+        expr: up{job="acgs-auth-service"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: authentication
+          component: service_health
+          team: security
+          escalation: immediate
+        annotations:
+          summary: "Authentication service is down"
+          description: "Authentication service has been down for more than 30 seconds"
+          runbook_url: "https://docs.acgs.ai/runbooks/auth-service-down"
+          impact: "User authentication and authorization unavailable"
+
+      # High Authentication Failure Rate
+      - alert: HighAuthenticationFailureRate
+        expr: rate(acgs_auth_attempts_total{service="auth",status="failed"}[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+          service: authentication
+          component: security
+          team: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value }} authentication failures per second for {{ $labels.auth_type }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/auth-failures"
+
+      # Critical Authentication Failure Rate (Potential Attack)
+      - alert: CriticalAuthenticationFailureRate
+        expr: rate(acgs_auth_attempts_total{service="auth",status="failed"}[5m]) > 20
+        for: 1m
+        labels:
+          severity: critical
+          service: authentication
+          component: security
+          team: security
+          escalation: immediate
+        annotations:
+          summary: "Critical authentication failure rate - potential attack"
+          description: "{{ $value }} authentication failures per second - possible brute force attack"
+          runbook_url: "https://docs.acgs.ai/runbooks/auth-attack"
+          impact: "Potential security breach in progress"
+
+      # MFA Operation Failures
+      - alert: MFAOperationFailures
+        expr: rate(acgs_mfa_operations_total{service="auth",result="failed"}[5m]) > 1
+        for: 3m
+        labels:
+          severity: warning
+          service: authentication
+          component: mfa
+          team: security
+        annotations:
+          summary: "MFA operation failures detected"
+          description: "{{ $value }} MFA failures per second for {{ $labels.mfa_type }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/mfa-failures"
+
+      # API Key Abuse Detection
+      - alert: APIKeyAbuseDetected
+        expr: rate(acgs_api_key_operations_total{service="auth",result="failed"}[5m]) > 2
+        for: 2m
+        labels:
+          severity: warning
+          service: authentication
+          component: api_security
+          team: security
+        annotations:
+          summary: "API key abuse detected"
+          description: "{{ $value }} API key operation failures per second"
+          runbook_url: "https://docs.acgs.ai/runbooks/api-key-abuse"
+
+      # Session Anomalies
+      - alert: SessionAnomalies
+        expr: acgs_active_connections{service="auth"} > 2000
+        for: 5m
+        labels:
+          severity: warning
+          service: authentication
+          component: session_management
+          team: platform
+        annotations:
+          summary: "High number of active sessions"
+          description: "{{ $value }} active sessions - exceeding normal capacity"
+          runbook_url: "https://docs.acgs.ai/runbooks/session-anomalies"
+
+  # ============================================================================
+  # CONSTITUTIONAL AI SERVICE ALERTS
+  # ============================================================================
+  - name: acgs_constitutional_ai_service
+    rules:
+      # Constitutional AI Service Down
+      - alert: ConstitutionalAIServiceDown
+        expr: up{job="acgs-constitutional-ai-service"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: constitutional_ai
+          component: service_health
+          team: governance
+          escalation: immediate
+        annotations:
+          summary: "Constitutional AI service is down"
+          description: "Constitutional AI service has been down for more than 30 seconds"
+          runbook_url: "https://docs.acgs.ai/runbooks/constitutional-ai-down"
+          impact: "Constitutional compliance validation unavailable"
+
+      # AI Processing Failures
+      - alert: AIProcessingFailures
+        expr: rate(acgs_constitutional_ai_processing_seconds_count{service="constitutional-ai"}[5m]) - rate(acgs_constitutional_ai_processing_seconds_count{service="constitutional-ai"}[5m] offset 5m) < 0
+        for: 3m
+        labels:
+          severity: warning
+          service: constitutional_ai
+          component: ai_processing
+          team: governance
+        annotations:
+          summary: "AI processing failures detected"
+          description: "Constitutional AI processing operations are failing"
+          runbook_url: "https://docs.acgs.ai/runbooks/ai-processing-failures"
+
+      # High AI Processing Latency
+      - alert: HighAIProcessingLatency
+        expr: histogram_quantile(0.95, rate(acgs_constitutional_ai_processing_seconds_bucket{service="constitutional-ai"}[5m])) > 2.0
+        for: 3m
+        labels:
+          severity: warning
+          service: constitutional_ai
+          component: performance
+          team: governance
+        annotations:
+          summary: "High AI processing latency"
+          description: "95th percentile AI processing time is {{ $value }}s, exceeding 2s target"
+          runbook_url: "https://docs.acgs.ai/runbooks/ai-latency"
+
+      # Constitutional Compliance Score Low
+      - alert: ConstitutionalComplianceScoreLow
+        expr: acgs_constitutional_compliance_score{service="constitutional-ai"} < 0.95
+        for: 2m
+        labels:
+          severity: critical
+          service: constitutional_ai
+          component: compliance
+          team: governance
+          escalation: immediate
+        annotations:
+          summary: "Constitutional compliance score below threshold"
+          description: "Compliance score is {{ $value }}, below 95% threshold for {{ $labels.policy_type }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/compliance-low"
+          impact: "Constitutional governance integrity compromised"
+
+      # Compliance Validation Errors
+      - alert: ComplianceValidationErrors
+        expr: rate(acgs_constitutional_compliance_checks_total{service="constitutional-ai",result="failed"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          service: constitutional_ai
+          component: validation
+          team: governance
+        annotations:
+          summary: "Compliance validation errors detected"
+          description: "{{ $value }} compliance validation errors per second"
+          runbook_url: "https://docs.acgs.ai/runbooks/compliance-validation-errors"
+
+      # LLM Reliability Score Low
+      - alert: LLMReliabilityScoreLow
+        expr: acgs_llm_reliability_score{service="constitutional-ai"} < 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: constitutional_ai
+          component: llm_reliability
+          team: governance
+        annotations:
+          summary: "LLM reliability score below threshold"
+          description: "LLM reliability score is {{ $value }} for {{ $labels.model }} - {{ $labels.operation_type }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/llm-reliability"
+
+  # ============================================================================
+  # INTEGRITY SERVICE ALERTS
+  # ============================================================================
+  - name: acgs_integrity_service
+    rules:
+      # Integrity Service Down
+      - alert: IntegrityServiceDown
+        expr: up{job="acgs-integrity-service"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: integrity
+          component: service_health
+          team: security
+          escalation: immediate
+        annotations:
+          summary: "Integrity service is down"
+          description: "Integrity service has been down for more than 30 seconds"
+          runbook_url: "https://docs.acgs.ai/runbooks/integrity-service-down"
+          impact: "Data integrity validation and audit trail unavailable"
+
+      # Cryptographic Operation Failures
+      - alert: CryptographicOperationFailures
+        expr: rate(acgs_cryptographic_operations_total{service="integrity",result="failed"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          service: integrity
+          component: cryptography
+          team: security
+          escalation: immediate
+        annotations:
+          summary: "Cryptographic operation failures detected"
+          description: "{{ $value }} cryptographic failures per second for {{ $labels.operation_type }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/crypto-failures"
+          impact: "Data integrity and security compromised"
+
+      # Audit Trail Corruption
+      - alert: AuditTrailCorruption
+        expr: rate(acgs_audit_trail_operations_total{service="integrity",result="failed"}[5m]) > 0.01
+        for: 1m
+        labels:
+          severity: critical
+          service: integrity
+          component: audit_trail
+          team: security
+          escalation: immediate
+        annotations:
+          summary: "Audit trail corruption detected"
+          description: "{{ $value }} audit trail operation failures per second"
+          runbook_url: "https://docs.acgs.ai/runbooks/audit-corruption"
+          impact: "Audit trail integrity compromised - compliance risk"
+
+      # Data Integrity Score Low
+      - alert: DataIntegrityScoreLow
+        expr: acgs_data_integrity_score{service="integrity"} < 0.99
+        for: 2m
+        labels:
+          severity: warning
+          service: integrity
+          component: data_integrity
+          team: security
+        annotations:
+          summary: "Data integrity score below threshold"
+          description: "Data integrity score is {{ $value }} for {{ $labels.data_type }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/data-integrity-low"
+
+      # Tamper Detection Events
+      - alert: TamperDetectionEvents
+        expr: rate(acgs_tamper_detection_events_total{service="integrity"}[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          service: integrity
+          component: tamper_detection
+          team: security
+          escalation: immediate
+        annotations:
+          summary: "Tamper detection events detected"
+          description: "{{ $value }} tamper detection events per second - {{ $labels.detection_type }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/tamper-detection"
+          impact: "Data tampering detected - immediate investigation required"
+
+      # Hash Verification Failures
+      - alert: HashVerificationFailures
+        expr: rate(acgs_hash_verification_operations_total{service="integrity",result="failed"}[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          service: integrity
+          component: hash_verification
+          team: security
+        annotations:
+          summary: "Hash verification failures detected"
+          description: "{{ $value }} hash verification failures per second for {{ $labels.hash_type }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/hash-verification-failures"
+
+  # ============================================================================
+  # FORMAL VERIFICATION SERVICE ALERTS
+  # ============================================================================
+  - name: acgs_formal_verification_service
+    rules:
+      # Formal Verification Service Down
+      - alert: FormalVerificationServiceDown
+        expr: up{job="acgs-formal-verification-service"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: formal_verification
+          component: service_health
+          team: governance
+          escalation: immediate
+        annotations:
+          summary: "Formal verification service is down"
+          description: "Formal verification service has been down for more than 30 seconds"
+          runbook_url: "https://docs.acgs.ai/runbooks/formal-verification-down"
+          impact: "Mathematical proof validation unavailable"
+
+      # Z3 Solver Failures
+      - alert: Z3SolverFailures
+        expr: rate(acgs_z3_solver_operations_total{service="formal-verification",result="failed"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          service: formal_verification
+          component: z3_solver
+          team: governance
+        annotations:
+          summary: "Z3 SMT solver failures detected"
+          description: "{{ $value }} Z3 solver failures per second for {{ $labels.operation_type }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/z3-solver-failures"
+
+      # Verification Timeout Issues
+      - alert: VerificationTimeouts
+        expr: histogram_quantile(0.95, rate(acgs_formal_verification_duration_seconds_bucket{service="formal-verification"}[5m])) > 30
+        for: 3m
+        labels:
+          severity: warning
+          service: formal_verification
+          component: performance
+          team: governance
+        annotations:
+          summary: "Formal verification timeouts detected"
+          description: "95th percentile verification time is {{ $value }}s, exceeding 30s threshold"
+          runbook_url: "https://docs.acgs.ai/runbooks/verification-timeouts"
+
+      # Mathematical Proof Failures
+      - alert: MathematicalProofFailures
+        expr: rate(acgs_mathematical_proof_operations_total{service="formal-verification",result="failed"}[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          service: formal_verification
+          component: proof_validation
+          team: governance
+        annotations:
+          summary: "Mathematical proof validation failures"
+          description: "{{ $value }} proof validation failures per second for {{ $labels.proof_type }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/proof-failures"
+
+      # Verification Cache Issues
+      - alert: VerificationCacheIssues
+        expr: rate(acgs_verification_cache_operations_total{service="formal-verification",result="miss"}[5m]) / rate(acgs_verification_cache_operations_total{service="formal-verification"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: formal_verification
+          component: caching
+          team: governance
+        annotations:
+          summary: "High verification cache miss rate"
+          description: "Cache miss rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.acgs.ai/runbooks/verification-cache-issues"

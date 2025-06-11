@@ -1,11 +1,12 @@
 # backend/gs_service/app/api/v1/synthesize.py
 
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from typing import List, Dict, Any, Optional
-import time
 import logging
+import time
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.database import get_async_db  # Added
 from services.shared.models import Principle
@@ -13,11 +14,11 @@ from services.shared.models import Principle
 # Import schemas and CRUD functions using relative paths
 from ... import schemas as gs_schemas  # Goes up 3 levels from v1 to app.
 from ...crud_gs import get_policy  # Goes up 3 levels from v1 to app for crud_gs
-from ...services import (
+from ...services import (  # Goes up 3 levels for services
     ac_client,
-    integrity_client,
     fv_client,
-)  # Goes up 3 levels for services
+    integrity_client,
+)
 from ...services.qec_error_correction_service import QECErrorCorrectionService
 
 router = APIRouter()

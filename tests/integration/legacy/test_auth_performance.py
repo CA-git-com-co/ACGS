@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -10,12 +12,11 @@ Tests authentication endpoints under load and measures performance metrics.
 """
 
 import asyncio
-import aiohttp
-import time
 import statistics
-import json
-from concurrent.futures import ThreadPoolExecutor
 import threading
+import time
+
+import aiohttp
 
 BASE_URL = "http://localhost:8000/api/auth"
 
@@ -248,8 +249,9 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

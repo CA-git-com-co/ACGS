@@ -1,6 +1,6 @@
-from pathlib import Path
 import subprocess
-from typing import Optional, List, Tuple, Union
+from pathlib import Path
+from typing import List, Optional, Tuple
 
 
 def tool_info():

@@ -1,4 +1,3 @@
-import pytest
 from coding_agent import is_patch_valid
 
 

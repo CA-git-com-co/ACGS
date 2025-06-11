@@ -5,12 +5,12 @@ This module provides standardized error handling patterns that eliminate
 duplicate error handling logic across services.
 """
 
+import json
 import logging
 import traceback
-from typing import Dict, Any, Optional, List
 from datetime import datetime, timezone
 from enum import Enum
-import json
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

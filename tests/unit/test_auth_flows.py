@@ -1,11 +1,12 @@
 # ACGS/auth_service/app/tests/test_auth_flows.py
-import pytest
-from httpx import AsyncClient
-from fastapi import status, HTTPException
-import uuid
 import sys
+import uuid
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
+
+import pytest
+from fastapi import HTTPException, status
+from httpx import AsyncClient
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent.parent
@@ -14,9 +15,9 @@ sys.path.insert(0, str(project_root / "src/backend"))
 
 # Mock shared modules to avoid import errors
 try:
-    from services.platform.authentication.app.core.config import (
+    from services.platform.authentication.app.core.config import (  # For API prefixes
         settings,
-    )  # For API prefixes
+    )
 
     AUTH_CONFIG_AVAILABLE = True
 except ImportError:
@@ -29,9 +30,9 @@ except ImportError:
     AUTH_CONFIG_AVAILABLE = False
 
 try:
-    from services.shared.schemas.user import (
+    from services.shared.schemas.user import (  # For type hinting if needed, though client sends JSON
         UserCreate,
-    )  # For type hinting if needed, though client sends JSON
+    )
 
     USER_SCHEMA_AVAILABLE = True
 except ImportError:
@@ -40,9 +41,9 @@ except ImportError:
     USER_SCHEMA_AVAILABLE = False
 
 try:
-    from services.platform.authentication.app.core import (
+    from services.platform.authentication.app.core import (  # For direct calls if needed for test setup, e.g. password hashing
         security,
-    )  # For direct calls if needed for test setup, e.g. password hashing
+    )
 
     SECURITY_AVAILABLE = True
 except ImportError:
@@ -202,7 +203,7 @@ async def test_login_inactive_user(client: AsyncClient):
     user_data = get_unique_user_data("login_inactive")
     # Register user (by default is_active=True)
     reg_response = await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
-    user_id = reg_response.json()["id"]
+    reg_response.json()["id"]
 
     # This test requires a way to make the user inactive.
     # Since there's no admin endpoint to do this, we'll skip direct testing of this

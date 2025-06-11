@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -13,11 +15,10 @@ and prevent test pollution between test runs.
 
 import asyncio
 import os
-import sys
 import subprocess
-import time
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 
 
 class TeardownProceduresTester:
@@ -322,8 +323,9 @@ if __name__ == "__main__":
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

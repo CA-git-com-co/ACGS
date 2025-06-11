@@ -6,25 +6,23 @@ Tests the complete error correction workflow including conflict detection,
 automatic resolution, semantic validation, and human escalation.
 """
 
+from datetime import datetime
+from typing import List
+
 import pytest
-import asyncio
-import uuid
-from datetime import datetime, timezone
-from typing import Dict, List, Any
 
 # Test framework imports
-from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Import test utilities
 try:
     from conftest import (
         async_client,
-        db_session,
-        test_user,
-        test_admin_user,
-        create_test_principle,
         create_test_policy,
+        create_test_principle,
+        db_session,
+        test_admin_user,
+        test_user,
     )
 except ImportError:
     # Fallback for when conftest is not available
@@ -44,24 +42,23 @@ sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(project_root / "src/backend"))
 
 # Import models and services
-from services.shared.models import ConstitutionalPrinciple, Policy, User
-from services.shared.database import get_async_db
+from services.shared.models import ConstitutionalPrinciple, Policy
 
 # Import QEC error correction services
 try:
     from services.core.governance_synthesis.app.services.qec_error_correction_service import (
-        QECErrorCorrectionService,
-        ConflictDetectionEngine,
         AutomaticResolutionWorkflow,
-        SemanticValidationEngine,
-        PolicyRefinementSuggester,
         ConflictComplexityScorer,
-        ParallelConflictProcessor,
-        ConflictType,
-        ResolutionStrategy,
-        ErrorCorrectionStatus,
+        ConflictDetectionEngine,
         ConflictDetectionResult,
+        ConflictType,
         ErrorCorrectionResult,
+        ErrorCorrectionStatus,
+        ParallelConflictProcessor,
+        PolicyRefinementSuggester,
+        QECErrorCorrectionService,
+        ResolutionStrategy,
+        SemanticValidationEngine,
     )
 
     QEC_AVAILABLE = True

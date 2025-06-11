@@ -12,10 +12,9 @@ Usage:
     python3 test_constitutional_council_implementation.py
 """
 
-import requests
 import json
-import sys
-from typing import Dict, Any, Optional, List
+
+import requests
 
 # Configuration
 BASE_URL = "http://localhost:8001"

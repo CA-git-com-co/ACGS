@@ -9,9 +9,6 @@ This script tests the three main Phase 1 components:
 """
 
 import asyncio
-import json
-import sys
-import os
 from datetime import datetime
 
 # Add the project root to the Python path
@@ -27,7 +24,6 @@ async def test_enhanced_principle_management():
     try:
         # Import the enhanced schemas and models
         from backend.ac_service.app import schemas
-        from services.shared.models import Principle
 
         # Test enhanced principle schema
         print("✓ Testing enhanced principle schema...")
@@ -160,8 +156,8 @@ async def test_contextual_analysis():
     try:
         # Import contextual analysis components
         from backend.gs_service.app.core.contextual_analyzer import (
-            contextual_analyzer,
             EnvironmentalFactor,
+            contextual_analyzer,
         )
 
         print("✓ Testing contextual analyzer...")

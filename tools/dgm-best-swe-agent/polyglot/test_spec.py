@@ -3,19 +3,16 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import platform
 import re
-
 from dataclasses import dataclass
-from typing import Any, Union, cast
+from typing import Union, cast
 
 from polyglot.constants import (
     MAP_REPO_TO_INSTALL,
     MAP_REPO_VERSION_TO_SPECS,
     USE_X86,
 )
-
 from polyglot.dockerfiles import (
     get_dockerfile_base,
     get_dockerfile_env,
@@ -24,8 +21,8 @@ from polyglot.dockerfiles import (
 
 try:
     from swebench.harness.utils import (
-        get_requirements,
         get_environment_yml,
+        get_requirements,
     )
 except ImportError:
     # Mock implementations for compatibility with newer swebench versions

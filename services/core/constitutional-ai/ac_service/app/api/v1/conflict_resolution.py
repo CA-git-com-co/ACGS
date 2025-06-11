@@ -3,30 +3,32 @@ Conflict Resolution API endpoints for the AC Service.
 Handles conflict detection, resolution strategies, and monitoring with QEC integration.
 """
 
-from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.ext.asyncio import AsyncSession
 import logging
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.auth import (
+    get_current_active_user,
+    require_admin,
+    require_auditor,
+    require_policy_manager,
+)
 from services.shared.database import get_async_db as get_db
+from services.shared.models import User
+
+from ... import crud
 from ...schemas import (
     ACConflictResolution,
     ACConflictResolutionCreate,
     ACConflictResolutionUpdate,
 )
-from ... import crud
-from services.shared.auth import (
-    get_current_active_user,
-    require_admin,
-    require_policy_manager,
-    require_auditor,
-)
-from services.shared.models import User
+from ...services.conflict_resolution_orchestrator import ConflictResolutionOrchestrator
 
 # Import QEC enhancement components and service
 from ...services.qec_conflict_resolver import QECConflictResolver
-from ...services.conflict_resolution_orchestrator import ConflictResolutionOrchestrator
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

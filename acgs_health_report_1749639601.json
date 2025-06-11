@@ -1,0 +1,173 @@
+{
+  "overall_status": "unhealthy",
+  "total_services": 7,
+  "healthy_services": 3,
+  "degraded_services": 0,
+  "unhealthy_services": 0,
+  "unreachable_services": 4,
+  "service_results": [
+    {
+      "service_name": "Auth Service",
+      "port": 8000,
+      "status": "healthy",
+      "response_time_ms": 37.653446197509766,
+      "http_status": 200,
+      "health_data": {
+        "status": "ok",
+        "message": "Auth Service is operational."
+      },
+      "error_message": null,
+      "timestamp": "2025-06-11T07:00:01.432865"
+    },
+    {
+      "service_name": "AC Service",
+      "port": 8001,
+      "status": "unreachable",
+      "response_time_ms": 8.405447006225586,
+      "http_status": null,
+      "health_data": null,
+      "error_message": "Server disconnected",
+      "timestamp": "2025-06-11T07:00:01.404374"
+    },
+    {
+      "service_name": "Integrity Service",
+      "port": 8002,
+      "status": "unreachable",
+      "response_time_ms": 8.275032043457031,
+      "http_status": null,
+      "health_data": null,
+      "error_message": "Server disconnected",
+      "timestamp": "2025-06-11T07:00:01.404467"
+    },
+    {
+      "service_name": "FV Service",
+      "port": 8003,
+      "status": "unreachable",
+      "response_time_ms": 7.5855255126953125,
+      "http_status": null,
+      "health_data": null,
+      "error_message": "Server disconnected",
+      "timestamp": "2025-06-11T07:00:01.404173"
+    },
+    {
+      "service_name": "GS Service",
+      "port": 8004,
+      "status": "unreachable",
+      "response_time_ms": 7.574796676635742,
+      "http_status": null,
+      "health_data": null,
+      "error_message": "Server disconnected",
+      "timestamp": "2025-06-11T07:00:01.404435"
+    },
+    {
+      "service_name": "PGC Service",
+      "port": 8005,
+      "status": "healthy",
+      "response_time_ms": 128.10206413269043,
+      "http_status": 200,
+      "health_data": {
+        "status": "healthy",
+        "service": "pgc_service",
+        "version": "1.0.0",
+        "timestamp": "2024-01-20T00:00:00Z",
+        "dependencies": {
+          "opa": {
+            "status": "healthy",
+            "response_time_ms": 18.793
+          },
+          "integrity_service": {
+            "status": "unhealthy",
+            "error": "All connection attempts failed"
+          }
+        },
+        "components": {
+          "policy_manager": {
+            "status": "healthy",
+            "last_refresh": "2025-06-10 10:06:57.116605",
+            "policies_loaded": true
+          }
+        },
+        "message": "PGC Service is fully operational"
+      },
+      "error_message": null,
+      "timestamp": "2025-06-11T07:00:01.525163"
+    },
+    {
+      "service_name": "EC Service",
+      "port": 8006,
+      "status": "healthy",
+      "response_time_ms": 8.400917053222656,
+      "http_status": 200,
+      "health_data": {
+        "status": "healthy",
+        "service": "evolutionary_computation",
+        "timestamp": "2025-06-11T11:00:01.405265",
+        "version": "v1",
+        "wina_coordinator": "disabled",
+        "features": {
+          "wina_optimization": false,
+          "constitutional_oversight": true,
+          "alphaevolve_integration": true,
+          "performance_monitoring": true,
+          "wina_performance_api": true,
+          "real_time_metrics": true,
+          "performance_dashboard": true
+        },
+        "performance_monitoring": {
+          "collector_available": false,
+          "monitoring_active": false,
+          "monitoring_level": "unknown"
+        }
+      },
+      "error_message": null,
+      "timestamp": "2025-06-11T07:00:01.405850"
+    }
+  ],
+  "performance_metrics": {
+    "response_time_metrics": {
+      "average_ms": 29.43,
+      "maximum_ms": 128.1,
+      "target_ms": 2000,
+      "meets_target": true
+    },
+    "availability_metrics": {
+      "current_percentage": 42.86,
+      "target_percentage": 99.5,
+      "meets_target": false
+    },
+    "service_distribution": {
+      "healthy": 3,
+      "total": 7,
+      "degraded": 0,
+      "unhealthy": 0,
+      "unreachable": 4
+    }
+  },
+  "constitutional_compliance_status": {
+    "status": "error",
+    "ac_service_available": false,
+    "pgc_service_available": false,
+    "compliance_checks_active": false,
+    "last_validation": null,
+    "error_message": "[Errno 104] Connection reset by peer"
+  },
+  "wina_oversight_status": {
+    "status": "partial",
+    "ec_service_available": true,
+    "oversight_coordination_active": false,
+    "wina_optimization_enabled": false,
+    "performance_monitoring_active": true,
+    "error_message": null
+  },
+  "recommendations": [
+    "\ud83d\udea8 CRITICAL: AC Service is unreachable - check service status and restart if needed",
+    "\ud83d\udea8 CRITICAL: Integrity Service is unreachable - check service status and restart if needed",
+    "\ud83d\udea8 CRITICAL: FV Service is unreachable - check service status and restart if needed",
+    "\ud83d\udea8 CRITICAL: GS Service is unreachable - check service status and restart if needed",
+    "\ud83d\udea8 HIGH: Service availability below target (42.86% < 99.5%)",
+    "\ud83d\udea8 HIGH: Constitutional compliance validation has errors - check service logs",
+    "\u26a0\ufe0f LOW: WINA oversight operations are partially active - monitor performance"
+  ],
+  "timestamp": "2025-06-11T07:00:01.528737",
+  "execution_time_ms": 133.75
+}

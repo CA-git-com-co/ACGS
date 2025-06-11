@@ -15,31 +15,28 @@ Test Coverage:
 - Cache management and performance optimization
 """
 
-import pytest
-import asyncio
 import time
 from datetime import datetime, timedelta
-from typing import Dict, List, Any
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
+from core.wina_oversight_coordinator import (
+    ECOversightContext,
+    ECOversightReport,
+    ECOversightRequest,
+    ECOversightStrategy,
+    WINAECOversightCoordinator,
+    WINAOversightMetrics,
+    WINAOversightResult,
+    close_wina_ec_oversight_coordinator,
+    get_wina_ec_oversight_coordinator,
+)
 
 # Import the modules under test
-import sys
-import os
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'ec_service', 'app'))  # Removed during reorganization
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'shared'))  # Removed during reorganization
 
-from core.wina_oversight_coordinator import (
-    WINAECOversightCoordinator,
-    ECOversightRequest,
-    ECOversightContext,
-    ECOversightStrategy,
-    WINAOversightResult,
-    WINAOversightMetrics,
-    ECOversightReport,
-    get_wina_ec_oversight_coordinator,
-    close_wina_ec_oversight_coordinator,
-)
 
 
 class TestWINAECOversightCoordinator:

@@ -45,13 +45,79 @@ PID_DIR="$PROJECT_ROOT/pids"
 # Create necessary directories
 mkdir -p "$LOG_DIR" "$PID_DIR"
 
-# Service configuration
+# Service configuration with corrected paths
 declare -A SERVICES=(
     ["ac_service"]="8001:services/core/constitutional-ai/ac_service"
     ["integrity_service"]="8002:services/platform/integrity/integrity_service"
     ["fv_service"]="8003:services/core/formal-verification/fv_service"
     ["gs_service"]="8004:services/core/governance-synthesis/gs_service"
 )
+
+# Enhanced health check function for FV and GS services
+check_service_health() {
+    local service_name=$1
+    local port=$2
+    local max_attempts=${3:-3}
+    local wait_time=${4:-2}
+
+    print_status "Performing enhanced health check for $service_name on port $port..."
+
+    for attempt in $(seq 1 $max_attempts); do
+        if curl -f -s --connect-timeout 5 --max-time 10 "http://localhost:$port/health" > /dev/null 2>&1; then
+            print_success "$service_name health check passed (attempt $attempt/$max_attempts)"
+            return 0
+        else
+            if [ $attempt -lt $max_attempts ]; then
+                print_warning "$service_name health check failed (attempt $attempt/$max_attempts), retrying in ${wait_time}s..."
+                sleep $wait_time
+            fi
+        fi
+    done
+
+    print_error "$service_name health check failed after $max_attempts attempts"
+    return 1
+}
+
+# Enhanced service detection and restart function
+detect_and_restart_service() {
+    local service_name=$1
+    local port=$2
+    local service_path=$3
+
+    print_status "Detecting and restarting $service_name if needed..."
+
+    # Check if service is responding
+    if check_service_health "$service_name" "$port" 1 1; then
+        print_success "$service_name is already running and healthy"
+        return 0
+    fi
+
+    print_warning "$service_name is unreachable, attempting restart..."
+
+    # Kill any existing processes for this service
+    print_status "Killing existing $service_name processes..."
+    pkill -f "uvicorn.*:$port" || true
+    pkill -f "$service_name" || true
+
+    # Remove old PID file if exists
+    local pid_file="$PID_DIR/${service_name}.pid"
+    if [ -f "$pid_file" ]; then
+        rm -f "$pid_file"
+        print_status "Removed old PID file: $pid_file"
+    fi
+
+    # Wait for processes to stop
+    sleep 3
+
+    # Start the service
+    if start_service "$service_name"; then
+        print_success "$service_name restarted successfully"
+        return 0
+    else
+        print_error "Failed to restart $service_name"
+        return 1
+    fi
+}
 
 # Function to check if service is running
 check_service() {
@@ -108,16 +174,39 @@ start_service() {
         return 1
     fi
     
-    # Check for main.py or app/main.py
+    # Check for main.py or app/main.py with service-specific handling
     local main_module=""
-    if [ -f "$service_dir/main.py" ]; then
-        main_module="main:app"
-    elif [ -f "$service_dir/app/main.py" ]; then
-        main_module="app.main:app"
-    else
-        print_error "No main.py found in $service_dir"
-        return 1
-    fi
+    case $service_name in
+        "fv_service")
+            if [ -f "$service_dir/main.py" ]; then
+                main_module="main:app"
+                print_status "Using direct main.py for FV service"
+            else
+                print_error "FV service main.py not found in $service_dir"
+                return 1
+            fi
+            ;;
+        "gs_service")
+            if [ -f "$service_dir/app/main.py" ]; then
+                main_module="app.main:app"
+                print_status "Using app/main.py for GS service"
+            else
+                print_error "GS service app/main.py not found in $service_dir"
+                return 1
+            fi
+            ;;
+        *)
+            # Default behavior for other services
+            if [ -f "$service_dir/main.py" ]; then
+                main_module="main:app"
+            elif [ -f "$service_dir/app/main.py" ]; then
+                main_module="app.main:app"
+            else
+                print_error "No main.py found in $service_dir"
+                return 1
+            fi
+            ;;
+    esac
     
     # Stop any existing service
     stop_service "$service_name" "$port"
@@ -237,13 +326,45 @@ main() {
         exit 1
     fi
     
-    print_status "Step 2: Starting missing services"
+    print_status "Step 2: Enhanced FV and GS Service Detection and Restoration"
+
+    # Priority restoration for FV and GS services
+    print_status "Checking critical services: FV (port 8003) and GS (port 8004)"
+
+    local fv_restored=false
+    local gs_restored=false
+
+    # Check and restore FV Service (port 8003)
+    if detect_and_restart_service "fv_service" "8003" "services/core/formal-verification/fv_service"; then
+        fv_restored=true
+        print_success "✅ FV Service (port 8003) is operational"
+    else
+        print_error "❌ FV Service (port 8003) restoration failed"
+    fi
+
+    # Check and restore GS Service (port 8004)
+    if detect_and_restart_service "gs_service" "8004" "services/core/governance-synthesis/gs_service"; then
+        gs_restored=true
+        print_success "✅ GS Service (port 8004) is operational"
+    else
+        print_error "❌ GS Service (port 8004) restoration failed"
+    fi
+
+    print_status "Step 3: Starting remaining missing services"
     local started_services=0
     local total_services=${#SERVICES[@]}
-    
-    # Start services in dependency order
-    local service_order=("ac_service" "integrity_service" "fv_service" "gs_service")
-    
+
+    # Count already restored services
+    if [ "$fv_restored" = true ]; then
+        started_services=$((started_services + 1))
+    fi
+    if [ "$gs_restored" = true ]; then
+        started_services=$((started_services + 1))
+    fi
+
+    # Start remaining services in dependency order
+    local service_order=("ac_service" "integrity_service")
+
     for service_name in "${service_order[@]}"; do
         if [[ -n "${SERVICES[$service_name]}" ]]; then
             if start_service "$service_name"; then
@@ -263,27 +384,62 @@ main() {
         python scripts/comprehensive_health_check.py
     fi
     
-    print_status "Step 4: Summary"
+    print_status "Step 4: Enhanced Service Validation and Summary"
     echo ""
-    print_success "🎉 Service startup completed!"
-    echo "=============================="
-    echo "✅ Started services: $started_services/$total_services"
+
+    # Perform final health checks on critical services
+    print_status "Performing final health checks on critical services..."
+
+    local fv_final_check=false
+    local gs_final_check=false
+
+    if check_service_health "fv_service" "8003" 2 3; then
+        fv_final_check=true
+        print_success "✅ FV Service (port 8003) final health check: PASSED"
+    else
+        print_error "❌ FV Service (port 8003) final health check: FAILED"
+    fi
+
+    if check_service_health "gs_service" "8004" 2 3; then
+        gs_final_check=true
+        print_success "✅ GS Service (port 8004) final health check: PASSED"
+    else
+        print_error "❌ GS Service (port 8004) final health check: FAILED"
+    fi
+
+    echo ""
+    print_success "🎉 Enhanced Service Restoration Completed!"
+    echo "================================================"
+    echo "✅ Total services processed: $started_services/$total_services"
+    echo "🏥 FV Service (port 8003): $([ "$fv_final_check" = true ] && echo "OPERATIONAL" || echo "FAILED")"
+    echo "🏥 GS Service (port 8004): $([ "$gs_final_check" = true ] && echo "OPERATIONAL" || echo "FAILED")"
     echo "📄 Logs directory: $LOG_DIR"
     echo "📄 PID files: $PID_DIR"
     echo ""
-    echo "🔧 To stop services:"
-    echo "   pkill -f 'uvicorn.*:800[1-4]'"
+    echo "🔧 Service Management Commands:"
+    echo "   Stop all services: pkill -f 'uvicorn.*:800[1-4]'"
+    echo "   Check FV logs: tail -f $LOG_DIR/fv_service.log"
+    echo "   Check GS logs: tail -f $LOG_DIR/gs_service.log"
     echo ""
-    echo "🔧 To check individual service logs:"
-    for service_name in "${service_order[@]}"; do
-        echo "   tail -f $LOG_DIR/${service_name}.log"
-    done
-    
-    if [ $started_services -eq $total_services ]; then
-        print_success "All services started successfully!"
+    echo "🔍 Health Check Commands:"
+    echo "   FV Service: curl -s http://localhost:8003/health | jq ."
+    echo "   GS Service: curl -s http://localhost:8004/health | jq ."
+    echo ""
+    echo "⚖️ Constitutional Compliance Validation:"
+    echo "   Test FV verification: curl -s http://localhost:8003/api/v1/enterprise/status"
+    echo "   Test GS synthesis: curl -s http://localhost:8004/api/v1/status"
+
+    # Determine overall success
+    if [ "$fv_final_check" = true ] && [ "$gs_final_check" = true ]; then
+        print_success "🎯 MISSION ACCOMPLISHED: Both FV and GS services are operational!"
+        print_success "🏛️ Constitutional governance workflows are now available for validation"
         return 0
+    elif [ "$fv_final_check" = true ] || [ "$gs_final_check" = true ]; then
+        print_warning "⚠️ PARTIAL SUCCESS: Some critical services are operational, others need attention"
+        return 1
     else
-        print_warning "Some services failed to start. Check logs for details."
+        print_error "❌ MISSION FAILED: Critical services could not be restored"
+        print_error "🔧 Check service logs and dependencies before retrying"
         return 1
     fi
 }

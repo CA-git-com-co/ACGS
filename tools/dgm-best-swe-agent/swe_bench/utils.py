@@ -1,9 +1,10 @@
-import tarfile
 import io
 import logging
+import tarfile
 import threading
-from typing import Union, Optional
 from pathlib import Path
+from typing import Optional, Union
+
 import docker
 
 # Thread-local storage for loggers

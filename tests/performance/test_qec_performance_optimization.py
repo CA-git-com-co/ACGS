@@ -12,41 +12,30 @@ Target Performance Metrics:
 - System uptime: >99.5%
 """
 
-import pytest
 import asyncio
-import time
 import statistics
-import concurrent.futures
-from datetime import datetime, timedelta
-from typing import Dict, Any, List
-import httpx
+import time
+from datetime import datetime
+from typing import Any, Dict
+
 import psutil
+import pytest
 import redis
 
 # QEC Enhancement imports
-import sys
-import os
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'alphaevolve_gs_engine', 'src'))  # Removed during reorganization
 
 try:
+    from integrations.alphaevolve_engine.core.constitutional_principle import (
+        ConstitutionalPrinciple,
+    )
     from integrations.alphaevolve_engine.services.qec_enhancement import (
         ConstitutionalDistanceCalculator,
-        ValidationDSLParser,
         ErrorPredictionModel,
-        RecoveryStrategyDispatcher,
-        FailureType,
-        SynthesisAttemptLog,
-        RecoveryStrategy,
     )
     from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
         ConstitutionalFidelityMonitor,
-        FidelityComponents,
-        FidelityAlert,
-        FidelityThresholds,
-    )
-    from integrations.alphaevolve_engine.core.constitutional_principle import (
-        ConstitutionalPrinciple,
     )
 
     QEC_AVAILABLE = True

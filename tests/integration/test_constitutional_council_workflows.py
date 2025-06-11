@@ -23,13 +23,11 @@ Target Metrics:
 import asyncio
 import json
 import time
-import pytest
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
 from pathlib import Path
+
 import httpx
 import websockets
-from unittest.mock import AsyncMock, patch
 
 # Test configuration
 AC_SERVICE_URL = "http://localhost:8001"
@@ -158,7 +156,7 @@ class ConstitutionalCouncilWorkflowTests:
         )
 
         assert status_response.status_code == 200
-        status = status_response.json()
+        status_response.json()
 
         execution_time = time.time() - start_time
         print(f"  ✅ Workflow completed in {execution_time:.2f}s")

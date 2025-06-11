@@ -5,15 +5,15 @@ This module provides structured logging capabilities for test execution,
 performance monitoring, and debugging integration test failures.
 """
 
+import asyncio
 import json
 import logging
-import time
-import asyncio
-from datetime import datetime, timezone
-from typing import Dict, Any, Optional, List
-from pathlib import Path
-import traceback
 import sys
+import time
+import traceback
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 
 class StructuredTestLogger:

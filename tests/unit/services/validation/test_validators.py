@@ -13,11 +13,11 @@ It tests:
 - ConflictValidator (OPAConflictDetector - Mocked with temp Rego files)
 """
 
-import unittest
 import os
+import shutil  # For cleaning up temp directories if created
 import sys
 import tempfile
-import shutil  # For cleaning up temp directories if created
+import unittest
 
 # Adjust import path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -29,35 +29,40 @@ src_path = os.path.join(project_root, "src")
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
 
-from integrations.alphaevolve_engine.services.validation.syntactic_validator import (
-    SyntacticValidator,
+from integrations.alphaevolve_engine.services.llm_service import (  # For LLMBiasReviewer
+    get_llm_service,
+)
+from integrations.alphaevolve_engine.services.validation.bias_validator import (
+    FairnessMetricValidator,  # OPA part is mocked in its example, will be here too
+)
+from integrations.alphaevolve_engine.services.validation.bias_validator import (
+    LLMBiasReviewer,  # LLM part is mocked
+)
+from integrations.alphaevolve_engine.services.validation.bias_validator import (
+    BiasMetric,
+)
+from integrations.alphaevolve_engine.services.validation.conflict_validator import (
+    ConflictDefinition,
+    OPAConflictDetector,
+)
+from integrations.alphaevolve_engine.services.validation.formal_verifier import (
+    FormalVerificationProperty,
+    MockFormalVerifier,
+)
+from integrations.alphaevolve_engine.services.validation.safety_validator import (
+    SimulationBasedSafetyValidator,  # This is mocked for simulation part
+)
+from integrations.alphaevolve_engine.services.validation.safety_validator import (
+    PatternBasedSafetyValidator,
+    SafetyAssertion,
 )
 from integrations.alphaevolve_engine.services.validation.semantic_validator import (
     ScenarioBasedSemanticValidator,
     SemanticTestCase,
 )
-from integrations.alphaevolve_engine.services.validation.formal_verifier import (
-    MockFormalVerifier,
-    FormalVerificationProperty,
+from integrations.alphaevolve_engine.services.validation.syntactic_validator import (
+    SyntacticValidator,
 )
-from integrations.alphaevolve_engine.services.validation.safety_validator import (
-    PatternBasedSafetyValidator,
-    SimulationBasedSafetyValidator,  # This is mocked for simulation part
-    SafetyAssertion,
-)
-from integrations.alphaevolve_engine.services.validation.bias_validator import (
-    FairnessMetricValidator,  # OPA part is mocked in its example, will be here too
-    LLMBiasReviewer,  # LLM part is mocked
-    BiasMetric,
-)
-from integrations.alphaevolve_engine.services.validation.conflict_validator import (
-    OPAConflictDetector,
-    ConflictDefinition,
-)
-from integrations.alphaevolve_engine.services.llm_service import (
-    get_llm_service,
-)  # For LLMBiasReviewer
-
 
 # Helper: Define some common Rego policies for testing
 VALID_REGO_POLICY = """

@@ -1,12 +1,12 @@
-import pytest
-import asyncio
 from datetime import datetime, timezone
 
+import pytest
+
 from scripts.load_testing import (
-    LoadTester,
-    LoadTestConfig,
-    TestResult,
     DatabasePerformanceMetrics,
+    LoadTestConfig,
+    LoadTester,
+    TestResult,
 )
 
 

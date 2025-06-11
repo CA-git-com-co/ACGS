@@ -1,9 +1,7 @@
-from datetime import timedelta
-import sys
-from pathlib import Path
-from unittest.mock import MagicMock, Mock
-import time
 import json
+import time
+from datetime import timedelta
+from unittest.mock import Mock
 
 import pytest
 

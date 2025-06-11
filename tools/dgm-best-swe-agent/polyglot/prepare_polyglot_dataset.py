@@ -1,14 +1,11 @@
 import json
 import os
-from pathlib import Path
-import glob
+import re
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
-import git
+from pathlib import Path
 
 from utils.git_utils import diff_versus_commit
-
-import re
 
 
 def modify_cmake_file(cmake_file_path, new_exercise_value):

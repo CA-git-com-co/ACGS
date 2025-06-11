@@ -1,5 +1,6 @@
-from typing import Dict, Any
-from .models import WINAWeightOutput, GatingThresholdConfig, GatingDecision
+from typing import Any, Dict
+
+from .models import GatingDecision, GatingThresholdConfig, WINAWeightOutput
 
 
 async def determine_gating_decision(

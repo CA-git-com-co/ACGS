@@ -1,9 +1,8 @@
 import argparse
 import os
 
-from matplotlib import pyplot as plt
-
 from analysis.visualize_archive import get_performance_score
+from matplotlib import pyplot as plt
 from utils.evo_utils import load_dgm_metadata
 
 
@@ -25,7 +24,6 @@ def get_run_info(dgm_dir):
     best_scores.append(root_node_score)
     avg_scores.append(root_node_score)
     total_scores.append(root_node_score)
-    best_node_id = "initial"
     # Add other iterations
     for archive in archives:
         children = archive["children"]
@@ -37,7 +35,7 @@ def get_run_info(dgm_dir):
             new_score = get_performance_score(dgm_dir, node_id)
             # Update best node id
             if new_score > best_scores[-1]:
-                best_node_id = node_id
+                pass
             # Update best score
             best_score = max(new_score, best_scores[-1])
             best_scores.append(best_score)

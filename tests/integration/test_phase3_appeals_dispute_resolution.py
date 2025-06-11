@@ -8,7 +8,7 @@ import asyncio
 import json
 import sys
 import time
-from typing import Dict, List, Any
+
 import httpx
 
 # Test configuration
@@ -384,7 +384,7 @@ class Phase3AppealsTestRunner:
             await self.test_escalate_appeal(appeal_id)
             await asyncio.sleep(0.5)
 
-            dispute_id = await self.test_create_dispute_resolution(appeal_id)
+            await self.test_create_dispute_resolution(appeal_id)
             await asyncio.sleep(0.5)
 
         await self.test_explain_decision()

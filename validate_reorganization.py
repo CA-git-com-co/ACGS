@@ -4,12 +4,11 @@ Validate ACGS-1 Reorganization
 Test that all services and components are still functional after reorganization
 """
 
-import os
-import subprocess
-import logging
-from pathlib import Path
 import json
+import logging
+import subprocess
 import time
+from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

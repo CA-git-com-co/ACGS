@@ -5,22 +5,22 @@ Implements digital signatures, hash functions, Merkle trees, key management, and
 
 import hashlib
 import json
-import time
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any, Tuple
 import logging
+import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
 # Try to import cryptography library
 try:
+    from cryptography.exceptions import InvalidSignature
     from cryptography.hazmat.primitives import hashes, serialization
-    from cryptography.hazmat.primitives.asymmetric import ec, rsa, padding
+    from cryptography.hazmat.primitives.asymmetric import ec, padding, rsa
     from cryptography.hazmat.primitives.serialization import (
         load_pem_private_key,
         load_pem_public_key,
     )
-    from cryptography.exceptions import InvalidSignature
 
     CRYPTOGRAPHY_AVAILABLE = True
 except ImportError:

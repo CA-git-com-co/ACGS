@@ -12,20 +12,15 @@ This test suite validates:
 - Backward compatibility
 """
 
-import pytest
 import asyncio
-import time
-import json
 import statistics
-from datetime import datetime, timedelta
-from typing import Dict, Any, List
-from unittest.mock import Mock, AsyncMock, patch
-from fastapi.testclient import TestClient
+import time
+from unittest.mock import Mock, patch
+
 import httpx
+import pytest
 
 # Import test dependencies
-import sys
-import os
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend'))  # Removed during reorganization
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'backend', 'ac_service'))  # Removed during reorganization
@@ -37,18 +32,12 @@ import os
 try:
     from integrations.alphaevolve_engine.services.qec_enhancement import (
         ConstitutionalDistanceCalculator,
-        ValidationDSLParser,
         ErrorPredictionModel,
         RecoveryStrategyDispatcher,
-        FailureType,
-        SynthesisAttemptLog,
-        RecoveryStrategy,
+        ValidationDSLParser,
     )
     from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
         ConstitutionalFidelityMonitor,
-        FidelityComponents,
-        FidelityAlert,
-        FidelityThresholds,
     )
 
     QEC_AVAILABLE = True
@@ -57,9 +46,7 @@ except ImportError:
 
 # Service imports with fallbacks
 try:
-    from app.main import app
     from app.services.qec_conflict_resolver import QECConflictResolver
-    from models import ACPrinciple, ACConflictResolution
 
     SERVICE_AVAILABLE = True
 except ImportError:
@@ -439,7 +426,7 @@ class TestQECComprehensiveIntegration:
 
         # Test concurrent conflict resolution
         async def process_conflict(conflict_data):
-            resolver = QECConflictResolver() if SERVICE_AVAILABLE else Mock()
+            QECConflictResolver() if SERVICE_AVAILABLE else Mock()
             start_time = time.time()
 
             # Simulate conflict processing

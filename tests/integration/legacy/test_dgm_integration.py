@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -15,12 +17,13 @@ This test validates all components of the Darwin Gödel Machine system:
 - Logging and progress tracking
 """
 
-import os
-import tempfile
-import subprocess
 import json
+import os
+import subprocess
+import tempfile
 import time
 from pathlib import Path
+
 from dgm_best_swe_agent import DarwinGodelMachine, DGMConfig, SolutionAttempt
 
 
@@ -355,8 +358,9 @@ def run_comprehensive_test():
 if __name__ == "__main__":
     success = run_comprehensive_test()
     exit(0 if success else 1)
-import os
 import asyncio
+import os
+
 import pytest
 
 

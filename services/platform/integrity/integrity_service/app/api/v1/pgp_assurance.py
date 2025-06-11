@@ -2,17 +2,17 @@
 PGP Assurance API endpoints for cryptographic integrity
 """
 
-from fastapi import APIRouter, HTTPException, Depends, status
-from pydantic import BaseModel, Field
-from typing import Dict, List, Optional, Any
-from datetime import datetime
 import logging
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from app.services.pgp_assurance import (
+    HashAlgorithm,
     PGPAssuranceService,
     SignatureAlgorithm,
-    HashAlgorithm,
 )
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 
 # from app.core.auth import require_integrity_admin, require_internal_service, User
 
@@ -310,8 +310,9 @@ async def verify_timestamp(
     """Verify an RFC 3161 timestamp token"""
     try:
         # Reconstruct timestamp token from info
-        from app.services.pgp_assurance import TimestampToken
         import json
+
+        from app.services.pgp_assurance import TimestampToken
 
         timestamp_token = TimestampToken(
             timestamp=datetime.fromisoformat(timestamp_info["timestamp"]),

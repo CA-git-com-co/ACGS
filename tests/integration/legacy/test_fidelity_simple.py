@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -9,7 +11,6 @@ Simple test for Constitutional Fidelity Monitor functionality.
 Tests the enhanced implementation for Task 19.1 without WebSocket dependencies.
 """
 
-import json
 import time
 from datetime import datetime
 
@@ -231,8 +232,9 @@ if __name__ == "__main__":
     print("   • QEC-inspired error correction integration")
     print("   • Performance dashboard integration")
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

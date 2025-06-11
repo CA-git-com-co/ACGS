@@ -24,12 +24,11 @@ StateGraph Nodes Tested:
 import asyncio
 import json
 import time
-import pytest
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional, Tuple
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any, Dict, Tuple
+
 import httpx
-from unittest.mock import AsyncMock, patch
 
 # Test configuration
 AC_SERVICE_URL = "http://localhost:8001"
@@ -422,7 +421,7 @@ class LangGraphAmendmentProcessingTests:
         assert "weighted_approval_rate" in voting_result
         assert "quorum_met" in voting_result
 
-        voting_summary = voting_result["voting_summary"]
+        voting_result["voting_summary"]
         weighted_approval_rate = voting_result["weighted_approval_rate"]
         quorum_met = voting_result["quorum_met"]
 
@@ -516,10 +515,10 @@ class LangGraphAmendmentProcessingTests:
 
         # Execute complete workflow
         amendment_id, proposal_result = await self.test_propose_amendment_node()
-        feedback_result = await self.test_gather_stakeholder_feedback_node(amendment_id)
-        analysis_result = await self.test_analyze_constitutionality_node(amendment_id)
-        voting_result = await self.test_conduct_voting_node(amendment_id)
-        refinement_result = await self.test_refine_amendment_node(amendment_id)
+        await self.test_gather_stakeholder_feedback_node(amendment_id)
+        await self.test_analyze_constitutionality_node(amendment_id)
+        await self.test_conduct_voting_node(amendment_id)
+        await self.test_refine_amendment_node(amendment_id)
 
         total_workflow_time = time.time() - workflow_start_time
 

@@ -4,10 +4,8 @@ ACGS-1 Documentation Structure Updates
 Updates all documentation to reflect new blockchain-focused directory structure
 """
 
-import os
 import logging
 from pathlib import Path
-import re
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

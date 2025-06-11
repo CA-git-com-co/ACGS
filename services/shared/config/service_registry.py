@@ -2,9 +2,9 @@
 Service Registry - Central service discovery and configuration
 """
 
-from typing import Dict, Optional
-from dataclasses import dataclass
 import os
+from dataclasses import dataclass
+from typing import Dict, Optional
 
 
 @dataclass

@@ -4,25 +4,24 @@ import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 import docker
 from datasets import load_dataset
-
 from prompts.testrepo_prompt import get_test_description
-from swebench.harness.test_spec import make_test_spec
-from swebench.harness.docker_build import (
-    build_env_images,
-    build_container,
-    cleanup_container,
-)
-
 from swe_bench.utils import (
-    copy_to_container,
     copy_from_container,
+    copy_to_container,
     log_container_output,
     remove_existing_container,
     safe_log,
     setup_logger,
 )
+from swebench.harness.docker_build import (
+    build_container,
+    build_env_images,
+    cleanup_container,
+)
+from swebench.harness.test_spec import make_test_spec
 from utils.common_utils import load_json_file
 
 
@@ -69,7 +68,7 @@ def process_entry(entry, out_dname, model_name_or_path, model_patch_paths):
                 os.chdir("dgm")
                 tmp_currdir = os.path.abspath(os.getcwd())
                 logger.info(f"Changed directory to: {tmp_currdir}")
-            except Exception as e:
+            except Exception:
                 pass
         # If still not in dgm directory, go up until we find it
         while not tmp_currdir.endswith("/dgm"):

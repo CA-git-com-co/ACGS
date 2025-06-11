@@ -5,19 +5,19 @@ This module contains parameterized tests designed to improve test coverage
 across all components and edge cases identified in the coverage report.
 """
 
+from typing import Any, Dict
+from unittest.mock import MagicMock
+
 import pytest
-import asyncio
-from typing import Dict, Any, List
-from unittest.mock import AsyncMock, MagicMock, patch
 
 # Import test utilities
 try:
-    from tests.utils.structured_logging import test_logger, log_test_execution
     from tests.utils.mock_services import mock_all_services, mock_service_communication
+    from tests.utils.structured_logging import log_test_execution, test_logger
 except ImportError:
     # Mock implementations for testing when modules are not available
-    from unittest.mock import MagicMock
     from contextlib import asynccontextmanager
+    from unittest.mock import MagicMock
 
     test_logger = MagicMock()
 
@@ -40,11 +40,11 @@ try:
     )
     from services.core.governance_synthesis.app.core.llm_integration import (
         MockLLMClient,
-        RealLLMClient,
     )
     from services.core.governance_synthesis.app.services.lipschitz_estimator import (
         LipschitzEstimator,
     )
+
     from services.platform.integrity.app.services.crypto_service import (
         CryptographicIntegrityService,
     )
@@ -172,7 +172,7 @@ class TestCoverageEnhancement:
                 input_data = LLMInterpretationInput(
                     principle_id=1, principle_text=prompt, context="test_context"
                 )
-                response = await llm_client.get_structured_interpretation(input_data)
+                await llm_client.get_structured_interpretation(input_data)
                 reliability_score = (
                     reliability_threshold + 0.05
                 )  # Mock score above threshold

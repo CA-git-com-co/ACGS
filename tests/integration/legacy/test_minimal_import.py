@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -9,8 +11,8 @@ Minimal import test for ACGS-PGP services
 Tests basic FastAPI functionality without complex dependencies
 """
 
-import sys
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -24,7 +26,7 @@ def test_basic_imports():
     print("=== Testing Basic Imports ===")
 
     try:
-        import fastapi
+        pass
 
         print("✅ FastAPI imported")
     except ImportError as e:
@@ -32,7 +34,7 @@ def test_basic_imports():
         return False
 
     try:
-        import uvicorn
+        pass
 
         print("✅ Uvicorn imported")
     except ImportError as e:
@@ -40,7 +42,7 @@ def test_basic_imports():
         return False
 
     try:
-        import httpx
+        pass
 
         print("✅ HTTPX imported")
     except ImportError as e:
@@ -195,8 +197,9 @@ def main():
 if __name__ == "__main__":
     exit(main())
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

@@ -1,4 +1,5 @@
 import asyncio
+
 import pytest
 
 # Import AIModelService utilities
@@ -38,6 +39,8 @@ async def test_concurrent_generate_text_does_not_mutate_config():
 async def test_concurrent_generation_federated_does_not_mutate_config():
     from services.research.federated_evaluation.shared.ai_model_service import (
         get_ai_model_service as get_fed_service,
+    )
+    from services.research.federated_evaluation.shared.ai_model_service import (
         reset_ai_model_service as reset_fed_service,
     )
 

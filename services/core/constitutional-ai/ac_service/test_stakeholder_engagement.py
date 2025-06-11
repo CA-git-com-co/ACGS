@@ -8,25 +8,26 @@ including notification dispatch, feedback collection, and real-time updates.
 
 import asyncio
 import logging
-import sys
 import os
+import sys
 from datetime import datetime, timezone
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
-from services.shared.database import Base
-from services.shared.models import User
 from app.models import ACAmendment
 from app.services.stakeholder_engagement import (
-    StakeholderNotificationService,
-    StakeholderEngagementInput,
     NotificationChannel,
+    StakeholderEngagementInput,
+    StakeholderNotificationService,
     StakeholderRole,
 )
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
+
+from services.shared.database import Base
 from services.shared.langgraph_config import ConstitutionalCouncilConfig
+from services.shared.models import User
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

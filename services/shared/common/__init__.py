@@ -5,10 +5,10 @@ This module provides shared utilities that eliminate code duplication
 across the ACGS microservices architecture.
 """
 
-from .http_clients import ACGSHttpClient, ServiceClient
-from .validation import validate_request, validate_response, ValidationError
-from .formatting import format_response, format_error, standardize_timestamps
 from .error_handling import ACGSException, handle_service_error, log_error
+from .formatting import format_error, format_response, standardize_timestamps
+from .http_clients import ACGSHttpClient, ServiceClient
+from .validation import ValidationError, validate_request, validate_response
 
 __all__ = [
     "ACGSHttpClient",

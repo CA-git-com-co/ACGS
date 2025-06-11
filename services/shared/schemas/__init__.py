@@ -1,6 +1,6 @@
 # shared/schemas/__init__.py
-from .user import UserBase, UserCreate, UserUpdate, UserInDBBase, UserInDB
 from .token import Token, TokenPayload
+from .user import UserBase, UserCreate, UserInDB, UserInDBBase, UserUpdate
 
 __all__ = [
     "UserBase",

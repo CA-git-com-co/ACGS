@@ -1,8 +1,9 @@
 # ACGS/shared/schemas.py
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 from uuid import UUID  # For UUID validation if used in models
+
+from pydantic import BaseModel, EmailStr, Field
 
 
 # Base Pydantic model for common settings

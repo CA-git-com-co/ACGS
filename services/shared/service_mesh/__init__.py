@@ -6,10 +6,10 @@ duplicate HTTP client implementations and provides consistent inter-service
 communication patterns.
 """
 
-from .client import ACGSServiceClient, ServiceMesh
-from .registry import ServiceRegistry, ServiceConfig
-from .discovery import ServiceDiscovery
 from .circuit_breaker import CircuitBreaker, CircuitBreakerState
+from .client import ACGSServiceClient, ServiceMesh
+from .discovery import ServiceDiscovery
+from .registry import ServiceConfig, ServiceRegistry
 
 __all__ = [
     "ACGSServiceClient",

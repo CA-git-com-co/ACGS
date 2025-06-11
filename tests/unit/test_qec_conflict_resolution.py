@@ -6,16 +6,13 @@ Tests integration of constitutional distance scoring, error prediction, recovery
 and validation DSL parsing with conflict resolution workflows.
 """
 
-import pytest
-import asyncio
-from datetime import datetime
-from typing import Dict, Any, List
-from unittest.mock import Mock, AsyncMock, patch
-
 # Import test dependencies
 import sys
-import os
+from datetime import datetime
 from pathlib import Path
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
@@ -25,9 +22,9 @@ sys.path.insert(0, str(project_root / "src/backend"))
 # Import QEC conflict resolution components with fallback
 try:
     from services.core.constitutional_ai.app.services.qec_conflict_resolver import (
-        QECConflictResolver,
         ConflictAnalysis,
         PatchResult,
+        QECConflictResolver,
     )
 
     QEC_RESOLVER_AVAILABLE = True
@@ -41,7 +38,7 @@ except ImportError:
     QEC_RESOLVER_AVAILABLE = False
 
 try:
-    from services.shared.models import ACPrinciple, ACConflictResolution
+    from services.shared.models import ACConflictResolution, ACPrinciple
 
     SHARED_MODELS_AVAILABLE = True
 except ImportError:

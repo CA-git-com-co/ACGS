@@ -6,20 +6,21 @@ in the Constitutional Council, including workflow creation, monitoring,
 and status management.
 """
 
-from fastapi import APIRouter, HTTPException, Depends, status
-from typing import Dict, Any, List, Optional
-from pydantic import BaseModel, Field
 import logging
+from typing import Any, Dict, List, Optional
+
+from app.workflows.constitutional_council_graph import (
+    AmendmentProposalInput,
+    execute_constitutional_council_workflow,
+)
+from app.workflows.workflow_manager import get_workflow_manager
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.auth import get_current_active_user as get_current_user
 from services.shared.database import get_async_db
-from app.workflows.workflow_manager import get_workflow_manager
-from app.workflows.constitutional_council_graph import (
-    execute_constitutional_council_workflow,
-    AmendmentProposalInput,
-)
 from services.shared.models import User
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 

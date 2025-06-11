@@ -1,4 +1,6 @@
-import os, pytest
+import os
+
+import pytest
 
 if not os.environ.get("ACGS_INTEGRATION"):
     pytest.skip("integration test requires running services", allow_module_level=True)
@@ -17,15 +19,15 @@ Usage: python test_comprehensive_acgs_validation.py
 """
 
 import asyncio
-import aiohttp
 import json
-import time
-import sys
 import logging
-from typing import Dict, List, Any, Optional
+import sys
+import time
 from dataclasses import dataclass
 from datetime import datetime
-import subprocess
+from typing import Any, Dict, List, Optional
+
+import aiohttp
 import psutil
 
 # Configure logging
@@ -594,7 +596,7 @@ class ACGSTestSuite:
             ) as response:
                 verification_passed = response.status in [200, 201]
                 if verification_passed:
-                    verification_result = await response.json()
+                    await response.json()
                 else:
                     logger.warning(f"Verification failed: {response.status}")
 
@@ -664,7 +666,7 @@ class ACGSTestSuite:
             ) as response:
                 constitutional_success = response.status in [200, 201]
                 if constitutional_success:
-                    result = await response.json()
+                    await response.json()
                     logger.info("Constitutional prompting: SUCCESS")
                 else:
                     logger.warning(
@@ -728,7 +730,7 @@ class ACGSTestSuite:
                     ) as response:
                         service_time = time.time() - service_start
                         response_times[service_name] = service_time
-                except Exception as e:
+                except Exception:
                     response_times[service_name] = -1  # Error indicator
 
             # Get system resource usage
@@ -910,8 +912,9 @@ if __name__ == "__main__":
     # Run the tests
     asyncio.run(main())
 
-import os
 import asyncio
+import os
+
 import pytest
 
 

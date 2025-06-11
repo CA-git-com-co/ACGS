@@ -1,6 +1,6 @@
 # ACGS Federated Service Models
-import sys
 import os
+import sys
 
 # Handle imports for both service context and alembic context
 Base = None
@@ -38,30 +38,31 @@ if not hasattr(Base, "metadata"):
     from sqlalchemy.orm import declarative_base
 
     Base = declarative_base()
+import enum
+import uuid  # For generating UUIDs
+from datetime import datetime, timezone
+
 from sqlalchemy import (
+    JSON,
     Boolean,
     Column,
     DateTime,
+    Enum,
+    Float,
     ForeignKey,
+    Index,
     Integer,
+    Numeric,
     String,
     Text,
     func,
-    JSON,
-    Float,
-    Index,
-    Enum,
-    Numeric,
 )
-from sqlalchemy.dialects.postgresql import (
+from sqlalchemy.dialects.postgresql import (  # For PostgreSQL specific JSONB, UUID, and ARRAY types
+    ARRAY,
     JSONB,
     UUID,
-    ARRAY,
-)  # For PostgreSQL specific JSONB, UUID, and ARRAY types
+)
 from sqlalchemy.orm import relationship
-from datetime import datetime, timezone
-import uuid  # For generating UUIDs
-import enum
 
 
 class User(Base):

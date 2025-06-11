@@ -5,10 +5,10 @@ Tests the Z3 SMT solver integration, tiered validation pipeline, and safety/conf
 """
 
 import asyncio
-import json
 import sys
 import time
-from typing import Dict, List, Any
+from typing import Dict
+
 import httpx
 
 # Test configuration

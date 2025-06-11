@@ -9,18 +9,15 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy shared module first
-COPY ../shared ./shared
-
 # Install any needed packages specified in requirements.txt
-COPY requirements_simple.txt .
-RUN pip install --no-cache-dir -r requirements_simple.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the current directory contents into the container at /app
 COPY . /app
 
 # Set Python path to include shared module
-ENV PYTHONPATH="/app:/app/services/shared:$PYTHONPATH"
+ENV PYTHONPATH="/app:$PYTHONPATH"
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash acgs

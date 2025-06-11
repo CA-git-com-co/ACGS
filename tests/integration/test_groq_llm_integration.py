@@ -5,11 +5,9 @@ Tests the three Groq-hosted Llama models for ACGS-PGP testing and research opera
 """
 
 import asyncio
-import json
+import logging
 import os
 import sys
-from typing import Dict, List, Any
-import logging
 
 # Add the src directory to Python path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../src"))
@@ -82,8 +80,8 @@ class GroqLLMIntegrationTest:
 
         try:
             from integrations.alphaevolve_engine.services.llm_service import (
-                get_llm_service,
                 GroqLLMService,
+                get_llm_service,
             )
 
             # Test each Groq model
@@ -147,9 +145,9 @@ class GroqLLMIntegrationTest:
             os.environ["LLM_PROVIDER"] = "groq"
 
             from gs_service.app.core.llm_integration import (
-                get_llm_client,
                 GroqLLMClient,
                 LLMInterpretationInput,
+                get_llm_client,
             )
 
             client = get_llm_client()

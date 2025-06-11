@@ -1,8 +1,8 @@
 import argparse
 import os
-from matplotlib import pyplot as plt
 
 from analysis.visualize_archive import get_parent_commit, get_performance_score
+from matplotlib import pyplot as plt
 from utils.evo_utils import load_dgm_metadata
 
 

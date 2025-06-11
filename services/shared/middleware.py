@@ -23,6 +23,11 @@ from .api_models import APIError, APIMetadata, APIResponse, APIStatus, ErrorCode
 logger = logging.getLogger(__name__)
 
 
+def serialize_api_response(api_response: APIResponse) -> dict:
+    """Serialize APIResponse to dict with proper datetime handling."""
+    return json.loads(api_response.json())
+
+
 class CorrelationIDMiddleware(BaseHTTPMiddleware):
     """
     Middleware to add correlation IDs to all requests for distributed tracing.
@@ -169,7 +174,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
 
         return JSONResponse(
             status_code=500,
-            content=api_response.dict(),
+            content=serialize_api_response(api_response),
             headers={"X-Correlation-ID": correlation_id},
         )
 
@@ -301,7 +306,7 @@ def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
             ),
         )
 
-        return JSONResponse(status_code=exc.status_code, content=api_response.dict())
+        return JSONResponse(status_code=exc.status_code, content=serialize_api_response(api_response))
 
     async def validation_exception_handler(request: Request, exc):
         """Handle validation exceptions."""
@@ -320,7 +325,7 @@ def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
             ),
         )
 
-        return JSONResponse(status_code=422, content=api_response.dict())
+        return JSONResponse(status_code=422, content=serialize_api_response(api_response))
 
     return {
         HTTPException: http_exception_handler,

@@ -3,27 +3,24 @@ Enhanced Bias Detection Tests for ACGS-PGP Phase 3
 Tests the improved bias detection implementation with HuggingFace Fairness Indicators
 """
 
-import pytest
 import json
-import asyncio
 from pathlib import Path
-from typing import List, Dict, Any
 
-# Import the enhanced bias detector
-import sys
-
-# sys.path.append('src/backend/fv_service')  # Removed during reorganization
-
+import pytest
 from services.core.formal_verification.app.core.bias_detector import (
-    BiasDetector,
     FAIRLEARN_AVAILABLE,
+    BiasDetector,
 )
 from services.core.formal_verification.app.schemas import (
     BiasDetectionRequest,
-    BiasDetectionResult,
     BiasMetric,
     PolicyRule,
 )
+
+# Import the enhanced bias detector
+
+# sys.path.append('src/backend/fv_service')  # Removed during reorganization
+
 
 
 class TestEnhancedBiasDetection:

@@ -10,16 +10,16 @@ framework enhancement, including:
 """
 
 import asyncio
-import pytest
-import time
-import uuid
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any
 
 # Import the available advanced components
 import sys
-import os
+import time
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any, Dict, List
+
+import pytest
 
 # Add the src directory to the Python path
 project_root = Path(__file__).parent.parent.parent
@@ -50,10 +50,6 @@ sys.modules["shared.metrics"].get_metrics = get_metrics
 try:
     from services.core.constitutional_ai.app.services.collective_constitutional_ai import (
         CollectiveConstitutionalAI,
-        CollectiveInput,
-        DemocraticPrinciple,
-        BiasCategory,
-        DemocraticLegitimacyLevel,
         PolisConversation,
     )
 
@@ -677,7 +673,7 @@ class TestIntegratedPerformanceValidation:
 
         # Initialize all components
         collective_ai = MockCollectiveConstitutionalAI()
-        polis_integration = PolisIntegration()
+        PolisIntegration()
         ensemble_coordinator = MultiModelEnsembleCoordinator()
         gpu_manager = GPUAccelerationManager()
 
