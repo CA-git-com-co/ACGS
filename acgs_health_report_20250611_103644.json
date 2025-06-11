@@ -1,0 +1,218 @@
+{
+  "timestamp": "2025-06-11T10:36:44.965653",
+  "total_check_duration_seconds": 0.11,
+  "services": {
+    "auth_service": {
+      "status": "healthy",
+      "response_time_ms": 3.54,
+      "critical": true,
+      "details": {
+        "status": "ok",
+        "message": "Auth Service is operational."
+      },
+      "error": null
+    },
+    "ac_service": {
+      "status": "healthy",
+      "response_time_ms": 1.55,
+      "critical": true,
+      "details": {
+        "status": "healthy",
+        "service": "ac_service_production",
+        "version": "3.0.0",
+        "port": 8001,
+        "timestamp": 1749652604.8639383,
+        "enhanced_services": false,
+        "services": {
+          "compliance_engine": false,
+          "violation_detector": false,
+          "audit_logger": false,
+          "fv_client": false
+        },
+        "performance": {
+          "response_time_target": "<100ms for compliance checks",
+          "accuracy_target": ">99% constitutional compliance detection",
+          "availability_target": ">99.9%"
+        }
+      },
+      "error": null
+    },
+    "integrity_service": {
+      "status": "healthy",
+      "response_time_ms": 2.69,
+      "critical": true,
+      "details": {
+        "status": "healthy",
+        "service": "integrity_service",
+        "version": "3.0.0",
+        "port": 8002,
+        "timestamp": "2025-06-11T14:36:44.865942+00:00",
+        "uptime_seconds": 4898.976065158844,
+        "dependencies": {
+          "database": "connected",
+          "crypto_service": "operational",
+          "pgp_service": "operational"
+        },
+        "performance_metrics": {
+          "uptime_seconds": 4898.976065158844,
+          "routers_available": false,
+          "api_endpoints": 3
+        }
+      },
+      "error": null
+    },
+    "fv_service": {
+      "status": "error",
+      "response_time_ms": 0,
+      "critical": true,
+      "details": {},
+      "error": "[Errno 104] Connection reset by peer"
+    },
+    "gs_service": {
+      "status": "error",
+      "response_time_ms": 0,
+      "critical": true,
+      "details": {},
+      "error": "[Errno 104] Connection reset by peer"
+    },
+    "pgc_service": {
+      "status": "healthy",
+      "response_time_ms": 43.51,
+      "critical": true,
+      "details": {
+        "status": "healthy",
+        "service": "pgc_service",
+        "version": "1.0.0",
+        "timestamp": "2024-01-20T00:00:00Z",
+        "dependencies": {
+          "opa": {
+            "status": "healthy",
+            "response_time_ms": 1.831
+          },
+          "integrity_service": {
+            "status": "unhealthy",
+            "error": "All connection attempts failed"
+          }
+        },
+        "components": {
+          "policy_manager": {
+            "status": "healthy",
+            "last_refresh": "2025-06-10 10:06:57.116605",
+            "policies_loaded": true
+          }
+        },
+        "message": "PGC Service is fully operational"
+      },
+      "error": null
+    },
+    "ec_service": {
+      "status": "healthy",
+      "response_time_ms": 1.67,
+      "critical": false,
+      "details": {
+        "status": "healthy",
+        "service": "evolutionary_computation",
+        "timestamp": "2025-06-11T14:36:44.914054",
+        "version": "v1",
+        "wina_coordinator": "disabled",
+        "features": {
+          "wina_optimization": false,
+          "constitutional_oversight": true,
+          "alphaevolve_integration": true,
+          "performance_monitoring": true,
+          "wina_performance_api": true,
+          "real_time_metrics": true,
+          "performance_dashboard": true
+        },
+        "performance_monitoring": {
+          "collector_available": false,
+          "monitoring_active": false,
+          "monitoring_level": "unknown"
+        }
+      },
+      "error": null
+    },
+    "research_service": {
+      "status": "error",
+      "response_time_ms": 0,
+      "critical": false,
+      "details": {},
+      "error": "Cannot connect to host localhost:8007 ssl:default [Connect call failed ('127.0.0.1', 8007)]"
+    }
+  },
+  "infrastructure": {
+    "postgres": {
+      "status": "assumed_healthy",
+      "type": "database",
+      "response_time_ms": 1.0,
+      "error": null
+    },
+    "redis": {
+      "status": "assumed_healthy",
+      "type": "cache",
+      "response_time_ms": 1.0,
+      "error": null
+    },
+    "opa": {
+      "status": "healthy",
+      "type": "policy_engine",
+      "response_time_ms": 6.28,
+      "error": null
+    },
+    "prometheus": {
+      "status": "error",
+      "type": "monitoring",
+      "response_time_ms": 0,
+      "error": "Cannot connect to host localhost:9090 ssl:default [Connect call failed ('127.0.0.1', 9090)]"
+    },
+    "grafana": {
+      "status": "error",
+      "type": "dashboard",
+      "response_time_ms": 0,
+      "error": "Cannot connect to host localhost:3001 ssl:default [Connect call failed ('127.0.0.1', 3001)]"
+    }
+  },
+  "dependencies": {
+    "gs_service_to_ac_service": {
+      "description": "Constitutional principle access",
+      "status": "error",
+      "response_time_ms": 0,
+      "error": "[Errno 104] Connection reset by peer"
+    },
+    "pgc_service_to_integrity_service": {
+      "description": "Policy integrity verification",
+      "status": "healthy",
+      "response_time_ms": 39.49,
+      "error": null
+    },
+    "fv_service_to_ac_service": {
+      "description": "Formal verification of principles",
+      "status": "error",
+      "response_time_ms": 0,
+      "error": "[Errno 104] Connection reset by peer"
+    },
+    "gs_service_to_integrity_service": {
+      "description": "Policy synthesis integrity",
+      "status": "error",
+      "response_time_ms": 0,
+      "error": "Server disconnected"
+    }
+  },
+  "performance": {
+    "response_time_analysis": {},
+    "availability_analysis": {
+      "healthy_services": 0,
+      "total_services": 8,
+      "availability_percentage": 0.0
+    },
+    "performance_grade": "C"
+  },
+  "overall_status": "unhealthy",
+  "recommendations": [
+    "Monitor service response times continuously",
+    "Implement automated health check alerts",
+    "Set up service dependency monitoring",
+    "Configure load balancing for high availability",
+    "Implement circuit breakers for service resilience"
+  ]
+}
