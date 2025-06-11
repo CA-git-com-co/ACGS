@@ -1,0 +1,102 @@
+# ACGS-1 Data Flywheel Integration Dockerfile
+# Multi-stage build for NVIDIA Data Flywheel with ACGS-1 constitutional governance integration
+
+# Base stage with Python and system dependencies
+FROM python:3.11-slim as base
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv for fast Python package management
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+# Set working directory
+WORKDIR /app
+
+# Development stage
+FROM base as development
+
+# Copy project files
+COPY pyproject.toml uv.lock ./
+COPY src/ ./src/
+COPY config/ ./config/
+
+# Install dependencies in development mode
+RUN uv sync --dev
+
+# Create necessary directories
+RUN mkdir -p logs data
+
+# Set environment variables for development
+ENV PYTHONPATH=/app
+ENV ENVIRONMENT=development
+
+# Production stage
+FROM base as production
+
+# Copy project files
+COPY pyproject.toml uv.lock ./
+COPY src/ ./src/
+COPY config/ ./config/
+
+# Install production dependencies only
+RUN uv sync --no-dev
+
+# Create application user for security
+RUN useradd --create-home --shell /bin/bash acgs_flywheel
+RUN chown -R acgs_flywheel:acgs_flywheel /app
+
+# Create necessary directories with proper permissions
+RUN mkdir -p logs data && \
+    chown -R acgs_flywheel:acgs_flywheel logs data
+
+# Switch to application user
+USER acgs_flywheel
+
+# Set environment variables for production
+ENV PYTHONPATH=/app
+ENV ENVIRONMENT=production
+ENV PYTHONUNBUFFERED=1
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8010/health || exit 1
+
+# Default command (can be overridden)
+CMD ["uv", "run", "uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8010"]
+
+# ACGS-1 Constitutional Governance stage
+FROM production as acgs_governance
+
+# Install additional ACGS-1 specific dependencies
+COPY requirements.acgs.txt ./
+RUN uv pip install -r requirements.acgs.txt
+
+# Copy ACGS-1 specific configuration and modules
+COPY config/acgs_config.yaml ./config/
+COPY src/constitutional/ ./src/constitutional/
+
+# Set ACGS-1 specific environment variables
+ENV ACGS_INTEGRATION_ENABLED=true
+ENV CONSTITUTIONAL_COMPLIANCE_THRESHOLD=0.95
+ENV GOVERNANCE_WORKFLOW_VALIDATION=true
+
+# Create ACGS-1 specific directories
+RUN mkdir -p logs/constitutional data/governance && \
+    chown -R acgs_flywheel:acgs_flywheel logs/constitutional data/governance
+
+# Enhanced health check for ACGS-1 integration
+HEALTHCHECK --interval=30s --timeout=15s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8010/health && \
+        curl -f http://localhost:8010/constitutional/health || exit 1
+
+# Labels for ACGS-1 integration
+LABEL org.acgs.version="1.0.0"
+LABEL org.acgs.component="data-flywheel"
+LABEL org.acgs.description="NVIDIA Data Flywheel with ACGS-1 Constitutional Governance Integration"
+LABEL org.acgs.constitutional_compliance="enabled"
+LABEL org.acgs.governance_workflows="policy_synthesis,formal_verification,constitutional_analysis"

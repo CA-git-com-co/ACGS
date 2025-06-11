@@ -78,7 +78,7 @@ check_service_health() {
     return 1
 }
 
-# Enhanced service detection and restart function
+# Enhanced Docker-aware service detection and restart function
 detect_and_restart_service() {
     local service_name=$1
     local port=$2
@@ -94,7 +94,41 @@ detect_and_restart_service() {
 
     print_warning "$service_name is unreachable, attempting restart..."
 
-    # Kill any existing processes for this service
+    # Enhanced cleanup: Check for Docker containers first
+    print_status "Checking for Docker containers on port $port..."
+    local docker_containers=$(docker ps --filter "publish=$port" --format "{{.Names}}" 2>/dev/null || echo "")
+
+    if [ -n "$docker_containers" ]; then
+        print_warning "Found Docker containers using port $port: $docker_containers"
+        print_status "Stopping Docker containers to free port $port..."
+
+        for container in $docker_containers; do
+            print_status "Stopping Docker container: $container"
+            docker stop "$container" || true
+            sleep 2
+        done
+
+        # Wait for containers to fully stop
+        sleep 5
+
+        # Verify port is free
+        if netstat -tlnp | grep -q ":$port "; then
+            print_warning "Port $port still in use after stopping Docker containers"
+            print_status "Attempting to kill remaining processes on port $port..."
+
+            # More aggressive port cleanup
+            local pids=$(lsof -ti:$port 2>/dev/null || echo "")
+            if [ -n "$pids" ]; then
+                print_status "Killing processes using port $port: $pids"
+                echo "$pids" | xargs -r kill -9 || true
+                sleep 3
+            fi
+        else
+            print_success "Port $port is now free"
+        fi
+    fi
+
+    # Kill any remaining uvicorn processes for this service
     print_status "Killing existing $service_name processes..."
     pkill -f "uvicorn.*:$port" || true
     pkill -f "$service_name" || true
@@ -108,6 +142,14 @@ detect_and_restart_service() {
 
     # Wait for processes to stop
     sleep 3
+
+    # Final port availability check
+    if netstat -tlnp | grep -q ":$port "; then
+        print_error "Port $port is still in use after cleanup attempts"
+        print_status "Processes still using port $port:"
+        netstat -tlnp | grep ":$port " || true
+        return 1
+    fi
 
     # Start the service
     if start_service "$service_name"; then
@@ -284,13 +326,27 @@ start_service() {
 # Function to check prerequisites
 check_prerequisites() {
     print_status "Checking prerequisites..."
-    
+
     # Check if virtual environment exists
     if [ ! -d "$VENV_PATH" ]; then
         print_error "Virtual environment not found at $VENV_PATH"
         return 1
     fi
-    
+    print_success "Virtual environment found"
+
+    # Check for required tools
+    if ! command -v docker > /dev/null 2>&1; then
+        print_warning "Docker not found - Docker container cleanup will be skipped"
+    else
+        print_success "Docker is available"
+    fi
+
+    if ! command -v lsof > /dev/null 2>&1; then
+        print_warning "lsof not found - advanced port cleanup may be limited"
+    else
+        print_success "lsof is available"
+    fi
+
     # Check if PostgreSQL is running
     if ! pg_isready -h localhost -p 5432 > /dev/null 2>&1; then
         print_warning "PostgreSQL not running. Attempting to start..."
@@ -302,7 +358,7 @@ check_prerequisites() {
         fi
     fi
     print_success "PostgreSQL is running"
-    
+
     # Check if Redis is running
     if ! redis-cli ping > /dev/null 2>&1; then
         print_warning "Redis not running. Attempting to start..."
@@ -314,7 +370,7 @@ check_prerequisites() {
         fi
     fi
     print_success "Redis is running"
-    
+
     return 0
 }
 
