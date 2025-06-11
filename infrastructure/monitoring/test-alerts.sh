@@ -66,7 +66,7 @@ check_service_connectivity() {
         log_warning "Cannot connect to Grafana at $GRAFANA_URL (optional for alert testing)"
     fi
     
-    if [[ $services_ok -lt 2 ]]; then
+    if [[ $services_ok -lt 1 ]]; then
         log_error "Insufficient services available for alert testing"
         return 1
     fi

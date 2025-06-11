@@ -38,8 +38,7 @@ services:
       - GF_USERS_AUTO_ASSIGN_ORG=true
       - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Viewer
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel
-      - GF_FEATURE_TOGGLES_ENABLE=ngalert
-      - GF_ALERTING_ENABLED=true
+      - GF_ALERTING_ENABLED=false
       - GF_UNIFIED_ALERTING_ENABLED=true
       - GF_RENDERING_SERVER_URL=http://renderer:8081/render
       - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
@@ -53,7 +52,6 @@ services:
     - grafana_data:/var/lib/grafana
     - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
     - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
-    - ./grafana/alerting:/etc/grafana/provisioning/alerting:ro
     restart: unless-stopped
     user: "472:472"
     healthcheck:
