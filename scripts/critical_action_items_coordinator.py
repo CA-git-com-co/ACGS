@@ -19,10 +19,10 @@ import subprocess
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-import requests
+from typing import Any, Dict
+
 import docker
-import psutil
+import requests
 
 # Configure logging
 logging.basicConfig(

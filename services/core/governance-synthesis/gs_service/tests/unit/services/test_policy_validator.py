@@ -7,28 +7,26 @@ constitutional compliance, conflict detection, and performance requirements.
 Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 """
 
-import pytest
 import asyncio
 import time
-from unittest.mock import Mock, AsyncMock, patch, MagicMock
-from typing import Dict, Any, List
+from unittest.mock import AsyncMock, patch
 
+import pytest
+from services.core.governance_synthesis.app.core.opa_integration import (
+    OPAIntegrationError,
+    PolicyDecisionResponse,
+    PolicyValidationResult,
+)
 from services.core.governance_synthesis.app.services.policy_validator import (
+    ComplianceCheckResult,
+    ConflictDetectionResult,
+    ConstitutionalValidationResult,
+    PolicyType,
     PolicyValidationEngine,
     PolicyValidationRequest,
     PolicyValidationResponse,
     ValidationLevel,
-    PolicyType,
-    ConflictDetectionResult,
-    ComplianceCheckResult,
-    ConstitutionalValidationResult,
     get_policy_validator,
-)
-from services.core.governance_synthesis.app.core.opa_integration import (
-    PolicyDecisionRequest,
-    PolicyDecisionResponse,
-    PolicyValidationResult,
-    OPAIntegrationError,
 )
 
 

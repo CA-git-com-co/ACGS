@@ -5,15 +5,13 @@ Provides high-performance REST API integration with OPA server for policy
 evaluation, bundle management, and incremental compilation capabilities.
 """
 
-import asyncio
-import json
 import logging
 import time
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
 import httpx
-from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 

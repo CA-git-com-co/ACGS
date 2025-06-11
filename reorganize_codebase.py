@@ -4,14 +4,10 @@ ACGS-1 Codebase Reorganization Script
 Reorganizes the codebase to follow blockchain development best practices
 """
 
+import logging
 import os
 import shutil
-import subprocess
-import json
-import logging
 from pathlib import Path
-from typing import Dict, List, Tuple
-import re
 
 # Configure logging
 logging.basicConfig(

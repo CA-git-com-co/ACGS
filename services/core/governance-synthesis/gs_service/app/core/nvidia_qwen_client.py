@@ -10,10 +10,8 @@ chat_template_kwargs parameter.
 import asyncio
 import logging
 import time
-from typing import Dict, Any, Optional, List, Union
 from dataclasses import dataclass
-from datetime import datetime, timezone
-import json
+from typing import Any, Dict, List, Optional
 
 try:
     from openai import OpenAI

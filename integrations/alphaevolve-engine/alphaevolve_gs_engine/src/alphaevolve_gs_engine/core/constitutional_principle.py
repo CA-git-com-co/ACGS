@@ -9,8 +9,8 @@ Classes:
     ConstitutionalPrinciple: Represents a single constitutional principle.
 """
 
-from typing import Dict, Any, List, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 
 class ConstitutionalPrinciple:

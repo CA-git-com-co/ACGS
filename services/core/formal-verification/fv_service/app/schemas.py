@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 # --- Schemas for FV Service's own API ---
 
@@ -412,8 +413,6 @@ class DomainContextBase(BaseModel):
 class DomainContextCreate(DomainContextBase):
     """Schema for creating domain context."""
 
-    pass
-
 
 class DomainContextUpdate(BaseModel):
     """Schema for updating domain context."""
@@ -471,8 +470,6 @@ class CrossDomainTestScenarioBase(BaseModel):
 
 class CrossDomainTestScenarioCreate(CrossDomainTestScenarioBase):
     """Schema for creating cross-domain test scenario."""
-
-    pass
 
 
 class CrossDomainTestScenarioUpdate(BaseModel):

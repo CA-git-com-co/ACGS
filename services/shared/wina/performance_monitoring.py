@@ -16,22 +16,19 @@ Key Features:
 
 import asyncio
 import logging
-import time
-import json
-from typing import Dict, List, Optional, Any, Tuple, Union
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone, timedelta
-from collections import defaultdict, deque
-from enum import Enum
-import numpy as np
 import statistics
+from collections import deque
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     from prometheus_client import (
-        Counter,
-        Histogram,
-        Gauge,
         CollectorRegistry,
+        Counter,
+        Gauge,
+        Histogram,
         generate_latest,
     )
 
@@ -39,9 +36,7 @@ try:
 except ImportError:
     PROMETHEUS_AVAILABLE = False
 
-from .config import WINAConfig
 from .exceptions import WINAMetricsError
-from .metrics import WINAMetrics, WINAPerformanceSnapshot, GFLOPsTracker
 
 logger = logging.getLogger(__name__)
 

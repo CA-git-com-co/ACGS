@@ -5,12 +5,14 @@ This module provides common validation functions that eliminate
 duplicate validation logic across services.
 """
 
+import logging
 import re
 import uuid
-from typing import Any, Dict, List, Optional, Union, Type
 from datetime import datetime
-from pydantic import BaseModel, ValidationError as PydanticValidationError
-import logging
+from typing import Any, Dict, List, Type, Union
+
+from pydantic import BaseModel
+from pydantic import ValidationError as PydanticValidationError
 
 logger = logging.getLogger(__name__)
 

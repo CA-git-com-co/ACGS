@@ -1,28 +1,32 @@
 # backend/gs_service/app/api/v1/policy_management.py (New file)
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
+
+from services.shared.database import get_async_db
 
 # Import schemas and CRUD functions using relative paths
 from ... import schemas as gs_schemas  # Goes up 3 levels from v1 to app
-from ...crud_gs import (  # Goes up 3 levels from v1 to app for crud_gs
+from ...crud_gs import (
+    count_policies,
+    count_policy_templates,
+    create_direct_policy,
+    create_policy_from_template_logic,
     create_policy_template,
+)
+from ...crud_gs import delete_policy as delete_policy_crud
+from ...crud_gs import (
+    delete_policy_template,
+    get_policies,
+    get_policy,
     get_policy_template,
     get_policy_templates,
-    count_policy_templates,
-    update_policy_template,
-    delete_policy_template,
-    create_policy_from_template_logic,
-    create_direct_policy,
-    get_policy,
-    get_policies,
-    count_policies,
-    update_policy as update_policy_crud,
-    delete_policy as delete_policy_crud,
 )
-
-
-from services.shared.database import get_async_db
+from ...crud_gs import (
+    update_policy as update_policy_crud,  # Goes up 3 levels from v1 to app for crud_gs
+)
+from ...crud_gs import (
+    update_policy_template,
+)
 
 # from services.shared.models import User # For auth dependency if needed
 # from src.backend.app.core.auth import require_gs_admin # Placeholder for auth

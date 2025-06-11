@@ -8,29 +8,28 @@ cross-platform evaluation with Byzantine fault tolerance and MAB optimization.
 import asyncio
 import logging
 import time
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-import json
-import hashlib
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+
 import numpy as np
+from shared import get_config
+
+from services.shared.metrics import get_metrics
 
 from .cross_platform_adapters import (
-    BasePlatformAdapter,
-    OpenAIPlatformAdapter,
+    AdapterStatus,
     AnthropicPlatformAdapter,
+    BasePlatformAdapter,
     CoherePlatformAdapter,
-    GroqPlatformAdapter,
+    EvaluationMode,
     EvaluationRequest,
     EvaluationResponse,
+    GroqPlatformAdapter,
+    OpenAIPlatformAdapter,
     PlatformType,
-    EvaluationMode,
-    AdapterStatus,
 )
-from .secure_aggregation import SecureAggregator, AggregationMethod
-from .federated_evaluator import FederatedNode
-from services.shared.metrics import get_metrics
-from shared import get_config
+from .secure_aggregation import SecureAggregator
 
 logger = logging.getLogger(__name__)
 

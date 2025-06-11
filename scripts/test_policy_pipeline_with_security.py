@@ -11,11 +11,12 @@ Usage:
 """
 
 import asyncio
-import aiohttp
 import json
 import time
-from typing import Dict, List, Optional
 from dataclasses import dataclass
+from typing import Dict, List, Optional
+
+import aiohttp
 
 
 @dataclass

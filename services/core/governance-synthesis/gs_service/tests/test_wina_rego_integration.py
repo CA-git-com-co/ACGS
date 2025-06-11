@@ -5,15 +5,13 @@ This module contains integration tests to validate the WINA Rego synthesis
 functionality works correctly with the existing ACGS-PGP infrastructure.
 """
 
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
-import asyncio
-import sys
-import os
 
 # Add the parent directory to the path for imports
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # Removed during reorganization
 
-from unittest.mock import Mock, patch, AsyncMock
 
 
 class TestWINARegoIntegration:
@@ -178,8 +176,8 @@ allow {
 
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", False):
             from app.core.wina_rego_synthesis import (
-                WINARegoSynthesizer,
                 WINARegoSynthesisMetrics,
+                WINARegoSynthesizer,
             )
 
             synthesizer = WINARegoSynthesizer(enable_wina=False)
@@ -273,8 +271,8 @@ allow {
 
                 # Mock a successful result
                 from app.core.wina_rego_synthesis import (
-                    WINARegoSynthesisResult,
                     WINARegoSynthesisMetrics,
+                    WINARegoSynthesisResult,
                 )
 
                 mock_result = WINARegoSynthesisResult(

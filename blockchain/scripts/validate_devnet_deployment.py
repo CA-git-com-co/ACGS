@@ -4,15 +4,14 @@ Quantumagi Devnet Deployment Validation Script
 Comprehensive validation of deployed governance system on Solana devnet
 """
 
+import argparse
 import asyncio
 import json
-import sys
-import argparse
-from pathlib import Path
 import logging
-from typing import Dict, List, Any
 import subprocess
-import time
+import sys
+from pathlib import Path
+from typing import Dict, List
 
 # Setup logging
 logging.basicConfig(

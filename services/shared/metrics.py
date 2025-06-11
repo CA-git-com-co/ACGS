@@ -3,22 +3,22 @@ Shared Prometheus metrics collection module for ACGS-PGP microservices.
 Provides standardized metrics collection across all services.
 """
 
+import logging
 import time
-from typing import Dict, Any, Optional
 from functools import wraps
+from typing import Dict
+
+from fastapi import Request
+from fastapi.responses import PlainTextResponse
 from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    REGISTRY,
     Counter,
-    Histogram,
     Gauge,
+    Histogram,
     Info,
     generate_latest,
-    CONTENT_TYPE_LATEST,
-    CollectorRegistry,
-    REGISTRY,
 )
-from fastapi import Request, Response
-from fastapi.responses import PlainTextResponse
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -261,6 +261,193 @@ class ACGSMetrics:
             ["service", "operation", "result"],
         )
 
+        # Phase A3 Constitutional Governance Metrics
+        self.constitutional_compliance_checks = Counter(
+            "acgs_constitutional_compliance_checks_total",
+            "Total constitutional compliance checks",
+            ["service", "check_type", "result"],
+        )
+
+        self.constitutional_compliance_score = Gauge(
+            "acgs_constitutional_compliance_score",
+            "Constitutional compliance score (0-1)",
+            ["service", "policy_type"],
+        )
+
+        self.constitutional_hash_validations = Counter(
+            "acgs_constitutional_hash_validations_total",
+            "Constitutional hash validation operations",
+            ["service", "validation_type", "result"],
+        )
+
+        # Governance Workflow Metrics
+        self.governance_workflow_operations = Counter(
+            "acgs_governance_workflow_operations_total",
+            "Governance workflow operations",
+            ["service", "workflow_type", "stage", "result"],
+        )
+
+        self.governance_workflow_duration = Histogram(
+            "acgs_governance_workflow_duration_seconds",
+            "Governance workflow execution time",
+            ["service", "workflow_type", "stage"],
+            buckets=(0.1, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0, 120.0),
+        )
+
+        self.policy_creation_rate = Counter(
+            "acgs_policy_creation_operations_total",
+            "Policy creation operations",
+            ["service", "policy_type", "status"],
+        )
+
+        self.voting_operations = Counter(
+            "acgs_voting_operations_total",
+            "Voting system operations",
+            ["service", "vote_type", "result"],
+        )
+
+        # Service-Specific Metrics
+        # Authentication Service Metrics
+        self.auth_session_duration = Histogram(
+            "acgs_auth_session_duration_seconds",
+            "Authentication session duration",
+            ["service", "session_type"],
+            buckets=(60, 300, 900, 1800, 3600, 7200, 14400, 28800),
+        )
+
+        self.mfa_operations = Counter(
+            "acgs_mfa_operations_total",
+            "Multi-factor authentication operations",
+            ["service", "mfa_type", "result"],
+        )
+
+        self.api_key_operations = Counter(
+            "acgs_api_key_operations_total",
+            "API key management operations",
+            ["service", "operation_type", "result"],
+        )
+
+        # Constitutional AI Service Metrics
+        self.constitutional_ai_processing_time = Histogram(
+            "acgs_constitutional_ai_processing_seconds",
+            "Constitutional AI processing time",
+            ["service", "ai_operation", "complexity"],
+            buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0),
+        )
+
+        self.compliance_validation_latency = Histogram(
+            "acgs_compliance_validation_latency_seconds",
+            "Compliance validation latency",
+            ["service", "validation_type"],
+            buckets=(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5),
+        )
+
+        # Formal Verification Service Metrics
+        self.z3_solver_operations = Counter(
+            "acgs_z3_solver_operations_total",
+            "Z3 SMT solver operations",
+            ["service", "operation_type", "result"],
+        )
+
+        self.formal_verification_duration = Histogram(
+            "acgs_formal_verification_duration_seconds",
+            "Formal verification execution time",
+            ["service", "verification_type", "complexity"],
+            buckets=(0.1, 0.5, 1.0, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0),
+        )
+
+        # Governance Synthesis Service Metrics
+        self.llm_token_usage = Counter(
+            "acgs_llm_token_usage_total",
+            "LLM token usage",
+            ["service", "model_name", "operation_type"],
+        )
+
+        self.policy_synthesis_operations = Counter(
+            "acgs_policy_synthesis_operations_total",
+            "Policy synthesis operations",
+            ["service", "synthesis_type", "risk_level", "result"],
+        )
+
+        self.multi_model_consensus_operations = Counter(
+            "acgs_multi_model_consensus_operations_total",
+            "Multi-model consensus operations",
+            ["service", "consensus_type", "model_count", "result"],
+        )
+
+        # Policy Governance Control Service Metrics
+        self.pgc_validation_latency = Histogram(
+            "acgs_pgc_validation_latency_seconds",
+            "PGC validation latency (target <50ms)",
+            ["service", "validation_type"],
+            buckets=(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5),
+        )
+
+        self.policy_enforcement_actions = Counter(
+            "acgs_policy_enforcement_actions_total",
+            "Policy enforcement actions",
+            ["service", "action_type", "policy_type", "result"],
+        )
+
+        # Evolutionary Computation Service Metrics
+        self.wina_optimization_score = Gauge(
+            "acgs_wina_optimization_score",
+            "WINA optimization score",
+            ["service", "optimization_type"],
+        )
+
+        self.evolutionary_computation_iterations = Counter(
+            "acgs_evolutionary_computation_iterations_total",
+            "Evolutionary computation iterations",
+            ["service", "algorithm_type", "convergence_status"],
+        )
+
+        # Integrity Service Metrics
+        self.cryptographic_operations = Counter(
+            "acgs_cryptographic_operations_total",
+            "Cryptographic operations",
+            ["service", "operation_type", "algorithm", "result"],
+        )
+
+        self.audit_trail_operations = Counter(
+            "acgs_audit_trail_operations_total",
+            "Audit trail operations",
+            ["service", "operation_type", "integrity_status"],
+        )
+
+        # Infrastructure Integration Metrics
+        self.redis_connection_pool_usage = Gauge(
+            "acgs_redis_connection_pool_usage",
+            "Redis connection pool usage",
+            ["service", "pool_status"],
+        )
+
+        self.postgresql_query_performance = Histogram(
+            "acgs_postgresql_query_performance_seconds",
+            "PostgreSQL query performance",
+            ["service", "query_type", "table"],
+            buckets=(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0),
+        )
+
+        # Quantumagi Blockchain Integration Metrics
+        self.solana_transaction_operations = Counter(
+            "acgs_solana_transaction_operations_total",
+            "Solana blockchain transaction operations",
+            ["service", "transaction_type", "result"],
+        )
+
+        self.quantumagi_program_calls = Counter(
+            "acgs_quantumagi_program_calls_total",
+            "Quantumagi program calls",
+            ["service", "program_method", "result"],
+        )
+
+        self.blockchain_sync_status = Gauge(
+            "acgs_blockchain_sync_status",
+            "Blockchain synchronization status (1=synced, 0=not synced)",
+            ["service", "network"],
+        )
+
         # Initialize service info (commented out due to prometheus_client compatibility)
         # self.service_info.info({
         #     'service': self.service_name,
@@ -476,6 +663,229 @@ class ACGSMetrics:
             service=self.service_name, escalation_reason=escalation_reason
         ).inc()
 
+    # Phase A3 Constitutional Governance Methods
+    def record_constitutional_compliance_check(self, check_type: str, result: str):
+        """Record constitutional compliance check."""
+        self.constitutional_compliance_checks.labels(
+            service=self.service_name, check_type=check_type, result=result
+        ).inc()
+
+    def set_constitutional_compliance_score(self, policy_type: str, score: float):
+        """Set constitutional compliance score."""
+        self.constitutional_compliance_score.labels(
+            service=self.service_name, policy_type=policy_type
+        ).set(score)
+
+    def record_constitutional_hash_validation(self, validation_type: str, result: str):
+        """Record constitutional hash validation."""
+        self.constitutional_hash_validations.labels(
+            service=self.service_name, validation_type=validation_type, result=result
+        ).inc()
+
+    def record_governance_workflow_operation(
+        self, workflow_type: str, stage: str, result: str
+    ):
+        """Record governance workflow operation."""
+        self.governance_workflow_operations.labels(
+            service=self.service_name,
+            workflow_type=workflow_type,
+            stage=stage,
+            result=result,
+        ).inc()
+
+    def record_governance_workflow_duration(
+        self, workflow_type: str, stage: str, duration: float
+    ):
+        """Record governance workflow duration."""
+        self.governance_workflow_duration.labels(
+            service=self.service_name, workflow_type=workflow_type, stage=stage
+        ).observe(duration)
+
+    def record_policy_creation_operation(self, policy_type: str, status: str):
+        """Record policy creation operation."""
+        self.policy_creation_rate.labels(
+            service=self.service_name, policy_type=policy_type, status=status
+        ).inc()
+
+    def record_voting_operation(self, vote_type: str, result: str):
+        """Record voting operation."""
+        self.voting_operations.labels(
+            service=self.service_name, vote_type=vote_type, result=result
+        ).inc()
+
+    # Authentication Service Methods
+    def record_auth_session_duration(self, session_type: str, duration: float):
+        """Record authentication session duration."""
+        self.auth_session_duration.labels(
+            service=self.service_name, session_type=session_type
+        ).observe(duration)
+
+    def record_mfa_operation(self, mfa_type: str, result: str):
+        """Record MFA operation."""
+        self.mfa_operations.labels(
+            service=self.service_name, mfa_type=mfa_type, result=result
+        ).inc()
+
+    def record_api_key_operation(self, operation_type: str, result: str):
+        """Record API key operation."""
+        self.api_key_operations.labels(
+            service=self.service_name, operation_type=operation_type, result=result
+        ).inc()
+
+    # Constitutional AI Service Methods
+    def record_constitutional_ai_processing_time(
+        self, ai_operation: str, complexity: str, duration: float
+    ):
+        """Record constitutional AI processing time."""
+        self.constitutional_ai_processing_time.labels(
+            service=self.service_name, ai_operation=ai_operation, complexity=complexity
+        ).observe(duration)
+
+    def record_compliance_validation_latency(
+        self, validation_type: str, duration: float
+    ):
+        """Record compliance validation latency."""
+        self.compliance_validation_latency.labels(
+            service=self.service_name, validation_type=validation_type
+        ).observe(duration)
+
+    # Formal Verification Service Methods
+    def record_z3_solver_operation(self, operation_type: str, result: str):
+        """Record Z3 solver operation."""
+        self.z3_solver_operations.labels(
+            service=self.service_name, operation_type=operation_type, result=result
+        ).inc()
+
+    def record_formal_verification_duration(
+        self, verification_type: str, complexity: str, duration: float
+    ):
+        """Record formal verification duration."""
+        self.formal_verification_duration.labels(
+            service=self.service_name,
+            verification_type=verification_type,
+            complexity=complexity,
+        ).observe(duration)
+
+    # Governance Synthesis Service Methods
+    def record_llm_token_usage(self, model_name: str, operation_type: str, tokens: int):
+        """Record LLM token usage."""
+        self.llm_token_usage.labels(
+            service=self.service_name,
+            model_name=model_name,
+            operation_type=operation_type,
+        ).inc(tokens)
+
+    def record_policy_synthesis_operation(
+        self, synthesis_type: str, risk_level: str, result: str
+    ):
+        """Record policy synthesis operation."""
+        self.policy_synthesis_operations.labels(
+            service=self.service_name,
+            synthesis_type=synthesis_type,
+            risk_level=risk_level,
+            result=result,
+        ).inc()
+
+    def record_multi_model_consensus_operation(
+        self, consensus_type: str, model_count: str, result: str
+    ):
+        """Record multi-model consensus operation."""
+        self.multi_model_consensus_operations.labels(
+            service=self.service_name,
+            consensus_type=consensus_type,
+            model_count=model_count,
+            result=result,
+        ).inc()
+
+    # Policy Governance Control Service Methods
+    def record_pgc_validation_latency(self, validation_type: str, duration: float):
+        """Record PGC validation latency."""
+        self.pgc_validation_latency.labels(
+            service=self.service_name, validation_type=validation_type
+        ).observe(duration)
+
+    def record_policy_enforcement_action(
+        self, action_type: str, policy_type: str, result: str
+    ):
+        """Record policy enforcement action."""
+        self.policy_enforcement_actions.labels(
+            service=self.service_name,
+            action_type=action_type,
+            policy_type=policy_type,
+            result=result,
+        ).inc()
+
+    # Evolutionary Computation Service Methods
+    def set_wina_optimization_score(self, optimization_type: str, score: float):
+        """Set WINA optimization score."""
+        self.wina_optimization_score.labels(
+            service=self.service_name, optimization_type=optimization_type
+        ).set(score)
+
+    def record_evolutionary_computation_iteration(
+        self, algorithm_type: str, convergence_status: str
+    ):
+        """Record evolutionary computation iteration."""
+        self.evolutionary_computation_iterations.labels(
+            service=self.service_name,
+            algorithm_type=algorithm_type,
+            convergence_status=convergence_status,
+        ).inc()
+
+    # Integrity Service Methods
+    def record_cryptographic_operation(
+        self, operation_type: str, algorithm: str, result: str
+    ):
+        """Record cryptographic operation."""
+        self.cryptographic_operations.labels(
+            service=self.service_name,
+            operation_type=operation_type,
+            algorithm=algorithm,
+            result=result,
+        ).inc()
+
+    def record_audit_trail_operation(self, operation_type: str, integrity_status: str):
+        """Record audit trail operation."""
+        self.audit_trail_operations.labels(
+            service=self.service_name,
+            operation_type=operation_type,
+            integrity_status=integrity_status,
+        ).inc()
+
+    # Infrastructure Integration Methods
+    def set_redis_connection_pool_usage(self, pool_status: str, usage: float):
+        """Set Redis connection pool usage."""
+        self.redis_connection_pool_usage.labels(
+            service=self.service_name, pool_status=pool_status
+        ).set(usage)
+
+    def record_postgresql_query_performance(
+        self, query_type: str, table: str, duration: float
+    ):
+        """Record PostgreSQL query performance."""
+        self.postgresql_query_performance.labels(
+            service=self.service_name, query_type=query_type, table=table
+        ).observe(duration)
+
+    # Quantumagi Blockchain Integration Methods
+    def record_solana_transaction_operation(self, transaction_type: str, result: str):
+        """Record Solana transaction operation."""
+        self.solana_transaction_operations.labels(
+            service=self.service_name, transaction_type=transaction_type, result=result
+        ).inc()
+
+    def record_quantumagi_program_call(self, program_method: str, result: str):
+        """Record Quantumagi program call."""
+        self.quantumagi_program_calls.labels(
+            service=self.service_name, program_method=program_method, result=result
+        ).inc()
+
+    def set_blockchain_sync_status(self, network: str, synced: bool):
+        """Set blockchain synchronization status."""
+        self.blockchain_sync_status.labels(
+            service=self.service_name, network=network
+        ).set(1.0 if synced else 0.0)
+
 
 def get_metrics(service_name: str) -> ACGSMetrics:
     """Get or create metrics instance for a service."""
@@ -575,7 +985,7 @@ def database_metrics_decorator(operation: str):
                 duration = time.time() - start_time
                 metrics.record_db_query(operation, duration)
                 return result
-            except Exception as e:
+            except Exception:
                 duration = time.time() - start_time
                 metrics.record_db_query(f"{operation}_failed", duration)
                 metrics.record_error(f"db_{operation}_error")
@@ -611,7 +1021,7 @@ def service_call_decorator(target_service: str, endpoint: str):
                 )
 
                 return result
-            except Exception as e:
+            except Exception:
                 duration = time.time() - start_time
                 metrics.record_service_call(
                     target_service=target_service,

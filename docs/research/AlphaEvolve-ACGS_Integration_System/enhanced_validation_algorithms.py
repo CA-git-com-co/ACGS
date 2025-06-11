@@ -4,14 +4,12 @@ Enhanced validation algorithms for AlphaEvolve-ACGS policy synthesis and enforce
 Implements multi-tier validation, adaptive thresholds, and formal verification integration.
 """
 
-import numpy as np
 import re
-import ast
-from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
-import hashlib
-import json
+from typing import Any, Dict, List
+
+import numpy as np
 
 
 class ValidationLevel(Enum):

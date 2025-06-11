@@ -12,38 +12,30 @@ Classes:
     EscalationResult: Result structure for escalation operations
 """
 
-import asyncio
 import logging
-import time
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
-
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func, desc
-from sqlalchemy.orm import selectinload
-
-from services.shared.models import (
-    ConstitutionalViolation,
-    ViolationAlert,
-    ViolationEscalation,
-    User,
-    ACAmendment,
-)
-from services.shared.database import get_async_db
-
-# Import notification services
-from app.services.stakeholder_engagement import (
-    StakeholderNotificationService,
-    NotificationChannel,
-    StakeholderRole,
-)
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 # Import Constitutional Council integration
 from app.core.constitutional_council_scalability import (
     ConstitutionalCouncilScalabilityFramework,
-    CoEvolutionMode,
+)
+
+# Import notification services
+from app.services.stakeholder_engagement import (
+    NotificationChannel,
+    StakeholderNotificationService,
+)
+from sqlalchemy import and_, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.database import get_async_db
+from services.shared.models import (
+    ConstitutionalViolation,
+    User,
+    ViolationEscalation,
 )
 
 logger = logging.getLogger(__name__)

@@ -8,12 +8,11 @@ import asyncio
 import gc
 import json
 import logging
-import os
-import psutil
 import sys
 import time
 from datetime import datetime
-from typing import Dict, List, Any
+
+import psutil
 
 # Configure logging
 logging.basicConfig(

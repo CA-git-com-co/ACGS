@@ -9,21 +9,20 @@ Tests all components of the HITL sampling system including:
 - API endpoints and integration
 """
 
-import pytest
 import asyncio
-from datetime import datetime, timedelta
-from unittest.mock import Mock, AsyncMock, patch
-from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime
+from unittest.mock import AsyncMock, Mock, patch
 
+import pytest
+from app.services.human_escalation_system import EscalationLevel
 from app.services.human_in_the_loop_sampler import (
-    HumanInTheLoopSampler,
     HITLSamplingConfig,
+    HumanInTheLoopSampler,
+    SamplingTrigger,
     UncertaintyAssessment,
     UncertaintyDimension,
-    SamplingTrigger,
 )
-from app.services.human_escalation_system import EscalationLevel
-from services.shared.models import Principle
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class TestHITLSamplingConfig:

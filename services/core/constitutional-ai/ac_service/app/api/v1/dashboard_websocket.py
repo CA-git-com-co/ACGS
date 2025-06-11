@@ -5,27 +5,26 @@ This module provides WebSocket endpoints for real-time dashboard functionality,
 enabling live updates for amendment workflows, stakeholder engagement, and voting progress.
 """
 
-import asyncio
 import json
 import logging
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
-from fastapi import (
-    APIRouter,
-    WebSocket,
-    WebSocketDisconnect,
-    Depends,
-    HTTPException,
-    Query,
-)
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from services.shared.database import get_async_db
-from services.shared.auth import User
 from app.services.constitutional_council_dashboard import (
     get_constitutional_council_dashboard,
 )
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Query,
+    WebSocket,
+    WebSocketDisconnect,
+)
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.auth import User
+from services.shared.database import get_async_db
 
 
 # Placeholder function for WebSocket authentication

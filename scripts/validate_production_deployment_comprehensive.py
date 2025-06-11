@@ -9,11 +9,11 @@ and meet the requirements for 99.9% uptime, <200ms response times, and 100+ conc
 import asyncio
 import json
 import subprocess
-import time
 import sys
-from typing import Dict, List, Tuple, Any
+import time
+from typing import Any, Dict
+
 import aiohttp
-import yaml
 
 
 class ProductionValidator:

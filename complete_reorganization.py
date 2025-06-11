@@ -4,9 +4,8 @@ Complete ACGS-1 Codebase Reorganization Script
 Handles remaining components and finalizes the reorganization
 """
 
-import os
-import shutil
 import logging
+import shutil
 from pathlib import Path
 
 # Configure logging

@@ -6,11 +6,10 @@ Showcases the complete constitutional governance workflow from principle to enfo
 
 import asyncio
 import json
-import sys
-import os
-from datetime import datetime
-from typing import Dict, List
 import logging
+import sys
+from datetime import datetime
+from typing import Dict
 
 # Add project paths
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # Removed during reorganization

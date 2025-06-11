@@ -7,18 +7,16 @@ and system health information for the ACGS governance synthesis service.
 Phase 3: Performance Optimization and Security Compliance
 """
 
-import asyncio
-import logging
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, status, Depends, Query
-from pydantic import BaseModel, Field
-import structlog
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from ...services.performance_monitor import get_performance_monitor, PerformanceMonitor
-from ...services.advanced_cache import MultiTierCache
-from ...services.security_compliance import get_security_service, security_required
+import structlog
+from fastapi import APIRouter, HTTPException, Query, status
+from pydantic import BaseModel, Field
+
 from ...core.opa_integration import get_opa_client
+from ...services.performance_monitor import get_performance_monitor
+from ...services.security_compliance import get_security_service, security_required
 
 logger = structlog.get_logger(__name__)
 
@@ -346,7 +344,7 @@ async def get_prometheus_metrics() -> str:
     integration with monitoring systems.
     """
     try:
-        from prometheus_client import generate_latest, REGISTRY
+        from prometheus_client import REGISTRY, generate_latest
 
         return generate_latest(REGISTRY).decode("utf-8")
 

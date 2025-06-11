@@ -6,13 +6,10 @@ This script validates research data for consistency, identifies corrupted entrie
 and checks for numerical discrepancies between text claims and table data.
 """
 
-import re
-import json
-import csv
-import sys
-from pathlib import Path
-from typing import Dict, List, Tuple, Any
 import logging
+import re
+import sys
+from typing import Any, Dict, List
 
 # Configure logging
 logging.basicConfig(

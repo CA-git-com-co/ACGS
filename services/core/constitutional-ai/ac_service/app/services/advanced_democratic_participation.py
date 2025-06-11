@@ -12,25 +12,23 @@ Based on 2024-2025 research in democratic AI governance and participatory system
 """
 
 import asyncio
+import hashlib
 import json
 import logging
 import time
 import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
 from collections import defaultdict
-import hashlib
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 from web3 import Web3
-from eth_account import Account
 
 from ..core.metrics import get_metrics
 from .collective_constitutional_ai import (
     get_collective_constitutional_ai,
-    DemocraticLegitimacyLevel,
 )
 
 logger = logging.getLogger(__name__)
@@ -355,7 +353,7 @@ class AdvancedDemocraticParticipation:
         Returns:
             Delegation chain record
         """
-        delegation_id = str(uuid.uuid4())
+        str(uuid.uuid4())
 
         expires_at = None
         if duration_days:

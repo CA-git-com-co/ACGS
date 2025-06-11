@@ -4,12 +4,12 @@ Post-merge validation suite
 Run after each successful merge to ensure system stability
 """
 
-import subprocess
-import logging
-import time
-import sys
 import json
-from typing import Dict, Any, List
+import logging
+import subprocess
+import sys
+import time
+from typing import Any, Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

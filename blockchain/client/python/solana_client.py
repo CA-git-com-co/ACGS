@@ -7,25 +7,21 @@ Handles policy deployment and compliance checking
 
 import asyncio
 import json
-import base64
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
 import logging
-from solders.pubkey import Pubkey
-from solders.keypair import Keypair
-from solders.system_program import ID as SYS_PROGRAM_ID
-from solana.rpc.async_api import AsyncClient
-from solana.rpc.commitment import Confirmed
-from solana.transaction import Transaction
-from anchorpy import Program, Provider, Wallet
-from anchorpy.coder.accounts import ACCOUNT_DISCRIMINATOR_SIZE
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 # Import our GS Engine
 from gs_engine.governance_synthesis import (
+    PolicyCategory,
     QuantumagiGSEngine,
     SolanaPolicy,
-    PolicyCategory,
 )
+from solana.rpc.async_api import AsyncClient
+from solana.rpc.commitment import Confirmed
+from solana.transaction import Transaction
+from solders.keypair import Keypair
+from solders.pubkey import Pubkey
 
 
 @dataclass
@@ -93,7 +89,7 @@ class QuantumagiSolanaClient:
             self.logger.info(f"Initializing constitution at PDA: {constitution_pda}")
 
             # Create instruction data (simplified - would use Anchor in production)
-            instruction_data = self._create_initialize_instruction(constitution_hash)
+            self._create_initialize_instruction(constitution_hash)
 
             # Build and send transaction
             transaction = Transaction()
@@ -162,7 +158,7 @@ class QuantumagiSolanaClient:
         self.logger.info(f"Deploying policy {policy.id} to PDA: {policy_pda}")
 
         # Create instruction data
-        instruction_data = self._create_propose_policy_instruction(policy)
+        self._create_propose_policy_instruction(policy)
 
         # Build transaction (simplified)
         transaction = Transaction()
@@ -187,7 +183,7 @@ class QuantumagiSolanaClient:
             )
 
             # Create instruction
-            instruction_data = self._create_enact_policy_instruction()
+            self._create_enact_policy_instruction()
 
             # Build and send transaction
             transaction = Transaction()

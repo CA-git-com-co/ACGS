@@ -5,11 +5,11 @@ Implement full API endpoints for AC and PGC services to enable complete constitu
 """
 
 import asyncio
-import time
 import json
 import sys
+import time
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 class ConstitutionalComplianceEnhancer:
@@ -640,8 +640,8 @@ if __name__ == "__main__":
         """Restart AC and PGC services with enhanced endpoints."""
         self.log_action("Restarting enhanced AC and PGC services", "INFO")
 
-        import subprocess
         import asyncio
+        import subprocess
 
         results = {"ac_service": False, "pgc_service": False}
 

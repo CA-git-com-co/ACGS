@@ -10,13 +10,13 @@ This script prepares the production deployment infrastructure including:
 5. Environment configuration management
 """
 
-import os
-import yaml
 import json
 import logging
-from pathlib import Path
-from typing import Dict, List, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict
+
+import yaml
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

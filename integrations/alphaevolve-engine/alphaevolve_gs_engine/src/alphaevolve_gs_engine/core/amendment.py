@@ -9,8 +9,8 @@ Classes:
     Amendment: Represents a proposed change to a rule or principle.
 """
 
-from typing import Dict, Any, Optional
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 
 class Amendment:

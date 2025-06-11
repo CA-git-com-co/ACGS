@@ -5,13 +5,13 @@ Conducts comprehensive security assessment of the ACGS-PGP deployment.
 """
 
 import asyncio
-import aiohttp
 import json
-import sys
-import os
-from typing import Dict, List, Any, Optional
-from datetime import datetime
 import logging
+import sys
+from datetime import datetime
+from typing import Any, Dict, List
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(

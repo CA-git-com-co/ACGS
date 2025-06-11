@@ -3,20 +3,21 @@ Safety and Conflict Checking for ACGS-PGP Phase 3
 Implements real-time safety property verification and conflict detection
 """
 
-import time
-import logging
 import hashlib
-from typing import List, Dict, Any, Optional, Set, Tuple
+import logging
+import time
+from typing import Dict, List, Optional
+
 from ..schemas import (
-    SafetyCheckRequest,
-    SafetyCheckResponse,
-    SafetyCheckResult,
     ConflictCheckRequest,
     ConflictCheckResponse,
     ConflictDetectionResult,
     ConflictType,
-    SafetyProperty,
     PolicyRule,
+    SafetyCheckRequest,
+    SafetyCheckResponse,
+    SafetyCheckResult,
+    SafetyProperty,
 )
 
 logger = logging.getLogger(__name__)
@@ -158,7 +159,6 @@ class SafetyPropertyChecker:
 
         # Check for common safety violations
         violations = []
-        witness_traces = []
 
         for rule in policy_rules:
             rule_content = rule.rule_content.lower()

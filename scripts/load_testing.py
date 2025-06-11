@@ -11,18 +11,17 @@ Tests system performance under concurrent load targeting:
 - AlphaEvolve integration under load
 """
 
-import asyncio
-import aiohttp
-import time
-import json
-import statistics
-import logging
-from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timezone
 import argparse
+import asyncio
+import logging
 import os
+import statistics
+import time
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Dict, List, Optional
+
+import aiohttp
 import asyncpg
 
 # Configure logging
@@ -158,7 +157,7 @@ class LoadTester:
                 "http://localhost:8001/api/v1/principles"
             ) as ac_resp:
                 if ac_resp.status == 200:
-                    principles = await ac_resp.json()
+                    await ac_resp.json()
 
                     # Then test GS service synthesis using AC principles
                     synthesis_payload = {

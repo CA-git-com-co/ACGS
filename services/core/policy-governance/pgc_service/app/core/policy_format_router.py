@@ -8,18 +8,18 @@ Addresses audit findings:
 - Syntax validation pipeline
 """
 
-import json
-import yaml
-import re
 import hashlib
-import tempfile
+import json
+import logging
+import re
 import subprocess
-from typing import Dict, Any, List, Optional, Tuple, Union
-from pathlib import Path
+import tempfile
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-import logging
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -156,8 +156,6 @@ class PolicyFormatRouter:
         Returns:
             PolicyConversionResult with conversion details
         """
-        warnings = []
-        import_dependencies = []
 
         try:
             if source_framework == PolicyFramework.REGO:
@@ -499,7 +497,6 @@ class PolicyFormatRouter:
         self, rego_content: str, stderr_output: str
     ) -> List[str]:
         """Extract missing import dependencies from Rego content and OPA output"""
-        missing_imports = []
 
         # Look for data.* references in the code
         import_pattern = r"data\.([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*)"

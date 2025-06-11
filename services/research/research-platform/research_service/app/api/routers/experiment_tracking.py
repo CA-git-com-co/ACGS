@@ -5,21 +5,19 @@ Provides endpoints for experiment management, tracking, and analysis.
 """
 
 import logging
-from typing import List, Optional, Dict, Any
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...core.database import get_db_session
 from ...services.experiment_tracker import (
-    ExperimentTracker,
     ExperimentConfig,
     ExperimentStatus,
-    MetricType,
+    ExperimentTracker,
 )
-from ...models.experiment import Experiment, ExperimentRun, ExperimentMetric
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

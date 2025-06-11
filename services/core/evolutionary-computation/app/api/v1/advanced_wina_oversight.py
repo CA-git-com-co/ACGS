@@ -16,12 +16,11 @@ Key Features:
 
 import logging
 import time
-from datetime import datetime
-from typing import Dict, List, Any, Optional
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends, Query
-from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Optional
 
 from app.core.wina_oversight_coordinator import WINAECOversightCoordinator
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -219,7 +218,7 @@ async def start_real_time_monitoring(
     - Governance compliance scores
     - Error rates and system health
     """
-    start_time = time.time()
+    time.time()
     monitoring_id = f"MON-{int(time.time())}-{request.monitoring_type}"
 
     try:

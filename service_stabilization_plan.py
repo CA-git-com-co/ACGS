@@ -4,14 +4,15 @@ ACGS-1 Service Infrastructure Stabilization Plan
 Phase 1: Full System Activation and Validation
 """
 
+import json
+import logging
 import os
 import subprocess
-import requests
 import time
-import logging
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-import json
+from pathlib import Path
+
+import requests
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -501,7 +502,7 @@ class ServiceStabilizer:
 
             # Phase 2: Start all services
             logger.info("Phase 2: Starting all services...")
-            service_results = self.start_all_services()
+            self.start_all_services()
 
             # Phase 3: Validate service mesh
             logger.info("Phase 3: Validating service mesh...")
@@ -517,7 +518,7 @@ class ServiceStabilizer:
 
             # Phase 6: Run comprehensive tests
             logger.info("Phase 6: Running comprehensive tests...")
-            test_results = self.run_comprehensive_tests()
+            self.run_comprehensive_tests()
 
             # Phase 7: Generate final report
             logger.info("Phase 7: Generating stabilization report...")

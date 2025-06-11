@@ -7,13 +7,14 @@ Comprehensive post-deployment validation with performance benchmarks and securit
 
 import asyncio
 import json
-import time
-import requests
 import subprocess
 import sys
+import time
 from datetime import datetime
-from typing import Dict, List, Any, Tuple
+from typing import Dict
+
 import psutil
+import requests
 
 
 class ProductionValidator:
@@ -493,10 +494,10 @@ class ProductionValidator:
         validation_start_time = time.time()
 
         # Run all validation components
-        health_passed = await self.validate_service_health()
-        performance_passed = await self.run_performance_benchmarks()
-        security_passed = await self.validate_security_compliance()
-        monitoring_passed = await self.validate_monitoring_infrastructure()
+        await self.validate_service_health()
+        await self.run_performance_benchmarks()
+        await self.validate_security_compliance()
+        await self.validate_monitoring_infrastructure()
 
         # Evaluate success criteria
         criteria_results = await self.evaluate_success_criteria()

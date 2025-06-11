@@ -3,9 +3,8 @@
 Final cleanup for ACGS-1 reorganization
 """
 
-import os
-import shutil
 import logging
+import shutil
 from pathlib import Path
 
 logging.basicConfig(

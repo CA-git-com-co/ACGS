@@ -5,14 +5,14 @@ Validates performance under sustained load with 100+ concurrent requests.
 """
 
 import asyncio
-import aiohttp
-import time
-import statistics
 import json
-from datetime import datetime
-from typing import Dict, List, Any
-import psutil
 import logging
+import statistics
+import time
+from datetime import datetime
+
+import aiohttp
+import psutil
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

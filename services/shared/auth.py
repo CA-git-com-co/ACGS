@@ -4,13 +4,14 @@ Provides JWT token validation and user authentication across all services
 """
 
 import os
+import uuid  # Added uuid
+from datetime import datetime, timedelta, timezone  # Added timedelta
+from typing import List, Optional
+
 import httpx
-from typing import Optional, List
-from fastapi import Depends, HTTPException, status, Request
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from datetime import datetime, timezone, timedelta  # Added timedelta
-import uuid  # Added uuid
 from pydantic import BaseModel
 
 # Environment variables

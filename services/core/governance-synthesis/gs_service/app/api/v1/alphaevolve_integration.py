@@ -1,19 +1,18 @@
 # backend/gs_service/app/api/v1/alphaevolve_integration.py
 
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Dict, Any, Optional
-import uuid
+import logging
 import time
-from datetime import datetime, timedelta
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List
+
+from app import schemas as gs_schemas
+from app.core.llm_integration import get_llm_client
+from app.services.ac_client import ac_service_client as ac_client
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.database import get_async_db
-from app import schemas as gs_schemas
-from app.services.ac_client import ac_service_client as ac_client
-from app.core.constitutional_prompting import constitutional_prompt_builder
-from app.core.llm_integration import get_llm_client
-
-import logging
 
 logger = logging.getLogger(__name__)
 

@@ -24,7 +24,8 @@ Next steps for testing:
 
 import os
 import sys
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
+
 from dotenv import load_dotenv
 from openai import OpenAI
 

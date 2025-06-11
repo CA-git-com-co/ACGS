@@ -13,14 +13,13 @@ Key Features:
 - Transparency and accessibility features
 """
 
-import asyncio
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_, or_
 
 try:
     from services.shared.models import ACAmendment, ACAmendmentComment, User
@@ -32,7 +31,6 @@ except ImportError:
     User = Any
 
 from .human_in_the_loop_sampler import HumanInTheLoopSampler
-from .human_escalation_system import EscalationLevel
 
 logger = logging.getLogger(__name__)
 
@@ -306,7 +304,7 @@ class PublicConsultationService:
             if time_period_days:
                 start_date = datetime.utcnow() - timedelta(days=time_period_days)
             else:
-                start_date = None
+                pass
 
             # Mock metrics calculation (would use actual database queries)
             metrics = ConsultationMetrics(

@@ -15,14 +15,14 @@ authentication, and Constitutional Council configuration.
 
 import asyncio
 import logging
-from typing import Dict, Any, Optional, List, Literal
-from datetime import datetime, timezone, timedelta
 import uuid
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Literal, Optional
 
 try:
-    from langgraph.graph import StateGraph, START, END
-    from langgraph.types import Send
     from langgraph.checkpoint.memory import MemorySaver
+    from langgraph.graph import END, START, StateGraph
+    from langgraph.types import Send
 
     LANGGRAPH_AVAILABLE = True
 except ImportError:
@@ -34,39 +34,28 @@ except ImportError:
     Send = None
     MemorySaver = None
 
-from sqlalchemy.ext.asyncio import AsyncSession
+# Import stakeholder engagement system
+from app.services.stakeholder_engagement import (
+    NotificationChannel,
+    StakeholderEngagementInput,
+    StakeholderNotificationService,
+    StakeholderRole,
+)
 from pydantic import BaseModel, Field, ValidationError
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from services.shared.langgraph_config import (
+    ConstitutionalCouncilConfig,
+    ModelRole,
+    get_langgraph_config,
+)
 from services.shared.langgraph_states import (
     ConstitutionalCouncilState,
     WorkflowStatus,
-    create_workflow_metadata,
-    update_workflow_status,
-)
-from services.shared.langgraph_config import (
-    get_langgraph_config,
-    ConstitutionalCouncilConfig,
-    ModelRole,
-)
-from services.shared.database import get_async_db
-from services.shared.auth import get_current_active_user
-from services.shared.models import (
-    User,
-    ACAmendment,
-    ACAmendmentVote,
-    ACAmendmentComment,
 )
 
 # Import AC service CRUD operations
 from .. import crud, schemas
-
-# Import stakeholder engagement system
-from app.services.stakeholder_engagement import (
-    StakeholderNotificationService,
-    StakeholderEngagementInput,
-    NotificationChannel,
-    StakeholderRole,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -961,9 +950,9 @@ class ConstitutionalCouncilGraph:
 
             # Process through amendment state machine
             from app.core.amendment_state_machine import (
-                amendment_state_machine,
-                WorkflowContext,
                 AmendmentEvent,
+                WorkflowContext,
+                amendment_state_machine,
             )
 
             # Create workflow context for state transition
@@ -1222,9 +1211,9 @@ class ConstitutionalCouncilGraph:
             if amendment_id:
                 # Attempt to rollback amendment to previous state
                 from app.core.amendment_state_machine import (
-                    amendment_state_machine,
-                    WorkflowContext,
                     AmendmentEvent,
+                    WorkflowContext,
+                    amendment_state_machine,
                 )
 
                 context = WorkflowContext(
@@ -1452,10 +1441,9 @@ class ConstitutionalCouncilGraph:
 
             # Import state machine components
             from app.core.amendment_state_machine import (
-                amendment_state_machine,
-                WorkflowContext,
                 AmendmentEvent,
-                AmendmentState,
+                WorkflowContext,
+                amendment_state_machine,
             )
 
             # Get current amendment

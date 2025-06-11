@@ -9,19 +9,17 @@ Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 """
 
 import logging
-from typing import Dict, Any, List, Optional
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends, status
-from pydantic import BaseModel, Field
-from datetime import datetime
+from typing import Any, Dict, List, Optional
 
+from fastapi import APIRouter, BackgroundTasks, HTTPException, status
+from pydantic import BaseModel, Field
+
+from ...core.opa_integration import OPAIntegrationError
 from ...services.enhanced_governance_synthesis import (
-    EnhancedGovernanceSynthesis,
     EnhancedSynthesisRequest,
-    EnhancedSynthesisResponse,
     get_enhanced_synthesis_service,
 )
-from ...services.policy_validator import ValidationLevel, PolicyType
-from ...core.opa_integration import OPAIntegrationError
+from ...services.policy_validator import ValidationLevel
 
 logger = logging.getLogger(__name__)
 

@@ -13,35 +13,34 @@ Key Features:
 """
 
 import logging
-import time
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from typing import List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from services.shared.auth import get_current_active_user as get_current_user
+from services.shared.auth import (
+    require_admin,
+)
 from services.shared.database import get_async_db as get_db
+from services.shared.models import User
+
 from ..schemas import (
-    PublicProposalCreate,
-    PublicProposalResponse,
+    ConsultationMetricsResponse,
     PublicFeedbackCreate,
     PublicFeedbackResponse,
-    ConsultationMetricsResponse,
-)
-from ..services.public_consultation_service import (
-    PublicConsultationService,
-    PublicProposal,
-    PublicFeedback,
-    StakeholderGroup,
-    FeedbackType,
-    ConsultationStatus,
+    PublicProposalCreate,
+    PublicProposalResponse,
 )
 from ..services.human_in_the_loop_sampler import HumanInTheLoopSampler
-from services.shared.auth import (
-    get_current_active_user as get_current_user,
-    require_admin,
-    require_policy_manager,
+from ..services.public_consultation_service import (
+    FeedbackType,
+    PublicConsultationService,
+    PublicFeedback,
+    PublicProposal,
+    StakeholderGroup,
 )
-from services.shared.models import User
 
 logger = logging.getLogger(__name__)
 

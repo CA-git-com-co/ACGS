@@ -5,12 +5,13 @@ This script checks all 5 ACGS services and their dependencies.
 """
 
 import asyncio
-import aiohttp
+import json
 import logging
 import sys
 import time
-from typing import Dict, List, Optional, Any
-import json
+from typing import Any, Dict, List
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(

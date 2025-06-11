@@ -7,13 +7,14 @@ by updating the service configuration and testing connectivity.
 """
 
 import asyncio
+import json
 import os
 import sys
-import json
-import httpx
 import time
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
+import httpx
 
 # Add project root to path
 project_root = Path(__file__).parent

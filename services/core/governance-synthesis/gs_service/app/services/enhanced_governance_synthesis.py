@@ -11,27 +11,27 @@ Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 import asyncio
 import logging
 import time
-from typing import Dict, Any, List, Optional, Union
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
+from ..core.opa_integration import get_opa_client
+from ..core.wina_rego_synthesis import (
+    WINARegoSynthesisResult,
+    WINARegoSynthesizer,
+    get_wina_rego_synthesizer,
+    synthesize_rego_policy_with_wina,
+)
+from ..workflows.policy_synthesis_workflow import PolicySynthesisWorkflow
+from .alphaevolve_bridge import AlphaEvolveBridge
 from .policy_validator import (
+    PolicyType,
     PolicyValidationEngine,
     PolicyValidationRequest,
     PolicyValidationResponse,
     ValidationLevel,
-    PolicyType,
     get_policy_validator,
 )
-from ..core.wina_rego_synthesis import (
-    WINARegoSynthesizer,
-    WINARegoSynthesisResult,
-    get_wina_rego_synthesizer,
-    synthesize_rego_policy_with_wina,
-)
-from .alphaevolve_bridge import AlphaEvolveBridge
-from ..workflows.policy_synthesis_workflow import PolicySynthesisWorkflow
-from ..core.opa_integration import get_opa_client, OPAIntegrationError
 
 logger = logging.getLogger(__name__)
 
@@ -175,10 +175,10 @@ class EnhancedGovernanceSynthesis:
         """Initialize Phase 2 advanced WINA optimization components."""
         try:
             # Import Phase 2 components
-            from ...shared.wina.svd_transformation import SVDTransformation, WINAConfig
             from ...shared.wina.constitutional_integration import (
                 ConstitutionalWINAIntegration,
             )
+            from ...shared.wina.svd_transformation import SVDTransformation, WINAConfig
             from ..core.multi_model_coordinator import MultiModelCoordinator
             from ..core.performance_optimizer import WINAPerformanceOptimizer
 

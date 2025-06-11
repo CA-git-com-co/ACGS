@@ -8,29 +8,24 @@ Phase 3: Performance Optimization and Security Compliance
 """
 
 import asyncio
-import time
-import logging
-import psutil
-import threading
-from typing import Dict, Any, List, Optional, Callable, Union
-from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
-from collections import defaultdict, deque
-from contextlib import asynccontextmanager, contextmanager
-import json
 import statistics
+import threading
+import time
+from collections import defaultdict, deque
+from contextlib import asynccontextmanager
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
 from functools import wraps
+from typing import Any, Callable, Dict, List, Optional
 
+import psutil
 import redis
+import structlog
 from prometheus_client import (
     Counter,
-    Histogram,
     Gauge,
-    Summary,
-    CollectorRegistry,
-    generate_latest,
+    Histogram,
 )
-import structlog
 
 logger = structlog.get_logger(__name__)
 

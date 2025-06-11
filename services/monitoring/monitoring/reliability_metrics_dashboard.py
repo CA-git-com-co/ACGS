@@ -10,28 +10,26 @@ reliability mechanisms to provide comprehensive oversight of system reliability.
 """
 
 import asyncio
-import json
 import logging
-from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass, asdict
-from enum import Enum
 import statistics
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
 import aiohttp
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import HTMLResponse, JSONResponse
-import uvicorn
+from fastapi.responses import HTMLResponse
 
 # Import existing monitoring components
 try:
+    from ...alphaevolve_gs_engine.src.alphaevolve_gs_engine.services.qec_enhancement.constitutional_distance_calculator import (
+        ConstitutionalDistanceCalculator,
+    )
     from ...alphaevolve_gs_engine.src.alphaevolve_gs_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
         ConstitutionalFidelityMonitor,
         FidelityComponents,
-        FidelityAlert,
         FidelityLevel,
-    )
-    from ...alphaevolve_gs_engine.src.alphaevolve_gs_engine.services.qec_enhancement.constitutional_distance_calculator import (
-        ConstitutionalDistanceCalculator,
     )
 except ImportError:
     # Fallback for development/testing

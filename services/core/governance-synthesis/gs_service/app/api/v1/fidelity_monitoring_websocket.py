@@ -15,40 +15,25 @@ Task 19: Real-time Constitutional Fidelity Monitoring
 import asyncio
 import json
 import logging
-from typing import Dict, Set, Optional, Any, List
-from datetime import datetime
 import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Set
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
-from fastapi.websockets import WebSocketState
-from pydantic import BaseModel
-
-from app.workflows.multi_model_manager import get_multi_model_manager
-from app.workflows.structured_output_models import (
-    ConstitutionalFidelityScore,
-    ConstitutionalComplianceLevel,
-    ConstitutionalViolation,
+from app.services.qec_error_correction_service import (
+    QECErrorCorrectionService,
 )
 
 # Import violation detection services
-from app.services.violation_detection_service import (
-    ViolationDetectionService,
-    ViolationType,
-    ViolationSeverity,
-    ViolationDetectionResult,
-)
 from app.services.violation_escalation_service import (
-    ViolationEscalationService,
-    EscalationLevel,
     EscalationResult,
 )
-from app.services.violation_audit_service import ViolationAuditService, AuditEventType
-from app.services.qec_error_correction_service import (
-    QECErrorCorrectionService,
-    ConflictDetectionResult,
-    ErrorCorrectionResult,
-    ErrorCorrectionStatus,
+from app.workflows.multi_model_manager import get_multi_model_manager
+from app.workflows.structured_output_models import (
+    ConstitutionalFidelityScore,
 )
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi.websockets import WebSocketState
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -548,9 +533,9 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
         elif message_type == "start_error_correction":
             # Start error correction workflow
             try:
-                principle_ids = data.get("principle_ids", [])
-                policy_ids = data.get("policy_ids", [])
-                context_data = data.get("context_data", {})
+                data.get("principle_ids", [])
+                data.get("policy_ids", [])
+                data.get("context_data", {})
 
                 # Initialize QEC service if not already done
                 if not hasattr(session, "qec_service"):

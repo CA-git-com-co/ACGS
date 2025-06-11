@@ -9,18 +9,17 @@ Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 """
 
 import asyncio
+import hashlib
 import json
 import logging
 import time
-from typing import Dict, Any, List, Optional, Union
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import datetime, timedelta
-from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 import aiohttp
-import hashlib
 
 try:
-    import requests
     from opa import OPA
 
     OPA_CLIENT_AVAILABLE = True
@@ -33,12 +32,11 @@ logger = logging.getLogger(__name__)
 
 # Phase 3: Performance Optimization imports
 try:
+    from ..services.advanced_cache import LRUCache, MultiTierCache, RedisCache
     from ..services.performance_monitor import (
         get_performance_monitor,
         performance_monitor_decorator,
     )
-    from ..services.advanced_cache import MultiTierCache, LRUCache, RedisCache
-    import redis.asyncio as redis
 
     PERFORMANCE_MONITORING_AVAILABLE = True
 except ImportError:
@@ -59,7 +57,7 @@ except ImportError:
         return None
 
 
-from ..config.opa_config import get_opa_config, OPAMode
+from ..config.opa_config import OPAMode, get_opa_config
 
 
 @dataclass
@@ -112,8 +110,6 @@ class BatchPolicyDecision:
 
 class OPAIntegrationError(Exception):
     """Custom exception for OPA integration errors."""
-
-    pass
 
 
 class PolicyDecisionCache:

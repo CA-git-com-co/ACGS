@@ -6,11 +6,11 @@ Implements comprehensive workflow analysis and enhancement recommendations
 
 import asyncio
 import json
+import logging
 import os
 import sys
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
-import logging
+from datetime import datetime
+from typing import Any, Dict, List
 
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))

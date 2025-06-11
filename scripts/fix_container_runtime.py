@@ -5,14 +5,14 @@ This script resolves cgroup v2 configuration errors and Docker compatibility iss
 """
 
 import asyncio
+import json
 import logging
 import os
 import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-import json
+from typing import Any, Dict, Optional
 
 # Configure logging
 logging.basicConfig(

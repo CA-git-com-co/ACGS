@@ -13,16 +13,12 @@ Features:
 - Creates architectural diagrams and workflow documentation
 """
 
-import os
-import sys
-import json
-import yaml
-from pathlib import Path
-from typing import Dict, List, Optional, Any
 import logging
+import sys
 from dataclasses import dataclass
 from datetime import datetime
-import subprocess
+from pathlib import Path
+from typing import Any, Dict, List
 
 # Configure logging
 logging.basicConfig(

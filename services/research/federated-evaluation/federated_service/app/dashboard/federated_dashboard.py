@@ -6,16 +6,14 @@ privacy budget usage, and cross-platform performance comparison.
 """
 
 import logging
-from typing import Dict, List, Optional, Any
-import plotly.graph_objs as go
-import plotly.express as px
 from datetime import datetime, timedelta
-import pandas as pd
+
+import plotly.graph_objs as go
 
 try:
     import dash
-    from dash import dcc, html, Input, Output, callback
     import dash_bootstrap_components as dbc
+    from dash import Input, Output, dcc, html
 
     DASH_AVAILABLE = True
 except ImportError:
@@ -307,7 +305,6 @@ def register_callbacks(app):
 def get_mock_metrics():
     """Get mock metrics for dashboard demonstration."""
     import random
-    import numpy as np
 
     # Generate mock time series data
     now = datetime.now()

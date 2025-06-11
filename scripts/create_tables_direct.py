@@ -6,35 +6,30 @@ This bypasses alembic import issues and creates tables directly
 
 import asyncio
 import sys
-import os
 from pathlib import Path
 
 # Add the src directory to Python path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root / "src" / "backend"))
 
-# Import database components
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.orm import declarative_base
+import uuid
+from datetime import datetime, timezone
+
 from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
+    Float,
     ForeignKey,
     Integer,
     String,
     Text,
-    func,
-    JSON,
-    Float,
-    Index,
-    Enum,
-    Numeric,
 )
-from sqlalchemy.dialects.postgresql import JSONB, UUID, ARRAY
-from datetime import datetime, timezone
-import uuid
-import enum
+from sqlalchemy.dialects.postgresql import JSONB, UUID
+
+# Import database components
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import declarative_base
 
 # Create Base
 Base = declarative_base()

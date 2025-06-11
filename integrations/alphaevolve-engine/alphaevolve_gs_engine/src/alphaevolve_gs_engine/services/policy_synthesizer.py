@@ -13,9 +13,8 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 from integrations.alphaevolve_engine.core.constitutional_principle import (
     ConstitutionalPrinciple,
 )
@@ -24,6 +23,7 @@ from integrations.alphaevolve_engine.services.llm_service import (
     LLMService,
     get_llm_service,
 )
+from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
 # from alphaevolve_gs_engine.services.validation.syntactic_validator import SyntacticValidator
 # from alphaevolve_gs_engine.services.validation.semantic_validator import SemanticValidator, SemanticTestCase
@@ -131,7 +131,6 @@ class PolicySynthesizer(ABC):
         Returns:
             Optional[PolicySuggestion]: The suggested policy, or None if synthesis fails.
         """
-        pass
 
 
 class LLMPolicyGenerator(PolicySynthesizer):

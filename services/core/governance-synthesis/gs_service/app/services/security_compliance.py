@@ -7,27 +7,20 @@ authentication, authorization, input validation, rate limiting, and audit loggin
 Phase 3: Performance Optimization and Security Compliance
 """
 
-import asyncio
-import time
-import logging
-import hashlib
-import hmac
+import re
 import secrets
-from typing import Dict, Any, Optional, List, Union, Callable
-from dataclasses import dataclass, asdict
+import threading
+import time
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import wraps
-import json
-import re
-from ipaddress import ip_address, ip_network
-import threading
+from typing import Any, Callable, Dict, List, Optional
 
-from fastapi import Request, HTTPException, status, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, validator, Field
 import jwt
-from passlib.context import CryptContext
 import structlog
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from passlib.context import CryptContext
 
 logger = structlog.get_logger(__name__)
 

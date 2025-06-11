@@ -5,12 +5,11 @@ This module provides scalability and co-evolution capabilities for the
 Constitutional Council workflows in the ACGS-PGP framework.
 """
 
-import asyncio
 import logging
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

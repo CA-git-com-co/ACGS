@@ -15,17 +15,12 @@ Usage:
     python scripts/phase3_performance_optimization.py --monitoring-setup
 """
 
-import argparse
 import json
-import subprocess
-import sys
-from pathlib import Path
-from typing import Dict, List, Optional
 import logging
+import sys
 from datetime import datetime
-import time
-import asyncio
-import aiohttp
+from pathlib import Path
+from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(

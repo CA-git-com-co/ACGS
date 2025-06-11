@@ -15,20 +15,20 @@ API Endpoints:
 - GET /workflows/metrics - Get performance metrics
 """
 
-import asyncio
 import logging
-from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
-
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Request, Query
-from pydantic import BaseModel, Field, validator
 import sys
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request
+from pydantic import BaseModel, Field
 
 # Import shared components
-sys.path.append('/home/dislove/ACGS-1/services/shared')
+sys.path.append("/home/dislove/ACGS-1/services/shared")
 try:
-    from api_models import create_success_response, create_error_response, ErrorCode
-    from validation_helpers import ValidationHelper, handle_validation_errors
+    from api_models import ErrorCode, create_error_response, create_success_response
+    from validation_helpers import handle_validation_errors
+
     SHARED_COMPONENTS_AVAILABLE = True
 except ImportError:
     SHARED_COMPONENTS_AVAILABLE = False
@@ -37,9 +37,10 @@ except ImportError:
 try:
     from ...workflows.phase_a3_governance_orchestrator import (
         PhaseA3GovernanceOrchestrator,
+        WorkflowStatus,
         WorkflowType,
-        WorkflowStatus
     )
+
     ORCHESTRATOR_AVAILABLE = True
 except ImportError:
     ORCHESTRATOR_AVAILABLE = False
@@ -51,53 +52,55 @@ router = APIRouter()
 
 class CreateWorkflowRequest(BaseModel):
     """Request model for creating a new governance workflow."""
-    
+
     workflow_type: str = Field(
         ...,
         regex=r"^(policy_creation|constitutional_compliance|policy_enforcement|wina_oversight|audit_transparency)$",
         description="Type of governance workflow",
-        example="policy_creation"
+        example="policy_creation",
     )
     name: str = Field(
         ...,
         min_length=3,
         max_length=100,
         description="Workflow name",
-        example="Environmental Policy Creation"
+        example="Environmental Policy Creation",
     )
     description: str = Field(
         ...,
         min_length=10,
         max_length=500,
         description="Workflow description",
-        example="Create new environmental protection policy for urban areas"
+        example="Create new environmental protection policy for urban areas",
     )
     context: Dict[str, Any] = Field(
         ...,
         description="Workflow context data",
         example={
             "policy_domain": "environmental",
-            "stakeholders": ["environmental_team", "legal_team", "public_representatives"],
+            "stakeholders": [
+                "environmental_team",
+                "legal_team",
+                "public_representatives",
+            ],
             "urgency": "medium",
-            "target_implementation": "2024-Q2"
-        }
+            "target_implementation": "2024-Q2",
+        },
     )
     priority: str = Field(
         "medium",
         regex=r"^(low|medium|high|critical)$",
         description="Workflow priority",
-        example="medium"
+        example="medium",
     )
     auto_start: bool = Field(
-        False,
-        description="Automatically start workflow after creation",
-        example=False
+        False, description="Automatically start workflow after creation", example=False
     )
 
 
 class WorkflowResponse(BaseModel):
     """Response model for workflow operations."""
-    
+
     workflow_id: str = Field(..., description="Unique workflow identifier")
     workflow_type: str = Field(..., description="Type of governance workflow")
     name: str = Field(..., description="Workflow name")
@@ -105,18 +108,22 @@ class WorkflowResponse(BaseModel):
     progress_percentage: float = Field(..., description="Completion percentage")
     completed_steps: int = Field(..., description="Number of completed steps")
     total_steps: int = Field(..., description="Total number of steps")
-    current_step: Optional[Dict[str, Any]] = Field(None, description="Current step information")
+    current_step: Optional[Dict[str, Any]] = Field(
+        None, description="Current step information"
+    )
     created_at: str = Field(..., description="Creation timestamp")
     started_at: Optional[str] = Field(None, description="Start timestamp")
     completed_at: Optional[str] = Field(None, description="Completion timestamp")
-    total_execution_time_ms: float = Field(..., description="Total execution time in milliseconds")
+    total_execution_time_ms: float = Field(
+        ..., description="Total execution time in milliseconds"
+    )
     created_by: str = Field(..., description="User who created the workflow")
     priority: str = Field(..., description="Workflow priority")
 
 
 class WorkflowListResponse(BaseModel):
     """Response model for workflow list operations."""
-    
+
     workflows: List[WorkflowResponse] = Field(..., description="List of workflows")
     total_count: int = Field(..., description="Total number of workflows")
     filtered_count: int = Field(..., description="Number of workflows after filtering")
@@ -125,10 +132,14 @@ class WorkflowListResponse(BaseModel):
 
 class WorkflowMetricsResponse(BaseModel):
     """Response model for workflow performance metrics."""
-    
-    workflow_metrics: Dict[str, Any] = Field(..., description="Performance metrics by workflow type")
+
+    workflow_metrics: Dict[str, Any] = Field(
+        ..., description="Performance metrics by workflow type"
+    )
     active_workflows: int = Field(..., description="Number of active workflows")
-    service_endpoints: int = Field(..., description="Number of configured service endpoints")
+    service_endpoints: int = Field(
+        ..., description="Number of configured service endpoints"
+    )
     workflow_templates: int = Field(..., description="Number of workflow templates")
     timestamp: str = Field(..., description="Metrics timestamp")
 
@@ -145,11 +156,11 @@ if ORCHESTRATOR_AVAILABLE:
 async def create_workflow(
     request: CreateWorkflowRequest,
     background_tasks: BackgroundTasks,
-    http_request: Request
+    http_request: Request,
 ):
     """
     Create a new governance workflow.
-    
+
     This endpoint creates a new instance of one of the 5 core governance workflows:
     - policy_creation: Draft → Review → Voting → Implementation
     - constitutional_compliance: Validation → Assessment → Enforcement
@@ -157,8 +168,8 @@ async def create_workflow(
     - wina_oversight: Performance Monitoring → Optimization → Reporting
     - audit_transparency: Data Collection → Analysis → Public Reporting
     """
-    correlation_id = getattr(http_request.state, 'correlation_id', None)
-    
+    correlation_id = getattr(http_request.state, "correlation_id", None)
+
     try:
         if not orchestrator:
             if SHARED_COMPONENTS_AVAILABLE:
@@ -166,23 +177,22 @@ async def create_workflow(
                     error_code=ErrorCode.SERVICE_UNAVAILABLE,
                     message="Workflow orchestrator not available",
                     service_name="gs_service",
-                    correlation_id=correlation_id
+                    correlation_id=correlation_id,
                 )
             else:
                 raise HTTPException(
-                    status_code=503,
-                    detail="Workflow orchestrator not available"
+                    status_code=503, detail="Workflow orchestrator not available"
                 )
-        
+
         # Convert string workflow type to enum
         try:
             workflow_type = WorkflowType(request.workflow_type)
         except ValueError:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid workflow type: {request.workflow_type}"
+                detail=f"Invalid workflow type: {request.workflow_type}",
             )
-        
+
         # Create workflow
         workflow_id = await orchestrator.create_workflow(
             workflow_type=workflow_type,
@@ -190,53 +200,51 @@ async def create_workflow(
             description=request.description,
             context=request.context,
             created_by="api_user",  # Would get from authentication in production
-            priority=request.priority
+            priority=request.priority,
         )
-        
+
         # Auto-start if requested
         if request.auto_start:
             await orchestrator.start_workflow(workflow_id)
-        
+
         # Get workflow status
         workflow_status = await orchestrator.get_workflow_status(workflow_id)
-        
+
         if not workflow_status:
             raise HTTPException(
-                status_code=500,
-                detail="Failed to retrieve created workflow status"
+                status_code=500, detail="Failed to retrieve created workflow status"
             )
-        
+
         # Add background monitoring task
         background_tasks.add_task(
-            _log_workflow_creation,
-            workflow_id,
-            request.workflow_type,
-            correlation_id
+            _log_workflow_creation, workflow_id, request.workflow_type, correlation_id
         )
-        
+
         response_data = WorkflowResponse(**workflow_status)
-        
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_success_response(
                 data=response_data.dict(),
                 service_name="gs_service",
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             return response_data
-            
+
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Workflow creation failed: {e}", extra={"correlation_id": correlation_id})
-        
+        logger.error(
+            f"Workflow creation failed: {e}", extra={"correlation_id": correlation_id}
+        )
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
                 error_code=ErrorCode.INTERNAL_ERROR,
                 message="Workflow creation failed",
                 service_name="gs_service",
                 details={"error": str(e)},
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             raise HTTPException(status_code=500, detail=str(e))
@@ -245,22 +253,27 @@ async def create_workflow(
 @router.get("/workflows", response_model=WorkflowListResponse)
 async def list_workflows(
     http_request: Request,
-    status: Optional[str] = Query(None, regex=r"^(pending|running|paused|completed|failed|cancelled)$"),
-    workflow_type: Optional[str] = Query(None, regex=r"^(policy_creation|constitutional_compliance|policy_enforcement|wina_oversight|audit_transparency)$"),
+    status: Optional[str] = Query(
+        None, regex=r"^(pending|running|paused|completed|failed|cancelled)$"
+    ),
+    workflow_type: Optional[str] = Query(
+        None,
+        regex=r"^(policy_creation|constitutional_compliance|policy_enforcement|wina_oversight|audit_transparency)$",
+    ),
     limit: int = Query(100, ge=1, le=1000),
-    created_by: Optional[str] = Query(None)
+    created_by: Optional[str] = Query(None),
 ):
     """
     List governance workflows with optional filtering.
-    
+
     Supports filtering by:
     - status: Workflow execution status
     - workflow_type: Type of governance workflow
     - created_by: User who created the workflow
     - limit: Maximum number of results
     """
-    correlation_id = getattr(http_request.state, 'correlation_id', None)
-    
+    correlation_id = getattr(http_request.state, "correlation_id", None)
+
     try:
         if not orchestrator:
             if SHARED_COMPONENTS_AVAILABLE:
@@ -268,14 +281,13 @@ async def list_workflows(
                     error_code=ErrorCode.SERVICE_UNAVAILABLE,
                     message="Workflow orchestrator not available",
                     service_name="gs_service",
-                    correlation_id=correlation_id
+                    correlation_id=correlation_id,
                 )
             else:
                 raise HTTPException(
-                    status_code=503,
-                    detail="Workflow orchestrator not available"
+                    status_code=503, detail="Workflow orchestrator not available"
                 )
-        
+
         # Convert string filters to enums
         status_filter = None
         if status:
@@ -283,10 +295,9 @@ async def list_workflows(
                 status_filter = WorkflowStatus(status)
             except ValueError:
                 raise HTTPException(
-                    status_code=400,
-                    detail=f"Invalid status filter: {status}"
+                    status_code=400, detail=f"Invalid status filter: {status}"
                 )
-        
+
         workflow_type_filter = None
         if workflow_type:
             try:
@@ -294,23 +305,23 @@ async def list_workflows(
             except ValueError:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Invalid workflow type filter: {workflow_type}"
+                    detail=f"Invalid workflow type filter: {workflow_type}",
                 )
-        
+
         # Get workflows
         workflows = await orchestrator.list_workflows(
             status_filter=status_filter,
             workflow_type_filter=workflow_type_filter,
-            limit=limit
+            limit=limit,
         )
-        
+
         # Apply additional filters
         if created_by:
             workflows = [w for w in workflows if w.get("created_by") == created_by]
-        
+
         # Prepare response
         workflow_responses = [WorkflowResponse(**w) for w in workflows]
-        
+
         response_data = WorkflowListResponse(
             workflows=workflow_responses,
             total_count=len(orchestrator.active_workflows),
@@ -319,44 +330,43 @@ async def list_workflows(
                 "status": status,
                 "workflow_type": workflow_type,
                 "created_by": created_by,
-                "limit": limit
-            }
+                "limit": limit,
+            },
         )
-        
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_success_response(
                 data=response_data.dict(),
                 service_name="gs_service",
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             return response_data
-            
+
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Workflow listing failed: {e}", extra={"correlation_id": correlation_id})
-        
+        logger.error(
+            f"Workflow listing failed: {e}", extra={"correlation_id": correlation_id}
+        )
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
                 error_code=ErrorCode.INTERNAL_ERROR,
                 message="Workflow listing failed",
                 service_name="gs_service",
                 details={"error": str(e)},
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/workflows/{workflow_id}", response_model=WorkflowResponse)
-async def get_workflow_status(
-    workflow_id: str,
-    http_request: Request
-):
+async def get_workflow_status(workflow_id: str, http_request: Request):
     """Get detailed status of a specific governance workflow."""
-    correlation_id = getattr(http_request.state, 'correlation_id', None)
-    
+    correlation_id = getattr(http_request.state, "correlation_id", None)
+
     try:
         if not orchestrator:
             if SHARED_COMPONENTS_AVAILABLE:
@@ -364,58 +374,55 @@ async def get_workflow_status(
                     error_code=ErrorCode.SERVICE_UNAVAILABLE,
                     message="Workflow orchestrator not available",
                     service_name="gs_service",
-                    correlation_id=correlation_id
+                    correlation_id=correlation_id,
                 )
             else:
                 raise HTTPException(
-                    status_code=503,
-                    detail="Workflow orchestrator not available"
+                    status_code=503, detail="Workflow orchestrator not available"
                 )
-        
+
         workflow_status = await orchestrator.get_workflow_status(workflow_id)
-        
+
         if not workflow_status:
             raise HTTPException(
-                status_code=404,
-                detail=f"Workflow {workflow_id} not found"
+                status_code=404, detail=f"Workflow {workflow_id} not found"
             )
-        
+
         response_data = WorkflowResponse(**workflow_status)
-        
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_success_response(
                 data=response_data.dict(),
                 service_name="gs_service",
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             return response_data
-            
+
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Get workflow status failed: {e}", extra={"correlation_id": correlation_id})
-        
+        logger.error(
+            f"Get workflow status failed: {e}", extra={"correlation_id": correlation_id}
+        )
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
                 error_code=ErrorCode.INTERNAL_ERROR,
                 message="Get workflow status failed",
                 service_name="gs_service",
                 details={"error": str(e)},
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/workflows/{workflow_id}/start")
-async def start_workflow(
-    workflow_id: str,
-    http_request: Request
-):
+async def start_workflow(workflow_id: str, http_request: Request):
     """Start execution of a pending governance workflow."""
-    correlation_id = getattr(http_request.state, 'correlation_id', None)
-    
+    correlation_id = getattr(http_request.state, "correlation_id", None)
+
     try:
         if not orchestrator:
             if SHARED_COMPONENTS_AVAILABLE:
@@ -423,63 +430,60 @@ async def start_workflow(
                     error_code=ErrorCode.SERVICE_UNAVAILABLE,
                     message="Workflow orchestrator not available",
                     service_name="gs_service",
-                    correlation_id=correlation_id
+                    correlation_id=correlation_id,
                 )
             else:
                 raise HTTPException(
-                    status_code=503,
-                    detail="Workflow orchestrator not available"
+                    status_code=503, detail="Workflow orchestrator not available"
                 )
-        
+
         success = await orchestrator.start_workflow(workflow_id)
-        
+
         if not success:
             raise HTTPException(
-                status_code=400,
-                detail=f"Failed to start workflow {workflow_id}"
+                status_code=400, detail=f"Failed to start workflow {workflow_id}"
             )
-        
+
         response_data = {
             "workflow_id": workflow_id,
             "status": "started",
             "message": "Workflow started successfully",
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-        
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_success_response(
                 data=response_data,
                 service_name="gs_service",
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             return response_data
-            
+
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Start workflow failed: {e}", extra={"correlation_id": correlation_id})
-        
+        logger.error(
+            f"Start workflow failed: {e}", extra={"correlation_id": correlation_id}
+        )
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
                 error_code=ErrorCode.INTERNAL_ERROR,
                 message="Start workflow failed",
                 service_name="gs_service",
                 details={"error": str(e)},
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/workflows/{workflow_id}/cancel")
-async def cancel_workflow(
-    workflow_id: str,
-    http_request: Request
-):
+async def cancel_workflow(workflow_id: str, http_request: Request):
     """Cancel a running governance workflow."""
-    correlation_id = getattr(http_request.state, 'correlation_id', None)
-    
+    correlation_id = getattr(http_request.state, "correlation_id", None)
+
     try:
         if not orchestrator:
             if SHARED_COMPONENTS_AVAILABLE:
@@ -487,50 +491,50 @@ async def cancel_workflow(
                     error_code=ErrorCode.SERVICE_UNAVAILABLE,
                     message="Workflow orchestrator not available",
                     service_name="gs_service",
-                    correlation_id=correlation_id
+                    correlation_id=correlation_id,
                 )
             else:
                 raise HTTPException(
-                    status_code=503,
-                    detail="Workflow orchestrator not available"
+                    status_code=503, detail="Workflow orchestrator not available"
                 )
-        
+
         success = await orchestrator.cancel_workflow(workflow_id)
-        
+
         if not success:
             raise HTTPException(
-                status_code=400,
-                detail=f"Failed to cancel workflow {workflow_id}"
+                status_code=400, detail=f"Failed to cancel workflow {workflow_id}"
             )
-        
+
         response_data = {
             "workflow_id": workflow_id,
             "status": "cancelled",
             "message": "Workflow cancelled successfully",
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-        
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_success_response(
                 data=response_data,
                 service_name="gs_service",
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             return response_data
-            
+
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Cancel workflow failed: {e}", extra={"correlation_id": correlation_id})
-        
+        logger.error(
+            f"Cancel workflow failed: {e}", extra={"correlation_id": correlation_id}
+        )
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
                 error_code=ErrorCode.INTERNAL_ERROR,
                 message="Cancel workflow failed",
                 service_name="gs_service",
                 details={"error": str(e)},
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             raise HTTPException(status_code=500, detail=str(e))
@@ -543,40 +547,66 @@ async def get_workflow_types():
         "policy_creation": {
             "name": "Policy Creation",
             "description": "Complete policy creation workflow from draft to implementation",
-            "steps": ["Draft Policy", "Stakeholder Review", "Constitutional Validation", "Democratic Voting", "Policy Implementation"],
+            "steps": [
+                "Draft Policy",
+                "Stakeholder Review",
+                "Constitutional Validation",
+                "Democratic Voting",
+                "Policy Implementation",
+            ],
             "estimated_duration": "2-8 hours",
-            "services_involved": ["gs", "pgc", "ac"]
+            "services_involved": ["gs", "pgc", "ac"],
         },
         "constitutional_compliance": {
             "name": "Constitutional Compliance",
             "description": "Validate and enforce constitutional compliance",
-            "steps": ["Compliance Assessment", "Violation Detection", "Remediation Planning", "Enforcement Action"],
+            "steps": [
+                "Compliance Assessment",
+                "Violation Detection",
+                "Remediation Planning",
+                "Enforcement Action",
+            ],
             "estimated_duration": "30 minutes - 2 hours",
-            "services_involved": ["ac", "integrity", "pgc"]
+            "services_involved": ["ac", "integrity", "pgc"],
         },
         "policy_enforcement": {
             "name": "Policy Enforcement",
             "description": "Monitor and enforce policy compliance",
-            "steps": ["Monitoring Setup", "Violation Monitoring", "Incident Response", "Corrective Action"],
+            "steps": [
+                "Monitoring Setup",
+                "Violation Monitoring",
+                "Incident Response",
+                "Corrective Action",
+            ],
             "estimated_duration": "1-4 hours",
-            "services_involved": ["integrity", "pgc"]
+            "services_involved": ["integrity", "pgc"],
         },
         "wina_oversight": {
             "name": "WINA Oversight",
             "description": "Monitor and optimize WINA performance",
-            "steps": ["Performance Monitoring", "Optimization Analysis", "Recommendation Generation", "Implementation Coordination"],
+            "steps": [
+                "Performance Monitoring",
+                "Optimization Analysis",
+                "Recommendation Generation",
+                "Implementation Coordination",
+            ],
             "estimated_duration": "20-60 minutes",
-            "services_involved": ["fv", "gs", "ec"]
+            "services_involved": ["fv", "gs", "ec"],
         },
         "audit_transparency": {
             "name": "Audit & Transparency",
             "description": "Generate transparency reports and audit trails",
-            "steps": ["Data Collection", "Analysis Processing", "Report Generation", "Public Disclosure"],
+            "steps": [
+                "Data Collection",
+                "Analysis Processing",
+                "Report Generation",
+                "Public Disclosure",
+            ],
             "estimated_duration": "30 minutes - 2 hours",
-            "services_involved": ["integrity", "fv", "gs", "ec"]
-        }
+            "services_involved": ["integrity", "fv", "gs", "ec"],
+        },
     }
-    
+
     return {
         "workflow_types": workflow_types,
         "total_types": len(workflow_types),
@@ -586,16 +616,16 @@ async def get_workflow_types():
             "ac": "Access Control (port 8002)",
             "integrity": "Integrity Service (port 8003)",
             "fv": "Formal Verification (port 8005)",
-            "ec": "External Coordination (port 8006)"
-        }
+            "ec": "External Coordination (port 8006)",
+        },
     }
 
 
 @router.get("/workflows/metrics", response_model=WorkflowMetricsResponse)
 async def get_workflow_metrics(http_request: Request):
     """Get comprehensive workflow performance metrics."""
-    correlation_id = getattr(http_request.state, 'correlation_id', None)
-    
+    correlation_id = getattr(http_request.state, "correlation_id", None)
+
     try:
         if not orchestrator:
             if SHARED_COMPONENTS_AVAILABLE:
@@ -603,46 +633,46 @@ async def get_workflow_metrics(http_request: Request):
                     error_code=ErrorCode.SERVICE_UNAVAILABLE,
                     message="Workflow orchestrator not available",
                     service_name="gs_service",
-                    correlation_id=correlation_id
+                    correlation_id=correlation_id,
                 )
             else:
                 raise HTTPException(
-                    status_code=503,
-                    detail="Workflow orchestrator not available"
+                    status_code=503, detail="Workflow orchestrator not available"
                 )
-        
+
         metrics = await orchestrator.get_performance_metrics()
-        
+
         response_data = WorkflowMetricsResponse(**metrics)
-        
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_success_response(
                 data=response_data.dict(),
                 service_name="gs_service",
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             return response_data
-            
+
     except Exception as e:
-        logger.error(f"Get workflow metrics failed: {e}", extra={"correlation_id": correlation_id})
-        
+        logger.error(
+            f"Get workflow metrics failed: {e}",
+            extra={"correlation_id": correlation_id},
+        )
+
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
                 error_code=ErrorCode.INTERNAL_ERROR,
                 message="Get workflow metrics failed",
                 service_name="gs_service",
                 details={"error": str(e)},
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
         else:
             raise HTTPException(status_code=500, detail=str(e))
 
 
 async def _log_workflow_creation(
-    workflow_id: str,
-    workflow_type: str,
-    correlation_id: Optional[str] = None
+    workflow_id: str, workflow_type: str, correlation_id: Optional[str] = None
 ):
     """Background task to log workflow creation metrics."""
     metrics = {
@@ -650,7 +680,7 @@ async def _log_workflow_creation(
         "workflow_type": workflow_type,
         "action": "created",
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "correlation_id": correlation_id
+        "correlation_id": correlation_id,
     }
-    
+
     logger.info(f"Workflow creation metrics: {metrics}")

@@ -7,25 +7,24 @@ from the integrity service and secure multi-party computation techniques.
 Based on Task 6 requirements and ACGS-PGP cryptographic infrastructure.
 """
 
-import asyncio
+import hashlib
+import json
 import logging
 import time
-import json
-import numpy as np
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
-from enum import Enum
-import hashlib
 from datetime import datetime, timezone
-from abc import ABC, abstractmethod
+from enum import Enum
+from typing import Any, Dict, List
+
+import numpy as np
 
 # Cryptographic imports
 try:
-    from cryptography.hazmat.primitives import hashes, serialization
-    from cryptography.hazmat.primitives.asymmetric import rsa, padding
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-    from cryptography.hazmat.backends import default_backend
     import secrets
+
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
     CRYPTOGRAPHY_AVAILABLE = True
 except ImportError:

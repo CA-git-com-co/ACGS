@@ -1,18 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
+import os
+import secrets
+
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse  # Added JSONResponse import
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.ext.asyncio import AsyncSession
-import secrets
-from datetime import timedelta
-from typing import Optional
 from fastapi_csrf_protect import CsrfProtect
-import os
+from shared import models
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .. import crud, schemas
-from shared import models
 from ..core import security
-from ..db.database import get_async_db
 from ..core.limiter import limiter  # Import the limiter instance
+from ..db.database import get_async_db
 
 router = APIRouter()
 

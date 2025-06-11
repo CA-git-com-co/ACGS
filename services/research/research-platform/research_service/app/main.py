@@ -8,26 +8,24 @@ automated research workflows.
 
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
+
+import uvicorn
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import uvicorn
-
-from .core.config import get_settings
-from .core.database import get_db_session
-from .api.routers import (
-    experiment_tracking_router,
-    data_collection_router,
-    analysis_router,
-    automation_router,
-    reproducibility_router,
-)
-from .services.experiment_tracker import ExperimentTracker
-from .services.research_automation import ResearchAutomationService
 
 # Import security middleware
 from services.shared.security_middleware import add_security_middleware
-from services.shared.security_config import security_config
+
+from .api.routers import (
+    analysis_router,
+    automation_router,
+    data_collection_router,
+    experiment_tracking_router,
+    reproducibility_router,
+)
+from .core.config import get_settings
+from .services.research_automation import ResearchAutomationService
 
 # Configure logging
 logging.basicConfig(

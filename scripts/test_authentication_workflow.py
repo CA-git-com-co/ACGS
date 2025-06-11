@@ -4,11 +4,11 @@ Authentication workflow testing script for ACGS-PGP Phase 1 remediation.
 Tests complete authentication flow: register→login→token refresh→logout
 """
 
-import subprocess
 import json
+import subprocess
 import sys
 import time
-from typing import Dict, Any, Optional
+from typing import Any, Dict
 
 
 class AuthenticationTester:

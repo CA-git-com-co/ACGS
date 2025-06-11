@@ -8,12 +8,11 @@ for the event-driven architecture.
 import asyncio
 import json
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timezone
 from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from .types import EventType, EventStatus
-from ..common.error_handling import ACGSException
+from .types import EventStatus, EventType
 
 logger = logging.getLogger(__name__)
 
@@ -24,22 +23,18 @@ class EventStore(ABC):
     @abstractmethod
     async def initialize(self) -> None:
         """Initialize the event store."""
-        pass
 
     @abstractmethod
     async def close(self) -> None:
         """Close the event store."""
-        pass
 
     @abstractmethod
     async def store_event(self, event: "Event") -> bool:
         """Store an event."""
-        pass
 
     @abstractmethod
     async def get_event(self, event_id: str) -> Optional["Event"]:
         """Get an event by ID."""
-        pass
 
     @abstractmethod
     async def get_events(
@@ -49,22 +44,18 @@ class EventStore(ABC):
         limit: int = 100,
     ) -> List["Event"]:
         """Get events with optional filtering."""
-        pass
 
     @abstractmethod
     async def get_pending_events(self, limit: int = 100) -> List["Event"]:
         """Get pending events for processing."""
-        pass
 
     @abstractmethod
     async def update_event(self, event: "Event") -> bool:
         """Update an existing event."""
-        pass
 
     @abstractmethod
     async def delete_event(self, event_id: str) -> bool:
         """Delete an event."""
-        pass
 
 
 class InMemoryEventStore(EventStore):

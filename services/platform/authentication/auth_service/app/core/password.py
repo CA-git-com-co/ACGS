@@ -6,7 +6,6 @@ Separated from security.py to avoid circular imports.
 
 import hashlib
 import secrets
-import os
 
 # Simple password hashing for testing - use proper library in production
 SALT_LENGTH = 32

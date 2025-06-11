@@ -4,13 +4,13 @@ Redis Cache Implementation for ACGS Services
 Provides distributed caching with TTL policies for improved performance.
 """
 
-import redis
-import json
 import hashlib
+import json
 import logging
-from typing import Any, Optional, Dict
-from datetime import timedelta
 import os
+from typing import Any, Dict, Optional
+
+import redis
 
 logger = logging.getLogger(__name__)
 

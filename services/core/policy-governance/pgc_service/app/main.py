@@ -1,11 +1,10 @@
-import os
-import logging
-import time
 import hashlib
-import json
-from typing import Dict, Any, Optional, List
-from datetime import datetime, timedelta
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+import logging
+import os
+import time
+from typing import Any, Dict
+
+from fastapi import FastAPI, HTTPException
 
 # Local implementations to avoid shared module dependencies
 from fastapi.middleware.cors import CORSMiddleware
@@ -1099,8 +1098,23 @@ app = FastAPI(
 # Initialize metrics for PGC service
 metrics = get_metrics("pgc_service")
 
-# Add metrics middleware
-app.middleware("http")(metrics_middleware("pgc_service"))
+# Add enhanced Prometheus metrics middleware
+try:
+    import sys
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    from prometheus_middleware import (
+        add_prometheus_middleware,
+        create_enhanced_metrics_endpoint,
+    )
+
+    add_prometheus_middleware(app, "pgc_service")
+
+    print("✅ Enhanced Prometheus metrics enabled for PGC Service")
+except ImportError as e:
+    print(f"⚠️ Enhanced Prometheus metrics not available: {e}")
+    # Fallback to existing metrics middleware
+    app.middleware("http")(metrics_middleware("pgc_service"))
 
 # Add enhanced security middleware (includes rate limiting, input validation, security headers, audit logging)
 add_security_middleware(app)
@@ -1710,7 +1724,7 @@ async def policy_creation_workflow(request: Dict[str, Any]):
         stakeholders = request.get(
             "stakeholders", ["governance_team", "policy_reviewers", "legal_team"]
         )
-        priority = request.get("priority", "medium")
+        request.get("priority", "medium")
 
         # Step 1: Initiate workflow
         workflow_id = await workflow_orchestrator.initiate_policy_workflow(
@@ -2239,8 +2253,13 @@ async def _generate_regulatory_compliance_report(transparency_report, time_range
     }
 
 
-# Add Prometheus metrics endpoint
+# Add enhanced Prometheus metrics endpoint
 @app.get("/metrics")
-async def metrics_endpoint():
-    """Prometheus metrics endpoint for PGC Service."""
-    return create_metrics_endpoint()
+async def enhanced_metrics_endpoint():
+    """Enhanced Prometheus metrics endpoint for PGC Service."""
+    try:
+        endpoint_func = create_enhanced_metrics_endpoint("pgc_service")
+        return await endpoint_func()
+    except NameError:
+        # Fallback to existing metrics
+        return create_metrics_endpoint()

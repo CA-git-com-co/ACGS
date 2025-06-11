@@ -8,16 +8,13 @@ Addresses audit findings:
 - Reproducibility support
 """
 
-import json
 import hashlib
-import os
-from typing import Dict, List, Any, Optional, Tuple
+import json
+import logging
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from dataclasses import dataclass, asdict
-from enum import Enum
-
-import logging
+from typing import Any, Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
 

@@ -11,10 +11,10 @@ Classes:
     ScenarioBasedSemanticValidator: Validates policies using predefined scenarios.
 """
 
-from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Tuple, Optional
-import subprocess  # For OPA eval if used
 import os  # For file operations
+import subprocess  # For OPA eval if used
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional, Tuple
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
@@ -92,7 +92,6 @@ class SemanticValidator(ABC):
                 Each tuple contains: (case_id, passed, message, actual_outcome, expected_outcome).
                 'passed' is True if the actual outcome matches the expected outcome.
         """
-        pass
 
 
 class ScenarioBasedSemanticValidator(SemanticValidator):

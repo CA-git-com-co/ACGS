@@ -5,12 +5,12 @@ Configuration classes for WINA (Weight Informed Neuron Activation) integration
 within the ACGS-PGP framework.
 """
 
+import json
 import os
-from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass, field
 from enum import Enum
-import json
 from pathlib import Path
+from typing import Dict, Union
 
 from .exceptions import WINAConfigurationError
 

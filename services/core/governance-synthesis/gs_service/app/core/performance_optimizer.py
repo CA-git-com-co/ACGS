@@ -15,15 +15,15 @@ Key Features:
 - Response time optimization targeting <2s
 """
 
-import asyncio
 import logging
+import statistics
 import time
-from typing import Dict, List, Any, Optional, Tuple
+from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from collections import defaultdict, deque
-import statistics
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -237,7 +237,7 @@ class WINAPerformanceOptimizer:
             )
 
             # Validate optimization results
-            validation_result = await self._validate_optimization(optimization_result)
+            await self._validate_optimization(optimization_result)
 
             # Update performance tracking
             optimization_time_ms = (time.time() - start_time) * 1000
@@ -484,7 +484,6 @@ class WINAPerformanceOptimizer:
         # In a real implementation, this would load from database
         # For now, we'll initialize with baseline values
         logger.info("Loading historical performance data")
-        pass
 
     async def _calibrate_adaptive_thresholds(self):
         """Calibrate adaptive thresholds based on historical performance."""

@@ -1,15 +1,16 @@
 # Enterprise Session Management
-import secrets
 import hashlib
 import json
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timezone, timedelta
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
-from fastapi import Request, HTTPException, status
+import secrets
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
 
-from ..models import User, UserSession
+from fastapi import Request
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from ..crud import crud_user
+from ..models import User, UserSession
 
 
 class SessionManager:

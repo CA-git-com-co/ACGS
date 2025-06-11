@@ -8,43 +8,24 @@ Phase 3: Performance Optimization and Security Compliance
 Enhanced with advanced caching, performance monitoring, and security testing.
 """
 
-import pytest
 import asyncio
-import time
 import statistics
-import concurrent.futures
-from typing import List, Dict, Any
-from unittest.mock import AsyncMock, MagicMock, patch
-import redis.asyncio as redis
+import time
+from unittest.mock import AsyncMock, MagicMock
 
-from services.core.governance_synthesis.app.services.policy_validator import (
-    PolicyValidationEngine,
-    PolicyValidationRequest,
-    ValidationLevel,
-    PolicyType,
-)
+import pytest
 from services.core.governance_synthesis.app.core.opa_integration import (
-    OPAClient,
     PolicyDecisionRequest,
     PolicyDecisionResponse,
 )
+from services.core.governance_synthesis.app.services.policy_validator import (
+    PolicyType,
+    PolicyValidationEngine,
+    PolicyValidationRequest,
+    ValidationLevel,
+)
 
 # Phase 3: Performance optimization imports
-from services.core.governance_synthesis.app.services.performance_monitor import (
-    PerformanceMonitor,
-    PerformanceProfiler,
-    SystemResourceMonitor,
-)
-from services.core.governance_synthesis.app.services.advanced_cache import (
-    MultiTierCache,
-    LRUCache,
-    RedisCache,
-)
-from services.core.governance_synthesis.app.services.security_compliance import (
-    SecurityComplianceService,
-    RateLimiter,
-    InputValidator,
-)
 
 
 @pytest.fixture
@@ -410,8 +391,9 @@ class TestMemoryAndResourceUsage:
         self, performance_policy_validator, sample_performance_requests
     ):
         """Test memory usage during high-load validation."""
-        import psutil
         import os
+
+        import psutil
 
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss / 1024 / 1024  # MB

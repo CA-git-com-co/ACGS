@@ -14,24 +14,21 @@ Test Coverage:
 - Integration with AlphaEvolve components
 """
 
-import pytest
 import asyncio
-from unittest.mock import Mock, patch, AsyncMock
-from typing import Dict, List, Any
+from unittest.mock import AsyncMock, Mock, patch
 
-import sys
-import os
+import pytest
+from services.core.governance_synthesis.app.core.wina_rego_synthesis import (
+    WINARegoSynthesisMetrics,
+    WINARegoSynthesisResult,
+    WINARegoSynthesizer,
+    batch_synthesize_rego_policies_with_wina,
+    get_wina_rego_synthesis_performance_summary,
+    synthesize_rego_policy_with_wina,
+)
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../../..'))  # Removed during reorganization
 
-from services.core.governance_synthesis.app.core.wina_rego_synthesis import (
-    WINARegoSynthesizer,
-    WINARegoSynthesisResult,
-    WINARegoSynthesisMetrics,
-    synthesize_rego_policy_with_wina,
-    batch_synthesize_rego_policies_with_wina,
-    get_wina_rego_synthesis_performance_summary,
-)
 
 
 class TestWINARegoSynthesizer:

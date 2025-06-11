@@ -4,20 +4,20 @@ Constitutional Council Test Fixtures
 Provides standardized test fixtures for Constitutional Council tests with Pydantic v2.0+ support.
 """
 
-import pytest
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, List, Optional
-from unittest.mock import AsyncMock, MagicMock
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import pytest
 
 # Import schemas and models
 from services.core.constitutional_ai.app.schemas import (
     ACAmendmentCreate,
     ACAmendmentVoteCreate,
-    ACAmendmentCommentCreate,
 )
-from services.shared.models import ACAmendment, ACAmendmentVote, User
+
+from services.shared.models import User
 
 
 class VotingBehavior(Enum):

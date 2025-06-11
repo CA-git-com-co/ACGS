@@ -5,13 +5,12 @@ Provides middleware components for event processing including
 logging, metrics collection, and filtering.
 """
 
-import time
 import logging
-from typing import Optional, Dict, Any
+import time
 from abc import ABC, abstractmethod
+from typing import Any, Dict, Optional
 
-from .types import EventType, EventSeverity, get_event_severity
-from ..common.error_handling import log_error
+from .types import EventSeverity, get_event_severity
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,6 @@ class EventMiddleware(ABC):
         Returns:
             Processed event or None to filter out
         """
-        pass
 
 
 class LoggingMiddleware(EventMiddleware):

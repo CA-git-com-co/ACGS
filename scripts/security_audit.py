@@ -13,19 +13,18 @@ Comprehensive security assessment targeting ≥85% security score:
 - Vulnerability scanning and hardening recommendations
 """
 
+import argparse
 import asyncio
-import aiohttp
-import json
+import hashlib
 import logging
 import time
-import hashlib
-import jwt
-import base64
-from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-import argparse
+from typing import Dict, List, Optional
+
+import aiohttp
+import jwt
 
 # Configure logging
 logging.basicConfig(

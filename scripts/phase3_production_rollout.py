@@ -7,14 +7,15 @@ Implements blue-green deployment with gradual traffic increase and performance m
 
 import asyncio
 import json
-import time
-import requests
+import signal
 import subprocess
 import sys
-import signal
+import time
 from datetime import datetime
-from typing import Dict, List, Any, Tuple
+from typing import Dict
+
 import psutil
+import requests
 
 
 class ProductionRollout:

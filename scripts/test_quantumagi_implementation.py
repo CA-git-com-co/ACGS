@@ -6,13 +6,11 @@ Validates the GS Engine, policy synthesis, and compliance checking logic
 """
 
 import asyncio
-import json
 import hashlib
-import sys
-import os
-from datetime import datetime
-from typing import Dict, List, Optional
+import json
 import logging
+from datetime import datetime
+from typing import Dict, List
 
 # Add the project root to the path
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # Removed during reorganization
@@ -148,7 +146,6 @@ class QuantumagiTestSuite:
             try:
                 from gs_engine.governance_synthesis import (
                     QuantumagiGSEngine,
-                    PolicyCategory,
                 )
 
                 gs_engine_available = True
@@ -175,7 +172,7 @@ class QuantumagiTestSuite:
                     "solana_cluster": "devnet",
                 }
 
-                gs_engine = QuantumagiGSEngine(config)
+                QuantumagiGSEngine(config)
 
                 # Mock the synthesis process
                 policy = await self._mock_policy_synthesis(principle)

@@ -7,11 +7,11 @@ This script parses policy files from various sources and normalizes them into a 
 
 import json
 import re
-import os
-import yaml
-from pathlib import Path
-from typing import Dict, List, Tuple, Generator, Any, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
+import yaml
 
 # Type aliases
 PolicyEntry = Dict[str, Any]

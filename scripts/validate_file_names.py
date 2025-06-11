@@ -11,13 +11,12 @@ Usage:
     python scripts/validate_file_names.py --fix-dry-run
 """
 
+import argparse
 import os
 import re
 import sys
-import argparse
 from pathlib import Path
 from typing import List, Tuple
-
 
 # Characters that are invalid on Windows
 INVALID_CHARS = r'[:<>"|?*]'

@@ -7,9 +7,10 @@ workflow-specific settings based on the Gemini-LangGraph patterns.
 """
 
 import os
-from typing import Dict, List, Optional, Any
-from pydantic import BaseModel, Field
 from enum import Enum
+from typing import Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class ModelRole(str, Enum):

@@ -11,20 +11,19 @@ Classes:
     ConfigSource: Enumeration of configuration sources
 """
 
-import os
 import logging
+import os
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any, Union
-from dataclasses import dataclass, asdict
 from pathlib import Path
+from typing import Any, Dict, Optional
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func
-from sqlalchemy.orm import selectinload
 
-from services.shared.models import ViolationThreshold, User
 from services.shared.database import get_async_db
+from services.shared.models import User, ViolationThreshold
 
 logger = logging.getLogger(__name__)
 

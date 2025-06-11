@@ -3,19 +3,17 @@ Result Aggregation and WebSocket Streaming for ACGS-PGP Task 7
 Provides real-time result aggregation with Byzantine fault tolerance
 """
 
-import asyncio
 import json
 import logging
+import statistics
 import time
-from typing import Dict, List, Any, Optional, Set, Callable, AsyncGenerator
+from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-import statistics
-from collections import defaultdict, Counter
+from typing import Any, Dict, List, Optional, Set
 
 from fastapi import WebSocket, WebSocketDisconnect
-import numpy as np
 
 logger = logging.getLogger(__name__)
 

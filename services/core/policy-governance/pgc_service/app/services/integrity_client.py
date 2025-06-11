@@ -1,6 +1,8 @@
 import os
-import httpx
 from typing import List, Optional
+
+import httpx
+
 from ..schemas import IntegrityPolicyRule  # Using the schema defined in pgc_service
 
 # Load environment variables
@@ -71,7 +73,7 @@ integrity_service_client = IntegrityServiceClient(base_url=INTEGRITY_SERVICE_URL
 
 # Example Usage (for testing this file)
 if __name__ == "__main__":
-    import asyncio
+    pass
 
     async def test_integrity_client_for_pgc():
         print(
@@ -81,7 +83,6 @@ if __name__ == "__main__":
 
         # Placeholder token for Integrity Service (if its placeholder auth expects one)
         # The integrity_service placeholder auth uses "internal_service_token" for GET /policies/
-        test_auth_token = "internal_service_token"
 
         # print("\nListing verified policy rules...")
         # verified_rules = await integrity_service_client.list_verified_policy_rules(auth_token=test_auth_token)

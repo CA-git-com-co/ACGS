@@ -4,12 +4,12 @@ Handles digital signatures, key management, Merkle trees, and timestamping
 """
 
 import base64
-from datetime import datetime, timezone, timedelta
-from typing import List, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime, timezone
+from typing import Any, Dict
 
 from app.database import get_async_db
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # from app.core.auth import require_internal_service, User
 
@@ -24,23 +24,22 @@ def require_internal_service():
 
 
 from app.schemas import (
-    CryptoKeyCreate,
     CryptoKey,
+    CryptoKeyCreate,
     CryptoKeyList,
+    MerkleProof,
+    MerkleProofResult,
+    MerkleProofVerification,
+    MerkleTreeBuild,
+    MerkleTreeResult,
     SignatureRequest,
     SignatureResponse,
     SignatureVerification,
     SignatureVerificationResult,
-    MerkleTreeBuild,
-    MerkleTreeResult,
-    MerkleProof,
-    MerkleProofVerification,
-    MerkleProofResult,
     TimestampRequest,
     TimestampResponse,
     TimestampVerification,
     TimestampVerificationResult,
-    IntegrityReport,
 )
 from app.services.crypto_service import crypto_service, merkle_service
 from app.services.key_management import key_manager

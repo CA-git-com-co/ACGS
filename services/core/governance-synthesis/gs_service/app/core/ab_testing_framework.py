@@ -5,15 +5,14 @@ Implements statistical significance testing, performance comparison,
 and A/B test result tracking for prompt template optimization.
 """
 
-import asyncio
 import logging
-import numpy as np
-import scipy.stats as stats
-from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-import json
+from typing import Any, Dict, List, Optional, Tuple
+
+import numpy as np
+import scipy.stats as stats
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +118,7 @@ class ABTestingFramework:
         test_config: ABTestConfig = None,
     ) -> ABTestResult:
         """Create a new A/B test."""
-        config = test_config or self.config
+        test_config or self.config
 
         # Validate allocations sum to 1.0
         total_allocation = sum(allocation for _, _, allocation in template_variants)

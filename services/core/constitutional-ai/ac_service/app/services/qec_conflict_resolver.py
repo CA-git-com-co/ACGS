@@ -6,25 +6,22 @@ workflows for intelligent automated patch suggestions and validation.
 """
 
 import logging
-from typing import List, Dict, Any, Optional, Tuple
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
-from ..models import Principle, ACConflictResolution
-from ..schemas import ACConflictResolutionCreate, ACConflictResolutionUpdate
+from ..models import ACConflictResolution, Principle
 
 # Import QEC enhancement components
 try:
+    from integrations.alphaevolve_engine.core.constitutional_principle import (
+        ConstitutionalPrinciple,
+    )
     from integrations.alphaevolve_engine.services.qec_enhancement import (
         ConstitutionalDistanceCalculator,
         ErrorPredictionModel,
         RecoveryStrategyDispatcher,
         ValidationDSLParser,
-        FailureType,
-        RecoveryStrategy,
-    )
-    from integrations.alphaevolve_engine.core.constitutional_principle import (
-        ConstitutionalPrinciple,
     )
 
     QEC_AVAILABLE = True

@@ -20,11 +20,11 @@ import logging
 import os
 import subprocess
 import time
-from datetime import datetime, timezone, timedelta
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Configure logging
 logging.basicConfig(
@@ -361,7 +361,7 @@ class PolicySynthesisDeploymentOrchestrator:
         """Set up comprehensive monitoring infrastructure for Policy Synthesis Enhancement."""
         try:
             # Create enhanced monitoring configuration
-            monitoring_config = await self._create_enhanced_monitoring_config()
+            await self._create_enhanced_monitoring_config()
 
             # Deploy monitoring stack
             monitoring_deploy_cmd = [

@@ -7,10 +7,10 @@ event-driven development patterns.
 
 import functools
 import logging
-from typing import Callable, Any, Dict, Optional
+from typing import Any, Callable, Dict
 
-from .types import EventType, EventPriority
 from .bus import get_event_bus
+from .types import EventPriority, EventType
 
 logger = logging.getLogger(__name__)
 

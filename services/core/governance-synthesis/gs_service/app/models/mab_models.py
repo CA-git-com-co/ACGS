@@ -5,24 +5,23 @@ SQLAlchemy models for storing prompt templates, performance metrics,
 and optimization history in the ACGS-PGP database.
 """
 
+import uuid
+from datetime import datetime, timezone
+
 from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Float,
-    DateTime,
-    Text,
     JSON,
     Boolean,
+    Column,
+    DateTime,
+    Float,
     ForeignKey,
+    Integer,
+    String,
+    Text,
 )
-from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID
-from datetime import datetime, timezone
-import uuid
 
 # Local database base to avoid shared module issues
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 
 # Create local Base to avoid shared module dependency issues
 Base = declarative_base()

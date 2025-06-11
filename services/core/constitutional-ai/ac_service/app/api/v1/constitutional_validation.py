@@ -4,14 +4,14 @@ Constitutional Validation API with Redis Caching
 Provides cached constitutional validation for improved performance.
 """
 
+import logging
+import sys
+import time
+from pathlib import Path
+from typing import Any, Dict
+
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
-from typing import Dict, Any, Optional
-import logging
-import time
-import sys
-import os
-from pathlib import Path
 
 # Add the backend directory to the Python path
 backend_dir = Path(__file__).parent.parent.parent.parent.parent

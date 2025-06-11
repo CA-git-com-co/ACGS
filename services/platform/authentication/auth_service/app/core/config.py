@@ -1,8 +1,8 @@
 # backend/auth_service/app/core/config.py
 import os
-from typing import Any, Dict, List, Optional, Union
+from typing import List, Optional
 
-from pydantic import AnyHttpUrl, field_validator, model_validator, ConfigDict
+from pydantic import ConfigDict, model_validator
 from pydantic_settings import BaseSettings
 
 

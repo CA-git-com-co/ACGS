@@ -7,14 +7,14 @@ as part of the WINA (Weight Informed Neuron Activation) optimization.
 
 import logging
 import time
-from typing import Dict, List, Optional, Tuple, Any
+from dataclasses import dataclass
+from typing import Any, Dict, Tuple
+
 import numpy as np
 import torch
-from dataclasses import dataclass
-from datetime import datetime, timezone
 
-from .exceptions import WINATransformationError
 from .config import WINAConfig
+from .exceptions import WINATransformationError
 
 logger = logging.getLogger(__name__)
 

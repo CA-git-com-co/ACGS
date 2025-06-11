@@ -6,25 +6,25 @@ client implementations across services and provides consistent patterns
 for inter-service communication.
 """
 
-import asyncio
 import logging
 import time
-from typing import Dict, Any, Optional, List, Union
 from contextlib import asynccontextmanager
+from typing import Any, Dict, Optional
+
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from .registry import ServiceRegistry, ServiceType, ServiceConfig, get_service_registry
-from .circuit_breaker import CircuitBreaker
 from ..common.error_handling import (
     ACGSException,
-    ServiceUnavailableError,
     AuthenticationError,
+    ServiceUnavailableError,
     handle_service_error,
     log_error,
 )
+from ..common.formatting import format_response
 from ..common.validation import validate_response
-from ..common.formatting import format_response, standardize_timestamps
+from .circuit_breaker import CircuitBreaker
+from .registry import ServiceRegistry, ServiceType, get_service_registry
 
 logger = logging.getLogger(__name__)
 

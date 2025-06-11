@@ -7,22 +7,18 @@ input validation, rate limiting, and audit logging.
 Phase 3: Performance Optimization and Security Compliance
 """
 
-import pytest
-import asyncio
 import time
-import json
-from typing import Dict, Any, List
-from unittest.mock import AsyncMock, MagicMock, patch
-from fastapi import Request, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials
+from unittest.mock import MagicMock
 
+import pytest
+from fastapi import HTTPException, Request, status
+from fastapi.security import HTTPAuthorizationCredentials
 from services.core.governance_synthesis.app.services.security_compliance import (
-    SecurityComplianceService,
-    InputValidator,
-    RateLimiter,
     AuditLogger,
+    InputValidator,
     JWTManager,
-    SecurityEvent,
+    RateLimiter,
+    SecurityComplianceService,
 )
 
 

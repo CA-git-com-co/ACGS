@@ -3,18 +3,16 @@ Celery Integration for ACGS-PGP Task 7 Parallel Validation Pipeline
 Provides distributed task queue management with Redis broker
 """
 
-import os
-import logging
 import asyncio
-import json
-from typing import Dict, List, Any, Optional, Callable
-from datetime import datetime, timezone, timedelta
+import logging
+import os
 from dataclasses import asdict
+from datetime import datetime, timezone
+from typing import Any, Callable, Dict, List, Optional
 
 try:
     from celery import Celery, Task
     from celery.result import AsyncResult
-    from celery.signals import task_prerun, task_postrun, task_failure
     from kombu import Queue
 
     CELERY_AVAILABLE = True
@@ -26,12 +24,12 @@ except ImportError:
     Queue = None
 
 from .parallel_processing import ParallelTask, TaskStatus, ValidationBatch
+from .redis_client import get_redis_client
 from .result_aggregation import (
-    ValidationResult,
     AggregatedResult,
     ByzantineFaultTolerantAggregator,
+    ValidationResult,
 )
-from .redis_client import get_redis_client
 
 logger = logging.getLogger(__name__)
 
@@ -137,8 +135,6 @@ else:
     class ACGSTask:
         """Mock task class when Celery is not available."""
 
-        pass
-
 
 if CELERY_AVAILABLE:
 
@@ -154,8 +150,6 @@ if CELERY_AVAILABLE:
             task = ParallelTask(**task_data)
 
             # Import validation logic
-            from ..fv_service.app.core.verification_logic import verify_policy_rules
-            from ..fv_service.app.core.bias_detector import bias_detector
 
             # Execute based on task type
             if task.task_type == "policy_verification":

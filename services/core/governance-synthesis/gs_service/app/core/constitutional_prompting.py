@@ -7,13 +7,14 @@ Enhanced with WINA-informed constitutional principle updates for optimization.
 """
 
 import logging
-from typing import List, Dict, Any, Optional
-from ..schemas import ACPrinciple
+from typing import Any, Dict, List, Optional
+
 from ..services.ac_client import ac_service_client
 
 # Import WINA constitutional integration
 try:
     import logging
+
     from services.shared.wina.constitutional_integration import (
         WINAConstitutionalPrincipleAnalyzer,
         WINAConstitutionalUpdateService,

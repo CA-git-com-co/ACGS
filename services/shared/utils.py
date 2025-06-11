@@ -1,15 +1,16 @@
 # ACGS/shared/utils.py
 
+import json
 import logging
 import os
-from datetime import datetime, timezone, timedelta
 import re
-from typing import Optional, Dict, Any, Union, List
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field, field_validator
-from enum import Enum
-import json
-from pathlib import Path
 
 # Setup basic logger
 # In a real application, you'd likely use a more sophisticated logging setup,

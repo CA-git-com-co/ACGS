@@ -11,48 +11,50 @@ This module provides:
 - Performance metrics collection
 """
 
-import logging  # Moved to top
 import asyncio
-import time
+import logging  # Moved to top
 import os
-from typing import Dict, List, Optional, Any, Union
+import time
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
+from typing import Any, Dict, List, Optional, Union
 
 logger = logging.getLogger(__name__)
 
 # Import WINA components
-from services.shared.wina import WINACore, WINAConfig, WINAIntegrationConfig
+from services.shared.wina import WINACore
+from services.shared.wina.config import load_wina_config_from_env
 from services.shared.wina.model_integration import (
     WINAModelIntegrator,
     WINAOptimizationResult,
 )
-from services.shared.wina.config import load_wina_config_from_env
-from services.shared.wina.exceptions import WINAError, WINAOptimizationError
 
 # Import WINA components from gs_service.app.wina
 from ..wina.core import analyze_neuron_activations, calculate_wina_weights
 from ..wina.gating import determine_gating_decision
-from ..wina.models import (
-    NeuronActivationInput,
-    GatingThresholdConfig,
+from ..wina.models import (  # Added GatingDecision
     GatingDecision,
-)  # Added GatingDecision
+    GatingThresholdConfig,
+    NeuronActivationInput,
+)
 
 # Import GS Engine components (with error handling for missing dependencies)
 try:
-    from .llm_integration import (
-        get_llm_client,
-        query_llm_for_structured_output,
-        query_llm_for_constitutional_synthesis,
-        GroqLLMClient,  # Import specific client for type checking
-        RealLLMClient,  # Import specific client for type checking
-    )
     from ..schemas import (
-        LLMInterpretationInput,
-        LLMStructuredOutput,
         ConstitutionalSynthesisInput,
         ConstitutionalSynthesisOutput,
+        LLMInterpretationInput,
+        LLMStructuredOutput,
+    )
+    from .llm_integration import (
+        GroqLLMClient,  # Import specific client for type checking
+    )
+    from .llm_integration import (
+        RealLLMClient,  # Import specific client for type checking
+    )
+    from .llm_integration import (
+        get_llm_client,
+        query_llm_for_constitutional_synthesis,
+        query_llm_for_structured_output,
     )
 
     GS_ENGINE_AVAILABLE = True
@@ -134,7 +136,7 @@ async def _retrieve_neuron_activations(text: str) -> Optional[Dict[str, List[flo
     get_activations_error = ""
     try:
         import torch  # Imported lazily
-        from transformers import AutoTokenizer, AutoModel
+        from transformers import AutoModel, AutoTokenizer
 
         model_name = os.getenv("HF_ACTIVATION_MODEL", "distilbert-base-uncased")
 

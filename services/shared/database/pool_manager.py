@@ -5,17 +5,16 @@ Provides optimized connection pooling to eliminate redundant database
 connections and improve performance across all services.
 """
 
-import asyncio
 import logging
 import time
-from typing import Dict, Any, Optional, List, AsyncContextManager
-from dataclasses import dataclass, field
 from contextlib import asynccontextmanager
-import asyncpg
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import QueuePool
 
-from ..common.error_handling import DatabaseError, ACGSException
+from ..common.error_handling import DatabaseError
 
 # Import DatabaseInterface with try/except to avoid circular imports
 try:

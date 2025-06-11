@@ -4,11 +4,10 @@ Emergency rollback script for dependency merges
 Use if any merge causes critical issues
 """
 
-import subprocess
 import logging
+import subprocess
 import sys
-import time
-from typing import Dict, Any
+from typing import Any, Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

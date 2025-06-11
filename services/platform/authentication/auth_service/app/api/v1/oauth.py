@@ -1,13 +1,13 @@
 # Enterprise OAuth 2.0 and OpenID Connect API Endpoints
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Response
-from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel
 from typing import List, Optional
 
-from ...core.oauth import oauth_service, initialize_oauth_providers
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ...core.oauth import initialize_oauth_providers, oauth_service
 from ...core.security_audit import security_audit
 from ...db.session import get_async_db
-
 
 router = APIRouter()
 
@@ -67,7 +67,7 @@ async def get_authorization_url(
         )
 
         # Extract state from URL for response
-        from urllib.parse import urlparse, parse_qs
+        from urllib.parse import parse_qs, urlparse
 
         parsed_url = urlparse(authorization_url)
         query_params = parse_qs(parsed_url.query)
@@ -247,7 +247,7 @@ async def link_oauth_account(
         )
 
         # Store user ID in state for account linking
-        from urllib.parse import urlparse, parse_qs
+        from urllib.parse import parse_qs, urlparse
 
         parsed_url = urlparse(authorization_url)
         query_params = parse_qs(parsed_url.query)
@@ -337,4 +337,3 @@ async def unlink_oauth_account(
 
 
 # Import get_current_active_user after router definition to avoid circular imports
-from ...core.security import get_current_active_user

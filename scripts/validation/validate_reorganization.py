@@ -4,14 +4,12 @@ Reorganization Validation Script
 Validates the new directory structure and import paths
 """
 
-import os
-import sys
-import subprocess
-import importlib.util
 import ast
-import json
+import os
+import subprocess
+import sys
 from pathlib import Path
-from typing import List, Dict, Tuple, Set
+from typing import List
 
 
 class ReorganizationValidator:

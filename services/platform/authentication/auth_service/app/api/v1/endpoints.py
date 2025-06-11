@@ -1,30 +1,29 @@
 # backend/auth_service/app/api/v1/endpoints.py
-import secrets
+from datetime import datetime as dt  # Use dt alias for datetime objects
 from datetime import (
     timedelta,
     timezone,
-    datetime as dt,
-)  # Use dt alias for datetime objects
+)
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_csrf_protect import CsrfProtect
 from jose import JWTError, jwt  # For decoding in /logout and /token/refresh
+
+# Create simple schemas locally since shared ones are not available
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Application-specific imports
 from ...core import security
 from ...core.config import settings
-from . import deps  # Assuming deps.get_db is correctly defined for AsyncSession
-from ...crud import (
+from ...crud import (  # crud_refresh_token was created earlier
     crud_refresh_token,
     crud_user,
-)  # crud_refresh_token was created earlier
+)
 from ...models import User  # RefreshToken model not directly used here, but in crud
-
-# Create simple schemas locally since shared ones are not available
-from pydantic import BaseModel
-from typing import Optional
+from . import deps  # Assuming deps.get_db is correctly defined for AsyncSession
 
 
 class Token(BaseModel):

@@ -12,11 +12,9 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Dict, Any
 
-import httpx
 import asyncpg
-from sqlalchemy.ext.asyncio import create_async_engine
+import httpx
 
 # Add project root to path
 project_root = Path(__file__).parent.parent

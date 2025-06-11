@@ -7,40 +7,27 @@ and performance monitoring.
 """
 
 import logging
-import uuid
 from datetime import datetime
-from typing import Dict, List, Optional, Any
-
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-
-from services.shared.database import get_async_db
-from services.shared.models import ConstitutionalPrinciple, Policy, User
-from services.shared.auth import get_current_active_user
+from typing import Any, Dict, List, Optional
 
 # Import QEC error correction services
 from app.services.qec_error_correction_service import (
-    QECErrorCorrectionService,
-    ConflictDetectionEngine,
-    AutomaticResolutionWorkflow,
-    SemanticValidationEngine,
-    PolicyRefinementSuggester,
-    ConflictComplexityScorer,
-    ParallelConflictProcessor,
-    ConflictType,
-    ResolutionStrategy,
-    ErrorCorrectionStatus,
     ConflictDetectionResult,
-    ErrorCorrectionResult,
-    PolicyRefinementSuggestion,
+    ConflictType,
+    QECErrorCorrectionService,
+    ResolutionStrategy,
 )
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi.responses import JSONResponse
 
 # Import Pydantic models for request/response
 from pydantic import BaseModel, Field
-from enum import Enum
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.auth import get_current_active_user
+from services.shared.database import get_async_db
+from services.shared.models import ConstitutionalPrinciple, Policy, User
 
 logger = logging.getLogger(__name__)
 

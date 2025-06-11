@@ -7,17 +7,14 @@ for formal verification capabilities.
 Based on AlphaEvolve-ACGS Integration System research paper improvements.
 """
 
-import asyncio
 import logging
-import time
 import random
-import numpy as np
-import json
-from typing import Dict, List, Optional, Any, Tuple
+import time
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List
 
-from ..schemas import SafetyProperty, PolicyRule
+from ..schemas import PolicyRule, SafetyProperty
 
 logger = logging.getLogger(__name__)
 

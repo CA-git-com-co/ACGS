@@ -1,13 +1,10 @@
 # Import shared authentication utilities
 from services.shared.auth import (
-    get_current_user_from_token,
     get_current_active_user,
-    require_admin,
+    get_current_user_from_token,
     require_auditor,
     require_integrity_admin,
     require_internal_service,
-    RoleChecker,
-    User,
 )
 
 # Integrity service specific role checkers

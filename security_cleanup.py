@@ -12,13 +12,11 @@ Focus Areas:
 - Clean up security configurations
 """
 
-import os
-import re
 import json
-import subprocess
 import logging
+import re
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import List
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

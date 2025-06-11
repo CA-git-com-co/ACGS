@@ -3,22 +3,22 @@ Enhanced Test Suite for LLM Reliability Framework
 Target: 80%+ test coverage (from 20%)
 """
 
-import pytest
 import asyncio
 import time
-from unittest.mock import Mock, patch, AsyncMock
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
+from unittest.mock import AsyncMock, patch
+
+import pytest
 
 # Import the LLM Reliability Framework components
 try:
     from services.shared.llm_reliability_framework import (
-        LLMReliabilityFramework,
-        ReliabilityMetrics,
-        LLMProvider,
-        ReliabilityConfig,
         FailureMode,
+        LLMProvider,
+        LLMReliabilityFramework,
         RecoveryStrategy,
+        ReliabilityConfig,
+        ReliabilityMetrics,
     )
 except ImportError:
     # Mock imports for testing

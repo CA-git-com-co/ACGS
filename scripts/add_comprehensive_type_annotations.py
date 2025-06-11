@@ -15,14 +15,12 @@ Features:
 """
 
 import ast
-import os
-import re
-import sys
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional, Any, Union
 import logging
+import sys
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Set
 
 # Configure logging
 logging.basicConfig(
@@ -183,7 +181,6 @@ class TypeAnnotationAnalyzer:
 
             # Track type annotations needed
             type_annotations_needed = set()
-            modifications = []
 
             # Analyze functions
             for node in ast.walk(tree):

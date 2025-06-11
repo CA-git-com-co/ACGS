@@ -10,9 +10,9 @@ Usage:
 """
 
 import asyncio
-import sys
-import os
 import json
+import os
+import sys
 from datetime import datetime, timezone
 
 # Add the backend directory to the Python path
@@ -35,8 +35,8 @@ async def validate_mab_core_functionality():
         from gs_service.app.core.mab_integration import MABIntegratedGSService
         from gs_service.app.schemas import (
             LLMStructuredOutput,
-            LLMSuggestedRule,
             LLMSuggestedAtom,
+            LLMSuggestedRule,
         )
 
         # Initialize MAB service

@@ -19,9 +19,8 @@ from typing import Optional
 # For digital signatures - requires 'cryptography' library
 # Ensure 'cryptography' is in requirements.txt
 try:
-    from cryptography.hazmat.primitives import hashes
-    from cryptography.hazmat.primitives.asymmetric import rsa, padding
-    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
     CRYPTOGRAPHY_AVAILABLE = True
 except ImportError:

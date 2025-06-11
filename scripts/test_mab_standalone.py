@@ -4,15 +4,15 @@ Standalone MAB Prompt Optimization Test
 Tests the core MAB functionality without complex service dependencies.
 """
 
-import sys
-import os
 import asyncio
-import json
-import numpy as np
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any, Tuple
+import os
+import sys
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
+
+import numpy as np
 
 # Add the src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
@@ -468,7 +468,7 @@ async def test_ab_testing_framework():
                 "core",
             ),
         )
-        from ab_testing_framework import ABTestingFramework, ABTestConfig
+        from ab_testing_framework import ABTestConfig, ABTestingFramework
 
         # Initialize A/B testing framework
         ab_config = ABTestConfig(
@@ -538,7 +538,7 @@ async def test_performance_validation():
 
     try:
         # Import performance validation
-        from performance_validation import PerformanceValidator, PerformanceTarget
+        from performance_validation import PerformanceValidator
 
         # Initialize performance validator
         validator = PerformanceValidator(

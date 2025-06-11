@@ -3,15 +3,14 @@ Redis client configuration and utilities for ACGS-PGP microservices.
 Provides centralized Redis connection management and caching utilities.
 """
 
-import os
 import json
-import asyncio
 import logging
-from typing import Optional, Any, Dict, List, Union
-from datetime import datetime, timedelta
+import os
+from contextlib import asynccontextmanager
+from typing import Any, Dict, List, Optional
+
 import redis.asyncio as redis
 from redis.asyncio import Redis
-from contextlib import asynccontextmanager
 
 logger = logging.getLogger(__name__)
 

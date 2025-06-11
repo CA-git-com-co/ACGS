@@ -5,23 +5,21 @@ REST API endpoints for managing federated evaluation tasks,
 node registration, and evaluation status monitoring.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Dict, List, Optional, Any
 import logging
-import asyncio
+from typing import Any, Dict, List, Optional
 
-from services.shared.database import get_async_db
-from services.shared.auth import get_current_user_from_token, get_current_active_user
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
+
+from services.shared.auth import get_current_active_user
+
 from ...core.federated_evaluator import federated_evaluator
 from ...schemas import (
+    EvaluationStatusResponse,
     FederatedEvaluationRequest,
     FederatedEvaluationResponse,
-    EvaluationStatusResponse,
+    FederatedMetricsResponse,
     NodeConfiguration,
     NodeStatusResponse,
-    FederatedMetricsResponse,
-    ErrorResponse,
     PlatformType,
 )
 

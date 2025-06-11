@@ -1,18 +1,15 @@
 # acgspcp-main/auth_service/app/core/security.py
-import os
-import sys
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional, Union, List
+from typing import List, Optional
 
-from pydantic import BaseModel
-from fastapi import Depends, HTTPException, status, Request
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Import password functions from separate module to avoid circular imports
-from .password import verify_password, get_password_hash
 
 # Use local database and models instead of shared ones
 try:
@@ -27,8 +24,8 @@ except ImportError:
         pass
 
 
-from .config import settings
 from ..crud import crud_user  # Ensure this import works
+from .config import settings
 
 
 # --- Pydantic model for token payload validation ---
@@ -236,8 +233,8 @@ async def get_current_user_from_api_key(
     request: Request, db: AsyncSession = Depends(get_async_db)
 ) -> User:
     """Authenticate user via API key for service-to-service authentication"""
-    from ..models import ApiKey
     from ..crud import crud_user
+    from ..models import ApiKey
 
     # Check for API key in Authorization header
     auth_header = request.headers.get("authorization")

@@ -436,6 +436,47 @@ services:
       - pgc_service
       - ec_service
 
+  # HAProxy Load Balancer for High Availability
+  haproxy_load_balancer:
+    build: ../load-balancer
+    container_name: acgs_haproxy_lb
+    ports:
+      - "80:80"     # HTTP traffic
+      - "443:443"   # HTTPS traffic
+      - "8080:8080" # HAProxy stats interface
+    volumes:
+      - ../load-balancer/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ../load-balancer/errors:/etc/haproxy/errors:ro
+      - ../load-balancer/ssl:/etc/ssl/certs:ro
+      - haproxy_logs:/var/log/haproxy
+    environment:
+      - HAPROXY_STATS_USER=${HAPROXY_STATS_USER:-admin}
+      - HAPROXY_STATS_PASSWORD=${HAPROXY_STATS_PASSWORD:-acgs_haproxy_admin_2024}
+    depends_on:
+      auth_service:
+        condition: service_started
+      ac_service:
+        condition: service_started
+      integrity_service:
+        condition: service_started
+      fv_service:
+        condition: service_started
+      gs_service:
+        condition: service_started
+      pgc_service:
+        condition: service_started
+      ec_service:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/health-check.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - default
+
   # Grafana monitoring dashboard
   grafana:
     image: grafana/grafana:10.2.0
@@ -466,3 +507,4 @@ volumes:
   research_data:
   experiment_artifacts:
   analysis_results:
+  haproxy_logs:

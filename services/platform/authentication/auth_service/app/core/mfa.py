@@ -1,15 +1,14 @@
 # Enterprise Multi-Factor Authentication (MFA) Implementation
-import secrets
-import qrcode
-import io
 import base64
-import pyotp
+import io
+import secrets
 from typing import List, Optional, Tuple
-from datetime import datetime, timezone
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
 
-from ..models import User
+import pyotp
+import qrcode
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from ..crud import crud_user
 
 

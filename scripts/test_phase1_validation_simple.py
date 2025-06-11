@@ -4,10 +4,10 @@ Simple Phase 1 validation script for ACGS-PGP remediation.
 Tests core functionality without complex authentication.
 """
 
-import subprocess
 import json
+import subprocess
 import sys
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 class SimplePhase1Validator:

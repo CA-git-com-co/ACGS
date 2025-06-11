@@ -3,27 +3,27 @@ ACGS-PGP Federated Evaluation Service
 Main FastAPI application for federated evaluation framework
 """
 
-from fastapi import FastAPI, Request, Response
+import logging
+from contextlib import asynccontextmanager
+from datetime import datetime
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from contextlib import asynccontextmanager
-import logging
-import asyncio
-from datetime import datetime, timedelta
+from shared import get_config
+
+from services.shared.metrics import (
+    create_metrics_endpoint,
+    metrics_middleware,
+)
+from services.shared.security_middleware import SecurityHeadersMiddleware
 
 from .api.v1.federated_evaluation import router as federated_router
-from .api.v1.secure_aggregation import router as aggregation_router
 from .api.v1.privacy_metrics import router as privacy_router
+from .api.v1.secure_aggregation import router as aggregation_router
 from .core.federated_coordinator import federated_coordinator
 from .core.secure_aggregation import secure_aggregator
 from .dashboard.federated_dashboard import create_dash_app
-from services.shared.security_middleware import SecurityHeadersMiddleware
-from shared import get_config
-from services.shared.metrics import (
-    get_metrics,
-    metrics_middleware,
-    create_metrics_endpoint,
-)
 
 # Load centralized configuration
 config = get_config()

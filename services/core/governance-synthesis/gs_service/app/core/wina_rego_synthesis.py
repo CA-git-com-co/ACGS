@@ -18,43 +18,39 @@ Target Performance:
 """
 
 import logging
-import asyncio
 import time
-from typing import Dict, List, Optional, Any, Union, Tuple
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
+from typing import Any, Dict, List, Optional
+
+from services.shared.wina.config import load_wina_config_from_env
+from services.shared.wina.metrics import WINAMetrics
 
 # Import WINA components
-from services.shared.wina import WINACore, WINAConfig, WINAIntegrationConfig
 from services.shared.wina.model_integration import (
     WINAModelIntegrator,
     WINAOptimizationResult,
 )
-from services.shared.wina.config import load_wina_config_from_env
-from services.shared.wina.exceptions import WINAError, WINAOptimizationError
-from services.shared.wina.metrics import WINAMetrics
+
+from ..schemas import ConstitutionalSynthesisInput
+from .constitutional_prompting import ConstitutionalPromptBuilder
 
 # Import GS Engine components
 from .wina_llm_integration import WINAOptimizedLLMClient, WINAOptimizedSynthesisResult
-from .constitutional_prompting import ConstitutionalPromptBuilder
-from .llm_integration import get_llm_client
-from ..schemas import ConstitutionalSynthesisInput, ConstitutionalSynthesisOutput
 
 # Import AlphaEvolve components
 try:
-    import sys
-    import os
+    pass
 
     # sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../alphaevolve_gs_engine/src'))  # Removed during reorganization
+    from integrations.alphaevolve_engine.services.llm_service import get_llm_service
     from integrations.alphaevolve_engine.services.policy_synthesizer import (
         LLMPolicyGenerator,
-        PolicySynthesisInput,
         PolicySuggestion,
+        PolicySynthesisInput,
     )
-    from integrations.alphaevolve_engine.services.llm_service import get_llm_service
 
     ALPHAEVOLVE_AVAILABLE = True
-except ImportError as e:
+except ImportError:
     ALPHAEVOLVE_AVAILABLE = False
 
     # Mock PolicySuggestion for when AlphaEvolve is not available

@@ -6,15 +6,12 @@ This script implements a comprehensive validation pipeline for the ACGS-PGP fram
 addressing the errors identified in the research workflow enhancement analysis.
 """
 
-import os
-import sys
-import subprocess
-import json
 import logging
-from pathlib import Path
-from typing import Dict, List, Any, Tuple
-import tempfile
 import re
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any, Dict, List
 
 # Configure logging
 logging.basicConfig(

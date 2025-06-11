@@ -12,24 +12,22 @@ with the Constitutional Council StateGraph to provide:
 
 import asyncio
 import logging
-from typing import Dict, List, Optional, Any, Set
-from datetime import datetime, timezone, timedelta
-from enum import Enum
 from dataclasses import dataclass, field
-import json
-import smtplib
-from email.mime.text import MIMEText
+from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
-import httpx
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_
-from pydantic import BaseModel, Field, validator
+from email.mime.text import MIMEText
+from enum import Enum
+from typing import Any, Dict, List, Optional, Set
 
-from services.shared.models import User
-from services.shared.auth import get_current_active_user
-from app.models import ACAmendment, ACAmendmentComment, ACAmendmentVote
+import httpx
 from app import crud
+from app.models import ACAmendment
+from pydantic import BaseModel, Field, validator
+from sqlalchemy import and_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from services.shared.langgraph_config import ConstitutionalCouncilConfig
+from services.shared.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -480,7 +478,6 @@ class StakeholderNotificationService:
         try:
             # Email configuration (should be moved to environment variables)
             smtp_server = "localhost"  # Configure based on environment
-            smtp_port = 587
 
             # Create email message
             msg = MIMEMultipart()

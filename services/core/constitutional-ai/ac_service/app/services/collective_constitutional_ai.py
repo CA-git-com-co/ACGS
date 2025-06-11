@@ -13,22 +13,19 @@ Key Features:
 - Real-time stakeholder engagement
 """
 
-import asyncio
-import json
 import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
-from urllib.parse import urljoin
+from typing import Any, Dict, List, Optional
 
 import aiohttp
 import numpy as np
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.metrics import get_metrics
+
 from ..models import Principle as ConstitutionalPrinciple
 from .democratic_governance import DemocraticGovernanceOrchestrator
 

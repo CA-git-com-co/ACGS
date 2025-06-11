@@ -12,23 +12,21 @@ Key Features:
 - Integration with QEC recovery strategies
 """
 
-import asyncio
 import logging
-import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.shared.models import Principle, ACConflictResolution
-from ..schemas import ACConflictResolutionUpdate
-from .qec_conflict_resolver import QECConflictResolver, ConflictAnalysis, PatchResult
+from services.shared.models import ACConflictResolution, Principle
+
 from .intelligent_conflict_detector import (
     ConflictDetectionResult,
     ConflictType,
-    ConflictSeverity,
 )
+from .qec_conflict_resolver import QECConflictResolver
 
 logger = logging.getLogger(__name__)
 

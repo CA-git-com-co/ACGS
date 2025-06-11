@@ -5,16 +5,14 @@ Implements transaction batching, formal verification optimization,
 and Redis caching to achieve <0.01 SOL costs and <2s response times.
 """
 
-import asyncio
 import json
 import logging
-import subprocess
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict
+
 import redis
-import requests
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

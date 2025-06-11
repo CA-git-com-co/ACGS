@@ -5,9 +5,8 @@ Tests that the new directory structure is working correctly
 """
 
 import os
-import sys
 import subprocess
-from pathlib import Path
+import sys
 
 
 def check_directory_structure():

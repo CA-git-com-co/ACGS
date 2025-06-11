@@ -6,20 +6,20 @@ under adversarial conditions and high load scenarios.
 """
 
 import asyncio
+import json
 import logging
 import time
-import json
-import random
-import psutil
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime, timezone
+from typing import Dict, List, Optional
+
 import aiohttp
+import psutil
 
 from .adversarial_framework import (
-    VulnerabilityResult,
-    AttackCategory,
-    VulnerabilitySeverity,
     AdversarialTestConfig,
+    AttackCategory,
+    VulnerabilityResult,
+    VulnerabilitySeverity,
 )
 
 logger = logging.getLogger(__name__)

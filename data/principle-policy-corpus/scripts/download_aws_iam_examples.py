@@ -5,13 +5,13 @@ AWS IAM Policy Examples Downloader
 This script downloads AWS IAM policy examples from the official AWS documentation.
 """
 
-import os
 import json
 import re
+from pathlib import Path
+from urllib.parse import urljoin
+
 import requests
 from bs4 import BeautifulSoup
-from pathlib import Path
-from urllib.parse import urljoin, urlparse
 
 
 def get_aws_iam_examples():

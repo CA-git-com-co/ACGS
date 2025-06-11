@@ -7,12 +7,9 @@ enhancement analysis for the ACGS-PGP framework.
 """
 
 import logging
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
-import json
 import re
 from dataclasses import dataclass
-from abc import ABC, abstractmethod
+from typing import Any, Dict, List
 
 # Configure logging
 logging.basicConfig(

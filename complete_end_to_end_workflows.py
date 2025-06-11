@@ -5,11 +5,12 @@ Implement and test the remaining 3/5 governance workflows to achieve full operat
 """
 
 import asyncio
-import httpx
 import json
 import time
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict
+
+import httpx
 
 
 class EndToEndWorkflowCompletion:
@@ -667,7 +668,7 @@ async def batch_oversight_coordination(request: dict):
         self.log_action("🚀 Starting End-to-End Workflow Completion", "INFO")
 
         # Step 1: Enhance service endpoints
-        enhancements = await self.enhance_service_endpoints()
+        await self.enhance_service_endpoints()
 
         # Step 2: Test complete governance workflow
         workflow_results = await self.test_complete_governance_workflow()

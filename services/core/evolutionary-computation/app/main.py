@@ -13,23 +13,22 @@ Key Features:
 - Adaptive learning and feedback mechanisms
 """
 
-import logging
 import asyncio
+import logging
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
+from datetime import datetime
 
-from app.api.v1.oversight import router as oversight_router
-from app.api.v1.alphaevolve import router as alphaevolve_router
-from app.api.v1.reporting import router as reporting_router
-from app.api.v1.monitoring import router as monitoring_router
-from app.api.v1.wina_oversight import router as wina_oversight_router
 from app.api.v1.advanced_wina_oversight import router as advanced_wina_oversight_router
+from app.api.v1.alphaevolve import router as alphaevolve_router
+from app.api.v1.monitoring import router as monitoring_router
+from app.api.v1.oversight import router as oversight_router
+from app.api.v1.reporting import router as reporting_router
+from app.api.v1.wina_oversight import router as wina_oversight_router
+from fastapi import FastAPI
 
 # Local implementations to avoid shared module dependencies
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 
 def add_security_middleware(app: FastAPI):
@@ -90,8 +89,8 @@ def get_config():
 
 # Import local components
 try:
+    from services.shared.wina.performance_api import router as wina_performance_router
     from services.shared.wina.performance_api import (
-        router as wina_performance_router,
         set_collector_getter,
     )
 except ImportError:
@@ -105,8 +104,8 @@ except ImportError:
 
 
 from app.core.wina_oversight_coordinator import WINAECOversightCoordinator
-from app.services.gs_client import gs_service_client
 from app.services.ac_client import ac_service_client
+from app.services.gs_client import gs_service_client
 from app.services.pgc_client import pgc_service_client
 
 # Load centralized configuration
@@ -207,8 +206,23 @@ add_security_middleware(app)
 # Add compression middleware
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# Add metrics middleware - commented out to avoid conflicts
-# app.middleware("http")(metrics_middleware("ec_service"))
+# Add enhanced Prometheus metrics middleware
+try:
+    import sys
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    from prometheus_middleware import (
+        add_prometheus_middleware,
+        create_enhanced_metrics_endpoint,
+    )
+
+    add_prometheus_middleware(app, "ec_service")
+
+    logger.info("✅ Enhanced Prometheus metrics enabled for EC Service")
+except ImportError as e:
+    logger.warning(f"⚠️ Enhanced Prometheus metrics not available: {e}")
+    # Fallback to existing metrics middleware
+    app.middleware("http")(metrics_middleware("ec_service"))
 
 # Include API routers
 app.include_router(
@@ -235,8 +249,17 @@ app.include_router(
     tags=["Advanced WINA Oversight - Task #4"],
 )
 
-# Add metrics endpoint
-app.get("/metrics")(create_metrics_endpoint())
+
+# Add enhanced metrics endpoint
+@app.get("/metrics")
+async def enhanced_metrics_endpoint():
+    """Enhanced Prometheus metrics endpoint for EC Service."""
+    try:
+        endpoint_func = create_enhanced_metrics_endpoint("ec_service")
+        return await endpoint_func()
+    except NameError:
+        # Fallback to existing metrics
+        return create_metrics_endpoint()
 
 
 @app.get("/health")

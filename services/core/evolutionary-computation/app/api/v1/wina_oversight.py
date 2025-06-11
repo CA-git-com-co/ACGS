@@ -14,20 +14,18 @@ request validation, and response formatting.
 """
 
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, Depends, Query, Body
-from fastapi.responses import JSONResponse
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
 # EC service imports
 from ...core.wina_oversight_coordinator import (
-    WINAECOversightCoordinator,
-    ECOversightRequest,
     ECOversightContext,
+    ECOversightRequest,
     ECOversightStrategy,
-    WINAOversightResult,
-    ECOversightReport,
+    WINAECOversightCoordinator,
     get_wina_ec_oversight_coordinator,
 )
 

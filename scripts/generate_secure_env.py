@@ -10,11 +10,11 @@ Usage:
 """
 
 import argparse
-import secrets
 import os
+import secrets
 import sys
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 
 
 def generate_secure_key(length: int = 64) -> str:

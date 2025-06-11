@@ -1,9 +1,8 @@
 # Simple Auth Service for Enterprise Features Demo
 import logging
+
 from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 
 # Configure structured logging
 logging.basicConfig(

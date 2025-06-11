@@ -13,18 +13,18 @@ Key Features:
 - Performance tracking and analytics
 """
 
-import asyncio
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services.shared.models import ACConflictResolution, User
-from ..schemas import ACConflictResolutionUpdate
-from .automated_resolution_engine import ResolutionResult, ResolutionStatus
-from .intelligent_conflict_detector import ConflictDetectionResult, ConflictSeverity
+from services.shared.models import ACConflictResolution
+
+from .automated_resolution_engine import ResolutionResult
+from .intelligent_conflict_detector import ConflictDetectionResult
 
 logger = logging.getLogger(__name__)
 

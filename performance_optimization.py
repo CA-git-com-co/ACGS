@@ -5,15 +5,13 @@ Analyzes and optimizes database queries, LLM inference, and API response times
 """
 
 import asyncio
-import aiohttp
-import time
-import statistics
 import json
-import sys
-import os
+import statistics
+import time
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
-from concurrent.futures import ThreadPoolExecutor
+from typing import Dict, List, Optional
+
+import aiohttp
 
 
 class PerformanceOptimizer:

@@ -6,11 +6,12 @@ This script demonstrates how to use the Darwin Gödel Machine for software engin
 It includes example scenarios and shows the evolution process in action.
 """
 
-import os
-import tempfile
-import subprocess
 import json
+import os
+import subprocess
+import tempfile
 from pathlib import Path
+
 from dgm_best_swe_agent import DarwinGodelMachine, DGMConfig
 
 # Import Requesty API integration

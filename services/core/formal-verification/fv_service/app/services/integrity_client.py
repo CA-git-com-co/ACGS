@@ -1,10 +1,12 @@
 import os
-import httpx
 from typing import List, Optional
-from ..schemas import (
+
+import httpx
+
+from ..schemas import (  # Using schemas defined in fv_service
     PolicyRule,
     PolicyRuleStatusUpdate,
-)  # Using schemas defined in fv_service
+)
 
 # Load environment variables
 INTEGRITY_SERVICE_URL = os.getenv(
@@ -105,7 +107,7 @@ integrity_service_client = IntegrityServiceClient(base_url=INTEGRITY_SERVICE_URL
 
 # Example Usage
 if __name__ == "__main__":
-    import asyncio
+    pass
 
     async def test_integrity_client_for_fv():
         print(

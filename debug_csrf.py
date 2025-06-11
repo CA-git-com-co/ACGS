@@ -3,10 +3,11 @@
 Debug CSRF token handling
 """
 
-import requests
-import re
 import base64
+import re
 from urllib.parse import unquote
+
+import requests
 
 BASE_URL = "http://localhost:8000/api/auth"
 

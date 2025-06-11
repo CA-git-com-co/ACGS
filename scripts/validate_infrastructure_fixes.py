@@ -7,12 +7,12 @@ Validates that the critical infrastructure fixes are working correctly.
 import asyncio
 import json
 import logging
-import requests
 import subprocess
-import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict
+
+import requests
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

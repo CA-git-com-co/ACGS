@@ -10,7 +10,7 @@ that services depend on for backward compatibility.
 
 # Import core database components from the main database module
 try:
-    from ..database import Base, get_async_db, AsyncSessionLocal, async_engine, metadata
+    from ..database import AsyncSessionLocal, Base, async_engine, get_async_db, metadata
 
     _core_database_available = True
 except ImportError:
@@ -23,8 +23,8 @@ except ImportError:
     metadata = None
 
 from .pool_manager import (
-    DatabasePoolManager,
     ConnectionPool,
+    DatabasePoolManager,
     PoolConfig,
     get_pool_manager,
 )
@@ -40,28 +40,28 @@ if _core_database_available:
 
 # Optional imports for components that may not be implemented yet
 try:
-    from .query_optimizer import QueryOptimizer, QueryCache, QueryMetrics
+    pass
 
     __all__.extend(["QueryOptimizer", "QueryCache", "QueryMetrics"])
 except ImportError:
     pass
 
 try:
-    from .connection import DatabaseConnection, AsyncDatabaseConnection
+    pass
 
     __all__.extend(["DatabaseConnection", "AsyncDatabaseConnection"])
 except ImportError:
     pass
 
 try:
-    from .migrations import MigrationManager, Migration
+    pass
 
     __all__.extend(["MigrationManager", "Migration"])
 except ImportError:
     pass
 
 try:
-    from .monitoring import DatabaseMonitor, PerformanceMetrics
+    pass
 
     __all__.extend(["DatabaseMonitor", "PerformanceMetrics"])
 except ImportError:

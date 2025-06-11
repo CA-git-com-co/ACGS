@@ -8,23 +8,14 @@ the new consolidated architecture.
 """
 
 import asyncio
-import time
 import logging
-from typing import Dict, Any
-from datetime import datetime
+import time
 
 # Import the new consolidated utilities
 from services.shared.common import (
-    ACGSHttpClient,
-    ServiceClient,
-    validate_request,
-    format_response,
-    ACGSException,
     handle_service_error,
 )
 from services.shared.service_mesh import (
-    ServiceMesh,
-    ServiceRegistry,
     ServiceType,
     get_service_mesh,
 )
@@ -107,10 +98,10 @@ class RefactoringDemo:
 
         # Import validation functions
         from services.shared.common.validation import (
-            validate_email,
-            validate_username,
-            validate_pagination_params,
             ValidationError,
+            validate_email,
+            validate_pagination_params,
+            validate_username,
         )
 
         # Demonstrate email validation
@@ -157,9 +148,9 @@ class RefactoringDemo:
 
         # Import error handling utilities
         from services.shared.common.error_handling import (
-            ValidationError,
             AuthenticationError,
             NotFoundError,
+            ValidationError,
             create_error_response,
             log_error,
         )
@@ -261,11 +252,10 @@ class RefactoringDemo:
 
         # Import formatting utilities
         from services.shared.common.formatting import (
-            format_response,
-            format_list_response,
-            format_health_check,
-            format_pagination,
             ResponseStatus,
+            format_health_check,
+            format_list_response,
+            format_response,
         )
 
         # Demonstrate standard response

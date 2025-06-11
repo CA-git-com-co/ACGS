@@ -6,10 +6,9 @@ This script validates the stakeholder engagement system implementation
 by checking code structure, imports, and basic functionality.
 """
 
-import sys
-import os
 import ast
-import inspect
+import os
+import sys
 
 
 def validate_file_structure():

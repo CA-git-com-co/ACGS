@@ -5,14 +5,14 @@ Validates memory optimization and Redis cache performance fixes.
 """
 
 import asyncio
-import aiohttp
 import json
 import logging
-import time
 import sys
-import os
+import time
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict
+
+import aiohttp
 
 # Add project root to path
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # Removed during reorganization
@@ -106,7 +106,6 @@ class Phase3CriticalFixesValidator:
             # Import memory optimizer
             from services.shared.memory_optimizer import (
                 MemoryOptimizer,
-                MemoryThresholds,
             )
 
             # Initialize memory optimizer
@@ -365,7 +364,6 @@ class Phase3CriticalFixesValidator:
             # Import cache warming service
             from services.shared.cache_warming_service import (
                 CacheWarmingService,
-                CacheWarmingConfig,
             )
             from services.shared.redis_client import ACGSRedisClient
 
@@ -381,7 +379,7 @@ class Phase3CriticalFixesValidator:
             warming_metrics = await warming_service.warm_cache_immediate()
 
             # Get warming stats
-            warming_stats = warming_service.get_warming_stats()
+            warming_service.get_warming_stats()
 
             warming_successful = warming_metrics.successful_warmings > 0
 

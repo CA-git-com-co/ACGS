@@ -8,30 +8,24 @@ human intervention escalation mechanisms.
 Task 19.4: Performance Dashboard Integration - API Endpoints
 """
 
-import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Any, Optional
-from uuid import UUID
-
-from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel, Field
-
-from services.shared.database import get_async_db
-from services.shared.auth import get_current_active_user, require_admin
-from services.shared.models import User
-from services.shared.metrics import get_metrics
+from typing import List, Optional
 
 from app.services.constitutional_reporting_service import (
-    ConstitutionalReportingService,
-    ReportType,
-    ReportFormat,
     ComplianceReport,
-    ComplianceMetrics,
-    TrendAnalysis,
+    ConstitutionalReportingService,
+    ReportFormat,
+    ReportType,
 )
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.auth import get_current_active_user, require_admin
+from services.shared.database import get_async_db
+from services.shared.metrics import get_metrics
+from services.shared.models import User
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/constitutional-reports", tags=["constitutional-reports"])

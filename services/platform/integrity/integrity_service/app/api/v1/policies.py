@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession  # Changed
-from typing import List, Optional
+from typing import Optional
 
 from app import crud, models, schemas  # Fixed import
 from app.database import get_async_db  # Local database import
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession  # Changed
 
 # from app.core.auth import require_internal_service, require_integrity_admin, User # Fixed import
 

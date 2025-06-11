@@ -1,14 +1,13 @@
 # Enterprise OAuth 2.0 and OpenID Connect Integration
-import httpx
 import secrets
-import hashlib
-from typing import Dict, Optional, Any
-from datetime import datetime, timezone, timedelta
-from urllib.parse import urlencode, parse_qs, urlparse
-from fastapi import HTTPException, status
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, Optional
+from urllib.parse import urlencode
+
+import httpx
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models import User
 from ..crud import crud_user
 from .security import create_access_token, create_refresh_token
 

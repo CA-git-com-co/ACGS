@@ -10,15 +10,12 @@ This script coordinates comprehensive performance optimization to achieve:
 - 25% gas optimization for Solana programs
 """
 
-import os
-import sys
 import json
-import time
-import asyncio
+import sys
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, field
+from typing import Any, Dict, List
 
 
 @dataclass

@@ -1,7 +1,8 @@
 # backend/gs_service/app/schemas.py
-from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, field_validator
 
 
 # Schemas for Policy Templates
@@ -82,7 +83,7 @@ class GSPolicyCreate(GSPolicyBase):
     @field_validator("content")
     @classmethod
     def check_content_or_template(cls, v, info):
-        values = info.data if hasattr(info, "data") else {}
+        info.data if hasattr(info, "data") else {}
         if (info.data if hasattr(info, "data") else {}).get(
             "template_id"
         ) is None and v is None:
@@ -144,7 +145,7 @@ class SynthesisRequest(
     @field_validator("principles")
     @classmethod
     def check_policy_id_or_principles(cls, v, info):
-        values = info.data if hasattr(info, "data") else {}
+        info.data if hasattr(info, "data") else {}
         if (info.data if hasattr(info, "data") else {}).get(
             "policy_id"
         ) is None and v is None:

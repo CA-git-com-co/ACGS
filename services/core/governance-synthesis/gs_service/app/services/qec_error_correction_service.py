@@ -19,57 +19,43 @@ Classes:
 import asyncio
 import logging
 import time
-import json
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-from typing import Dict, List, Optional, Any, Tuple, Set
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func, desc, text
-from sqlalchemy.orm import selectinload
-
-from services.shared.models import (
-    ConstitutionalViolation,
-    ViolationAlert,
-    ViolationEscalation,
-    Principle,
-    Policy,
-    User,
-    ACConflictResolution,
+# Import existing services
+from app.services.violation_detection_service import (
+    ViolationSeverity,
 )
-from services.shared.database import get_async_db
+from app.services.violation_escalation_service import (
+    EscalationLevel,
+    ViolationEscalationService,
+)
+from app.workflows.multi_model_manager import MultiModelManager
+from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
+    ConstitutionalDistanceCalculator,
+)
 
 # Import QEC enhancement services
 from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
     ConstitutionalFidelityMonitor,
-    FidelityComponents,
-)
-from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
-    ConstitutionalDistanceCalculator,
 )
 from integrations.alphaevolve_engine.services.qec_enhancement.error_prediction_model import (
     ErrorPredictionModel,
-    FailureType,
-    SynthesisAttemptLog,
 )
 from integrations.alphaevolve_engine.services.qec_enhancement.recovery_strategy_dispatcher import (
     RecoveryStrategyDispatcher,
-    RecoveryStrategy,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
 
-# Import existing services
-from app.services.violation_detection_service import (
-    ViolationDetectionService,
-    ViolationType,
-    ViolationSeverity,
+from services.shared.database import get_async_db
+from services.shared.models import (
+    ConstitutionalViolation,
+    Policy,
+    Principle,
 )
-from app.services.violation_escalation_service import (
-    ViolationEscalationService,
-    EscalationLevel,
-)
-from app.workflows.multi_model_manager import MultiModelManager
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,6 @@
 import asyncio
 import os
 import sys
-from typing import AsyncGenerator, Generator
 from pathlib import Path
 
 import pytest
@@ -28,8 +27,6 @@ os.environ.setdefault(
 
 try:
     from httpx import AsyncClient
-    from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-    from sqlalchemy.orm import sessionmaker
 
     ASYNC_DEPS_AVAILABLE = True
 except ImportError:
@@ -107,7 +104,6 @@ async def test_client():
 async def integration_test_cleanup():
     """Cleanup for integration tests to prevent pollution."""
     import gc
-    import tempfile
     from pathlib import Path
 
     # Track resources

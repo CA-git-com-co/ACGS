@@ -4,13 +4,13 @@ Fix SHA256 hash mismatches in requirements.txt files for ACGS Phase 3 deployment
 This script regenerates correct package hashes for all requirements.txt files.
 """
 
+import logging
 import os
 import subprocess
 import sys
 import tempfile
-import logging
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(

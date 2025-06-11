@@ -6,19 +6,18 @@ performance monitoring, and optimization management targeting sub-25ms latency.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ...core.database import get_db
 from ...core.auth import get_current_user_id
+from ...core.database import get_db
 from ...core.ultra_low_latency_optimizer import (
-    get_ultra_low_latency_optimizer,
-    OptimizationLevel,
     CacheStrategy,
-    LatencyTarget,
+    OptimizationLevel,
+    get_ultra_low_latency_optimizer,
 )
 
 logger = logging.getLogger(__name__)

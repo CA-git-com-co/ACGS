@@ -12,39 +12,32 @@ Classes:
     ViolationDetectionResult: Result structure for detection operations
 """
 
-import asyncio
 import logging
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func, desc
-from sqlalchemy.orm import selectinload
-
-from services.shared.models import (
-    ConstitutionalViolation,
-    ViolationAlert,
-    ViolationThreshold,
-    Principle,
-    Policy,
-    User,
+from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
+    ConstitutionalDistanceCalculator,
 )
-from services.shared.database import get_async_db
 
 # Import QEC enhancement services
 from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fidelity_monitor import (
     ConstitutionalFidelityMonitor,
-    FidelityComponents,
-)
-from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
-    ConstitutionalDistanceCalculator,
 )
 from integrations.alphaevolve_engine.services.qec_enhancement.error_prediction_model import (
     ErrorPredictionModel,
-    FailureType,
+)
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from services.shared.database import get_async_db
+from services.shared.models import (
+    Policy,
+    Principle,
+    ViolationThreshold,
 )
 
 logger = logging.getLogger(__name__)

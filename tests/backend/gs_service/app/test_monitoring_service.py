@@ -1,13 +1,11 @@
-import asyncio
 import os
-from unittest.mock import AsyncMock
 
 import pytest
 from prometheus_client import Counter
 
 try:
-    import sys
     import os
+    import sys
 
     sys.path.insert(
         0,
@@ -17,8 +15,8 @@ try:
         ),
     )
     from app.services import monitoring_service
-    from app.services.monitoring_service import MonitoringService
     from app.services.advanced_cache import CacheStats
+    from app.services.monitoring_service import MonitoringService
 except ImportError:
     # Fallback to mock implementations for testing
     from dataclasses import dataclass

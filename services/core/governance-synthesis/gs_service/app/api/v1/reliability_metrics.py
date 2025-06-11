@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Any, Dict
+
 from app.core.llm_reliability_framework import (
     EnhancedLLMReliabilityFramework,
-    ReliabilityMetrics,
 )
-from typing import Dict, Any
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 

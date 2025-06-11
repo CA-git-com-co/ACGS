@@ -11,17 +11,17 @@ Usage:
 """
 
 import asyncio
-import aiohttp
-import sys
 import os
-import time
-from typing import Dict, List
-from dataclasses import dataclass
-import uvicorn
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
-import threading
 import signal
+import sys
+import threading
+import time
+from dataclasses import dataclass
+from typing import List
+
+import aiohttp
+import uvicorn
+from fastapi import FastAPI, HTTPException, Request
 
 # Add the shared directory to the Python path
 sys.path.insert(
@@ -30,7 +30,6 @@ sys.path.insert(
 
 try:
     from security_middleware import add_security_middleware
-    from security_config import security_config
 except ImportError as e:
     print(f"Error importing security modules: {e}")
     print("Make sure you're running this from the ACGS-master root directory")

@@ -5,13 +5,14 @@ Validates that reorganized services can be deployed and integrated properly
 """
 
 import asyncio
-import aiohttp
 import json
+import logging
 import subprocess
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
-import logging
+from typing import Dict
+
+import aiohttp
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -159,7 +160,7 @@ class DeploymentValidator:
                     timeout=10,
                 ) as response:
                     if response.status == 200:
-                        result = await response.json()
+                        await response.json()
                         logger.info("✅ GS synthesis endpoint working")
                         return True
                     else:

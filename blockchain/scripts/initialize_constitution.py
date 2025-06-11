@@ -4,14 +4,14 @@ Quantumagi Constitution Initialization Script
 Initializes the constitutional governance system on Solana devnet
 """
 
-import asyncio
-import json
-import sys
 import argparse
-from pathlib import Path
-from typing import Dict, Any
+import asyncio
 import hashlib
+import json
 import logging
+import sys
+from pathlib import Path
+from typing import Any, Dict
 
 # Setup logging
 logging.basicConfig(
@@ -314,7 +314,7 @@ async def main():
 
         # Validate and report
         validation_results = await initializer.validate_initialization()
-        report = await initializer.generate_initialization_report()
+        await initializer.generate_initialization_report()
 
         logger.info("🎉 Constitution initialization completed successfully!")
         logger.info(f"Constitution hash: {initializer.constitution_data['hash']}")

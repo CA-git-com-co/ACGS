@@ -9,17 +9,17 @@ import functools
 import inspect
 import logging
 from typing import (
+    Any,
+    Callable,
     Type,
     TypeVar,
-    Callable,
-    Any,
-    get_type_hints,
-    get_origin,
-    get_args,
     Union,
+    get_args,
+    get_origin,
+    get_type_hints,
 )
 
-from .container import get_container, Scope
+from .container import Scope, get_container
 
 logger = logging.getLogger(__name__)
 
@@ -328,7 +328,7 @@ class DIProperty:
 
             try:
                 self._instance = container.resolve(self.interface)
-            except ValueError as e:
+            except ValueError:
                 if self.optional:
                     return None
                 raise

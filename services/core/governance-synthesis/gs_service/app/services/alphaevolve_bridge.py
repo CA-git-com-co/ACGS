@@ -8,13 +8,10 @@ and the main ACGS-PGP services, enabling constitutional governance for
 evolutionary computation systems.
 """
 
-import asyncio
 import logging
-from typing import List, Dict, Any, Optional, Tuple
-from datetime import datetime
 import uuid
-import sys
-import os
+from datetime import datetime
+from typing import Any, Dict, List
 
 
 # Mock AlphaEvolve classes for development (defined early for type annotations)
@@ -130,7 +127,6 @@ ALPHAEVOLVE_AVAILABLE = True
 
 from .. import schemas as gs_schemas
 from .ac_client import ac_service_client
-from .integrity_client import integrity_service_client
 
 logger = logging.getLogger(__name__)
 

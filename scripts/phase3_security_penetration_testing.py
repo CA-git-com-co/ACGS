@@ -5,14 +5,12 @@ Comprehensive security validation for ACGS Phase 3 deployment.
 """
 
 import asyncio
-import aiohttp
-import time
-import json
-from datetime import datetime
-from typing import Dict, List, Any
-import logging
 import base64
-import jwt
+import json
+import logging
+from datetime import datetime
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

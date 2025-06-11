@@ -7,18 +7,14 @@ This module provides real-time policy enforcement capabilities specifically
 designed for evolutionary computation systems, with sub-50ms latency requirements.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List, Dict, Any, Optional
+import asyncio
+import logging
 import time
 import uuid
 from datetime import datetime
-import asyncio
+from typing import Any, Dict, List, Optional
 
-from ...core.datalog_engine import datalog_engine
-from ...core.policy_manager import policy_manager
-from ...services.integrity_client import integrity_service_client
-
-import logging
+from fastapi import APIRouter, HTTPException, status
 
 logger = logging.getLogger(__name__)
 

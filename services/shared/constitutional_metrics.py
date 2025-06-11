@@ -3,9 +3,10 @@ Constitutional AI Governance Metrics for ACGS-PGP
 Provides specialized metrics for constitutional AI governance operations.
 """
 
-from typing import Dict, Any, Optional, List
-from prometheus_client import Counter, Histogram, Gauge, Info
 import logging
+from typing import Dict
+
+from prometheus_client import Counter, Gauge, Histogram
 
 logger = logging.getLogger(__name__)
 

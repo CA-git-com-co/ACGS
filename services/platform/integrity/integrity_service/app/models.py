@@ -1,25 +1,26 @@
+from datetime import datetime
+
 from sqlalchemy import (
+    JSON,
+    Boolean,
     Column,
+    DateTime,
+    Index,
     Integer,
+    LargeBinary,
     String,
     Text,
-    DateTime,
-    func,
-    JSON,
-    Index,
-    LargeBinary,
-    Boolean,
 )
 from sqlalchemy.dialects.postgresql import ARRAY  # For PostgreSQL specific ARRAY type
 from sqlalchemy.orm import declarative_base
-from datetime import datetime
 
 # Create a local Base for this service to avoid import issues
 Base = declarative_base()
 
-# Define local models for integrity service to avoid shared module import issues
-from sqlalchemy.dialects.postgresql import UUID, JSONB
 import uuid
+
+# Define local models for integrity service to avoid shared module import issues
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 
 class PolicyRule(Base):

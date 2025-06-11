@@ -6,19 +6,18 @@ microservices, replacing direct HTTP calls with event-driven patterns.
 """
 
 import asyncio
+import json
 import logging
-import time
 import uuid
-from typing import Dict, List, Callable, Any, Optional, Set
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from collections import defaultdict
-import json
+from typing import Any, Callable, Dict, List, Optional, Set
 
-from .types import EventType, EventPriority, EventStatus, EventMetadata, EventData
-from .store import EventStore, InMemoryEventStore
 from ..common.error_handling import ACGSException, handle_service_error
 from ..di.interfaces import EventBusInterface
+from .store import EventStore, InMemoryEventStore
+from .types import EventData, EventMetadata, EventPriority, EventStatus, EventType
 
 logger = logging.getLogger(__name__)
 

@@ -14,17 +14,16 @@ Key Features:
 
 import logging
 import time
-from typing import Dict, List, Any, Optional
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+from ...core.performance_optimizer import OptimizationStrategy
 from ...services.enhanced_governance_synthesis import (
     EnhancedGovernanceSynthesis,
     EnhancedSynthesisRequest,
-    EnhancedSynthesisResponse,
 )
-from ...core.multi_model_coordinator import EnsembleStrategy
-from ...core.performance_optimizer import OptimizationStrategy
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

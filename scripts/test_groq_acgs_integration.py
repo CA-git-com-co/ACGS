@@ -16,11 +16,10 @@ Environment Variables Required:
 """
 
 import asyncio
-import json
 import os
 import sys
 import time
-from typing import Dict, List, Any, Optional
+from typing import List
 
 # Add project paths
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -94,9 +93,7 @@ class ACGSGroqTester:
 
         # Check imports
         try:
-            from integrations.alphaevolve_engine.services.llm_service import (
-                GroqLLMService,
-            )
+            pass
 
             print("✅ AlphaEvolve GS Engine imports available")
         except ImportError as e:

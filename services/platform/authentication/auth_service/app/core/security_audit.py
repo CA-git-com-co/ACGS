@@ -1,13 +1,13 @@
 # Enterprise Security Audit Logging
 import uuid
-import json
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timezone, timedelta
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, desc
-from fastapi import Request
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
 
-from ..models import SecurityEvent, User
+from fastapi import Request
+from sqlalchemy import and_, desc, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..models import SecurityEvent
 
 
 class SecurityAuditLogger:

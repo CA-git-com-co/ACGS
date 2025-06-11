@@ -5,12 +5,12 @@ Provides circuit breaker pattern to prevent cascading failures
 and improve system resilience in microservices architecture.
 """
 
-import time
 import logging
-from typing import Dict, Any, Optional, Callable, List
-from enum import Enum
-from dataclasses import dataclass, field
+import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

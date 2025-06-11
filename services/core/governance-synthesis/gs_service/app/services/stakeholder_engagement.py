@@ -5,15 +5,11 @@ This module provides stakeholder notification and engagement capabilities
 for the ACGS-PGP Constitutional Council and violation escalation workflows.
 """
 
-import asyncio
 import logging
-import smtplib
-from datetime import datetime, timezone
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from enum import Enum
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

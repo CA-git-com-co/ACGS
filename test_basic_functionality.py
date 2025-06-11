@@ -3,10 +3,10 @@
 Basic functionality test to verify test infrastructure is working.
 """
 
-import pytest
 import sys
-import os
 from pathlib import Path
+
+import pytest
 
 
 def test_python_environment():
@@ -34,14 +34,15 @@ def test_project_structure():
 def test_imports():
     """Test that basic imports work."""
     # Test standard library imports
-    import json
     import asyncio
     import datetime
+    import json
+
+    import httpx
+    import pydantic
 
     # Test installed packages
     import pytest
-    import httpx
-    import pydantic
 
     assert json is not None
     assert asyncio is not None

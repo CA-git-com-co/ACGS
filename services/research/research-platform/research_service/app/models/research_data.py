@@ -2,23 +2,22 @@
 Database models for research data management
 """
 
+import uuid
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
-    DateTime,
-    Text,
     JSON,
     Boolean,
+    Column,
+    DateTime,
+    Float,
     ForeignKey,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID
-import uuid
 
 Base = declarative_base()
 

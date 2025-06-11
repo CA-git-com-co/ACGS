@@ -11,17 +11,18 @@ Performance Targets:
 - Zero service crashes or timeouts during load testing
 """
 
-import asyncio
-import aiohttp
-import time
-import json
-import statistics
-import psutil
-import sys
-from datetime import datetime, timezone
-from typing import Dict, List, Tuple, Optional
 import argparse
+import asyncio
+import json
 import logging
+import statistics
+import sys
+import time
+from datetime import datetime, timezone
+from typing import Dict
+
+import aiohttp
+import psutil
 
 # Configure logging
 logging.basicConfig(
@@ -182,7 +183,7 @@ class ACGSPerformanceValidator:
                         else:
                             error_counts[service_id] += 1
 
-                except Exception as e:
+                except Exception:
                     error_counts[service_id] += 1
 
                 # Small delay to prevent overwhelming

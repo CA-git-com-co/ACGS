@@ -1,12 +1,10 @@
 # Import shared authentication utilities
 from services.shared.auth import (
-    get_current_user_from_token,
-    get_current_active_user,
-    require_admin,
-    require_policy_manager,
-    require_ac_admin,
     RoleChecker,
-    User,
+    get_current_active_user,
+    get_current_user_from_token,
+    require_ac_admin,
+    require_policy_manager,
 )
 
 # AC service specific role checkers

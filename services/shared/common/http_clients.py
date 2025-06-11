@@ -5,12 +5,12 @@ This module eliminates duplicate HTTP client implementations across services
 and provides a unified interface for inter-service communication.
 """
 
-import asyncio
 import logging
 import time
-from typing import Dict, Any, Optional, Union
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, Optional
+
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
 

@@ -17,22 +17,21 @@ Key Features:
 import asyncio
 import json
 import logging
+import threading
 import time
 import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
-from collections import defaultdict, OrderedDict
-import threading
+from collections import OrderedDict, defaultdict
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 import numpy as np
-import redis.asyncio as redis
-from prometheus_client import Counter, Histogram, Gauge
+from prometheus_client import Counter, Gauge, Histogram
 
 from ..core.metrics import get_metrics
-from ..services.advanced_cache import MultiTierCache, CacheStats
+from ..services.advanced_cache import MultiTierCache
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +131,7 @@ class SpeculativeExecutor:
 
         # Execute speculatively in background
         try:
-            future = self.executor.submit(self._execute_policy_decision, policy_context)
+            self.executor.submit(self._execute_policy_decision, policy_context)
             # Don't wait for completion - this is speculative
             return None
         except Exception as e:

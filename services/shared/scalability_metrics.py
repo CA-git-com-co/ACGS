@@ -19,17 +19,16 @@ import logging
 import statistics
 import time
 from collections import defaultdict, deque
-from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta, timezone
+from dataclasses import asdict, dataclass
+from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional
 
 import psutil
 
 try:
     from prometheus_client import (
         CollectorRegistry,
-        Counter,
         Gauge,
         Histogram,
         generate_latest,
@@ -563,7 +562,7 @@ class ScalabilityMetricsCollector:
     async def _check_scalability_alerts(self) -> None:
         """Check for scalability threshold violations and generate alerts."""
         try:
-            current_time = datetime.utcnow()
+            datetime.utcnow()
 
             # Check latency thresholds
             for component_name, metrics_queue in self.latency_metrics.items():

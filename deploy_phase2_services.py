@@ -7,11 +7,11 @@ AlphaEvolve integration with WINA optimization.
 """
 
 import asyncio
+import json
 import subprocess
 import time
+
 import httpx
-import json
-from pathlib import Path
 
 # Service configuration
 SERVICES = {
@@ -151,10 +151,10 @@ async def test_phase2_integration():
     # Test multi-model coordination
     try:
         # This would test the multi-model coordinator directly
-        import sys
+        pass
 
         # sys.path.append("src/backend/gs_service/app")  # Removed during reorganization
-        from core.multi_model_coordinator import MultiModelCoordinator, EnsembleStrategy
+        from core.multi_model_coordinator import MultiModelCoordinator
 
         config = {
             "primary_model": "gemini-2.5-pro",
@@ -173,13 +173,13 @@ async def test_phase2_integration():
     # Test WINA components
     try:
         # sys.path.append("src/backend/shared")  # Removed during reorganization
-        from wina.core import WINACore
         from wina.config import WINAConfig
+        from wina.core import WINACore
 
         config = WINAConfig(
             svd_rank_reduction=0.6, accuracy_threshold=0.95, enable_runtime_gating=True
         )
-        wina_core = WINACore(config)
+        WINACore(config)
 
         integration_tests.append("WINA Core")
         print("   ✅ WINA Core: functional")

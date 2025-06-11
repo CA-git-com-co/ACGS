@@ -1,5 +1,6 @@
 # Local authentication utilities to avoid shared module dependencies
-from typing import Optional, List
+from typing import List
+
 from fastapi import HTTPException, status
 from pydantic import BaseModel
 

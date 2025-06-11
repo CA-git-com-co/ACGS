@@ -9,38 +9,32 @@ Tests all components of the intelligent conflict resolution system including:
 - Performance metrics and targets
 """
 
-import pytest
-import asyncio
-from datetime import datetime, timedelta
-from unittest.mock import Mock, AsyncMock, patch
-from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime
+from unittest.mock import AsyncMock, Mock, patch
 
-from app.services.intelligent_conflict_detector import (
-    IntelligentConflictDetector,
-    ConflictDetectionResult,
-    ConflictType,
-    ConflictSeverity,
-)
+import pytest
 from app.services.automated_resolution_engine import (
     AutomatedResolutionEngine,
     ResolutionResult,
     ResolutionStrategy,
-    ResolutionStatus,
-)
-from app.services.human_escalation_system import (
-    HumanEscalationSystem,
-    EscalationRequest,
-    EscalationLevel,
-    EscalationReason,
 )
 from app.services.conflict_audit_system import (
-    ConflictAuditSystem,
     AuditEventType,
-    AuditLevel,
+    ConflictAuditSystem,
     PerformanceMetrics,
 )
 from app.services.conflict_resolution_orchestrator import ConflictResolutionOrchestrator
-from services.shared.models import Principle, ACConflictResolution
+from app.services.human_escalation_system import (
+    EscalationLevel,
+    EscalationRequest,
+    HumanEscalationSystem,
+)
+from app.services.intelligent_conflict_detector import (
+    ConflictDetectionResult,
+    ConflictSeverity,
+    ConflictType,
+    IntelligentConflictDetector,
+)
 
 
 class TestIntelligentConflictDetector:

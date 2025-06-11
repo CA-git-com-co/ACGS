@@ -5,15 +5,15 @@ Systematic health assessment and deployment orchestration for staging environmen
 """
 
 import asyncio
-import aiohttp
 import json
-import time
+import logging
 import subprocess
 import sys
-import logging
+import time
 from datetime import datetime
-from typing import Dict, List, Any, Optional
-from pathlib import Path
+from typing import Any, Dict, List
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(
@@ -526,7 +526,7 @@ async def main():
 
     if services_unhealthy:
         logger.info("🔧 ACGS services need deployment...")
-        deployment_results = await orchestrator.deploy_acgs_services()
+        await orchestrator.deploy_acgs_services()
 
         # Re-check service health after deployment
         service_health = await orchestrator.check_service_health()
