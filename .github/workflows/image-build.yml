@@ -25,16 +25,30 @@ jobs:
           - name: formal-verification
             file: services/core/formal-verification/fv_service/Dockerfile
             context: services/core/formal-verification/fv_service
+          - name: evolutionary-computation
+            file: services/core/evolutionary-computation/Dockerfile
+            context: services/core/evolutionary-computation
           - name: authentication
             file: services/platform/authentication/auth_service/Dockerfile
             context: services/platform/authentication/auth_service
           - name: integrity
             file: services/platform/integrity/integrity_service/Dockerfile
             context: services/platform/integrity/integrity_service
+          - name: federated-evaluation
+            file: services/research/federated-evaluation/federated_service/Dockerfile
+            context: services/research/federated-evaluation/federated_service
+          - name: research-platform
+            file: services/research/research-platform/research_service/Dockerfile
+            context: services/research/research-platform/research_service
+          - name: governance-dashboard
+            file: applications/governance-dashboard/Dockerfile
+            context: applications/governance-dashboard
           - name: legacy-frontend
             file: applications/legacy-frontend/Dockerfile
             context: applications/legacy-frontend
-            exists: false  # Mark as non-existent for now
+          - name: data-flywheel
+            file: integrations/data-flywheel/deploy/Dockerfile
+            context: integrations/data-flywheel
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
