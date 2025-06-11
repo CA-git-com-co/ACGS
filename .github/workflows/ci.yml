@@ -353,7 +353,17 @@ jobs:
     if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.python_changed == 'true'
     strategy:
       matrix:
-        service: ['evolutionary-computation']  # Only build services that actually exist
+        service: [
+          'constitutional-ai',
+          'governance-synthesis',
+          'policy-governance',
+          'formal-verification',
+          'evolutionary-computation',
+          'authentication',
+          'integrity',
+          'federated-evaluation',
+          'research-platform'
+        ]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -379,11 +389,57 @@ jobs:
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Set service path
+        id: service-path
+        run: |
+          case "${{ matrix.service }}" in
+            "constitutional-ai")
+              echo "context=services/core/constitutional-ai/ac_service" >> $GITHUB_OUTPUT
+              echo "dockerfile=services/core/constitutional-ai/ac_service/Dockerfile" >> $GITHUB_OUTPUT
+              ;;
+            "governance-synthesis")
+              echo "context=services/core/governance-synthesis/gs_service" >> $GITHUB_OUTPUT
+              echo "dockerfile=services/core/governance-synthesis/gs_service/Dockerfile" >> $GITHUB_OUTPUT
+              ;;
+            "policy-governance")
+              echo "context=services/core/policy-governance/pgc_service" >> $GITHUB_OUTPUT
+              echo "dockerfile=services/core/policy-governance/pgc_service/Dockerfile" >> $GITHUB_OUTPUT
+              ;;
+            "formal-verification")
+              echo "context=services/core/formal-verification/fv_service" >> $GITHUB_OUTPUT
+              echo "dockerfile=services/core/formal-verification/fv_service/Dockerfile" >> $GITHUB_OUTPUT
+              ;;
+            "evolutionary-computation")
+              echo "context=services/core/evolutionary-computation" >> $GITHUB_OUTPUT
+              echo "dockerfile=services/core/evolutionary-computation/Dockerfile" >> $GITHUB_OUTPUT
+              ;;
+            "authentication")
+              echo "context=services/platform/authentication/auth_service" >> $GITHUB_OUTPUT
+              echo "dockerfile=services/platform/authentication/auth_service/Dockerfile" >> $GITHUB_OUTPUT
+              ;;
+            "integrity")
+              echo "context=services/platform/integrity/integrity_service" >> $GITHUB_OUTPUT
+              echo "dockerfile=services/platform/integrity/integrity_service/Dockerfile" >> $GITHUB_OUTPUT
+              ;;
+            "federated-evaluation")
+              echo "context=services/research/federated-evaluation/federated_service" >> $GITHUB_OUTPUT
+              echo "dockerfile=services/research/federated-evaluation/federated_service/Dockerfile" >> $GITHUB_OUTPUT
+              ;;
+            "research-platform")
+              echo "context=services/research/research-platform/research_service" >> $GITHUB_OUTPUT
+              echo "dockerfile=services/research/research-platform/research_service/Dockerfile" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "Unknown service: ${{ matrix.service }}"
+              exit 1
+              ;;
+          esac
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: services/core/${{ matrix.service }}
-          file: services/core/${{ matrix.service }}/Dockerfile
+          context: ${{ steps.service-path.outputs.context }}
+          file: ${{ steps.service-path.outputs.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

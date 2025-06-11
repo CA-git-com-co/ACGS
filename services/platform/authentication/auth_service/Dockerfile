@@ -4,7 +4,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Install any needed packages specified in requirements.txt
-COPY ./requirements_simple.txt ./requirements.txt
+COPY ./requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt \
     && apt-get update && apt-get install -y curl \
     && rm -rf /var/lib/apt/lists/*
