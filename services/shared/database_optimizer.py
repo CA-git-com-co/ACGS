@@ -259,13 +259,15 @@ class DatabasePerformanceOptimizer:
                     try:
                         # Check if table exists first
                         table_check = await conn.execute(
-                            text("""
+                            text(
+                                """
                             SELECT EXISTS (
                                 SELECT FROM information_schema.tables
                                 WHERE table_name = :table_name
                             )
-                        """),
-                            {"table_name": index_def['table']}
+                        """
+                            ),
+                            {"table_name": index_def["table"]},
                         )
 
                         if not table_check.scalar():
@@ -371,13 +373,14 @@ class DatabasePerformanceOptimizer:
                 # Enable query logging if not already enabled
                 await conn.execute(
                     text("SET log_min_duration_statement = :threshold"),
-                    {"threshold": threshold_ms}
+                    {"threshold": threshold_ms},
                 )
 
                 # Get slow queries from pg_stat_statements if available
                 try:
                     query_stats = await conn.execute(
-                        text("""
+                        text(
+                            """
                         SELECT
                             query,
                             calls,
@@ -391,8 +394,9 @@ class DatabasePerformanceOptimizer:
                         WHERE mean_exec_time > :threshold
                         ORDER BY total_exec_time DESC
                         LIMIT 20
-                    """),
-                        {"threshold": threshold_ms}
+                    """
+                        ),
+                        {"threshold": threshold_ms},
                     )
 
                     slow_queries = [

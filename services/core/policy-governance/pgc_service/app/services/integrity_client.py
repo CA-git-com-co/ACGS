@@ -17,13 +17,15 @@ class IntegrityServiceClient:
         timeout_config = httpx.Timeout(10.0, connect=5.0)
         # Handle SSL verification issues for development/testing
         try:
-            self.client = httpx.AsyncClient(base_url=self.base_url, timeout=timeout_config)
+            self.client = httpx.AsyncClient(
+                base_url=self.base_url, timeout=timeout_config
+            )
         except Exception as e:
             print(f"Warning: SSL configuration issue, using verify=False: {e}")
             self.client = httpx.AsyncClient(
                 base_url=self.base_url,
                 timeout=timeout_config,
-                verify=False  # Disable SSL verification for development
+                verify=False,  # Disable SSL verification for development
             )
 
     async def list_verified_policy_rules(

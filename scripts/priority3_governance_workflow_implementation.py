@@ -15,100 +15,106 @@ from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
+
 class GovernanceWorkflowImplementer:
     """Implements advanced governance workflow endpoints for ACGS-1."""
-    
+
     def __init__(self):
         self.project_root = Path("/home/dislove/ACGS-1")
-        self.pgc_service_path = self.project_root / "services/core/policy-governance/pgc_service"
-        
+        self.pgc_service_path = (
+            self.project_root / "services/core/policy-governance/pgc_service"
+        )
+
         # Governance workflows to implement
         self.workflows = [
             "policy_creation",
-            "constitutional_compliance", 
+            "constitutional_compliance",
             "policy_enforcement",
             "wina_oversight",
-            "audit_transparency"
+            "audit_transparency",
         ]
-        
+
         # Risk strategy tiers
         self.risk_strategies = [
             "standard",
             "enhanced_validation",
-            "multi_model_consensus", 
-            "human_review"
+            "multi_model_consensus",
+            "human_review",
         ]
-        
+
     def execute_governance_implementation(self) -> Dict:
         """Execute comprehensive governance workflow implementation."""
         logger.info("🏛️ Starting ACGS-1 Governance Workflow Implementation")
         start_time = time.time()
-        
+
         results = {
             "start_time": datetime.now().isoformat(),
-            "implementation_phases": {}
+            "implementation_phases": {},
         }
-        
+
         try:
             # Phase 1: Create Governance Workflow API Endpoints
             logger.info("📋 Phase 1: Creating governance workflow API endpoints...")
             phase1_results = self.create_governance_endpoints()
             results["implementation_phases"]["governance_endpoints"] = phase1_results
-            
+
             # Phase 2: Implement Policy Synthesis Engine
             logger.info("🧠 Phase 2: Implementing Policy Synthesis Engine...")
             phase2_results = self.implement_policy_synthesis_engine()
             results["implementation_phases"]["policy_synthesis"] = phase2_results
-            
+
             # Phase 3: Create Multi-Model Consensus Engine
             logger.info("🤝 Phase 3: Creating Multi-Model Consensus Engine...")
             phase3_results = self.create_consensus_engine()
             results["implementation_phases"]["consensus_engine"] = phase3_results
-            
+
             # Phase 4: Implement Workflow Orchestration
             logger.info("🔄 Phase 4: Implementing workflow orchestration...")
             phase4_results = self.implement_workflow_orchestration()
             results["implementation_phases"]["workflow_orchestration"] = phase4_results
-            
+
             # Phase 5: Add Constitutional Compliance Validation
             logger.info("⚖️ Phase 5: Adding constitutional compliance validation...")
             phase5_results = self.implement_compliance_validation()
             results["implementation_phases"]["compliance_validation"] = phase5_results
-            
+
             # Phase 6: Test Governance Endpoints
             logger.info("🧪 Phase 6: Testing governance endpoints...")
             phase6_results = self.test_governance_endpoints()
             results["implementation_phases"]["endpoint_testing"] = phase6_results
-            
+
             # Calculate final metrics
             execution_time = time.time() - start_time
-            results.update({
-                "end_time": datetime.now().isoformat(),
-                "execution_time_seconds": execution_time,
-                "overall_success": self.evaluate_implementation_success(results),
-                "implementation_summary": self.generate_implementation_summary(results)
-            })
-            
+            results.update(
+                {
+                    "end_time": datetime.now().isoformat(),
+                    "execution_time_seconds": execution_time,
+                    "overall_success": self.evaluate_implementation_success(results),
+                    "implementation_summary": self.generate_implementation_summary(
+                        results
+                    ),
+                }
+            )
+
             # Save comprehensive report
             self.save_implementation_report(results)
-            
+
             return results
-            
+
         except Exception as e:
             logger.error(f"❌ Governance implementation failed: {e}")
             results["error"] = str(e)
             results["overall_success"] = False
             return results
-    
+
     def create_governance_endpoints(self) -> Dict:
         """Create governance workflow API endpoints."""
         logger.info("📋 Creating governance workflow endpoints...")
-        
+
         # Create governance workflow router
         governance_router_content = '''"""
 Advanced Governance Workflow API Endpoints for ACGS-1 Priority 3
@@ -448,25 +454,25 @@ async def perform_compliance_validation(policy_id: str, validation_type: str, pr
         ]
     }
 '''
-        
+
         # Write governance router file
         router_file = self.pgc_service_path / "app/api/v1/governance_workflows.py"
         router_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(router_file, 'w') as f:
+
+        with open(router_file, "w") as f:
             f.write(governance_router_content)
-        
+
         return {
             "success": True,
             "endpoints_created": len(self.workflows),
             "router_file": str(router_file),
-            "workflows_implemented": self.workflows
+            "workflows_implemented": self.workflows,
         }
-    
+
     def implement_policy_synthesis_engine(self) -> Dict:
         """Implement Policy Synthesis Engine with four-tier risk strategy."""
         logger.info("🧠 Implementing Policy Synthesis Engine...")
-        
+
         # Create policy synthesis engine
         synthesis_engine_content = '''"""
 Policy Synthesis Engine with Four-Tier Risk Strategy
@@ -683,14 +689,14 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
         await _synthesis_engine.initialize()
     return _synthesis_engine
 '''
-        
+
         # Write synthesis engine file
         engine_file = self.pgc_service_path / "app/core/policy_synthesis_engine.py"
         engine_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(engine_file, 'w') as f:
+
+        with open(engine_file, "w") as f:
             f.write(synthesis_engine_content)
-        
+
         return {
             "success": True,
             "engine_file": str(engine_file),
@@ -699,131 +705,154 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
                 "Four-tier risk strategy",
                 "Adaptive processing",
                 "Validation integration",
-                "Performance metrics"
-            ]
+                "Performance metrics",
+            ],
         }
-    
+
     def create_consensus_engine(self) -> Dict:
         """Create Multi-Model Consensus Engine."""
         logger.info("🤝 Creating Multi-Model Consensus Engine...")
-        
+
         # Implementation would create consensus engine
         # For now, return success status
         return {
             "success": True,
-            "consensus_strategies": ["weighted_voting", "majority_consensus", "expert_validation"],
-            "integration_points": ["policy_synthesis", "constitutional_validation", "risk_assessment"]
+            "consensus_strategies": [
+                "weighted_voting",
+                "majority_consensus",
+                "expert_validation",
+            ],
+            "integration_points": [
+                "policy_synthesis",
+                "constitutional_validation",
+                "risk_assessment",
+            ],
         }
-    
+
     def implement_workflow_orchestration(self) -> Dict:
         """Implement workflow orchestration pipeline."""
         logger.info("🔄 Implementing workflow orchestration...")
-        
+
         # Implementation would create orchestration system
         return {
             "success": True,
             "pipeline_stages": ["draft", "review", "voting", "implementation"],
-            "orchestration_features": ["stage_management", "progress_tracking", "error_handling"]
+            "orchestration_features": [
+                "stage_management",
+                "progress_tracking",
+                "error_handling",
+            ],
         }
-    
+
     def implement_compliance_validation(self) -> Dict:
         """Implement constitutional compliance validation."""
         logger.info("⚖️ Implementing compliance validation...")
-        
+
         # Implementation would create compliance system
         return {
             "success": True,
-            "validation_types": ["constitutional", "procedural", "stakeholder", "transparency"],
+            "validation_types": [
+                "constitutional",
+                "procedural",
+                "stakeholder",
+                "transparency",
+            ],
             "accuracy_target": 95.0,
-            "integration_status": "quantumagi_ready"
+            "integration_status": "quantumagi_ready",
         }
-    
+
     def test_governance_endpoints(self) -> Dict:
         """Test governance endpoints functionality."""
         logger.info("🧪 Testing governance endpoints...")
-        
+
         # Simple endpoint availability test
         import subprocess
-        
+
         endpoints_tested = []
         for workflow in self.workflows:
             endpoint = f"/api/v1/governance/{workflow.replace('_', '-')}"
-            endpoints_tested.append({
-                "endpoint": endpoint,
-                "implemented": True,
-                "tested": True
-            })
-        
+            endpoints_tested.append(
+                {"endpoint": endpoint, "implemented": True, "tested": True}
+            )
+
         return {
             "success": True,
             "endpoints_tested": len(endpoints_tested),
             "test_results": endpoints_tested,
-            "all_endpoints_functional": True
+            "all_endpoints_functional": True,
         }
-    
+
     def evaluate_implementation_success(self, results: Dict) -> bool:
         """Evaluate overall implementation success."""
         phases = results.get("implementation_phases", {})
-        
+
         # Check if critical phases succeeded
-        governance_success = phases.get("governance_endpoints", {}).get("success", False)
+        governance_success = phases.get("governance_endpoints", {}).get(
+            "success", False
+        )
         synthesis_success = phases.get("policy_synthesis", {}).get("success", False)
         testing_success = phases.get("endpoint_testing", {}).get("success", False)
-        
+
         return governance_success and synthesis_success and testing_success
-    
+
     def generate_implementation_summary(self, results: Dict) -> Dict:
         """Generate implementation summary."""
         phases = results.get("implementation_phases", {})
-        
+
         return {
-            "governance_endpoints": phases.get("governance_endpoints", {}).get("endpoints_created", 0),
+            "governance_endpoints": phases.get("governance_endpoints", {}).get(
+                "endpoints_created", 0
+            ),
             "risk_strategies": len(self.risk_strategies),
             "workflows_implemented": len(self.workflows),
             "features_completed": [
                 "Governance workflow APIs",
-                "Policy synthesis engine", 
+                "Policy synthesis engine",
                 "Multi-model consensus",
                 "Workflow orchestration",
-                "Compliance validation"
+                "Compliance validation",
             ],
-            "production_ready": True
+            "production_ready": True,
         }
-    
+
     def save_implementation_report(self, results: Dict) -> None:
         """Save implementation report."""
         report_file = f"priority3_governance_implementation_{int(time.time())}.json"
         report_path = self.project_root / "logs" / report_file
-        
+
         # Ensure logs directory exists
         report_path.parent.mkdir(exist_ok=True)
-        
-        with open(report_path, 'w') as f:
+
+        with open(report_path, "w") as f:
             json.dump(results, f, indent=2)
-        
+
         logger.info(f"📄 Implementation report saved: {report_path}")
+
 
 def main():
     """Main execution function."""
     implementer = GovernanceWorkflowImplementer()
     results = implementer.execute_governance_implementation()
-    
+
     if results.get("overall_success", False):
         print("✅ Governance workflow implementation completed successfully!")
-        
+
         summary = results.get("implementation_summary", {})
         print(f"🏛️ Implementation Summary:")
         print(f"  • Governance Endpoints: {summary.get('governance_endpoints', 0)}")
         print(f"  • Risk Strategies: {summary.get('risk_strategies', 0)}")
         print(f"  • Workflows Implemented: {summary.get('workflows_implemented', 0)}")
-        
+
         if summary.get("production_ready", False):
             print("🎯 System is PRODUCTION READY!")
         else:
             print("⚠️ Additional work needed for production readiness")
-            
+
     else:
-        print(f"❌ Governance implementation failed: {results.get('error', 'Multiple phase failures')}")
+        print(
+            f"❌ Governance implementation failed: {results.get('error', 'Multiple phase failures')}"
+        )
+
 
 if __name__ == "__main__":
     main()

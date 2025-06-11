@@ -175,7 +175,9 @@ class SecureAggregator:
             Aggregated results with privacy guarantees
         """
         try:
-            aggregation_id = hashlib.sha256(f"agg_{time.time()}".encode()).hexdigest()[:16]
+            aggregation_id = hashlib.sha256(f"agg_{time.time()}".encode()).hexdigest()[
+                :16
+            ]
             start_time = time.time()
 
             logger.info(f"Starting secure aggregation: {aggregation_id}")

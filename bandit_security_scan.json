@@ -1,17 +1,17 @@
 {
   "errors": [],
-  "generated_at": "2025-06-11T18:16:56Z",
+  "generated_at": "2025-06-11T21:50:10Z",
   "metrics": {
     "_totals": {
-      "CONFIDENCE.HIGH": 763,
-      "CONFIDENCE.LOW": 2,
-      "CONFIDENCE.MEDIUM": 33,
+      "CONFIDENCE.HIGH": 753,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 31,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 11,
+      "SEVERITY.HIGH": 1,
       "SEVERITY.LOW": 771,
-      "SEVERITY.MEDIUM": 16,
+      "SEVERITY.MEDIUM": 12,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 130365,
+      "loc": 130815,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -356,11 +356,11 @@
     "services/core/constitutional-ai/ac_service/app/main.py": {
       "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
-      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.MEDIUM": 1,
       "CONFIDENCE.UNDEFINED": 0,
       "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
-      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.MEDIUM": 1,
       "SEVERITY.UNDEFINED": 0,
       "loc": 798,
       "nosec": 0,
@@ -1745,11 +1745,11 @@
       "skipped_tests": 0
     },
     "services/core/governance-synthesis/gs_service/app/core/llm_reliability_framework.py": {
-      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 2,
+      "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
@@ -1823,11 +1823,11 @@
       "skipped_tests": 0
     },
     "services/core/governance-synthesis/gs_service/app/core/opa_integration.py": {
-      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 1,
+      "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
@@ -1955,11 +1955,11 @@
     "services/core/governance-synthesis/gs_service/app/main.py": {
       "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
-      "CONFIDENCE.MEDIUM": 2,
+      "CONFIDENCE.MEDIUM": 1,
       "CONFIDENCE.UNDEFINED": 0,
       "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
-      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.MEDIUM": 1,
       "SEVERITY.UNDEFINED": 0,
       "loc": 445,
       "nosec": 0,
@@ -2616,11 +2616,11 @@
       "skipped_tests": 0
     },
     "services/core/policy-governance/pgc_service/app/api/v1/alphaevolve_enforcement.py": {
-      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 1,
+      "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
@@ -2638,6 +2638,19 @@
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
       "loc": 181,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "services/core/policy-governance/pgc_service/app/api/v1/governance_workflows.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 275,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -2797,6 +2810,19 @@
       "nosec": 0,
       "skipped_tests": 0
     },
+    "services/core/policy-governance/pgc_service/app/core/policy_synthesis_engine.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 176,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
     "services/core/policy-governance/pgc_service/app/core/proactive_fairness_generator.py": {
       "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
@@ -2837,11 +2863,11 @@
       "skipped_tests": 0
     },
     "services/core/policy-governance/pgc_service/app/core/wina_enforcement_optimizer.py": {
-      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 2,
+      "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
@@ -2967,11 +2993,11 @@
       "skipped_tests": 0
     },
     "services/core/policy-governance/pgc_service/tests/test_wina_enforcement_optimizer.py": {
-      "CONFIDENCE.HIGH": 37,
+      "CONFIDENCE.HIGH": 36,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 1,
+      "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 36,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
@@ -4293,11 +4319,11 @@
       "skipped_tests": 0
     },
     "services/research/federated-evaluation/federated_service/app/core/federated_evaluator.py": {
-      "CONFIDENCE.HIGH": 1,
+      "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 1,
+      "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
@@ -4332,11 +4358,11 @@
       "skipped_tests": 0
     },
     "services/research/federated-evaluation/federated_service/app/core/secure_aggregation.py": {
-      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
-      "SEVERITY.HIGH": 2,
+      "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
@@ -5048,14 +5074,14 @@
     },
     "services/shared/database_optimizer.py": {
       "CONFIDENCE.HIGH": 0,
-      "CONFIDENCE.LOW": 2,
+      "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
       "CONFIDENCE.UNDEFINED": 0,
       "SEVERITY.HIGH": 0,
       "SEVERITY.LOW": 0,
-      "SEVERITY.MEDIUM": 2,
+      "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 509,
+      "loc": 508,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -5952,27 +5978,7 @@
       "test_name": "hardcoded_password_funcarg"
     },
     {
-      "code": "34         logging.StreamHandler(sys.stdout),\n35         logging.FileHandler(\"/tmp/ac_service.log\", mode=\"a\"),\n36     ],\n",
-      "col_offset": 28,
-      "end_col_offset": 49,
-      "filename": "services/core/constitutional-ai/ac_service/app/main.py",
-      "issue_confidence": "MEDIUM",
-      "issue_cwe": {
-        "id": 377,
-        "link": "https://cwe.mitre.org/data/definitions/377.html"
-      },
-      "issue_severity": "MEDIUM",
-      "issue_text": "Probable insecure usage of temp file/directory.",
-      "line_number": 35,
-      "line_range": [
-        35
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b108_hardcoded_tmp_directory.html",
-      "test_id": "B108",
-      "test_name": "hardcoded_tmp_directory"
-    },
-    {
-      "code": "954 \n955     uvicorn.run(app, host=\"0.0.0.0\", port=8001)\n",
+      "code": "956     # In production, this should be configured to bind to specific interfaces\n957     uvicorn.run(app, host=\"0.0.0.0\", port=8001)\n",
       "col_offset": 26,
       "end_col_offset": 35,
       "filename": "services/core/constitutional-ai/ac_service/app/main.py",
@@ -5983,9 +5989,9 @@
       },
       "issue_severity": "MEDIUM",
       "issue_text": "Possible binding to all interfaces.",
-      "line_number": 955,
+      "line_number": 957,
       "line_range": [
-        955
+        957
       ],
       "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b104_hardcoded_bind_all_interfaces.html",
       "test_id": "B104",
@@ -10607,88 +10613,6 @@
       "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b106_hardcoded_password_funcarg.html",
       "test_id": "B106",
       "test_name": "hardcoded_password_funcarg"
-    },
-    {
-      "code": "1379         start_time = time.time()\n1380         request_id = hashlib.md5(f\"{principle.id}_{start_time}\".encode()).hexdigest()[\n1381             :8\n",
-      "col_offset": 21,
-      "end_col_offset": 73,
-      "filename": "services/core/governance-synthesis/gs_service/app/core/llm_reliability_framework.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 327,
-        "link": "https://cwe.mitre.org/data/definitions/327.html"
-      },
-      "issue_severity": "HIGH",
-      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
-      "line_number": 1380,
-      "line_range": [
-        1380
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b324_hashlib.html",
-      "test_id": "B324",
-      "test_name": "hashlib"
-    },
-    {
-      "code": "3230             # The request_id for the overall process_with_reliability context\n3231             process_request_id = hashlib.md5(\n3232                 f\"{getattr(input_data, 'principle_id', 'unknown_principle')}_{start_time}_process\".encode()\n3233             ).hexdigest()[:8]\n3234 \n",
-      "col_offset": 33,
-      "end_col_offset": 13,
-      "filename": "services/core/governance-synthesis/gs_service/app/core/llm_reliability_framework.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 327,
-        "link": "https://cwe.mitre.org/data/definitions/327.html"
-      },
-      "issue_severity": "HIGH",
-      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
-      "line_number": 3231,
-      "line_range": [
-        3231,
-        3232,
-        3233
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b324_hashlib.html",
-      "test_id": "B324",
-      "test_name": "hashlib"
-    },
-    {
-      "code": "149             if self.use_advanced_cache\n150             else hashlib.md5(json.dumps(key_data, sort_keys=True).encode()).hexdigest()\n151         )\n",
-      "col_offset": 17,
-      "end_col_offset": 75,
-      "filename": "services/core/governance-synthesis/gs_service/app/core/opa_integration.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 327,
-        "link": "https://cwe.mitre.org/data/definitions/327.html"
-      },
-      "issue_severity": "HIGH",
-      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
-      "line_number": 150,
-      "line_range": [
-        150
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b324_hashlib.html",
-      "test_id": "B324",
-      "test_name": "hashlib"
-    },
-    {
-      "code": "45         logging.StreamHandler(sys.stdout),\n46         logging.FileHandler(\"/tmp/gs_service_phase_a3.log\", mode=\"a\"),\n47     ],\n",
-      "col_offset": 28,
-      "end_col_offset": 58,
-      "filename": "services/core/governance-synthesis/gs_service/app/main.py",
-      "issue_confidence": "MEDIUM",
-      "issue_cwe": {
-        "id": 377,
-        "link": "https://cwe.mitre.org/data/definitions/377.html"
-      },
-      "issue_severity": "MEDIUM",
-      "issue_text": "Probable insecure usage of temp file/directory.",
-      "line_number": 46,
-      "line_range": [
-        46
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b108_hardcoded_tmp_directory.html",
-      "test_id": "B108",
-      "test_name": "hardcoded_tmp_directory"
     },
     {
       "code": "534     config = {\n535         \"host\": \"0.0.0.0\",\n536         \"port\": 8004,\n537         \"log_level\": \"info\",\n538         \"access_log\": True,\n539         \"workers\": 1,  # Single worker for development, increase for production\n540         \"loop\": \"asyncio\",\n541         \"http\": \"httptools\",\n542         \"lifespan\": \"on\",\n543     }\n544 \n545     logger.info(\n",
@@ -16773,26 +16697,6 @@
       "test_name": "hardcoded_password_funcarg"
     },
     {
-      "code": "404     content = f\"{proposal.solution_code}:{context}:{proposal.generation}\"\n405     return hashlib.md5(content.encode()).hexdigest()\n406 \n",
-      "col_offset": 11,
-      "end_col_offset": 40,
-      "filename": "services/core/policy-governance/pgc_service/app/api/v1/alphaevolve_enforcement.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 327,
-        "link": "https://cwe.mitre.org/data/definitions/327.html"
-      },
-      "issue_severity": "HIGH",
-      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
-      "line_number": 405,
-      "line_range": [
-        405
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b324_hashlib.html",
-      "test_id": "B324",
-      "test_name": "hashlib"
-    },
-    {
       "code": "165     )\n166     assert result1 == [()]\n167 \n",
       "col_offset": 4,
       "end_col_offset": 26,
@@ -16941,46 +16845,6 @@
       "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b105_hardcoded_password_string.html",
       "test_id": "B105",
       "test_name": "hardcoded_password_string"
-    },
-    {
-      "code": "684 \n685         return hashlib.md5(key_data.encode()).hexdigest()\n686 \n",
-      "col_offset": 15,
-      "end_col_offset": 45,
-      "filename": "services/core/policy-governance/pgc_service/app/core/wina_enforcement_optimizer.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 327,
-        "link": "https://cwe.mitre.org/data/definitions/327.html"
-      },
-      "issue_severity": "HIGH",
-      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
-      "line_number": 685,
-      "line_range": [
-        685
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b324_hashlib.html",
-      "test_id": "B324",
-      "test_name": "hashlib"
-    },
-    {
-      "code": "699 \n700         return hashlib.md5(key_data.encode()).hexdigest()\n701 \n",
-      "col_offset": 15,
-      "end_col_offset": 45,
-      "filename": "services/core/policy-governance/pgc_service/app/core/wina_enforcement_optimizer.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 327,
-        "link": "https://cwe.mitre.org/data/definitions/327.html"
-      },
-      "issue_severity": "HIGH",
-      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
-      "line_number": 700,
-      "line_range": [
-        700
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b324_hashlib.html",
-      "test_id": "B324",
-      "test_name": "hashlib"
     },
     {
       "code": "25                 timeout=timeout_config,\n26                 verify=False  # Disable SSL verification for development\n27             )\n28 \n29     async def list_verified_policy_rules(\n30         self, auth_token: Optional[str] = None\n31     ) -> List[IntegrityPolicyRule]:\n",
@@ -17629,26 +17493,6 @@
       "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b101_assert_used.html",
       "test_id": "B101",
       "test_name": "assert_used"
-    },
-    {
-      "code": "127 \n128             return hashlib.md5(str(context).encode()).hexdigest()\n129 \n",
-      "col_offset": 19,
-      "end_col_offset": 53,
-      "filename": "services/core/policy-governance/pgc_service/tests/test_wina_enforcement_optimizer.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 327,
-        "link": "https://cwe.mitre.org/data/definitions/327.html"
-      },
-      "issue_severity": "HIGH",
-      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
-      "line_number": 128,
-      "line_range": [
-        128
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b324_hashlib.html",
-      "test_id": "B324",
-      "test_name": "hashlib"
     },
     {
       "code": "216         \"\"\"Test WINA optimizer initialization.\"\"\"\n217         assert wina_optimizer.enable_wina is True\n218         assert wina_optimizer.cache_ttl == timedelta(minutes=5)\n",
@@ -20496,70 +20340,6 @@
       "test_name": "hardcoded_bind_all_interfaces"
     },
     {
-      "code": "402         try:\n403             task_id = hashlib.md5(\n404                 f\"{request.policy_content}_{time.time()}\".encode()\n405             ).hexdigest()[:16]\n406 \n",
-      "col_offset": 22,
-      "end_col_offset": 13,
-      "filename": "services/research/federated-evaluation/federated_service/app/core/federated_evaluator.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 327,
-        "link": "https://cwe.mitre.org/data/definitions/327.html"
-      },
-      "issue_severity": "HIGH",
-      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
-      "line_number": 403,
-      "line_range": [
-        403,
-        404,
-        405
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b324_hashlib.html",
-      "test_id": "B324",
-      "test_name": "hashlib"
-    },
-    {
-      "code": "177         try:\n178             aggregation_id = hashlib.md5(f\"agg_{time.time()}\".encode()).hexdigest()[:16]\n179             start_time = time.time()\n",
-      "col_offset": 29,
-      "end_col_offset": 71,
-      "filename": "services/research/federated-evaluation/federated_service/app/core/secure_aggregation.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 327,
-        "link": "https://cwe.mitre.org/data/definitions/327.html"
-      },
-      "issue_severity": "HIGH",
-      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
-      "line_number": 178,
-      "line_range": [
-        178
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b324_hashlib.html",
-      "test_id": "B324",
-      "test_name": "hashlib"
-    },
-    {
-      "code": "552                         participant_id=f\"participant_{i}\",\n553                         verification_hash=hashlib.md5(\n554                             f\"share_{i}\".encode()\n555                         ).hexdigest(),\n556                     )\n",
-      "col_offset": 42,
-      "end_col_offset": 25,
-      "filename": "services/research/federated-evaluation/federated_service/app/core/secure_aggregation.py",
-      "issue_confidence": "HIGH",
-      "issue_cwe": {
-        "id": 327,
-        "link": "https://cwe.mitre.org/data/definitions/327.html"
-      },
-      "issue_severity": "HIGH",
-      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
-      "line_number": 553,
-      "line_range": [
-        553,
-        554,
-        555
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b324_hashlib.html",
-      "test_id": "B324",
-      "test_name": "hashlib"
-    },
-    {
       "code": "319             \"timestamps\": times,\n320             \"success_rates\": [random.uniform(0.85, 0.98) for _ in times],\n321             \"response_times\": [random.uniform(100, 200) for _ in times],\n",
       "col_offset": 30,
       "end_col_offset": 56,
@@ -21282,65 +21062,6 @@
       "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b112_try_except_continue.html",
       "test_id": "B112",
       "test_name": "try_except_continue"
-    },
-    {
-      "code": "262                             text(\n263                                 f\"\"\"\n264                             SELECT EXISTS (\n265                                 SELECT FROM information_schema.tables \n266                                 WHERE table_name = '{index_def['table']}'\n267                             )\n268                         \"\"\"\n269                             )\n",
-      "col_offset": 36,
-      "end_col_offset": 52,
-      "filename": "services/shared/database_optimizer.py",
-      "issue_confidence": "LOW",
-      "issue_cwe": {
-        "id": 89,
-        "link": "https://cwe.mitre.org/data/definitions/89.html"
-      },
-      "issue_severity": "MEDIUM",
-      "issue_text": "Possible SQL injection vector through string-based query construction.",
-      "line_number": 263,
-      "line_range": [
-        263,
-        264,
-        265,
-        266,
-        267,
-        268
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html",
-      "test_id": "B608",
-      "test_name": "hardcoded_sql_expressions"
-    },
-    {
-      "code": "380                         text(\n381                             f\"\"\"\n382                         SELECT \n383                             query,\n384                             calls,\n385                             total_exec_time,\n386                             mean_exec_time,\n387                             max_exec_time,\n388                             stddev_exec_time,\n389                             rows,\n390                             100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent\n391                         FROM pg_stat_statements \n392                         WHERE mean_exec_time > {threshold_ms}\n393                         ORDER BY total_exec_time DESC \n394                         LIMIT 20\n395                     \"\"\"\n396                         )\n",
-      "col_offset": 32,
-      "end_col_offset": 47,
-      "filename": "services/shared/database_optimizer.py",
-      "issue_confidence": "LOW",
-      "issue_cwe": {
-        "id": 89,
-        "link": "https://cwe.mitre.org/data/definitions/89.html"
-      },
-      "issue_severity": "MEDIUM",
-      "issue_text": "Possible SQL injection vector through string-based query construction.",
-      "line_number": 381,
-      "line_range": [
-        381,
-        382,
-        383,
-        384,
-        385,
-        386,
-        387,
-        388,
-        389,
-        390,
-        391,
-        392,
-        393,
-        394,
-        395
-      ],
-      "more_info": "https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html",
-      "test_id": "B608",
-      "test_name": "hardcoded_sql_expressions"
     },
     {
       "code": "23     USER_DELETED = \"user.deleted\"\n24     TOKEN_EXPIRED = \"token.expired\"\n25 \n",

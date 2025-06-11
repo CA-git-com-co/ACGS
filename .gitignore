@@ -234,3 +234,10 @@ Cargo.lock
 *.swp
 *.swo
 *~
+
+# Python
+.venv/
+*.crt
+# Reports
+*_report.json
+*_report.html

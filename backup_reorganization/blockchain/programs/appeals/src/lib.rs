@@ -16,13 +16,16 @@ pub mod appeals {
         policy_id: u64,
         violation_details: String,
         evidence_hash: [u8; 32],
-        appeal_type: AppealType
+        appeal_type: AppealType,
     ) -> Result<()> {
-        require!(violation_details.len() <= MAX_VIOLATION_DETAILS, AppealsError::ViolationDetailsTooLong);
-        
+        require!(
+            violation_details.len() <= MAX_VIOLATION_DETAILS,
+            AppealsError::ViolationDetailsTooLong
+        );
+
         let appeal = &mut ctx.accounts.appeal;
         let clock = Clock::get()?;
-        
+
         appeal.id = clock.unix_timestamp as u64;
         appeal.policy_id = policy_id;
         appeal.appellant = ctx.accounts.appellant.key();
@@ -34,10 +37,14 @@ pub mod appeals {
         appeal.reviewer = None;
         appeal.review_deadline = clock.unix_timestamp + REVIEW_DEADLINE_SECONDS;
         appeal.escalation_count = 0;
-        
-        msg!("Appeal {} submitted for policy {} by {}", 
-             appeal.id, policy_id, ctx.accounts.appellant.key());
-        
+
+        msg!(
+            "Appeal {} submitted for policy {} by {}",
+            appeal.id,
+            policy_id,
+            ctx.accounts.appellant.key()
+        );
+
         Ok(())
     }
 
@@ -46,52 +53,80 @@ pub mod appeals {
         ctx: Context<ReviewAppeal>,
         reviewer_decision: ReviewDecision,
         review_evidence: String,
-        confidence_score: u8
+        confidence_score: u8,
     ) -> Result<()> {
-        require!(confidence_score <= 100, AppealsError::InvalidConfidenceScore);
-        require!(review_evidence.len() <= MAX_REVIEW_EVIDENCE, AppealsError::ReviewEvidenceTooLong);
-        
+        require!(
+            confidence_score <= 100,
+            AppealsError::InvalidConfidenceScore
+        );
+        require!(
+            review_evidence.len() <= MAX_REVIEW_EVIDENCE,
+            AppealsError::ReviewEvidenceTooLong
+        );
+
         let appeal = &mut ctx.accounts.appeal;
         let clock = Clock::get()?;
-        
+
         // Verify appeal is in correct status
-        require!(appeal.status == AppealStatus::Submitted, AppealsError::InvalidAppealStatus);
-        
+        require!(
+            appeal.status == AppealStatus::Submitted,
+            AppealsError::InvalidAppealStatus
+        );
+
         // Check review deadline
-        require!(clock.unix_timestamp <= appeal.review_deadline, AppealsError::ReviewDeadlineExpired);
-        
+        require!(
+            clock.unix_timestamp <= appeal.review_deadline,
+            AppealsError::ReviewDeadlineExpired
+        );
+
         appeal.reviewer = Some(ctx.accounts.reviewer.key());
         appeal.review_decision = Some(reviewer_decision.clone());
         appeal.review_evidence = review_evidence;
         appeal.confidence_score = confidence_score;
         appeal.reviewed_at = Some(clock.unix_timestamp);
-        
+
         // Determine next status based on decision and confidence
         match reviewer_decision {
             ReviewDecision::Approve => {
                 if confidence_score >= HIGH_CONFIDENCE_THRESHOLD {
                     appeal.status = AppealStatus::Approved;
-                    msg!("Appeal {} approved with high confidence ({}%)", appeal.id, confidence_score);
+                    msg!(
+                        "Appeal {} approved with high confidence ({}%)",
+                        appeal.id,
+                        confidence_score
+                    );
                 } else {
                     appeal.status = AppealStatus::PendingHumanReview;
-                    msg!("Appeal {} approved but requires human review (confidence: {}%)", appeal.id, confidence_score);
+                    msg!(
+                        "Appeal {} approved but requires human review (confidence: {}%)",
+                        appeal.id,
+                        confidence_score
+                    );
                 }
-            },
+            }
             ReviewDecision::Reject => {
                 if confidence_score >= HIGH_CONFIDENCE_THRESHOLD {
                     appeal.status = AppealStatus::Rejected;
-                    msg!("Appeal {} rejected with high confidence ({}%)", appeal.id, confidence_score);
+                    msg!(
+                        "Appeal {} rejected with high confidence ({}%)",
+                        appeal.id,
+                        confidence_score
+                    );
                 } else {
                     appeal.status = AppealStatus::PendingHumanReview;
-                    msg!("Appeal {} rejected but requires human review (confidence: {}%)", appeal.id, confidence_score);
+                    msg!(
+                        "Appeal {} rejected but requires human review (confidence: {}%)",
+                        appeal.id,
+                        confidence_score
+                    );
                 }
-            },
+            }
             ReviewDecision::Escalate => {
                 appeal.status = AppealStatus::PendingHumanReview;
                 msg!("Appeal {} escalated to human review", appeal.id);
             }
         }
-        
+
         Ok(())
     }
 
@@ -99,33 +134,43 @@ pub mod appeals {
     pub fn escalate_to_human_committee(
         ctx: Context<EscalateAppeal>,
         escalation_reason: String,
-        committee_type: CommitteeType
+        committee_type: CommitteeType,
     ) -> Result<()> {
-        require!(escalation_reason.len() <= MAX_ESCALATION_REASON, AppealsError::EscalationReasonTooLong);
-        
+        require!(
+            escalation_reason.len() <= MAX_ESCALATION_REASON,
+            AppealsError::EscalationReasonTooLong
+        );
+
         let appeal = &mut ctx.accounts.appeal;
         let clock = Clock::get()?;
-        
+
         // Verify appeal can be escalated
         require!(
-            appeal.status == AppealStatus::PendingHumanReview || 
-            appeal.status == AppealStatus::Submitted,
+            appeal.status == AppealStatus::PendingHumanReview
+                || appeal.status == AppealStatus::Submitted,
             AppealsError::CannotEscalate
         );
-        
+
         // Check escalation limits
-        require!(appeal.escalation_count < MAX_ESCALATIONS, AppealsError::MaxEscalationsReached);
-        
+        require!(
+            appeal.escalation_count < MAX_ESCALATIONS,
+            AppealsError::MaxEscalationsReached
+        );
+
         appeal.status = AppealStatus::EscalatedToHuman;
         appeal.escalation_reason = Some(escalation_reason);
         appeal.committee_type = Some(committee_type.clone());
         appeal.escalated_at = Some(clock.unix_timestamp);
         appeal.escalation_count += 1;
         appeal.human_review_deadline = Some(clock.unix_timestamp + HUMAN_REVIEW_DEADLINE_SECONDS);
-        
-        msg!("Appeal {} escalated to {:?} committee (escalation #{})", 
-             appeal.id, committee_type, appeal.escalation_count);
-        
+
+        msg!(
+            "Appeal {} escalated to {:?} committee (escalation #{})",
+            appeal.id,
+            committee_type,
+            appeal.escalation_count
+        );
+
         Ok(())
     }
 
@@ -134,56 +179,68 @@ pub mod appeals {
         ctx: Context<ResolveAppeal>,
         final_decision: FinalDecision,
         ruling_details: String,
-        enforcement_action: EnforcementAction
+        enforcement_action: EnforcementAction,
     ) -> Result<()> {
-        require!(ruling_details.len() <= MAX_RULING_DETAILS, AppealsError::RulingDetailsTooLong);
-        
+        require!(
+            ruling_details.len() <= MAX_RULING_DETAILS,
+            AppealsError::RulingDetailsTooLong
+        );
+
         let appeal = &mut ctx.accounts.appeal;
         let clock = Clock::get()?;
-        
+
         // Verify appeal is in correct status for resolution
         require!(
-            appeal.status == AppealStatus::EscalatedToHuman ||
-            appeal.status == AppealStatus::PendingHumanReview,
+            appeal.status == AppealStatus::EscalatedToHuman
+                || appeal.status == AppealStatus::PendingHumanReview,
             AppealsError::CannotResolve
         );
-        
+
         appeal.final_decision = Some(final_decision.clone());
         appeal.ruling_details = ruling_details;
         appeal.enforcement_action = Some(enforcement_action.clone());
         appeal.resolved_at = Some(clock.unix_timestamp);
         appeal.resolver = Some(ctx.accounts.resolver.key());
-        
+
         // Set final status
         match final_decision {
             FinalDecision::Uphold => {
                 appeal.status = AppealStatus::Rejected;
-                msg!("Appeal {} final ruling: UPHOLD original decision", appeal.id);
-            },
+                msg!(
+                    "Appeal {} final ruling: UPHOLD original decision",
+                    appeal.id
+                );
+            }
             FinalDecision::Overturn => {
                 appeal.status = AppealStatus::Approved;
-                msg!("Appeal {} final ruling: OVERTURN original decision", appeal.id);
-            },
+                msg!(
+                    "Appeal {} final ruling: OVERTURN original decision",
+                    appeal.id
+                );
+            }
             FinalDecision::Modify => {
                 appeal.status = AppealStatus::ModifiedApproval;
                 msg!("Appeal {} final ruling: MODIFY with conditions", appeal.id);
             }
         }
-        
+
         // Log enforcement action
         match enforcement_action {
-            EnforcementAction::None => {},
+            EnforcementAction::None => {}
             EnforcementAction::PolicyUpdate => {
                 msg!("Enforcement: Policy {} requires update", appeal.policy_id);
-            },
+            }
             EnforcementAction::SystemAlert => {
-                msg!("Enforcement: System alert issued for policy {}", appeal.policy_id);
-            },
+                msg!(
+                    "Enforcement: System alert issued for policy {}",
+                    appeal.policy_id
+                );
+            }
             EnforcementAction::TemporaryExemption => {
                 msg!("Enforcement: Temporary exemption granted for appellant");
             }
         }
-        
+
         Ok(())
     }
 
@@ -191,9 +248,9 @@ pub mod appeals {
     pub fn get_appeal_stats(ctx: Context<GetAppealStats>) -> Result<()> {
         // This would typically return statistics but Anchor doesn't support return values
         // Instead, we emit an event with the statistics
-        
+
         let stats = &ctx.accounts.appeal_stats;
-        
+
         emit!(AppealStatsEvent {
             total_appeals: stats.total_appeals,
             approved_appeals: stats.approved_appeals,
@@ -202,7 +259,7 @@ pub mod appeals {
             average_resolution_time: stats.average_resolution_time,
             human_escalation_rate: stats.human_escalation_rate,
         });
-        
+
         Ok(())
     }
 }
@@ -280,16 +337,16 @@ pub struct AppealStats {
     pub rejected_appeals: u64,
     pub pending_appeals: u64,
     pub average_resolution_time: u64, // in seconds
-    pub human_escalation_rate: u8, // percentage
+    pub human_escalation_rate: u8,    // percentage
 }
 
 // Enums
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
 pub enum AppealType {
-    PolicyViolation,    // Appeal against policy violation ruling
-    ProcessError,       // Appeal due to process/system error
-    NewEvidence,        // Appeal with new evidence
+    PolicyViolation,         // Appeal against policy violation ruling
+    ProcessError,            // Appeal due to process/system error
+    NewEvidence,             // Appeal with new evidence
     ConstitutionalChallenge, // Challenge policy constitutionality
 }
 
@@ -307,9 +364,9 @@ pub enum AppealStatus {
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
 pub enum ReviewDecision {
-    Approve,    // Approve the appeal
-    Reject,     // Reject the appeal
-    Escalate,   // Escalate to human review
+    Approve,  // Approve the appeal
+    Reject,   // Reject the appeal
+    Escalate, // Escalate to human review
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
@@ -322,17 +379,17 @@ pub enum CommitteeType {
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
 pub enum FinalDecision {
-    Uphold,     // Uphold original decision
-    Overturn,   // Overturn original decision
-    Modify,     // Modify with conditions
+    Uphold,   // Uphold original decision
+    Overturn, // Overturn original decision
+    Modify,   // Modify with conditions
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
 pub enum EnforcementAction {
-    None,                   // No action required
-    PolicyUpdate,           // Policy needs updating
-    SystemAlert,            // Issue system alert
-    TemporaryExemption,     // Grant temporary exemption
+    None,               // No action required
+    PolicyUpdate,       // Policy needs updating
+    SystemAlert,        // Issue system alert
+    TemporaryExemption, // Grant temporary exemption
 }
 
 // Instruction Contexts
