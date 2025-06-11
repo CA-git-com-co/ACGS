@@ -306,7 +306,9 @@ def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
             ),
         )
 
-        return JSONResponse(status_code=exc.status_code, content=serialize_api_response(api_response))
+        return JSONResponse(
+            status_code=exc.status_code, content=serialize_api_response(api_response)
+        )
 
     async def validation_exception_handler(request: Request, exc):
         """Handle validation exceptions."""
@@ -325,7 +327,9 @@ def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
             ),
         )
 
-        return JSONResponse(status_code=422, content=serialize_api_response(api_response))
+        return JSONResponse(
+            status_code=422, content=serialize_api_response(api_response)
+        )
 
     return {
         HTTPException: http_exception_handler,

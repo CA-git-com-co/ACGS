@@ -201,15 +201,20 @@ class TestWINAEnforcementIntegration:
     ):
         """Test successful WINA enforcement endpoint."""
 
-        with patch(
-            "src.backend.pgc_service.app.api.v1.enforcement.get_wina_enforcement_optimizer"
-        ) as mock_get_optimizer, patch(
-            "src.backend.pgc_service.app.api.v1.enforcement.policy_manager"
-        ) as mock_policy_manager, patch(
-            "src.backend.pgc_service.app.api.v1.enforcement.get_opa_client"
-        ) as mock_get_opa_client, patch(
-            "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
-        ) as mock_auth:
+        with (
+            patch(
+                "src.backend.pgc_service.app.api.v1.enforcement.get_wina_enforcement_optimizer"
+            ) as mock_get_optimizer,
+            patch(
+                "src.backend.pgc_service.app.api.v1.enforcement.policy_manager"
+            ) as mock_policy_manager,
+            patch(
+                "src.backend.pgc_service.app.api.v1.enforcement.get_opa_client"
+            ) as mock_get_opa_client,
+            patch(
+                "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
+            ) as mock_auth,
+        ):
 
             # Setup mocks
             mock_optimizer = AsyncMock()
@@ -244,15 +249,20 @@ class TestWINAEnforcementIntegration:
     ):
         """Test WINA enforcement endpoint fallback to standard enforcement."""
 
-        with patch(
-            "src.backend.pgc_service.app.api.v1.enforcement.get_wina_enforcement_optimizer"
-        ) as mock_get_optimizer, patch(
-            "src.backend.pgc_service.app.api.v1.enforcement.policy_manager"
-        ) as mock_policy_manager, patch(
-            "src.backend.pgc_service.app.api.v1.enforcement.datalog_engine"
-        ) as mock_datalog, patch(
-            "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
-        ) as mock_auth:
+        with (
+            patch(
+                "src.backend.pgc_service.app.api.v1.enforcement.get_wina_enforcement_optimizer"
+            ) as mock_get_optimizer,
+            patch(
+                "src.backend.pgc_service.app.api.v1.enforcement.policy_manager"
+            ) as mock_policy_manager,
+            patch(
+                "src.backend.pgc_service.app.api.v1.enforcement.datalog_engine"
+            ) as mock_datalog,
+            patch(
+                "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
+            ) as mock_auth,
+        ):
 
             # Setup mocks to trigger fallback
             mock_optimizer = AsyncMock()
@@ -314,15 +324,20 @@ class TestWINAEnforcementIntegration:
             wina_insights={"strategy_used": "constitutional_priority"},
         )
 
-        with patch(
-            "src.backend.pgc_service.app.api.v1.enforcement.get_wina_enforcement_optimizer"
-        ) as mock_get_optimizer, patch(
-            "src.backend.pgc_service.app.api.v1.enforcement.policy_manager"
-        ) as mock_policy_manager, patch(
-            "src.backend.pgc_service.app.api.v1.enforcement.get_opa_client"
-        ) as mock_get_opa_client, patch(
-            "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
-        ) as mock_auth:
+        with (
+            patch(
+                "src.backend.pgc_service.app.api.v1.enforcement.get_wina_enforcement_optimizer"
+            ) as mock_get_optimizer,
+            patch(
+                "src.backend.pgc_service.app.api.v1.enforcement.policy_manager"
+            ) as mock_policy_manager,
+            patch(
+                "src.backend.pgc_service.app.api.v1.enforcement.get_opa_client"
+            ) as mock_get_opa_client,
+            patch(
+                "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
+            ) as mock_auth,
+        ):
 
             # Setup mocks
             mock_optimizer = AsyncMock()
@@ -369,11 +384,14 @@ class TestWINAEnforcementIntegration:
             "compliance_cache_size": 32,
         }
 
-        with patch(
-            "src.backend.pgc_service.app.api.v1.enforcement.get_wina_enforcement_optimizer"
-        ) as mock_get_optimizer, patch(
-            "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
-        ) as mock_auth:
+        with (
+            patch(
+                "src.backend.pgc_service.app.api.v1.enforcement.get_wina_enforcement_optimizer"
+            ) as mock_get_optimizer,
+            patch(
+                "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
+            ) as mock_auth,
+        ):
 
             # Setup mocks
             mock_optimizer = AsyncMock()

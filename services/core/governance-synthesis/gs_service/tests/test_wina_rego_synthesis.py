@@ -30,7 +30,6 @@ from services.core.governance_synthesis.app.core.wina_rego_synthesis import (
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../../..'))  # Removed during reorganization
 
 
-
 class TestWINARegoSynthesizer:
     """Test cases for WINARegoSynthesizer class."""
 

@@ -60,10 +60,11 @@ class TestFederatedEvaluationFramework:
         evaluator = FederatedEvaluator()
 
         # Mock the initialization to avoid external dependencies
-        with patch.object(evaluator, "_initialize_mab_client"), patch.object(
-            evaluator, "_load_federated_nodes"
-        ), patch.object(evaluator, "_initialize_node_monitoring"), patch.object(
-            evaluator, "_initialize_byzantine_detection"
+        with (
+            patch.object(evaluator, "_initialize_mab_client"),
+            patch.object(evaluator, "_load_federated_nodes"),
+            patch.object(evaluator, "_initialize_node_monitoring"),
+            patch.object(evaluator, "_initialize_byzantine_detection"),
         ):
             await evaluator.initialize()
 
@@ -115,11 +116,12 @@ class TestFederatedEvaluationFramework:
         federated_evaluator.nodes = mock_nodes
 
         # Mock database operations
-        with patch.object(
-            federated_evaluator, "_store_evaluation_in_db"
-        ) as mock_store, patch.object(
-            federated_evaluator, "_execute_federated_evaluation"
-        ) as mock_execute:
+        with (
+            patch.object(federated_evaluator, "_store_evaluation_in_db") as mock_store,
+            patch.object(
+                federated_evaluator, "_execute_federated_evaluation"
+            ) as mock_execute,
+        ):
 
             task_id = await federated_evaluator.submit_evaluation(
                 sample_evaluation_request
@@ -237,11 +239,12 @@ class TestFederatedEvaluationFramework:
 
         failed_node_id = "test_node_0"
 
-        with patch.object(
-            federated_evaluator, "_select_optimal_nodes"
-        ) as mock_select, patch.object(
-            federated_evaluator, "_execute_federated_evaluation"
-        ) as mock_execute:
+        with (
+            patch.object(federated_evaluator, "_select_optimal_nodes") as mock_select,
+            patch.object(
+                federated_evaluator, "_execute_federated_evaluation"
+            ) as mock_execute,
+        ):
 
             mock_select.return_value = ["test_node_1", "test_node_2"]
 
@@ -345,8 +348,9 @@ class TestFederatedEvaluationFramework:
         # Test response time target (<200ms for API calls)
         start_time = datetime.now()
 
-        with patch.object(federated_evaluator, "_store_evaluation_in_db"), patch.object(
-            federated_evaluator, "_execute_federated_evaluation"
+        with (
+            patch.object(federated_evaluator, "_store_evaluation_in_db"),
+            patch.object(federated_evaluator, "_execute_federated_evaluation"),
         ):
 
             task_id = await federated_evaluator.submit_evaluation(
@@ -379,8 +383,9 @@ class TestFederatedEvaluationFramework:
             )
             evaluation_requests.append(request)
 
-        with patch.object(federated_evaluator, "_store_evaluation_in_db"), patch.object(
-            federated_evaluator, "_execute_federated_evaluation"
+        with (
+            patch.object(federated_evaluator, "_store_evaluation_in_db"),
+            patch.object(federated_evaluator, "_execute_federated_evaluation"),
         ):
 
             # Submit evaluations concurrently

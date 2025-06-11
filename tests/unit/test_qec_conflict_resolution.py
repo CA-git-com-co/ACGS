@@ -143,13 +143,11 @@ class TestQECConflictResolver:
         """Test conflict analysis with QEC components available."""
         # Mock QEC components to be available
         with patch.object(qec_resolver, "qec_available", True):
-            with patch.object(
-                qec_resolver, "distance_calculator"
-            ) as mock_calc, patch.object(
-                qec_resolver, "error_predictor"
-            ) as mock_predictor, patch.object(
-                qec_resolver, "recovery_dispatcher"
-            ) as mock_dispatcher:
+            with (
+                patch.object(qec_resolver, "distance_calculator") as mock_calc,
+                patch.object(qec_resolver, "error_predictor") as mock_predictor,
+                patch.object(qec_resolver, "recovery_dispatcher") as mock_dispatcher,
+            ):
 
                 # Setup mocks
                 mock_calc.calculate_distance.return_value = 0.3

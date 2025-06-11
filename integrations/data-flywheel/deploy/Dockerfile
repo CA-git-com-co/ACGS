@@ -54,14 +54,14 @@ ENV PORT=8000
 FROM base AS dev
 RUN uv sync
 RUN uv pip freeze > requirements.txt
-COPY src/ ./src/
-COPY config/ ./config/
+COPY ../src/ ./src/
+COPY ../config/ ./config/
 CMD ["sh", "-c", "uv run uvicorn src.app:app --host 0.0.0.0 --port ${PORT}"]
 
 # Production target -- default target
 FROM base AS prod
 RUN uv sync --no-dev
 RUN uv pip freeze > requirements.txt
-COPY src/ ./src/
-COPY config/ ./config/
+COPY ../src/ ./src/
+COPY ../config/ ./config/
 CMD ["sh", "-c", "uv run uvicorn src.app:app --host 0.0.0.0 --port ${PORT}"]

@@ -24,7 +24,6 @@ from mock_services import (
 # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/shared'))  # Removed during reorganization
 
 
-
 class TestEnhancedDependencyMocking:
     """Test enhanced dependency mocking capabilities."""
 

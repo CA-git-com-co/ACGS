@@ -25,7 +25,6 @@ from services.shared.wina.performance_monitoring import (
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))  # Removed during reorganization
 
 
-
 async def demonstrate_performance_monitoring():
     """Demonstrate the WINA performance monitoring system capabilities."""
 

@@ -2,6 +2,7 @@
 Splitting these out avoids circular imports between discovery.py and
 failover_circuit_breaker.py
 """
+
 import time
 from dataclasses import dataclass, field
 from enum import Enum

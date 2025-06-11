@@ -9,14 +9,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
-COPY requirements.txt .
+COPY research/federated-evaluation/federated_service/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy shared directory
+# Copy shared directory from services level
 COPY shared/ ./shared/
 
 # Copy application code
-COPY app/ ./app/
+COPY research/federated-evaluation/federated_service/app/ ./app/
 
 # Set Python path to include shared modules
 ENV PYTHONPATH=/app/services/shared:/app:$PYTHONPATH
