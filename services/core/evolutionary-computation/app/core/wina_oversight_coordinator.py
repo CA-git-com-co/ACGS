@@ -1434,7 +1434,7 @@ class WINAECOversightCoordinator:
         if request.constitutional_constraints:
             key_data += f":{sorted(request.constitutional_constraints)}"
 
-        return hashlib.md5(key_data.encode()).hexdigest()
+        return hashlib.sha256(key_data.encode()).hexdigest()
 
     def _generate_compliance_cache_key(
         self, request: ECOversightRequest, requirements: List[str]
@@ -1446,7 +1446,7 @@ class WINAECOversightCoordinator:
         if request.constitutional_constraints:
             key_data += f":{sorted(request.constitutional_constraints)}"
 
-        return hashlib.md5(key_data.encode()).hexdigest()
+        return hashlib.sha256(key_data.encode()).hexdigest()
 
     async def _calculate_requirement_relevance(
         self, requirement: str, request: ECOversightRequest

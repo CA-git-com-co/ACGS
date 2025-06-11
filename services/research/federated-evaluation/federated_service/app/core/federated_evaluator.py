@@ -400,7 +400,7 @@ class FederatedEvaluator:
     async def submit_evaluation(self, request: Any) -> str:
         """Submit a new federated evaluation task with enhanced multi-node support."""
         try:
-            task_id = hashlib.md5(
+            task_id = hashlib.sha256(
                 f"{request.policy_content}_{time.time()}".encode()
             ).hexdigest()[:16]
 

@@ -79,7 +79,7 @@ class LRUCache(Generic[T]):
         if isinstance(key, str):
             return key
         key_str = json.dumps(key, sort_keys=True)
-        return hashlib.md5(key_str.encode()).hexdigest()
+        return hashlib.sha256(key_str.encode()).hexdigest()
 
     def _is_expired(self, entry: CacheEntry) -> bool:
         """Check if cache entry is expired."""
@@ -276,7 +276,7 @@ class RedisCache:
             cache_key = key
         else:
             key_str = json.dumps(key, sort_keys=True)
-            cache_key = hashlib.md5(key_str.encode()).hexdigest()
+            cache_key = hashlib.sha256(key_str.encode()).hexdigest()
         return f"{self.key_prefix}{cache_key}"
 
     async def get(self, key: Union[str, Dict[str, Any]]) -> Optional[Any]:

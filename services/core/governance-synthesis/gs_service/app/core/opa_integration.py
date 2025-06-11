@@ -147,7 +147,7 @@ class PolicyDecisionCache:
         return (
             key_data
             if self.use_advanced_cache
-            else hashlib.md5(json.dumps(key_data, sort_keys=True).encode()).hexdigest()
+            else hashlib.sha256(json.dumps(key_data, sort_keys=True).encode()).hexdigest()
         )
 
     async def get(

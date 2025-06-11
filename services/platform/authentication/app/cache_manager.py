@@ -272,4 +272,4 @@ def generate_request_cache_key(
         key_data.update(additional_params)
 
     key_str = json.dumps(key_data, sort_keys=True)
-    return hashlib.md5(key_str.encode()).hexdigest()
+    return hashlib.sha256(key_str.encode()).hexdigest()
