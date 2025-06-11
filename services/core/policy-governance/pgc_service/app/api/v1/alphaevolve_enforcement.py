@@ -402,7 +402,7 @@ def _generate_cache_key(proposal: ECProposal, context: str) -> str:
     import hashlib
 
     content = f"{proposal.solution_code}:{context}:{proposal.generation}"
-    return hashlib.md5(content.encode()).hexdigest()
+    return hashlib.sha256(content.encode()).hexdigest()
 
 
 def _calculate_cache_hit_rate(proposals: List[ECProposal]) -> float:

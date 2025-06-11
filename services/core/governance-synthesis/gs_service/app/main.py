@@ -43,7 +43,7 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s:%(lineno)d",
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler("/tmp/gs_service_phase_a3.log", mode="a"),
+        logging.FileHandler("logs/gs_service_phase_a3.log", mode="a"),
     ],
 )
 logger = logging.getLogger("gs_service_phase_a3")

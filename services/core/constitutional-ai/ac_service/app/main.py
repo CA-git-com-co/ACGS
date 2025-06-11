@@ -32,7 +32,7 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler("/tmp/ac_service.log", mode="a"),
+        logging.FileHandler("logs/ac_service.log", mode="a"),
     ],
 )
 logger = logging.getLogger(__name__)
@@ -592,7 +592,7 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
     enable_formal_verification = request.get("enable_formal_verification", False)
 
     validation_id = (
-        f"VAL-{int(time.time())}-{hashlib.md5(str(policy).encode()).hexdigest()[:8]}"
+        f"VAL-{int(time.time())}-{hashlib.sha256(str(policy).encode()).hexdigest()[:8]}"
     )
 
     # Log audit trail
@@ -952,4 +952,6 @@ async def analyze_constitutional_impact(request: Dict[str, Any]):
 if __name__ == "__main__":
     import uvicorn
 
+    # Note: Binding to 0.0.0.0 is intentional for development environment
+    # In production, this should be configured to bind to specific interfaces
     uvicorn.run(app, host="0.0.0.0", port=8001)

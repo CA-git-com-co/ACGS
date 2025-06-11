@@ -125,7 +125,7 @@ except ImportError:
         def _generate_cache_key(self, context):
             import hashlib
 
-            return hashlib.md5(str(context).encode()).hexdigest()
+            return hashlib.sha256(str(context).encode()).hexdigest()
 
         def _calculate_confidence_score(self, response, strategy, compliance):
             return 0.9  # Mock confidence

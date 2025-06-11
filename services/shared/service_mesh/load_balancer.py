@@ -153,7 +153,7 @@ class LoadBalancer:
             self._build_hash_ring(service_type, instances)
 
         # Hash the key
-        hash_value = int(hashlib.md5(key.encode()).hexdigest(), 16)
+        hash_value = int(hashlib.sha256(key.encode()).hexdigest(), 16)
 
         # Find the instance
         ring = self._consistent_hash_ring[service_type]
@@ -194,7 +194,7 @@ class LoadBalancer:
             weight_factor = max(1, instance.weight // 10)
             for i in range(weight_factor):
                 hash_key = f"{instance.instance_id}:{i}"
-                hash_value = int(hashlib.md5(hash_key.encode()).hexdigest(), 16)
+                hash_value = int(hashlib.sha256(hash_key.encode()).hexdigest(), 16)
                 ring.append((hash_value, instance.instance_id))
 
         # Sort ring by hash value for consistent ordering

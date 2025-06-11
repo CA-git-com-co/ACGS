@@ -175,7 +175,7 @@ class SecureAggregator:
             Aggregated results with privacy guarantees
         """
         try:
-            aggregation_id = hashlib.md5(f"agg_{time.time()}".encode()).hexdigest()[:16]
+            aggregation_id = hashlib.sha256(f"agg_{time.time()}".encode()).hexdigest()[:16]
             start_time = time.time()
 
             logger.info(f"Starting secure aggregation: {aggregation_id}")
@@ -550,7 +550,7 @@ class SecureAggregator:
                         share_id=f"share_{i}",
                         encrypted_value=f"mock_encrypted_{i}".encode(),
                         participant_id=f"participant_{i}",
-                        verification_hash=hashlib.md5(
+                        verification_hash=hashlib.sha256(
                             f"share_{i}".encode()
                         ).hexdigest(),
                     )

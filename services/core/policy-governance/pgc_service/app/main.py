@@ -1376,7 +1376,7 @@ async def create_policy(request: Dict[str, Any]):
     stakeholders = request.get("stakeholders", [])
     workflow_type = request.get("workflow_type", "standard")
 
-    policy_id = f"POL-{int(time.time())}-{hashlib.md5(str(policy_data).encode()).hexdigest()[:8]}"
+    policy_id = f"POL-{int(time.time())}-{hashlib.sha256(str(policy_data).encode()).hexdigest()[:8]}"
 
     # Initialize policy in lifecycle management
     policy_record = {
@@ -1484,7 +1484,7 @@ async def initiate_governance_workflow(request: Dict[str, Any]):
     stakeholders = request.get("stakeholders", [])
     priority = request.get("priority", "medium")
 
-    workflow_id = f"WF-{int(time.time())}-{hashlib.md5((workflow_type + str(policy_id)).encode()).hexdigest()[:8]}"
+    workflow_id = f"WF-{int(time.time())}-{hashlib.sha256((workflow_type + str(policy_id)).encode()).hexdigest()[:8]}"
 
     workflow_record = {
         "workflow_id": workflow_id,

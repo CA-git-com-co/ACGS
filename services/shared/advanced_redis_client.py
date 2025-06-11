@@ -180,7 +180,7 @@ class AdvancedRedisClient:
             cache_key = key
         else:
             key_str = json.dumps(key, sort_keys=True)
-            cache_key = hashlib.md5(key_str.encode()).hexdigest()
+            cache_key = hashlib.sha256(key_str.encode()).hexdigest()
 
         service_prefix = f"acgs:{self.service_name}:"
         if prefix:

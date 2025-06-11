@@ -259,14 +259,13 @@ class DatabasePerformanceOptimizer:
                     try:
                         # Check if table exists first
                         table_check = await conn.execute(
-                            text(
-                                f"""
+                            text("""
                             SELECT EXISTS (
-                                SELECT FROM information_schema.tables 
-                                WHERE table_name = '{index_def['table']}'
+                                SELECT FROM information_schema.tables
+                                WHERE table_name = :table_name
                             )
-                        """
-                            )
+                        """),
+                            {"table_name": index_def['table']}
                         )
 
                         if not table_check.scalar():
@@ -371,15 +370,15 @@ class DatabasePerformanceOptimizer:
             async with self.engine.begin() as conn:
                 # Enable query logging if not already enabled
                 await conn.execute(
-                    text(f"SET log_min_duration_statement = {threshold_ms}")
+                    text("SET log_min_duration_statement = :threshold"),
+                    {"threshold": threshold_ms}
                 )
 
                 # Get slow queries from pg_stat_statements if available
                 try:
                     query_stats = await conn.execute(
-                        text(
-                            f"""
-                        SELECT 
+                        text("""
+                        SELECT
                             query,
                             calls,
                             total_exec_time,
@@ -388,12 +387,12 @@ class DatabasePerformanceOptimizer:
                             stddev_exec_time,
                             rows,
                             100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent
-                        FROM pg_stat_statements 
-                        WHERE mean_exec_time > {threshold_ms}
-                        ORDER BY total_exec_time DESC 
+                        FROM pg_stat_statements
+                        WHERE mean_exec_time > :threshold
+                        ORDER BY total_exec_time DESC
                         LIMIT 20
-                    """
-                        )
+                    """),
+                        {"threshold": threshold_ms}
                     )
 
                     slow_queries = [
@@ -438,7 +437,8 @@ class DatabasePerformanceOptimizer:
                 # Vacuum and analyze each table
                 for table in tables:
                     try:
-                        # Vacuum
+                        # Vacuum - Note: Table names cannot be parameterized in VACUUM statements
+                        # This is safe as table names come from pg_tables system catalog
                         await conn.execute(text(f"VACUUM ANALYZE {table}"))
                         maintenance_results["vacuum_results"].append(
                             {"table": table, "status": "success"}

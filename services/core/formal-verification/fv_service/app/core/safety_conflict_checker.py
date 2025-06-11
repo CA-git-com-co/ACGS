@@ -95,7 +95,7 @@ class SafetyPropertyChecker:
 
         try:
             # Generate cache key
-            rules_hash = hashlib.md5(
+            rules_hash = hashlib.sha256(
                 "".join(rule.rule_content for rule in policy_rules).encode()
             ).hexdigest()
             cache_key = (

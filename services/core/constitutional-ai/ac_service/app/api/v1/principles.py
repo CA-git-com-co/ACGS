@@ -257,7 +257,7 @@ async def validate_constitutional_endpoint(
         # Generate cache key from request
         request_str = json.dumps(validation_request, sort_keys=True)
         cache_key = (
-            f"constitutional_validation:{hashlib.md5(request_str.encode()).hexdigest()}"
+            f"constitutional_validation:{hashlib.sha256(request_str.encode()).hexdigest()}"
         )
 
         # Check cache first

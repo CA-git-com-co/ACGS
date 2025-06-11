@@ -682,7 +682,7 @@ class WINAEnforcementOptimizer:
         if context.constitutional_requirements:
             key_data += f":{sorted(context.constitutional_requirements)}"
 
-        return hashlib.md5(key_data.encode()).hexdigest()
+        return hashlib.sha256(key_data.encode()).hexdigest()
 
     def _generate_compliance_cache_key(
         self, context: EnforcementContext, policies: List[IntegrityPolicyRule]
@@ -697,7 +697,7 @@ class WINAEnforcementOptimizer:
         if context.constitutional_requirements:
             key_data += f":{sorted(context.constitutional_requirements)}"
 
-        return hashlib.md5(key_data.encode()).hexdigest()
+        return hashlib.sha256(key_data.encode()).hexdigest()
 
     def _calculate_confidence_score(
         self,

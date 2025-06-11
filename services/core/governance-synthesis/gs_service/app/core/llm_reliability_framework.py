@@ -488,7 +488,7 @@ class CacheManager:
             "context": getattr(input_data, "context", ""),
         }
         key_string = json.dumps(key_data, sort_keys=True)
-        return f"llm_cache:{hashlib.md5(key_string.encode()).hexdigest()}"
+        return f"llm_cache:{hashlib.sha256(key_string.encode()).hexdigest()}"
 
     async def get_cached_response(
         self, input_data: LLMInterpretationInput
@@ -1377,7 +1377,7 @@ class EnhancedMultiModelValidator:
         aligning with the research protocol's UltraReliableConsensus class.
         """
         start_time = time.time()
-        request_id = hashlib.md5(f"{principle.id}_{start_time}".encode()).hexdigest()[
+        request_id = hashlib.sha256(f"{principle.id}_{start_time}".encode()).hexdigest()[
             :8
         ]
 
@@ -3228,7 +3228,7 @@ class EnhancedLLMReliabilityFramework:
             # Multi-model validation with enhanced ensemble
             # Multi-model validation using the new ultra-reliable consensus method
             # The request_id for the overall process_with_reliability context
-            process_request_id = hashlib.md5(
+            process_request_id = hashlib.sha256(
                 f"{getattr(input_data, 'principle_id', 'unknown_principle')}_{start_time}_process".encode()
             ).hexdigest()[:8]
 
