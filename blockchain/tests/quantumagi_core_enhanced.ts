@@ -14,9 +14,12 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
   const authority = provider.wallet as anchor.Wallet;
 
   // Test data and PDAs
-  const constitutionalDoc = "ACGS Constitutional Framework v1.0 - Enhanced Testing";
-  const constitutionHash = createHash("sha256").update(constitutionalDoc).digest();
-  
+  const constitutionalDoc =
+    "ACGS Constitutional Framework v1.0 - Enhanced Testing";
+  const constitutionHash = createHash("sha256")
+    .update(constitutionalDoc)
+    .digest();
+
   const [constitutionPDA] = anchor.web3.PublicKey.findProgramAddressSync(
     [Buffer.from("constitution")],
     program.programId
@@ -33,10 +36,14 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
         })
         .rpc();
 
-      const constitutionAccount = await program.account.constitution.fetch(constitutionPDA);
+      const constitutionAccount = await program.account.constitution.fetch(
+        constitutionPDA
+      );
       expect(constitutionAccount.isActive).to.be.true;
       expect(constitutionAccount.version).to.equal(1);
-      expect(Buffer.from(constitutionAccount.hash)).to.deep.equal(constitutionHash);
+      expect(Buffer.from(constitutionAccount.hash)).to.deep.equal(
+        constitutionHash
+      );
     });
 
     it("should handle constitution updates with version control", async () => {
@@ -51,14 +58,18 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
         })
         .rpc();
 
-      const constitutionAccount = await program.account.constitution.fetch(constitutionPDA);
+      const constitutionAccount = await program.account.constitution.fetch(
+        constitutionPDA
+      );
       expect(constitutionAccount.version).to.equal(2);
       expect(Buffer.from(constitutionAccount.hash)).to.deep.equal(newHash);
     });
 
     it("should reject unauthorized constitution updates", async () => {
       const unauthorizedKeypair = anchor.web3.Keypair.generate();
-      const newHash = createHash("sha256").update("unauthorized update").digest();
+      const newHash = createHash("sha256")
+        .update("unauthorized update")
+        .digest();
 
       try {
         await program.methods
@@ -90,14 +101,9 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
 
     it("should create policy with comprehensive validation", async () => {
       const policyContent = "Enhanced test policy for comprehensive validation";
-      
+
       await program.methods
-        .createPolicy(
-          policyId,
-          policyContent,
-          "Governance",
-          "High"
-        )
+        .createPolicy(policyId, policyContent, "Governance", "High")
         .accounts({
           policy: policyPDA,
           constitution: constitutionPDA,
@@ -117,12 +123,7 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
     it("should handle policy voting with quorum validation", async () => {
       // Create policy first
       await program.methods
-        .createPolicy(
-          policyId,
-          "Test policy for voting",
-          "Safety",
-          "Critical"
-        )
+        .createPolicy(policyId, "Test policy for voting", "Safety", "Critical")
         .accounts({
           policy: policyPDA,
           constitution: constitutionPDA,
@@ -187,12 +188,7 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
     it("should deactivate policy in emergency situations", async () => {
       // Create and enact policy first
       await program.methods
-        .createPolicy(
-          policyId,
-          "Emergency test policy",
-          "Safety",
-          "Critical"
-        )
+        .createPolicy(policyId, "Emergency test policy", "Safety", "Critical")
         .accounts({
           policy: policyPDA,
           constitution: constitutionPDA,
@@ -279,7 +275,7 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
 
     it("should validate compliance with active policies", async () => {
       const testAction = "Test governance action for compliance";
-      
+
       const isCompliant = await program.methods
         .validateCompliance(testAction)
         .accounts({
@@ -292,7 +288,7 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
 
     it("should detect non-compliance with policies", async () => {
       const nonCompliantAction = "Action that violates governance policies";
-      
+
       try {
         await program.methods
           .validateCompliance(nonCompliantAction)
@@ -308,7 +304,7 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
 
     it("should provide compliance confidence scores", async () => {
       const testAction = "Moderate confidence test action";
-      
+
       const complianceResult = await program.methods
         .getComplianceScore(testAction)
         .accounts({
@@ -323,8 +319,10 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
 
   describe("Performance and Gas Optimization", () => {
     it("should execute governance actions within SOL cost limits", async () => {
-      const initialBalance = await provider.connection.getBalance(authority.publicKey);
-      
+      const initialBalance = await provider.connection.getBalance(
+        authority.publicKey
+      );
+
       const policyId = new anchor.BN(Date.now());
       const [policyPDA] = anchor.web3.PublicKey.findProgramAddressSync(
         [Buffer.from("policy"), policyId.toBuffer("le", 8)],
@@ -364,9 +362,12 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
         })
         .rpc();
 
-      const finalBalance = await provider.connection.getBalance(authority.publicKey);
-      const costInSOL = (initialBalance - finalBalance) / anchor.web3.LAMPORTS_PER_SOL;
-      
+      const finalBalance = await provider.connection.getBalance(
+        authority.publicKey
+      );
+      const costInSOL =
+        (initialBalance - finalBalance) / anchor.web3.LAMPORTS_PER_SOL;
+
       console.log(`Governance action cost: ${costInSOL} SOL`);
       expect(costInSOL).to.be.lessThan(0.01); // Target: <0.01 SOL per action
     });
@@ -488,12 +489,7 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
       );
 
       await program.methods
-        .createPolicy(
-          policyId,
-          maxContent,
-          "Governance",
-          "Low"
-        )
+        .createPolicy(policyId, maxContent, "Governance", "Low")
         .accounts({
           policy: policyPDA,
           constitution: constitutionPDA,

@@ -1,0 +1,266 @@
+{
+  "timestamp": "2025-06-11T17:56:27.139687",
+  "phase": "Phase 3: Functionality Validation",
+  "service_health": {
+    "auth_service": {
+      "status": "healthy",
+      "response_time_ms": 5.8,
+      "port": 8000,
+      "health_data": {
+        "status": "ok",
+        "message": "Auth Service is operational."
+      }
+    },
+    "ac_service": {
+      "status": "healthy",
+      "response_time_ms": 2.33,
+      "port": 8001,
+      "health_data": {
+        "status": "healthy",
+        "service": "ac_service_production",
+        "version": "3.0.0",
+        "port": 8001,
+        "timestamp": 1749679014.050649,
+        "enhanced_services": false,
+        "services": {
+          "compliance_engine": false,
+          "violation_detector": false,
+          "audit_logger": false,
+          "fv_client": false
+        },
+        "performance": {
+          "response_time_target": "<100ms for compliance checks",
+          "accuracy_target": ">99% constitutional compliance detection",
+          "availability_target": ">99.9%"
+        }
+      }
+    },
+    "integrity_service": {
+      "status": "healthy",
+      "response_time_ms": 3.87,
+      "port": 8002,
+      "health_data": {
+        "status": "healthy",
+        "service": "integrity_service",
+        "version": "3.0.0",
+        "port": 8002,
+        "timestamp": "2025-06-11T21:56:54.053333+00:00",
+        "uptime_seconds": 31308.1634619236,
+        "dependencies": {
+          "database": "connected",
+          "crypto_service": "operational",
+          "pgp_service": "operational"
+        },
+        "performance_metrics": {
+          "uptime_seconds": 31308.1634619236,
+          "routers_available": false,
+          "api_endpoints": 3
+        }
+      }
+    },
+    "fv_service": {
+      "status": "healthy",
+      "response_time_ms": 1.82,
+      "port": 8003,
+      "health_data": {
+        "status": "healthy",
+        "service": "enhanced_fv_service",
+        "version": "2.0.0",
+        "port": 8003,
+        "enterprise_features_enabled": true,
+        "components": {
+          "z3_smt_solver": "unavailable",
+          "tiered_validation": "operational",
+          "parallel_pipeline": "operational",
+          "cryptographic_validation": "operational",
+          "blockchain_audit": "operational",
+          "ac_integration": "operational"
+        },
+        "performance_metrics": {
+          "target_response_time": "<500ms",
+          "availability_target": ">99.9%",
+          "concurrent_verification_support": ">100 tasks"
+        }
+      }
+    },
+    "gs_service": {
+      "status": "healthy",
+      "response_time_ms": 2.17,
+      "port": 8004,
+      "health_data": {
+        "status": "healthy",
+        "service": "gs_service",
+        "version": "3.0.0",
+        "port": 8004,
+        "uptime_seconds": 26264.023981809616,
+        "dependencies": {
+          "enhanced_synthesis": "unavailable",
+          "multi_model_coordinator": "unavailable",
+          "policy_workflow": "unavailable",
+          "shared_components": "fallback_mode"
+        },
+        "performance_metrics": {
+          "uptime_seconds": 26264.023981809616,
+          "routers_available": false,
+          "synthesis_engines": 1,
+          "api_endpoints": 3
+        },
+        "synthesis_capabilities": {
+          "standard_synthesis": true,
+          "enhanced_validation": false,
+          "multi_model_consensus": false,
+          "human_review_integration": false,
+          "proactive_error_prediction": false
+        }
+      }
+    },
+    "pgc_service": {
+      "status": "degraded",
+      "response_time_ms": 73.32,
+      "port": 8005,
+      "health_data": {
+        "status": "degraded",
+        "service": "pgc_service_production",
+        "version": "3.0.0",
+        "timestamp": 1749679014.0610976,
+        "phase": "Phase 3 - Production Implementation",
+        "enhanced_governance": true,
+        "dependencies": {
+          "opa": {
+            "status": "unhealthy",
+            "error": "[Errno -3] Temporary failure in name resolution"
+          },
+          "integrity_service": {
+            "status": "healthy",
+            "response_time_ms": 3.0469999999999997
+          }
+        },
+        "components": {
+          "policy_manager": {
+            "status": "healthy",
+            "last_refresh": "2025-06-11 21:52:40.612966",
+            "policies_loaded": true
+          }
+        },
+        "governance_services": {
+          "policy_lifecycle_manager": true,
+          "workflow_orchestrator": true,
+          "enforcement_engine": true,
+          "stakeholder_manager": true,
+          "audit_trail": true,
+          "governance_monitor": true
+        },
+        "performance": {
+          "response_time_target": "<100ms for governance operations",
+          "workflow_processing_target": "<500ms for workflow steps",
+          "enforcement_target": "<50ms for policy enforcement",
+          "availability_target": ">99.9%"
+        },
+        "message": "Critical dependencies unhealthy: opa"
+      }
+    },
+    "ec_service": {
+      "status": "healthy",
+      "response_time_ms": 2.84,
+      "port": 8006,
+      "health_data": {
+        "status": "healthy",
+        "service": "evolutionary_computation",
+        "timestamp": "2025-06-11T21:56:54.135760",
+        "version": "v1",
+        "wina_coordinator": "disabled",
+        "features": {
+          "wina_optimization": false,
+          "constitutional_oversight": true,
+          "alphaevolve_integration": true,
+          "performance_monitoring": true,
+          "wina_performance_api": true,
+          "real_time_metrics": true,
+          "performance_dashboard": true
+        },
+        "performance_monitoring": {
+          "collector_available": false,
+          "monitoring_active": false,
+          "monitoring_level": "unknown"
+        }
+      }
+    }
+  },
+  "governance_workflows": {
+    "Policy Creation": {
+      "status": "degraded",
+      "response_time_ms": 0.85,
+      "endpoint": "/api/v1/governance/policy-creation",
+      "error": "HTTP 404"
+    },
+    "Constitutional Compliance": {
+      "status": "degraded",
+      "response_time_ms": 0.54,
+      "endpoint": "/api/v1/governance/constitutional-compliance",
+      "error": "HTTP 404"
+    },
+    "Policy Enforcement": {
+      "status": "degraded",
+      "response_time_ms": 0.46,
+      "endpoint": "/api/v1/governance/policy-enforcement",
+      "error": "HTTP 404"
+    },
+    "WINA Oversight": {
+      "status": "degraded",
+      "response_time_ms": 0.48,
+      "endpoint": "/api/v1/governance/wina-oversight",
+      "error": "HTTP 404"
+    },
+    "Audit/Transparency": {
+      "status": "degraded",
+      "response_time_ms": 0.48,
+      "endpoint": "/api/v1/governance/audit-transparency",
+      "error": "HTTP 404"
+    }
+  },
+  "blockchain_status": {
+    "quantumagi_deployment": "present",
+    "anchor_programs": [
+      "logging",
+      "quantumagi-core",
+      "appeals"
+    ],
+    "build_status": "success"
+  },
+  "test_results": {
+    "python_unit_tests": {
+      "status": "failed",
+      "output": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-8.4.0, pluggy-1.6.0 -- /home/dislove/ACGS-1/venv/bin/python\ncachedir: .pytest_cache\nbenchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nhypothesis profile 'default' -> database=DirectoryBasedExampleDatabase(PosixPath('/home/dislove/ACGS-1/.hypothesis/examples'))\nmetadata: {'Python': '3.12.3', 'Platform': 'Linux-6.8.0-60-generic-x86_64-with-glibc2.39', 'Packages': {'pytest': '8.4.0', 'pluggy': '1.6.0'}, 'Plugins': {'pytest_httpserver': '1.1.3', 'anyio': '3.7.1', 'asyncio': '0.23.8', 'trio': '0.8.0', 'timeout': '2.4.0', 'cov': '4.1.0', 'postgresql': '5.0.0', 'benchmark': '5.1.0', 'html': '4.1.1', 'hypothesis': '6.88.1', 'mock': '3.14.1', 'sugar': '0.9.7', 'clarity': '1.0.1', 'requests-mock': '1.11.0', 'json-report': '1.5.0', 'metadata': '3.1.1', 'alembic': '0.12.1', 'Faker': '20.1.0', 'pyfakefs': '5.8.0', 'xdist': '3.3.1'}}\nrootdir: /home/dislove/ACGS-1\nconfigfile: pytest.ini\nplugins: pytest_httpserver-1.1.3, anyio-3.7.1, asyncio-0.23.8, trio-0.8.0, timeout-2.4.0, cov-4.1.0, postgresql-5.0.0, benchmark-5.1.0, html-4.1.1, hypothesis-6.88.1, mock-3.14.1, sugar-0.9.7, clarity-1.0.1, requests-mock-1.11.0, json-report-1.5.0, metadata-3.1.1, alembic-0.12.1, Faker-20.1.0, pyfakefs-5.8.0, xdist-3.3.1\nasyncio: mode=Mode.STRICT\ncollecting ... collected 513 items / 12 errors / 19 skipped\n\n==================================== ERRORS ====================================\n__ ERROR collecting tests/integration/legacy/test_enhanced_llm_reliability.py __\nimport file mismatch:\nimported module 'test_enhanced_llm_reliability' has this __file__ attribute:\n  /home/dislove/ACGS-1/tests/enhanced/llm_reliability_framework/test_enhanced_llm_reliability.py\nwhich is not the same as the test file we want to collect:\n  /home/dislove/ACGS-1/tests/integration/legacy/test_enhanced_llm_reliability.py\nHINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules\n___ ERROR collecting tests/integration/test_alphaevolve_advanced_features.py ___\ntests/integration/test_alphaevolve_advanced_features.py:251: in <module>\n    class MockCollectiveConstitutionalAI(CollectiveConstitutionalAI):\n                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   NameError: name 'CollectiveConstitutionalAI' is not defined\n------------------------------- Captured stdout --------------------------------\nWarning: Could not import CollectiveConstitutionalAI: No module named 'services.core.constitutional_ai'\n____ ERROR collecting tests/integration/test_enhanced_dependency_mocking.py ____\nImportError while importing test module '/home/dislove/ACGS-1/tests/integration/test_enhanced_dependency_mocking.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/integration/test_enhanced_dependency_mocking.py:11: in <module>\n    from mock_services import (\nE   ModuleNotFoundError: No module named 'mock_services'\n_ ERROR collecting tests/integration/test_federated_evaluation_communication.py _\nImportError while importing test module '/home/dislove/ACGS-1/tests/integration/test_federated_evaluation_communication.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/integration/test_federated_evaluation_communication.py:14: in <module>\n    from federated_evaluation.agent.main import serve as serve_agent\nE   ModuleNotFoundError: No module named 'federated_evaluation'\n_ ERROR collecting tests/integration/test_qec_error_correction_integration.py __\nImportError while importing test module '/home/dislove/ACGS-1/tests/integration/test_qec_error_correction_integration.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/integration/test_qec_error_correction_integration.py:45: in <module>\n    from services.shared.models import ConstitutionalPrinciple, Policy\nE   ImportError: cannot import name 'ConstitutionalPrinciple' from 'services.shared.models' (/home/dislove/ACGS-1/services/shared/models/__init__.py)\n___________ ERROR collecting tests/unit/core/test_data_structures.py ___________\nImportError while importing test module '/home/dislove/ACGS-1/tests/unit/core/test_data_structures.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/unit/core/test_data_structures.py:29: in <module>\n    from integrations.alphaevolve_engine.core.amendment import Amendment\nE   ModuleNotFoundError: No module named 'integrations.alphaevolve_engine'\n_______ ERROR collecting tests/unit/services/test_policy_synthesizer.py ________\nImportError while importing test module '/home/dislove/ACGS-1/tests/unit/services/test_policy_synthesizer.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/unit/services/test_policy_synthesizer.py:22: in <module>\n    from integrations.alphaevolve_engine.core.constitutional_principle import (\nE   ModuleNotFoundError: No module named 'integrations.alphaevolve_engine'\n______ ERROR collecting tests/unit/services/validation/test_validators.py ______\nImportError while importing test module '/home/dislove/ACGS-1/tests/unit/services/validation/test_validators.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/unit/services/validation/test_validators.py:32: in <module>\n    from integrations.alphaevolve_engine.services.llm_service import (  # For LLMBiasReviewer\nE   ModuleNotFoundError: No module named 'integrations.alphaevolve_engine'\n_________ ERROR collecting tests/unit/test_bias_detection_enhanced.py __________\nImportError while importing test module '/home/dislove/ACGS-1/tests/unit/test_bias_detection_enhanced.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/unit/test_bias_detection_enhanced.py:10: in <module>\n    from services.core.formal_verification.app.core.bias_detector import (\nE   ModuleNotFoundError: No module named 'services.core.formal_verification'\n_____ ERROR collecting tests/unit/test_enhanced_multi_model_validation.py ______\nImportError while importing test module '/home/dislove/ACGS-1/tests/unit/test_enhanced_multi_model_validation.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/unit/test_enhanced_multi_model_validation.py:4: in <module>\n    from services.core.formal_verification.app.core.enhanced_multi_model_validation import (\nE   ModuleNotFoundError: No module named 'services.core.formal_verification'\n_____________ ERROR collecting tests/unit/test_qec_enhancements.py _____________\nImportError while importing test module '/home/dislove/ACGS-1/tests/unit/test_qec_enhancements.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/unit/test_qec_enhancements.py:13: in <module>\n    from integrations.alphaevolve_engine.core.constitutional_principle import (\nE   ModuleNotFoundError: No module named 'integrations.alphaevolve_engine'\n______ ERROR collecting tests/unit/test_wina_ec_oversight_integration.py _______\nImportError while importing test module '/home/dislove/ACGS-1/tests/unit/test_wina_ec_oversight_integration.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/usr/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/unit/test_wina_ec_oversight_integration.py:23: in <module>\n    from core.wina_oversight_coordinator import (\nE   ModuleNotFoundError: No module named 'core'\n=============================== warnings summary ===============================\nvenv/lib/python3.12/site-packages/pydantic/_internal/_config.py:291\n  /home/dislove/ACGS-1/venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:291: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.9/migration/\n    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)\n\nvenv/lib/python3.12/site-packages/pydantic/_internal/_fields.py:132\nvenv/lib/python3.12/site-packages/pydantic/_internal/_fields.py:132\n  /home/dislove/ACGS-1/venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py:132: UserWarning: Field \"model_features\" in ACGSConfigModel has conflict with protected namespace \"model_\".\n  \n  You may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n    warnings.warn(\n\ntests/enhanced/llm_reliability_framework/test_enhanced_llm_reliability.py:364\n  /home/dislove/ACGS-1/tests/enhanced/llm_reliability_framework/test_enhanced_llm_reliability.py:364: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.integration\n\nvenv/lib/python3.12/site-packages/_hypothesis_pytestplugin.py:417\n  /home/dislove/ACGS-1/venv/lib/python3.12/site-packages/_hypothesis_pytestplugin.py:417: PytestRemovedIn9Warning: Marks applied to fixtures have no effect\n  See docs: https://docs.pytest.org/en/stable/deprecations.html#applying-a-mark-to-a-fixture-function\n    return _orig_call(self, function)\n\ntests/service_mesh/test_load_balancing.py:462\n  /home/dislove/ACGS-1/tests/service_mesh/test_load_balancing.py:462: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.integration\n\nscripts/load_testing.py:56\n  /home/dislove/ACGS-1/scripts/load_testing.py:56: PytestCollectionWarning: cannot collect test class 'TestResult' because it has a __init__ constructor (from: tests/unit/test_load_testing.py)\n    @dataclass\n\ntests/unit/test_secure_cookie_env.py:30\n  /home/dislove/ACGS-1/tests/unit/test_secure_cookie_env.py:30: PytestUnknownMarkWarning: Unknown pytest.mark.unit - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.unit\n\ntests/unit/test_secure_cookie_env.py:37\n  /home/dislove/ACGS-1/tests/unit/test_secure_cookie_env.py:37: PytestUnknownMarkWarning: Unknown pytest.mark.unit - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.unit\n\nvenv/lib/python3.12/site-packages/pydantic/_internal/_fields.py:132\n  /home/dislove/ACGS-1/venv/lib/python3.12/site-packages/pydantic/_internal/_fields.py:132: UserWarning: Field \"model_selection_criteria\" in WINAContinuousLearningSystemConfig has conflict with protected namespace \"model_\".\n  \n  You may be able to resolve this warning by setting `model_config['protected_namespaces'] = ()`.\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/integration/legacy/test_enhanced_llm_reliability.py\nERROR tests/integration/test_alphaevolve_advanced_features.py - NameError: na...\nERROR tests/integration/test_enhanced_dependency_mocking.py\nERROR tests/integration/test_federated_evaluation_communication.py\nERROR tests/integration/test_qec_error_correction_integration.py\nERROR tests/unit/core/test_data_structures.py\nERROR tests/unit/services/test_policy_synthesizer.py\nERROR tests/unit/services/validation/test_validators.py\nERROR tests/unit/test_bias_detection_enhanced.py\nERROR tests/unit/test_enhanced_multi_model_validation.py\nERROR tests/unit/test_qec_enhancements.py\nERROR tests/unit/test_wina_ec_oversight_integration.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 12 errors during collection !!!!!!!!!!!!!!!!!!!\n================= 19 skipped, 10 warnings, 12 errors in 4.52s ==================\n",
+      "errors": "/home/dislove/ACGS-1/venv/lib/python3.12/site-packages/pytest_postgresql/executor.py:31: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n  from pkg_resources import parse_version\n"
+    },
+    "anchor_tests": {
+      "status": "failed",
+      "output": "Deploying cluster: https://api.devnet.solana.com\nUpgrade authority: /home/dislove/.config/solana/id.json\nDeploying program \"quantumagi_core\"...\nProgram path: /home/dislove/ACGS-1/blockchain/target/deploy/quantumagi_core.so...\nProgram Id: sQyjPfFt4wueY6w2QF9iL1HJ3ZkQFoM3dq1MSaC5ztC\n\nDeploying program \"appeals\"...\nProgram path: /home/dislove/ACGS-1/blockchain/target/deploy/appeals.so...\nThere was a problem deploying: Output { status: ExitStatus(unix_wait_status(256)), stdout: \"\", stderr: \"\" }.\n",
+      "errors": "    Finished release [optimized] target(s) in 0.11s\n    Finished release [optimized] target(s) in 0.10s\n    Finished release [optimized] target(s) in 0.10s\n=============================================================================\nRecover the intermediate account's ephemeral keypair file with\n`solana-keygen recover` and the following 12-word seed phrase:\n=============================================================================\nnation harvest hello wrap fun decorate good ginger attend grace trade recycle\n=============================================================================\nTo resume a deploy, pass the recovered keypair as the\n[BUFFER_SIGNER] to `solana program deploy` or `solana program write-buffer'.\nOr to recover the account's lamports, pass it as the\n[BUFFER_ACCOUNT_ADDRESS] argument to `solana program close`.\n=============================================================================\nError: Account 7iKRdG8szp2VUCZDKG4mNeYqo8stQHdoZWfHWY35RZgG has insufficient funds for spend (1.81820952 SOL) + fee (0.00131 SOL)\n"
+    }
+  },
+  "performance_metrics": {
+    "response_times": {
+      "auth_service": 5.8,
+      "ac_service": 2.33,
+      "integrity_service": 3.87,
+      "fv_service": 1.82,
+      "gs_service": 2.17,
+      "pgc_service": 73.32,
+      "ec_service": 2.84
+    },
+    "availability_target": ">99.5%",
+    "response_time_target": "<500ms",
+    "average_response_time_ms": 13.16,
+    "targets_met": {
+      "response_time": true,
+      "availability": true
+    }
+  },
+  "issues_found": [],
+  "recommendations": [
+    "Restore unhealthy services: pgc_service",
+    "Fix governance workflows: Policy Creation, Constitutional Compliance, Policy Enforcement, WINA Oversight, Audit/Transparency",
+    "Fix failing tests: python_unit_tests, anchor_tests"
+  ]
+}

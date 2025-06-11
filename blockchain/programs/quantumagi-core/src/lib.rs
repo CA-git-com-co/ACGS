@@ -20,8 +20,11 @@ pub mod quantumagi_core {
         constitution.version = 1;
         constitution.created_at = Clock::get()?.unix_timestamp;
         constitution.is_active = true;
-        
-        msg!("Constitution Initialized with hash: {:?}", constitution_hash);
+
+        msg!(
+            "Constitution Initialized with hash: {:?}",
+            constitution_hash
+        );
         msg!("Authority: {}", constitution.authority);
         Ok(())
     }
@@ -29,14 +32,14 @@ pub mod quantumagi_core {
     /// Propose a new policy (Called by the off-chain GS Engine)
     /// Creates a new policy in proposed state, not yet active
     pub fn propose_policy(
-        ctx: Context<ProposePolicy>, 
-        policy_id: u64, 
+        ctx: Context<ProposePolicy>,
+        policy_id: u64,
         rule: String,
         category: PolicyCategory,
-        priority: PolicyPriority
+        priority: PolicyPriority,
     ) -> Result<()> {
         require!(rule.len() <= MAX_RULE_LENGTH, QuantumagiError::RuleTooLong);
-        
+
         let policy = &mut ctx.accounts.policy;
         policy.id = policy_id;
         policy.rule = rule.clone();
@@ -47,9 +50,14 @@ pub mod quantumagi_core {
         policy.proposed_by = ctx.accounts.authority.key();
         policy.votes_for = 0;
         policy.votes_against = 0;
-        
-        msg!("Policy {} Proposed: '{}' (Category: {:?}, Priority: {:?})", 
-             policy.id, policy.rule, policy.category, policy.priority);
+
+        msg!(
+            "Policy {} Proposed: '{}' (Category: {:?}, Priority: {:?})",
+            policy.id,
+            policy.rule,
+            policy.category,
+            policy.priority
+        );
         Ok(())
     }
 
@@ -58,49 +66,49 @@ pub mod quantumagi_core {
     pub fn enact_policy(ctx: Context<EnactPolicy>) -> Result<()> {
         let policy = &mut ctx.accounts.policy;
         let constitution = &ctx.accounts.constitution;
-        
+
         // Verify authority
         require!(
             ctx.accounts.authority.key() == constitution.authority,
             QuantumagiError::Unauthorized
         );
-        
+
         // Verify constitution is active
-        require!(constitution.is_active, QuantumagiError::ConstitutionInactive);
-        
+        require!(
+            constitution.is_active,
+            QuantumagiError::ConstitutionInactive
+        );
+
         policy.is_active = true;
         policy.enacted_at = Some(Clock::get()?.unix_timestamp);
         policy.enacted_by = Some(ctx.accounts.authority.key());
-        
+
         msg!("Policy {} has been ENACTED and is now ACTIVE.", policy.id);
         Ok(())
     }
 
     /// Vote on a proposed policy (Democratic governance mechanism)
-    pub fn vote_on_policy(
-        ctx: Context<VoteOnPolicy>, 
-        vote: PolicyVote
-    ) -> Result<()> {
+    pub fn vote_on_policy(ctx: Context<VoteOnPolicy>, vote: PolicyVote) -> Result<()> {
         let policy = &mut ctx.accounts.policy;
         let voter_record = &mut ctx.accounts.voter_record;
-        
+
         // Ensure policy is not yet active (still in voting phase)
         require!(!policy.is_active, QuantumagiError::PolicyAlreadyActive);
-        
+
         // Prevent double voting
         require!(!voter_record.has_voted, QuantumagiError::AlreadyVoted);
-        
+
         // Record the vote
         voter_record.has_voted = true;
         voter_record.vote = vote;
         voter_record.voted_at = Clock::get()?.unix_timestamp;
-        
+
         // Update policy vote counts
         match vote {
             PolicyVote::For => policy.votes_for += 1,
             PolicyVote::Against => policy.votes_against += 1,
         }
-        
+
         msg!("Vote recorded for Policy {}: {:?}", policy.id, vote);
         Ok(())
     }
@@ -108,52 +116,58 @@ pub mod quantumagi_core {
     /// Check Compliance (The Prompt Governance Compiler - PGC)
     /// Core enforcement function that validates actions against active policies
     pub fn check_compliance(
-        ctx: Context<CheckCompliance>, 
+        ctx: Context<CheckCompliance>,
         action_to_check: String,
-        action_context: ActionContext
+        action_context: ActionContext,
     ) -> Result<()> {
         let policy = &ctx.accounts.policy;
-        
+
         // Ensure the policy is active
         require!(policy.is_active, QuantumagiError::PolicyNotActive);
-        
+
         // Core PGC logic - Enhanced compliance checking
         let compliance_result = evaluate_compliance(
-            &policy.rule, 
-            &action_to_check, 
+            &policy.rule,
+            &action_to_check,
             &action_context,
-            &policy.category
+            &policy.category,
         )?;
-        
+
         if compliance_result.is_compliant {
-            msg!("✅ Compliance check PASSED for action: '{}' (Confidence: {}%)", 
-                 action_to_check, compliance_result.confidence);
+            msg!(
+                "✅ Compliance check PASSED for action: '{}' (Confidence: {}%)",
+                action_to_check,
+                compliance_result.confidence
+            );
             Ok(())
         } else {
-            msg!("❌ Compliance check FAILED for action: '{}' (Reason: {})", 
-                 action_to_check, compliance_result.violation_reason);
+            msg!(
+                "❌ Compliance check FAILED for action: '{}' (Reason: {})",
+                action_to_check,
+                compliance_result.violation_reason
+            );
             Err(error!(QuantumagiError::ComplianceFailed))
         }
     }
 
     /// Update constitution hash (for constitutional amendments)
-    pub fn update_constitution(
-        ctx: Context<UpdateConstitution>, 
-        new_hash: [u8; 32]
-    ) -> Result<()> {
+    pub fn update_constitution(ctx: Context<UpdateConstitution>, new_hash: [u8; 32]) -> Result<()> {
         let constitution = &mut ctx.accounts.constitution;
-        
+
         require!(
             ctx.accounts.authority.key() == constitution.authority,
             QuantumagiError::Unauthorized
         );
-        
+
         constitution.hash = new_hash;
         constitution.version += 1;
         constitution.updated_at = Some(Clock::get()?.unix_timestamp);
-        
-        msg!("Constitution updated to version {} with new hash: {:?}", 
-             constitution.version, new_hash);
+
+        msg!(
+            "Constitution updated to version {} with new hash: {:?}",
+            constitution.version,
+            new_hash
+        );
         Ok(())
     }
 
@@ -161,15 +175,15 @@ pub mod quantumagi_core {
     pub fn deactivate_policy(ctx: Context<DeactivatePolicy>) -> Result<()> {
         let policy = &mut ctx.accounts.policy;
         let constitution = &ctx.accounts.constitution;
-        
+
         require!(
             ctx.accounts.authority.key() == constitution.authority,
             QuantumagiError::Unauthorized
         );
-        
+
         policy.is_active = false;
         policy.deactivated_at = Some(Clock::get()?.unix_timestamp);
-        
+
         msg!("Policy {} has been DEACTIVATED.", policy.id);
         Ok(())
     }
@@ -180,14 +194,14 @@ const MAX_RULE_LENGTH: usize = 1000;
 
 // Enhanced compliance evaluation function
 fn evaluate_compliance(
-    rule: &str, 
-    action: &str, 
+    rule: &str,
+    action: &str,
     context: &ActionContext,
-    category: &PolicyCategory
+    category: &PolicyCategory,
 ) -> Result<ComplianceResult> {
     // This is a simplified implementation
     // In a real system, this would involve complex policy evaluation logic
-    
+
     match category {
         PolicyCategory::PromptConstitution => {
             // PC-001: No Extrajudicial State Mutation
@@ -198,7 +212,7 @@ fn evaluate_compliance(
                     violation_reason: "Potential unauthorized state mutation detected".to_string(),
                 });
             }
-        },
+        }
         PolicyCategory::Safety => {
             // Safety-critical rule evaluation
             if action.contains("unsafe") || action.contains("exploit") {
@@ -208,7 +222,7 @@ fn evaluate_compliance(
                     violation_reason: "Safety violation detected".to_string(),
                 });
             }
-        },
+        }
         PolicyCategory::Governance => {
             // Governance rule evaluation
             if context.requires_governance && !context.has_governance_approval {
@@ -218,7 +232,7 @@ fn evaluate_compliance(
                     violation_reason: "Governance approval required".to_string(),
                 });
             }
-        },
+        }
         PolicyCategory::Financial => {
             // Financial rule evaluation
             if context.involves_funds && context.amount > context.authorized_limit {
@@ -230,17 +244,17 @@ fn evaluate_compliance(
             }
         }
     }
-    
+
     // Simple string matching for basic compliance (enhanced logic would go here)
     let is_compliant = rule == action || rule.contains("ALLOW") && action.contains(&rule[6..]);
-    
+
     Ok(ComplianceResult {
         is_compliant,
         confidence: if is_compliant { 85 } else { 80 },
-        violation_reason: if is_compliant { 
-            "Action complies with policy".to_string() 
-        } else { 
-            "Action does not match policy rule".to_string() 
+        violation_reason: if is_compliant {
+            "Action complies with policy".to_string()
+        } else {
+            "Action does not match policy rule".to_string()
         },
     })
 }
@@ -248,18 +262,18 @@ fn evaluate_compliance(
 // Data Structures and Enums
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
 pub enum PolicyCategory {
-    PromptConstitution,  // PC-001 type rules
-    Safety,              // Safety-critical policies
-    Governance,          // DAO governance rules
-    Financial,           // Treasury and financial policies
+    PromptConstitution, // PC-001 type rules
+    Safety,             // Safety-critical policies
+    Governance,         // DAO governance rules
+    Financial,          // Treasury and financial policies
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
 pub enum PolicyPriority {
-    Critical,    // Must be enforced immediately
-    High,        // Important but not critical
-    Medium,      // Standard priority
-    Low,         // Advisory level
+    Critical, // Must be enforced immediately
+    High,     // Important but not critical
+    Medium,   // Standard priority
+    Low,      // Advisory level
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, PartialEq)]

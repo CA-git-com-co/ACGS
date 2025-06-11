@@ -12,7 +12,9 @@ class MockGSEngine {
   async synthesizePolicy(principleData: any) {
     return {
       id: principleData.id,
-      rule: `ENFORCE ${principleData.title.toUpperCase()}: ${principleData.content}`,
+      rule: `ENFORCE ${principleData.title.toUpperCase()}: ${
+        principleData.content
+      }`,
       category: this.mapCategory(principleData.category),
       priority: "critical",
       validationScore: 0.95,
@@ -20,17 +22,17 @@ class MockGSEngine {
         policyId: Date.now(),
         rule: `ENFORCE ${principleData.title.toUpperCase()}`,
         category: this.mapCategory(principleData.category),
-        priority: "critical"
-      }
+        priority: "critical",
+      },
     };
   }
 
   private mapCategory(category: string) {
     const categoryMap = {
-      "safety": { promptConstitution: {} },
-      "governance": { governance: {} },
-      "financial": { financial: {} },
-      "ethics": { safety: {} }
+      safety: { promptConstitution: {} },
+      governance: { governance: {} },
+      financial: { financial: {} },
+      ethics: { safety: {} },
     };
     return categoryMap[category.toLowerCase()] || { governance: {} };
   }
@@ -54,24 +56,27 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
     {
       id: "PC-001",
       title: "No Extrajudicial State Mutation",
-      content: "AI systems must not perform unauthorized state mutations without proper governance approval",
+      content:
+        "AI systems must not perform unauthorized state mutations without proper governance approval",
       category: "safety",
-      rationale: "Prevents unauthorized changes to critical system state"
+      rationale: "Prevents unauthorized changes to critical system state",
     },
     {
       id: "GV-001",
       title: "Democratic Policy Approval",
-      content: "All governance policies must be approved through democratic voting process",
+      content:
+        "All governance policies must be approved through democratic voting process",
       category: "governance",
-      rationale: "Ensures community participation in governance decisions"
+      rationale: "Ensures community participation in governance decisions",
     },
     {
       id: "FN-001",
       title: "Treasury Protection",
-      content: "Financial operations exceeding limits require multi-signature approval",
+      content:
+        "Financial operations exceeding limits require multi-signature approval",
       category: "financial",
-      rationale: "Protects community treasury from unauthorized access"
-    }
+      rationale: "Protects community treasury from unauthorized access",
+    },
   ];
 
   describe("🏛️ Complete Constitutional Governance Workflow", () => {
@@ -95,8 +100,14 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
         - Multi-model validation ensures policy reliability
       `;
 
-      const constitutionHash = createHash("sha256").update(constitutionalDoc).digest();
-      console.log(`  Constitution Hash: ${constitutionHash.toString('hex').substring(0, 16)}...`);
+      const constitutionHash = createHash("sha256")
+        .update(constitutionalDoc)
+        .digest();
+      console.log(
+        `  Constitution Hash: ${constitutionHash
+          .toString("hex")
+          .substring(0, 16)}...`
+      );
 
       await program.methods
         .initialize(Array.from(constitutionHash))
@@ -107,28 +118,40 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
         })
         .rpc();
 
-      const constitutionAccount = await program.account.constitution.fetch(constitutionPDA);
+      const constitutionAccount = await program.account.constitution.fetch(
+        constitutionPDA
+      );
       expect(constitutionAccount.isActive).to.be.true;
       console.log("  ✅ Constitution successfully initialized and activated");
 
       // ===== PHASE 2: POLICY SYNTHESIS & PROPOSAL =====
-      console.log("\n🧠 Phase 2: GS Engine Policy Synthesis & Democratic Proposal");
+      console.log(
+        "\n🧠 Phase 2: GS Engine Policy Synthesis & Democratic Proposal"
+      );
 
       const synthesizedPolicies = [];
 
       for (let i = 0; i < constitutionalPrinciples.length; i++) {
         const principle = constitutionalPrinciples[i];
-        console.log(`  Processing Principle ${principle.id}: ${principle.title}`);
+        console.log(
+          `  Processing Principle ${principle.id}: ${principle.title}`
+        );
 
         // Simulate GS Engine policy synthesis
         const synthesizedPolicy = await gsEngine.synthesizePolicy(principle);
         synthesizedPolicies.push(synthesizedPolicy);
 
-        console.log(`    Generated Rule: ${synthesizedPolicy.rule.substring(0, 50)}...`);
-        console.log(`    Validation Score: ${synthesizedPolicy.validationScore}`);
+        console.log(
+          `    Generated Rule: ${synthesizedPolicy.rule.substring(0, 50)}...`
+        );
+        console.log(
+          `    Validation Score: ${synthesizedPolicy.validationScore}`
+        );
 
         // Propose policy on-chain
-        const policyId = new anchor.BN(synthesizedPolicy.solanaInstructionData.policyId);
+        const policyId = new anchor.BN(
+          synthesizedPolicy.solanaInstructionData.policyId
+        );
         const [policyPDA] = anchor.web3.PublicKey.findProgramAddressSync(
           [Buffer.from("policy"), policyId.toBuffer("le", 8)],
           program.programId
@@ -152,10 +175,16 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
         expect(policyAccount.isActive).to.be.false; // Should not be active until enacted
         expect(policyAccount.rule).to.equal(synthesizedPolicy.rule);
 
-        console.log(`    ✅ Policy ${principle.id} proposed on-chain (PDA: ${policyPDA.toString().substring(0, 8)}...)`);
+        console.log(
+          `    ✅ Policy ${principle.id} proposed on-chain (PDA: ${policyPDA
+            .toString()
+            .substring(0, 8)}...)`
+        );
       }
 
-      console.log(`  📋 Successfully synthesized and proposed ${synthesizedPolicies.length} policies`);
+      console.log(
+        `  📋 Successfully synthesized and proposed ${synthesizedPolicies.length} policies`
+      );
 
       // ===== PHASE 3: DEMOCRATIC VOTING PROCESS =====
       console.log("\n🗳️ Phase 3: Democratic Voting & Policy Enactment");
@@ -178,7 +207,7 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
             [
               Buffer.from("vote"),
               policyId.toBuffer("le", 8),
-              voter.publicKey.toBuffer()
+              voter.publicKey.toBuffer(),
             ],
             program.programId
           );
@@ -201,7 +230,7 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
           .accounts({
             policy: policyPDA,
             constitution: constitutionPDA,
-            authority: authority.publicKey
+            authority: authority.publicKey,
           })
           .rpc();
 
@@ -209,10 +238,14 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
         expect(enactedPolicy.isActive).to.be.true;
         expect(enactedPolicy.votesFor).to.equal(1);
 
-        console.log(`    ✅ Policy ${constitutionalPrinciples[i].id} enacted (Votes: ${enactedPolicy.votesFor} for, ${enactedPolicy.votesAgainst} against)`);
+        console.log(
+          `    ✅ Policy ${constitutionalPrinciples[i].id} enacted (Votes: ${enactedPolicy.votesFor} for, ${enactedPolicy.votesAgainst} against)`
+        );
       }
 
-      console.log(`  🎉 All ${synthesizedPolicies.length} policies successfully enacted through democratic process`);
+      console.log(
+        `  🎉 All ${synthesizedPolicies.length} policies successfully enacted through democratic process`
+      );
 
       // ===== PHASE 4: PGC COMPLIANCE ENFORCEMENT =====
       console.log("\n🔍 Phase 4: Real-time PGC Compliance Enforcement");
@@ -230,7 +263,7 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
             caller: authority.publicKey,
           },
           expectedResult: "PASS",
-          policyIndex: 2 // FN-001 Treasury Protection
+          policyIndex: 2, // FN-001 Treasury Protection
         },
         {
           description: "Unauthorized state mutation (should FAIL - PC-001)",
@@ -244,10 +277,11 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
             caller: authority.publicKey,
           },
           expectedResult: "FAIL",
-          policyIndex: 0 // PC-001 No Extrajudicial State Mutation
+          policyIndex: 0, // PC-001 No Extrajudicial State Mutation
         },
         {
-          description: "Governance decision without approval (should FAIL - GV-001)",
+          description:
+            "Governance decision without approval (should FAIL - GV-001)",
           action: "governance_decision_without_voting",
           context: {
             requiresGovernance: true,
@@ -258,7 +292,7 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
             caller: authority.publicKey,
           },
           expectedResult: "FAIL",
-          policyIndex: 1 // GV-001 Democratic Policy Approval
+          policyIndex: 1, // GV-001 Democratic Policy Approval
         },
         {
           description: "Excessive treasury withdrawal (should FAIL - FN-001)",
@@ -272,7 +306,7 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
             caller: authority.publicKey,
           },
           expectedResult: "FAIL",
-          policyIndex: 2 // FN-001 Treasury Protection
+          policyIndex: 2, // FN-001 Treasury Protection
         },
         {
           description: "Standard governance operation (should PASS)",
@@ -286,8 +320,8 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
             caller: authority.publicKey,
           },
           expectedResult: "PASS",
-          policyIndex: 1 // GV-001 Democratic Policy Approval
-        }
+          policyIndex: 1, // GV-001 Democratic Policy Approval
+        },
       ];
 
       let passedTests = 0;
@@ -310,18 +344,26 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
             .rpc();
 
           if (testCase.expectedResult === "PASS") {
-            console.log(`    ✅ PASSED as expected - Action complies with policy`);
+            console.log(
+              `    ✅ PASSED as expected - Action complies with policy`
+            );
             passedTests++;
           } else {
-            console.log(`    ❌ UNEXPECTED PASS - Action should have been blocked`);
+            console.log(
+              `    ❌ UNEXPECTED PASS - Action should have been blocked`
+            );
             failedTests++;
           }
         } catch (error) {
           if (testCase.expectedResult === "FAIL") {
-            console.log(`    ✅ BLOCKED as expected - Policy violation detected`);
+            console.log(
+              `    ✅ BLOCKED as expected - Policy violation detected`
+            );
             passedTests++;
           } else {
-            console.log(`    ❌ UNEXPECTED BLOCK - Action should have been allowed`);
+            console.log(
+              `    ❌ UNEXPECTED BLOCK - Action should have been allowed`
+            );
             console.log(`       Error: ${error.message}`);
             failedTests++;
           }
@@ -331,7 +373,12 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
       console.log(`\n  📊 PGC Compliance Test Results:`);
       console.log(`     Passed: ${passedTests}/${complianceTestCases.length}`);
       console.log(`     Failed: ${failedTests}/${complianceTestCases.length}`);
-      console.log(`     Success Rate: ${(passedTests/complianceTestCases.length*100).toFixed(1)}%`);
+      console.log(
+        `     Success Rate: ${(
+          (passedTests / complianceTestCases.length) *
+          100
+        ).toFixed(1)}%`
+      );
 
       expect(passedTests).to.equal(complianceTestCases.length);
 
@@ -339,8 +386,14 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
       console.log("\n📊 Phase 5: System Validation & Final Report");
 
       // Validate constitution state
-      const finalConstitution = await program.account.constitution.fetch(constitutionPDA);
-      console.log(`  Constitution Status: ${finalConstitution.isActive ? 'ACTIVE' : 'INACTIVE'}`);
+      const finalConstitution = await program.account.constitution.fetch(
+        constitutionPDA
+      );
+      console.log(
+        `  Constitution Status: ${
+          finalConstitution.isActive ? "ACTIVE" : "INACTIVE"
+        }`
+      );
       console.log(`  Constitution Version: ${finalConstitution.version}`);
 
       // Count active policies
@@ -355,15 +408,21 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
         if (policyAccount.isActive) activePolicyCount++;
       }
 
-      console.log(`  Active Policies: ${activePolicyCount}/${synthesizedPolicies.length}`);
-      console.log(`  PGC Enforcement: ${passedTests}/${complianceTestCases.length} tests passed`);
+      console.log(
+        `  Active Policies: ${activePolicyCount}/${synthesizedPolicies.length}`
+      );
+      console.log(
+        `  PGC Enforcement: ${passedTests}/${complianceTestCases.length} tests passed`
+      );
 
       // Final validation
       expect(finalConstitution.isActive).to.be.true;
       expect(activePolicyCount).to.equal(synthesizedPolicies.length);
       expect(passedTests).to.equal(complianceTestCases.length);
 
-      console.log("\n🎉 ===== QUANTUMAGI END-TO-END DEMONSTRATION COMPLETE =====");
+      console.log(
+        "\n🎉 ===== QUANTUMAGI END-TO-END DEMONSTRATION COMPLETE ====="
+      );
       console.log("✅ Constitutional governance framework fully operational");
       console.log("✅ GS Engine policy synthesis validated");
       console.log("✅ Democratic voting process confirmed");
@@ -376,7 +435,8 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
       console.log("\n🔧 Component-Level Validation Tests");
 
       // Test constitution updates
-      const newDoc = "Quantumagi Constitutional Framework v2.0 - Enhanced governance";
+      const newDoc =
+        "Quantumagi Constitutional Framework v2.0 - Enhanced governance";
       const newHash = createHash("sha256").update(newDoc).digest();
 
       await program.methods
@@ -387,7 +447,9 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
         })
         .rpc();
 
-      const updatedConstitution = await program.account.constitution.fetch(constitutionPDA);
+      const updatedConstitution = await program.account.constitution.fetch(
+        constitutionPDA
+      );
       expect(updatedConstitution.version).to.equal(2);
       console.log("  ✅ Constitution amendment functionality verified");
 
@@ -417,7 +479,7 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
         .accounts({
           policy: testPolicyPDA,
           constitution: constitutionPDA,
-          authority: authority.publicKey
+          authority: authority.publicKey,
         })
         .rpc();
 
@@ -430,7 +492,9 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
         })
         .rpc();
 
-      const deactivatedPolicy = await program.account.policy.fetch(testPolicyPDA);
+      const deactivatedPolicy = await program.account.policy.fetch(
+        testPolicyPDA
+      );
       expect(deactivatedPolicy.isActive).to.be.false;
       console.log("  ✅ Emergency policy deactivation verified");
     });
@@ -445,13 +509,13 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
         {
           id: "COMPLEX-001",
           rule: "REQUIRE multi_sig_approval FOR treasury_operations EXCEEDING 1000",
-          category: { financial: {} }
+          category: { financial: {} },
         },
         {
           id: "COMPLEX-002",
           rule: "DENY state_mutations WITHOUT governance_approval",
-          category: { promptConstitution: {} }
-        }
+          category: { promptConstitution: {} },
+        },
       ];
 
       const policyPDAs = [];
@@ -477,7 +541,7 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
           .accounts({
             policy: policyPDA,
             constitution: constitutionPDA,
-            authority: authority.publicKey
+            authority: authority.publicKey,
           })
           .rpc();
 
@@ -497,8 +561,8 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
             caller: authority.publicKey,
           },
           policyIndex: 0,
-          shouldPass: false // Exceeds limit without multi-sig
-        }
+          shouldPass: false, // Exceeds limit without multi-sig
+        },
       ];
 
       for (const scenario of complexScenarios) {
@@ -524,8 +588,9 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
       const testPrinciple = {
         id: "TEST-SYNTHESIS",
         title: "Automated Testing Protocol",
-        content: "All automated systems must undergo validation testing before deployment",
-        category: "safety"
+        content:
+          "All automated systems must undergo validation testing before deployment",
+        category: "safety",
       };
 
       const gsEngine = new MockGSEngine();
@@ -533,10 +598,14 @@ describe("Quantumagi End-to-End Constitutional Governance", () => {
 
       expect(synthesizedPolicy.rule).to.include("AUTOMATED TESTING PROTOCOL");
       expect(synthesizedPolicy.validationScore).to.be.greaterThan(0.8);
-      console.log(`  ✅ Policy synthesis validation score: ${synthesizedPolicy.validationScore}`);
+      console.log(
+        `  ✅ Policy synthesis validation score: ${synthesizedPolicy.validationScore}`
+      );
 
       // Test policy deployment
-      const policyId = new anchor.BN(synthesizedPolicy.solanaInstructionData.policyId);
+      const policyId = new anchor.BN(
+        synthesizedPolicy.solanaInstructionData.policyId
+      );
       const [policyPDA] = anchor.web3.PublicKey.findProgramAddressSync(
         [Buffer.from("policy"), policyId.toBuffer("le", 8)],
         program.programId

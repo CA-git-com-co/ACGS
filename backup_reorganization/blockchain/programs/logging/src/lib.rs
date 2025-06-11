@@ -15,13 +15,16 @@ pub mod logging {
         ctx: Context<LogEvent>,
         event_type: EventType,
         metadata: String,
-        source_program: Pubkey
+        source_program: Pubkey,
     ) -> Result<()> {
-        require!(metadata.len() <= MAX_METADATA_LENGTH, LoggingError::MetadataTooLong);
-        
+        require!(
+            metadata.len() <= MAX_METADATA_LENGTH,
+            LoggingError::MetadataTooLong
+        );
+
         let log_entry = &mut ctx.accounts.log_entry;
         let clock = Clock::get()?;
-        
+
         log_entry.id = clock.unix_timestamp as u64;
         log_entry.event_type = event_type.clone();
         log_entry.metadata = metadata;
@@ -29,7 +32,7 @@ pub mod logging {
         log_entry.source_program = source_program;
         log_entry.block_height = clock.slot;
         log_entry.logger = ctx.accounts.logger.key();
-        
+
         // Emit event for real-time monitoring
         emit!(GovernanceEventLogged {
             log_id: log_entry.id,
@@ -39,8 +42,13 @@ pub mod logging {
             block_height: log_entry.block_height,
         });
 
-        msg!("Event logged: {:?} from {} at {}", event_type, source_program, log_entry.timestamp);
-        
+        msg!(
+            "Event logged: {:?} from {} at {}",
+            event_type,
+            source_program,
+            log_entry.timestamp
+        );
+
         Ok(())
     }
 
@@ -51,13 +59,16 @@ pub mod logging {
         action_hash: [u8; 32],
         compliance_result: ComplianceResult,
         confidence_score: u8,
-        processing_time_ms: u32
+        processing_time_ms: u32,
     ) -> Result<()> {
-        require!(confidence_score <= 100, LoggingError::InvalidConfidenceScore);
-        
+        require!(
+            confidence_score <= 100,
+            LoggingError::InvalidConfidenceScore
+        );
+
         let metadata_log = &mut ctx.accounts.metadata_log;
         let clock = Clock::get()?;
-        
+
         metadata_log.id = clock.unix_timestamp as u64;
         metadata_log.policy_id = policy_id;
         metadata_log.action_hash = action_hash;
@@ -67,7 +78,7 @@ pub mod logging {
         metadata_log.timestamp = clock.unix_timestamp;
         metadata_log.block_height = clock.slot;
         metadata_log.checker = ctx.accounts.checker.key();
-        
+
         // Emit detailed compliance event
         emit!(ComplianceCheckLogged {
             log_id: metadata_log.id,
@@ -80,26 +91,31 @@ pub mod logging {
             checker: metadata_log.checker,
         });
 
-        msg!("Compliance check logged: Policy {} - {:?} ({}% confidence, {}ms)",
-             policy_id, compliance_result, confidence_score, processing_time_ms);
-        
+        msg!(
+            "Compliance check logged: Policy {} - {:?} ({}% confidence, {}ms)",
+            policy_id,
+            compliance_result,
+            confidence_score,
+            processing_time_ms
+        );
+
         Ok(())
     }
 
     /// Log system performance metrics
     pub fn log_performance_metrics(
         ctx: Context<LogPerformanceMetrics>,
-        metrics: PerformanceMetrics
+        metrics: PerformanceMetrics,
     ) -> Result<()> {
         let perf_log = &mut ctx.accounts.performance_log;
         let clock = Clock::get()?;
-        
+
         perf_log.id = clock.unix_timestamp as u64;
         perf_log.metrics = metrics.clone();
         perf_log.timestamp = clock.unix_timestamp;
         perf_log.block_height = clock.slot;
         perf_log.reporter = ctx.accounts.reporter.key();
-        
+
         // Emit performance metrics event
         emit!(PerformanceMetricsLogged {
             log_id: perf_log.id,
@@ -109,10 +125,14 @@ pub mod logging {
             system_load_percentage: metrics.system_load_percentage,
             timestamp: perf_log.timestamp,
         });
-        
-        msg!("Performance metrics logged: {}ms avg, {}% success rate, {}% load", 
-             metrics.avg_compliance_check_time, metrics.compliance_success_rate, metrics.system_load_percentage);
-        
+
+        msg!(
+            "Performance metrics logged: {}ms avg, {}% success rate, {}% load",
+            metrics.avg_compliance_check_time,
+            metrics.compliance_success_rate,
+            metrics.system_load_percentage
+        );
+
         Ok(())
     }
 
@@ -122,13 +142,16 @@ pub mod logging {
         alert_type: SecurityAlertType,
         severity: AlertSeverity,
         description: String,
-        affected_policy_id: Option<u64>
+        affected_policy_id: Option<u64>,
     ) -> Result<()> {
-        require!(description.len() <= MAX_DESCRIPTION_LENGTH, LoggingError::DescriptionTooLong);
-        
+        require!(
+            description.len() <= MAX_DESCRIPTION_LENGTH,
+            LoggingError::DescriptionTooLong
+        );
+
         let security_log = &mut ctx.accounts.security_log;
         let clock = Clock::get()?;
-        
+
         security_log.id = clock.unix_timestamp as u64;
         security_log.alert_type = alert_type.clone();
         security_log.severity = severity.clone();
@@ -138,7 +161,7 @@ pub mod logging {
         security_log.block_height = clock.slot;
         security_log.reporter = ctx.accounts.reporter.key();
         security_log.acknowledged = false;
-        
+
         // Emit security alert event
         emit!(SecurityAlertLogged {
             log_id: security_log.id,
@@ -149,43 +172,58 @@ pub mod logging {
             reporter: security_log.reporter,
         });
 
-        msg!("SECURITY ALERT: {:?} - {:?} severity at {}", alert_type, severity, security_log.timestamp);
-        
+        msg!(
+            "SECURITY ALERT: {:?} - {:?} severity at {}",
+            alert_type,
+            severity,
+            security_log.timestamp
+        );
+
         Ok(())
     }
 
     /// Acknowledge a security alert
     pub fn acknowledge_security_alert(
         ctx: Context<AcknowledgeSecurityAlert>,
-        acknowledgment_note: String
+        acknowledgment_note: String,
     ) -> Result<()> {
-        require!(acknowledgment_note.len() <= MAX_ACK_NOTE_LENGTH, LoggingError::AckNoteTooLong);
-        
+        require!(
+            acknowledgment_note.len() <= MAX_ACK_NOTE_LENGTH,
+            LoggingError::AckNoteTooLong
+        );
+
         let security_log = &mut ctx.accounts.security_log;
         let clock = Clock::get()?;
-        
-        require!(!security_log.acknowledged, LoggingError::AlreadyAcknowledged);
-        
+
+        require!(
+            !security_log.acknowledged,
+            LoggingError::AlreadyAcknowledged
+        );
+
         security_log.acknowledged = true;
         security_log.acknowledged_at = Some(clock.unix_timestamp);
         security_log.acknowledged_by = Some(ctx.accounts.acknowledger.key());
         security_log.acknowledgment_note = acknowledgment_note;
-        
+
         emit!(SecurityAlertAcknowledged {
             log_id: security_log.id,
             acknowledged_by: ctx.accounts.acknowledger.key(),
             acknowledged_at: clock.unix_timestamp,
         });
-        
-        msg!("Security alert {} acknowledged by {}", security_log.id, ctx.accounts.acknowledger.key());
-        
+
+        msg!(
+            "Security alert {} acknowledged by {}",
+            security_log.id,
+            ctx.accounts.acknowledger.key()
+        );
+
         Ok(())
     }
 
     /// Get logging statistics
     pub fn get_logging_stats(ctx: Context<GetLoggingStats>) -> Result<()> {
         let stats = &ctx.accounts.logging_stats;
-        
+
         emit!(LoggingStatsEvent {
             total_events_logged: stats.total_events_logged,
             compliance_checks_logged: stats.compliance_checks_logged,
@@ -194,7 +232,7 @@ pub mod logging {
             average_log_processing_time: stats.average_log_processing_time,
             last_updated: stats.last_updated,
         });
-        
+
         Ok(())
     }
 }

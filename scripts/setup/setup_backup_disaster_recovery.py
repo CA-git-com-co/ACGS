@@ -10,6 +10,7 @@ import yaml
 from datetime import datetime, timedelta
 from typing import Dict, List, Any
 
+
 class BackupDisasterRecovery:
     def __init__(self):
         self.backup_config = {
@@ -17,24 +18,20 @@ class BackupDisasterRecovery:
                 "host": "localhost",
                 "port": "5433",
                 "name": "acgs_pgp_db",
-                "user": "acgs_user"
+                "user": "acgs_user",
             },
-            "retention": {
-                "daily": 7,
-                "weekly": 4,
-                "monthly": 12
-            },
+            "retention": {"daily": 7, "weekly": 4, "monthly": 12},
             "storage": {
                 "local_path": "/var/backups/acgs-pgp",
                 "s3_bucket": "acgs-pgp-backups",
-                "encryption": True
-            }
+                "encryption": True,
+            },
         }
-    
+
     def create_backup_strategy_document(self):
         """Create backup strategy documentation"""
         print("📋 Creating Backup Strategy Document...")
-        
+
         strategy_doc = f"""# ACGS-PGP Backup and Disaster Recovery Strategy
 
 ## Overview
@@ -90,17 +87,17 @@ This document outlines the backup and disaster recovery procedures for the ACGS-
 
 Generated on: {datetime.now().isoformat()}
 """
-        
+
         with open("backup_strategy.md", "w") as f:
             f.write(strategy_doc)
-        
+
         print("  ✅ Backup strategy document created: backup_strategy.md")
-    
+
     def create_database_backup_script(self):
         """Create comprehensive database backup script"""
         print("\n💾 Creating Database Backup Script...")
-        
-        backup_script = f'''#!/bin/bash
+
+        backup_script = f"""#!/bin/bash
 # ACGS-PGP Database Backup Script with Rotation and S3 Upload
 
 set -e
@@ -203,19 +200,21 @@ fi
 
 echo "✅ Backup completed successfully: $(basename $COMPRESSED_FILE)"
 echo "📊 Backup size: $(du -h $COMPRESSED_FILE | cut -f1)"
-'''
-        
+"""
+
         with open("backup_database_comprehensive.sh", "w") as f:
             f.write(backup_script)
-        
+
         os.chmod("backup_database_comprehensive.sh", 0o755)
-        print("  ✅ Comprehensive backup script created: backup_database_comprehensive.sh")
-    
+        print(
+            "  ✅ Comprehensive backup script created: backup_database_comprehensive.sh"
+        )
+
     def create_restore_script(self):
         """Create database restore script"""
         print("\n🔄 Creating Database Restore Script...")
-        
-        restore_script = f'''#!/bin/bash
+
+        restore_script = f"""#!/bin/bash
 # ACGS-PGP Database Restore Script
 
 set -e
@@ -312,19 +311,19 @@ sleep 10
 ./health_check.sh
 
 echo "✅ Database restore completed successfully"
-'''
-        
+"""
+
         with open("restore_database.sh", "w") as f:
             f.write(restore_script)
-        
+
         os.chmod("restore_database.sh", 0o755)
         print("  ✅ Database restore script created: restore_database.sh")
-    
+
     def create_disaster_recovery_playbook(self):
         """Create disaster recovery playbook"""
         print("\n📖 Creating Disaster Recovery Playbook...")
-        
-        playbook = '''# ACGS-PGP Disaster Recovery Playbook
+
+        playbook = """# ACGS-PGP Disaster Recovery Playbook
 
 ## Emergency Contacts
 - System Administrator: admin@acgs-pgp.com
@@ -398,18 +397,18 @@ echo "✅ Database restore completed successfully"
 - Monthly: Test database restore
 - Quarterly: Full disaster recovery drill
 - Annually: Review and update procedures
-'''
-        
+"""
+
         with open("disaster_recovery_playbook.md", "w") as f:
             f.write(playbook)
-        
+
         print("  ✅ Disaster recovery playbook created: disaster_recovery_playbook.md")
-    
+
     def create_backup_monitoring_script(self):
         """Create backup monitoring and validation script"""
         print("\n🔍 Creating Backup Monitoring Script...")
-        
-        monitoring_script = f'''#!/bin/bash
+
+        monitoring_script = f"""#!/bin/bash
 # ACGS-PGP Backup Monitoring and Validation
 
 BACKUP_DIR="{self.backup_config['storage']['local_path']}"
@@ -495,19 +494,19 @@ else
     echo "  Status: ❌ Backup system needs attention"
     exit 1
 fi
-'''
-        
+"""
+
         with open("monitor_backups.sh", "w") as f:
             f.write(monitoring_script)
-        
+
         os.chmod("monitor_backups.sh", 0o755)
         print("  ✅ Backup monitoring script created: monitor_backups.sh")
-    
+
     def create_cron_jobs(self):
         """Create cron job configuration"""
         print("\n⏰ Creating Cron Job Configuration...")
-        
-        cron_config = f'''# ACGS-PGP Automated Backup and Monitoring Cron Jobs
+
+        cron_config = f"""# ACGS-PGP Automated Backup and Monitoring Cron Jobs
 # Add these to your crontab: crontab -e
 
 # Daily database backup at 2:00 AM
@@ -524,27 +523,27 @@ fi
 
 # Daily health check
 */30 * * * * /path/to/acgs-pgp/health_check.sh >> /var/log/acgs-health.log 2>&1
-'''
-        
+"""
+
         with open("acgs_cron_jobs.txt", "w") as f:
             f.write(cron_config)
-        
+
         print("  ✅ Cron job configuration created: acgs_cron_jobs.txt")
-    
+
     def setup_backup_disaster_recovery(self):
         """Main setup function"""
         print("🚀 Setting up Backup and Disaster Recovery for ACGS-PGP")
         print("=" * 60)
-        
+
         self.create_backup_strategy_document()
         self.create_database_backup_script()
         self.create_restore_script()
         self.create_disaster_recovery_playbook()
         self.create_backup_monitoring_script()
         self.create_cron_jobs()
-        
+
         # Create test script
-        test_script = '''#!/bin/bash
+        test_script = """#!/bin/bash
 # Test disaster recovery procedures
 
 echo "🧪 Testing Disaster Recovery Procedures"
@@ -560,13 +559,13 @@ echo -e "\\n3. Testing health checks..."
 ./health_check.sh
 
 echo -e "\\n✅ Disaster recovery test completed"
-'''
-        
+"""
+
         with open("test_disaster_recovery.sh", "w") as f:
             f.write(test_script)
-        
+
         os.chmod("test_disaster_recovery.sh", 0o755)
-        
+
         print("\n" + "=" * 60)
         print("✅ Backup and Disaster Recovery Setup Complete!")
         print("\nCreated files:")
@@ -583,9 +582,11 @@ echo -e "\\n✅ Disaster recovery test completed"
         print("3. Test restore: ./test_disaster_recovery.sh")
         print("4. Configure S3 credentials for offsite backup")
 
+
 def main():
     setup = BackupDisasterRecovery()
     setup.setup_backup_disaster_recovery()
+
 
 if __name__ == "__main__":
     main()

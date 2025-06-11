@@ -1377,9 +1377,9 @@ class EnhancedMultiModelValidator:
         aligning with the research protocol's UltraReliableConsensus class.
         """
         start_time = time.time()
-        request_id = hashlib.sha256(f"{principle.id}_{start_time}".encode()).hexdigest()[
-            :8
-        ]
+        request_id = hashlib.sha256(
+            f"{principle.id}_{start_time}".encode()
+        ).hexdigest()[:8]
 
         principle_text = principle.text
         synthesis_context = context

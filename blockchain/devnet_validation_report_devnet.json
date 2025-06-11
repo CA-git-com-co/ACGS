@@ -36,11 +36,7 @@
       "file_exists": true,
       "total_policies": 3,
       "active_policies": 3,
-      "policy_categories": [
-        "Financial",
-        "Safety",
-        "Governance"
-      ]
+      "policy_categories": ["Financial", "Safety", "Governance"]
     },
     "governance_accounts": {
       "status": "\u2705 Governance accounts configured",

@@ -1,4 +1,3 @@
-
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { expect } from "chai";
@@ -109,7 +108,9 @@ describe("logging", () => {
         .signers([policy, authority])
         .rpc();
 
-      const policyAccount = await program.account.policy.fetch(policy.publicKey);
+      const policyAccount = await program.account.policy.fetch(
+        policy.publicKey
+      );
 
       expect(policyAccount.content).to.equal(policyContent);
       expect(policyAccount.category).to.equal(category);
@@ -128,7 +129,9 @@ describe("logging", () => {
         .signers([authority])
         .rpc();
 
-      const policyAccount = await program.account.policy.fetch(policy.publicKey);
+      const policyAccount = await program.account.policy.fetch(
+        policy.publicKey
+      );
       expect(policyAccount.supportVotes).to.equal(1);
     });
 
@@ -142,7 +145,9 @@ describe("logging", () => {
         .signers([authority])
         .rpc();
 
-      const policyAccount = await program.account.policy.fetch(policy.publicKey);
+      const policyAccount = await program.account.policy.fetch(
+        policy.publicKey
+      );
       expect(policyAccount.status).to.equal("Active");
     });
   });
@@ -192,7 +197,9 @@ describe("logging", () => {
         .signers([authority])
         .rpc();
 
-      const policyAccount = await program.account.policy.fetch(policy.publicKey);
+      const policyAccount = await program.account.policy.fetch(
+        policy.publicKey
+      );
       expect(policyAccount.status).to.equal("Deactivated");
     });
   });
