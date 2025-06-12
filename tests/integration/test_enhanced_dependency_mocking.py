@@ -8,7 +8,7 @@ import asyncio
 from unittest.mock import AsyncMock
 
 import pytest
-from mock_services import (
+from tests.utils.mock_services import (
     EnhancedHTTPXMock,
     MockLLMService,
     MockServiceManager,

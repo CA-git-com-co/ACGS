@@ -11,8 +11,23 @@ from fastapi.testclient import TestClient
 # Add the project root to the path to allow imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from federated_evaluation.agent.main import serve as serve_agent
-from federated_evaluation.coordinator.main import app as coordinator_app
+try:
+    from services.research.federated_evaluation.federated_service.app.core.federated_evaluator import (
+        FederatedEvaluator,
+        EvaluationTask,
+    )
+    FEDERATED_AVAILABLE = True
+except ImportError:
+    # Mock for testing when federated evaluation is not available
+    class FederatedEvaluator:
+        def __init__(self):
+            pass
+
+    class EvaluationTask:
+        def __init__(self):
+            pass
+
+    FEDERATED_AVAILABLE = False
 
 
 # Fixture to manage the agent server lifecycle

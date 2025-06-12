@@ -1,0 +1,18 @@
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %              Introduction             %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+\label{sec:introduction}
+
+Evolutionary computation (EC) systems represent a critical frontier in AI safety research, where traditional governance approaches fundamentally break down~\cite{amodei2016concrete,russell2019human}. Unlike deterministic AI systems, EC generates emergent behaviors through population dynamics, mutation, and selection processes that cannot be predicted or controlled by static rule sets~\cite{russell2020artificial}. This creates what we term the \textit{evolutionary governance gap}: the inability of existing AI governance frameworks---from regulatory standards like the EU AI Act~\cite{eu2024ai} to technical solutions like Constitutional AI (CAI)~\cite{anthropic2022constitutional}---to manage systems that continuously evolve their own behavior. This gap poses significant risks, as unconstrained evolutionary systems can develop unsafe, biased, or non-compliant solutions in society-critical applications~\cite{barocas2019fairness,acgs2024}.
+
+To bridge this gap, we introduce \acgs{}, a co-evolutionary constitutional governance framework that embeds adaptive principles directly into EC~systems. The framework's architecture enables governance mechanisms and the AI~system to adapt together, facilitating ``constitutionally bounded innovation''. At its core, \acgs{} uses Large Language Models (LLMs) to dynamically synthesize a living constitution, encoded as executable policies in Rego~\cite{rego2019}, and enforces them in real-time via a Prompt Governance Compiler (PGC) based on Open Policy Agent (OPA)~\cite{opa2023}.
+
+This work makes five key contributions to AI governance and EC\@:
+\begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=2pt,parsep=0pt]
+    \item \textbf{Co-Evolutionary Governance Paradigm:} We introduce a governance framework that evolves alongside the AI system it governs, addressing the mismatch between static governance and dynamic AI behavior through a four-layer architecture.
+    \item \textbf{Automated Policy Synthesis Pipeline:} We develop a mechanism for translating natural language principles into executable Rego policies, achieving 73--93\percent{} synthesis success with multi-tier validation, including formal verification for safety-critical rules.
+    \item \textbf{Real-Time Constitutional Enforcement:} We demonstrate sub-50\ms{} policy enforcement (42.3\ms{} average) suitable for integration into evolutionary loops, enabling constitutional governance without compromising system performance.
+    \item \textbf{Democratic AI Governance Mechanisms:} We establish formal protocols for multi-stakeholder constitutional management, including a Constitutional Council, cryptographically secured amendment procedures, and transparent appeal workflows.
+    \item \textbf{Empirical Validation and Open Science:} We provide comprehensive evaluation demonstrating constitutional compliance improvements from 31.7\percent{} to 94.7\percent{} in EC systems. We are releasing our full implementation and reproducible artifacts to support further research (see Appendix~\ref{sec:appendix_artifacts}).
+\end{enumerate}

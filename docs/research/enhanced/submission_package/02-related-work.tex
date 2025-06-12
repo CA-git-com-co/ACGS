@@ -1,0 +1,21 @@
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %             Related Work              %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work}
+\label{sec:related_work}
+\acgs{} builds upon and synthesizes several intersecting research domains.
+
+\subsection{AI Governance and Policy-as-Code}
+High-level AI governance frameworks, such as the NIST AI Risk Management Framework~\cite{nist2023ai} and ISO/IEC~42001~\cite{iso42001}, provide essential organizational guidance but lack mechanisms for technical operationalization. Policy-as-Code (PaC) paradigms, exemplified by Open Policy Agent (OPA)~\cite{opa2023} and its policy language Rego~\cite{rego2019}, bridge part of this gap. However, PaC systems traditionally rely on manually authored rules, creating a bottleneck that inhibits rapid adaptation. \acgs{} leverages PaC for enforcement but automates rule generation from high-level principles.
+
+\subsection{Constitutional AI and Value Alignment}
+Anthropic's Constitutional AI~(CAI) pioneered using explicit principles to guide LLM behavior during training~\cite{anthropic2022constitutional}. While impactful, this approach embeds principles statically, limiting adaptability post-training. Value alignment research~\cite{russell2019human} often lacks mechanisms for explicit value representation and verification. \acgs{} extends CAI by implementing a dynamic, runtime constitutional system where principles are continuously interpreted and operationalized.
+
+\subsection{LLM-driven Policy and Code Synthesis}
+Recent work demonstrates the potential of LLMs to translate natural language into structured code and policies~\cite{propertygpt2023, veriplan2023}. However, challenges such as semantic inaccuracy and hallucination persist. We address these through a multi-stage validation pipeline that integrates syntactic checks, semantic alignment scoring, formal verification for critical rules, and human-in-the-loop oversight.
+
+\subsection{Runtime Enforcement for LLM~Agents}
+Frameworks like AgentSpec~\cite{agentspec2023} and Progent~\cite{progent2023} provide runtime safety constraints for LLM~agents. These systems excel at enforcement but depend on static, manually crafted rule sets. The PGC component of \acgs{} draws inspiration from these runtime guards but uniquely integrates enforcement with an adaptive, constitutionally-grounded rule synthesis engine.
+
+\subsection{Governance of Evolutionary Computation}
+The governance of EC systems is a nascent field. While some research explores synergies between LLMs and EC, it typically focuses on using LLMs to enhance evolutionary operators. \acgs{} is distinct in establishing a co-evolutionary loop where the governance framework itself evolves in response to the emergent behaviors of the EC system, creating a system of checks and balances that adapts at machine speed.

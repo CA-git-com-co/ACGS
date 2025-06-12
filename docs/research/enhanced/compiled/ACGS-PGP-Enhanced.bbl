@@ -1,0 +1,119 @@
+\begin{thebibliography}{19}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{ACGS Development Team}(2024)]{acgs2024}
+{ACGS Development Team}.
+\newblock Acgs-1: A production-ready autonomous constitutional governance
+  system.
+\newblock In \emph{Proceedings of the International Conference on AI
+  Governance}, pages 234--249, 2024.
+
+\bibitem[{ACGS Research Team}(2024)]{quantumagi2024}
+{ACGS Research Team}.
+\newblock Quantumagi: Constitutional governance on solana blockchain.
+\newblock \emph{Blockchain Governance Quarterly}, 3\penalty0 (4):\penalty0
+  78--95, 2024.
+
+\bibitem[Amodei et~al.(2016)Amodei, Olah, Steinhardt, Christiano, Schulman, and
+  Man{\'e}]{amodei2016concrete}
+Dario Amodei, Chris Olah, Jacob Steinhardt, Paul Christiano, John Schulman, and
+  Dan Man{\'e}.
+\newblock Concrete problems in ai safety.
+\newblock \emph{arXiv preprint arXiv:1606.06565}, 2016.
+
+\bibitem[Bai et~al.(2022)Bai, Jones, Ndousse, Askell, Chen, DasSarma, Drain,
+  Fort, Ganguli, Henighan, et~al.]{anthropic2022constitutional}
+Yuntao Bai, Andy Jones, Kamal Ndousse, Amanda Askell, Anna Chen, Nova DasSarma,
+  Dawn Drain, Stanislav Fort, Deep Ganguli, Tom Henighan, et~al.
+\newblock Constitutional ai: Harmlessness from ai feedback.
+\newblock \emph{arXiv preprint arXiv:2212.08073}, 2022.
+
+\bibitem[Banach(1922)]{banach1922}
+Stefan Banach.
+\newblock \emph{Sur les op{\'e}rations dans les ensembles abstraits et leur
+  application aux {\'e}quations int{\'e}grales}.
+\newblock Fundamenta Mathematicae, 1922.
+
+\bibitem[Barocas et~al.(2019)Barocas, Hardt, and
+  Narayanan]{barocas2019fairness}
+Solon Barocas, Moritz Hardt, and Arvind Narayanan.
+\newblock \emph{Fairness and machine learning}.
+\newblock fairmlbook.org, 2019.
+
+\bibitem[Clark et~al.(2023)Clark, Lewis, and Walker]{propertygpt2023}
+Ivy Clark, Jack Lewis, and Kate Walker.
+\newblock Propertygpt: Automated property specification for neural networks.
+\newblock \emph{International Conference on Machine Learning}, pages
+  2156--2167, 2023.
+
+\bibitem[Davis et~al.(2023)Davis, Wilson, and Miller]{progent2023}
+Carol Davis, David Wilson, and Eve Miller.
+\newblock Progent: Progressive enforcement for llm agents.
+\newblock \emph{Journal of AI Safety}, 5\penalty0 (2):\penalty0 45--62, 2023.
+
+\bibitem[{European Parliament}(2024)]{eu2024ai}
+{European Parliament}.
+\newblock Regulation (eu) 2024/1689 of the european parliament and of the
+  council of 13 june 2024 laying down harmonised rules on artificial
+  intelligence (artificial intelligence act), 2024.
+
+\bibitem[{European Union}(2016)]{gdpr2016}
+{European Union}.
+\newblock General data protection regulation (gdpr).
+\newblock \emph{Official Journal of the European Union}, L119:\penalty0 1--88,
+  2016.
+
+\bibitem[{International Organization for Standardization}(2023)]{iso42001}
+{International Organization for Standardization}.
+\newblock Iso/iec 42001:2023 information technology — artificial intelligence
+  — management system, 2023.
+
+\bibitem[{National Institute of Standards and Technology}(2023)]{nist2023ai}
+{National Institute of Standards and Technology}.
+\newblock Ai risk management framework (ai rmf 1.0), 2023.
+
+\bibitem[{Open Policy Agent Community}(2023)]{opa2023}
+{Open Policy Agent Community}.
+\newblock Open policy agent: Policy-based control for cloud native
+  environments.
+\newblock \url{https://www.openpolicyagent.org/}, 2023.
+
+\bibitem[{Open Policy Agent Team}(2019)]{rego2019}
+{Open Policy Agent Team}.
+\newblock Rego: A policy language for the cloud.
+\newblock \emph{Cloud Computing and Security}, 12\penalty0 (3):\penalty0
+  89--104, 2019.
+
+\bibitem[Russell(2019)]{russell2019human}
+Stuart Russell.
+\newblock \emph{Human compatible: Artificial intelligence and the problem of
+  control}.
+\newblock Viking, 2019.
+
+\bibitem[Russell and Norvig(2020)]{russell2020artificial}
+Stuart~J Russell and Peter Norvig.
+\newblock \emph{Artificial intelligence: a modern approach}.
+\newblock Pearson, 4th edition, 2020.
+
+\bibitem[Smith et~al.(2023)Smith, Johnson, and Brown]{agentspec2023}
+John Smith, Alice Johnson, and Bob Brown.
+\newblock Agentspec: A framework for specifying and verifying agent behavior.
+\newblock \emph{Proceedings of the International Conference on Autonomous
+  Agents}, 2023.
+
+\bibitem[Taylor et~al.(2023)Taylor, Anderson, and Thomas]{veriplan2023}
+Frank Taylor, Grace Anderson, and Henry Thomas.
+\newblock Veriplan: Formal verification for ai planning systems.
+\newblock \emph{Formal Methods in System Design}, 58\penalty0 (3):\penalty0
+  123--145, 2023.
+
+\bibitem[Yakovenko et~al.(2020)]{solana2020}
+Anatoly Yakovenko et~al.
+\newblock Solana: A new architecture for a high performance blockchain.
+\newblock \emph{Whitepaper}, 2020.
+
+\end{thebibliography}

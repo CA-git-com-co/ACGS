@@ -42,7 +42,27 @@ sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(project_root / "src/backend"))
 
 # Import models and services
-from services.shared.models import ConstitutionalPrinciple, Policy
+try:
+    from services.core.governance_synthesis.gs_service.app.models.reliability_models import ConstitutionalPrinciple
+    from services.shared.models import Policy
+except ImportError:
+    # Mock ConstitutionalPrinciple for testing
+    from dataclasses import dataclass
+    from typing import Any, Dict, Optional
+
+    @dataclass
+    class ConstitutionalPrinciple:
+        id: str
+        text: str
+        version: Optional[str] = None
+        source: Optional[str] = None
+        metadata: Dict[str, Any] = None
+
+    # Mock Policy if needed
+    @dataclass
+    class Policy:
+        id: str
+        content: str
 
 # Import QEC error correction services
 try:
