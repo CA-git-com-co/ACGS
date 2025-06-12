@@ -37,27 +37,27 @@ class LangGraphConfiguration(BaseModel):
     # Multi-model LLM configuration
     models: Dict[ModelRole, str] = Field(
         default={
-            ModelRole.CONSTITUTIONAL_PROMPTING: "gemini-2.5-pro",
-            ModelRole.POLICY_SYNTHESIS: "gemini-2.0-flash",
-            ModelRole.CONFLICT_RESOLUTION: "gemini-2.5-flash",
-            ModelRole.BIAS_MITIGATION: "gemini-2.5-pro",
-            ModelRole.REFLECTION: "gemini-2.5-flash-preview",
-            ModelRole.AMENDMENT_ANALYSIS: "gemini-2.5-pro",
-            ModelRole.STAKEHOLDER_COMMUNICATION: "gemini-2.0-flash",
-            ModelRole.FIDELITY_MONITORING: "gemini-2.5-flash",
+            ModelRole.CONSTITUTIONAL_PROMPTING: "qwen/qwen3-235b-a22b:free",
+            ModelRole.POLICY_SYNTHESIS: "deepseek/deepseek-chat-v3-0324:free",
+            ModelRole.CONFLICT_RESOLUTION: "qwen/qwen3-32b",
+            ModelRole.BIAS_MITIGATION: "deepseek/deepseek-chat-v3-0324:free",
+            ModelRole.REFLECTION: "qwen/qwen3-235b-a22b:free",
+            ModelRole.AMENDMENT_ANALYSIS: "deepseek/deepseek-chat-v3-0324:free",
+            ModelRole.STAKEHOLDER_COMMUNICATION: "qwen/qwen3-32b",
+            ModelRole.FIDELITY_MONITORING: "deepseek/deepseek-chat-v3-0324:free",
         }
     )
 
     fallback_models: Dict[ModelRole, str] = Field(
         default={
-            ModelRole.CONSTITUTIONAL_PROMPTING: "hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q8_K_XL",
-            ModelRole.POLICY_SYNTHESIS: "hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q8_K_XL",
-            ModelRole.CONFLICT_RESOLUTION: "gemini-2.0-flash",
-            ModelRole.BIAS_MITIGATION: "hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q8_K_XL",
-            ModelRole.REFLECTION: "hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q8_K_XL",
-            ModelRole.AMENDMENT_ANALYSIS: "gemini-2.0-flash",
-            ModelRole.STAKEHOLDER_COMMUNICATION: "hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q8_K_XL",
-            ModelRole.FIDELITY_MONITORING: "hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q8_K_XL",
+            ModelRole.CONSTITUTIONAL_PROMPTING: "deepseek/deepseek-r1-0528:free",
+            ModelRole.POLICY_SYNTHESIS: "qwen/qwen3-32b",
+            ModelRole.CONFLICT_RESOLUTION: "deepseek/deepseek-chat-v3-0324:free",
+            ModelRole.BIAS_MITIGATION: "qwen/qwen3-32b",
+            ModelRole.REFLECTION: "deepseek/deepseek-r1-0528:free",
+            ModelRole.AMENDMENT_ANALYSIS: "qwen/qwen3-32b",
+            ModelRole.STAKEHOLDER_COMMUNICATION: "deepseek/deepseek-chat-v3-0324:free",
+            ModelRole.FIDELITY_MONITORING: "qwen/qwen3-32b",
         }
     )
 
@@ -104,6 +104,7 @@ class LangGraphConfiguration(BaseModel):
     groq_api_key: Optional[str] = Field(default=None)
     xai_api_key: Optional[str] = Field(default=None)
     nvidia_api_key: Optional[str] = Field(default=None)
+    openrouter_api_key: Optional[str] = Field(default=None)
     ollama_api_key: Optional[str] = Field(default=None)
     ollama_base_url: str = Field(default="http://127.0.0.1:11434")
 
@@ -131,6 +132,7 @@ class LangGraphConfiguration(BaseModel):
         groq_api_key = os.getenv("GROQ_API_KEY")
         xai_api_key = os.getenv("XAI_API_KEY")
         nvidia_api_key = os.getenv("NVIDIA_API_KEY")
+        openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
         ollama_api_key = os.getenv("OLLAMA_API_KEY")
         ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
 
@@ -174,6 +176,7 @@ class LangGraphConfiguration(BaseModel):
             groq_api_key=groq_api_key,
             xai_api_key=xai_api_key,
             nvidia_api_key=nvidia_api_key,
+            openrouter_api_key=openrouter_api_key,
             ollama_api_key=ollama_api_key,
             ollama_base_url=ollama_base_url,
             redis_url=redis_url,
@@ -198,7 +201,7 @@ class LangGraphConfiguration(BaseModel):
 
     def get_fallback_model_for_role(self, role: ModelRole) -> str:
         """Get the fallback model for a specific role."""
-        return self.fallback_models.get(role, "gpt-4o-mini")
+        return self.fallback_models.get(role, "qwen/qwen3-32b")
 
     def get_temperature_for_role(self, role: ModelRole) -> float:
         """Get the temperature setting for a specific role."""
@@ -217,6 +220,7 @@ class LangGraphConfiguration(BaseModel):
             "groq": self.groq_api_key is not None,
             "xai": self.xai_api_key is not None,
             "nvidia": self.nvidia_api_key is not None,
+            "openrouter": self.openrouter_api_key is not None,
             "ollama": True,  # Ollama typically doesn't require API key for local deployment
         }
 

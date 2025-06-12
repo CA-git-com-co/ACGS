@@ -17,25 +17,70 @@ class ConstitutionalMetrics:
     def __init__(self, service_name: str):
         self.service_name = service_name
 
-        # Constitutional principle metrics
-        self.constitutional_principle_operations = Counter(
-            "acgs_constitutional_principle_operations_total",
-            "Total constitutional principle operations",
-            ["service", "operation_type", "principle_category", "status"],
-        )
+        # Constitutional principle metrics - use try/except to handle duplicates
+        try:
+            self.constitutional_principle_operations = Counter(
+                "acgs_constitutional_principle_operations_total",
+                "Total constitutional principle operations",
+                ["service", "operation_type", "principle_category", "status"],
+            )
+        except ValueError as e:
+            if "Duplicated timeseries" in str(e):
+                # Get existing metric from registry
+                from prometheus_client import REGISTRY
+                for collector in REGISTRY._collector_to_names:
+                    if (hasattr(collector, "_name") and
+                        collector._name == "acgs_constitutional_principle_operations_total"):
+                        self.constitutional_principle_operations = collector
+                        break
+                else:
+                    # Create a no-op counter if we can't find the existing one
+                    self.constitutional_principle_operations = self._create_noop_counter()
+            else:
+                raise
 
-        self.constitutional_compliance_score = Gauge(
-            "acgs_constitutional_compliance_score",
-            "Constitutional compliance score (0-1)",
-            ["service", "principle_id", "policy_type"],
-        )
+        try:
+            self.constitutional_compliance_score = Gauge(
+                "acgs_constitutional_compliance_score",
+                "Constitutional compliance score (0-1)",
+                ["service", "principle_id", "policy_type"],
+            )
+        except ValueError as e:
+            if "Duplicated timeseries" in str(e):
+                # Get existing metric from registry
+                from prometheus_client import REGISTRY
+                for collector in REGISTRY._collector_to_names:
+                    if (hasattr(collector, "_name") and
+                        collector._name == "acgs_constitutional_compliance_score"):
+                        self.constitutional_compliance_score = collector
+                        break
+                else:
+                    # Create a no-op gauge if we can't find the existing one
+                    self.constitutional_compliance_score = self._create_noop_gauge()
+            else:
+                raise
 
         # Policy synthesis metrics
-        self.policy_synthesis_operations = Counter(
-            "acgs_policy_synthesis_operations_total",
-            "Total policy synthesis operations",
-            ["service", "synthesis_type", "constitutional_context", "status"],
-        )
+        try:
+            self.policy_synthesis_operations = Counter(
+                "acgs_policy_synthesis_operations_total",
+                "Total policy synthesis operations",
+                ["service", "synthesis_type", "constitutional_context", "status"],
+            )
+        except ValueError as e:
+            if "Duplicated timeseries" in str(e):
+                # Get existing metric from registry
+                from prometheus_client import REGISTRY
+                for collector in REGISTRY._collector_to_names:
+                    if (hasattr(collector, "_name") and
+                        collector._name == "acgs_policy_synthesis_operations_total"):
+                        self.policy_synthesis_operations = collector
+                        break
+                else:
+                    # Create a no-op counter if we can't find the existing one
+                    self.policy_synthesis_operations = self._create_noop_counter()
+            else:
+                raise
 
         self.policy_synthesis_duration = Histogram(
             "acgs_policy_synthesis_duration_seconds",
@@ -137,16 +182,46 @@ class ConstitutionalMetrics:
             ["service", "efficiency_type"],
         )
 
+    def _create_noop_counter(self):
+        """Create a no-op counter for when metrics are already registered."""
+        class NoOpCounter:
+            def labels(self, **kwargs):
+                return self
+            def inc(self, amount=1):
+                pass
+        return NoOpCounter()
+
+    def _create_noop_gauge(self):
+        """Create a no-op gauge for when metrics are already registered."""
+        class NoOpGauge:
+            def labels(self, **kwargs):
+                return self
+            def set(self, value):
+                pass
+        return NoOpGauge()
+
+    def _create_noop_histogram(self):
+        """Create a no-op histogram for when metrics are already registered."""
+        class NoOpHistogram:
+            def labels(self, **kwargs):
+                return self
+            def observe(self, value):
+                pass
+        return NoOpHistogram()
+
     def record_constitutional_principle_operation(
         self, operation_type: str, principle_category: str, status: str
     ):
         """Record constitutional principle operation."""
-        self.constitutional_principle_operations.labels(
-            service=self.service_name,
-            operation_type=operation_type,
-            principle_category=principle_category,
-            status=status,
-        ).inc()
+        try:
+            self.constitutional_principle_operations.labels(
+                service=self.service_name,
+                operation_type=operation_type,
+                principle_category=principle_category,
+                status=status,
+            ).inc()
+        except Exception as e:
+            logger.warning(f"Failed to record constitutional principle operation: {e}")
 
     def update_constitutional_compliance_score(
         self, principle_id: str, policy_type: str, score: float
@@ -231,7 +306,45 @@ constitutional_metrics_registry: Dict[str, ConstitutionalMetrics] = {}
 def get_constitutional_metrics(service_name: str) -> ConstitutionalMetrics:
     """Get or create constitutional metrics instance for a service."""
     if service_name not in constitutional_metrics_registry:
-        constitutional_metrics_registry[service_name] = ConstitutionalMetrics(
-            service_name
-        )
+        try:
+            constitutional_metrics_registry[service_name] = ConstitutionalMetrics(
+                service_name
+            )
+        except ValueError as e:
+            if "Duplicated timeseries" in str(e):
+                logger.warning(f"Metrics collision for {service_name}, using existing registry")
+                # Create a dummy metrics object that doesn't register new metrics
+                class DummyConstitutionalMetrics:
+                    def __init__(self, service_name):
+                        self.service_name = service_name
+
+                    def __getattr__(self, name):
+                        # Return a no-op function for any metric method
+                        return lambda *args, **kwargs: None
+
+                constitutional_metrics_registry[service_name] = DummyConstitutionalMetrics(service_name)
+            else:
+                raise
     return constitutional_metrics_registry[service_name]
+
+
+def reset_constitutional_metrics():
+    """Reset constitutional metrics registry (useful for testing)."""
+    global constitutional_metrics_registry
+    constitutional_metrics_registry.clear()
+
+    # Clear Prometheus registry if needed
+    try:
+        from prometheus_client import REGISTRY
+        collectors_to_remove = []
+        for collector in REGISTRY._collector_to_names:
+            if hasattr(collector, "_name") and "acgs_constitutional" in str(collector._name):
+                collectors_to_remove.append(collector)
+
+        for collector in collectors_to_remove:
+            try:
+                REGISTRY.unregister(collector)
+            except KeyError:
+                pass  # Already removed
+    except Exception as e:
+        logger.warning(f"Failed to clear Prometheus registry: {e}")

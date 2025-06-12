@@ -262,6 +262,39 @@ class MultiModelManager:
                         )
                         logger.info(f"Initialized Groq Llama model: {model_name}")
 
+                elif model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b":
+                    # Groq API support for Qwen3-32B model
+                    if self.config.groq_api_key and GROQ_AVAILABLE:
+                        client = Groq(api_key=self.config.groq_api_key)
+                        self.model_clients[model_name] = client
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
+                        logger.info(f"Initialized Groq Qwen3-32B model: {model_name}")
+
+                elif model_name.startswith("deepseek/") or model_name.startswith("qwen/qwen3-235b"):
+                    # OpenRouter API support for DeepSeek models and Qwen3-235B
+                    if hasattr(self.config, 'openrouter_api_key') and self.config.openrouter_api_key and OPENAI_AVAILABLE:
+                        client = OpenAI(
+                            api_key=self.config.openrouter_api_key,
+                            base_url="https://openrouter.ai/api/v1",
+                        )
+                        self.model_clients[model_name] = client
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
+                        logger.info(f"Initialized OpenRouter model: {model_name}")
+
+                elif model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b":
+                    # Groq API support for Qwen3-32B model
+                    if self.config.groq_api_key and GROQ_AVAILABLE:
+                        client = Groq(api_key=self.config.groq_api_key)
+                        self.model_clients[model_name] = client
+                        self.performance_trackers[model_name] = ModelPerformanceTracker(
+                            model_name
+                        )
+                        logger.info(f"Initialized Groq Qwen3-32B model: {model_name}")
+
                 elif model_name.startswith("grok"):
                     if self.config.xai_api_key and OPENAI_AVAILABLE:
                         client = OpenAI(
@@ -443,13 +476,19 @@ class MultiModelManager:
                 )
 
         elif isinstance(client, Groq):
-            # Groq client for Llama models
+            # Groq client for Llama and Qwen models
             # Run in thread pool since Groq client is synchronous
             loop = asyncio.get_event_loop()
+
+            # Use appropriate model name for Groq API
+            groq_model_name = model_name
+            if model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b":
+                groq_model_name = "qwen/qwen3-32b"
+
             response = await loop.run_in_executor(
                 None,
                 lambda: client.chat.completions.create(
-                    model=model_name,
+                    model=groq_model_name,
                     messages=[{"role": "user", "content": prompt}],
                     temperature=temperature,
                     max_tokens=4096,
@@ -465,13 +504,46 @@ class MultiModelManager:
                 return content
 
         elif isinstance(client, OpenAI):
-            # OpenAI client (for xAI Grok, OpenAI models, or NVIDIA API models)
-            # Handle NVIDIA API models with reasoning capabilities
-            if model_name.startswith("qwen/") or model_name.startswith("nvidia/"):
-                # NVIDIA API with reasoning support
-                loop = asyncio.get_event_loop()
+            # OpenAI client (for xAI Grok, OpenAI models, NVIDIA API models, or OpenRouter models)
+            loop = asyncio.get_event_loop()
 
-                # Check if this is a reasoning model (Qwen 3 235B)
+            # Handle different model types
+            if model_name.startswith("deepseek/") or model_name.startswith("qwen/qwen3-235b"):
+                # OpenRouter models (DeepSeek Chat v3, DeepSeek R1, Qwen3-235B)
+                extra_headers = {
+                    "HTTP-Referer": "https://acgs.local",  # Optional site URL
+                    "X-Title": "ACGS-PGP Constitutional Governance",  # Optional site title
+                }
+
+                # Set appropriate max_tokens based on model
+                max_tokens = 8192
+                if "qwen3-235b" in model_name:
+                    max_tokens = 16384  # Larger context for Qwen3-235B
+
+                response = await loop.run_in_executor(
+                    None,
+                    lambda: client.chat.completions.create(
+                        model=model_name,
+                        messages=[{"role": "user", "content": prompt}],
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                        extra_headers=extra_headers,
+                        extra_body={},  # Required for OpenRouter
+                        stream=False,
+                    ),
+                )
+                content = response.choices[0].message.content
+
+                # DeepSeek R1 may include reasoning content
+                if "deepseek-r1" in model_name and hasattr(response.choices[0].message, "reasoning_content"):
+                    reasoning = response.choices[0].message.reasoning_content
+                    if reasoning:
+                        content = f"[REASONING]\n{reasoning}\n\n[RESPONSE]\n{content}"
+
+                return content
+
+            elif model_name.startswith("qwen/") or model_name.startswith("nvidia/"):
+                # NVIDIA API with reasoning support
                 extra_body = {}
                 if "qwen3-235b" in model_name.lower():
                     extra_body = {"chat_template_kwargs": {"thinking": True}}
@@ -485,12 +557,12 @@ class MultiModelManager:
                         top_p=0.7,
                         max_tokens=8192,
                         extra_body=extra_body,
-                        stream=False,  # For now, use non-streaming for simplicity
+                        stream=False,
                     ),
                 )
                 content = response.choices[0].message.content
 
-                # For reasoning models, we might want to extract reasoning content
+                # For reasoning models, extract reasoning content
                 if hasattr(response.choices[0].message, "reasoning_content"):
                     reasoning = response.choices[0].message.reasoning_content
                     if reasoning:
@@ -499,7 +571,6 @@ class MultiModelManager:
                 return content
             else:
                 # Standard OpenAI API call
-                loop = asyncio.get_event_loop()
                 response = await loop.run_in_executor(
                     None,
                     lambda: client.chat.completions.create(

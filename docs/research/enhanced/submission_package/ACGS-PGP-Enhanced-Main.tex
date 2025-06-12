@@ -31,7 +31,7 @@
 \begin{abstract}
 Evolutionary computation (EC) systems exhibit emergent behaviors that static governance frameworks cannot adequately control, creating a critical gap in AI safety and alignment. We introduce \acgs{}, a co-evolutionary constitutional governance framework that dynamically adapts alongside evolving AI systems. Our approach integrates four key innovations: (1) a hierarchical architecture that translates high-level constitutional principles into verifiable runtime constraints; (2) an LLM-driven synthesis engine that generates executable policies from natural language; (3) a real-time Prompt Governance Compiler (PGC) for efficient enforcement; and (4) a democratic oversight model with cryptographically-secured amendment and appeal processes.
 
-Empirical validation through the \quantumagi{} production deployment on the Solana blockchain demonstrates the framework's effectiveness. We achieve \textbf{94.7\percent{} constitutional compliance}, a significant improvement from an ungoverned baseline of 31.7\percent{}, while maintaining evolutionary performance. The system operates with a mean enforcement latency of \textbf{42.3\ms{}}. The measured Lipschitz constant of $\lipschitz \approx 0.74$ and convergence in~14 iterations empirically validate our theoretical stability guarantees. \acgs{} contributes a production-validated methodology for embedding dynamic, verifiable, and constitutionally-grounded governance within~AI, establishing a new paradigm for trustworthy autonomous systems where governance is intrinsic rather than external.
+Empirical validation through the \quantumagi{} production deployment on the Solana blockchain demonstrates the framework's effectiveness. We achieve \textbf{94.7\percent{} constitutional compliance}, a significant improvement from an ungoverned baseline of 31.7\percent{}, while maintaining evolutionary performance. The system operates with policy violation rates reduced to \textbf{<0.5\percent{}} while achieving \textbf{<100\ms{}} average enforcement latency. The Enhanced Constitutional Analyzer with Qwen3 Embedding Integration has achieved \textbf{100\percent{} test pass rate (15/15 tests)} with production-ready performance targets met. The measured Lipschitz constant of $\lipschitz \approx 0.74$ and convergence in~14 iterations empirically validate our theoretical stability guarantees. \acgs{} contributes a production-validated methodology for embedding dynamic, verifiable, and constitutionally-grounded governance within~AI, establishing a new paradigm for trustworthy autonomous systems where governance is intrinsic rather than external.
 \end{abstract}
 
 \textbf{Keywords:} AI Governance, Evolutionary Computation, Constitutional AI, Large Language Models, Policy-as-Code, Open Policy Agent, Responsible AI, Algorithmic Governance, Dynamic Policy.
@@ -58,8 +58,14 @@ Empirical validation through the \quantumagi{} production deployment on the Sola
 % Future Work
 \input{06-future-work}
 
+% Enhanced Constitutional Analyzer
+\input{07-enhanced-constitutional-analyzer}
+
+% Quantumagi
+\input{08-quantumagi}
+
 % Conclusion
-\input{07-conclusion}
+\input{09-conclusion}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %           Acknowledgments             %

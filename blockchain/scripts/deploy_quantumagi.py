@@ -35,7 +35,7 @@ class QuantumagiDeployer:
             "deployer_keypair_path": "~/.config/solana/id.json",
             "constitution_document_url": "https://arweave.net/constitution_hash",
             "gs_engine_config": {
-                "llm_model": "gpt-4",
+                "llm_model": "qwen/qwen3-32b",
                 "validation_threshold": 0.85,
                 "max_policy_length": 1000,
             },
