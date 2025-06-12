@@ -144,8 +144,8 @@ class PhaseA3MultiModelConsensus:
 
         # Model configuration
         self.models = {
-            "gpt-4": {
-                "provider": "openai",
+            "qwen/qwen3-32b": {
+                "provider": "groq",
                 "weight": 1.0,
                 "role": "primary",
                 "circuit_breaker": CircuitBreaker(),

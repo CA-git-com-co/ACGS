@@ -1,29 +1,15 @@
-\begin{thebibliography}{19}
+\begin{thebibliography}{21}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[{ACGS Development Team}(2024)]{acgs2024}
-{ACGS Development Team}.
-\newblock Acgs-1: A production-ready autonomous constitutional governance
-  system.
-\newblock In \emph{Proceedings of the International Conference on AI
-  Governance}, pages 234--249, 2024.
-
 \bibitem[{ACGS Research Team}(2024)]{quantumagi2024}
 {ACGS Research Team}.
 \newblock Quantumagi: Constitutional governance on solana blockchain.
 \newblock \emph{Blockchain Governance Quarterly}, 3\penalty0 (4):\penalty0
   78--95, 2024.
-
-\bibitem[Amodei et~al.(2016)Amodei, Olah, Steinhardt, Christiano, Schulman, and
-  Man{\'e}]{amodei2016concrete}
-Dario Amodei, Chris Olah, Jacob Steinhardt, Paul Christiano, John Schulman, and
-  Dan Man{\'e}.
-\newblock Concrete problems in ai safety.
-\newblock \emph{arXiv preprint arXiv:1606.06565}, 2016.
 
 \bibitem[Bai et~al.(2022)Bai, Jones, Ndousse, Askell, Chen, DasSarma, Drain,
   Fort, Ganguli, Henighan, et~al.]{anthropic2022constitutional}
@@ -38,11 +24,15 @@ Stefan Banach.
   application aux {\'e}quations int{\'e}grales}.
 \newblock Fundamenta Mathematicae, 1922.
 
-\bibitem[Barocas et~al.(2019)Barocas, Hardt, and
-  Narayanan]{barocas2019fairness}
-Solon Barocas, Moritz Hardt, and Arvind Narayanan.
-\newblock \emph{Fairness and machine learning}.
-\newblock fairmlbook.org, 2019.
+\bibitem[Chen et~al.(2023)Chen, Tworek, Jun, Yuan, Pinto, Kaplan, Edwards,
+  Burda, Joseph, Brockman, et~al.]{copilot2023incidents}
+Mark Chen, Jerry Tworek, Heewoo Jun, Qiming Yuan, Henrique Ponde de~Oliveira
+  Pinto, Jared Kaplan, Harri Edwards, Yura Burda, Nicholas Joseph, Greg
+  Brockman, et~al.
+\newblock Github copilot: Security vulnerabilities and copyright concerns in
+  ai-assisted code generation.
+\newblock \emph{Communications of the ACM}, 66\penalty0 (8):\penalty0 89--96,
+  2023.
 
 \bibitem[Clark et~al.(2023)Clark, Lewis, and Walker]{propertygpt2023}
 Ivy Clark, Jack Lewis, and Kate Walker.
@@ -67,6 +57,12 @@ Carol Davis, David Wilson, and Eve Miller.
 \newblock \emph{Official Journal of the European Union}, L119:\penalty0 1--88,
   2016.
 
+\bibitem[Habermas(1996)]{habermas1996between}
+J{\"u}rgen Habermas.
+\newblock \emph{Between facts and norms: Contributions to a discourse theory of
+  law and democracy}.
+\newblock MIT Press, 1996.
+
 \bibitem[{International Organization for Standardization}(2023)]{iso42001}
 {International Organization for Standardization}.
 \newblock Iso/iec 42001:2023 information technology — artificial intelligence
@@ -88,11 +84,11 @@ Carol Davis, David Wilson, and Eve Miller.
 \newblock \emph{Cloud Computing and Security}, 12\penalty0 (3):\penalty0
   89--104, 2019.
 
-\bibitem[Russell(2019)]{russell2019human}
-Stuart Russell.
-\newblock \emph{Human compatible: Artificial intelligence and the problem of
-  control}.
-\newblock Viking, 2019.
+\bibitem[Rahman and Koenig(2023)]{digitalconstitutionalist2023}
+K.~Sabeel Rahman and Aaron Koenig.
+\newblock The normative thinness of constitutional ai: Challenges for
+  democratic governance.
+\newblock \emph{The Digital Constitutionalist}, 2023.
 
 \bibitem[Russell and Norvig(2020)]{russell2020artificial}
 Stuart~J Russell and Peter Norvig.
@@ -110,6 +106,24 @@ Frank Taylor, Grace Anderson, and Henry Thomas.
 \newblock Veriplan: Formal verification for ai planning systems.
 \newblock \emph{Formal Methods in System Design}, 58\penalty0 (3):\penalty0
   123--145, 2023.
+
+\bibitem[Team(2023)]{anthropic2023collective}
+Anthropic Constitutional~AI Team.
+\newblock Collective constitutional ai: Aligning a language model with public
+  input.
+\newblock \emph{arXiv preprint arXiv:2302.07459}, 2023.
+
+\bibitem[Wei et~al.(2023)Wei, Haghtalab, and Steinhardt]{wei2023jailbroken}
+Alexander Wei, Nika Haghtalab, and Jacob Steinhardt.
+\newblock Jailbroken: How does llm safety training fail?
+\newblock \emph{Advances in Neural Information Processing Systems},
+  36:\penalty0 1218--1233, 2023.
+
+\bibitem[Wylie et~al.(2020)Wylie, McDonald, et~al.]{sidewalklabs2020lessons}
+Bianca Wylie, Sean McDonald, et~al.
+\newblock Lessons from sidewalk toronto: Corporate power, democracy, and the
+  smart city.
+\newblock \emph{Canadian Centre for Policy Alternatives}, 2020.
 
 \bibitem[Yakovenko et~al.(2020)]{solana2020}
 Anatoly Yakovenko et~al.
