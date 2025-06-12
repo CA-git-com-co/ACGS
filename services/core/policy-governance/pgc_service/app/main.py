@@ -9,6 +9,30 @@ from fastapi import FastAPI, HTTPException
 # Local implementations to avoid shared module dependencies
 from fastapi.middleware.cors import CORSMiddleware
 
+# ACGS-PGP Metrics Integration
+try:
+    from app.monitoring.acgs_pgp_metrics import initialize_acgs_pgp_monitoring, metrics_collector
+    ACGS_PGP_MONITORING_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: ACGS-PGP monitoring not available: {e}")
+    ACGS_PGP_MONITORING_AVAILABLE = False
+
+    # Mock metrics collector
+    class MockMetricsCollector:
+        async def record_enforcement_event(self, latency_ms, policy_count, compliance_result, context=None):
+            pass
+        async def record_policy_synthesis(self, principle_id, synthesis_success, constitutional_state, synthesis_time_ms):
+            pass
+        async def record_adversarial_event(self, attack_type, detected, severity, defense_mechanism=None):
+            pass
+        def get_paper_validation_report(self):
+            return {"status": "monitoring_unavailable"}
+
+    metrics_collector = MockMetricsCollector()
+
+    async def initialize_acgs_pgp_monitoring():
+        pass
+
 
 def add_security_middleware(app: FastAPI):
     """Local implementation of security middleware"""
@@ -411,6 +435,35 @@ class EnforcementEngine:
                 self.enforcement_metrics["violations_detected"] += 1
 
             processing_time = (time.time() - start_time) * 1000
+
+            # ACGS-PGP Metrics Collection
+            if ACGS_PGP_MONITORING_AVAILABLE:
+                # Record enforcement event for paper validation
+                policy_count = len(context.get("active_policies", [policy_id]))
+                compliance_result = violation_result.get("violations_found", 0) == 0
+
+                await metrics_collector.record_enforcement_event(
+                    latency_ms=processing_time,
+                    policy_count=policy_count,
+                    compliance_result=compliance_result,
+                    context={
+                        "policy_id": policy_id,
+                        "severity": severity,
+                        "enforcement_decision": enforcement_action["decision"],
+                        "confidence": enforcement_action["confidence"]
+                    }
+                )
+
+                # Record adversarial events if detected
+                if violation_result.get("violations_found", 0) > 0:
+                    for violation in violation_result.get("violations", []):
+                        if "manipulation" in violation.get("type", "").lower():
+                            await metrics_collector.record_adversarial_event(
+                                attack_type=violation["type"],
+                                detected=True,
+                                severity=violation["severity"],
+                                defense_mechanism="policy_enforcement"
+                            )
 
             return {
                 "policy_id": policy_id,
@@ -1153,6 +1206,17 @@ async def on_startup():
             print(f"PGC Service: Policy Manager initialization failed: {e}")
     else:
         print("PGC Service: Using mock Policy Manager.")
+
+    # Initialize ACGS-PGP monitoring
+    if ACGS_PGP_MONITORING_AVAILABLE:
+        try:
+            await initialize_acgs_pgp_monitoring()
+            print("PGC Service: ACGS-PGP monitoring initialized successfully")
+        except Exception as e:
+            print(f"PGC Service: Failed to initialize ACGS-PGP monitoring: {e}")
+    else:
+        print("PGC Service: ACGS-PGP monitoring not available")
+
     # Other startup tasks if any
 
 
@@ -1321,6 +1385,54 @@ async def health_check():
         health_status["error"] = str(e)
 
     return health_status
+
+
+@app.get("/acgs-pgp/validation-report")
+async def get_acgs_pgp_validation_report():
+    """
+    Get ACGS-PGP paper validation report with empirical data
+
+    Returns real performance metrics to validate theoretical claims
+    in the ACGS-PGP research paper.
+    """
+    try:
+        if ACGS_PGP_MONITORING_AVAILABLE:
+            report = metrics_collector.get_paper_validation_report()
+
+            # Add service-specific context
+            report["service_info"] = {
+                "service_name": "pgc-service",
+                "version": "3.0.0",
+                "deployment": "ACGS-1 Production",
+                "quantumagi_integration": True,
+                "solana_devnet_active": True
+            }
+
+            # Add paper citation info
+            report["paper_reference"] = {
+                "title": "ACGS-PGP: Autonomous Constitutional Governance System with PGP Assurance",
+                "framework": "AlphaEvolve-ACGS",
+                "deployment": "Quantumagi on Solana Devnet",
+                "constitution_hash": "cdd01ef066bc6cf2"
+            }
+
+            return report
+        else:
+            return {
+                "status": "monitoring_unavailable",
+                "message": "ACGS-PGP monitoring not initialized",
+                "service_info": {
+                    "service_name": "pgc-service",
+                    "version": "3.0.0"
+                }
+            }
+    except Exception as e:
+        logger.error(f"Error generating ACGS-PGP validation report: {e}")
+        return {
+            "status": "error",
+            "message": str(e),
+            "timestamp": time.time()
+        }
 
 
 # Enhanced Governance API Endpoints

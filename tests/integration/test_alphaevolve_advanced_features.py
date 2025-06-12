@@ -48,7 +48,7 @@ sys.modules["shared.metrics"] = type(sys)("shared.metrics")
 sys.modules["shared.metrics"].get_metrics = get_metrics
 
 try:
-    from services.core.constitutional_ai.app.services.collective_constitutional_ai import (
+    from services.core.constitutional_ai.ac_service.app.services.collective_constitutional_ai import (
         CollectiveConstitutionalAI,
         PolisConversation,
     )
@@ -57,6 +57,15 @@ try:
 except ImportError as e:
     print(f"Warning: Could not import CollectiveConstitutionalAI: {e}")
     COLLECTIVE_AI_AVAILABLE = False
+
+    # Mock CollectiveConstitutionalAI for testing
+    class CollectiveConstitutionalAI:
+        def __init__(self):
+            pass
+
+    class PolisConversation:
+        def __init__(self):
+            pass
 
 # Mock classes for testing (these would be implemented in actual advanced features)
 from dataclasses import dataclass
