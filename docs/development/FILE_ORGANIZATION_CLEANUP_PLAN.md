@@ -7,16 +7,16 @@ This document outlines the comprehensive file organization and cleanup plan for 
 
 ### Identified Duplicate Files to Remove:
 1. **AC Service**:
-   - `backend/ac_service/requirements_new.txt` (duplicate of requirements.txt)
+   - `services/core/constitutional-ai/ac_service/requirements_new.txt` (duplicate of requirements.txt)
    
 2. **FV Service**:
-   - `backend/fv_service/requirements_base.txt` (consolidate into requirements.txt)
+   - `services/core/formal-verification/fv_service/requirements_base.txt` (consolidate into requirements.txt)
    
 3. **GS Service**:
-   - `backend/gs_service/requirements_new.txt` (duplicate of requirements.txt)
+   - `services/core/governance-synthesis/gs_service/requirements_new.txt` (duplicate of requirements.txt)
    
 4. **Auth Service**:
-   - `backend/auth_service/requirements_simple.txt` (if exists, consolidate)
+   - `services/core/auth/auth_service/requirements_simple.txt` (if exists, consolidate)
 
 ### Actions:
 - Remove duplicate requirements files
