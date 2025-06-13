@@ -4,7 +4,7 @@
 
 use anchor_lang::prelude::*;
 
-declare_id!("4rEgetuUsuf3PEDcPCpKH4ndjbfnCReRbmdiEKMkMUxo");
+declare_id!("7ZVxgkky5V12gvpfDh174nsDT8vfT7vQhN77C6csamsw");
 
 #[program]
 pub mod logging {

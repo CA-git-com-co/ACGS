@@ -20,6 +20,8 @@ describe("Transaction Optimization", () => {
   let governanceBump: number;
 
   before(async () => {
+    // Test isolation - unique governance per test suite
+    const testSuiteId = "transaction_optimization_" + Date.now();
     authority = anchor.web3.Keypair.generate();
 
     // Airdrop SOL for testing
@@ -32,7 +34,7 @@ describe("Transaction Optimization", () => {
 
     // Derive governance PDA
     [governancePDA, governanceBump] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("governance")],
+      [Buffer.from("governance_transaction_optimization_" + Date.now())],
       program.programId
     );
 

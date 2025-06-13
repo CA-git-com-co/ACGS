@@ -21,7 +21,7 @@ describe("Quantumagi Core - Enhanced Test Suite", () => {
     .digest();
 
   const [governancePDA] = anchor.web3.PublicKey.findProgramAddressSync(
-    [Buffer.from("governance")],
+    [Buffer.from("governance"), Buffer.from("quantuma")],
     program.programId
   );
 

@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("sQyjPfFt4wueY6w2QF9iL1HJ3ZkQFoM3dq1MSaC5ztC");
 
 /// Maximum number of constitutional principles
 const MAX_PRINCIPLES: usize = 100;

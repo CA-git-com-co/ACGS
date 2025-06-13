@@ -12,9 +12,9 @@ describe("Quantumagi Core - Corrected Test Suite", () => {
   const program = anchor.workspace.QuantumagiCore as Program<QuantumagiCore>;
   const authority = provider.wallet as anchor.Wallet;
 
-  // Correct PDAs
+  // Correct PDAs - Use simple governance seed to avoid max length error
   const [governancePDA] = anchor.web3.PublicKey.findProgramAddressSync(
-    [Buffer.from("governance")],
+    [Buffer.from("governance"), Buffer.from("quantuma")],
     program.programId
   );
 
