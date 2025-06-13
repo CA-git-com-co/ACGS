@@ -1,230 +1,129 @@
-# AlphaEvolve-ACGS Integration System - Product Requirements Document
+# ACGS-1 Phase 2: Enhanced Policy Synthesis Engine Development - Product Requirements Document
 
-## Project Overview
+## Executive Summary
 
-The AlphaEvolve-ACGS Integration System is a comprehensive research and development project that enhances the AI Compliance Governance System (ACGS-PGP) with evolutionary computation capabilities. The system addresses critical issues identified in the research paper review and implements advanced features for constitutional AI governance.
+This PRD outlines the remaining implementation tasks for Phase 2 of the ACGS-1 Enhanced Policy Synthesis Engine development. Building upon the successfully completed Phase 1 implementation, Phase 2 focuses on advanced performance optimization, enhanced multi-model integration, production monitoring, security hardening, and comprehensive documentation.
 
-## Current Status
+## Project Context
 
-### ✅ Completed Components
-- Import dependency fixes (7/11 tests passing)
-- Lipschitz constant resolution framework
-- LLM reliability enhancements (partial)
-- Adversarial robustness testing framework
-- Proactive fair policy generation
-- Research paper build system (26-page PDF generation)
-- Mathematical error corrections
-- Bibliography cleanup and reference consistency
+**Current State**: Phase 1 completed with enhanced policy synthesis capabilities, multi-model consensus, constitutional prompting, and adversarial defenses.
 
-### ⚠️ Remaining Issues
-- 4 failing integration tests due to business logic issues
-- Constitutional Council schema mismatches
-- Bias mitigation mock implementation needs real logic
-- Cross-service configuration parameter issues
-- PDF metadata completion for academic compliance
+**Infrastructure Status**: Redis caching, HAProxy load balancing, Prometheus/Grafana monitoring, and PostgreSQL connection pooling are implemented but require optimization for >1000 concurrent users.
 
-## Product Requirements
+**Security Status**: Basic security hardening completed (88.3/100 security score) with remaining GitHub security alerts and MD5 usage requiring remediation.
 
-### 1. Integration Test Completion
-**Priority**: High
-**Description**: Fix the remaining 4 failing integration tests to achieve 100% test success rate
-**Acceptance Criteria**:
-- All 11 AlphaEvolve-ACGS integration tests pass
-- Bias mitigation test implements actual bias detection logic
-- Constitutional Council tests work with correct schema
-- Cross-service integration test has proper configuration
-- Test coverage >95% for all enhanced components
+## Phase 2 Objectives
 
-### 2. Constitutional Council Schema Alignment
-**Priority**: High
-**Description**: Align Constitutional Council scalability framework with actual AC service schemas
-**Acceptance Criteria**:
-- Amendment processing works with ACAmendmentCreate schema
-- Rapid co-evolution handling processes amendments correctly
-- Scalability metrics calculation works with proper database mocking
-- Voting mechanisms integrate with existing AC service endpoints
-- Democratic governance workflows are fully functional
+### ✅ Priority 1: Advanced Performance Optimization (COMPLETED)
+- Enhanced Redis multi-tier caching (L1 + L2) ✅
+- Optimized PostgreSQL connection pooling ✅
+- Performance validation script created ✅
+- Target: >1000 concurrent users, <500ms response times, >99.9% availability
 
-### 3. LLM Reliability Enhancement Completion
-**Priority**: High
-**Description**: Complete the LLM reliability framework for >99.9% reliability target
-**Acceptance Criteria**:
-- Multi-model validation achieves consensus-based reliability
-- Bias detection and mitigation produces different outputs for biased inputs
-- Semantic faithfulness validation works with real principle-to-policy translation
-- Ensemble voting mechanisms reduce individual model failures
-- Reliability metrics tracking and reporting system
+## Remaining Phase 2 Requirements
 
-### 4. Research Paper Finalization
-**Priority**: Medium
-**Description**: Complete the research paper for academic submission
-**Acceptance Criteria**:
-- PDF metadata fully configured (title, author, subject)
-- All 3 remaining LaTeX errors resolved
-- Warning count reduced from 60 to <10
-- All figures properly generated and integrated
-- Bibliography fully validated and cross-referenced
-- Academic compliance checklist 100% complete
+### Priority 2: Enhanced Multi-Model Integration
+**Objective**: Expand multi-model consensus engine to include additional LLM providers for improved constitutional analysis accuracy.
 
-### 5. Production Deployment Readiness
-**Priority**: Medium
-**Description**: Prepare the enhanced system for production deployment
-**Acceptance Criteria**:
-- All microservices (AC, GS, FV, Integrity, PGC, Auth) enhanced with AlphaEvolve features
-- Docker containers updated with new dependencies
-- Kubernetes deployment manifests include enhanced components
-- Monitoring and alerting for new AlphaEvolve metrics
-- Performance benchmarks meet <200ms response time targets
-- Security hardening for new components
+**Requirements**:
+- Add DeepSeek Chat v3, DeepSeek R1 via OpenRouter, and Qwen3-235B to consensus engine
+- Update services/shared/multi_model_manager.py with new model configurations
+- Modify services/shared/langgraph_config.py for additional LLM providers with API key management
+- Implement 4+ model consensus capability with weighted voting
+- Achieve <2s multi-model response times and >95% consensus accuracy
+- Maintain constitutional hash cdd01ef066bc6cf2 validation throughout
 
-### 6. Advanced Algorithm Implementation
-**Priority**: Medium
-**Description**: Implement the advanced algorithms described in methodology optimization
-**Acceptance Criteria**:
-- Multi-Armed Bandit prompt optimization system
-- Federated evaluation framework for cross-platform validation
-- Parallel validation pipeline with 60-70% latency reduction
-- Incremental policy compilation using OPA partial evaluation
-- Intelligent conflict resolution with automated patch suggestions
-- Active human-in-the-loop sampling for uncertainty-based consultation
+### Priority 3: Production Monitoring & Observability
+**Objective**: Deploy comprehensive monitoring infrastructure for real-time system health and performance tracking.
 
-### 7. Comprehensive Testing Framework
-**Priority**: Medium
-**Description**: Implement comprehensive testing beyond current integration tests
-**Acceptance Criteria**:
-- Adversarial testing framework for robustness evaluation
-- Cross-domain principle portability testing
-- Longitudinal stability monitoring over extended periods
-- Performance regression testing suite
-- Security penetration testing for new components
-- Load testing for 100+ concurrent users
+**Requirements**:
+- Deploy Prometheus metrics collection for all 7 core services (Auth:8000, AC:8001, Integrity:8002, FV:8003, GS:8004, PGC:8005, EC:8006)
+- Configure Grafana dashboards for policy synthesis success rates, response times, and system health
+- Implement custom constitutional compliance metrics and governance workflow monitoring
+- Set up automated alerting for performance degradation and constitutional compliance failures
+- Target: <1% monitoring overhead, real-time dashboard updates, automated SLA breach alerts
+- Integrate with existing HAProxy load balancer monitoring
 
-### 8. Documentation and Compliance
-**Priority**: Low
-**Description**: Complete documentation for all enhanced components
-**Acceptance Criteria**:
-- API documentation for all new endpoints
-- Deployment guides updated with AlphaEvolve components
-- Security configuration documentation
-- Troubleshooting guides for new features
-- Developer onboarding documentation
-- User guides for Constitutional Council features
+### Priority 4: Security Hardening
+**Objective**: Achieve production-grade security posture with comprehensive vulnerability remediation.
 
-### 9. Community and Collaboration Features
-**Priority**: Low
-**Description**: Implement features for collaborative governance and community contribution
-**Acceptance Criteria**:
-- Public consultation mechanisms for constitutional amendments
-- Stakeholder voting interfaces
-- Community contribution framework
-- Real-time collaboration features for distributed governance
-- Transparency reporting and audit trails
-- Democratic decision-making workflows
+**Requirements**:
+- Audit and resolve remaining GitHub security alerts through dependency updates
+- Replace all remaining MD5 cryptographic functions with SHA-256 throughout codebase
+- Implement security middleware for API endpoints with rate limiting and input validation
+- Deploy automated security scanning with Bandit, safety, and pip-audit integration
+- Target: >90% security score, zero HIGH/CRITICAL vulnerabilities, SHA-256 compliance
+- Maintain compatibility with existing Quantumagi Solana devnet deployment
 
-### 10. Future Research Infrastructure
-**Priority**: Low
-**Description**: Establish infrastructure for ongoing research and development
-**Acceptance Criteria**:
-- Automated paper generation pipelines for continuous research
-- Standardized evaluation protocols for constitutional AI governance
-- Ecosystem compatibility tools for broader adoption
-- Research data collection and analysis frameworks
-- Reproducibility infrastructure for research validation
-- Continuous integration for research workflows
+### Priority 5: Comprehensive Documentation
+**Objective**: Create complete documentation coverage for new features and deployment procedures.
 
-## Technical Specifications
+**Requirements**:
+- Update API specifications in OpenAPI format for enhanced synthesis endpoints
+- Create user guides for multi-model consensus features and monitoring dashboards
+- Document performance optimization configurations and deployment procedures
+- Generate troubleshooting guides for common issues and error resolution
+- Target: Complete API coverage, user guide completeness, deployment runbook accuracy
+- Include integration examples and best practices documentation
 
-### Architecture Requirements
-- Microservices-based architecture maintained
-- FastAPI backends with async/await patterns
-- React frontend with enhanced Constitutional Council interfaces
-- PostgreSQL database with Alembic migrations
-- Docker/Kubernetes deployment with monitoring
+## Technical Constraints
 
-### Performance Requirements
-- API response times <200ms for 95th percentile
-- System uptime >99.5%
-- Support for 100+ concurrent users
-- Database query optimization for complex governance operations
-- Real-time constitutional enforcement with sub-50ms latency
+**Preservation Requirements**:
+- Maintain 100% compatibility with existing Quantumagi Solana devnet deployment functionality
+- Preserve constitutional hash cdd01ef066bc6cf2 validation throughout all systems
+- Ensure all 5 governance workflows remain operational (Policy Creation, Constitutional Compliance, Policy Enforcement, WINA Oversight, Audit/Transparency)
+- Maintain <0.01 SOL governance costs for blockchain operations
+- Preserve >80% test coverage across unit and integration tests
 
-### Security Requirements
-- RBAC with Admin/Policy Manager/Auditor roles
-- JWT authentication with CSRF protection
-- PGP cryptographic integrity for constitutional versions
-- Audit trails for all governance decisions
-- Rate limiting and input validation
+**Performance Targets**:
+- Support >1000 concurrent governance actions
+- Maintain <500ms response times for 95% of operations
+- Achieve >99.9% system availability
+- Ensure <2s multi-model consensus response times
+- Maintain >95% constitutional compliance accuracy
 
-### Integration Requirements
-- LLM integration (GPT-4) for policy synthesis
-- SMT solver integration (Z3) for formal verification
-- OPA integration for policy evaluation
-- Prometheus/Grafana monitoring integration
-- Cross-service communication with proper error handling
+**Security Requirements**:
+- Achieve >90% security score
+- Zero HIGH/CRITICAL vulnerabilities
+- Complete SHA-256 cryptographic compliance
+- Comprehensive input validation and rate limiting
+- Automated security scanning integration
 
-## Success Metrics
+## Implementation Methodology
 
-### Technical Metrics
-- 100% integration test pass rate
-- >95% code coverage for enhanced components
-- <200ms API response times
-- >99.5% system uptime
-- Zero critical security vulnerabilities
+**Approach**: Systematic execution with performance validation after each major change
+**Rollout**: Incremental implementation with rollback capability for production changes
+**Testing**: End-to-end testing after each priority objective completion
+**Monitoring**: Real-time progress tracking with specific metrics validation
+**Documentation**: Continuous documentation updates throughout implementation
 
-### Research Metrics
-- Successful academic paper submission
-- Research reproducibility score >90%
-- Community adoption metrics
-- Citation and reference tracking
-- Open source contribution metrics
+## Success Criteria
 
-### Business Metrics
-- Constitutional amendment processing efficiency
-- Democratic governance participation rates
-- Policy synthesis success rates (target: 68-93%)
-- Conflict resolution automation rates
-- User satisfaction scores for governance interfaces
+**Completion Metrics**:
+- All 4 remaining priority objectives completed with measurable targets achieved
+- Zero regression in existing functionality (Quantumagi, governance workflows, constitutional compliance)
+- Performance benchmarks met or exceeded (>1000 concurrent users, <500ms response times, >99.9% availability)
+- Security posture improved (>90% security score, zero critical vulnerabilities)
+- Complete documentation coverage for new features and configurations
 
-## Timeline and Milestones
+**Validation Requirements**:
+- Comprehensive performance testing with load simulation
+- Security scanning with automated vulnerability assessment
+- End-to-end governance workflow validation
+- Multi-model consensus accuracy measurement
+- Documentation completeness review and user testing
 
-### Phase 1 (Immediate - 1-2 weeks)
-- Fix remaining 4 integration tests
-- Complete Constitutional Council schema alignment
-- Finalize LLM reliability framework
-- Resolve research paper LaTeX errors
+## Dependencies and Integration Points
 
-### Phase 2 (Short-term - 1-2 months)
-- Implement advanced algorithms
-- Complete production deployment readiness
-- Establish comprehensive testing framework
-- Finalize documentation and compliance
+**External Dependencies**:
+- OpenRouter API access for additional LLM models
+- Prometheus/Grafana monitoring infrastructure
+- GitHub security scanning and dependency management
+- Redis and PostgreSQL performance optimization
 
-### Phase 3 (Long-term - 3-6 months)
-- Deploy community and collaboration features
-- Establish future research infrastructure
-- Achieve full academic publication
-- Scale to production usage
-
-## Risk Assessment
-
-### Technical Risks
-- Schema mismatches between services
-- Performance degradation with new features
-- Integration complexity with existing systems
-- Dependency conflicts and version management
-
-### Research Risks
-- Academic review and publication timeline
-- Reproducibility challenges
-- Peer review feedback incorporation
-- Research validation requirements
-
-### Business Risks
-- User adoption of new governance features
-- Regulatory compliance requirements
-- Community engagement and participation
-- Long-term maintenance and support
-
-## Conclusion
-
-This PRD outlines a comprehensive roadmap for completing the AlphaEvolve-ACGS Integration System. The focus is on achieving technical excellence, research rigor, and practical deployment readiness while maintaining the democratic governance principles that define the system's core mission.
+**Internal Integration**:
+- ACGS-1 core services (7 services on ports 8000-8006)
+- Quantumagi Solana devnet deployment
+- Constitutional governance workflows
+- Multi-model manager and LangGraph configuration
+- Advanced caching and database connection pooling

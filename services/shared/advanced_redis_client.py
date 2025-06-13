@@ -11,7 +11,7 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
+from typing import Any, Callable, Dict, List, Optional, TypeVar, Union, Tuple
 
 import redis.asyncio as redis
 import structlog
@@ -22,7 +22,7 @@ logger = structlog.get_logger(__name__)
 
 T = TypeVar("T")
 
-# Cache TTL policies for different data types
+# Enhanced Cache TTL policies for Phase 2 performance optimization
 CACHE_TTL_POLICIES = {
     "policy_decisions": 300,  # 5 minutes
     "governance_rules": 3600,  # 1 hour
@@ -33,6 +33,14 @@ CACHE_TTL_POLICIES = {
     "synthesis_results": 1200,  # 20 minutes
     "auth_tokens": 3600,  # 1 hour
     "workflow_state": 7200,  # 2 hours
+    # Phase 2 enhancements for >1000 concurrent users
+    "multi_model_consensus": 1800,  # 30 minutes - longer for expensive operations
+    "constitutional_analysis": 2400,  # 40 minutes - stable constitutional data
+    "load_balancer_metrics": 60,  # 1 minute - frequent updates needed
+    "performance_metrics": 120,  # 2 minutes - monitoring data
+    "security_validations": 600,  # 10 minutes - security checks
+    "user_preferences": 3600,  # 1 hour - user settings
+    "system_health": 30,  # 30 seconds - critical health data
 }
 
 
@@ -62,7 +70,7 @@ class CacheConfig:
     retry_on_timeout: bool = True
     health_check_interval: int = 30
     enable_sentinel: bool = False
-    sentinel_hosts: List[tuple] = None
+    sentinel_hosts: Optional[List[Tuple[str, int]]] = None
     master_name: str = "acgs-master"
 
 

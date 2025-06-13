@@ -503,6 +503,8 @@ class ACGSConfig:
                 "gemini_2_5_flash": "gemini-2.5-flash-preview-04-17",
                 "deepseek_r1": "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
                 "deepseek_r1_openrouter": "deepseek/deepseek-chat-v3-0324",
+                "cerebras_llama_scout": "llama-4-scout-17b-16e-instruct",
+                "cerebras_qwen3": "qwen-3-32b",
             },
             # Model settings
             "llm_settings": {
@@ -520,6 +522,8 @@ class ACGSConfig:
                 == "true",
                 "enable_deepseek_r1": os.getenv("ENABLE_DEEPSEEK_R1", "true").lower()
                 == "true",
+                "enable_cerebras": os.getenv("ENABLE_CEREBRAS", "true").lower()
+                == "true",
                 "enable_bias_detection_llm": os.getenv(
                     "ENABLE_BIAS_DETECTION_LLM", "true"
                 ).lower()
@@ -535,6 +539,7 @@ class ACGSConfig:
                 "openrouter": os.getenv("OPENROUTER_API_KEY"),
                 "mistral": os.getenv("MISTRAL_API_KEY"),
                 "xai": os.getenv("XAI_API_KEY"),
+                "cerebras": os.getenv("CEREBRAS_API_KEY"),
             },
             # External AI service endpoints
             "ai_endpoints": {
@@ -543,6 +548,7 @@ class ACGSConfig:
                     "https://api-inference.huggingface.co/models",
                 ),
                 "openrouter": "https://openrouter.ai/api/v1",
+                "cerebras": "https://api.cerebras.ai/v1",
             },
             # Monitoring and logging
             "log_level": os.getenv("LOG_LEVEL", "INFO"),
@@ -748,6 +754,22 @@ class ACGSConfig:
                     "maxTokens": 8192,
                     "temperature": 0.2,
                     "enabled": self.is_model_enabled("enable_deepseek_r1"),
+                },
+                "cerebras_llama_scout": {
+                    "provider": "cerebras",
+                    "modelId": self.get_ai_model("cerebras_llama_scout"),
+                    "maxTokens": 8192,
+                    "temperature": 0.1,
+                    "enabled": self.is_model_enabled("enable_cerebras"),
+                    "endpoint": self.get_ai_endpoint("cerebras"),
+                },
+                "cerebras_qwen3": {
+                    "provider": "cerebras",
+                    "modelId": self.get_ai_model("cerebras_qwen3"),
+                    "maxTokens": 8192,
+                    "temperature": 0.1,
+                    "enabled": self.is_model_enabled("enable_cerebras"),
+                    "endpoint": self.get_ai_endpoint("cerebras"),
                 },
             },
             "api_keys": {
