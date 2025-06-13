@@ -1,0 +1,213 @@
+{
+  "timestamp": "2025-06-13T22:01:52.889107",
+  "project_root": "/mnt/persist/workspace",
+  "directory_structure": {
+    "blockchain": {
+      "description": "Solana/Anchor Programs",
+      "subdirectories": [
+        "programs",
+        "client",
+        "tests",
+        "scripts",
+        "quantumagi-deployment"
+      ],
+      "purpose": "On-chain governance enforcement"
+    },
+    "services": {
+      "description": "Backend Microservices",
+      "subdirectories": {
+        "core": [
+          "constitutional-ai",
+          "governance-synthesis",
+          "policy-governance",
+          "formal-verification"
+        ],
+        "platform": [
+          "authentication",
+          "integrity",
+          "workflow"
+        ],
+        "research": [
+          "federated-evaluation",
+          "research-platform"
+        ],
+        "shared": [
+          "libraries",
+          "utilities"
+        ]
+      },
+      "purpose": "Off-chain governance services"
+    },
+    "applications": {
+      "description": "Frontend Applications",
+      "subdirectories": [
+        "governance-dashboard",
+        "constitutional-council",
+        "public-consultation",
+        "admin-panel"
+      ],
+      "purpose": "User interfaces for governance participation"
+    },
+    "integrations": {
+      "description": "Integration Layer",
+      "subdirectories": [
+        "quantumagi-bridge",
+        "alphaevolve-engine",
+        "data-flywheel"
+      ],
+      "purpose": "Bridges between blockchain and off-chain components"
+    },
+    "infrastructure": {
+      "description": "Infrastructure & Operations",
+      "subdirectories": [
+        "docker",
+        "kubernetes",
+        "monitoring",
+        "load-balancer"
+      ],
+      "purpose": "Deployment and operational infrastructure"
+    }
+  },
+  "service_ports": {
+    "8000": {
+      "service": "Authentication Service",
+      "location": "services/platform/authentication/",
+      "purpose": "User auth & access control"
+    },
+    "8001": {
+      "service": "Constitutional AI Service",
+      "location": "services/core/constitutional-ai/",
+      "purpose": "Constitutional principles & compliance"
+    },
+    "8002": {
+      "service": "Integrity Service",
+      "location": "services/platform/integrity/",
+      "purpose": "Data integrity & audit trails"
+    },
+    "8003": {
+      "service": "Formal Verification Service",
+      "location": "services/core/formal-verification/",
+      "purpose": "Mathematical policy validation"
+    },
+    "8004": {
+      "service": "Governance Synthesis Service",
+      "location": "services/core/governance-synthesis/",
+      "purpose": "Policy synthesis & management"
+    },
+    "8005": {
+      "service": "Policy Governance Service",
+      "location": "services/core/policy-governance/",
+      "purpose": "Real-time policy enforcement (PGC)"
+    },
+    "8006": {
+      "service": "Evolutionary Computation Service",
+      "location": "services/core/evolutionary-computation/",
+      "purpose": "WINA optimization & oversight"
+    }
+  },
+  "path_updates": {
+    "src/backend/ac_service/": "services/core/constitutional-ai/",
+    "src/backend/gs_service/": "services/core/governance-synthesis/",
+    "src/backend/pgc_service/": "services/core/policy-governance/",
+    "src/backend/fv_service/": "services/core/formal-verification/",
+    "src/backend/auth_service/": "services/platform/authentication/",
+    "src/backend/integrity_service/": "services/platform/integrity/",
+    "src/backend/shared/": "services/shared/",
+    "src/frontend/": "applications/legacy-frontend/",
+    "quantumagi_core/": "blockchain/",
+    "src/alphaevolve_gs_engine/": "integrations/alphaevolve-engine/"
+  },
+  "technology_integrations": [
+    {
+      "name": "Solana Blockchain",
+      "version": "1.18.22+",
+      "purpose": "On-chain governance enforcement",
+      "location": "blockchain/"
+    },
+    {
+      "name": "Anchor Framework",
+      "version": "0.29.0+",
+      "purpose": "Smart contract development",
+      "location": "blockchain/programs/"
+    },
+    {
+      "name": "Quantumagi Core",
+      "version": "Production",
+      "purpose": "Constitutional governance on-chain",
+      "location": "blockchain/programs/quantumagi-core/"
+    },
+    {
+      "name": "NVIDIA Data Flywheel",
+      "version": "Latest",
+      "purpose": "AI model optimization",
+      "location": "integrations/data-flywheel/"
+    },
+    {
+      "name": "AlphaEvolve Engine",
+      "version": "Latest",
+      "purpose": "Enhanced governance synthesis",
+      "location": "integrations/alphaevolve-engine/"
+    }
+  ],
+  "security_updates": [
+    "Zero critical vulnerabilities via cargo audit --deny warnings",
+    "Enterprise-grade testing standards with >80% coverage",
+    "Formal verification compliance per ACGS-1 governance specialist protocol v2.0",
+    "Multi-signature governance for constitutional changes",
+    "Hardware security modules for cryptographic key protection",
+    "Automated secret scanning with 4-tool validation",
+    "SARIF integration for security findings",
+    "Custom ACGS rules for constitutional governance patterns"
+  ],
+  "files_requiring_review": [
+    {
+      "file": "docker-compose.yml",
+      "reason": "Service build contexts may need updating",
+      "priority": "Medium"
+    },
+    {
+      "file": ".github/workflows/*.yml",
+      "reason": "CI/CD paths may need updating",
+      "priority": "High"
+    },
+    {
+      "file": "requirements.txt",
+      "reason": "Dependencies may need version updates",
+      "priority": "Low"
+    },
+    {
+      "file": "blockchain/Anchor.toml",
+      "reason": "Program configurations should be verified",
+      "priority": "Medium"
+    },
+    {
+      "file": "service_registry_config.json",
+      "reason": "Service registry may need port updates",
+      "priority": "High"
+    }
+  ],
+  "validation_steps": [
+    "Run documentation validation script",
+    "Verify all service README files are updated",
+    "Check API documentation completeness",
+    "Validate deployment guide accuracy",
+    "Test service startup with new paths",
+    "Verify blockchain program compilation",
+    "Check frontend application builds",
+    "Validate integration tests pass",
+    "Confirm monitoring and logging work",
+    "Test end-to-end governance workflows"
+  ],
+  "next_steps": [
+    "Complete documentation validation",
+    "Update CI/CD pipeline configurations",
+    "Test all service integrations",
+    "Validate blockchain deployment scripts",
+    "Update monitoring configurations",
+    "Review and update Docker configurations",
+    "Test production deployment procedures",
+    "Validate security configurations",
+    "Update team onboarding materials",
+    "Schedule team training on new structure"
+  ]
+}

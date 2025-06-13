@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class DocumentationUpdater:
-    def __init__(self, project_root: str = "/home/dislove/ACGS-1"):
+    def __init__(self, project_root: str = "/mnt/persist/workspace"):
         self.project_root = Path(project_root)
 
         # Path mappings for documentation updates
