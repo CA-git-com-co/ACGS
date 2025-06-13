@@ -11,7 +11,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # ACGS-PGP Metrics Integration
 try:
-    from app.monitoring.acgs_pgp_metrics import initialize_acgs_pgp_monitoring, metrics_collector
+    from app.monitoring.acgs_pgp_metrics import (
+        initialize_acgs_pgp_monitoring,
+        metrics_collector,
+    )
+
     ACGS_PGP_MONITORING_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: ACGS-PGP monitoring not available: {e}")
@@ -19,12 +23,25 @@ except ImportError as e:
 
     # Mock metrics collector
     class MockMetricsCollector:
-        async def record_enforcement_event(self, latency_ms, policy_count, compliance_result, context=None):
+        async def record_enforcement_event(
+            self, latency_ms, policy_count, compliance_result, context=None
+        ):
             pass
-        async def record_policy_synthesis(self, principle_id, synthesis_success, constitutional_state, synthesis_time_ms):
+
+        async def record_policy_synthesis(
+            self,
+            principle_id,
+            synthesis_success,
+            constitutional_state,
+            synthesis_time_ms,
+        ):
             pass
-        async def record_adversarial_event(self, attack_type, detected, severity, defense_mechanism=None):
+
+        async def record_adversarial_event(
+            self, attack_type, detected, severity, defense_mechanism=None
+        ):
             pass
+
         def get_paper_validation_report(self):
             return {"status": "monitoring_unavailable"}
 
@@ -117,9 +134,7 @@ except ImportError as e:
     enforcement_router = APIRouter()
 
 try:
-    from app.api.v1.alphaevolve_enforcement import (
-        router as alphaevolve_enforcement_router,
-    )
+    from app.api.v1.alphaevolve_enforcement import router as alphaevolve_enforcement_router
 except ImportError as e:
     print(f"Warning: AlphaEvolve enforcement router not available: {e}")
     from fastapi import APIRouter
@@ -127,9 +142,7 @@ except ImportError as e:
     alphaevolve_enforcement_router = APIRouter()
 
 try:
-    from app.api.v1.incremental_compilation import (
-        router as incremental_compilation_router,
-    )
+    from app.api.v1.incremental_compilation import router as incremental_compilation_router
 except ImportError as e:
     print(f"Warning: Incremental compilation router not available: {e}")
     from fastapi import APIRouter
@@ -450,8 +463,8 @@ class EnforcementEngine:
                         "policy_id": policy_id,
                         "severity": severity,
                         "enforcement_decision": enforcement_action["decision"],
-                        "confidence": enforcement_action["confidence"]
-                    }
+                        "confidence": enforcement_action["confidence"],
+                    },
                 )
 
                 # Record adversarial events if detected
@@ -462,7 +475,7 @@ class EnforcementEngine:
                                 attack_type=violation["type"],
                                 detected=True,
                                 severity=violation["severity"],
-                                defense_mechanism="policy_enforcement"
+                                defense_mechanism="policy_enforcement",
                             )
 
             return {
@@ -1405,7 +1418,7 @@ async def get_acgs_pgp_validation_report():
                 "version": "3.0.0",
                 "deployment": "ACGS-1 Production",
                 "quantumagi_integration": True,
-                "solana_devnet_active": True
+                "solana_devnet_active": True,
             }
 
             # Add paper citation info
@@ -1413,7 +1426,7 @@ async def get_acgs_pgp_validation_report():
                 "title": "ACGS-PGP: Autonomous Constitutional Governance System with PGP Assurance",
                 "framework": "AlphaEvolve-ACGS",
                 "deployment": "Quantumagi on Solana Devnet",
-                "constitution_hash": "cdd01ef066bc6cf2"
+                "constitution_hash": "cdd01ef066bc6cf2",
             }
 
             return report
@@ -1421,18 +1434,11 @@ async def get_acgs_pgp_validation_report():
             return {
                 "status": "monitoring_unavailable",
                 "message": "ACGS-PGP monitoring not initialized",
-                "service_info": {
-                    "service_name": "pgc-service",
-                    "version": "3.0.0"
-                }
+                "service_info": {"service_name": "pgc-service", "version": "3.0.0"},
             }
     except Exception as e:
         logger.error(f"Error generating ACGS-PGP validation report: {e}")
-        return {
-            "status": "error",
-            "message": str(e),
-            "timestamp": time.time()
-        }
+        return {"status": "error", "message": str(e), "timestamp": time.time()}
 
 
 # Enhanced Governance API Endpoints

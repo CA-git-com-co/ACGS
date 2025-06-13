@@ -15,44 +15,51 @@ Key Features:
 """
 
 import asyncio
+import json
 import logging
 import time
-from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
 from enum import Enum
-import json
+from typing import Any, Dict, List, Optional, Union
 
 # ACGS-1 imports
 try:
-    from .enhanced_constitutional_analyzer import get_enhanced_constitutional_analyzer, AnalysisType
-    from .ai_model_service import get_ai_model_service, ModelRole
+    from .ai_model_service import ModelRole, get_ai_model_service
+    from .constitutional_metrics import get_constitutional_metrics
+    from .enhanced_constitutional_analyzer import (
+        AnalysisType,
+        get_enhanced_constitutional_analyzer,
+    )
     from .langgraph_config import get_langgraph_config
+    from .performance_optimizer import OptimizationStrategy, get_performance_optimizer
+    from .redis_cache import get_cache
+    from .weighted_consensus_engine import ConsensusStrategy as WConsensusStrategy
+    from .weighted_consensus_engine import TieBreakingStrategy as WTieBreakingStrategy
     from .weighted_consensus_engine import (
         get_consensus_engine,
-        ConsensusStrategy as WConsensusStrategy,
-        TieBreakingStrategy as WTieBreakingStrategy
     )
-    from .performance_optimizer import get_performance_optimizer, OptimizationStrategy
-    from .constitutional_metrics import get_constitutional_metrics
-    from .redis_cache import get_cache
 except ImportError:
     # Fallback for testing
-    from enhanced_constitutional_analyzer import get_enhanced_constitutional_analyzer, AnalysisType
-    from ai_model_service import get_ai_model_service, ModelRole
+    from ai_model_service import ModelRole, get_ai_model_service
+    from constitutional_metrics import get_constitutional_metrics
+    from enhanced_constitutional_analyzer import (
+        AnalysisType,
+        get_enhanced_constitutional_analyzer,
+    )
     from langgraph_config import get_langgraph_config
+    from redis_cache import get_cache
+    from weighted_consensus_engine import ConsensusStrategy as WConsensusStrategy
+    from weighted_consensus_engine import TieBreakingStrategy as WTieBreakingStrategy
     from weighted_consensus_engine import (
         get_consensus_engine,
-        ConsensusStrategy as WConsensusStrategy,
-        TieBreakingStrategy as WTieBreakingStrategy
     )
-    from constitutional_metrics import get_constitutional_metrics
-    from redis_cache import get_cache
 
 logger = logging.getLogger(__name__)
 
 
 class ConsensusStrategy(str, Enum):
     """Strategies for combining multiple model results."""
+
     WEIGHTED_AVERAGE = "weighted_average"
     MAJORITY_VOTE = "majority_vote"
     CONFIDENCE_BASED = "confidence_based"
@@ -63,6 +70,7 @@ class ConsensusStrategy(str, Enum):
 @dataclass
 class ModelResult:
     """Result from a single model analysis."""
+
     model_id: str
     model_type: str  # "embedding", "llm"
     compliance_score: float
@@ -74,6 +82,7 @@ class ModelResult:
 @dataclass
 class ConsensusResult:
     """Result from multi-model consensus analysis."""
+
     final_compliance_score: float
     final_confidence_score: float
     consensus_strategy: ConsensusStrategy
@@ -87,7 +96,7 @@ class ConsensusResult:
 class MultiModelManager:
     """
     Multi-Model Manager for coordinating embedding and LLM analysis.
-    
+
     Coordinates between Qwen3 embeddings and existing LLM models to provide
     comprehensive constitutional analysis with consensus mechanisms.
     """
@@ -96,35 +105,45 @@ class MultiModelManager:
         """Initialize Multi-Model Manager."""
         self.config = config or {}
         self.langgraph_config = get_langgraph_config()
-        
+
         # Component references
         self.constitutional_analyzer = None
         self.ai_model_service = None
         self.redis_client = None
         self.metrics = get_constitutional_metrics("multi_model_manager")
-        
+
         # Enhanced Phase 2 model configurations with additional models for 4+ model consensus
-        self.model_weights = self.config.get("model_weights", {
-            "embedding": 0.25,  # 25% weight for embedding analysis
-            "qwen3_32b": 0.20,  # 20% weight for Qwen3-32B (Groq)
-            "qwen3_235b": 0.25,  # 25% weight for Qwen3-235B (OpenRouter)
-            "deepseek_chat_v3": 0.20,  # 20% weight for DeepSeek Chat v3 (OpenRouter)
-            "deepseek_r1": 0.10   # 10% weight for DeepSeek R1 (OpenRouter)
-        })
+        self.model_weights = self.config.get(
+            "model_weights",
+            {
+                "embedding": 0.25,  # 25% weight for embedding analysis
+                "qwen3_32b": 0.20,  # 20% weight for Qwen3-32B (Groq)
+                "qwen3_235b": 0.25,  # 25% weight for Qwen3-235B (OpenRouter)
+                "deepseek_chat_v3": 0.20,  # 20% weight for DeepSeek Chat v3 (OpenRouter)
+                "deepseek_r1": 0.10,  # 10% weight for DeepSeek R1 (OpenRouter)
+            },
+        )
 
         # Validate weights sum to 1.0
         total_weight = sum(self.model_weights.values())
         if abs(total_weight - 1.0) > 0.01:
-            logger.warning(f"Model weights sum to {total_weight:.3f}, normalizing to 1.0")
-            self.model_weights = {k: v/total_weight for k, v in self.model_weights.items()}
+            logger.warning(
+                f"Model weights sum to {total_weight:.3f}, normalizing to 1.0"
+            )
+            self.model_weights = {
+                k: v / total_weight for k, v in self.model_weights.items()
+            }
 
         # Failover configuration for model reliability
-        self.failover_config = self.config.get("failover_config", {
-            "max_retries": 3,
-            "timeout_seconds": 30.0,
-            "fallback_threshold": 0.5,  # Minimum confidence for accepting results
-            "consensus_threshold": 0.7   # Minimum agreement for high confidence
-        })
+        self.failover_config = self.config.get(
+            "failover_config",
+            {
+                "max_retries": 3,
+                "timeout_seconds": 30.0,
+                "fallback_threshold": 0.5,  # Minimum confidence for accepting results
+                "consensus_threshold": 0.7,  # Minimum agreement for high confidence
+            },
+        )
 
         # Phase 2 enhanced model configurations for OpenRouter integration
         self.enhanced_models = {
@@ -136,7 +155,11 @@ class MultiModelManager:
                 "temperature": 0.1,
                 "timeout": 30.0,
                 "weight": self.model_weights.get("qwen3_235b", 0.25),
-                "capabilities": ["constitutional_analysis", "policy_synthesis", "reasoning"]
+                "capabilities": [
+                    "constitutional_analysis",
+                    "policy_synthesis",
+                    "reasoning",
+                ],
             },
             "deepseek_r1": {
                 "provider": "openrouter",
@@ -146,7 +169,7 @@ class MultiModelManager:
                 "temperature": 0.0,  # Zero temperature for consistent reasoning
                 "timeout": 30.0,
                 "weight": self.model_weights.get("deepseek_r1", 0.10),
-                "capabilities": ["reasoning", "validation", "logical_analysis"]
+                "capabilities": ["reasoning", "validation", "logical_analysis"],
             },
             "deepseek_chat_v3": {
                 "provider": "openrouter",
@@ -156,7 +179,11 @@ class MultiModelManager:
                 "temperature": 0.2,
                 "timeout": 30.0,
                 "weight": self.model_weights.get("deepseek_chat_v3", 0.20),
-                "capabilities": ["policy_synthesis", "constitutional_analysis", "dialogue"]
+                "capabilities": [
+                    "policy_synthesis",
+                    "constitutional_analysis",
+                    "dialogue",
+                ],
             },
             "qwen3_32b": {
                 "provider": "groq",
@@ -166,10 +193,10 @@ class MultiModelManager:
                 "temperature": 0.15,
                 "timeout": 30.0,
                 "weight": self.model_weights.get("qwen3_32b", 0.20),
-                "capabilities": ["constitutional_prompting", "analysis", "synthesis"]
-            }
+                "capabilities": ["constitutional_prompting", "analysis", "synthesis"],
+            },
         }
-        
+
         # Consensus settings
         self.default_consensus_strategy = ConsensusStrategy(
             self.config.get("consensus_strategy", "weighted_average")
@@ -223,10 +250,12 @@ class MultiModelManager:
             "compliance_required": self.constitutional_compliance_required,
             "governance_framework": "ACGS-1",
             "quantumagi_compatible": True,
-            "validation_timestamp": time.time()
+            "validation_timestamp": time.time(),
         }
 
-    def ensure_constitutional_compliance(self, analysis_result: Dict[str, Any]) -> Dict[str, Any]:
+    def ensure_constitutional_compliance(
+        self, analysis_result: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Ensure analysis result includes constitutional compliance metadata.
 
@@ -241,21 +270,27 @@ class MultiModelManager:
 
         # Enhance the result
         enhanced_result = analysis_result.copy()
-        enhanced_result.update({
-            "constitutional_hash": self.constitutional_hash,
-            "constitutional_compliance": {
-                "validated": True,
-                "hash_verified": True,
-                "compliance_score": analysis_result.get("confidence", 0.0),
-                "governance_framework": "ACGS-1",
-                "quantumagi_integration": True
-            },
-            "governance_metadata": constitutional_metadata
-        })
+        enhanced_result.update(
+            {
+                "constitutional_hash": self.constitutional_hash,
+                "constitutional_compliance": {
+                    "validated": True,
+                    "hash_verified": True,
+                    "compliance_score": analysis_result.get("confidence", 0.0),
+                    "governance_framework": "ACGS-1",
+                    "quantumagi_integration": True,
+                },
+                "governance_metadata": constitutional_metadata,
+            }
+        )
 
         return enhanced_result
 
-    def calculate_weighted_consensus(self, model_responses: Dict[str, Any], model_weights: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
+    def calculate_weighted_consensus(
+        self,
+        model_responses: Dict[str, Any],
+        model_weights: Optional[Dict[str, float]] = None,
+    ) -> Dict[str, Any]:
         """
         Calculate weighted consensus from multiple model responses.
 
@@ -273,14 +308,21 @@ class MultiModelManager:
 
         # Normalize weights for participating models only
         participating_models = set(model_responses.keys())
-        participating_weights = {k: v for k, v in weights.items() if k in participating_models}
+        participating_weights = {
+            k: v for k, v in weights.items() if k in participating_models
+        }
 
         if not participating_weights:
             # Equal weights if no configured weights
-            participating_weights = {k: 1.0/len(participating_models) for k in participating_models}
+            participating_weights = {
+                k: 1.0 / len(participating_models) for k in participating_models
+            }
 
         total_weight = sum(participating_weights.values())
-        normalized_weights = {model: weight/total_weight for model, weight in participating_weights.items()}
+        normalized_weights = {
+            model: weight / total_weight
+            for model, weight in participating_weights.items()
+        }
 
         # Calculate weighted votes for decisions
         decision_scores = {}
@@ -290,8 +332,8 @@ class MultiModelManager:
             if not isinstance(response, dict):
                 continue
 
-            decision = response.get('decision', 'unknown')
-            confidence = response.get('confidence', 0.5)
+            decision = response.get("decision", "unknown")
+            confidence = response.get("confidence", 0.5)
             model_weight = normalized_weights.get(model, 0.0)
 
             if decision not in decision_scores:
@@ -312,7 +354,7 @@ class MultiModelManager:
             "weighted_score": best_decision[1],
             "all_scores": decision_scores,
             "participating_models": list(participating_models),
-            "weights_used": normalized_weights
+            "weights_used": normalized_weights,
         }
 
     def enhanced_consensus_analysis(
@@ -320,7 +362,7 @@ class MultiModelManager:
         model_responses: Dict[str, Dict[str, Any]],
         strategy: WConsensusStrategy = WConsensusStrategy.WEIGHTED_AVERAGE,
         custom_weights: Optional[Dict[str, float]] = None,
-        tie_breaking: WTieBreakingStrategy = WTieBreakingStrategy.HIGHEST_CONFIDENCE
+        tie_breaking: WTieBreakingStrategy = WTieBreakingStrategy.HIGHEST_CONFIDENCE,
     ) -> Dict[str, Any]:
         """
         Perform enhanced consensus analysis using the weighted consensus engine.
@@ -340,7 +382,7 @@ class MultiModelManager:
                 model_responses=model_responses,
                 strategy=strategy,
                 custom_weights=custom_weights,
-                tie_breaking=tie_breaking
+                tie_breaking=tie_breaking,
             )
 
             # Convert to dictionary format for compatibility
@@ -351,7 +393,11 @@ class MultiModelManager:
                 "consensus_strategy": result.consensus_strategy.value,
                 "participating_models": result.participating_models,
                 "tie_broken": result.tie_broken,
-                "tie_breaking_strategy": result.tie_breaking_strategy.value if result.tie_breaking_strategy else None,
+                "tie_breaking_strategy": (
+                    result.tie_breaking_strategy.value
+                    if result.tie_breaking_strategy
+                    else None
+                ),
                 "processing_time_ms": result.processing_time_ms,
                 "model_votes": [
                     {
@@ -361,11 +407,11 @@ class MultiModelManager:
                         "weight": vote.weight,
                         "reasoning": vote.reasoning,
                         "constitutional_score": vote.constitutional_score,
-                        "response_time_ms": vote.response_time_ms
+                        "response_time_ms": vote.response_time_ms,
                     }
                     for vote in result.model_votes
                 ],
-                "metadata": result.metadata or {}
+                "metadata": result.metadata or {},
             }
 
         except Exception as e:
@@ -376,7 +422,7 @@ class MultiModelManager:
                 "error": str(e),
                 "consensus_strategy": strategy.value,
                 "participating_models": list(model_responses.keys()),
-                "tie_broken": False
+                "tie_broken": False,
             }
 
     async def optimized_multi_model_analysis(
@@ -384,7 +430,7 @@ class MultiModelManager:
         policy_content: str,
         analysis_type: AnalysisType = AnalysisType.CONSTITUTIONAL_COMPLIANCE,
         context: Optional[Dict[str, Any]] = None,
-        optimization_strategies: Optional[List[OptimizationStrategy]] = None
+        optimization_strategies: Optional[List[OptimizationStrategy]] = None,
     ) -> Dict[str, Any]:
         """
         Perform optimized multi-model analysis with performance optimization.
@@ -406,7 +452,7 @@ class MultiModelManager:
                 OptimizationStrategy.PARALLEL_EXECUTION,
                 OptimizationStrategy.CACHED_RESPONSES,
                 OptimizationStrategy.CIRCUIT_BREAKER,
-                OptimizationStrategy.ADAPTIVE_TIMEOUT
+                OptimizationStrategy.ADAPTIVE_TIMEOUT,
             ]
 
             # Create model request functions for parallel execution
@@ -417,14 +463,16 @@ class MultiModelManager:
                 ("qwen3_235b", "constitutional_analysis"),
                 ("deepseek_chat_v3", "policy_synthesis"),
                 ("deepseek_r1", "reasoning_validation"),
-                ("qwen3_32b", "constitutional_prompting")
+                ("qwen3_32b", "constitutional_prompting"),
             ]
 
             for model_name, role in enhanced_models:
                 model_config = self.get_enhanced_model_config(model_name)
                 if model_config:
                     # Create async request function for this model
-                    async def create_model_request(model_id=model_name, model_role=role):
+                    async def create_model_request(
+                        model_id=model_name, model_role=role
+                    ):
                         return await self._execute_single_model_analysis(
                             model_id, policy_content, analysis_type, context, model_role
                         )
@@ -432,8 +480,10 @@ class MultiModelManager:
                     model_requests[model_name] = create_model_request
 
             # Apply performance optimization
-            optimization_result = await self.performance_optimizer.optimize_multi_model_request(
-                model_requests, strategies
+            optimization_result = (
+                await self.performance_optimizer.optimize_multi_model_request(
+                    model_requests, strategies
+                )
             )
 
             # Extract model responses
@@ -444,7 +494,7 @@ class MultiModelManager:
             consensus_result = self.enhanced_consensus_analysis(
                 model_responses,
                 strategy=WConsensusStrategy.CONFIDENCE_WEIGHTED,
-                tie_breaking=WTieBreakingStrategy.CONSTITUTIONAL_PRIORITY
+                tie_breaking=WTieBreakingStrategy.CONSTITUTIONAL_PRIORITY,
             )
 
             # Calculate total response time
@@ -457,15 +507,15 @@ class MultiModelManager:
                     **performance_data,
                     "total_response_time_ms": total_response_time,
                     "meets_2s_target": total_response_time < 2000,
-                    "optimization_strategies_used": [s.value for s in strategies]
+                    "optimization_strategies_used": [s.value for s in strategies],
                 },
                 "model_responses": model_responses,
                 "metadata": {
                     "analysis_type": analysis_type.value,
                     "models_used": list(model_responses.keys()),
                     "optimization_applied": True,
-                    "constitutional_hash_validated": True  # Maintain constitutional compliance
-                }
+                    "constitutional_hash_validated": True,  # Maintain constitutional compliance
+                },
             }
 
             logger.info(
@@ -474,7 +524,7 @@ class MultiModelManager:
                 models_used=len(model_responses),
                 meets_target=total_response_time < 2000,
                 consensus_decision=consensus_result.get("decision"),
-                consensus_confidence=consensus_result.get("confidence")
+                consensus_confidence=consensus_result.get("confidence"),
             )
 
             return final_result
@@ -485,26 +535,26 @@ class MultiModelManager:
             logger.error(
                 "Optimized multi-model analysis failed",
                 error=str(e),
-                response_time_ms=total_response_time
+                response_time_ms=total_response_time,
             )
 
             return {
                 "analysis_result": {
                     "decision": "error",
                     "confidence": 0.0,
-                    "error": str(e)
+                    "error": str(e),
                 },
                 "performance_metrics": {
                     "total_response_time_ms": total_response_time,
                     "meets_2s_target": False,
-                    "error": str(e)
+                    "error": str(e),
                 },
                 "model_responses": {},
                 "metadata": {
                     "analysis_type": analysis_type.value,
                     "optimization_applied": False,
-                    "error": str(e)
-                }
+                    "error": str(e),
+                },
             }
 
     async def _execute_single_model_analysis(
@@ -513,7 +563,7 @@ class MultiModelManager:
         policy_content: str,
         analysis_type: AnalysisType,
         context: Optional[Dict[str, Any]],
-        model_role: str
+        model_role: str,
     ) -> Dict[str, Any]:
         """Execute analysis for a single model."""
         try:
@@ -522,7 +572,7 @@ class MultiModelManager:
             if not model_config:
                 return {
                     "error": f"Model configuration not found for {model_id}",
-                    "model_id": model_id
+                    "model_id": model_id,
                 }
 
             # Simulate model analysis (in production, this would call actual model APIs)
@@ -546,7 +596,11 @@ class MultiModelManager:
 
             decision = random.choices(decisions, weights=weights)[0]
             confidence = random.uniform(0.7, 0.95)
-            constitutional_score = random.uniform(0.6, 0.9) if decision in ["compliant", "approve", "valid"] else random.uniform(0.1, 0.4)
+            constitutional_score = (
+                random.uniform(0.6, 0.9)
+                if decision in ["compliant", "approve", "valid"]
+                else random.uniform(0.1, 0.4)
+            )
 
             return {
                 "decision": decision,
@@ -558,60 +612,58 @@ class MultiModelManager:
                 "response_time_ms": random.uniform(200, 800),  # Simulate response time
                 "metadata": {
                     "provider": model_config.get("provider"),
-                    "model_capabilities": model_config.get("capabilities", [])
-                }
+                    "model_capabilities": model_config.get("capabilities", []),
+                },
             }
 
         except Exception as e:
-            return {
-                "error": str(e),
-                "model_id": model_id,
-                "model_role": model_role
-            }
+            return {"error": str(e), "model_id": model_id, "model_role": model_role}
         self.agreement_threshold = self.config.get("agreement_threshold", 0.8)
         self.cache_ttl_seconds = self.config.get("cache_ttl_seconds", 1800)
-        
+
         # State tracking
         self.initialized = False
         self.total_analyses = 0
         self.successful_analyses = 0
-        
+
         logger.info("MultiModelManager initialized")
 
     async def initialize(self) -> bool:
         """Initialize the multi-model manager and its components."""
         try:
             start_time = time.time()
-            
+
             # Initialize constitutional analyzer (includes embedding client)
             self.constitutional_analyzer = await get_enhanced_constitutional_analyzer()
-            
+
             # Initialize AI model service
             self.ai_model_service = await get_ai_model_service()
-            
+
             # Initialize Redis cache
             self.redis_client = get_cache()
-            
+
             self.initialized = True
-            
+
             init_time = (time.time() - start_time) * 1000
-            logger.info(f"MultiModelManager initialized successfully in {init_time:.2f}ms")
-            
+            logger.info(
+                f"MultiModelManager initialized successfully in {init_time:.2f}ms"
+            )
+
             # Record initialization metrics
             self.metrics.record_constitutional_principle_operation(
                 operation_type="manager_initialization",
                 principle_category="multi_model_coordination",
-                status="success"
+                status="success",
             )
-            
+
             return True
-            
+
         except Exception as e:
             logger.error(f"Failed to initialize MultiModelManager: {e}")
             self.metrics.record_constitutional_principle_operation(
                 operation_type="manager_initialization",
                 principle_category="multi_model_coordination",
-                status="error"
+                status="error",
             )
             return False
 
@@ -620,79 +672,78 @@ class MultiModelManager:
         policy_content: str,
         analysis_type: AnalysisType = AnalysisType.COMPLIANCE_SCORING,
         consensus_strategy: Optional[ConsensusStrategy] = None,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
     ) -> ConsensusResult:
         """
         Perform constitutional analysis using multiple models with consensus.
-        
+
         Args:
             policy_content: Policy content to analyze
             analysis_type: Type of analysis to perform
             consensus_strategy: Strategy for combining results
             context: Additional context for analysis
-            
+
         Returns:
             ConsensusResult with consensus analysis and model coordination
         """
         start_time = time.time()
         self.total_analyses += 1
-        
+
         try:
             # Use default consensus strategy if not specified
             strategy = consensus_strategy or self.default_consensus_strategy
-            
+
             # Check cache first
-            cache_key = self._generate_cache_key(policy_content, analysis_type, strategy)
+            cache_key = self._generate_cache_key(
+                policy_content, analysis_type, strategy
+            )
             cached_result = await self._get_cached_result(cache_key)
             if cached_result:
                 return cached_result
-            
+
             # Step 1: Get embedding-based analysis
             embedding_result = await self._get_embedding_analysis(
                 policy_content, analysis_type, context
             )
-            
+
             # Step 2: Get LLM-based analyses
             llm_results = await self._get_llm_analyses(
                 policy_content, analysis_type, context
             )
-            
+
             # Step 3: Combine results using consensus strategy
             consensus_result = await self._apply_consensus_strategy(
-                embedding_result,
-                llm_results,
-                strategy,
-                start_time
+                embedding_result, llm_results, strategy, start_time
             )
-            
+
             # Cache result
             await self._cache_result(cache_key, consensus_result)
-            
+
             self.successful_analyses += 1
-            
+
             # Record metrics
             processing_time = consensus_result.processing_time_ms / 1000
             self.metrics.record_policy_synthesis_operation(
                 synthesis_type="multi_model_consensus",
                 constitutional_context=analysis_type.value,
                 status="success",
-                duration=processing_time
+                duration=processing_time,
             )
-            
+
             return consensus_result
-            
+
         except Exception as e:
             processing_time = (time.time() - start_time) * 1000
             logger.error(f"Error in multi-model consensus analysis: {e}")
-            
+
             # Record error metrics
             self.metrics.record_policy_synthesis_operation(
                 synthesis_type="multi_model_consensus",
                 constitutional_context=analysis_type.value,
                 status="error",
-                duration=processing_time / 1000
+                duration=processing_time / 1000,
             )
-            
+
             return ConsensusResult(
                 final_compliance_score=0.0,
                 final_confidence_score=0.0,
@@ -700,26 +751,30 @@ class MultiModelManager:
                 model_results=[],
                 agreement_score=0.0,
                 processing_time_ms=processing_time,
-                recommendations=["Multi-model analysis failed - review system configuration"],
-                metadata={"error": str(e)}
+                recommendations=[
+                    "Multi-model analysis failed - review system configuration"
+                ],
+                metadata={"error": str(e)},
             )
 
     async def _get_embedding_analysis(
         self,
         policy_content: str,
         analysis_type: AnalysisType,
-        context: Optional[Dict[str, Any]]
+        context: Optional[Dict[str, Any]],
     ) -> ModelResult:
         """Get analysis from embedding-based constitutional analyzer."""
         try:
             start_time = time.time()
-            
-            result = await self.constitutional_analyzer.analyze_constitutional_compliance(
-                policy_content, analysis_type, context
+
+            result = (
+                await self.constitutional_analyzer.analyze_constitutional_compliance(
+                    policy_content, analysis_type, context
+                )
             )
-            
+
             processing_time = (time.time() - start_time) * 1000
-            
+
             return ModelResult(
                 model_id="enhanced_constitutional_analyzer",
                 model_type="embedding",
@@ -729,10 +784,10 @@ class MultiModelManager:
                 metadata={
                     "violations": result.violations,
                     "recommendations": result.recommendations,
-                    "constitutional_hash": result.constitutional_hash
-                }
+                    "constitutional_hash": result.constitutional_hash,
+                },
             )
-            
+
         except Exception as e:
             logger.error(f"Error in embedding analysis: {e}")
             return ModelResult(
@@ -741,42 +796,42 @@ class MultiModelManager:
                 compliance_score=0.0,
                 confidence_score=0.0,
                 processing_time_ms=0.0,
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     async def _get_llm_analyses(
         self,
         policy_content: str,
         analysis_type: AnalysisType,
-        context: Optional[Dict[str, Any]]
+        context: Optional[Dict[str, Any]],
     ) -> List[ModelResult]:
         """Get analyses from multiple LLM models."""
         llm_results = []
-        
+
         # Enhanced model configurations for constitutional analysis with 4+ models
         llm_models = [
             {
                 "role": LangGraphModelRole.CONSTITUTIONAL_PROMPTING,
                 "model_id": "qwen3_235b_openrouter",
-                "weight": self.model_weights.get("qwen3_235b", 0.25)
+                "weight": self.model_weights.get("qwen3_235b", 0.25),
             },
             {
                 "role": LangGraphModelRole.POLICY_SYNTHESIS,
                 "model_id": "deepseek_chat_v3_openrouter",
-                "weight": self.model_weights.get("deepseek_chat_v3", 0.20)
+                "weight": self.model_weights.get("deepseek_chat_v3", 0.20),
             },
             {
                 "role": LangGraphModelRole.REFLECTION,
                 "model_id": "deepseek_r1_openrouter_enhanced",
-                "weight": self.model_weights.get("deepseek_r1", 0.10)
+                "weight": self.model_weights.get("deepseek_r1", 0.10),
             },
             {
                 "role": LangGraphModelRole.CONSTITUTIONAL_PROMPTING,
                 "model_id": "qwen3_32b_groq",
-                "weight": self.model_weights.get("qwen3_32b", 0.20)
-            }
+                "weight": self.model_weights.get("qwen3_32b", 0.20),
+            },
         ]
-        
+
         # Run LLM analyses in parallel
         tasks = []
         for model_config in llm_models:
@@ -784,19 +839,19 @@ class MultiModelManager:
                 policy_content, analysis_type, context, model_config
             )
             tasks.append(task)
-        
+
         try:
             results = await asyncio.gather(*tasks, return_exceptions=True)
-            
+
             for result in results:
                 if isinstance(result, ModelResult):
                     llm_results.append(result)
                 elif isinstance(result, Exception):
                     logger.error(f"LLM analysis failed: {result}")
-                    
+
         except Exception as e:
             logger.error(f"Error in parallel LLM analyses: {e}")
-        
+
         return llm_results
 
     async def _get_single_llm_analysis(
@@ -804,7 +859,7 @@ class MultiModelManager:
         policy_content: str,
         analysis_type: AnalysisType,
         context: Optional[Dict[str, Any]],
-        model_config: Dict[str, Any]
+        model_config: Dict[str, Any],
     ) -> ModelResult:
         """Get analysis from a single LLM model."""
         try:
@@ -818,11 +873,13 @@ class MultiModelManager:
                 prompt=prompt,
                 role=model_config["role"],
                 max_tokens=1024,
-                temperature=0.1
+                temperature=0.1,
             )
 
             # Parse response for compliance scoring
-            compliance_score, confidence_score = self._parse_llm_compliance_response(response.content)
+            compliance_score, confidence_score = self._parse_llm_compliance_response(
+                response.content
+            )
 
             processing_time = (time.time() - start_time) * 1000
 
@@ -835,26 +892,28 @@ class MultiModelManager:
                 metadata={
                     "model_role": model_config["role"].value,
                     "response_content": response.content[:500],  # Truncated for storage
-                    "weight": model_config["weight"]
-                }
+                    "weight": model_config["weight"],
+                },
             )
 
         except Exception as e:
-            logger.error(f"Error in single LLM analysis for {model_config['model_id']}: {e}")
+            logger.error(
+                f"Error in single LLM analysis for {model_config['model_id']}: {e}"
+            )
             return ModelResult(
                 model_id=model_config["model_id"],
                 model_type="llm",
                 compliance_score=0.0,
                 confidence_score=0.0,
                 processing_time_ms=0.0,
-                metadata={"error": str(e), "weight": model_config.get("weight", 0.0)}
+                metadata={"error": str(e), "weight": model_config.get("weight", 0.0)},
             )
 
     def _build_llm_prompt(
         self,
         policy_content: str,
         analysis_type: AnalysisType,
-        context: Optional[Dict[str, Any]]
+        context: Optional[Dict[str, Any]],
     ) -> str:
         """Build prompt for LLM constitutional analysis."""
         context_str = ""
@@ -883,18 +942,28 @@ REASONING: <brief explanation>
 """
         return prompt
 
-    def _parse_llm_compliance_response(self, response_content: str) -> tuple[float, float]:
+    def _parse_llm_compliance_response(
+        self, response_content: str
+    ) -> tuple[float, float]:
         """Parse LLM response to extract compliance and confidence scores."""
         try:
             import re
 
             # Extract compliance score
-            compliance_match = re.search(r'COMPLIANCE_SCORE:\s*([0-9.]+)', response_content)
-            compliance_score = float(compliance_match.group(1)) if compliance_match else 0.5
+            compliance_match = re.search(
+                r"COMPLIANCE_SCORE:\s*([0-9.]+)", response_content
+            )
+            compliance_score = (
+                float(compliance_match.group(1)) if compliance_match else 0.5
+            )
 
             # Extract confidence score
-            confidence_match = re.search(r'CONFIDENCE_SCORE:\s*([0-9.]+)', response_content)
-            confidence_score = float(confidence_match.group(1)) if confidence_match else 0.5
+            confidence_match = re.search(
+                r"CONFIDENCE_SCORE:\s*([0-9.]+)", response_content
+            )
+            confidence_score = (
+                float(confidence_match.group(1)) if confidence_match else 0.5
+            )
 
             # Ensure scores are in valid range
             compliance_score = max(0.0, min(1.0, compliance_score))
@@ -911,27 +980,37 @@ REASONING: <brief explanation>
         embedding_result: ModelResult,
         llm_results: List[ModelResult],
         strategy: ConsensusStrategy,
-        start_time: float
+        start_time: float,
     ) -> ConsensusResult:
         """Apply consensus strategy to combine model results."""
         try:
             all_results = [embedding_result] + llm_results
 
             if strategy == ConsensusStrategy.WEIGHTED_AVERAGE:
-                final_score, final_confidence = self._weighted_average_consensus(all_results)
+                final_score, final_confidence = self._weighted_average_consensus(
+                    all_results
+                )
             elif strategy == ConsensusStrategy.CONFIDENCE_BASED:
-                final_score, final_confidence = self._confidence_based_consensus(all_results)
+                final_score, final_confidence = self._confidence_based_consensus(
+                    all_results
+                )
             elif strategy == ConsensusStrategy.EMBEDDING_PRIORITY:
-                final_score, final_confidence = self._embedding_priority_consensus(embedding_result, llm_results)
+                final_score, final_confidence = self._embedding_priority_consensus(
+                    embedding_result, llm_results
+                )
             else:
                 # Default to weighted average
-                final_score, final_confidence = self._weighted_average_consensus(all_results)
+                final_score, final_confidence = self._weighted_average_consensus(
+                    all_results
+                )
 
             # Calculate agreement score
             agreement_score = self._calculate_agreement_score(all_results)
 
             # Generate recommendations
-            recommendations = self._generate_consensus_recommendations(all_results, agreement_score)
+            recommendations = self._generate_consensus_recommendations(
+                all_results, agreement_score
+            )
 
             processing_time = (time.time() - start_time) * 1000
 
@@ -946,8 +1025,10 @@ REASONING: <brief explanation>
                 metadata={
                     "embedding_weight": self.model_weights.get("embedding", 0.4),
                     "total_models": len(all_results),
-                    "successful_models": len([r for r in all_results if r.compliance_score > 0])
-                }
+                    "successful_models": len(
+                        [r for r in all_results if r.compliance_score > 0]
+                    ),
+                },
             )
 
         except Exception as e:
@@ -961,11 +1042,15 @@ REASONING: <brief explanation>
                 model_results=all_results,
                 agreement_score=0.0,
                 processing_time_ms=processing_time,
-                recommendations=["Consensus strategy failed - review model coordination"],
-                metadata={"error": str(e)}
+                recommendations=[
+                    "Consensus strategy failed - review model coordination"
+                ],
+                metadata={"error": str(e)},
             )
 
-    def _weighted_average_consensus(self, results: List[ModelResult]) -> tuple[float, float]:
+    def _weighted_average_consensus(
+        self, results: List[ModelResult]
+    ) -> tuple[float, float]:
         """Calculate enhanced weighted average consensus with improved model recognition."""
         total_weight = 0.0
         weighted_compliance = 0.0
@@ -1009,7 +1094,9 @@ REASONING: <brief explanation>
             return self.model_weights.get("qwen3_235b", 0.25)
         elif "qwen3_32b" in model_id_lower or "qwen3-32b" in model_id_lower:
             return self.model_weights.get("qwen3_32b", 0.20)
-        elif "deepseek_chat_v3" in model_id_lower or "deepseek-chat-v3" in model_id_lower:
+        elif (
+            "deepseek_chat_v3" in model_id_lower or "deepseek-chat-v3" in model_id_lower
+        ):
             return self.model_weights.get("deepseek_chat_v3", 0.20)
         elif "deepseek_r1" in model_id_lower or "deepseek-r1" in model_id_lower:
             return self.model_weights.get("deepseek_r1", 0.10)
@@ -1017,21 +1104,31 @@ REASONING: <brief explanation>
             # Use metadata weight if available, otherwise default
             return result.metadata.get("weight", 0.05) if result.metadata else 0.05
 
-    def _confidence_based_consensus(self, results: List[ModelResult]) -> tuple[float, float]:
+    def _confidence_based_consensus(
+        self, results: List[ModelResult]
+    ) -> tuple[float, float]:
         """Calculate confidence-based consensus."""
         if not results:
             return 0.0, 0.0
 
         # Weight by confidence scores
-        total_confidence = sum(r.confidence_score for r in results if r.compliance_score > 0)
+        total_confidence = sum(
+            r.confidence_score for r in results if r.compliance_score > 0
+        )
 
         if total_confidence > 0:
-            weighted_compliance = sum(
-                r.compliance_score * r.confidence_score
-                for r in results if r.compliance_score > 0
-            ) / total_confidence
+            weighted_compliance = (
+                sum(
+                    r.compliance_score * r.confidence_score
+                    for r in results
+                    if r.compliance_score > 0
+                )
+                / total_confidence
+            )
 
-            avg_confidence = total_confidence / len([r for r in results if r.compliance_score > 0])
+            avg_confidence = total_confidence / len(
+                [r for r in results if r.compliance_score > 0]
+            )
         else:
             weighted_compliance = 0.0
             avg_confidence = 0.0
@@ -1039,9 +1136,7 @@ REASONING: <brief explanation>
         return weighted_compliance, avg_confidence
 
     def _embedding_priority_consensus(
-        self,
-        embedding_result: ModelResult,
-        llm_results: List[ModelResult]
+        self, embedding_result: ModelResult, llm_results: List[ModelResult]
     ) -> tuple[float, float]:
         """Calculate embedding-priority consensus."""
         # Give 70% weight to embedding, 30% to LLM average
@@ -1051,20 +1146,24 @@ REASONING: <brief explanation>
         # Calculate LLM average
         valid_llm_results = [r for r in llm_results if r.compliance_score > 0]
         if valid_llm_results:
-            llm_avg_compliance = sum(r.compliance_score for r in valid_llm_results) / len(valid_llm_results)
-            llm_avg_confidence = sum(r.confidence_score for r in valid_llm_results) / len(valid_llm_results)
+            llm_avg_compliance = sum(
+                r.compliance_score for r in valid_llm_results
+            ) / len(valid_llm_results)
+            llm_avg_confidence = sum(
+                r.confidence_score for r in valid_llm_results
+            ) / len(valid_llm_results)
         else:
             llm_avg_compliance = 0.0
             llm_avg_confidence = 0.0
 
         # Combine with embedding priority
         final_compliance = (
-            embedding_result.compliance_score * embedding_weight +
-            llm_avg_compliance * llm_weight
+            embedding_result.compliance_score * embedding_weight
+            + llm_avg_compliance * llm_weight
         )
         final_confidence = (
-            embedding_result.confidence_score * embedding_weight +
-            llm_avg_confidence * llm_weight
+            embedding_result.confidence_score * embedding_weight
+            + llm_avg_confidence * llm_weight
         )
 
         return final_compliance, final_confidence
@@ -1083,7 +1182,7 @@ REASONING: <brief explanation>
 
         # Calculate standard deviation
         variance = sum((score - mean_score) ** 2 for score in scores) / len(scores)
-        std_dev = variance ** 0.5
+        std_dev = variance**0.5
 
         # Convert to agreement score (lower std_dev = higher agreement)
         agreement_score = max(0.0, 1.0 - (std_dev * 2))  # Scale factor of 2
@@ -1091,9 +1190,7 @@ REASONING: <brief explanation>
         return agreement_score
 
     def _generate_consensus_recommendations(
-        self,
-        results: List[ModelResult],
-        agreement_score: float
+        self, results: List[ModelResult], agreement_score: float
     ) -> List[str]:
         """Generate recommendations based on consensus analysis."""
         recommendations = []
@@ -1113,7 +1210,9 @@ REASONING: <brief explanation>
             )
 
         # Check compliance levels
-        compliance_scores = [r.compliance_score for r in results if r.compliance_score > 0]
+        compliance_scores = [
+            r.compliance_score for r in results if r.compliance_score > 0
+        ]
         if compliance_scores:
             avg_compliance = sum(compliance_scores) / len(compliance_scores)
             if avg_compliance < 0.7:
@@ -1126,7 +1225,9 @@ REASONING: <brief explanation>
                 )
 
         # Performance recommendations
-        processing_times = [r.processing_time_ms for r in results if r.processing_time_ms > 0]
+        processing_times = [
+            r.processing_time_ms for r in results if r.processing_time_ms > 0
+        ]
         if processing_times:
             avg_time = sum(processing_times) / len(processing_times)
             if avg_time > 1000:  # >1 second
@@ -1143,10 +1244,11 @@ REASONING: <brief explanation>
         self,
         policy_content: str,
         analysis_type: AnalysisType,
-        strategy: ConsensusStrategy
+        strategy: ConsensusStrategy,
     ) -> str:
         """Generate cache key for consensus result."""
         import hashlib
+
         content_hash = hashlib.sha256(policy_content.encode()).hexdigest()[:16]
         return f"multi_model_consensus:{content_hash}:{analysis_type.value}:{strategy.value}"
 
@@ -1184,20 +1286,18 @@ REASONING: <brief explanation>
                         "compliance_score": r.compliance_score,
                         "confidence_score": r.confidence_score,
                         "processing_time_ms": r.processing_time_ms,
-                        "metadata": r.metadata
+                        "metadata": r.metadata,
                     }
                     for r in result.model_results
                 ],
                 "agreement_score": result.agreement_score,
                 "processing_time_ms": result.processing_time_ms,
                 "recommendations": result.recommendations,
-                "metadata": result.metadata
+                "metadata": result.metadata,
             }
 
             self.redis_client.set(
-                cache_key,
-                json.dumps(result_dict, default=str),
-                self.cache_ttl_seconds
+                cache_key, json.dumps(result_dict, default=str), self.cache_ttl_seconds
             )
         except Exception as e:
             logger.warning(f"Cache storage error: {e}")
@@ -1213,7 +1313,8 @@ REASONING: <brief explanation>
             "performance_metrics": {
                 "total_analyses": self.total_analyses,
                 "successful_analyses": self.successful_analyses,
-                "success_rate": (self.successful_analyses / max(1, self.total_analyses)) * 100,
+                "success_rate": (self.successful_analyses / max(1, self.total_analyses))
+                * 100,
             },
         }
 
@@ -1223,14 +1324,20 @@ REASONING: <brief explanation>
                 # Test constitutional analyzer
                 if self.constitutional_analyzer:
                     analyzer_health = await self.constitutional_analyzer.health_check()
-                    health_status["components"]["constitutional_analyzer"] = analyzer_health["status"]
+                    health_status["components"]["constitutional_analyzer"] = (
+                        analyzer_health["status"]
+                    )
                 else:
-                    health_status["components"]["constitutional_analyzer"] = "unavailable"
+                    health_status["components"][
+                        "constitutional_analyzer"
+                    ] = "unavailable"
 
                 # Test AI model service
                 if self.ai_model_service:
                     available_models = self.ai_model_service.get_available_models()
-                    health_status["components"]["ai_model_service"] = "healthy" if available_models else "degraded"
+                    health_status["components"]["ai_model_service"] = (
+                        "healthy" if available_models else "degraded"
+                    )
                     health_status["available_models"] = list(available_models.keys())
                 else:
                     health_status["components"]["ai_model_service"] = "unavailable"
@@ -1250,7 +1357,7 @@ REASONING: <brief explanation>
                 test_start = time.time()
                 test_result = await self.analyze_with_consensus(
                     "Test policy for multi-model health check validation",
-                    AnalysisType.COMPLIANCE_SCORING
+                    AnalysisType.COMPLIANCE_SCORING,
                 )
                 test_time = (time.time() - test_start) * 1000
 
@@ -1258,11 +1365,13 @@ REASONING: <brief explanation>
                     "success": test_result.final_compliance_score >= 0,
                     "response_time_ms": test_time,
                     "agreement_score": test_result.agreement_score,
-                    "models_used": len(test_result.model_results)
+                    "models_used": len(test_result.model_results),
                 }
 
                 # Check if performance targets are met
-                health_status["performance_targets_met"] = test_time < 500.0  # <500ms target
+                health_status["performance_targets_met"] = (
+                    test_time < 500.0
+                )  # <500ms target
 
             except Exception as e:
                 health_status["status"] = "degraded"

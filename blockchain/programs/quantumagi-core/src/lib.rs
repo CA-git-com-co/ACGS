@@ -19,7 +19,10 @@ pub mod quantumagi_core {
         authority: Pubkey,
         principles: Vec<String>,
     ) -> Result<()> {
-        require!(principles.len() <= MAX_PRINCIPLES, GovernanceError::TooManyPrinciples);
+        require!(
+            principles.len() <= MAX_PRINCIPLES,
+            GovernanceError::TooManyPrinciples
+        );
 
         let governance = &mut ctx.accounts.governance;
         governance.authority = authority;
@@ -44,7 +47,10 @@ pub mod quantumagi_core {
         description: String,
         policy_text: String,
     ) -> Result<()> {
-        require!(policy_text.len() <= MAX_POLICY_LENGTH, GovernanceError::PolicyTooLong);
+        require!(
+            policy_text.len() <= MAX_POLICY_LENGTH,
+            GovernanceError::PolicyTooLong
+        );
         require!(title.len() <= 100, GovernanceError::TitleTooLong);
 
         let proposal = &mut ctx.accounts.proposal;
@@ -56,7 +62,8 @@ pub mod quantumagi_core {
         proposal.policy_text = policy_text;
         proposal.proposer = ctx.accounts.proposer.key();
         proposal.created_at = Clock::get()?.unix_timestamp;
-        proposal.voting_ends_at = Clock::get()?.unix_timestamp + (VOTING_PERIOD as i64 * 400 / 1000);
+        proposal.voting_ends_at =
+            Clock::get()?.unix_timestamp + (VOTING_PERIOD as i64 * 400 / 1000);
         proposal.status = ProposalStatus::Active;
         proposal.votes_for = 0;
         proposal.votes_against = 0;
@@ -84,8 +91,14 @@ pub mod quantumagi_core {
         let proposal = &mut ctx.accounts.proposal;
         let vote_record = &mut ctx.accounts.vote_record;
 
-        require!(proposal.status == ProposalStatus::Active, GovernanceError::ProposalNotActive);
-        require!(Clock::get()?.unix_timestamp <= proposal.voting_ends_at, GovernanceError::VotingPeriodEnded);
+        require!(
+            proposal.status == ProposalStatus::Active,
+            GovernanceError::ProposalNotActive
+        );
+        require!(
+            Clock::get()?.unix_timestamp <= proposal.voting_ends_at,
+            GovernanceError::VotingPeriodEnded
+        );
         require!(voting_power > 0, GovernanceError::InvalidVotingPower);
 
         // Record the vote
@@ -115,15 +128,18 @@ pub mod quantumagi_core {
     }
 
     /// Finalize a proposal after voting period (constitutional compliance check)
-    pub fn finalize_proposal(
-        ctx: Context<FinalizeProposal>,
-        policy_id: u64,
-    ) -> Result<()> {
+    pub fn finalize_proposal(ctx: Context<FinalizeProposal>, policy_id: u64) -> Result<()> {
         let proposal = &mut ctx.accounts.proposal;
         let governance = &mut ctx.accounts.governance;
 
-        require!(proposal.status == ProposalStatus::Active, GovernanceError::ProposalNotActive);
-        require!(Clock::get()?.unix_timestamp > proposal.voting_ends_at, GovernanceError::VotingPeriodNotEnded);
+        require!(
+            proposal.status == ProposalStatus::Active,
+            GovernanceError::ProposalNotActive
+        );
+        require!(
+            Clock::get()?.unix_timestamp > proposal.voting_ends_at,
+            GovernanceError::VotingPeriodNotEnded
+        );
 
         // Determine outcome based on votes
         let total_votes = proposal.votes_for + proposal.votes_against;
@@ -280,11 +296,11 @@ pub struct EmergencyAction<'info> {
 
 #[account]
 pub struct GovernanceState {
-    pub authority: Pubkey,                    // 32 bytes
-    pub principles: Vec<String>,              // Variable size (max 100 principles)
-    pub total_policies: u32,                  // 4 bytes
-    pub active_proposals: u32,                // 4 bytes
-    pub bump: u8,                            // 1 byte
+    pub authority: Pubkey,       // 32 bytes
+    pub principles: Vec<String>, // Variable size (max 100 principles)
+    pub total_policies: u32,     // 4 bytes
+    pub active_proposals: u32,   // 4 bytes
+    pub bump: u8,                // 1 byte
 }
 
 impl GovernanceState {
@@ -293,32 +309,33 @@ impl GovernanceState {
 
 #[account]
 pub struct PolicyProposal {
-    pub policy_id: u64,                      // 8 bytes
-    pub title: String,                       // Variable (max 100 chars)
-    pub description: String,                 // Variable (max 500 chars)
-    pub policy_text: String,                 // Variable (max 1000 chars)
-    pub proposer: Pubkey,                    // 32 bytes
-    pub created_at: i64,                     // 8 bytes
-    pub voting_ends_at: i64,                 // 8 bytes
-    pub status: ProposalStatus,              // 1 byte
-    pub votes_for: u64,                      // 8 bytes
-    pub votes_against: u64,                  // 8 bytes
-    pub total_voters: u32,                   // 4 bytes
-    pub bump: u8,                           // 1 byte
+    pub policy_id: u64,         // 8 bytes
+    pub title: String,          // Variable (max 100 chars)
+    pub description: String,    // Variable (max 500 chars)
+    pub policy_text: String,    // Variable (max 1000 chars)
+    pub proposer: Pubkey,       // 32 bytes
+    pub created_at: i64,        // 8 bytes
+    pub voting_ends_at: i64,    // 8 bytes
+    pub status: ProposalStatus, // 1 byte
+    pub votes_for: u64,         // 8 bytes
+    pub votes_against: u64,     // 8 bytes
+    pub total_voters: u32,      // 4 bytes
+    pub bump: u8,               // 1 byte
 }
 
 impl PolicyProposal {
-    pub const INIT_SPACE: usize = 8 + (4 + 100) + (4 + 500) + (4 + 1000) + 32 + 8 + 8 + 1 + 8 + 8 + 4 + 1; // ~1.7KB
+    pub const INIT_SPACE: usize =
+        8 + (4 + 100) + (4 + 500) + (4 + 1000) + 32 + 8 + 8 + 1 + 8 + 8 + 4 + 1; // ~1.7KB
 }
 
 #[account]
 pub struct VoteRecord {
-    pub voter: Pubkey,                       // 32 bytes
-    pub policy_id: u64,                      // 8 bytes
-    pub vote: bool,                          // 1 byte
-    pub voting_power: u64,                   // 8 bytes
-    pub timestamp: i64,                      // 8 bytes
-    pub bump: u8,                           // 1 byte
+    pub voter: Pubkey,     // 32 bytes
+    pub policy_id: u64,    // 8 bytes
+    pub vote: bool,        // 1 byte
+    pub voting_power: u64, // 8 bytes
+    pub timestamp: i64,    // 8 bytes
+    pub bump: u8,          // 1 byte
 }
 
 impl VoteRecord {
