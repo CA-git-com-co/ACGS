@@ -3,6 +3,7 @@ name = "logging"
 version = "0.1.0"
 description = "Quantumagi Logging System - Comprehensive Event Logging and Monitoring"
 edition = "2021"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib", "lib"]

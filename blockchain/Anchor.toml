@@ -16,7 +16,7 @@ logging = "CjZi5hi9qggBzbXDht9YSJhN5cw7Bhz3rHhn63QQcPQo"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Devnet"
+cluster = "Localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

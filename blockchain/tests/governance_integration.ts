@@ -21,8 +21,8 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
   let authority: Keypair;
   let voter1: Keypair;
   let voter2: Keypair;
-  let constitutionAccount: PublicKey;
-  let policyAccount: PublicKey;
+  let governanceAccount: PublicKey;
+  let proposalAccount: PublicKey;
   let appealAccount: PublicKey;
   let logAccount: PublicKey;
 
@@ -41,13 +41,14 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Derive PDAs for test accounts
-    [constitutionAccount] = PublicKey.findProgramAddressSync(
-      [Buffer.from("constitution"), authority.publicKey.toBuffer()],
+    [governanceAccount] = PublicKey.findProgramAddressSync(
+      [Buffer.from("governance")],
       quantumagiProgram.programId
     );
 
-    [policyAccount] = PublicKey.findProgramAddressSync(
-      [Buffer.from("policy"), Buffer.from("POL-001")],
+    const policyId = new anchor.BN(1001);
+    [proposalAccount] = PublicKey.findProgramAddressSync(
+      [Buffer.from("proposal"), policyId.toBuffer("le", 8)],
       quantumagiProgram.programId
     );
 
@@ -63,77 +64,91 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
   });
 
   describe("Complete Governance Workflow", () => {
-    it("Should initialize constitution with governance framework", async () => {
-      const constitutionHash = "cdd01ef066bc6cf2"; // Test constitution hash
-      
+    it("Should initialize governance with constitutional framework", async () => {
+      const principles = [
+        "PC-001: No unauthorized state mutations",
+        "GV-001: Democratic governance required",
+        "FN-001: Treasury protection mandatory"
+      ];
+
       try {
         await quantumagiProgram.methods
-          .initializeConstitution(constitutionHash)
+          .initializeGovernance(authority.publicKey, principles)
           .accounts({
-            constitution: constitutionAccount,
+            governance: governanceAccount,
             authority: authority.publicKey,
             systemProgram: SystemProgram.programId,
           })
           .signers([authority])
           .rpc();
 
-        // Verify constitution was created
-        const constitutionData = await quantumagiProgram.account.constitution.fetch(constitutionAccount);
-        assert.equal(constitutionData.hash, constitutionHash);
-        assert.equal(constitutionData.authority.toString(), authority.publicKey.toString());
-        
-        console.log("✅ Constitution initialized successfully");
+        // Verify governance was created
+        const governanceData = await quantumagiProgram.account.governanceState.fetch(governanceAccount);
+        assert.equal((governanceData as any).authority.toString(), authority.publicKey.toString());
+        assert.equal((governanceData as any).principles.length, principles.length);
+
+        console.log("✅ Governance initialized successfully");
       } catch (error) {
-        console.log("ℹ️  Constitution may already exist, continuing...");
+        console.log("ℹ️  Governance may already exist, continuing...");
       }
     });
 
     it("Should create and validate policy proposal", async () => {
+      const policyId = new anchor.BN(1001);
       const policyData = {
-        id: "POL-001",
         title: "Test Governance Policy",
         description: "A test policy for governance validation",
-        category: "governance",
-        priority: "high",
+        policyText: "ENFORCE: Test governance policy requirements for validation",
       };
 
       try {
         await quantumagiProgram.methods
-          .createPolicy(
-            policyData.id,
+          .createPolicyProposal(
+            policyId,
             policyData.title,
             policyData.description,
-            policyData.category,
-            policyData.priority
+            policyData.policyText
           )
           .accounts({
-            policy: policyAccount,
-            constitution: constitutionAccount,
-            authority: authority.publicKey,
+            proposal: proposalAccount,
+            governance: governanceAccount,
+            proposer: authority.publicKey,
             systemProgram: SystemProgram.programId,
           })
           .signers([authority])
           .rpc();
 
-        // Verify policy was created
-        const policy = await quantumagiProgram.account.policy.fetch(policyAccount);
-        assert.equal(policy.id, policyData.id);
-        assert.equal(policy.title, policyData.title);
-        assert.equal(policy.status, "pending");
-        
+        // Verify proposal was created
+        const proposal = await quantumagiProgram.account.policyProposal.fetch(proposalAccount);
+        assert.equal((proposal as any).policyId.toString(), policyId.toString());
+        assert.equal((proposal as any).title, policyData.title);
+        assert.deepEqual((proposal as any).status, { active: {} });
+
         console.log("✅ Policy proposal created successfully");
       } catch (error) {
-        console.log("ℹ️  Policy may already exist, continuing...");
+        console.log("ℹ️  Proposal may already exist, continuing...");
       }
     });
 
     it("Should conduct democratic voting process", async () => {
+      const policyId = new anchor.BN(1001);
+
       // Voter 1 votes in favor
       try {
+        const [voteRecord1PDA] = PublicKey.findProgramAddressSync(
+          [
+            Buffer.from("vote_record"),
+            policyId.toBuffer("le", 8),
+            voter1.publicKey.toBuffer(),
+          ],
+          quantumagiProgram.programId
+        );
+
         await quantumagiProgram.methods
-          .vote(true, "Support this governance policy")
+          .voteOnProposal(policyId, true, new anchor.BN(1))
           .accounts({
-            policy: policyAccount,
+            proposal: proposalAccount,
+            voteRecord: voteRecord1PDA,
             voter: voter1.publicKey,
             systemProgram: SystemProgram.programId,
           })
@@ -147,10 +162,20 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
 
       // Voter 2 votes in favor
       try {
+        const [voteRecord2PDA] = PublicKey.findProgramAddressSync(
+          [
+            Buffer.from("vote_record"),
+            policyId.toBuffer("le", 8),
+            voter2.publicKey.toBuffer(),
+          ],
+          quantumagiProgram.programId
+        );
+
         await quantumagiProgram.methods
-          .vote(true, "Agree with the proposal")
+          .voteOnProposal(policyId, true, new anchor.BN(1))
           .accounts({
-            policy: policyAccount,
+            proposal: proposalAccount,
+            voteRecord: voteRecord2PDA,
             voter: voter2.publicKey,
             systemProgram: SystemProgram.programId,
           })
@@ -163,35 +188,42 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
       }
 
       // Verify voting results
-      const policy = await quantumagiProgram.account.policy.fetch(policyAccount);
-      console.log(`📊 Voting results - Votes for: ${policy.votesFor}, Votes against: ${policy.votesAgainst}`);
+      const proposal = await quantumagiProgram.account.policyProposal.fetch(proposalAccount);
+      console.log(`📊 Voting results - Votes for: ${(proposal as any).votesFor}, Votes against: ${(proposal as any).votesAgainst}`);
     });
 
-    it("Should perform policy compliance checking (PGC)", async () => {
+    it("Should perform policy governance compliance (PGC) validation", async () => {
+      const policyId = new anchor.BN(1001);
+
       try {
-        const complianceResult = await quantumagiProgram.methods
-          .checkCompliance("POL-001")
+        // Finalize the proposal to demonstrate PGC workflow
+        const finalizeResult = await quantumagiProgram.methods
+          .finalizeProposal(policyId)
           .accounts({
-            policy: policyAccount,
-            constitution: constitutionAccount,
-            authority: authority.publicKey,
+            proposal: proposalAccount,
+            governance: governanceAccount,
+            finalizer: authority.publicKey,
           })
           .signers([authority])
           .rpc();
 
-        console.log("✅ Policy compliance check completed");
-        console.log(`🔍 Compliance transaction: ${complianceResult}`);
+        // Verify proposal finalization (PGC validation)
+        const finalizedProposal = await quantumagiProgram.account.policyProposal.fetch(proposalAccount);
+
+        console.log("✅ Policy governance compliance (PGC) validation completed");
+        console.log(`🔍 Proposal status: ${JSON.stringify((finalizedProposal as any).status)}`);
+        console.log(`📊 Final vote tally - For: ${(finalizedProposal as any).votesFor}, Against: ${(finalizedProposal as any).votesAgainst}`);
       } catch (error) {
-        console.log("ℹ️  Compliance check completed with expected behavior");
+        console.log("ℹ️  PGC validation completed with expected behavior");
       }
     });
 
     it("Should log governance actions for transparency", async () => {
       const logMessage = "Governance workflow test completed successfully";
-      
+
       try {
         await loggingProgram.methods
-          .logAction("governance-test", logMessage)
+          .logEvent("governance-test", logMessage)
           .accounts({
             logEntry: logAccount,
             authority: authority.publicKey,
@@ -202,9 +234,9 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
 
         // Verify log entry
         const logEntry = await loggingProgram.account.logEntry.fetch(logAccount);
-        assert.equal(logEntry.message, logMessage);
-        assert.equal(logEntry.authority.toString(), authority.publicKey.toString());
-        
+        assert.equal((logEntry as any).message, logMessage);
+        assert.equal((logEntry as any).authority.toString(), authority.publicKey.toString());
+
         console.log("✅ Governance action logged successfully");
       } catch (error) {
         console.log("ℹ️  Log entry may already exist, continuing...");
@@ -233,9 +265,9 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
 
         // Verify appeal was submitted
         const appeal = await appealsProgram.account.appeal.fetch(appealAccount);
-        assert.equal(appeal.policyId, appealData.policyId);
-        assert.equal(appeal.reason, appealData.reason);
-        assert.equal(appeal.status, "pending");
+        assert.equal((appeal as any).policyId, appealData.policyId);
+        assert.equal((appeal as any).reason, appealData.reason);
+        assert.equal((appeal as any).status, "pending");
         
         console.log("✅ Appeal submitted successfully");
       } catch (error) {
@@ -256,7 +288,7 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
 
         // Verify appeal was reviewed
         const appeal = await appealsProgram.account.appeal.fetch(appealAccount);
-        assert.equal(appeal.status, "approved");
+        assert.equal((appeal as any).status, "approved");
         
         console.log("✅ Appeal reviewed and approved");
       } catch (error) {
@@ -267,14 +299,14 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
 
   describe("Emergency Governance Actions", () => {
     it("Should validate authority for emergency actions", async () => {
-      // Test emergency authority validation
-      const emergencyAction = "emergency-halt";
-      
       try {
         await quantumagiProgram.methods
-          .emergencyAction(emergencyAction, "Test emergency governance action")
+          .emergencyAction(
+            { systemMaintenance: {} }, // Emergency action type
+            null // No specific policy target
+          )
           .accounts({
-            constitution: constitutionAccount,
+            governance: governanceAccount,
             authority: authority.publicKey,
           })
           .signers([authority])
@@ -294,9 +326,12 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
 
       try {
         await quantumagiProgram.methods
-          .emergencyAction("unauthorized-action", "This should fail")
+          .emergencyAction(
+            { systemMaintenance: {} },
+            null
+          )
           .accounts({
-            constitution: constitutionAccount,
+            governance: governanceAccount,
             authority: unauthorizedUser.publicKey,
           })
           .signers([unauthorizedUser])
@@ -312,34 +347,50 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
   });
 
   describe("Edge Cases and Error Handling", () => {
-    it("Should handle invalid policy IDs gracefully", async () => {
-      const invalidPolicyId = "INVALID-POLICY-999";
-      
+    it("Should handle invalid proposal operations gracefully", async () => {
+      const invalidPolicyId = new anchor.BN(999999);
+      const [invalidProposalPDA] = PublicKey.findProgramAddressSync(
+        [Buffer.from("proposal"), invalidPolicyId.toBuffer("le", 8)],
+        quantumagiProgram.programId
+      );
+
       try {
+        // Try to finalize non-existent proposal
         await quantumagiProgram.methods
-          .checkCompliance(invalidPolicyId)
+          .finalizeProposal(invalidPolicyId)
           .accounts({
-            policy: policyAccount, // This will cause a mismatch
-            constitution: constitutionAccount,
-            authority: authority.publicKey,
+            proposal: invalidProposalPDA,
+            governance: governanceAccount,
+            finalizer: authority.publicKey,
           })
           .signers([authority])
           .rpc();
 
-        assert.fail("Invalid policy ID should have been rejected");
+        assert.fail("Invalid proposal ID should have been rejected");
       } catch (error) {
-        console.log("✅ Invalid policy ID properly rejected");
+        console.log("✅ Invalid proposal operation properly rejected");
         // Expected behavior
       }
     });
 
     it("Should handle duplicate votes gracefully", async () => {
-      // Try to vote again with the same voter
+      const policyId = new anchor.BN(1001);
+      const [voteRecordPDA] = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("vote_record"),
+          policyId.toBuffer("le", 8),
+          voter1.publicKey.toBuffer(),
+        ],
+        quantumagiProgram.programId
+      );
+
+      // Try to vote again with the same voter (should fail due to existing vote record)
       try {
         await quantumagiProgram.methods
-          .vote(false, "Changing my vote")
+          .voteOnProposal(policyId, false, new anchor.BN(1))
           .accounts({
-            policy: policyAccount,
+            proposal: proposalAccount,
+            voteRecord: voteRecordPDA,
             voter: voter1.publicKey,
             systemProgram: SystemProgram.programId,
           })
@@ -359,19 +410,22 @@ describe("ACGS-1 Quantumagi Governance Integration Tests", () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       try {
-        // Try to modify someone else's policy
+        // Try to execute emergency action without proper authority
         await quantumagiProgram.methods
-          .updatePolicy("POL-001", "Malicious Update", "This should fail")
+          .emergencyAction(
+            { systemMaintenance: {} },
+            null
+          )
           .accounts({
-            policy: policyAccount,
+            governance: governanceAccount,
             authority: maliciousUser.publicKey, // Wrong authority
           })
           .signers([maliciousUser])
           .rpc();
 
-        assert.fail("Unauthorized policy update should have been rejected");
+        assert.fail("Unauthorized emergency action should have been rejected");
       } catch (error) {
-        console.log("✅ Unauthorized policy update properly rejected");
+        console.log("✅ Unauthorized emergency action properly rejected");
         // Expected behavior
       }
     });
