@@ -41,8 +41,8 @@
       "active_policies": 3,
       "policy_categories": [
         "Governance",
-        "Financial",
-        "Safety"
+        "Safety",
+        "Financial"
       ]
     },
     "governance_accounts": {
