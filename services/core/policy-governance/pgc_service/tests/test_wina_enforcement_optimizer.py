@@ -364,7 +364,10 @@ class TestWINAEnforcementOptimizer:
         cache_key = wina_optimizer._generate_cache_key(enforcement_context)
 
         assert isinstance(cache_key, str)
-        assert len(cache_key) == 64  # SHA-256 hash length
+        import hashlib
+        expected_length = len(hashlib.sha256().hexdigest())  # Dynamically compute SHA-256 hash length
+        assert len(cache_key) == expected_length
+        assert all(c in "0123456789abcdef" for c in cache_key)  # Verify hexadecimal format
 
         # Test that same context generates same key
         cache_key2 = wina_optimizer._generate_cache_key(enforcement_context)
