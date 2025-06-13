@@ -9,8 +9,8 @@ This document provides a comprehensive analysis of the ACGS-1 GitHub Actions CI/
 ### 1. **Critical Issues (Resolved)**
 
 #### Service Path Mismatches
-- **Problem**: CI workflows referenced `src/backend/` services that didn't exist in the current project structure
-- **Solution**: Updated workflow configurations to match actual project structure with services in `services/` and `src/backend/ec_service/`
+- **Problem**: CI workflows referenced `services/core/` services that didn't exist in the current project structure
+- **Solution**: Updated workflow configurations to match actual project structure with services in `services/` and `services/core/ec_service/`
 - **Impact**: Prevents build failures due to missing service directories
 
 #### Missing Rust/Anchor Build Pipeline
@@ -28,7 +28,7 @@ This document provides a comprehensive analysis of the ACGS-1 GitHub Actions CI/
 - **Solution**: Updated all workflow files to reference actual project structure:
   - `blockchain/` for Anchor programs
   - `services/core/`, `services/platform/` for microservices
-  - `src/backend/ec_service/` for existing backend service
+  - `services/core/ec_service/` for existing backend service
 - **Impact**: Eliminates workflow failures due to path mismatches
 
 ### 2. **Medium Priority Issues (Resolved)**
@@ -64,7 +64,7 @@ env:
 #### Improved Change Detection
 Enhanced preflight checks to detect changes in:
 - Rust/Anchor code (`blockchain/`, `*.rs`, `Cargo.toml`, `Anchor.toml`)
-- Python services (`services/`, `src/backend/`, `*.py`, `requirements*.txt`)
+- Python services (`services/`, `services/core/`, `*.py`, `requirements*.txt`)
 - TypeScript/Node.js code (`*.ts`, `*.js`, `package.json`, `tsconfig.json`)
 
 ## Workflow Files Updated

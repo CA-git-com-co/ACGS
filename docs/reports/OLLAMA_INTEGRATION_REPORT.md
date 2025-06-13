@@ -27,7 +27,7 @@ ENABLE_OLLAMA_MODELS=true
 
 ### 2. Ollama Client Implementation ✅
 
-**Created `src/backend/gs_service/app/core/ollama_client.py`:**
+**Created `services/core/gs_service/app/core/ollama_client.py`:**
 - Async/await patterns for consistency with ACGS-PGP architecture
 - Health check and model availability validation
 - Text generation with configurable parameters
@@ -43,7 +43,7 @@ ENABLE_OLLAMA_MODELS=true
 
 ### 3. MultiModelManager Integration ✅
 
-**Enhanced `src/backend/gs_service/app/workflows/multi_model_manager.py`:**
+**Enhanced `services/core/gs_service/app/workflows/multi_model_manager.py`:**
 - Added Ollama model initialization in `_initialize_models()`
 - Implemented Ollama-specific model calling logic in `_call_model()`
 - Integrated with existing performance tracking and circuit breaker patterns
@@ -56,7 +56,7 @@ ENABLE_OLLAMA_MODELS=true
 
 ### 4. LangGraph Configuration Updates ✅
 
-**Updated `src/backend/shared/langgraph_config.py`:**
+**Updated `services/core/shared/langgraph_config.py`:**
 - Added Ollama models as fallback options for constitutional roles
 - Configured DeepSeek-R1 for constitutional prompting, policy synthesis, and bias mitigation
 - Added Ollama API key and base URL configuration support

@@ -366,7 +366,7 @@ GRAFANA_ENABLED=true
 ### Migration
 ```bash
 # Apply QEC database schema
-cd src/backend/ac_service
+cd services/core/ac_service
 alembic upgrade head
 ```
 

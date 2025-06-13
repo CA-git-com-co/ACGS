@@ -24,9 +24,9 @@ This document outlines a comprehensive refinement plan for the ACGS-PGP (AI Comp
 - [ ] Validate CSRF protection implementation
 
 **Files to Review:**
-- `src/backend/auth_service/app/api/v1/endpoints.py`
-- `src/backend/auth_service/app/api/v1/api_router.py`
-- `src/backend/auth_service/main.py`
+- `services/core/auth_service/app/api/v1/endpoints.py`
+- `services/core/auth_service/app/api/v1/api_router.py`
+- `services/core/auth_service/main.py`
 
 ### 1.2 Database Schema and Connectivity
 **Issues:** 500 errors, server disconnections, missing tables
@@ -40,8 +40,8 @@ This document outlines a comprehensive refinement plan for the ACGS-PGP (AI Comp
 - [ ] Implement proper database health checks
 
 **Files to Review:**
-- `src/backend/shared/database.py`
-- `src/backend/shared/models.py`
+- `services/core/shared/database.py`
+- `services/core/shared/models.py`
 - `migrations/versions/`
 - All service `models.py` files
 
@@ -165,7 +165,7 @@ This document outlines a comprehensive refinement plan for the ACGS-PGP (AI Comp
 **Root Cause:** Multiple conflicting main.py files in auth_service:
 - `auth_service/main.py` (simple health check only)
 - `auth_service/app/main.py` (full FastAPI app with proper routing)
-- `backend/auth_service/main.py` (another full FastAPI app)
+- `services/core/auth/auth_service/main.py` (another full FastAPI app)
 
 **Impact:** Docker containers may be using the wrong main.py file, causing 404 errors on login endpoints.
 

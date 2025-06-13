@@ -348,7 +348,7 @@ Update nginx.conf to include new instances:
 upstream auth_service_upstream {
     least_conn;
     server auth_service:8000 max_fails=3 fail_timeout=30s weight=1;
-    server auth_service_2:8000 max_fails=3 fail_timeout=30s weight=1;
+    server auth_service:8000 max_fails=3 fail_timeout=30s weight=1;
     keepalive 32;
 }
 ```

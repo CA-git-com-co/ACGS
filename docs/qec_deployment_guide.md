@@ -71,7 +71,7 @@ GRAFANA_PORT=3001
 ### 3. Initialize Database Schema
 ```bash
 # Run Alembic migrations
-cd src/backend/shared
+cd services/core/shared
 alembic upgrade head
 
 # Verify QEC enhancement tables
@@ -227,7 +227,7 @@ save 60 10000
 upstream ac_service {
     server ac_service:8001;
     # Add more instances for scaling
-    # server ac_service_2:8001;
+    # server ac_service:8001;
 }
 
 upstream gs_service {

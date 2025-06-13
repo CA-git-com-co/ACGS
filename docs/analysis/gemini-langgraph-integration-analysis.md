@@ -231,7 +231,7 @@ result = structured_llm.invoke(formatted_prompt)
 ### 1. Constitutional Council LangGraph Implementation
 
 ```python
-# src/backend/ac_service/app/workflows/constitutional_council.py
+# services/core/ac_service/app/workflows/constitutional_council.py
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send
 from typing import TypedDict, Annotated
@@ -293,7 +293,7 @@ constitutional_council_graph = council_builder.compile()
 ### 2. Enhanced GS Engine Multi-Model Configuration
 
 ```python
-# src/backend/gs_service/app/core/multi_model_config.py
+# services/core/gs_service/app/core/multi_model_config.py
 from pydantic import BaseModel, Field
 from typing import Dict, Optional
 from enum import Enum
@@ -366,7 +366,7 @@ class ModelManager:
 ### 3. Real-time Constitutional Fidelity Monitoring
 
 ```typescript
-// src/frontend/src/components/ConstitutionalFidelityMonitor.tsx
+// applications/src/components/ConstitutionalFidelityMonitor.tsx
 import { useStream } from "@langchain/langgraph-sdk/react";
 import { useState, useEffect } from "react";
 

@@ -71,7 +71,7 @@ nano .env
 - `ENVIRONMENT`: Set to "development", "staging", or "production"
 - `CONSTITUTIONAL_COUNCIL_ENABLED`: Enable democratic governance features
 - `CRYPTOGRAPHIC_INTEGRITY_ENABLED`: Enable PGP assurance layer
-- `AC_SERVICE_URL`: AC service URL for constitutional prompting (default: "http://ac_service:8000/api/v1")
+- `AC_SERVICE_URL`: AC service URL for constitutional prompting (default: "http://ac_service:8001/api/v1")
 
 ## Phase 1: Foundational Enhancements & Theoretical Alignment
 

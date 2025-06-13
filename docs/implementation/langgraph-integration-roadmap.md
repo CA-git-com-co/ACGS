@@ -11,8 +11,8 @@ This roadmap outlines the practical implementation steps for integrating LangGra
 **Add LangGraph Dependencies**:
 ```bash
 # Backend services requiring LangGraph
-cd src/backend/ac_service && pip install langgraph>=0.2.6 langchain>=0.3.19 langchain-google-genai
-cd src/backend/gs_service && pip install langgraph>=0.2.6 langchain>=0.3.19 langchain-google-genai
+cd services/core/ac_service && pip install langgraph>=0.2.6 langchain>=0.3.19 langchain-google-genai
+cd services/core/gs_service && pip install langgraph>=0.2.6 langchain>=0.3.19 langchain-google-genai
 ```
 
 **Environment Configuration**:
@@ -25,7 +25,7 @@ LANGGRAPH_POSTGRES_URL=postgresql://acgs_user:acgs_password@localhost:5433/acgs_
 
 **Docker Compose Updates**:
 ```yaml
-# Add to config/docker/docker-compose.yml
+# Add to infrastructure/docker/docker-compose.yml
   langgraph-redis:
     image: redis:6
     container_name: acgs_langgraph_redis
@@ -42,7 +42,7 @@ LANGGRAPH_POSTGRES_URL=postgresql://acgs_user:acgs_password@localhost:5433/acgs_
 
 **Create shared state management**:
 ```python
-# src/backend/shared/langgraph_states.py
+# services/core/shared/langgraph_states.py
 from typing import TypedDict, Annotated, List, Dict, Any
 from langgraph.graph import add_messages
 import operator
@@ -81,7 +81,7 @@ class PolicySynthesisState(BaseACGSState):
 
 ### 2.1 Constitutional Council Workflow Graph
 
-**Implementation Location**: `src/backend/ac_service/app/workflows/constitutional_council.py`
+**Implementation Location**: `services/core/ac_service/app/workflows/constitutional_council.py`
 
 **Key Components**:
 1. Amendment proposal generation
@@ -97,7 +97,7 @@ class PolicySynthesisState(BaseACGSState):
 
 ### 2.2 Multi-Model Configuration for Constitutional Analysis
 
-**Implementation Location**: `src/backend/ac_service/app/core/constitutional_models.py`
+**Implementation Location**: `services/core/ac_service/app/core/constitutional_models.py`
 
 **Model Specialization**:
 - Constitutional Analysis: Gemini 2.5 Pro (high accuracy)
@@ -109,7 +109,7 @@ class PolicySynthesisState(BaseACGSState):
 
 **Real-time Amendment Tracking**:
 ```typescript
-// src/frontend/src/components/ConstitutionalCouncilDashboard.tsx
+// applications/src/components/ConstitutionalCouncilDashboard.tsx
 import { useStream } from "@langchain/langgraph-sdk/react";
 
 export function ConstitutionalCouncilDashboard() {
@@ -138,7 +138,7 @@ export function ConstitutionalCouncilDashboard() {
 
 ### 3.1 Policy Synthesis Workflow Graph
 
-**Implementation Location**: `src/backend/gs_service/app/workflows/policy_synthesis.py`
+**Implementation Location**: `services/core/gs_service/app/workflows/policy_synthesis.py`
 
 **Workflow Steps**:
 1. Constitutional principle analysis
@@ -149,7 +149,7 @@ export function ConstitutionalCouncilDashboard() {
 
 ### 3.2 Multi-Model Manager Implementation
 
-**Implementation Location**: `src/backend/gs_service/app/core/multi_model_manager.py`
+**Implementation Location**: `services/core/gs_service/app/core/multi_model_manager.py`
 
 **Features**:
 - Role-based model selection
@@ -162,7 +162,7 @@ export function ConstitutionalCouncilDashboard() {
 
 **Policy Generation Schemas**:
 ```python
-# src/backend/gs_service/app/schemas/policy_schemas.py
+# services/core/gs_service/app/schemas/policy_schemas.py
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 
@@ -184,7 +184,7 @@ class PolicyGenerationResponse(BaseModel):
 
 ### 4.1 Constitutional Fidelity Monitor
 
-**Implementation Location**: `src/frontend/src/components/ConstitutionalFidelityMonitor.tsx`
+**Implementation Location**: `applications/src/components/ConstitutionalFidelityMonitor.tsx`
 
 **Features**:
 - Real-time fidelity score tracking
@@ -194,7 +194,7 @@ class PolicyGenerationResponse(BaseModel):
 
 ### 4.2 QEC-inspired Error Correction
 
-**Implementation Location**: `src/backend/gs_service/app/workflows/qec_correction.py`
+**Implementation Location**: `services/core/gs_service/app/workflows/qec_correction.py`
 
 **Error Correction Workflow**:
 1. Constitutional distance scoring

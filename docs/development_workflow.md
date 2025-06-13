@@ -610,11 +610,11 @@ jobs:
     
     - name: Build Docker images
       run: |
-        docker-compose -f config/docker/docker-compose.yml build
+        docker-compose -f infrastructure/docker/docker-compose.yml build
     
     - name: Run integration tests
       run: |
-        docker-compose -f config/docker/docker-compose.test.yml up --abort-on-container-exit
+        docker-compose -f infrastructure/docker/docker-compose.test.yml up --abort-on-container-exit
     
     - name: Security scan images
       run: |

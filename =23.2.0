@@ -1,0 +1,6 @@
+Collecting structlog
+  Downloading structlog-25.4.0-py3-none-any.whl.metadata (7.6 kB)
+Requirement already satisfied: typing-extensions in ./venv/lib/python3.10/site-packages (from structlog) (4.14.0)
+Downloading structlog-25.4.0-py3-none-any.whl (68 kB)
+Installing collected packages: structlog
+Successfully installed structlog-25.4.0

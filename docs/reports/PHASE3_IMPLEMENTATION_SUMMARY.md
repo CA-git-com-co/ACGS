@@ -9,38 +9,38 @@ Phase 3 of the ACGS-master development plan has been successfully implemented, d
 ### ✅ **Completed Components**
 
 #### 1. **Advanced Performance Monitoring System**
-- **File**: `src/backend/gs_service/app/services/performance_monitor.py`
+- **File**: `services/core/gs_service/app/services/performance_monitor.py`
 - **Features**: Real-time latency profiling, system resource monitoring, bottleneck detection
 - **Metrics**: Prometheus integration, performance threshold alerting, concurrent request tracking
 - **Target**: <50ms policy decision latency achieved
 
 #### 2. **Multi-Tier Caching Infrastructure**
-- **File**: `src/backend/gs_service/app/services/advanced_cache.py`
+- **File**: `services/core/gs_service/app/services/advanced_cache.py`
 - **Features**: L1 (in-memory LRU) + L2 (Redis distributed) caching
 - **Capabilities**: Intelligent cache invalidation, configurable TTL, performance metrics
 - **Performance**: <2ms cache hit latency, >80% hit rate target
 
 #### 3. **Security Compliance Framework**
-- **File**: `src/backend/gs_service/app/services/security_compliance.py`
+- **File**: `services/core/gs_service/app/services/security_compliance.py`
 - **Features**: Input validation, rate limiting, JWT authentication, audit logging
 - **Protection**: SQL injection, XSS, command injection prevention
 - **Compliance**: RBAC, comprehensive security audit trails
 
 #### 4. **Enhanced OPA Integration**
-- **File**: `src/backend/gs_service/app/core/opa_integration.py` (enhanced)
+- **File**: `services/core/gs_service/app/core/opa_integration.py` (enhanced)
 - **Improvements**: Multi-tier caching integration, performance monitoring
 - **Optimization**: Connection pooling, batch processing, advanced error handling
 - **Performance**: <50ms policy decision latency with caching
 
 #### 5. **Performance Monitoring APIs**
-- **File**: `src/backend/gs_service/app/api/v1/performance_monitoring.py`
+- **File**: `services/core/gs_service/app/api/v1/performance_monitoring.py`
 - **Endpoints**: Metrics, health, bottlenecks, latency profiling, alerts
 - **Integration**: Prometheus metrics, Grafana dashboard support
 - **Features**: Real-time monitoring, custom alert configuration
 
 #### 6. **Comprehensive Testing Suite**
-- **Performance Tests**: `src/backend/gs_service/tests/performance/test_governance_synthesis_performance.py`
-- **Security Tests**: `src/backend/gs_service/tests/security/test_security_compliance.py`
+- **Performance Tests**: `services/core/gs_service/tests/performance/test_governance_synthesis_performance.py`
+- **Security Tests**: `services/core/gs_service/tests/security/test_security_compliance.py`
 - **Coverage**: ≥90% test coverage for all Phase 3 components
 - **Validation**: Automated performance and security validation
 
@@ -153,8 +153,8 @@ Phase 3 of the ACGS-master development plan has been successfully implemented, d
 ./scripts/run_phase3_tests.sh
 
 # Run specific test categories
-pytest src/backend/gs_service/tests/performance/ -m performance
-pytest src/backend/gs_service/tests/security/ -m security
+pytest services/core/gs_service/tests/performance/ -m performance
+pytest services/core/gs_service/tests/security/ -m security
 ```
 
 ## Deployment and Operations

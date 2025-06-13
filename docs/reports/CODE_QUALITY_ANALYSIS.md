@@ -18,9 +18,9 @@ This analysis identifies code quality issues across the ACGS-PGP microservices a
 - Missing connection pooling configuration
 
 **Files Affected:**
-- `src/backend/shared/database.py`
-- `src/backend/shared_backup_temp/database.py`
-- `backend/auth_service/app/db/database.py`
+- `services/core/shared/database.py`
+- `services/core/shared_backup_temp/database.py`
+- `services/core/auth/auth_service/app/db/database.py`
 
 **Recommended Fixes:**
 ```python

@@ -13,26 +13,26 @@
 
 ## Files with Most Improvements
 
-- **/mnt/persist/workspace/src/backend/shared/utils.py**: 9 handlers, 37 logging statements
-- **/mnt/persist/workspace/src/backend/shared/metrics.py**: 0 handlers, 37 logging statements
-- **/mnt/persist/workspace/src/backend/gs_service/app/core/llm_reliability_framework.py**: 3 handlers, 25 logging statements
-- **/mnt/persist/workspace/src/backend/ac_service/tests/test_hitl_api_integration.py**: 10 handlers, 15 logging statements
-- **/mnt/persist/workspace/src/backend/shared/wina/gating.py**: 7 handlers, 17 logging statements
-- **/mnt/persist/workspace/src/backend/gs_service/app/core/constitutional_prompting.py**: 11 handlers, 11 logging statements
-- **/mnt/persist/workspace/src/backend/gs_service/tests/security/test_security_compliance.py**: 0 handlers, 22 logging statements
-- **/mnt/persist/workspace/src/backend/federated_service/app/core/cross_platform_adapters.py**: 0 handlers, 20 logging statements
-- **/mnt/persist/workspace/src/backend/gs_service/app/services/qec_error_correction_service.py**: 6 handlers, 14 logging statements
-- **/mnt/persist/workspace/src/backend/gs_service/app/services/advanced_cache.py**: 2 handlers, 17 logging statements
+- **/mnt/persist/workspace/services/core/shared/utils.py**: 9 handlers, 37 logging statements
+- **/mnt/persist/workspace/services/core/shared/metrics.py**: 0 handlers, 37 logging statements
+- **/mnt/persist/workspace/services/core/gs_service/app/core/llm_reliability_framework.py**: 3 handlers, 25 logging statements
+- **/mnt/persist/workspace/services/core/ac_service/tests/test_hitl_api_integration.py**: 10 handlers, 15 logging statements
+- **/mnt/persist/workspace/services/core/shared/wina/gating.py**: 7 handlers, 17 logging statements
+- **/mnt/persist/workspace/services/core/gs_service/app/core/constitutional_prompting.py**: 11 handlers, 11 logging statements
+- **/mnt/persist/workspace/services/core/gs_service/tests/security/test_security_compliance.py**: 0 handlers, 22 logging statements
+- **/mnt/persist/workspace/services/core/federated_service/app/core/cross_platform_adapters.py**: 0 handlers, 20 logging statements
+- **/mnt/persist/workspace/services/core/gs_service/app/services/qec_error_correction_service.py**: 6 handlers, 14 logging statements
+- **/mnt/persist/workspace/services/core/gs_service/app/services/advanced_cache.py**: 2 handlers, 17 logging statements
 
 ## Changes Made
 
-### /mnt/persist/workspace/src/backend/fv_service/app/services/integrity_client.py
+### /mnt/persist/workspace/services/core/fv_service/app/services/integrity_client.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/services/ac_client.py
+### /mnt/persist/workspace/services/core/fv_service/app/services/ac_client.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/core/tiered_validation.py
+### /mnt/persist/workspace/services/core/fv_service/app/core/tiered_validation.py
 - Added logging to function '__init__'
 - Added logging to function '_simulate_human_review'
 - Added logging to function '_combine_rigorous_results'
@@ -40,34 +40,34 @@
 - Added logging to function '_determine_overall_status'
 - Added logging to function '_generate_summary'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/core/cross_domain_testing_engine.py
+### /mnt/persist/workspace/services/core/fv_service/app/core/cross_domain_testing_engine.py
 - Added logging to function '__init__'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/core/safety_conflict_checker.py
+### /mnt/persist/workspace/services/core/fv_service/app/core/safety_conflict_checker.py
 - Added logging to function '__init__'
 - Added logging to function '_determine_safety_status'
 - Added logging to function '_generate_safety_summary'
 - Added logging to function '__init__'
 - Added logging to function '_generate_conflict_summary'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/core/proof_obligations.py
+### /mnt/persist/workspace/services/core/fv_service/app/core/proof_obligations.py
 - Added logging to function 'generate_proof_obligations_from_principle'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/core/verification_completeness_tester.py
+### /mnt/persist/workspace/services/core/fv_service/app/core/verification_completeness_tester.py
 - Added logging to function '__init__'
 - Added logging to function '_create_test_cases'
 - Added logging to function '_calculate_completeness_score'
 - Added logging to function '_result_to_dict'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/core/smt_solver_integration.py
+### /mnt/persist/workspace/services/core/fv_service/app/core/smt_solver_integration.py
 - Added logging to function '__init__'
 - Added logging to function '_parse_datalog_rule'
 - Added logging to function '_parse_predicate'
 - Added logging to function '_parse_obligation'
 - Added logging to function '_extract_counter_example'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/core/adversarial_robustness_tester.py
+### /mnt/persist/workspace/services/core/fv_service/app/core/adversarial_robustness_tester.py
 - Added logging to function '__post_init__'
 - Added logging to function '__init__'
 - Added logging to function '__init__'
@@ -78,7 +78,7 @@
 - Added logging to function '_generate_robustness_report'
 - Added logging to function '_generate_recommendations'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/core/parallel_validation_pipeline.py
+### /mnt/persist/workspace/services/core/fv_service/app/core/parallel_validation_pipeline.py
 - Added logging to function '__post_init__'
 - Added logging to function '__post_init__'
 - Added logging to function '__init__'
@@ -95,7 +95,7 @@
 - Added logging to function '_convert_to_verification_response'
 - Added logging to function '_update_performance_metrics'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/core/bias_detector.py
+### /mnt/persist/workspace/services/core/fv_service/app/core/bias_detector.py
 - Added logging to function '__init__'
 - Added logging to function '_simulate_policy_predictions'
 - Added logging to function '_calculate_overall_bias_score'
@@ -106,7 +106,7 @@
 - Added logging to function '_determine_compliance_status'
 - Added logging to function '_generate_fairness_summary'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/core/enhanced_multi_model_validation.py
+### /mnt/persist/workspace/services/core/fv_service/app/core/enhanced_multi_model_validation.py
 - Added logging to function 'create_enhanced_multi_model_validator'
 - Added logging to function 'create_validation_context'
 - Added logging to function '__init__'
@@ -116,18 +116,18 @@
 - Added logging to function '_check_safety_violation'
 - Added logging to function '_check_compliance_coverage'
 
-### /mnt/persist/workspace/src/backend/fv_service/app/middleware/enhanced_security.py
+### /mnt/persist/workspace/services/core/fv_service/app/middleware/enhanced_security.py
 - Added logging to function '__init__'
 - Added logging to function 'validate_http_method'
 - Added error handling to function 'validate_content_type'
 - Added logging to function 'validate_content_type'
 - Added logging to function 'get_allowed_methods'
 
-### /mnt/persist/workspace/src/backend/federated_service/app/schemas.py
+### /mnt/persist/workspace/services/core/federated_service/app/schemas.py
 - Added logging to function 'validate_platforms'
 - Added logging to function 'validate_max_participants'
 
-### /mnt/persist/workspace/src/backend/federated_service/app/dashboard/federated_dashboard.py
+### /mnt/persist/workspace/services/core/federated_service/app/dashboard/federated_dashboard.py
 - Added logging to function 'create_dashboard_layout'
 - Added logging to function 'get_mock_metrics'
 - Added logging to function 'create_performance_timeline'
@@ -135,29 +135,29 @@
 - Added logging to function 'create_privacy_budget_chart'
 - Added logging to function 'create_node_status_chart'
 
-### /mnt/persist/workspace/src/backend/federated_service/app/core/acgs_integration.py
+### /mnt/persist/workspace/services/core/federated_service/app/core/acgs_integration.py
 - Added logging to function 'api_base_url'
 - Added logging to function '__init__'
 - Added logging to function '_setup_default_service_configs'
 - Added logging to function '_calculate_success_rate'
 
-### /mnt/persist/workspace/src/backend/federated_service/app/core/privacy_metrics.py
+### /mnt/persist/workspace/services/core/federated_service/app/core/privacy_metrics.py
 - Added logging to function '__post_init__'
 - Added logging to function '_check_privacy_budget'
 - Added logging to function '_update_privacy_budget'
 
-### /mnt/persist/workspace/src/backend/federated_service/app/core/cross_platform_coordinator.py
+### /mnt/persist/workspace/services/core/federated_service/app/core/cross_platform_coordinator.py
 - Added logging to function '__init__'
 - Added logging to function '_select_available_platforms'
 - Added logging to function 'counter'
 - Added logging to function 'histogram'
 
-### /mnt/persist/workspace/src/backend/federated_service/app/core/federated_evaluator.py
+### /mnt/persist/workspace/services/core/federated_service/app/core/federated_evaluator.py
 - Added logging to function '_get_node_db_id'
 - Added error handling to function 'node_score'
 - Added logging to function 'node_score'
 
-### /mnt/persist/workspace/src/backend/federated_service/app/core/cross_platform_adapters.py
+### /mnt/persist/workspace/services/core/federated_service/app/core/cross_platform_adapters.py
 - Added logging to function '__init__'
 - Added logging to function '_update_metrics'
 - Added logging to function '__init__'
@@ -179,7 +179,7 @@
 - Added logging to function 'counter'
 - Added logging to function 'histogram'
 
-### /mnt/persist/workspace/src/backend/federated_service/tests/test_federated_evaluation_framework.py
+### /mnt/persist/workspace/services/core/federated_service/tests/test_federated_evaluation_framework.py
 - Added logging to function 'sample_evaluation_request'
 - Added logging to function 'mock_nodes'
 - Added logging to function '__init__'
@@ -187,7 +187,7 @@
 - Added logging to function '__init__'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/api/v1/alphaevolve_enforcement.py
+### /mnt/persist/workspace/services/core/pgc_service/app/api/v1/alphaevolve_enforcement.py
 - Added logging to function '_generate_cache_key'
 - Added error handling to function '_calculate_cache_hit_rate'
 - Added logging to function '_calculate_cache_hit_rate'
@@ -200,10 +200,10 @@
 - Added logging to function 'put'
 - Added logging to function 'clear'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/services/integrity_client.py
+### /mnt/persist/workspace/services/core/pgc_service/app/services/integrity_client.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/core/wina_enforcement_optimizer.py
+### /mnt/persist/workspace/services/core/pgc_service/app/core/wina_enforcement_optimizer.py
 - Added logging to function '_generate_cache_key'
 - Added logging to function '_generate_compliance_cache_key'
 - Added error handling to function '_calculate_confidence_score'
@@ -215,7 +215,7 @@
 - Added error handling to function 'get_performance_summary'
 - Added logging to function 'get_performance_summary'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/core/policy_format_router.py
+### /mnt/persist/workspace/services/core/pgc_service/app/core/policy_format_router.py
 - Added logging to function '__init__'
 - Added logging to function 'detect_framework'
 - Added logging to function '_convert_json_to_rego'
@@ -233,7 +233,7 @@
 - Added logging to function 'generate_content_hash'
 - Added logging to function 'create_missing_module_stub'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/core/proactive_fairness_generator.py
+### /mnt/persist/workspace/services/core/pgc_service/app/core/proactive_fairness_generator.py
 - Added logging to function '__init__'
 - Added logging to function '_load_bias_patterns'
 - Added logging to function '_categorize_bias_level'
@@ -242,7 +242,7 @@
 - Added logging to function '_default_config'
 - Added logging to function 'get_fairness_metrics'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/core/manifest_manager.py
+### /mnt/persist/workspace/services/core/pgc_service/app/core/manifest_manager.py
 - Added logging to function 'to_dict'
 - Added logging to function 'to_dict'
 - Added logging to function 'datalog_percentage'
@@ -260,7 +260,7 @@
 - Added logging to function 'validate_manifest'
 - Added logging to function 'load_manifest'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/core/incremental_compiler.py
+### /mnt/persist/workspace/services/core/pgc_service/app/core/incremental_compiler.py
 - Added logging to function '__init__'
 - Added logging to function '_should_use_full_compilation'
 - Added logging to function '_get_dependent_policies'
@@ -278,21 +278,21 @@
 - Added error handling to function '_update_deployment_metrics'
 - Added logging to function '_update_deployment_metrics'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/core/limiter.py
+### /mnt/persist/workspace/services/core/pgc_service/app/core/limiter.py
 - Added error handling to function 'get_pgc_request_identifier'
 - Added logging to function 'get_pgc_request_identifier'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/core/policy_manager.py
+### /mnt/persist/workspace/services/core/pgc_service/app/core/policy_manager.py
 - Added logging to function '__init__'
 - Added logging to function '_generate_principle_text'
 - Added logging to function 'get_active_rule_strings'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/core/wina_policy_compiler.py
+### /mnt/persist/workspace/services/core/pgc_service/app/core/wina_policy_compiler.py
 - Added logging to function 'get_wina_policy_compiler'
 - Added logging to function '_calculate_wina_compilation_metrics'
 - Added logging to function 'get_performance_summary'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/core/datalog_engine.py
+### /mnt/persist/workspace/services/core/pgc_service/app/core/datalog_engine.py
 - Added logging to function '__init__'
 - Added logging to function 'clear_rules_and_facts'
 - Added logging to function 'load_rules'
@@ -301,20 +301,20 @@
 - Added error handling to function 'build_facts_from_context'
 - Added logging to function 'build_facts_from_context'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/core/opa_client.py
+### /mnt/persist/workspace/services/core/pgc_service/app/core/opa_client.py
 - Added logging to function '__init__'
 - Added logging to function '_detect_policy_changes'
 - Added logging to function '_update_policy_cache'
 - Added logging to function '_update_response_time_metric'
 
-### /mnt/persist/workspace/src/backend/pgc_service/app/middleware/enhanced_security.py
+### /mnt/persist/workspace/services/core/pgc_service/app/middleware/enhanced_security.py
 - Added logging to function '__init__'
 - Added logging to function 'validate_http_method'
 - Added error handling to function 'validate_content_type'
 - Added logging to function 'validate_content_type'
 - Added logging to function 'get_allowed_methods'
 
-### /mnt/persist/workspace/src/backend/pgc_service/tests/test_wina_enforcement_optimizer.py
+### /mnt/persist/workspace/services/core/pgc_service/tests/test_wina_enforcement_optimizer.py
 - Added logging to function 'mock_policy_rule'
 - Added logging to function 'enforcement_context'
 - Added logging to function 'wina_optimizer'
@@ -326,7 +326,7 @@
 - Added logging to function '_generate_enforcement_reason'
 - Added logging to function 'get_performance_summary'
 
-### /mnt/persist/workspace/src/backend/pgc_service/tests/test_wina_enforcement_integration.py
+### /mnt/persist/workspace/services/core/pgc_service/tests/test_wina_enforcement_integration.py
 - Added logging to function 'client'
 - Added logging to function 'mock_user'
 - Added logging to function 'sample_policy_request'
@@ -334,13 +334,13 @@
 - Added logging to function '__init__'
 - Added logging to function 'get_performance_summary'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/schemas.py
+### /mnt/persist/workspace/services/core/gs_service/app/schemas.py
 - Added error handling to function 'check_content_or_template'
 - Added logging to function 'check_content_or_template'
 - Added error handling to function 'check_policy_id_or_principles'
 - Added logging to function 'check_policy_id_or_principles'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/api/v1/performance_monitoring.py
+### /mnt/persist/workspace/services/core/gs_service/app/api/v1/performance_monitoring.py
 - Added error handling to function '_generate_health_alerts'
 - Added logging to function '_generate_health_alerts'
 - Added error handling to function '_get_optimization_recommendations'
@@ -350,17 +350,17 @@
 - Added error handling to function '_calculate_performance_grade'
 - Added logging to function '_calculate_performance_grade'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/api/v1/mab_optimization.py
+### /mnt/persist/workspace/services/core/gs_service/app/api/v1/mab_optimization.py
 - Added logging to function 'get_mab_service'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/api/v1/fidelity_monitoring_websocket.py
+### /mnt/persist/workspace/services/core/gs_service/app/api/v1/fidelity_monitoring_websocket.py
 - Added logging to function '__init__'
 - Added logging to function 'subscribe_to_workflow'
 - Added logging to function 'unsubscribe_from_workflow'
 - Added logging to function '__init__'
 - Added logging to function 'subscribe_session_to_workflow'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/api/v1/alphaevolve_integration.py
+### /mnt/persist/workspace/services/core/gs_service/app/api/v1/alphaevolve_integration.py
 - Added error handling to function '_analyze_ec_population'
 - Added logging to function '_analyze_ec_population'
 - Added error handling to function '_construct_ec_constitutional_prompt'
@@ -374,7 +374,7 @@
 - Added logging to function '_generate_population_filters'
 - Added logging to function '_generate_ec_recommendations'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/performance_monitor.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/performance_monitor.py
 - Added logging to function 'get_performance_monitor'
 - Added logging to function 'performance_monitor_decorator'
 - Added logging to function '__init__'
@@ -390,7 +390,7 @@
 - Added logging to function 'decorator'
 - Added logging to function 'sync_wrapper'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/alphaevolve_bridge.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/alphaevolve_bridge.py
 - Added logging to function 'get_llm_service'
 - Added logging to function '__init__'
 - Added logging to function '__init__'
@@ -409,7 +409,7 @@
 - Added logging to function '_create_fallback_decision'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/fairness_evaluation_framework.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/fairness_evaluation_framework.py
 - Added logging to function 'run_fairness_evaluation_example'
 - Added logging to function '__init__'
 - Added logging to function '_initialize_domain_configs'
@@ -424,12 +424,12 @@
 - Added logging to function '_generate_fairness_recommendations'
 - Added logging to function '_metric_to_dict'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/enhanced_governance_synthesis.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/enhanced_governance_synthesis.py
 - Added logging to function '__init__'
 - Added logging to function '_update_metrics'
 - Added logging to function 'get_metrics'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/security_compliance.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/security_compliance.py
 - Added logging to function 'get_security_service'
 - Added logging to function 'security_required'
 - Added logging to function '__init__'
@@ -448,14 +448,14 @@
 - Added logging to function 'get_security_summary'
 - Added logging to function 'decorator'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/violation_audit_service.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/violation_audit_service.py
 - Added error handling to function '__init__'
 - Added logging to function '_apply_privacy_protection'
 - Added logging to function '_get_period_start_time'
 - Added logging to function '_generate_compliance_recommendations'
 - Added logging to function '_get_default_config'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/violation_escalation_service.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/violation_escalation_service.py
 - Added error handling to function '_get_next_escalation_level'
 - Added logging to function '_get_next_escalation_level'
 - Added error handling to function '_get_response_time_target'
@@ -463,7 +463,7 @@
 - Added logging to function '_initialize_escalation_rules'
 - Added logging to function '_get_default_config'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/policy_validator.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/policy_validator.py
 - Added logging to function '__init__'
 - Added error handling to function '_extract_conflicts'
 - Added logging to function '_extract_conflicts'
@@ -472,30 +472,30 @@
 - Added logging to function '_update_metrics'
 - Added logging to function 'get_metrics'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/violation_detection_service.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/violation_detection_service.py
 - Added error handling to function '__init__'
 - Added error handling to function '_get_severity_weight'
 - Added logging to function '_get_severity_weight'
 - Added logging to function '_get_detection_methods_used'
 - Added logging to function '_get_default_config'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/constitutional_reporting_service.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/constitutional_reporting_service.py
 - Added logging to function '_calculate_reporting_period'
 - Added logging to function '_load_report_templates'
 - Added logging to function '_load_notification_config'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/integrity_client.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/integrity_client.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/stakeholder_engagement.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/stakeholder_engagement.py
 - Added error handling to function '__init__'
 - Added logging to function '_initialize_templates'
 - Added logging to function '_get_default_config'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/ac_client.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/ac_client.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/lipschitz_estimator.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/lipschitz_estimator.py
 - Added logging to function 'validate_triangle_inequality'
 - Added logging to function 'validate_symmetry'
 - Added logging to function '__init__'
@@ -508,7 +508,7 @@
 - Added logging to function 'get_llm_service'
 - Added logging to function 'levenshtein'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/advanced_cache.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/advanced_cache.py
 - Added error handling to function 'cache_decorator'
 - Added logging to function 'cache_decorator'
 - Added logging to function '__init__'
@@ -529,10 +529,10 @@
 - Added error handling to function 'decorator'
 - Added logging to function 'decorator'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/fv_client.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/fv_client.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/services/qec_error_correction_service.py
+### /mnt/persist/workspace/services/core/gs_service/app/services/qec_error_correction_service.py
 - Added error handling to function '__init__'
 - Added logging to function '_get_default_config'
 - Added logging to function '_get_default_config'
@@ -554,7 +554,7 @@
 - Added error handling to function '__init__'
 - Added logging to function '_get_default_config'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/contextual_analyzer.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/contextual_analyzer.py
 - Added logging to function '__init__'
 - Added logging to function 'to_dict'
 - Added logging to function '__init__'
@@ -569,11 +569,11 @@
 - Added error handling to function 'get_context_adaptation_triggers'
 - Added logging to function 'get_context_adaptation_triggers'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/llm_integration.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/llm_integration.py
 - Added logging to function '_construct_prompt'
 - Added logging to function '_construct_prompt'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/constitutional_council_scalability.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/constitutional_council_scalability.py
 - Added logging to function '_calculate_throughput'
 - Added logging to function '_get_average_response_time'
 - Added logging to function '_calculate_consensus_rate'
@@ -584,12 +584,12 @@
 - Added logging to function '_initialize_co_evolution_modes'
 - Added logging to function '_get_default_config'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/ollama_client.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/ollama_client.py
 - Added logging to function '_load_config_from_env'
 - Added logging to function '_construct_constitutional_prompt'
 - Added logging to function '_parse_constitutional_response'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/performance_validation.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/performance_validation.py
 - Added logging to function '_calculate_reward_variance'
 - Added logging to function '_calculate_selection_entropy'
 - Added logging to function '_calculate_convergence_score'
@@ -603,10 +603,10 @@
 - Added logging to function 'check_performance_targets'
 - Added logging to function 'export_performance_report'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/nvidia_qwen_client.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/nvidia_qwen_client.py
 - Added logging to function 'get_model_capabilities'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/wina_llm_integration.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/wina_llm_integration.py
 - Added logging to function 'get_wina_optimized_llm_client'
 - Added error handling to function '_calculate_performance_metrics'
 - Added logging to function '_calculate_performance_metrics'
@@ -618,7 +618,7 @@
 - Added logging to function '__init__'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/mab_prompt_optimizer.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/mab_prompt_optimizer.py
 - Added logging to function '__init__'
 - Added logging to function 'select_arm'
 - Added logging to function 'update_reward'
@@ -629,7 +629,7 @@
 - Added logging to function 'get_optimization_metrics'
 - Added logging to function 'get_best_performing_templates'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/constitutional_prompting.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/constitutional_prompting.py
 - Added error handling to function '_principle_applies_to_context'
 - Added logging to function '_principle_applies_to_context'
 - Added error handling to function '_build_principle_hierarchy'
@@ -653,7 +653,7 @@
 - Added error handling to function '_build_wina_optimization_section'
 - Added logging to function '_build_wina_optimization_section'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/llm_reliability_framework.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/llm_reliability_framework.py
 - Added logging to function 'overall_reliability_score'
 - Added logging to function '__init__'
 - Added logging to function '_setup_metrics'
@@ -683,7 +683,7 @@
 - Added logging to function 'get_performance_summary'
 - Added logging to function 'get_recovery_statistics'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/qec_enhanced_synthesizer.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/qec_enhanced_synthesizer.py
 - Added logging to function '_select_synthesis_strategy'
 - Added logging to function '_validate_synthesis_result'
 - Added logging to function '_classify_failure_type'
@@ -691,7 +691,7 @@
 - Added logging to function 'get_synthesis_statistics'
 - Added logging to function '_get_default_config'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/mab_integration.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/mab_integration.py
 - Added logging to function '_default_mab_config'
 - Added logging to function '_default_reliability_config'
 - Added error handling to function '_build_optimized_prompt'
@@ -700,7 +700,7 @@
 - Added logging to function '_convert_to_synthesis_output'
 - Added logging to function '_update_integration_metrics'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/violation_config.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/violation_config.py
 - Added logging to function 'get_violation_config_manager'
 - Added logging to function 'get_threshold_config'
 - Added logging to function 'get_detection_config'
@@ -720,7 +720,7 @@
 - Added logging to function '_is_cache_valid'
 - Added logging to function '_invalidate_cache'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/opa_integration.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/opa_integration.py
 - Added logging to function '_generate_key'
 - Added logging to function 'get_stats'
 - Added logging to function '__init__'
@@ -730,7 +730,7 @@
 - Added logging to function 'get_performance_monitor'
 - Added logging to function 'decorator'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/wina_rego_synthesis.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/wina_rego_synthesis.py
 - Added logging to function 'get_wina_rego_synthesizer'
 - Added logging to function 'get_wina_rego_synthesis_performance_summary'
 - Added logging to function '_generate_fallback_rego_policy'
@@ -740,11 +740,11 @@
 - Added logging to function 'get_performance_summary'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/rule_generator.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/rule_generator.py
 - Added logging to function '_format_atom_to_datalog'
 - Added logging to function '_assemble_datalog_rule'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/core/ab_testing_framework.py
+### /mnt/persist/workspace/services/core/gs_service/app/core/ab_testing_framework.py
 - Added logging to function 'select_variant'
 - Added logging to function 'get_test_results'
 - Added logging to function 'get_active_tests'
@@ -752,20 +752,20 @@
 - Added logging to function 'calculate_required_sample_size'
 - Added logging to function 'export_test_results'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/middleware/enhanced_security.py
+### /mnt/persist/workspace/services/core/gs_service/app/middleware/enhanced_security.py
 - Added logging to function '__init__'
 - Added logging to function 'validate_http_method'
 - Added error handling to function 'validate_content_type'
 - Added logging to function 'validate_content_type'
 - Added logging to function 'get_allowed_methods'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/wina/svd_utils.py
+### /mnt/persist/workspace/services/core/gs_service/app/wina/svd_utils.py
 - Added logging to function 'perform_svd'
 - Added logging to function 'reconstruct_from_svd'
 - Added logging to function 'apply_svd_transformation'
 - Added logging to function 'get_svd_reduced_components'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/config/opa_config.py
+### /mnt/persist/workspace/services/core/gs_service/app/config/opa_config.py
 - Added logging to function 'reload_opa_config'
 - Added logging to function 'base_url'
 - Added logging to function 'data_api_url'
@@ -778,7 +778,7 @@
 - Added logging to function '_get_security_config'
 - Added logging to function 'get_config_dict'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/shared/metrics.py
+### /mnt/persist/workspace/services/core/gs_service/app/shared/metrics.py
 - Added logging to function 'get_metrics'
 - Added logging to function 'metrics_middleware'
 - Added logging to function 'create_metrics_endpoint'
@@ -796,7 +796,7 @@
 - Added logging to function 'decorator'
 - Added logging to function 'decorator'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/workflows/policy_synthesis_workflow.py
+### /mnt/persist/workspace/services/core/gs_service/app/workflows/policy_synthesis_workflow.py
 - Added logging to function 'get_policy_synthesis_workflow'
 - Added logging to function '_should_resolve_conflicts'
 - Added logging to function '_should_retry_or_complete'
@@ -805,7 +805,7 @@
 - Added logging to function '_build_policy_generation_prompt'
 - Added logging to function '_build_fidelity_assessment_prompt'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/workflows/structured_output_models.py
+### /mnt/persist/workspace/services/core/gs_service/app/workflows/structured_output_models.py
 - Added error handling to function 'determine_compliance_level'
 - Added logging to function 'determine_compliance_level'
 - Added logging to function 'meets_target_fidelity'
@@ -817,7 +817,7 @@
 - Added logging to function 'add_error'
 - Added logging to function 'duration_ms'
 
-### /mnt/persist/workspace/src/backend/gs_service/app/workflows/multi_model_manager.py
+### /mnt/persist/workspace/services/core/gs_service/app/workflows/multi_model_manager.py
 - Added logging to function 'get_multi_model_manager'
 - Added logging to function 'success_rate'
 - Added logging to function 'is_healthy'
@@ -831,17 +831,17 @@
 - Added error handling to function 'get_model_recommendations'
 - Added logging to function 'get_model_recommendations'
 
-### /mnt/persist/workspace/src/backend/gs_service/tests/test_wina_rego_integration.py
+### /mnt/persist/workspace/services/core/gs_service/tests/test_wina_rego_integration.py
 - Added logging to function 'test_performance_summary_structure'
 
-### /mnt/persist/workspace/src/backend/gs_service/tests/test_wina_rego_synthesis.py
+### /mnt/persist/workspace/services/core/gs_service/tests/test_wina_rego_synthesis.py
 - Added logging to function 'mock_constitutional_principles'
 - Added logging to function 'wina_synthesizer'
 - Added logging to function 'mock_wina_optimization_result'
 - Added logging to function 'test_performance_tracking'
 - Added logging to function 'test_performance_summary_structure'
 
-### /mnt/persist/workspace/src/backend/gs_service/tests/security/test_security_compliance.py
+### /mnt/persist/workspace/services/core/gs_service/tests/security/test_security_compliance.py
 - Added logging to function 'security_service'
 - Added logging to function 'mock_request'
 - Added logging to function 'valid_jwt_credentials'
@@ -865,36 +865,36 @@
 - Added logging to function 'test_input_validation_performance'
 - Added logging to function 'test_rate_limiting_performance'
 
-### /mnt/persist/workspace/src/backend/gs_service/tests/integration/test_opa_integration.py
+### /mnt/persist/workspace/services/core/gs_service/tests/integration/test_opa_integration.py
 - Added logging to function 'mock_opa_config'
 - Added logging to function 'opa_client'
 - Added logging to function 'sample_policy_decision_request'
 
-### /mnt/persist/workspace/src/backend/gs_service/tests/unit/services/test_policy_validator.py
+### /mnt/persist/workspace/services/core/gs_service/tests/unit/services/test_policy_validator.py
 - Added logging to function 'mock_opa_client'
 - Added logging to function 'policy_validator'
 - Added logging to function 'sample_policy_request'
 - Added logging to function 'test_calculate_overall_score'
 - Added logging to function 'test_calculate_overall_validity'
 
-### /mnt/persist/workspace/src/backend/gs_service/tests/performance/test_governance_synthesis_performance.py
+### /mnt/persist/workspace/services/core/gs_service/tests/performance/test_governance_synthesis_performance.py
 - Added logging to function 'performance_test_config'
 - Added logging to function 'mock_fast_opa_client'
 - Added logging to function 'performance_policy_validator'
 - Added logging to function 'sample_performance_requests'
 
-### /mnt/persist/workspace/src/backend/integrity_service/app/models.py
+### /mnt/persist/workspace/services/core/integrity_service/app/models.py
 - Added logging to function '__repr__'
 - Added logging to function '__repr__'
 - Added logging to function '__repr__'
 
-### /mnt/persist/workspace/src/backend/integrity_service/app/services/crypto_service.py
+### /mnt/persist/workspace/services/core/integrity_service/app/services/crypto_service.py
 - Added logging to function '__init__'
 - Added logging to function 'generate_content_hash'
 - Added logging to function '__init__'
 - Added logging to function 'generate_merkle_proof'
 
-### /mnt/persist/workspace/src/backend/integrity_service/app/services/timestamp_service.py
+### /mnt/persist/workspace/services/core/integrity_service/app/services/timestamp_service.py
 - Added logging to function '__init__'
 - Added logging to function 'create_timestamp_request'
 - Added logging to function '__init__'
@@ -905,29 +905,29 @@
 - Added logging to function 'timestamp_policy_rule'
 - Added logging to function 'verify_timestamp'
 
-### /mnt/persist/workspace/src/backend/integrity_service/app/services/pgp_assurance.py
+### /mnt/persist/workspace/services/core/integrity_service/app/services/pgp_assurance.py
 - Added logging to function 'get_merkle_root'
 - Added error handling to function 'get_public_key'
 - Added logging to function 'get_public_key'
 - Added error handling to function 'get_private_key'
 - Added logging to function 'get_private_key'
 
-### /mnt/persist/workspace/src/backend/integrity_service/app/services/integrity_verification.py
+### /mnt/persist/workspace/services/core/integrity_service/app/services/integrity_verification.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/integrity_service/app/services/research_data_pipeline.py
+### /mnt/persist/workspace/services/core/integrity_service/app/services/research_data_pipeline.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/integrity_service/app/services/key_management.py
+### /mnt/persist/workspace/services/core/integrity_service/app/services/key_management.py
 - Added logging to function '__init__'
 - Added logging to function '_encrypt_private_key'
 - Added logging to function '_decrypt_private_key'
 
-### /mnt/persist/workspace/src/backend/integrity_service/app/core/explainability.py
+### /mnt/persist/workspace/services/core/integrity_service/app/core/explainability.py
 - Added logging to function '__init__'
 - Added logging to function '_get_mock_rule_count'
 
-### /mnt/persist/workspace/src/backend/integrity_service/app/core/crypto_benchmarking.py
+### /mnt/persist/workspace/services/core/integrity_service/app/core/crypto_benchmarking.py
 - Added logging to function '__post_init__'
 - Added logging to function '__init__'
 - Added logging to function '_generate_mock_key'
@@ -940,14 +940,14 @@
 - Added logging to function '_result_to_dict'
 - Added logging to function '_overhead_to_dict'
 
-### /mnt/persist/workspace/src/backend/integrity_service/app/middleware/enhanced_security.py
+### /mnt/persist/workspace/services/core/integrity_service/app/middleware/enhanced_security.py
 - Added logging to function '__init__'
 - Added logging to function 'validate_http_method'
 - Added error handling to function 'validate_content_type'
 - Added logging to function 'validate_content_type'
 - Added logging to function 'get_allowed_methods'
 
-### /mnt/persist/workspace/src/backend/workflow_service/app/testing/automated_validator.py
+### /mnt/persist/workspace/services/core/workflow_service/app/testing/automated_validator.py
 - Added logging to function '__post_init__'
 - Added logging to function '__post_init__'
 - Added logging to function '__post_init__'
@@ -957,7 +957,7 @@
 - Added logging to function 'get_test_results'
 - Added logging to function 'set_performance_baseline'
 
-### /mnt/persist/workspace/src/backend/workflow_service/app/core/workflow_engine.py
+### /mnt/persist/workspace/services/core/workflow_service/app/core/workflow_engine.py
 - Added logging to function '__post_init__'
 - Added logging to function '__init__'
 - Added logging to function '_initialize_templates'
@@ -965,7 +965,7 @@
 - Added logging to function 'get_workflow_status'
 - Added logging to function 'list_workflows'
 
-### /mnt/persist/workspace/src/backend/workflow_service/app/monitoring/workflow_monitor.py
+### /mnt/persist/workspace/services/core/workflow_service/app/monitoring/workflow_monitor.py
 - Added logging to function '__post_init__'
 - Added logging to function '__init__'
 - Added logging to function '_initialize_thresholds'
@@ -979,7 +979,7 @@
 - Added logging to function 'resolve_alert'
 - Added logging to function 'get_dashboard_data'
 
-### /mnt/persist/workspace/src/backend/workflow_service/app/recovery/workflow_recovery.py
+### /mnt/persist/workspace/services/core/workflow_service/app/recovery/workflow_recovery.py
 - Added logging to function '__post_init__'
 - Added logging to function '__post_init__'
 - Added logging to function '__init__'
@@ -987,7 +987,7 @@
 - Added error handling to function 'get_recovery_status'
 - Added logging to function 'get_recovery_status'
 
-### /mnt/persist/workspace/src/backend/auth_service/models.py
+### /mnt/persist/workspace/services/core/auth_service/models.py
 - Added logging to function '__repr__'
 - Added logging to function '__repr__'
 - Added logging to function 'has_role'
@@ -996,10 +996,10 @@
 - Added logging to function '__repr__'
 - Added logging to function '__repr__'
 
-### /mnt/persist/workspace/src/backend/auth_service/app/main.py
+### /mnt/persist/workspace/services/core/auth_service/app/main.py
 - Added logging to function 'get_csrf_config'
 
-### /mnt/persist/workspace/src/backend/auth_service/app/core/security.py
+### /mnt/persist/workspace/services/core/auth_service/app/core/security.py
 - Added logging to function 'create_access_token'
 - Added logging to function 'create_refresh_token'
 - Added logging to function 'revoke_access_jti'
@@ -1008,35 +1008,35 @@
 - Added logging to function 'authorize_roles'
 - Added logging to function 'get_user_id_from_request_optional'
 
-### /mnt/persist/workspace/src/backend/auth_service/app/core/password.py
+### /mnt/persist/workspace/services/core/auth_service/app/core/password.py
 - Added logging to function 'verify_password'
 - Added logging to function 'get_password_hash'
 
-### /mnt/persist/workspace/src/backend/auth_service/app/core/limiter.py
+### /mnt/persist/workspace/services/core/auth_service/app/core/limiter.py
 - Added logging to function 'mock_get_remote_address'
 - Added logging to function 'get_request_identifier'
 - Added logging to function '__init__'
 - Added logging to function 'limit'
 - Added logging to function 'decorator'
 
-### /mnt/persist/workspace/src/backend/auth_service/app/core/config.py
+### /mnt/persist/workspace/services/core/auth_service/app/core/config.py
 - Added logging to function 'cors_origins_list'
 - Added logging to function 'assemble_db_connection'
 
-### /mnt/persist/workspace/src/backend/auth_service/app/middleware/enhanced_security.py
+### /mnt/persist/workspace/services/core/auth_service/app/middleware/enhanced_security.py
 - Added logging to function '__init__'
 - Added logging to function 'validate_http_method'
 - Added error handling to function 'validate_content_type'
 - Added logging to function 'validate_content_type'
 - Added logging to function 'get_allowed_methods'
 
-### /mnt/persist/workspace/src/backend/auth_service/app/tests/conftest.py
+### /mnt/persist/workspace/services/core/auth_service/app/tests/conftest.py
 - Added logging to function 'event_loop'
 
-### /mnt/persist/workspace/src/backend/auth_service/app/tests/test_auth_flows.py
+### /mnt/persist/workspace/services/core/auth_service/app/tests/test_auth_flows.py
 - Added logging to function 'get_unique_user_data'
 
-### /mnt/persist/workspace/src/backend/auth_service/app/tests/test_token.py
+### /mnt/persist/workspace/services/core/auth_service/app/tests/test_token.py
 - Added logging to function 'test_create_access_token'
 - Added logging to function 'test_verify_access_token_valid'
 - Added logging to function 'test_verify_access_token_expired'
@@ -1046,10 +1046,10 @@
 - Added logging to function 'test_token_with_non_ascii_subject'
 - Added logging to function 'test_token_created_right_before_expiry'
 
-### /mnt/persist/workspace/src/backend/auth_service/app/tests/test_users.py
+### /mnt/persist/workspace/services/core/auth_service/app/tests/test_users.py
 - Added logging to function 'random_user_payload'
 
-### /mnt/persist/workspace/src/backend/ac_service/test_stakeholder_simple.py
+### /mnt/persist/workspace/services/core/ac_service/test_stakeholder_simple.py
 - Added logging to function 'test_enums'
 - Added logging to function 'test_notification_record'
 - Added logging to function 'test_feedback_record'
@@ -1058,7 +1058,7 @@
 - Added logging to function 'test_notification_content_structure'
 - Added logging to function 'run_all_tests'
 
-### /mnt/persist/workspace/src/backend/ac_service/validate_stakeholder_system.py
+### /mnt/persist/workspace/services/core/ac_service/validate_stakeholder_system.py
 - Added logging to function 'validate_file_structure'
 - Added logging to function 'validate_stakeholder_service'
 - Added logging to function 'validate_api_endpoints'
@@ -1066,29 +1066,29 @@
 - Added logging to function 'validate_main_app_integration'
 - Added logging to function 'run_validation'
 
-### /mnt/persist/workspace/src/backend/ac_service/alembic/versions/005_add_qec_conflict_resolution_fields.py
+### /mnt/persist/workspace/services/core/ac_service/alembic/versions/005_add_qec_conflict_resolution_fields.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/main.py
+### /mnt/persist/workspace/services/core/ac_service/app/main.py
 - Added logging to function 'on_startup'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/schemas.py
+### /mnt/persist/workspace/services/core/ac_service/app/schemas.py
 - Added logging to function 'validate_stakeholder_groups'
 - Added logging to function 'validate_co_evolution_context'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/api/v1/conflict_resolution.py
+### /mnt/persist/workspace/services/core/ac_service/app/api/v1/conflict_resolution.py
 - Added error handling to function 'get_qec_priority'
 - Added logging to function 'get_qec_priority'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/api/v1/voting.py
+### /mnt/persist/workspace/services/core/ac_service/app/api/v1/voting.py
 - Added logging to function '__init__'
 - Added logging to function 'disconnect'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/public_consultation_service.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/public_consultation_service.py
 - Added logging to function '_classify_feedback_type'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/qec_conflict_resolver.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/qec_conflict_resolver.py
 - Added logging to function '_convert_to_constitutional_principles'
 - Added error handling to function '_calculate_priority_score'
 - Added logging to function '_calculate_priority_score'
@@ -1096,14 +1096,14 @@
 - Added logging to function '_fallback_analysis'
 - Added logging to function '_fallback_patch_generation'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/hitl_cross_service_integration.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/hitl_cross_service_integration.py
 - Added logging to function 'get_average_confidence'
 - Added error handling to function '__init__'
 - Added error handling to function '_update_confidence_metrics'
 - Added logging to function '_update_confidence_metrics'
 - Added logging to function '_update_avg_integration_time'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/democratic_governance.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/democratic_governance.py
 - Added logging to function '__init__'
 - Added logging to function '_initialize_routing_rules'
 - Added logging to function '_initialize_workflow_templates'
@@ -1111,7 +1111,7 @@
 - Added error handling to function '_check_all_approvals_complete'
 - Added logging to function '_check_all_approvals_complete'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/intelligent_conflict_detector.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/intelligent_conflict_detector.py
 - Added logging to function '__init__'
 - Added logging to function '_load_conflict_patterns'
 - Added logging to function '_extract_scope_keywords'
@@ -1128,44 +1128,44 @@
 - Added logging to function 'update_detection_stats'
 - Added logging to function 'get_performance_metrics'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/human_escalation_system.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/human_escalation_system.py
 - Added logging to function '__init__'
 - Added logging to function '_initialize_escalation_rules'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/stakeholder_engagement.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/stakeholder_engagement.py
 - Added logging to function 'get_stakeholder_engagement_service'
 - Added logging to function 'validate_channels'
 - Added logging to function '__init__'
 - Added logging to function '_user_has_role'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/voting_client.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/voting_client.py
 - Added logging to function '__init__'
 - Added logging to function 'get_metrics'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/conflict_audit_system.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/conflict_audit_system.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/automated_resolution_engine.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/automated_resolution_engine.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/constitutional_council_dashboard.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/constitutional_council_dashboard.py
 - Added logging to function 'get_constitutional_council_dashboard'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/services/voting_mechanism.py
+### /mnt/persist/workspace/services/core/ac_service/app/services/voting_mechanism.py
 - Added logging to function 'total_weight'
 - Added logging to function '_generate_session_id'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/core/domain_context_manager.py
+### /mnt/persist/workspace/services/core/ac_service/app/core/domain_context_manager.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/core/constitutional_council_scalability.py
+### /mnt/persist/workspace/services/core/ac_service/app/core/constitutional_council_scalability.py
 - Added logging to function '__init__'
 - Added error handling to function '_get_voting_window'
 - Added logging to function '_get_voting_window'
 - Added logging to function '__init__'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/core/amendment_state_machine.py
+### /mnt/persist/workspace/services/core/ac_service/app/core/amendment_state_machine.py
 - Added logging to function '__post_init__'
 - Added logging to function 'to_dict'
 - Added logging to function '__init__'
@@ -1173,14 +1173,14 @@
 - Added logging to function 'register_event_handler'
 - Added logging to function 'get_valid_events'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/middleware/enhanced_security.py
+### /mnt/persist/workspace/services/core/ac_service/app/middleware/enhanced_security.py
 - Added logging to function '__init__'
 - Added logging to function 'validate_http_method'
 - Added error handling to function 'validate_content_type'
 - Added logging to function 'validate_content_type'
 - Added logging to function 'get_allowed_methods'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/workflows/constitutional_council_graph.py
+### /mnt/persist/workspace/services/core/ac_service/app/workflows/constitutional_council_graph.py
 - Added logging to function '_calculate_workflow_duration'
 - Added error handling to function 'should_proceed_to_voting'
 - Added logging to function 'should_proceed_to_voting'
@@ -1189,13 +1189,13 @@
 - Added error handling to function 'should_continue_refinement'
 - Added logging to function 'should_continue_refinement'
 
-### /mnt/persist/workspace/src/backend/ac_service/app/workflows/workflow_manager.py
+### /mnt/persist/workspace/services/core/ac_service/app/workflows/workflow_manager.py
 - Added logging to function 'get_workflow_manager'
 - Added error handling to function '_create_constitutional_council_state'
 - Added logging to function '_create_constitutional_council_state'
 - Added logging to function 'get_workflow_capabilities'
 
-### /mnt/persist/workspace/src/backend/ac_service/tests/test_intelligent_conflict_resolution.py
+### /mnt/persist/workspace/services/core/ac_service/tests/test_intelligent_conflict_resolution.py
 - Added logging to function 'detector'
 - Added logging to function 'mock_principles'
 - Added logging to function 'resolver'
@@ -1207,7 +1207,7 @@
 - Added logging to function 'mock_conflict'
 - Added logging to function 'orchestrator'
 
-### /mnt/persist/workspace/src/backend/ac_service/tests/test_human_in_the_loop_sampling.py
+### /mnt/persist/workspace/services/core/ac_service/tests/test_human_in_the_loop_sampling.py
 - Added logging to function 'test_default_config'
 - Added logging to function 'test_custom_config'
 - Added logging to function 'mock_db'
@@ -1220,7 +1220,7 @@
 - Added logging to function 'mock_db'
 - Added logging to function 'hitl_sampler'
 
-### /mnt/persist/workspace/src/backend/ac_service/tests/test_hitl_api_integration.py
+### /mnt/persist/workspace/services/core/ac_service/tests/test_hitl_api_integration.py
 - Added logging to function 'client'
 - Added logging to function 'mock_user'
 - Added logging to function 'sample_hitl_request'
@@ -1247,23 +1247,23 @@
 - Added error handling to function 'test_complete_hitl_workflow'
 - Added logging to function 'test_complete_hitl_workflow'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/main.py
+### /mnt/persist/workspace/services/core/ec_service/app/main.py
 - Added logging to function 'get_wina_coordinator'
 - Added logging to function 'get_wina_performance_collector'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/api/v1/monitoring.py
+### /mnt/persist/workspace/services/core/ec_service/app/api/v1/monitoring.py
 - Added logging to function 'get_wina_coordinator'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/api/v1/reporting.py
+### /mnt/persist/workspace/services/core/ec_service/app/api/v1/reporting.py
 - Added logging to function 'get_wina_coordinator'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/api/v1/alphaevolve.py
+### /mnt/persist/workspace/services/core/ec_service/app/api/v1/alphaevolve.py
 - Added logging to function 'get_wina_coordinator'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/api/v1/oversight.py
+### /mnt/persist/workspace/services/core/ec_service/app/api/v1/oversight.py
 - Added logging to function 'get_wina_coordinator'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/api/v1/wina_oversight.py
+### /mnt/persist/workspace/services/core/ec_service/app/api/v1/wina_oversight.py
 - Added error handling to function '_get_strategy_description'
 - Added logging to function '_get_strategy_description'
 - Added error handling to function '_get_strategy_use_cases'
@@ -1278,30 +1278,30 @@
 - Added logging to function 'validate_priority_level'
 - Added logging to function 'validate_end_time'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/services/pgc_client.py
+### /mnt/persist/workspace/services/core/ec_service/app/services/pgc_client.py
 - Added error handling to function '__init__'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/services/ac_client.py
+### /mnt/persist/workspace/services/core/ec_service/app/services/ac_client.py
 - Added error handling to function '__init__'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/services/gs_client.py
+### /mnt/persist/workspace/services/core/ec_service/app/services/gs_client.py
 - Added error handling to function '__init__'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/core/wina_oversight_coordinator.py
+### /mnt/persist/workspace/services/core/ec_service/app/core/wina_oversight_coordinator.py
 - Added logging to function '_generate_cache_key'
 - Added logging to function '_generate_compliance_cache_key'
 
-### /mnt/persist/workspace/src/backend/ec_service/app/middleware/enhanced_security.py
+### /mnt/persist/workspace/services/core/ec_service/app/middleware/enhanced_security.py
 - Added logging to function '__init__'
 - Added logging to function 'validate_http_method'
 - Added error handling to function 'validate_content_type'
 - Added logging to function 'validate_content_type'
 - Added logging to function 'get_allowed_methods'
 
-### /mnt/persist/workspace/src/backend/shared/constitutional_metrics.py
+### /mnt/persist/workspace/services/core/shared/constitutional_metrics.py
 - Added logging to function 'get_constitutional_metrics'
 - Added logging to function '__init__'
 - Added logging to function 'record_constitutional_principle_operation'
@@ -1312,7 +1312,7 @@
 - Added logging to function 'record_formal_verification_operation'
 - Added logging to function 'record_human_escalation'
 
-### /mnt/persist/workspace/src/backend/shared/utils.py
+### /mnt/persist/workspace/services/core/shared/utils.py
 - Added logging to function 'get_utc_now'
 - Added logging to function 'create_timestamp_str'
 - Added logging to function 'calculate_expiration_time'
@@ -1360,7 +1360,7 @@
 - Added logging to function 'export_config_template'
 - Added logging to function 'to_dict'
 
-### /mnt/persist/workspace/src/backend/shared/metrics.py
+### /mnt/persist/workspace/services/core/shared/metrics.py
 - Added logging to function 'metrics_middleware'
 - Added logging to function 'create_metrics_endpoint'
 - Added logging to function 'database_metrics_decorator'
@@ -1399,7 +1399,7 @@
 - Added logging to function '__init__'
 - Added logging to function '__getattr__'
 
-### /mnt/persist/workspace/src/backend/shared/security_config.py
+### /mnt/persist/workspace/services/core/shared/security_config.py
 - Added logging to function '__init__'
 - Added logging to function 'get_security_level'
 - Added logging to function 'is_production'
@@ -1413,35 +1413,35 @@
 - Added logging to function 'validate_email'
 - Added logging to function 'validate_password_strength'
 
-### /mnt/persist/workspace/src/backend/shared/langgraph_states.py
+### /mnt/persist/workspace/services/core/shared/langgraph_states.py
 - Added logging to function 'create_workflow_metadata'
 - Added error handling to function 'update_workflow_status'
 - Added logging to function 'update_workflow_status'
 - Added logging to function 'add_messages'
 
-### /mnt/persist/workspace/src/backend/shared/redis_client.py
+### /mnt/persist/workspace/services/core/shared/redis_client.py
 - Added logging to function '__init__'
 - Added logging to function 'generate_key'
 
-### /mnt/persist/workspace/src/backend/shared/scalability_metrics.py
+### /mnt/persist/workspace/services/core/shared/scalability_metrics.py
 - Added logging to function '_determine_resource_status'
 - Added logging to function '_count_alerts_by_severity'
 
-### /mnt/persist/workspace/src/backend/shared/scalability_dashboard.py
+### /mnt/persist/workspace/services/core/shared/scalability_dashboard.py
 - Added logging to function 'get_dashboard_html'
 
-### /mnt/persist/workspace/src/backend/shared/models.py
+### /mnt/persist/workspace/services/core/shared/models.py
 - Added logging to function '__repr__'
 - Added logging to function '__repr__'
 
-### /mnt/persist/workspace/src/backend/shared/celery_integration.py
+### /mnt/persist/workspace/services/core/shared/celery_integration.py
 - Added logging to function '_execute_policy_verification'
 - Added error handling to function '_execute_bias_detection'
 - Added logging to function '_execute_bias_detection'
 - Added logging to function '_execute_safety_check'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/shared/result_aggregation.py
+### /mnt/persist/workspace/services/core/shared/result_aggregation.py
 - Added logging to function 'is_valid'
 - Added logging to function 'total_validators'
 - Added logging to function 'valid_results'
@@ -1456,7 +1456,7 @@
 - Added logging to function '_create_empty_result'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/shared/security_middleware.py
+### /mnt/persist/workspace/services/core/shared/security_middleware.py
 - Added logging to function 'add_security_middleware'
 - Added logging to function 'add_security_headers'
 - Added logging to function '__init__'
@@ -1467,7 +1467,7 @@
 - Added error handling to function '_get_client_ip'
 - Added logging to function '_get_client_ip'
 
-### /mnt/persist/workspace/src/backend/shared/langgraph_config.py
+### /mnt/persist/workspace/services/core/shared/langgraph_config.py
 - Added logging to function 'get_langgraph_config'
 - Added logging to function 'set_langgraph_config'
 - Added logging to function 'from_environment'
@@ -1480,19 +1480,19 @@
 - Added logging to function 'validate_api_keys'
 - Added logging to function 'get_redis_key'
 
-### /mnt/persist/workspace/src/backend/shared/auth.py
+### /mnt/persist/workspace/services/core/shared/auth.py
 - Added logging to function 'verify_token_and_get_payload'
 - Added logging to function '__init__'
 - Added logging to function '__call__'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/shared/ai_model_service.py
+### /mnt/persist/workspace/services/core/shared/ai_model_service.py
 - Added error handling to function '_load_model_configurations'
 - Added logging to function '_load_model_configurations'
 - Added logging to function '_get_model_by_role'
 - Added logging to function 'get_available_models'
 
-### /mnt/persist/workspace/src/backend/shared/parallel_processing.py
+### /mnt/persist/workspace/services/core/shared/parallel_processing.py
 - Added logging to function '__post_init__'
 - Added logging to function '_generate_task_id'
 - Added logging to function 'execution_time_ms'
@@ -1511,81 +1511,81 @@
 - Added logging to function 'calculate_similarity'
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/env.py
+### /mnt/persist/workspace/services/core/shared/alembic/env.py
 - Added logging to function 'get_url'
 - Added logging to function 'run_migrations_offline'
 - Added logging to function 'run_migrations_online'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/add_violation_detection_tables.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/add_violation_detection_tables.py
 - Added error handling to function 'upgrade'
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/008_add_federated_evaluation_models.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/008_add_federated_evaluation_models.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/005_fix_refresh_token_length.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/005_fix_refresh_token_length.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/010_task_13_cross_domain_principle_testing_framework.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/010_task_13_cross_domain_principle_testing_framework.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/f1a2b3c4d5e6_add_constitutional_council_fields.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/f1a2b3c4d5e6_add_constitutional_council_fields.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/eaa5f6249b99_add_policy_and_template_models_fresh.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/eaa5f6249b99_add_policy_and_template_models_fresh.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/82069bc89d27_initial_migration.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/82069bc89d27_initial_migration.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/c2a48966_modify_policyrule_source_principles.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/c2a48966_modify_policyrule_source_principles.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/004_add_qec_enhancement_fields.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/004_add_qec_enhancement_fields.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/009_add_secure_aggregation_privacy_models.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/009_add_secure_aggregation_privacy_models.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/006_add_mab_optimization_tables.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/006_add_mab_optimization_tables.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/003_comprehensive_acgs_enhancements.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/003_comprehensive_acgs_enhancements.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/004_add_missing_user_columns.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/004_add_missing_user_columns.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/007_phase3_z3_integration.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/007_phase3_z3_integration.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/task8_incremental_compilation.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/task8_incremental_compilation.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/alembic/versions/006_add_wina_constitutional_updates.py
+### /mnt/persist/workspace/services/core/shared/alembic/versions/006_add_wina_constitutional_updates.py
 - Added logging to function 'upgrade'
 - Added logging to function 'downgrade'
 
-### /mnt/persist/workspace/src/backend/shared/wina/core.py
+### /mnt/persist/workspace/services/core/shared/wina/core.py
 - Added logging to function '_calculate_wina_scores'
 - Added logging to function '_estimate_accuracy_retention'
 
-### /mnt/persist/workspace/src/backend/shared/wina/constitutional_integration.py
+### /mnt/persist/workspace/services/core/shared/wina/constitutional_integration.py
 - Added logging to function '__init__'
 - Added error handling to function '_calculate_optimization_potential'
 - Added logging to function '_calculate_optimization_potential'
@@ -1600,27 +1600,27 @@
 - Added logging to function 'get_proposed_updates'
 - Added logging to function 'get_governance_decisions'
 
-### /mnt/persist/workspace/src/backend/shared/wina/learning_api.py
+### /mnt/persist/workspace/services/core/shared/wina/learning_api.py
 - Added logging to function 'validate_feedback_value'
 
-### /mnt/persist/workspace/src/backend/shared/wina/performance_monitoring.py
+### /mnt/persist/workspace/services/core/shared/wina/performance_monitoring.py
 - Added logging to function 'get_prometheus_metrics'
 
-### /mnt/persist/workspace/src/backend/shared/wina/svd_transformation.py
+### /mnt/persist/workspace/services/core/shared/wina/svd_transformation.py
 - Added error handling to function 'get_transformation_statistics'
 - Added logging to function 'get_transformation_statistics'
 
-### /mnt/persist/workspace/src/backend/shared/wina/metrics.py
+### /mnt/persist/workspace/services/core/shared/wina/metrics.py
 - Added logging to function 'get_layer_breakdown'
 - Added error handling to function '_check_performance_alerts'
 - Added logging to function 'get_performance_summary'
 
-### /mnt/persist/workspace/src/backend/shared/wina/performance_api.py
+### /mnt/persist/workspace/services/core/shared/wina/performance_api.py
 - Added logging to function 'set_collector_getter'
 - Added logging to function 'get_wina_performance_router'
 - Added logging to function 'convert_datetime'
 
-### /mnt/persist/workspace/src/backend/shared/wina/continuous_learning.py
+### /mnt/persist/workspace/services/core/shared/wina/continuous_learning.py
 - Added logging to function '__init__'
 - Added logging to function '_calculate_reward'
 - Added logging to function '_get_state_key'
@@ -1630,7 +1630,7 @@
 - Added logging to function '_calculate_trend_strength'
 - Added logging to function '_initialize_component_profiles'
 
-### /mnt/persist/workspace/src/backend/shared/wina/gating.py
+### /mnt/persist/workspace/services/core/shared/wina/gating.py
 - Added logging to function '__init__'
 - Added logging to function 'update_activation'
 - Added logging to function 'get_activation_statistics'
@@ -1656,7 +1656,7 @@
 - Added logging to function '_get_adaptation_factor'
 - Added logging to function '_infer_layer_type'
 
-### /mnt/persist/workspace/src/backend/shared/wina/config.py
+### /mnt/persist/workspace/services/core/shared/wina/config.py
 - Added logging to function 'load_wina_config_from_env'
 - Added logging to function 'save_wina_config'
 - Added error handling to function 'load_wina_config_from_file'
@@ -1666,7 +1666,7 @@
 - Added logging to function '__post_init__'
 - Added logging to function '_validate_integration_config'
 
-### /mnt/persist/workspace/src/backend/shared/wina/model_integration.py
+### /mnt/persist/workspace/services/core/shared/wina/model_integration.py
 - Added logging to function 'get_supported_models'
 - Added logging to function '__init__'
 - Added logging to function 'get_supported_models'
@@ -1677,17 +1677,17 @@
 - Added logging to function 'get_optimization_history'
 - Added logging to function 'get_performance_summary'
 
-### /mnt/persist/workspace/src/backend/research_service/app/services/research_automation.py
+### /mnt/persist/workspace/services/core/research_service/app/services/research_automation.py
 - Added logging to function '__init__'
 
-### /mnt/persist/workspace/src/backend/research_service/app/services/experiment_tracker.py
+### /mnt/persist/workspace/services/core/research_service/app/services/experiment_tracker.py
 - Added logging to function '__init__'
 - Added logging to function '_calculate_checksum'
 
-### /mnt/persist/workspace/src/backend/research_service/app/core/config.py
+### /mnt/persist/workspace/services/core/research_service/app/core/config.py
 - Added logging to function 'get_settings'
 
-### /mnt/persist/workspace/src/backend/research_service/app/models/research_data.py
+### /mnt/persist/workspace/services/core/research_service/app/models/research_data.py
 - Added logging to function '__repr__'
 - Added logging to function '__repr__'
 - Added logging to function '__repr__'
@@ -1695,7 +1695,7 @@
 - Added logging to function '__repr__'
 - Added logging to function '__repr__'
 
-### /mnt/persist/workspace/src/backend/research_service/app/models/experiment.py
+### /mnt/persist/workspace/services/core/research_service/app/models/experiment.py
 - Added logging to function '__repr__'
 - Added logging to function '__repr__'
 - Added logging to function '__repr__'

@@ -46,7 +46,7 @@ async def health_check() -> dict:
 ### 6. **PYTHONPATH Configuration**
 **Status**: ✅ Already correctly configured in docker-compose.yml
 - All services have `PYTHONPATH=/app:/app/shared`
-- Volume mounting correctly configured: `./src/backend/shared:/app/shared`
+- Volume mounting correctly configured: `./services/core/shared:/app/shared`
 
 ### 7. **Alembic Runner Issues**
 **Problem**: Alembic runner couldn't find env.py file
@@ -57,15 +57,15 @@ async def health_check() -> dict:
 ## Files Modified
 
 ### Dockerfiles Updated:
-- `src/backend/ac_service/Dockerfile`
-- `src/backend/integrity_service/Dockerfile`
-- `src/backend/fv_service/Dockerfile`
-- `src/backend/gs_service/Dockerfile`
-- `src/backend/pgc_service/Dockerfile`
-- `src/backend/auth_service/Dockerfile`
+- `services/core/ac_service/Dockerfile`
+- `services/core/integrity_service/Dockerfile`
+- `services/core/fv_service/Dockerfile`
+- `services/core/gs_service/Dockerfile`
+- `services/core/pgc_service/Dockerfile`
+- `services/core/auth_service/Dockerfile`
 
 ### Application Files Updated:
-- `src/backend/auth_service/app/main.py` (added health endpoint)
+- `services/core/auth_service/app/main.py` (added health endpoint)
 
 ### Test Files Created:
 - `docker-compose-test.yml` (simplified test configuration)
