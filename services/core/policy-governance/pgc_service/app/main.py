@@ -187,6 +187,7 @@ class WorkflowState:
     COMPLIANCE_CHECK = "compliance_check"
     APPROVED = "approved"
     REJECTED = "rejected"
+    FAILED = "failed"
     COMPLETED = "completed"
 
 
