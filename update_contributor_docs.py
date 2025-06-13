@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class ContributorDocsUpdater:
-    def __init__(self, project_root: str = "/home/dislove/ACGS-1"):
+    def __init__(self, project_root: str = "/mnt/persist/workspace"):
         self.project_root = Path(project_root)
 
     def create_contributing_guide(self):
