@@ -8,7 +8,7 @@ workflow-specific settings based on the Gemini-LangGraph patterns.
 
 import os
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -244,15 +244,15 @@ class LangGraphConfiguration(BaseModel):
             "headers": {
                 "HTTP-Referer": "https://acgs.ai",
                 "X-Title": "ACGS-1 Constitutional Governance System",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             "timeout": 30.0,
             "max_retries": 3,
             "supported_models": [
                 "deepseek/deepseek-chat-v3-0324:free",
                 "deepseek/deepseek-r1",
-                "qwen/qwen3-235b-a22b:free"
-            ]
+                "qwen/qwen3-235b-a22b:free",
+            ],
         }
 
     def validate_openrouter_setup(self) -> Dict[str, Any]:
@@ -266,7 +266,7 @@ class LangGraphConfiguration(BaseModel):
             "api_key_present": self.openrouter_api_key is not None,
             "api_key_valid": False,
             "models_accessible": [],
-            "errors": []
+            "errors": [],
         }
 
         if not self.openrouter_api_key:
@@ -275,7 +275,9 @@ class LangGraphConfiguration(BaseModel):
 
         # Basic API key format validation
         if len(self.openrouter_api_key) < 20:
-            validation_result["errors"].append("OpenRouter API key appears to be invalid (too short)")
+            validation_result["errors"].append(
+                "OpenRouter API key appears to be invalid (too short)"
+            )
         else:
             validation_result["api_key_valid"] = True
 
@@ -306,7 +308,9 @@ class LangGraphConfiguration(BaseModel):
         else:
             return "unknown"
 
-    def get_model_config_for_provider(self, model_id: str, role: ModelRole) -> Dict[str, Any]:
+    def get_model_config_for_provider(
+        self, model_id: str, role: ModelRole
+    ) -> Dict[str, Any]:
         """
         Get model configuration for specific provider integration.
 
@@ -326,43 +330,48 @@ class LangGraphConfiguration(BaseModel):
             "temperature": temperature,
             "timeout": self.timeout_seconds,
             "max_retries": self.max_retries,
-            "role": role.value
+            "role": role.value,
         }
 
         # Provider-specific configurations
         if provider == "openrouter":
-            base_config.update({
-                "api_key": self.openrouter_api_key,
-                "base_url": "https://openrouter.ai/api/v1",
-                "extra_headers": {
-                    "HTTP-Referer": "https://acgs.ai",
-                    "X-Title": "ACGS-1 Constitutional Governance System"
-                },
-                "max_tokens": 16384 if "qwen3-235b" in model_id else 8192
-            })
+            base_config.update(
+                {
+                    "api_key": self.openrouter_api_key,
+                    "base_url": "https://openrouter.ai/api/v1",
+                    "extra_headers": {
+                        "HTTP-Referer": "https://acgs.ai",
+                        "X-Title": "ACGS-1 Constitutional Governance System",
+                    },
+                    "max_tokens": 16384 if "qwen3-235b" in model_id else 8192,
+                }
+            )
         elif provider == "groq":
-            base_config.update({
-                "api_key": self.groq_api_key,
-                "base_url": "https://api.groq.com/openai/v1",
-                "max_tokens": 4096
-            })
+            base_config.update(
+                {
+                    "api_key": self.groq_api_key,
+                    "base_url": "https://api.groq.com/openai/v1",
+                    "max_tokens": 4096,
+                }
+            )
         elif provider == "gemini":
-            base_config.update({
-                "api_key": self.gemini_api_key,
-                "max_tokens": 8192
-            })
+            base_config.update({"api_key": self.gemini_api_key, "max_tokens": 8192})
         elif provider == "openai":
-            base_config.update({
-                "api_key": self.openai_api_key,
-                "base_url": "https://api.openai.com/v1",
-                "max_tokens": 16384
-            })
+            base_config.update(
+                {
+                    "api_key": self.openai_api_key,
+                    "base_url": "https://api.openai.com/v1",
+                    "max_tokens": 16384,
+                }
+            )
         elif provider == "xai":
-            base_config.update({
-                "api_key": self.xai_api_key,
-                "base_url": "https://api.x.ai/v1",
-                "max_tokens": 8192
-            })
+            base_config.update(
+                {
+                    "api_key": self.xai_api_key,
+                    "base_url": "https://api.x.ai/v1",
+                    "max_tokens": 8192,
+                }
+            )
 
         return base_config
 

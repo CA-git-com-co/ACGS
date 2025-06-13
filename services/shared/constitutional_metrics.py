@@ -28,14 +28,20 @@ class ConstitutionalMetrics:
             if "Duplicated timeseries" in str(e):
                 # Get existing metric from registry
                 from prometheus_client import REGISTRY
+
                 for collector in REGISTRY._collector_to_names:
-                    if (hasattr(collector, "_name") and
-                        collector._name == "acgs_constitutional_principle_operations_total"):
+                    if (
+                        hasattr(collector, "_name")
+                        and collector._name
+                        == "acgs_constitutional_principle_operations_total"
+                    ):
                         self.constitutional_principle_operations = collector
                         break
                 else:
                     # Create a no-op counter if we can't find the existing one
-                    self.constitutional_principle_operations = self._create_noop_counter()
+                    self.constitutional_principle_operations = (
+                        self._create_noop_counter()
+                    )
             else:
                 raise
 
@@ -49,9 +55,12 @@ class ConstitutionalMetrics:
             if "Duplicated timeseries" in str(e):
                 # Get existing metric from registry
                 from prometheus_client import REGISTRY
+
                 for collector in REGISTRY._collector_to_names:
-                    if (hasattr(collector, "_name") and
-                        collector._name == "acgs_constitutional_compliance_score"):
+                    if (
+                        hasattr(collector, "_name")
+                        and collector._name == "acgs_constitutional_compliance_score"
+                    ):
                         self.constitutional_compliance_score = collector
                         break
                 else:
@@ -71,9 +80,12 @@ class ConstitutionalMetrics:
             if "Duplicated timeseries" in str(e):
                 # Get existing metric from registry
                 from prometheus_client import REGISTRY
+
                 for collector in REGISTRY._collector_to_names:
-                    if (hasattr(collector, "_name") and
-                        collector._name == "acgs_policy_synthesis_operations_total"):
+                    if (
+                        hasattr(collector, "_name")
+                        and collector._name == "acgs_policy_synthesis_operations_total"
+                    ):
                         self.policy_synthesis_operations = collector
                         break
                 else:
@@ -184,29 +196,38 @@ class ConstitutionalMetrics:
 
     def _create_noop_counter(self):
         """Create a no-op counter for when metrics are already registered."""
+
         class NoOpCounter:
             def labels(self, **kwargs):
                 return self
+
             def inc(self, amount=1):
                 pass
+
         return NoOpCounter()
 
     def _create_noop_gauge(self):
         """Create a no-op gauge for when metrics are already registered."""
+
         class NoOpGauge:
             def labels(self, **kwargs):
                 return self
+
             def set(self, value):
                 pass
+
         return NoOpGauge()
 
     def _create_noop_histogram(self):
         """Create a no-op histogram for when metrics are already registered."""
+
         class NoOpHistogram:
             def labels(self, **kwargs):
                 return self
+
             def observe(self, value):
                 pass
+
         return NoOpHistogram()
 
     def record_constitutional_principle_operation(
@@ -312,7 +333,10 @@ def get_constitutional_metrics(service_name: str) -> ConstitutionalMetrics:
             )
         except ValueError as e:
             if "Duplicated timeseries" in str(e):
-                logger.warning(f"Metrics collision for {service_name}, using existing registry")
+                logger.warning(
+                    f"Metrics collision for {service_name}, using existing registry"
+                )
+
                 # Create a dummy metrics object that doesn't register new metrics
                 class DummyConstitutionalMetrics:
                     def __init__(self, service_name):
@@ -322,7 +346,9 @@ def get_constitutional_metrics(service_name: str) -> ConstitutionalMetrics:
                         # Return a no-op function for any metric method
                         return lambda *args, **kwargs: None
 
-                constitutional_metrics_registry[service_name] = DummyConstitutionalMetrics(service_name)
+                constitutional_metrics_registry[service_name] = (
+                    DummyConstitutionalMetrics(service_name)
+                )
             else:
                 raise
     return constitutional_metrics_registry[service_name]
@@ -336,9 +362,12 @@ def reset_constitutional_metrics():
     # Clear Prometheus registry if needed
     try:
         from prometheus_client import REGISTRY
+
         collectors_to_remove = []
         for collector in REGISTRY._collector_to_names:
-            if hasattr(collector, "_name") and "acgs_constitutional" in str(collector._name):
+            if hasattr(collector, "_name") and "acgs_constitutional" in str(
+                collector._name
+            ):
                 collectors_to_remove.append(collector)
 
         for collector in collectors_to_remove:

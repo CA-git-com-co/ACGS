@@ -14,6 +14,12 @@ from typing import Any, Callable, Dict, List, Optional
 import httpx
 
 from ..common.error_handling import ServiceUnavailableError
+from .common_types import (
+    LoadBalancingStrategy,
+    ServiceInstance,
+    ServiceType,
+    ServiceWeight,
+)
 from .failover_circuit_breaker import FailoverConfig, FailoverManager
 from .governance_session_manager import GovernanceSessionManager, GovernanceWorkflowType
 from .infrastructure_integration import (
@@ -25,12 +31,6 @@ from .performance_monitor import (
     PerformanceMetrics,
     PerformanceMonitor,
     get_performance_monitor,
-)
-from .common_types import (
-    ServiceInstance,
-    ServiceType,
-    ServiceWeight,
-    LoadBalancingStrategy,
 )
 from .registry import get_service_registry
 

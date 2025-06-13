@@ -21,6 +21,7 @@ from math import sqrt
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+
 from integrations.alphaevolve_engine.services.validation.formal_verifier import (
     FormalVerificationProperty,
     MockFormalVerifier,

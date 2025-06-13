@@ -19,6 +19,9 @@ Key Features:
 """
 
 import logging
+
+# Import shared components - FIXED HARDCODED PATH
+import os
 import sys
 import time
 from contextlib import asynccontextmanager
@@ -28,9 +31,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-# Import shared components - FIXED HARDCODED PATH
-import os
-shared_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "shared")
+shared_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "shared"
+)
 sys.path.append(shared_path)
 from api_models import HealthCheckResponse, ServiceInfo, create_success_response
 from middleware import add_production_middleware, create_exception_handlers
@@ -99,7 +102,9 @@ app = FastAPI(
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 # Add CORS middleware with SECURE production settings
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",")
+allowed_origins = os.getenv(
+    "ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080"
+).split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,  # SECURITY FIX: No longer allow all origins
