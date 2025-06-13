@@ -1,0 +1,273 @@
+{
+  "timestamp": "2025-06-13T03:10:36.163381",
+  "total_check_duration_seconds": 0.15,
+  "services": {
+    "auth_service": {
+      "status": "healthy",
+      "response_time_ms": 2.91,
+      "critical": true,
+      "details": {
+        "status": "ok",
+        "message": "Auth Service is operational."
+      },
+      "error": null
+    },
+    "ac_service": {
+      "status": "error",
+      "response_time_ms": 0,
+      "critical": true,
+      "details": {},
+      "error": "Server disconnected"
+    },
+    "integrity_service": {
+      "status": "healthy",
+      "response_time_ms": 2.7,
+      "critical": true,
+      "details": {
+        "status": "healthy",
+        "service": "integrity_service",
+        "version": "3.0.0",
+        "port": 8002,
+        "timestamp": "2025-06-13T07:10:36.018955+00:00",
+        "uptime_seconds": 10478.127442359924,
+        "dependencies": {
+          "database": "connected",
+          "crypto_service": "operational",
+          "pgp_service": "operational"
+        },
+        "performance_metrics": {
+          "uptime_seconds": 10478.127442359924,
+          "routers_available": false,
+          "api_endpoints": 3
+        }
+      },
+      "error": null
+    },
+    "fv_service": {
+      "status": "healthy",
+      "response_time_ms": 1.02,
+      "critical": true,
+      "details": {
+        "status": "healthy",
+        "service": "enhanced_fv_service",
+        "version": "2.0.0",
+        "port": 8003,
+        "enterprise_features_enabled": true,
+        "components": {
+          "z3_smt_solver": "unavailable",
+          "tiered_validation": "operational",
+          "parallel_pipeline": "operational",
+          "cryptographic_validation": "operational",
+          "blockchain_audit": "operational",
+          "ac_integration": "operational"
+        },
+        "performance_metrics": {
+          "target_response_time": "<500ms",
+          "availability_target": ">99.9%",
+          "concurrent_verification_support": ">100 tasks"
+        }
+      },
+      "error": null
+    },
+    "gs_service": {
+      "status": "healthy",
+      "response_time_ms": 1.92,
+      "critical": true,
+      "details": {
+        "status": "success",
+        "data": {
+          "status": "healthy",
+          "service": "gs_service",
+          "version": "3.0.0",
+          "port": 8004,
+          "uptime_seconds": 52.11695432662964,
+          "dependencies": {
+            "enhanced_synthesis": "unavailable",
+            "multi_model_coordinator": "unavailable",
+            "policy_workflow": "unavailable",
+            "shared_components": "operational"
+          },
+          "performance_metrics": {
+            "uptime_seconds": 52.11695432662964,
+            "routers_available": false,
+            "synthesis_engines": 1,
+            "api_endpoints": 3
+          },
+          "synthesis_capabilities": {
+            "standard_synthesis": true,
+            "enhanced_validation": false,
+            "multi_model_consensus": false,
+            "human_review_integration": false,
+            "proactive_error_prediction": false
+          }
+        },
+        "error": null,
+        "metadata": {
+          "correlation_id": "30fc5a08-2fc8-4f7e-9a96-d3f98b3f0fe2",
+          "timestamp": "2025-06-13T07:10:36.022858+00:00",
+          "response_time_ms": null,
+          "service_name": "gs_service",
+          "service_version": "3.0.0",
+          "api_version": "v1",
+          "request_id": null
+        }
+      },
+      "error": null
+    },
+    "pgc_service": {
+      "status": "healthy",
+      "response_time_ms": 68.06,
+      "critical": true,
+      "details": {
+        "status": "degraded",
+        "service": "pgc_service_production",
+        "version": "3.0.0",
+        "timestamp": 1749798636.0243495,
+        "phase": "Phase 3 - Production Implementation",
+        "enhanced_governance": true,
+        "dependencies": {
+          "opa": {
+            "status": "unhealthy",
+            "error": "[Errno -3] Temporary failure in name resolution"
+          },
+          "integrity_service": {
+            "status": "healthy",
+            "response_time_ms": 3.0509999999999997
+          }
+        },
+        "components": {
+          "policy_manager": {
+            "status": "healthy",
+            "last_refresh": "2025-06-13 07:06:07.922450",
+            "policies_loaded": true
+          }
+        },
+        "governance_services": {
+          "policy_lifecycle_manager": true,
+          "workflow_orchestrator": true,
+          "enforcement_engine": true,
+          "stakeholder_manager": true,
+          "audit_trail": true,
+          "governance_monitor": true
+        },
+        "performance": {
+          "response_time_target": "<100ms for governance operations",
+          "workflow_processing_target": "<500ms for workflow steps",
+          "enforcement_target": "<50ms for policy enforcement",
+          "availability_target": ">99.9%"
+        },
+        "message": "Critical dependencies unhealthy: opa"
+      },
+      "error": null
+    },
+    "ec_service": {
+      "status": "healthy",
+      "response_time_ms": 1.21,
+      "critical": false,
+      "details": {
+        "status": "healthy",
+        "service": "evolutionary_computation",
+        "timestamp": "2025-06-13T07:10:36.092852",
+        "version": "v1",
+        "wina_coordinator": "disabled",
+        "features": {
+          "wina_optimization": false,
+          "constitutional_oversight": true,
+          "alphaevolve_integration": true,
+          "performance_monitoring": true,
+          "wina_performance_api": true,
+          "real_time_metrics": true,
+          "performance_dashboard": true
+        },
+        "performance_monitoring": {
+          "collector_available": false,
+          "monitoring_active": false,
+          "monitoring_level": "unknown"
+        }
+      },
+      "error": null
+    },
+    "research_service": {
+      "status": "error",
+      "response_time_ms": 0,
+      "critical": false,
+      "details": {},
+      "error": "Cannot connect to host localhost:8007 ssl:default [Connect call failed ('127.0.0.1', 8007)]"
+    }
+  },
+  "infrastructure": {
+    "postgres": {
+      "status": "assumed_healthy",
+      "type": "database",
+      "response_time_ms": 1.0,
+      "error": null
+    },
+    "redis": {
+      "status": "assumed_healthy",
+      "type": "cache",
+      "response_time_ms": 1.0,
+      "error": null
+    },
+    "opa": {
+      "status": "healthy",
+      "type": "policy_engine",
+      "response_time_ms": 0.75,
+      "error": null
+    },
+    "prometheus": {
+      "status": "healthy",
+      "type": "monitoring",
+      "response_time_ms": 0.59,
+      "error": null
+    },
+    "grafana": {
+      "status": "error",
+      "type": "dashboard",
+      "response_time_ms": 0,
+      "error": "Cannot connect to host localhost:3001 ssl:default [Connect call failed ('127.0.0.1', 3001)]"
+    }
+  },
+  "dependencies": {
+    "gs_service_to_ac_service": {
+      "description": "Constitutional principle access",
+      "status": "error",
+      "response_time_ms": 0,
+      "error": "Server disconnected"
+    },
+    "pgc_service_to_integrity_service": {
+      "description": "Policy integrity verification",
+      "status": "healthy",
+      "response_time_ms": 60.73,
+      "error": null
+    },
+    "fv_service_to_ac_service": {
+      "description": "Formal verification of principles",
+      "status": "error",
+      "response_time_ms": 0,
+      "error": "[Errno 104] Connection reset by peer"
+    },
+    "gs_service_to_integrity_service": {
+      "description": "Policy synthesis integrity",
+      "status": "healthy",
+      "response_time_ms": 3.0,
+      "error": null
+    }
+  },
+  "performance": {
+    "response_time_analysis": {},
+    "availability_analysis": {
+      "healthy_services": 0,
+      "total_services": 8,
+      "availability_percentage": 0.0
+    },
+    "performance_grade": "C"
+  },
+  "overall_status": "unhealthy",
+  "recommendations": [
+    "Monitor service response times continuously",
+    "Implement automated health check alerts",
+    "Set up service dependency monitoring",
+    "Configure load balancing for high availability",
+    "Implement circuit breakers for service resilience"
+  ]
+}
