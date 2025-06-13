@@ -12,10 +12,10 @@ import json
 import logging
 import time
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 # Configure logger
@@ -31,13 +31,13 @@ try:
     sys.path.insert(0, str(shared_path))
 
     from enhanced_constitutional_analyzer import (
+        AnalysisType,
+        ConstitutionalFramework,
+        PolicyRule,
         get_enhanced_constitutional_analyzer,
         integrate_with_pgc_service,
-        AnalysisType,
-        PolicyRule,
-        ConstitutionalFramework
     )
-    from multi_model_manager import get_multi_model_manager, ConsensusStrategy
+    from multi_model_manager import ConsensusStrategy, get_multi_model_manager
 
     ENHANCED_ANALYZER_AVAILABLE = True
     logger.info("Enhanced Constitutional Analyzer integration loaded successfully")
@@ -97,9 +97,15 @@ class EnhancedAnalysisRequest(BaseModel):
     """Request model for enhanced constitutional analysis."""
 
     policy_content: str = Field(..., description="Policy content to analyze")
-    analysis_type: str = Field(default="compliance_scoring", description="Type of analysis")
-    consensus_strategy: str = Field(default="weighted_average", description="Consensus strategy")
-    context: Optional[Dict[str, Any]] = Field(default=None, description="Additional context")
+    analysis_type: str = Field(
+        default="compliance_scoring", description="Type of analysis"
+    )
+    consensus_strategy: str = Field(
+        default="weighted_average", description="Consensus strategy"
+    )
+    context: Optional[Dict[str, Any]] = Field(
+        default=None, description="Additional context"
+    )
 
 
 class EnhancedAnalysisResponse(BaseModel):
@@ -279,7 +285,9 @@ async def initiate_audit_transparency(
 # Enhanced Constitutional Analysis Endpoints
 
 
-@router.post("/enhanced-constitutional-analysis", response_model=EnhancedAnalysisResponse)
+@router.post(
+    "/enhanced-constitutional-analysis", response_model=EnhancedAnalysisResponse
+)
 async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequest):
     """
     Perform enhanced constitutional analysis using Qwen3 embeddings and multi-model consensus.
@@ -305,7 +313,7 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
             model_results=[],
             recommendations=validation_results["recommendations"],
             constitutional_hash="cdd01ef066bc6cf2",
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
     try:
@@ -318,7 +326,7 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
             "compliance_scoring": "COMPLIANCE_SCORING",
             "conflict_detection": "CONFLICT_DETECTION",
             "policy_validation": "POLICY_VALIDATION",
-            "constitutional_alignment": "CONSTITUTIONAL_ALIGNMENT"
+            "constitutional_alignment": "CONSTITUTIONAL_ALIGNMENT",
         }
 
         # Map string consensus strategy to enum
@@ -327,11 +335,19 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
             "majority_vote": "MAJORITY_VOTE",
             "confidence_based": "CONFIDENCE_BASED",
             "embedding_priority": "EMBEDDING_PRIORITY",
-            "llm_priority": "LLM_PRIORITY"
+            "llm_priority": "LLM_PRIORITY",
         }
 
-        analysis_type_enum = getattr(AnalysisType, analysis_type_mapping.get(request.analysis_type, "COMPLIANCE_SCORING"))
-        consensus_strategy_enum = getattr(ConsensusStrategy, consensus_strategy_mapping.get(request.consensus_strategy, "WEIGHTED_AVERAGE"))
+        analysis_type_enum = getattr(
+            AnalysisType,
+            analysis_type_mapping.get(request.analysis_type, "COMPLIANCE_SCORING"),
+        )
+        consensus_strategy_enum = getattr(
+            ConsensusStrategy,
+            consensus_strategy_mapping.get(
+                request.consensus_strategy, "WEIGHTED_AVERAGE"
+            ),
+        )
 
         # Perform consensus analysis
         start_time = time.time()
@@ -339,20 +355,22 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
             policy_content=request.policy_content,
             analysis_type=analysis_type_enum,
             consensus_strategy=consensus_strategy_enum,
-            context=request.context
+            context=request.context,
         )
 
         # Convert model results to serializable format
         model_results = []
         for model_result in consensus_result.model_results:
-            model_results.append({
-                "model_id": model_result.model_id,
-                "model_type": model_result.model_type,
-                "compliance_score": model_result.compliance_score,
-                "confidence_score": model_result.confidence_score,
-                "processing_time_ms": model_result.processing_time_ms,
-                "metadata": model_result.metadata or {}
-            })
+            model_results.append(
+                {
+                    "model_id": model_result.model_id,
+                    "model_type": model_result.model_type,
+                    "compliance_score": model_result.compliance_score,
+                    "confidence_score": model_result.confidence_score,
+                    "processing_time_ms": model_result.processing_time_ms,
+                    "metadata": model_result.metadata or {},
+                }
+            )
 
         return EnhancedAnalysisResponse(
             analysis_id=analysis_id,
@@ -364,14 +382,13 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
             model_results=model_results,
             recommendations=consensus_result.recommendations,
             constitutional_hash="cdd01ef066bc6cf2",
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
     except Exception as e:
         logger.error(f"Error in enhanced constitutional analysis: {e}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Enhanced constitutional analysis failed: {str(e)}"
+            status_code=500, detail=f"Enhanced constitutional analysis failed: {str(e)}"
         )
 
 
@@ -379,7 +396,7 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
 async def pgc_enforcement_integration(
     policy_id: str,
     policy_content: str,
-    enforcement_context: Optional[Dict[str, Any]] = None
+    enforcement_context: Optional[Dict[str, Any]] = None,
 ):
     """
     Integrate enhanced constitutional analysis with PGC real-time enforcement.
@@ -396,7 +413,7 @@ async def pgc_enforcement_integration(
             "confidence_score": 0.75,
             "constitutional_hash": "cdd01ef066bc6cf2",
             "processing_time_ms": 50.0,
-            "recommendation_reason": "Fallback enforcement - enhanced analyzer unavailable"
+            "recommendation_reason": "Fallback enforcement - enhanced analyzer unavailable",
         }
 
     try:
@@ -404,7 +421,7 @@ async def pgc_enforcement_integration(
         enforcement_result = await integrate_with_pgc_service(
             policy_id=policy_id,
             policy_content=policy_content,
-            enforcement_context=enforcement_context or {}
+            enforcement_context=enforcement_context or {},
         )
 
         return enforcement_result
@@ -412,8 +429,7 @@ async def pgc_enforcement_integration(
     except Exception as e:
         logger.error(f"Error in PGC enforcement integration: {e}")
         raise HTTPException(
-            status_code=500,
-            detail=f"PGC enforcement integration failed: {str(e)}"
+            status_code=500, detail=f"PGC enforcement integration failed: {str(e)}"
         )
 
 
@@ -437,7 +453,9 @@ async def get_governance_status():
             enhanced_analyzer_status = health.get("status", "degraded")
 
             # Check embedding client status
-            embedding_status = health.get("components", {}).get("embedding_client", "unavailable")
+            embedding_status = health.get("components", {}).get(
+                "embedding_client", "unavailable"
+            )
 
             # Check multi-model manager status
             multi_model_manager = await get_multi_model_manager()
@@ -596,13 +614,15 @@ async def perform_compliance_validation(
                 "conflict": AnalysisType.CONFLICT_DETECTION,
                 "policy": AnalysisType.POLICY_VALIDATION,
             }
-            analysis_type = analysis_type_mapping.get(validation_type, AnalysisType.COMPLIANCE_SCORING)
+            analysis_type = analysis_type_mapping.get(
+                validation_type, AnalysisType.COMPLIANCE_SCORING
+            )
 
             # Create context with principles
             context = {
                 "policy_id": policy_id,
                 "validation_type": validation_type,
-                "principles": principles
+                "principles": principles,
             }
 
             # Perform analysis
@@ -610,7 +630,7 @@ async def perform_compliance_validation(
             result = await analyzer.analyze_constitutional_compliance(
                 policy_content=policy_content,
                 analysis_type=analysis_type,
-                context=context
+                context=context,
             )
 
             processing_time = (time.time() - start_time) * 1000
@@ -619,7 +639,11 @@ async def perform_compliance_validation(
             return {
                 "compliance_score": result.compliance_score,
                 "detailed_results": {
-                    "constitutional_alignment": result.metadata.get("embedding_score", 0.95) if result.metadata else 0.95,
+                    "constitutional_alignment": (
+                        result.metadata.get("embedding_score", 0.95)
+                        if result.metadata
+                        else 0.95
+                    ),
                     "procedural_compliance": 0.98,
                     "stakeholder_representation": 0.92,
                     "transparency_score": 0.97,

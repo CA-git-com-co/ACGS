@@ -34,6 +34,8 @@ from app.services.violation_escalation_service import (
     ViolationEscalationService,
 )
 from app.workflows.multi_model_manager import MultiModelManager
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
     ConstitutionalDistanceCalculator,
 )
@@ -48,8 +50,6 @@ from integrations.alphaevolve_engine.services.qec_enhancement.error_prediction_m
 from integrations.alphaevolve_engine.services.qec_enhancement.recovery_strategy_dispatcher import (
     RecoveryStrategyDispatcher,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.shared.database import get_async_db
 from services.shared.models import (
     ConstitutionalViolation,
