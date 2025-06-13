@@ -82,7 +82,7 @@ curl http://localhost:8004/health  # Formal Verification
 # Platform Services
 curl http://localhost:8005/health  # Authentication
 curl http://localhost:8006/health  # Integrity
-curl http://localhost:8007/health  # Workflow
+curl http://localhost:8006/health  # Evolutionary Computation
 
 # Research Services
 curl http://localhost:8008/health  # Federated Evaluation
