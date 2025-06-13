@@ -163,7 +163,7 @@ The following files may contain outdated references and should be reviewed:
 - `docs/architecture_documentation.md` - May have old paths
 - `docs/deployment_guide.md` - Contains old deployment instructions
 - `docs/developer_guide.md` - Contains old development workflows
-- Individual service README files in `src/backend/` - Need to be moved/updated
+- Individual service README files in `services/core/` - Need to be moved/updated
 
 ### 2. **Configuration Files**
 - Docker Compose files may need service name updates

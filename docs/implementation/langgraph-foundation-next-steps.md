@@ -37,9 +37,9 @@ curl http://localhost:8001/api/v1/workflows/capabilities
 - Iterative refinement with human oversight
 
 **Implementation Files**:
-- `src/backend/ac_service/app/workflows/constitutional_council_graph.py`
-- `src/backend/ac_service/app/workflows/amendment_processor.py`
-- `src/frontend/src/components/ConstitutionalCouncilDashboard.tsx`
+- `services/core/ac_service/app/workflows/constitutional_council_graph.py`
+- `services/core/ac_service/app/workflows/amendment_processor.py`
+- `applications/src/components/ConstitutionalCouncilDashboard.tsx`
 
 ### 3. GS Engine Multi-Model Integration (Following 1-2 Weeks)
 **Objective**: Enhance policy synthesis with multi-model reliability
@@ -52,9 +52,9 @@ curl http://localhost:8001/api/v1/workflows/capabilities
 - Intelligent fallback mechanisms
 
 **Implementation Files**:
-- `src/backend/gs_service/app/workflows/policy_synthesis_graph.py`
-- `src/backend/gs_service/app/workflows/constitutional_validator.py`
-- `src/backend/gs_service/app/api/v1/synthesis_workflows.py`
+- `services/core/gs_service/app/workflows/policy_synthesis_graph.py`
+- `services/core/gs_service/app/workflows/constitutional_validator.py`
+- `services/core/gs_service/app/api/v1/synthesis_workflows.py`
 
 ### 4. Real-time Constitutional Fidelity Monitoring (Following 1-2 Weeks)
 **Objective**: QEC-inspired error correction and monitoring
@@ -66,9 +66,9 @@ curl http://localhost:8001/api/v1/workflows/capabilities
 - Performance dashboard integration
 
 **Implementation Files**:
-- `src/frontend/src/components/ConstitutionalFidelityMonitor.tsx`
-- `src/backend/shared/constitutional_monitor.py`
-- `src/backend/shared/qec_error_correction.py`
+- `applications/src/components/ConstitutionalFidelityMonitor.tsx`
+- `services/core/shared/constitutional_monitor.py`
+- `services/core/shared/qec_error_correction.py`
 
 ## 📋 Technical Implementation Roadmap
 

@@ -10,7 +10,7 @@ This document details the implementation of advanced constitutional AI governanc
 
 ### Phase 1: Collective Constitutional AI Integration ✅
 
-**Implementation**: `src/backend/ac_service/app/services/collective_constitutional_ai.py`
+**Implementation**: `services/core/ac_service/app/services/collective_constitutional_ai.py`
 
 **Key Features Implemented**:
 - **Polis Platform Integration**: Democratic deliberation platform for stakeholder input
@@ -34,7 +34,7 @@ GET  /api/v1/ccai/monitoring/legitimacy  # Legitimacy metrics monitoring
 
 ### Phase 2: Enhanced Multi-Model Validation ✅
 
-**Implementation**: `src/backend/gs_service/app/services/enhanced_multi_model_validation.py`
+**Implementation**: `services/core/gs_service/app/services/enhanced_multi_model_validation.py`
 
 **Key Features Implemented**:
 - **Boosting-based Weighted Majority Vote**: Dynamic weight assignment through boosting algorithms
@@ -66,7 +66,7 @@ GET  /api/v1/enhanced-multi-model/strategies      # Available strategies
 
 ### Phase 3: Ultra Low Latency Optimization ✅
 
-**Implementation**: `src/backend/pgc_service/app/core/ultra_low_latency_optimizer.py`
+**Implementation**: `services/core/pgc_service/app/core/ultra_low_latency_optimizer.py`
 
 **Key Features Implemented**:
 - **Sub-25ms Policy Decisions**: 50% improvement from <50ms baseline target

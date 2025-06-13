@@ -21,8 +21,8 @@ The comprehensive code review and refactoring of the ACGS-master codebase has su
 - **Unified authentication patterns** across all services
 
 #### Code Structure Enhancement
-- **Shared utilities consolidated** into `src/backend/shared/common/` directory
-- **Service mesh components** organized in `src/backend/shared/service_mesh/`
+- **Shared utilities consolidated** into `services/core/shared/common/` directory
+- **Service mesh components** organized in `services/core/shared/service_mesh/`
 - **Consistent error handling** with structured exceptions and logging
 - **Standardized response formatting** across all APIs
 
@@ -56,7 +56,7 @@ The comprehensive code review and refactoring of the ACGS-master codebase has su
 
 #### New Consolidated Structure:
 ```
-src/backend/shared/
+services/core/shared/
 ├── common/
 │   ├── __init__.py
 │   ├── http_clients.py      # Unified HTTP patterns

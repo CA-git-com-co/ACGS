@@ -29,7 +29,7 @@ Phase 3 successfully implements advanced performance optimization and security c
 ### **1. Advanced Caching Strategies**
 
 #### **Multi-Tier Cache Architecture**
-- **File**: `src/backend/gs_service/app/services/advanced_cache.py`
+- **File**: `services/core/gs_service/app/services/advanced_cache.py`
 - **Features**: 
   - L1 (In-memory LRU) + L2 (Redis distributed) caching
   - Intelligent cache invalidation with Redis pub/sub
@@ -56,7 +56,7 @@ CACHE_TTL_POLICIES = {
 ### **2. Enhanced Monitoring Infrastructure**
 
 #### **Comprehensive Monitoring Service**
-- **File**: `src/backend/gs_service/app/services/monitoring_service.py`
+- **File**: `services/core/gs_service/app/services/monitoring_service.py`
 - **Features**:
   - Prometheus metrics collection with custom ACGS metrics
   - Real-time performance monitoring with configurable alerts
@@ -80,7 +80,7 @@ CACHE_TTL_POLICIES = {
 ### **3. Security Compliance Enhancement**
 
 #### **Vulnerability Scanner**
-- **File**: `src/backend/gs_service/app/services/security_compliance.py`
+- **File**: `services/core/gs_service/app/services/security_compliance.py`
 - **Features**:
   - Automated security scanning with vulnerability detection
   - Input validation testing against injection attacks
@@ -101,7 +101,7 @@ CACHE_TTL_POLICIES = {
 ### **4. Cache Manager Service**
 
 #### **Centralized Cache Management**
-- **File**: `src/backend/gs_service/app/services/cache_manager.py`
+- **File**: `services/core/gs_service/app/services/cache_manager.py`
 - **Features**:
   - Centralized cache instance management
   - Automated cache warming for critical data

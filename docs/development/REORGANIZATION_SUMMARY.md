@@ -60,7 +60,7 @@ ACGS-master/
 ### 2. File Movements and Updates
 
 #### Configuration Files
-- **Docker Compose**: Moved to `config/docker/docker-compose.yml`
+- **Docker Compose**: Moved to `infrastructure/docker/docker-compose.yml`
 - **Kubernetes**: Moved to `config/k8s/`
 - **Environment**: Moved to `config/env/`
 - **Monitoring**: Moved to `config/monitoring/`
@@ -126,7 +126,7 @@ ACGS-master/
    git pull origin main
    
    # Update Docker Compose commands
-   docker-compose -f config/docker/docker-compose.yml up
+   docker-compose -f infrastructure/docker/docker-compose.yml up
    ```
 
 2. **Update Import Statements**:

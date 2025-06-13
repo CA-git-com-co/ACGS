@@ -9,7 +9,7 @@ This document summarizes the implementation of improvements and enhancements to 
 ### 1. Theoretical Framework Improvements
 
 #### 1.1 Lipschitz Constant Discrepancy Resolution
-**File:** `src/backend/gs_service/app/services/lipschitz_estimator.py`
+**File:** `services/core/gs_service/app/services/lipschitz_estimator.py`
 
 **Problem Addressed:** Discrepancy between theoretical Lipschitz bound (≤0.593) and empirical observations (0.73)
 
@@ -43,7 +43,7 @@ class LipschitzEstimationConfig:
 ### 2. LLM Reliability Enhancements
 
 #### 2.1 Multi-Model Validation Framework
-**File:** `src/backend/gs_service/app/core/llm_reliability_framework.py`
+**File:** `services/core/gs_service/app/core/llm_reliability_framework.py`
 
 **Problem Addressed:** Current 78.6% success rate insufficient for safety-critical applications requiring >99.9%
 
@@ -85,7 +85,7 @@ class LLMReliabilityFramework:
 ### 3. Constitutional Council Scalability
 
 #### 3.1 Rapid Co-Evolution Handling
-**File:** `src/backend/ac_service/app/core/constitutional_council_scalability.py`
+**File:** `services/core/ac_service/app/core/constitutional_council_scalability.py`
 
 **Problem Addressed:** Constitutional Council scalability for rapid co-evolution scenarios
 
@@ -121,7 +121,7 @@ class CoEvolutionMode(Enum):
 ### 4. Adversarial Robustness Testing
 
 #### 4.1 Expanded Testing Framework
-**File:** `src/backend/fv_service/app/core/adversarial_robustness_tester.py`
+**File:** `services/core/fv_service/app/core/adversarial_robustness_tester.py`
 
 **Problem Addressed:** Limited adversarial robustness testing capabilities
 
@@ -154,7 +154,7 @@ class AdversarialTestType(Enum):
 ### 5. Proactive Fair Policy Generation
 
 #### 5.1 Beyond Post-Hoc Monitoring
-**File:** `src/backend/pgc_service/app/core/proactive_fairness_generator.py`
+**File:** `services/core/pgc_service/app/core/proactive_fairness_generator.py`
 
 **Problem Addressed:** Current post-hoc bias monitoring insufficient for proactive fairness
 

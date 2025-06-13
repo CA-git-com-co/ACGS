@@ -11,7 +11,7 @@ This document provides a comprehensive response to the technical review findings
 **Issue:** Theorem 3.1 derived L ≤ 0.525, but empirical analysis reported L ≈ 0.73, violating the theoretical bound.
 
 **Corrective Actions:**
-- **Implemented systematic Lipschitz constant estimation** (`backend/gs_service/app/services/lipschitz_estimator.py`)
+- **Implemented systematic Lipschitz constant estimation** (`services/core/governance-synthesis/gs_service/app/services/lipschitz_estimator.py`)
 - **Revised theoretical bounds** based on empirical evidence with confidence intervals
 - **Updated documentation** to reflect L ≤ 0.82 (empirical upper confidence limit)
 - **Added experimental protocol** for component-wise Lipschitz estimation
@@ -226,10 +226,10 @@ The revised framework maintains all core contributions while providing solid emp
 
 All corrective implementations are available in the ACGS-PGP repository:
 
-- **Lipschitz Estimation**: `backend/gs_service/app/services/lipschitz_estimator.py`
-- **Fairness Framework**: `backend/gs_service/app/services/fairness_evaluation_framework.py`
-- **Verification Testing**: `backend/fv_service/app/core/verification_completeness_tester.py`
-- **Crypto Benchmarking**: `backend/integrity_service/app/core/crypto_benchmarking.py`
+- **Lipschitz Estimation**: `services/core/governance-synthesis/gs_service/app/services/lipschitz_estimator.py`
+- **Fairness Framework**: `services/core/governance-synthesis/gs_service/app/services/fairness_evaluation_framework.py`
+- **Verification Testing**: `services/core/formal-verification/fv_service/app/core/verification_completeness_tester.py`
+- **Crypto Benchmarking**: `services/platform/integrity/integrity_service/app/core/crypto_benchmarking.py`
 - **Validation Script**: `scripts/technical_review_validation.py`
 
 The framework is ready for production deployment with continuous monitoring and improvement capabilities.

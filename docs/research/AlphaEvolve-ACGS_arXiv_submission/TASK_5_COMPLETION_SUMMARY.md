@@ -24,7 +24,7 @@
 ## 🏗️ **Architecture Components Implemented**
 
 ### 1. **Multi-Armed Bandit Core System**
-**File:** `src/backend/gs_service/app/core/mab_prompt_optimizer.py`
+**File:** `services/core/gs_service/app/core/mab_prompt_optimizer.py`
 - **Thompson Sampling Algorithm**: Beta-Bernoulli conjugate priors for exploration-exploitation balance
 - **UCB Algorithm**: Upper Confidence Bound with confidence interval optimization
 - **Reward Function**: Multi-component scoring system with configurable weights
@@ -32,7 +32,7 @@
 - **Integration Points**: Seamless connection with LLM reliability framework
 
 ### 2. **A/B Testing Framework**
-**File:** `src/backend/gs_service/app/core/ab_testing_framework.py`
+**File:** `services/core/gs_service/app/core/ab_testing_framework.py`
 - **Statistical Testing**: Two-sample t-tests with significance level detection
 - **Effect Size Calculation**: Cohen's d for meaningful difference measurement
 - **Early Stopping**: Intelligent test termination based on statistical significance
@@ -40,7 +40,7 @@
 - **Result Export**: Comprehensive test result documentation
 
 ### 3. **Performance Validation System**
-**File:** `src/backend/gs_service/app/core/performance_validation.py`
+**File:** `services/core/gs_service/app/core/performance_validation.py`
 - **Baseline Comparison**: Performance improvement tracking against established baselines
 - **Convergence Detection**: Multi-metric convergence analysis with confidence scoring
 - **Target Validation**: 25% improvement and 100-iteration convergence tracking
@@ -48,7 +48,7 @@
 - **Reporting**: Comprehensive performance reports with statistical summaries
 
 ### 4. **Database Integration**
-**File:** `src/backend/shared/alembic/versions/006_add_mab_optimization_tables.py`
+**File:** `services/core/shared/alembic/versions/006_add_mab_optimization_tables.py`
 - **Prompt Templates**: Template storage with metadata and performance tracking
 - **Performance Metrics**: Detailed reward component tracking and historical data
 - **Optimization History**: Complete audit trail of MAB decisions and outcomes
@@ -56,7 +56,7 @@
 - **Session Tracking**: A/B test session management and result persistence
 
 ### 5. **API Endpoints**
-**File:** `src/backend/gs_service/app/api/v1/mab_optimization.py`
+**File:** `services/core/gs_service/app/api/v1/mab_optimization.py`
 - **Template Management**: Registration and listing of prompt templates
 - **Optimization Metrics**: Real-time performance and convergence metrics
 - **A/B Test Control**: Test creation, monitoring, and result retrieval

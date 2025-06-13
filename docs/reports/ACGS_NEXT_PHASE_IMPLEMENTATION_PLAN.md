@@ -12,7 +12,7 @@
 1. **OPA Client Enhancement**
    ```bash
    # Current OPA client needs expansion
-   src/backend/pgc_service/app/core/opa_client.py  # 32% coverage
+   services/core/pgc_service/app/core/opa_client.py  # 32% coverage
    ```
    - Enhance policy compilation validation
    - Add Rego syntax checking
@@ -21,7 +21,7 @@
 2. **WINA-Rego Synthesis Integration**
    ```bash
    # Fix import issues and enhance functionality
-   src/backend/gs_service/tests/test_wina_rego_synthesis.py  # Currently failing
+   services/core/gs_service/tests/test_wina_rego_synthesis.py  # Currently failing
    ```
    - Resolve module import errors
    - Implement constitutional principle → Rego translation
@@ -29,7 +29,7 @@
 
 3. **Policy Format Router Enhancement**
    ```bash
-   src/backend/pgc_service/app/core/policy_format_router.py  # 24% coverage
+   services/core/pgc_service/app/core/policy_format_router.py  # 24% coverage
    ```
    - Add Rego format support
    - Implement policy format validation
@@ -42,7 +42,7 @@
 ##### Implementation Steps:
 1. **Constitutional Integration Enhancement**
    ```bash
-   src/backend/shared/wina/constitutional_integration.py  # 21% coverage
+   services/core/shared/wina/constitutional_integration.py  # 21% coverage
    ```
    - Implement principle adherence checking
    - Add constitutional conflict detection
@@ -50,7 +50,7 @@
 
 2. **Multi-Model Validation Enhancement**
    ```bash
-   src/backend/fv_service/app/core/enhanced_multi_model_validation.py  # 25% coverage
+   services/core/fv_service/app/core/enhanced_multi_model_validation.py  # 25% coverage
    ```
    - Add constitutional principle validation
    - Implement cross-model consistency checks
@@ -65,7 +65,7 @@
 ##### Implementation Steps:
 1. **Performance Monitoring Infrastructure**
    ```bash
-   src/backend/shared/wina/performance_monitoring.py  # 35% coverage
+   services/core/shared/wina/performance_monitoring.py  # 35% coverage
    ```
    - Implement real-time latency tracking
    - Add performance bottleneck detection
@@ -73,7 +73,7 @@
 
 2. **Incremental Compiler Optimization**
    ```bash
-   src/backend/pgc_service/app/core/incremental_compiler.py  # 28% coverage
+   services/core/pgc_service/app/core/incremental_compiler.py  # 28% coverage
    ```
    - Implement policy caching mechanisms
    - Add incremental compilation optimization
@@ -81,7 +81,7 @@
 
 3. **WINA Enforcement Optimizer**
    ```bash
-   src/backend/pgc_service/app/core/wina_enforcement_optimizer.py  # 25% coverage
+   services/core/pgc_service/app/core/wina_enforcement_optimizer.py  # 25% coverage
    ```
    - Implement policy execution optimization
    - Add runtime performance tuning
@@ -137,7 +137,7 @@
 ##### Implementation Steps:
 1. **PGP Assurance Enhancement**
    ```bash
-   src/backend/integrity_service/app/services/pgp_assurance.py  # 24% coverage
+   services/core/integrity_service/app/services/pgp_assurance.py  # 24% coverage
    ```
    - Implement comprehensive key validation
    - Add signature verification testing
@@ -145,7 +145,7 @@
 
 2. **Crypto Service Hardening**
    ```bash
-   src/backend/integrity_service/app/services/crypto_service.py  # 28% coverage
+   services/core/integrity_service/app/services/crypto_service.py  # 28% coverage
    ```
    - Enhance encryption/decryption testing
    - Add cryptographic algorithm validation

@@ -27,7 +27,7 @@ This document summarizes the comprehensive implementation of corrective actions 
 #### Deprecated Pydantic Imports (ERR-002)
 - **Issue**: Using deprecated `validator` import instead of `field_validator`
 - **Solution**: Updated all imports and method signatures for Pydantic v2 compatibility
-- **Files Fixed**: `src/backend/gs_service/app/schemas.py`
+- **Files Fixed**: `services/core/gs_service/app/schemas.py`
 - **Status**: ✅ FIXED
 
 #### Schema Configuration Issues (ERR-005)

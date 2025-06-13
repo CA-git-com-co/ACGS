@@ -37,8 +37,8 @@ The comprehensive CI/CD pipeline analysis and resolution for ACGS-1 has been **s
 ## 🔍 **Critical Issues Resolved**
 
 ### 1. **Service Path Mismatches** ✅ RESOLVED
-- **Before**: Workflows referenced non-existent `src/backend/ac_service`, `gs_service`, etc.
-- **After**: Updated to actual project structure with `services/` and `src/backend/ec_service/`
+- **Before**: Workflows referenced non-existent `services/core/ac_service`, `gs_service`, etc.
+- **After**: Updated to actual project structure with `services/` and `services/core/ec_service/`
 
 ### 2. **Missing Rust/Anchor Pipeline** ✅ RESOLVED
 - **Before**: No blockchain development support in CI
@@ -101,7 +101,7 @@ The comprehensive CI/CD pipeline analysis and resolution for ACGS-1 has been **s
 ✅ quantumagi_core/Anchor.toml: EXISTS
 ✅ quantumagi_core/package.json: EXISTS
 ✅ services/: EXISTS
-✅ src/backend/ec_service/: EXISTS
+✅ services/core/ec_service/: EXISTS
 ✅ requirements-test.txt: EXISTS
 ```
 
