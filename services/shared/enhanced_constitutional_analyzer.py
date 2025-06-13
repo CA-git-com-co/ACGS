@@ -15,35 +15,45 @@ Key Features:
 """
 
 import asyncio
+import hashlib
+import json
 import logging
 import time
-import hashlib
-import numpy as np
-from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
 from enum import Enum
-import json
+from typing import Any, Dict, List, Optional, Union
+
+import numpy as np
 
 # ACGS-1 imports
 try:
-    from .qwen3_embedding_client import get_qwen3_embedding_client, EmbeddingRequest, EmbeddingTaskType
-    from .ai_model_service import get_ai_model_service, ModelRole
-    from .langgraph_config import get_langgraph_config
-    from .redis_cache import get_cache
+    from .ai_model_service import ModelRole, get_ai_model_service
     from .constitutional_metrics import get_constitutional_metrics
+    from .langgraph_config import get_langgraph_config
+    from .qwen3_embedding_client import (
+        EmbeddingRequest,
+        EmbeddingTaskType,
+        get_qwen3_embedding_client,
+    )
+    from .redis_cache import get_cache
 except ImportError:
     # Fallback for testing
-    from qwen3_embedding_client import get_qwen3_embedding_client, EmbeddingRequest, EmbeddingTaskType
-    from ai_model_service import get_ai_model_service, ModelRole
-    from langgraph_config import get_langgraph_config
-    from redis_cache import get_cache
+    from ai_model_service import ModelRole, get_ai_model_service
     from constitutional_metrics import get_constitutional_metrics
+    from langgraph_config import get_langgraph_config
+    from qwen3_embedding_client import (
+        EmbeddingRequest,
+        EmbeddingTaskType,
+        get_qwen3_embedding_client,
+    )
+    from redis_cache import get_cache
 
 logger = logging.getLogger(__name__)
 
 
 class AnalysisType(str, Enum):
     """Types of constitutional analysis."""
+
     SEMANTIC_SIMILARITY = "semantic_similarity"
     COMPLIANCE_SCORING = "compliance_scoring"
     CONFLICT_DETECTION = "conflict_detection"
@@ -54,6 +64,7 @@ class AnalysisType(str, Enum):
 @dataclass
 class PolicyRule:
     """Policy rule for constitutional analysis."""
+
     id: str
     title: str
     content: str
@@ -64,6 +75,7 @@ class PolicyRule:
 @dataclass
 class ConstitutionalFramework:
     """Constitutional framework for analysis."""
+
     constitution_hash: str
     principles: List[Dict[str, Any]]
     policies: List[PolicyRule]
@@ -73,6 +85,7 @@ class ConstitutionalFramework:
 @dataclass
 class AnalysisResult:
     """Result of constitutional analysis."""
+
     analysis_type: AnalysisType
     compliance_score: float
     confidence_score: float
@@ -86,7 +99,7 @@ class AnalysisResult:
 class EnhancedConstitutionalAnalyzer:
     """
     Enhanced Constitutional Analyzer with Qwen3 embedding integration.
-    
+
     Provides semantic similarity analysis and constitutional compliance scoring
     using embeddings combined with multi-model LLM coordination.
     """
@@ -96,23 +109,23 @@ class EnhancedConstitutionalAnalyzer:
         self.config = config or {}
         self.langgraph_config = get_langgraph_config()
         self.constitutional_hash = "cdd01ef066bc6cf2"  # Reference constitutional hash
-        
+
         # Component references
         self.embedding_client = None
         self.ai_model_service = None
         self.redis_client = None
         self.metrics = get_constitutional_metrics("enhanced_constitutional_analyzer")
-        
+
         # Performance settings
         self.similarity_threshold = self.config.get("similarity_threshold", 0.85)
         self.compliance_threshold = self.config.get("compliance_threshold", 0.95)
         self.cache_ttl_seconds = self.config.get("cache_ttl_seconds", 3600)
-        
+
         # State tracking
         self.initialized = False
         self.total_analyses = 0
         self.successful_analyses = 0
-        
+
         logger.info("EnhancedConstitutionalAnalyzer initialized")
 
     async def initialize(self) -> bool:
@@ -124,10 +137,14 @@ class EnhancedConstitutionalAnalyzer:
             try:
                 self.embedding_client = await get_qwen3_embedding_client()
                 if self.embedding_client is None:
-                    logger.warning("Embedding client initialization returned None, using fallback")
+                    logger.warning(
+                        "Embedding client initialization returned None, using fallback"
+                    )
                     self.embedding_client = None
             except Exception as e:
-                logger.warning(f"Failed to initialize embedding client: {e}, using fallback")
+                logger.warning(
+                    f"Failed to initialize embedding client: {e}, using fallback"
+                )
                 self.embedding_client = None
 
             # Initialize AI model service
@@ -147,26 +164,28 @@ class EnhancedConstitutionalAnalyzer:
             self.initialized = True
 
             init_time = (time.time() - start_time) * 1000
-            logger.info(f"EnhancedConstitutionalAnalyzer initialized successfully in {init_time:.2f}ms")
+            logger.info(
+                f"EnhancedConstitutionalAnalyzer initialized successfully in {init_time:.2f}ms"
+            )
 
             # Record initialization metrics
             try:
                 self.metrics.record_constitutional_principle_operation(
                     operation_type="analyzer_initialization",
                     principle_category="constitutional_analysis",
-                    status="success"
+                    status="success",
                 )
             except Exception as e:
                 logger.warning(f"Failed to record initialization metrics: {e}")
 
             return True
-            
+
         except Exception as e:
             logger.error(f"Failed to initialize EnhancedConstitutionalAnalyzer: {e}")
             self.metrics.record_constitutional_principle_operation(
                 operation_type="analyzer_initialization",
                 principle_category="constitutional_analysis",
-                status="error"
+                status="error",
             )
             return False
 
@@ -174,92 +193,92 @@ class EnhancedConstitutionalAnalyzer:
         self,
         policy_content: str,
         analysis_type: AnalysisType = AnalysisType.COMPLIANCE_SCORING,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
     ) -> AnalysisResult:
         """
         Analyze constitutional compliance using semantic embeddings and LLM coordination.
-        
+
         Args:
             policy_content: Policy content to analyze
             analysis_type: Type of analysis to perform
             context: Additional context for analysis
-            
+
         Returns:
             AnalysisResult with compliance scoring and recommendations
         """
         start_time = time.time()
         self.total_analyses += 1
-        
+
         try:
             # Step 1: Generate embeddings for policy content
             embedding_request = EmbeddingRequest(
                 text=policy_content,
                 task_type=EmbeddingTaskType.CONSTITUTIONAL_ANALYSIS,
-                context=context
+                context=context,
             )
-            
+
             if self.embedding_client is None:
                 # Use fallback embedding (mock)
                 policy_embedding = [0.1] * 8192  # Mock embedding
                 logger.warning("Using fallback embedding due to client unavailability")
             else:
-                policy_embedding_response = await self.embedding_client.generate_embedding(embedding_request)
+                policy_embedding_response = (
+                    await self.embedding_client.generate_embedding(embedding_request)
+                )
 
                 if not policy_embedding_response.success:
-                    raise ValueError(f"Failed to generate policy embedding: {policy_embedding_response.error_message}")
+                    raise ValueError(
+                        f"Failed to generate policy embedding: {policy_embedding_response.error_message}"
+                    )
 
                 policy_embedding = policy_embedding_response.embedding
-            
+
             # Step 2: Get constitutional framework
             constitutional_framework = await self._get_constitutional_framework()
-            
+
             # Step 3: Perform semantic similarity analysis
             similarity_scores = await self._calculate_constitutional_similarity(
-                policy_embedding,
-                constitutional_framework
+                policy_embedding, constitutional_framework
             )
-            
+
             # Step 4: Use multi-model LLM for detailed analysis
             llm_analysis = await self._perform_llm_analysis(
                 policy_content,
                 constitutional_framework,
                 similarity_scores,
-                analysis_type
+                analysis_type,
             )
-            
+
             # Step 5: Combine embedding and LLM results
             final_result = await self._combine_analysis_results(
-                similarity_scores,
-                llm_analysis,
-                analysis_type,
-                start_time
+                similarity_scores, llm_analysis, analysis_type, start_time
             )
-            
+
             self.successful_analyses += 1
-            
+
             # Record metrics
             processing_time = final_result.processing_time_ms / 1000
             self.metrics.record_policy_synthesis_operation(
                 synthesis_type="constitutional_compliance",
                 constitutional_context=analysis_type.value,
                 status="success",
-                duration=processing_time
+                duration=processing_time,
             )
-            
+
             return final_result
-            
+
         except Exception as e:
             processing_time = (time.time() - start_time) * 1000
             logger.error(f"Error in constitutional compliance analysis: {e}")
-            
+
             # Record error metrics
             self.metrics.record_policy_synthesis_operation(
                 synthesis_type="constitutional_compliance",
                 constitutional_context=analysis_type.value,
                 status="error",
-                duration=processing_time / 1000
+                duration=processing_time / 1000,
             )
-            
+
             return AnalysisResult(
                 analysis_type=analysis_type,
                 compliance_score=0.0,
@@ -268,14 +287,14 @@ class EnhancedConstitutionalAnalyzer:
                 recommendations=["Review policy content and retry analysis"],
                 processing_time_ms=processing_time,
                 constitutional_hash=self.constitutional_hash,
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     async def _get_constitutional_framework(self) -> ConstitutionalFramework:
         """Get constitutional framework for analysis."""
         # Check cache first
         cache_key = f"constitutional_framework:{self.constitutional_hash}"
-        
+
         try:
             if self.redis_client is not None:
                 cached_framework = self.redis_client.get(cache_key)
@@ -284,7 +303,7 @@ class EnhancedConstitutionalAnalyzer:
                     return ConstitutionalFramework(**framework_data)
         except Exception as e:
             logger.warning(f"Cache retrieval error: {e}")
-        
+
         # Generate framework (mock implementation)
         framework = ConstitutionalFramework(
             constitution_hash=self.constitutional_hash,
@@ -293,55 +312,55 @@ class EnhancedConstitutionalAnalyzer:
                     "id": "PRIN-001",
                     "title": "Democratic Governance",
                     "content": "All governance decisions must be made through democratic processes",
-                    "weight": 1.0
+                    "weight": 1.0,
                 },
                 {
-                    "id": "PRIN-002", 
+                    "id": "PRIN-002",
                     "title": "Transparency",
                     "content": "All governance actions must be transparent and auditable",
-                    "weight": 0.9
+                    "weight": 0.9,
                 },
                 {
                     "id": "PRIN-003",
                     "title": "Fairness",
                     "content": "All policies must treat stakeholders fairly and equitably",
-                    "weight": 0.95
-                }
+                    "weight": 0.95,
+                },
             ],
             policies=[
                 PolicyRule(
                     id="POL-001",
                     title="Voting Rights",
                     content="All eligible stakeholders have the right to vote on governance matters",
-                    rule_type="fundamental"
+                    rule_type="fundamental",
                 ),
                 PolicyRule(
                     id="POL-002",
                     title="Audit Requirements",
                     content="All governance actions must be logged and auditable",
-                    rule_type="procedural"
-                )
+                    rule_type="procedural",
+                ),
             ],
-            metadata={"version": "1.0", "last_updated": time.time()}
+            metadata={"version": "1.0", "last_updated": time.time()},
         )
-        
+
         # Cache framework
         try:
             if self.redis_client is not None:
                 self.redis_client.set(
                     cache_key,
                     json.dumps(framework.__dict__, default=str),
-                    self.cache_ttl_seconds
+                    self.cache_ttl_seconds,
                 )
         except Exception as e:
             logger.warning(f"Cache storage error: {e}")
-        
+
         return framework
 
     async def _calculate_constitutional_similarity(
         self,
         policy_embedding: List[float],
-        constitutional_framework: ConstitutionalFramework
+        constitutional_framework: ConstitutionalFramework,
     ) -> Dict[str, float]:
         """Calculate semantic similarity between policy and constitutional principles."""
         similarity_scores = {}
@@ -351,29 +370,36 @@ class EnhancedConstitutionalAnalyzer:
             for principle in constitutional_framework.principles:
                 principle_request = EmbeddingRequest(
                     text=principle["content"],
-                    task_type=EmbeddingTaskType.CONSTITUTIONAL_ANALYSIS
+                    task_type=EmbeddingTaskType.CONSTITUTIONAL_ANALYSIS,
                 )
 
                 if self.embedding_client is None:
                     # Use fallback similarity calculation
-                    similarity_scores[principle["id"]] = 0.5  # Default moderate similarity
-                    logger.warning(f"Using fallback similarity for principle {principle['id']}")
+                    similarity_scores[principle["id"]] = (
+                        0.5  # Default moderate similarity
+                    )
+                    logger.warning(
+                        f"Using fallback similarity for principle {principle['id']}"
+                    )
                     continue
 
-                principle_embedding_response = await self.embedding_client.generate_embedding(principle_request)
+                principle_embedding_response = (
+                    await self.embedding_client.generate_embedding(principle_request)
+                )
 
                 if principle_embedding_response.success:
                     # Calculate cosine similarity
                     similarity = self._cosine_similarity(
-                        policy_embedding,
-                        principle_embedding_response.embedding
+                        policy_embedding, principle_embedding_response.embedding
                     )
 
                     # Weight by principle importance
                     weighted_similarity = similarity * principle.get("weight", 1.0)
                     similarity_scores[principle["id"]] = weighted_similarity
                 else:
-                    logger.warning(f"Failed to generate embedding for principle {principle['id']}")
+                    logger.warning(
+                        f"Failed to generate embedding for principle {principle['id']}"
+                    )
                     similarity_scores[principle["id"]] = 0.0
 
             return similarity_scores
@@ -409,7 +435,7 @@ class EnhancedConstitutionalAnalyzer:
         policy_content: str,
         constitutional_framework: ConstitutionalFramework,
         similarity_scores: Dict[str, float],
-        analysis_type: AnalysisType
+        analysis_type: AnalysisType,
     ) -> Dict[str, Any]:
         """Perform detailed analysis using multi-model LLM coordination."""
         try:
@@ -418,7 +444,7 @@ class EnhancedConstitutionalAnalyzer:
                 policy_content,
                 constitutional_framework,
                 similarity_scores,
-                analysis_type
+                analysis_type,
             )
 
             # Use constitutional analysis model role
@@ -429,14 +455,14 @@ class EnhancedConstitutionalAnalyzer:
                     "constitutional_analysis": "Fallback analysis - service unavailable",
                     "compliance_score": 0.5,
                     "recommendations": ["Service unavailable - manual review required"],
-                    "risk_assessment": "medium"
+                    "risk_assessment": "medium",
                 }
 
             response = await self.ai_model_service.generate_text(
                 prompt=prompt,
                 role=ModelRole.CONSTITUTIONAL,
                 max_tokens=2048,
-                temperature=0.1
+                temperature=0.1,
             )
 
             # Parse LLM response
@@ -450,7 +476,7 @@ class EnhancedConstitutionalAnalyzer:
                 "compliance_assessment": "error",
                 "confidence": 0.0,
                 "violations": [{"type": "llm_error", "message": str(e)}],
-                "recommendations": ["Retry analysis with different parameters"]
+                "recommendations": ["Retry analysis with different parameters"],
             }
 
     def _build_analysis_prompt(
@@ -458,13 +484,15 @@ class EnhancedConstitutionalAnalyzer:
         policy_content: str,
         constitutional_framework: ConstitutionalFramework,
         similarity_scores: Dict[str, float],
-        analysis_type: AnalysisType
+        analysis_type: AnalysisType,
     ) -> str:
         """Build analysis prompt for LLM."""
-        principles_text = "\n".join([
-            f"- {p['title']}: {p['content']} (Similarity: {similarity_scores.get(p['id'], 0.0):.3f})"
-            for p in constitutional_framework.principles
-        ])
+        principles_text = "\n".join(
+            [
+                f"- {p['title']}: {p['content']} (Similarity: {similarity_scores.get(p['id'], 0.0):.3f})"
+                for p in constitutional_framework.principles
+            ]
+        )
 
         prompt = f"""
 Constitutional Compliance Analysis
@@ -501,7 +529,8 @@ Respond in JSON format with the following structure:
         try:
             # Try to extract JSON from response
             import re
-            json_match = re.search(r'\{.*\}', response_content, re.DOTALL)
+
+            json_match = re.search(r"\{.*\}", response_content, re.DOTALL)
 
             if json_match:
                 json_str = json_match.group()
@@ -512,7 +541,7 @@ Respond in JSON format with the following structure:
                     "compliance_score": 0.8,
                     "confidence": 0.7,
                     "violations": [],
-                    "recommendations": ["Review LLM response format"]
+                    "recommendations": ["Review LLM response format"],
                 }
 
         except Exception as e:
@@ -521,7 +550,7 @@ Respond in JSON format with the following structure:
                 "compliance_score": 0.5,
                 "confidence": 0.5,
                 "violations": [{"type": "parsing_error", "description": str(e)}],
-                "recommendations": ["Retry analysis with improved prompt"]
+                "recommendations": ["Retry analysis with improved prompt"],
             }
 
     async def _combine_analysis_results(
@@ -529,12 +558,14 @@ Respond in JSON format with the following structure:
         similarity_scores: Dict[str, float],
         llm_analysis: Dict[str, Any],
         analysis_type: AnalysisType,
-        start_time: float
+        start_time: float,
     ) -> AnalysisResult:
         """Combine embedding similarity and LLM analysis results."""
         try:
             # Calculate weighted compliance score
-            embedding_score = np.mean(list(similarity_scores.values())) if similarity_scores else 0.0
+            embedding_score = (
+                np.mean(list(similarity_scores.values())) if similarity_scores else 0.0
+            )
             llm_score = llm_analysis.get("compliance_score", 0.0)
 
             # Weighted combination (70% LLM, 30% embedding)
@@ -551,12 +582,14 @@ Respond in JSON format with the following structure:
             # Add embedding-based violations
             for principle_id, score in similarity_scores.items():
                 if score < self.similarity_threshold:
-                    violations.append({
-                        "type": "semantic_mismatch",
-                        "principle_id": principle_id,
-                        "similarity_score": score,
-                        "description": f"Low semantic similarity to principle {principle_id}"
-                    })
+                    violations.append(
+                        {
+                            "type": "semantic_mismatch",
+                            "principle_id": principle_id,
+                            "similarity_score": score,
+                            "description": f"Low semantic similarity to principle {principle_id}",
+                        }
+                    )
 
             processing_time = (time.time() - start_time) * 1000
 
@@ -572,8 +605,8 @@ Respond in JSON format with the following structure:
                     "embedding_score": embedding_score,
                     "llm_score": llm_score,
                     "similarity_scores": similarity_scores,
-                    "score_agreement": score_agreement
-                }
+                    "score_agreement": score_agreement,
+                },
             )
 
         except Exception as e:
@@ -588,13 +621,11 @@ Respond in JSON format with the following structure:
                 recommendations=["Review analysis pipeline"],
                 processing_time_ms=processing_time,
                 constitutional_hash=self.constitutional_hash,
-                metadata={"error": str(e)}
+                metadata={"error": str(e)},
             )
 
     async def policy_creation_workflow_analysis(
-        self,
-        policy: PolicyRule,
-        constitutional_framework: ConstitutionalFramework
+        self, policy: PolicyRule, constitutional_framework: ConstitutionalFramework
     ) -> Dict[str, Any]:
         """Analyze policy for creation workflow."""
         start_time = time.time()
@@ -603,7 +634,7 @@ Respond in JSON format with the following structure:
             result = await self.analyze_constitutional_compliance(
                 policy.content,
                 AnalysisType.POLICY_VALIDATION,
-                context={"policy_id": policy.id, "workflow": "creation"}
+                context={"policy_id": policy.id, "workflow": "creation"},
             )
 
             # Workflow-specific processing
@@ -618,7 +649,7 @@ Respond in JSON format with the following structure:
                 "recommendations": result.recommendations,
                 "processing_time_ms": result.processing_time_ms,
                 "constitutional_hash": result.constitutional_hash,
-                "workflow_type": "policy_creation"
+                "workflow_type": "policy_creation",
             }
 
             return workflow_result
@@ -632,14 +663,14 @@ Respond in JSON format with the following structure:
                 "approved": False,
                 "error": str(e),
                 "processing_time_ms": processing_time,
-                "workflow_type": "policy_creation"
+                "workflow_type": "policy_creation",
             }
 
     async def constitutional_compliance_workflow_analysis(
         self,
         policy_id: str,
         policy_content: str,
-        validation_type: str = "comprehensive"
+        validation_type: str = "comprehensive",
     ) -> Dict[str, Any]:
         """Analyze constitutional compliance for workflow."""
         start_time = time.time()
@@ -648,7 +679,7 @@ Respond in JSON format with the following structure:
             result = await self.analyze_constitutional_compliance(
                 policy_content,
                 AnalysisType.COMPLIANCE_SCORING,
-                context={"policy_id": policy_id, "validation_type": validation_type}
+                context={"policy_id": policy_id, "validation_type": validation_type},
             )
 
             # Compliance workflow result
@@ -662,7 +693,7 @@ Respond in JSON format with the following structure:
                 "processing_time_ms": result.processing_time_ms,
                 "constitutional_hash": result.constitutional_hash,
                 "validation_type": validation_type,
-                "workflow_type": "constitutional_compliance"
+                "workflow_type": "constitutional_compliance",
             }
 
             return workflow_result
@@ -676,7 +707,7 @@ Respond in JSON format with the following structure:
                 "compliant": False,
                 "error": str(e),
                 "processing_time_ms": processing_time,
-                "workflow_type": "constitutional_compliance"
+                "workflow_type": "constitutional_compliance",
             }
 
     async def health_check(self) -> Dict[str, Any]:
@@ -689,7 +720,8 @@ Respond in JSON format with the following structure:
             "performance_metrics": {
                 "total_analyses": self.total_analyses,
                 "successful_analyses": self.successful_analyses,
-                "success_rate": (self.successful_analyses / max(1, self.total_analyses)) * 100,
+                "success_rate": (self.successful_analyses / max(1, self.total_analyses))
+                * 100,
                 "average_response_time_ms": 0.0,
             },
         }
@@ -700,14 +732,18 @@ Respond in JSON format with the following structure:
                 # Test embedding client
                 if self.embedding_client:
                     embedding_health = await self.embedding_client.health_check()
-                    health_status["components"]["embedding_client"] = embedding_health["status"]
+                    health_status["components"]["embedding_client"] = embedding_health[
+                        "status"
+                    ]
                 else:
                     health_status["components"]["embedding_client"] = "unavailable"
 
                 # Test AI model service
                 if self.ai_model_service:
                     available_models = self.ai_model_service.get_available_models()
-                    health_status["components"]["ai_model_service"] = "healthy" if available_models else "degraded"
+                    health_status["components"]["ai_model_service"] = (
+                        "healthy" if available_models else "degraded"
+                    )
                 else:
                     health_status["components"]["ai_model_service"] = "unavailable"
 
@@ -726,20 +762,24 @@ Respond in JSON format with the following structure:
                 test_start = time.time()
                 test_result = await self.analyze_constitutional_compliance(
                     "Test policy for health check validation",
-                    AnalysisType.COMPLIANCE_SCORING
+                    AnalysisType.COMPLIANCE_SCORING,
                 )
                 test_time = (time.time() - test_start) * 1000
 
                 health_status["test_analysis"] = {
                     "success": test_result.compliance_score >= 0,
                     "response_time_ms": test_time,
-                    "compliance_score": test_result.compliance_score
+                    "compliance_score": test_result.compliance_score,
                 }
 
-                health_status["performance_metrics"]["average_response_time_ms"] = test_time
+                health_status["performance_metrics"][
+                    "average_response_time_ms"
+                ] = test_time
 
                 # Check if performance targets are met
-                health_status["performance_targets_met"] = test_time < 500.0  # <500ms target
+                health_status["performance_targets_met"] = (
+                    test_time < 500.0
+                )  # <500ms target
 
             except Exception as e:
                 health_status["status"] = "degraded"
@@ -791,7 +831,7 @@ async def reset_enhanced_constitutional_analyzer():
 async def integrate_with_pgc_service(
     policy_id: str,
     policy_content: str,
-    enforcement_context: Optional[Dict[str, Any]] = None
+    enforcement_context: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Integrate constitutional analysis with PGC service for real-time enforcement."""
     try:
@@ -803,9 +843,7 @@ async def integrate_with_pgc_service(
             context.update(enforcement_context)
 
         result = await analyzer.analyze_constitutional_compliance(
-            policy_content,
-            AnalysisType.COMPLIANCE_SCORING,
-            context=context
+            policy_content, AnalysisType.COMPLIANCE_SCORING, context=context
         )
 
         # Determine enforcement action based on compliance
@@ -825,7 +863,7 @@ async def integrate_with_pgc_service(
             "violations": result.violations,
             "recommendations": result.recommendations,
             "processing_time_ms": result.processing_time_ms,
-            "recommendation_reason": f"Policy {'meets' if enforcement_action == 'allow' else 'does not meet'} constitutional compliance requirements"
+            "recommendation_reason": f"Policy {'meets' if enforcement_action == 'allow' else 'does not meet'} constitutional compliance requirements",
         }
 
     except Exception as e:
@@ -835,5 +873,5 @@ async def integrate_with_pgc_service(
             "enforcement_action": "deny",
             "error": str(e),
             "processing_time_ms": 0.0,
-            "recommendation_reason": "Analysis failed - defaulting to deny for safety"
+            "recommendation_reason": "Analysis failed - defaulting to deny for safety",
         }

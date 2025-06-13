@@ -11,7 +11,7 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
 
 import redis.asyncio as redis
 import structlog

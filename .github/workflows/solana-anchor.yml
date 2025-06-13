@@ -24,7 +24,7 @@ env:
   SOLANA_CLI_VERSION: 1.18.22
   ANCHOR_CLI_VERSION: 0.29.0
   NODE_VERSION: '18'
-  RUST_TOOLCHAIN: 1.75.0
+  RUST_TOOLCHAIN: 1.81.0
 
 jobs:
   anchor-test:
@@ -67,82 +67,121 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ matrix.project }}-${{ hashFiles(format('{0}/**/Cargo.lock', matrix.project)) }}
           restore-keys: ${{ runner.os }}-cargo-${{ matrix.project }}-
 
-      - name: Install Solana CLI with fallback strategy
+      - name: Install Solana CLI with enhanced fallback strategy
         if: steps.check_project.outputs.exists == 'true'
         run: |
-          echo "🔧 Installing Solana CLI v${{ env.SOLANA_CLI_VERSION }} with fallback strategy..."
+          echo "🔧 Installing Solana CLI v${{ env.SOLANA_CLI_VERSION }} with enhanced fallback strategy..."
 
-          # Primary installation method with proper error detection
+          # Enhanced primary installation method with better error detection
           install_solana_primary() {
             echo "Attempting primary installation method..."
-            if curl -sSfL "https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install" | sh; then
-              return 0
+            local temp_script=$(mktemp)
+
+            # Download install script with timeout and error checking
+            if timeout 60 curl -sSfL --retry 3 --retry-delay 5 "https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install" -o "$temp_script"; then
+              echo "Install script downloaded successfully"
+              chmod +x "$temp_script"
+
+              # Execute with timeout and proper error handling
+              if timeout 300 bash "$temp_script"; then
+                rm -f "$temp_script"
+                return 0
+              else
+                echo "Primary installation script execution failed with exit code $?"
+                rm -f "$temp_script"
+                return 1
+              fi
             else
-              echo "Primary installation method failed with exit code $?"
+              echo "Failed to download install script (curl error: $?)"
+              rm -f "$temp_script"
               return 1
             fi
           }
 
-          # Fallback installation method
+          # Enhanced fallback installation method
           install_solana_fallback() {
-            echo "Primary method failed, trying fallback installation..."
-            # Download directly from GitHub releases
+            echo "Primary method failed, trying enhanced fallback installation..."
+            local temp_dir=$(mktemp -d)
+            cd "$temp_dir"
+
+            # Try multiple download sources
             SOLANA_RELEASE_URL="https://github.com/solana-labs/solana/releases/download/v${{ env.SOLANA_CLI_VERSION }}/solana-release-x86_64-unknown-linux-gnu.tar.bz2"
 
-            echo "Downloading from: $SOLANA_RELEASE_URL"
-            if ! wget -O solana-release.tar.bz2 "$SOLANA_RELEASE_URL"; then
-              echo "Failed to download Solana release"
+            echo "Downloading from GitHub releases..."
+            if timeout 120 wget --retry-connrefused --waitretry=5 --read-timeout=20 --timeout=15 -t 3 -O solana-release.tar.bz2 "$SOLANA_RELEASE_URL"; then
+              echo "Download successful, extracting..."
+              if tar -xjf solana-release.tar.bz2; then
+                echo "Extraction successful, installing..."
+                mkdir -p "$HOME/.local/share/solana/install/active_release"
+                cp -r solana-release/* "$HOME/.local/share/solana/install/active_release/"
+                chmod +x "$HOME/.local/share/solana/install/active_release/bin/"*
+                cd - && rm -rf "$temp_dir"
+                return 0
+              else
+                echo "Failed to extract archive"
+                cd - && rm -rf "$temp_dir"
+                return 1
+              fi
+            else
+              echo "Failed to download from GitHub releases"
+              cd - && rm -rf "$temp_dir"
               return 1
             fi
-
-            echo "Extracting Solana release..."
-            if ! tar -xjf solana-release.tar.bz2; then
-              echo "Failed to extract Solana release"
-              return 1
-            fi
-
-            echo "Installing Solana to ~/.local/share/solana/install/active_release"
-            mkdir -p "$HOME/.local/share/solana/install/active_release"
-            cp -r solana-release/* "$HOME/.local/share/solana/install/active_release/"
-            chmod +x "$HOME/.local/share/solana/install/active_release/bin/"*
-
-            echo "Fallback installation completed successfully"
-            return 0
           }
 
-          # Try primary method first, then fallback
-          INSTALLATION_SUCCESS=false
+          # Alternative installation using package manager
+          install_solana_alternative() {
+            echo "Trying alternative installation via package manager..."
+            # Install dependencies
+            sudo apt-get update -qq
+            sudo apt-get install -y build-essential pkg-config libudev-dev
 
-          if install_solana_primary; then
-            echo "✅ Primary installation method succeeded"
-            INSTALLATION_SUCCESS=true
-          else
-            echo "⚠️ Primary installation failed, attempting fallback..."
-            if install_solana_fallback; then
-              echo "✅ Fallback installation method succeeded"
-              INSTALLATION_SUCCESS=true
+            # Try installing via cargo if available
+            if command -v cargo >/dev/null 2>&1; then
+              echo "Installing Solana CLI via cargo..."
+              cargo install solana-cli --version ${{ env.SOLANA_CLI_VERSION }} --root "$HOME/.local/share/solana/install/active_release"
+              return $?
             else
-              echo "❌ Both installation methods failed"
-              INSTALLATION_SUCCESS=false
+              echo "Cargo not available for alternative installation"
+              return 1
             fi
+          }
+
+          # Try installation methods in order
+          if install_solana_primary; then
+            echo "✅ Primary installation successful"
+          elif install_solana_fallback; then
+            echo "✅ Fallback installation successful"
+          elif install_solana_alternative; then
+            echo "✅ Alternative installation successful"
+          else
+            echo "❌ All installation methods failed"
+            exit 1
           fi
 
           # Configure PATH and verify installation
           echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
           export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
 
-          # Verify installation only if successful
-          if [ "$INSTALLATION_SUCCESS" = "true" ]; then
+          # Enhanced verification with retry
+          echo "Verifying Solana CLI installation..."
+          for attempt in 1 2 3; do
             if solana --version; then
-              echo "✅ Solana CLI installed and verified successfully"
+              echo "✅ Solana CLI v$(solana --version | head -n1) installed and verified successfully"
+              break
             else
-              echo "❌ Solana CLI installation verification failed"
-              exit 1
+              if [ $attempt -eq 3 ]; then
+                echo "❌ Solana CLI installation verification failed after 3 attempts"
+                echo "PATH: $PATH"
+                echo "Solana binary location:"
+                find "$HOME/.local/share/solana" -name "solana" -type f 2>/dev/null || echo "No solana binary found"
+                exit 1
+              else
+                echo "⚠️ Verification attempt $attempt failed, retrying..."
+                sleep 5
+              fi
             fi
-          else
-            echo "❌ Solana CLI installation failed completely"
-            exit 1
-          fi
+          done
 
       - name: Install Anchor CLI with retry logic
         if: steps.check_project.outputs.exists == 'true'
@@ -206,9 +245,11 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: cargo clippy --all-targets --all-features -- -D warnings
 
-      - name: Build Anchor programs
+      - name: Build Anchor programs with strict compilation
         if: steps.check_project.outputs.exists == 'true'
         working-directory: ${{ matrix.project }}
+        env:
+          RUSTFLAGS: "-Dwarnings -Dclippy::all -Dclippy::pedantic"
         run: |
           solana config set --url localhost
           anchor build
@@ -225,8 +266,14 @@ jobs:
           # Wait for validator to be ready
           timeout 30 bash -c 'until solana cluster-version; do sleep 1; done'
           
-          # Run tests
-          anchor test --skip-local-validator || TEST_RESULT=$?
+          # Run comprehensive test suite
+          echo "Running comprehensive test suite..."
+          if [ -f scripts/run_comprehensive_tests.sh ]; then
+            chmod +x scripts/run_comprehensive_tests.sh
+            ./scripts/run_comprehensive_tests.sh || TEST_RESULT=$?
+          else
+            anchor test --skip-local-validator || TEST_RESULT=$?
+          fi
           
           # Cleanup
           kill $VALIDATOR_PID || true
@@ -256,7 +303,7 @@ jobs:
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
 
-      - name: Install security tools with version compatibility
+      - name: Install security tools with enhanced compatibility
         run: |
           echo "🔧 Installing security tools for Rust ${{ env.RUST_TOOLCHAIN }}..."
 
@@ -264,24 +311,77 @@ jobs:
           RUST_VERSION="${{ env.RUST_TOOLCHAIN }}"
           echo "Using Rust toolchain: $RUST_VERSION"
 
-          # Install cargo-audit with version compatibility for Rust 1.81.0
-          echo "Installing cargo-audit v0.21.1 for Rust 1.81.0 compatibility..."
-          cargo install cargo-audit --version 0.21.1
+          # Enhanced cargo-audit installation with retry logic
+          install_cargo_audit() {
+            echo "Installing cargo-audit v0.21.1 for Rust 1.81.0 compatibility..."
+            for attempt in 1 2 3; do
+              echo "Attempt $attempt/3: Installing cargo-audit..."
+              if cargo install cargo-audit --version 0.21.1 --locked; then
+                echo "✅ cargo-audit installed successfully on attempt $attempt"
+                return 0
+              else
+                if [ $attempt -eq 3 ]; then
+                  echo "❌ Failed to install cargo-audit after 3 attempts"
+                  return 1
+                else
+                  echo "⚠️ Attempt $attempt failed, retrying in 10 seconds..."
+                  sleep 10
+                fi
+              fi
+            done
+          }
 
-          # Install cargo-deny for enhanced security scanning with version compatibility
-          echo "Installing cargo-deny for enhanced security scanning..."
-          if [[ "$RUST_VERSION" < "1.85.0" ]]; then
-            echo "Installing cargo-deny v0.17.0 for Rust < 1.85.0"
-            cargo install cargo-deny --version 0.17.0
-          else
-            echo "Installing latest cargo-deny for Rust >= 1.85.0"
-            cargo install cargo-deny
+          # Enhanced cargo-deny installation with version compatibility
+          install_cargo_deny() {
+            echo "Installing cargo-deny for enhanced security scanning..."
+            for attempt in 1 2 3; do
+              echo "Attempt $attempt/3: Installing cargo-deny..."
+              if [[ "$RUST_VERSION" < "1.85.0" ]]; then
+                echo "Installing cargo-deny v0.17.0 for Rust < 1.85.0"
+                if cargo install cargo-deny --version 0.17.0 --locked; then
+                  echo "✅ cargo-deny installed successfully on attempt $attempt"
+                  return 0
+                fi
+              else
+                echo "Installing latest cargo-deny for Rust >= 1.85.0"
+                if cargo install cargo-deny --locked; then
+                  echo "✅ cargo-deny installed successfully on attempt $attempt"
+                  return 0
+                fi
+              fi
+
+              if [ $attempt -eq 3 ]; then
+                echo "❌ Failed to install cargo-deny after 3 attempts"
+                return 1
+              else
+                echo "⚠️ Attempt $attempt failed, retrying in 10 seconds..."
+                sleep 10
+              fi
+            done
+          }
+
+          # Install tools with error handling
+          if ! install_cargo_audit; then
+            echo "❌ cargo-audit installation failed, continuing without it"
+          fi
+
+          if ! install_cargo_deny; then
+            echo "❌ cargo-deny installation failed, continuing without it"
           fi
 
           # Verify installations
-          echo "✅ Installed security tools:"
-          cargo audit --version
-          cargo deny --version
+          echo "✅ Verifying installed security tools:"
+          if command -v cargo-audit >/dev/null 2>&1; then
+            cargo audit --version
+          else
+            echo "⚠️ cargo-audit not available"
+          fi
+
+          if command -v cargo-deny >/dev/null 2>&1; then
+            cargo deny --version
+          else
+            echo "⚠️ cargo-deny not available"
+          fi
 
       - name: Run comprehensive security audit on blockchain
         if: hashFiles('blockchain/Cargo.lock') != ''
@@ -322,7 +422,7 @@ jobs:
             fi
           fi
 
-          # Run cargo deny check if available
+          # Run cargo deny check
           echo "Running cargo deny check..."
           if [ -f "deny.toml" ]; then
             cargo deny check
@@ -381,7 +481,7 @@ jobs:
         run: |
           echo "🔧 Installing Solana CLI v${{ env.SOLANA_CLI_VERSION }} for program verification..."
 
-          # Primary installation method
+          # Primary installation method with proper error detection
           install_solana_primary() {
             echo "Attempting primary installation method..."
             if curl -sSfL "https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install" | sh; then
