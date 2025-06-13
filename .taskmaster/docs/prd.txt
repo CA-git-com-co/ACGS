@@ -1,129 +1,148 @@
-# ACGS-1 Phase 2: Enhanced Policy Synthesis Engine Development - Product Requirements Document
+# ACGS-1 PR #117 CI/CD Failure Remediation - Product Requirements Document
 
 ## Executive Summary
 
-This PRD outlines the remaining implementation tasks for Phase 2 of the ACGS-1 Enhanced Policy Synthesis Engine development. Building upon the successfully completed Phase 1 implementation, Phase 2 focuses on advanced performance optimization, enhanced multi-model integration, production monitoring, security hardening, and comprehensive documentation.
+This PRD defines the systematic remediation workflow for critical CI/CD pipeline failures identified in ACGS-1 PR #117 post-merge validation. The project addresses 5 workflow failures across 4 pipelines, with 2 critical/high severity blocking issues that prevent safe blockchain deployment.
 
-## Project Context
+## Problem Statement
 
-**Current State**: Phase 1 completed with enhanced policy synthesis capabilities, multi-model consensus, constitutional prompting, and adversarial defenses.
+**Current State**: ACGS-1 PR #117 merge resulted in 80% CI/CD pipeline failure rate (4/5 workflows failed) with critical security and compilation issues blocking Solana blockchain development.
 
-**Infrastructure Status**: Redis caching, HAProxy load balancing, Prometheus/Grafana monitoring, and PostgreSQL connection pooling are implemented but require optimization for >1000 concurrent users.
+**Critical Issues Identified**:
+- CRITICAL: Rust security audit failures (potential vulnerabilities undetected)
+- HIGH: Rust clippy compilation failures (blocks Anchor program builds)
+- MEDIUM: Multiple security scanning tool failures (CodeQL, MSDO, detect-secrets)
 
-**Security Status**: Basic security hardening completed (88.3/100 security score) with remaining GitHub security alerts and MD5 usage requiring remediation.
-
-## Phase 2 Objectives
-
-### ✅ Priority 1: Advanced Performance Optimization (COMPLETED)
-- Enhanced Redis multi-tier caching (L1 + L2) ✅
-- Optimized PostgreSQL connection pooling ✅
-- Performance validation script created ✅
-- Target: >1000 concurrent users, <500ms response times, >99.9% availability
-
-## Remaining Phase 2 Requirements
-
-### Priority 2: Enhanced Multi-Model Integration
-**Objective**: Expand multi-model consensus engine to include additional LLM providers for improved constitutional analysis accuracy.
-
-**Requirements**:
-- Add DeepSeek Chat v3, DeepSeek R1 via OpenRouter, and Qwen3-235B to consensus engine
-- Update services/shared/multi_model_manager.py with new model configurations
-- Modify services/shared/langgraph_config.py for additional LLM providers with API key management
-- Implement 4+ model consensus capability with weighted voting
-- Achieve <2s multi-model response times and >95% consensus accuracy
-- Maintain constitutional hash cdd01ef066bc6cf2 validation throughout
-
-### Priority 3: Production Monitoring & Observability
-**Objective**: Deploy comprehensive monitoring infrastructure for real-time system health and performance tracking.
-
-**Requirements**:
-- Deploy Prometheus metrics collection for all 7 core services (Auth:8000, AC:8001, Integrity:8002, FV:8003, GS:8004, PGC:8005, EC:8006)
-- Configure Grafana dashboards for policy synthesis success rates, response times, and system health
-- Implement custom constitutional compliance metrics and governance workflow monitoring
-- Set up automated alerting for performance degradation and constitutional compliance failures
-- Target: <1% monitoring overhead, real-time dashboard updates, automated SLA breach alerts
-- Integrate with existing HAProxy load balancer monitoring
-
-### Priority 4: Security Hardening
-**Objective**: Achieve production-grade security posture with comprehensive vulnerability remediation.
-
-**Requirements**:
-- Audit and resolve remaining GitHub security alerts through dependency updates
-- Replace all remaining MD5 cryptographic functions with SHA-256 throughout codebase
-- Implement security middleware for API endpoints with rate limiting and input validation
-- Deploy automated security scanning with Bandit, safety, and pip-audit integration
-- Target: >90% security score, zero HIGH/CRITICAL vulnerabilities, SHA-256 compliance
-- Maintain compatibility with existing Quantumagi Solana devnet deployment
-
-### Priority 5: Comprehensive Documentation
-**Objective**: Create complete documentation coverage for new features and deployment procedures.
-
-**Requirements**:
-- Update API specifications in OpenAPI format for enhanced synthesis endpoints
-- Create user guides for multi-model consensus features and monitoring dashboards
-- Document performance optimization configurations and deployment procedures
-- Generate troubleshooting guides for common issues and error resolution
-- Target: Complete API coverage, user guide completeness, deployment runbook accuracy
-- Include integration examples and best practices documentation
-
-## Technical Constraints
-
-**Preservation Requirements**:
-- Maintain 100% compatibility with existing Quantumagi Solana devnet deployment functionality
-- Preserve constitutional hash cdd01ef066bc6cf2 validation throughout all systems
-- Ensure all 5 governance workflows remain operational (Policy Creation, Constitutional Compliance, Policy Enforcement, WINA Oversight, Audit/Transparency)
-- Maintain <0.01 SOL governance costs for blockchain operations
-- Preserve >80% test coverage across unit and integration tests
-
-**Performance Targets**:
-- Support >1000 concurrent governance actions
-- Maintain <500ms response times for 95% of operations
-- Achieve >99.9% system availability
-- Ensure <2s multi-model consensus response times
-- Maintain >95% constitutional compliance accuracy
-
-**Security Requirements**:
-- Achieve >90% security score
-- Zero HIGH/CRITICAL vulnerabilities
-- Complete SHA-256 cryptographic compliance
-- Comprehensive input validation and rate limiting
-- Automated security scanning integration
-
-## Implementation Methodology
-
-**Approach**: Systematic execution with performance validation after each major change
-**Rollout**: Incremental implementation with rollback capability for production changes
-**Testing**: End-to-end testing after each priority objective completion
-**Monitoring**: Real-time progress tracking with specific metrics validation
-**Documentation**: Continuous documentation updates throughout implementation
+**Impact**:
+- Quantumagi Solana devnet deployment: BLOCKED
+- Constitutional governance system: AT RISK
+- Performance targets: Cannot be validated
+- Security posture: COMPROMISED
 
 ## Success Criteria
 
-**Completion Metrics**:
-- All 4 remaining priority objectives completed with measurable targets achieved
-- Zero regression in existing functionality (Quantumagi, governance workflows, constitutional compliance)
-- Performance benchmarks met or exceeded (>1000 concurrent users, <500ms response times, >99.9% availability)
-- Security posture improved (>90% security score, zero critical vulnerabilities)
-- Complete documentation coverage for new features and configurations
+### Primary Objectives
+1. **Zero Critical/High Severity Failures**: Resolve all blocking CI/CD issues within 4-hour deadline
+2. **Security Compliance**: Achieve 100% security audit pass rate (cargo audit + cargo deny)
+3. **Blockchain Pipeline Restoration**: Successful Solana Anchor program compilation and testing
+4. **Performance Validation**: Confirm <0.01 SOL costs, <2s response times, >99.5% uptime
 
-**Validation Requirements**:
-- Comprehensive performance testing with load simulation
-- Security scanning with automated vulnerability assessment
-- End-to-end governance workflow validation
-- Multi-model consensus accuracy measurement
-- Documentation completeness review and user testing
+### Secondary Objectives
+1. **Security Tool Restoration**: Achieve ≥80% security scanning tool success rate
+2. **Pipeline Stability**: Establish 24-48 hour monitoring for sustained stability
+3. **Documentation**: Complete CVE tracking and remediation documentation
+4. **Future Prevention**: Implement enhanced pre-merge validation criteria
 
-## Dependencies and Integration Points
+## Technical Requirements
 
-**External Dependencies**:
-- OpenRouter API access for additional LLM models
-- Prometheus/Grafana monitoring infrastructure
-- GitHub security scanning and dependency management
-- Redis and PostgreSQL performance optimization
+### Phase 1: Critical Priority (0-4 hours)
+**Task 1: Rust Security Audit Remediation**
+- Working Directory: `/home/dislove/ACGS-1/blockchain`
+- Commands: `cargo audit --fix`, `cargo deny check --fix`
+- Success Criteria: Zero RUSTSEC critical vulnerabilities
+- Dependencies: None (immediate execution)
 
-**Internal Integration**:
-- ACGS-1 core services (7 services on ports 8000-8006)
-- Quantumagi Solana devnet deployment
-- Constitutional governance workflows
-- Multi-model manager and LangGraph configuration
-- Advanced caching and database connection pooling
+**Task 2: Rust Clippy Resolution**
+- Working Directory: `/home/dislove/ACGS-1/blockchain`
+- Commands: `cargo clippy --all-targets --all-features -- -D warnings`, `cargo fix --allow-dirty`
+- Success Criteria: Clean clippy run with zero warnings
+- Dependencies: Task 1 completion
+
+### Phase 2: High Priority (4-12 hours)
+**Task 3: Security Scanning Infrastructure Restoration**
+- Fix detect-secrets baseline configuration
+- Resolve Microsoft Defender for DevOps Windows environment issues
+- Update CodeQL Rust analysis for Rust 1.81.0 compatibility
+- Target: ≥80% security scanning success rate
+
+**Task 4: Blockchain Pipeline Validation**
+- Re-trigger Solana Anchor Programs CI workflow
+- Validate Anchor builds with Solana CLI v1.18.22 + Anchor v0.29.0
+- Execute comprehensive test suite including PGC compliance checks
+- Confirm Quantumagi deployment readiness
+
+### Phase 3: Validation and Monitoring (12-24 hours)
+**Task 5: End-to-End Validation**
+- Verify all 5 CI/CD workflows pass successfully
+- Validate constitutional governance workflow functionality
+- Confirm performance targets achievement
+- Generate compliance documentation
+
+**Task 6: Monitoring and Reporting**
+- Implement 2-hour status update cycles during critical phase
+- Generate JSON-formatted progress reports
+- Establish 24-48 hour stability monitoring
+- Create final validation report
+
+## Architecture Requirements
+
+### Integration Constraints
+- **Quantumagi Compatibility**: Maintain existing Solana devnet deployment functionality
+- **ACGS-1 Services**: Preserve seven core services architecture (Auth, AC, Integrity, FV, GS, PGC, EC)
+- **Constitutional Governance**: Ensure system functionality throughout remediation
+- **Performance Standards**: Enterprise-grade targets maintained
+
+### Technology Stack
+- **Blockchain**: Solana CLI v1.18.22, Anchor v0.29.0, Rust 1.81.0
+- **Security Tools**: cargo-audit v0.21.1, cargo-deny v0.17.0, detect-secrets, CodeQL, MSDO
+- **CI/CD**: GitHub Actions workflows, Ubuntu/Windows runners
+- **Monitoring**: Task Master CLI, JSON progress tracking
+
+## Risk Assessment
+
+### High Risk Items
+1. **Security Vulnerabilities**: Unpatched RUSTSEC issues may require breaking changes
+2. **Compilation Dependencies**: Rust toolchain compatibility issues
+3. **Tool Configuration**: Security scanning tools may need infrastructure updates
+4. **Timeline Pressure**: 4-hour critical deadline for blocking issues
+
+### Mitigation Strategies
+1. **Incremental Validation**: Test each fix before proceeding to next task
+2. **Rollback Readiness**: Maintain ability to revert changes if issues arise
+3. **Parallel Execution**: Run non-dependent tasks simultaneously where possible
+4. **Escalation Triggers**: Clear criteria for escalating to senior engineering
+
+## Acceptance Criteria
+
+### Go-Live Criteria
+- [ ] All CRITICAL and HIGH severity CI/CD failures resolved
+- [ ] Rust security audit: PASS (zero critical vulnerabilities)
+- [ ] Rust clippy: PASS (zero warnings)
+- [ ] Solana Anchor programs: BUILD and TEST successfully
+- [ ] Security scanning tools: ≥80% success rate
+- [ ] Performance targets: <0.01 SOL, <2s response, >99.5% uptime
+- [ ] Constitutional governance: End-to-end functional
+- [ ] Documentation: Complete with CVE tracking
+
+### Future PR Merge Criteria
+- [ ] Pre-merge security audit validation required
+- [ ] Rust clippy clean run mandatory
+- [ ] Anchor program test suite execution required
+- [ ] Enhanced monitoring and alerting implemented
+
+## Timeline and Milestones
+
+**Hour 0-1**: Task Master setup, model configuration, task parsing
+**Hour 1-2**: Critical security audit remediation execution
+**Hour 2-3**: Rust clippy resolution and validation
+**Hour 3-4**: Critical phase validation and status reporting
+**Hour 4-8**: Security tool restoration and configuration
+**Hour 8-12**: Blockchain pipeline validation and testing
+**Hour 12-24**: End-to-end validation and monitoring setup
+**Hour 24-48**: Stability monitoring and final reporting
+
+## Success Metrics
+
+### Quantitative Targets
+- CI/CD Pipeline Success Rate: 100% (5/5 workflows)
+- Security Vulnerability Count: 0 critical, 0 high
+- Compilation Success Rate: 100%
+- Performance: <0.01 SOL, <2s response, >99.5% uptime
+- Security Tool Success Rate: ≥80%
+
+### Qualitative Outcomes
+- Quantumagi deployment readiness restored
+- Constitutional governance system operational
+- Enhanced security posture established
+- Improved CI/CD reliability and monitoring
+- Comprehensive documentation and knowledge transfer

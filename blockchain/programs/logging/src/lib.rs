@@ -38,7 +38,7 @@ pub mod logging {
             log_id: log_entry.id,
             event_type: event_type.clone(),
             timestamp: log_entry.timestamp,
-            source_program: source_program,
+            source_program,
             block_height: log_entry.block_height,
         });
 

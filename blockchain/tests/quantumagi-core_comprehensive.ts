@@ -1,23 +1,28 @@
 
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
+import { QuantumagiCore } from "../target/types/quantumagi_core";
 import { expect } from "chai";
 
 describe("quantumagi-core", () => {
   // Configure the client to use the local cluster
   anchor.setProvider(anchor.AnchorProvider.env());
 
-  const program = anchor.workspace.quantumagi-core_CAMEL as Program<quantumagi-core_CAMEL>;
+  const program = anchor.workspace.QuantumagiCore as Program<QuantumagiCore>;
 
   // Test accounts
   let authority: anchor.web3.Keypair;
-  let constitution: anchor.web3.Keypair;
-  let policy: anchor.web3.Keypair;
+  let governancePDA: anchor.web3.PublicKey;
+  let proposalPDA: anchor.web3.PublicKey;
 
   before(async () => {
     authority = anchor.web3.Keypair.generate();
-    constitution = anchor.web3.Keypair.generate();
-    policy = anchor.web3.Keypair.generate();
+
+    // Generate PDAs
+    [governancePDA] = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("governance")],
+      program.programId
+    );
 
     // Airdrop SOL for testing
     await program.provider.connection.confirmTransaction(
@@ -28,59 +33,64 @@ describe("quantumagi-core", () => {
     );
   });
 
-  describe("Constitution Management", () => {
-    it("Should initialize constitution successfully", async () => {
-      // Test constitution initialization
-      const constitutionHash = "test_hash_12345";
+  describe("Governance Management", () => {
+    it("Should initialize governance successfully", async () => {
+      // Test governance initialization
+      const principles = [
+        "PC-001: No unauthorized state mutations",
+        "GV-001: Democratic governance required",
+        "FN-001: Treasury protection mandatory"
+      ];
 
       await program.methods
-        .initialize(constitutionHash)
+        .initializeGovernance(authority.publicKey, principles)
         .accounts({
-          constitution: constitution.publicKey,
+          governance: governancePDA,
           authority: authority.publicKey,
           systemProgram: anchor.web3.SystemProgram.programId,
         })
-        .signers([constitution, authority])
+        .signers([authority])
         .rpc();
 
-      const constitutionAccount = await program.account.constitution.fetch(
-        constitution.publicKey
+      const governanceAccount = await program.account.governanceState.fetch(
+        governancePDA
       );
 
-      expect(constitutionAccount.hash).to.equal(constitutionHash);
-      expect(constitutionAccount.authority.toString()).to.equal(
+      expect(governanceAccount.principles.length).to.equal(principles.length);
+      expect(governanceAccount.authority.toString()).to.equal(
         authority.publicKey.toString()
       );
     });
 
-    it("Should update constitution with proper authority", async () => {
-      // Test constitution updates
-      const newHash = "updated_hash_67890";
-
+    it("Should execute emergency actions with proper authority", async () => {
+      // Test emergency governance actions
       await program.methods
-        .updateConstitution(newHash)
+        .emergencyAction(
+          { systemMaintenance: {} },
+          null
+        )
         .accounts({
-          constitution: constitution.publicKey,
+          governance: governancePDA,
           authority: authority.publicKey,
         })
         .signers([authority])
         .rpc();
 
-      const constitutionAccount = await program.account.constitution.fetch(
-        constitution.publicKey
-      );
-
-      expect(constitutionAccount.hash).to.equal(newHash);
+      // Emergency action should complete without error
+      console.log("Emergency action executed successfully");
     });
 
-    it("Should reject unauthorized constitution updates", async () => {
+    it("Should reject unauthorized emergency actions", async () => {
       const unauthorizedUser = anchor.web3.Keypair.generate();
 
       try {
         await program.methods
-          .updateConstitution("unauthorized_hash")
+          .emergencyAction(
+            { systemMaintenance: {} },
+            null
+          )
           .accounts({
-            constitution: constitution.publicKey,
+            governance: governancePDA,
             authority: unauthorizedUser.publicKey,
           })
           .signers([unauthorizedUser])
@@ -94,106 +104,119 @@ describe("quantumagi-core", () => {
   });
 
   describe("Policy Management", () => {
-    it("Should propose policy successfully", async () => {
-      const policyContent = "Test policy content";
-      const category = "Safety";
+    it("Should create policy proposal successfully", async () => {
+      const policyId = new anchor.BN(Date.now());
+      const title = "Test Policy";
+      const description = "Test policy description";
+      const policyText = "ENFORCE: Test policy content for safety compliance";
+
+      [proposalPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("proposal"), policyId.toBuffer("le", 8)],
+        program.programId
+      );
 
       await program.methods
-        .proposePolicy(policyContent, category)
+        .createPolicyProposal(policyId, title, description, policyText)
         .accounts({
-          policy: policy.publicKey,
+          proposal: proposalPDA,
+          governance: governancePDA,
           proposer: authority.publicKey,
-          constitution: constitution.publicKey,
           systemProgram: anchor.web3.SystemProgram.programId,
         })
-        .signers([policy, authority])
+        .signers([authority])
         .rpc();
 
-      const policyAccount = await program.account.policy.fetch(policy.publicKey);
+      const proposalAccount = await program.account.policyProposal.fetch(proposalPDA);
 
-      expect(policyAccount.content).to.equal(policyContent);
-      expect(policyAccount.category).to.equal(category);
-      expect(policyAccount.status).to.equal("Proposed");
+      expect(proposalAccount.policyText).to.equal(policyText);
+      expect(proposalAccount.title).to.equal(title);
+      expect(proposalAccount.status).to.deep.equal({ active: {} });
     });
 
-    it("Should vote on policy", async () => {
+    it("Should vote on proposal", async () => {
+      const policyId = new anchor.BN(Date.now() - 1000); // Use the policy ID from previous test
       const vote = true; // Support
+      const votingPower = new anchor.BN(1);
+
+      const [voteRecordPDA] = anchor.web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("vote_record"),
+          policyId.toBuffer("le", 8),
+          authority.publicKey.toBuffer(),
+        ],
+        program.programId
+      );
 
       await program.methods
-        .voteOnPolicy(vote)
+        .voteOnProposal(policyId, vote, votingPower)
         .accounts({
-          policy: policy.publicKey,
+          proposal: proposalPDA,
+          voteRecord: voteRecordPDA,
           voter: authority.publicKey,
+          systemProgram: anchor.web3.SystemProgram.programId,
         })
         .signers([authority])
         .rpc();
 
-      const policyAccount = await program.account.policy.fetch(policy.publicKey);
-      expect(policyAccount.supportVotes).to.equal(1);
+      const voteRecordAccount = await program.account.voteRecord.fetch(voteRecordPDA);
+      expect(voteRecordAccount.vote).to.equal(vote);
+      expect(voteRecordAccount.votingPower.toNumber()).to.equal(1);
     });
 
-    it("Should enact policy after sufficient votes", async () => {
+    it("Should finalize proposal after voting", async () => {
+      const policyId = new anchor.BN(Date.now() - 1000); // Use the same policy ID
+
       await program.methods
-        .enactPolicy()
+        .finalizeProposal(policyId)
         .accounts({
-          policy: policy.publicKey,
+          proposal: proposalPDA,
+          governance: governancePDA,
+          finalizer: authority.publicKey,
+        })
+        .signers([authority])
+        .rpc();
+
+      const proposalAccount = await program.account.policyProposal.fetch(proposalPDA);
+      expect(proposalAccount.status).to.deep.equal({ approved: {} });
+    });
+  });
+
+  describe("System Validation", () => {
+    it("Should validate governance state", async () => {
+      const governanceAccount = await program.account.governanceState.fetch(governancePDA);
+
+      expect(governanceAccount.authority.toString()).to.equal(authority.publicKey.toString());
+      expect(governanceAccount.principles.length).to.be.greaterThan(0);
+      expect(governanceAccount.totalPolicies).to.be.greaterThan(0);
+    });
+
+    it("Should validate proposal state", async () => {
+      const proposalAccount = await program.account.policyProposal.fetch(proposalPDA);
+
+      expect(proposalAccount.status).to.deep.equal({ approved: {} });
+      expect(proposalAccount.proposer.toString()).to.equal(authority.publicKey.toString());
+      expect(proposalAccount.votesFor.toNumber()).to.be.greaterThan(0);
+    });
+  });
+
+  describe("Emergency Actions", () => {
+    it("Should execute emergency suspension", async () => {
+      const policyId = new anchor.BN(Date.now() - 1000);
+
+      await program.methods
+        .emergencyAction(
+          { suspendProposal: {} },
+          policyId
+        )
+        .accounts({
+          governance: governancePDA,
           authority: authority.publicKey,
         })
         .signers([authority])
         .rpc();
 
-      const policyAccount = await program.account.policy.fetch(policy.publicKey);
-      expect(policyAccount.status).to.equal("Active");
-    });
-  });
-
-  describe("PGC Compliance Checking", () => {
-    it("Should validate compliant actions", async () => {
-      const action = "compliant_action";
-      const context = "test_context";
-
-      const result = await program.methods
-        .checkCompliance(action, context)
-        .accounts({
-          policy: policy.publicKey,
-          constitution: constitution.publicKey,
-        })
-        .view();
-
-      expect(result.isCompliant).to.be.true;
-      expect(result.confidence).to.be.greaterThan(0.9);
-    });
-
-    it("Should reject non-compliant actions", async () => {
-      const action = "extrajudicial_state_mutation";
-      const context = "unauthorized_context";
-
-      const result = await program.methods
-        .checkCompliance(action, context)
-        .accounts({
-          policy: policy.publicKey,
-          constitution: constitution.publicKey,
-        })
-        .view();
-
-      expect(result.isCompliant).to.be.false;
-      expect(result.violatedPolicies).to.have.length.greaterThan(0);
-    });
-  });
-
-  describe("Emergency Governance", () => {
-    it("Should deactivate policy in emergency", async () => {
-      await program.methods
-        .deactivatePolicy("Emergency deactivation")
-        .accounts({
-          policy: policy.publicKey,
-          authority: authority.publicKey,
-        })
-        .signers([authority])
-        .rpc();
-
-      const policyAccount = await program.account.policy.fetch(policy.publicKey);
-      expect(policyAccount.status).to.equal("Deactivated");
+      // Emergency action should complete successfully
+      console.log("Emergency suspension executed successfully");
     });
   });
 });
