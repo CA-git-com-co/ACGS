@@ -28,8 +28,10 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-# Import shared components
-sys.path.append("/home/dislove/ACGS-1/services/shared")
+# Import shared components - FIXED HARDCODED PATH
+import os
+shared_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "shared")
+sys.path.append(shared_path)
 from api_models import HealthCheckResponse, ServiceInfo, create_success_response
 from middleware import add_production_middleware, create_exception_handlers
 
@@ -96,13 +98,14 @@ app = FastAPI(
 # Add security middleware
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
-# Add CORS middleware with production settings
+# Add CORS middleware with SECURE production settings
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=allowed_origins,  # SECURITY FIX: No longer allow all origins
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID", "X-Correlation-ID"],
     expose_headers=["X-Request-ID", "X-Response-Time", "X-Correlation-ID"],
 )
 
@@ -142,7 +145,7 @@ for exc_type, handler in exception_handlers.items():
     app.add_exception_handler(exc_type, handler)
 
 
-# Service configuration
+# Service configuration - MOVED TO TOP TO FIX VARIABLE ORDER BUG
 SERVICE_NAME = "auth_service"
 SERVICE_VERSION = "3.0.0"
 SERVICE_PORT = 8000

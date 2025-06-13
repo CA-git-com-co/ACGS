@@ -79,7 +79,8 @@ ACGS-1/
 - **Anchor Framework** v0.29.0+
 - **Node.js** v18+
 - **Python** 3.9+
-- **Docker** & **Docker Compose**
+- **PostgreSQL** 15+
+- **Redis** 7+
 
 ### 1. Clone and Setup
 
@@ -87,27 +88,51 @@ ACGS-1/
 git clone https://github.com/CA-git-com-co/ACGS.git
 cd ACGS-1
 
-# Install dependencies
-./scripts/setup/install_dependencies.sh
+# Install Python dependencies
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
 ### 2. Build Blockchain Programs
 
 ```bash
 cd blockchain
+npm install
 anchor build
 anchor test
 ```
 
-### 3. Start Backend Services
+### 3. Start Backend Services (Host-based)
 
 ```bash
-# Start all services with Docker Compose
-docker-compose -f infrastructure/docker/docker-compose.yml up -d
+# Start Authentication Service (Port 8000)
+cd services/platform/authentication/auth_service
+python -m uvicorn app.main:app --reload --port 8000
 
-# Or start individual services
-cd services/core/constitutional-ai
+# Start Constitutional AI Service (Port 8001)
+cd services/core/constitutional-ai/ac_service
 python -m uvicorn app.main:app --reload --port 8001
+
+# Start Integrity Service (Port 8002)
+cd services/platform/integrity/integrity_service
+python -m uvicorn app.main:app --reload --port 8002
+
+# Start Formal Verification Service (Port 8003)
+cd services/core/formal-verification/fv_service
+python -m uvicorn main:app --reload --port 8003
+
+# Start Governance Synthesis Service (Port 8004)
+cd services/core/governance-synthesis/gs_service
+python -m uvicorn app.main:app --reload --port 8004
+
+# Start Policy Governance Service (Port 8005)
+cd services/core/policy-governance/pgc_service
+python -m uvicorn app.main:app --reload --port 8005
+
+# Start Evolutionary Computation Service (Port 8006)
+cd services/core/evolutionary-computation
+python -m uvicorn app.main:app --reload --port 8006
 ```
 
 ### 4. Launch Frontend Applications
@@ -123,6 +148,7 @@ npm start
 ```bash
 cd blockchain
 anchor deploy --provider.cluster devnet
+python scripts/initialize_constitution.py
 ```
 
 ## 🏛️ Core Components
@@ -131,37 +157,92 @@ anchor deploy --provider.cluster devnet
 
 **Quantumagi Core Program**: Main governance enforcement
 - Constitutional principle storage and validation
-- Policy proposal and voting mechanisms  
+- Policy proposal and voting mechanisms
 - Real-time compliance checking (PGC)
 - Democratic governance workflows
 
 **Appeals Program**: Governance appeals and dispute resolution
 **Logging Program**: Comprehensive audit trail and event logging
 
-### Core Services (`services/core/`)
+### 7 Core Services Architecture
 
-**Constitutional AI Service** (`constitutional-ai/`)
-- Constitutional principle management
-- Human-in-the-loop sampling for uncertainty
+**Authentication Service** (Port 8000) - `services/platform/authentication/auth_service/`
+- Enterprise-grade authentication with MFA
+- OAuth 2.0 & OpenID Connect integration
+- API key management and JWT token validation
+- Role-based access control (RBAC)
+
+**Constitutional AI Service** (Port 8001) - `services/core/constitutional-ai/ac_service/`
+- Constitutional principle management and validation
+- Human-in-the-loop sampling for uncertainty resolution
 - Collective Constitutional AI integration
-- Democratic participation mechanisms
+- Democratic participation mechanisms and voting workflows
 
-**Governance Synthesis Service** (`governance-synthesis/`)
-- LLM-powered policy synthesis from principles
-- Multi-model validation (99.92% reliability)
-- QEC-inspired error correction
-- Bias detection and mitigation
+**Integrity Service** (Port 8002) - `services/platform/integrity/integrity_service/`
+- Cryptographic integrity verification
+- PGP assurance and digital signatures
+- Appeals and dispute resolution processing
+- Research data pipeline integration
 
-**Policy Governance Service** (`policy-governance/`)
-- Real-time policy enforcement using OPA
-- Sub-5ms policy decisions with hardware acceleration
-- Incremental compilation and hot-swapping
-- Constitutional amendment integration
-
-**Formal Verification Service** (`formal-verification/`)
+**Formal Verification Service** (Port 8003) - `services/core/formal-verification/fv_service/`
 - Z3 SMT solver integration for mathematical verification
-- Safety property checking
-- Formal policy validation against principles
+- Safety property checking and formal validation
+- Cross-domain testing and adversarial robustness
+- Parallel validation pipeline processing
+
+**Governance Synthesis Service** (Port 8004) - `services/core/governance-synthesis/gs_service/`
+- LLM-powered policy synthesis from constitutional principles
+- Multi-model validation with 99.92% reliability
+- QEC-inspired error correction and bias detection
+- AlphaEvolve integration for enhanced synthesis
+
+**Policy Governance Service** (Port 8005) - `services/core/policy-governance/pgc_service/`
+- Real-time policy enforcement using Open Policy Agent (OPA)
+- Sub-200ms policy decisions with incremental compilation
+- Constitutional amendment integration and workflow orchestration
+- Multi-stakeholder governance coordination
+
+**Evolutionary Computation Service** (Port 8006) - `services/core/evolutionary-computation/`
+- WINA-optimized oversight and performance monitoring
+- Constitutional compliance verification and optimization
+- Evolutionary governance strategies and learning feedback
+- Performance optimization alerts and constitutional updates
+
+## 🔄 5 Core Governance Workflows
+
+ACGS-1 implements five comprehensive governance workflows that orchestrate constitutional AI governance:
+
+### 1. Policy Creation Workflow
+**Implementation**: `services/core/policy-governance/pgc_service/app/api/v1/governance_workflows.py`
+- **Draft Preparation**: Initial policy drafting using GS service
+- **Stakeholder Review**: Coordinated review process with multiple stakeholders
+- **Constitutional Validation**: Validation against constitutional principles via AC service
+- **Voting Process**: Democratic voting with weighted stakeholder input
+- **Implementation**: Policy activation and enforcement setup
+
+### 2. Constitutional Compliance Workflow
+**Implementation**: `services/core/constitutional-ai/ac_service/app/workflows/`
+- **Validation**: Constitutional principle compliance checking
+- **Assessment**: LLM-powered constitutional analysis and conflict detection
+- **Enforcement**: Automated compliance enforcement and remediation
+
+### 3. Policy Enforcement Workflow
+**Implementation**: `services/core/policy-governance/pgc_service/app/main.py`
+- **Monitoring**: Real-time policy compliance monitoring
+- **Violation Detection**: Automated detection of policy violations
+- **Remediation**: Corrective actions and enforcement measures
+
+### 4. WINA Oversight Workflow
+**Implementation**: `services/core/evolutionary-computation/ec_service/app/core/wina_oversight_coordinator.py`
+- **Performance Monitoring**: WINA-optimized governance performance tracking
+- **Optimization**: Evolutionary computation for governance improvement
+- **Reporting**: Comprehensive performance and compliance reporting
+
+### 5. Audit/Transparency Workflow
+**Implementation**: `services/core/policy-governance/pgc_service/app/api/v1/governance_workflows.py`
+- **Data Collection**: Comprehensive governance data gathering
+- **Analysis**: Transparency analysis and audit trail generation
+- **Public Reporting**: Public transparency reports and accountability measures
 
 ### Integration Layer (`integrations/`)
 
@@ -185,36 +266,44 @@ anchor deploy --provider.cluster devnet
 # Blockchain tests
 cd blockchain && anchor test
 
-# Backend service tests  
-cd services && python -m pytest tests/
+# Backend service tests (from project root)
+python -m pytest tests/ -v
+
+# Individual service tests
+cd services/core/constitutional-ai/ac_service && python -m pytest tests/
+cd services/platform/integrity/integrity_service && python -m pytest tests/
 
 # Frontend tests
 cd applications/governance-dashboard && npm test
 
 # Integration tests
-python scripts/validation/validate_deployment.py
+python scripts/comprehensive_integration_test_runner.py
+python scripts/validate_service_health.sh
 ```
 
 ### Code Quality
 
 ```bash
-# Lint and format
-./scripts/maintenance/lint_and_format.sh
-
 # Security audit
-./scripts/validation/security_audit.py
+python scripts/security_audit.py
 
 # Performance testing
-./scripts/validation/performance_test.py
+python scripts/phase2_performance_validation.py
+
+# Health checks
+python scripts/comprehensive_health_check.py
+
+# Service validation
+./scripts/validate_service_stack.py
 ```
 
 ### Adding New Services
 
-1. Create service directory in `services/core/` or `services/platform/`
-2. Follow the service template in `tools/generators/service_template/`
-3. Update service registry in `services/shared/config/service_registry.py`
-4. Add Docker configuration in `infrastructure/docker/`
-5. Update integration tests
+1. Create service directory in `services/core/`, `services/platform/`, or `services/research/`
+2. Follow existing service patterns (FastAPI with uvicorn)
+3. Update service registry in `service_registry_config.json`
+4. Add service to monitoring in `scripts/priority3_monitoring_infrastructure.py`
+5. Update integration tests and health checks
 
 ## 📊 Monitoring & Observability
 
@@ -276,19 +365,44 @@ ACGS-1 features a comprehensive CI/CD pipeline with **100% health score** and en
 
 ## 🌐 Deployment
 
-### Development Environment
+### Host-based Development Environment
 ```bash
-docker-compose -f infrastructure/docker/docker-compose.dev.yml up
+# Start all services using the quick start script
+./scripts/quick_start.sh
+
+# Or start services individually (see Quick Start section above)
+# Each service runs on its designated port (8000-8006)
 ```
 
-### Staging Environment  
+### Solana Devnet Deployment
 ```bash
-./scripts/deployment/deploy_staging.sh
+cd blockchain
+anchor deploy --provider.cluster devnet
+python scripts/initialize_constitution.py
+python scripts/validate_devnet_deployment.py
 ```
 
 ### Production Environment
 ```bash
-./scripts/deployment/deploy_production.sh
+# Host-based production deployment
+./scripts/phase3_host_based_deployment.sh
+
+# Or use Docker Compose for containerized deployment
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Environment Configuration
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Configure database and services
+export DATABASE_URL="postgresql://user:password@localhost:5432/acgs_db"
+export REDIS_URL="redis://localhost:6379"
+
+# Set API keys for LLM services
+export OPENAI_API_KEY="your_openai_key"
+export GEMINI_API_KEY="your_gemini_key"
 ```
 
 ## 📚 Documentation
