@@ -39,8 +39,8 @@ This directory contains comprehensive API documentation for all ACGS-1 services 
 - **Features:** Cryptographic integrity, policy storage, versioning, audit logs, PGP assurance
 
 ### Workflow Service (`workflow`)
-- **Base URL:** `http://localhost:8007/api/workflow/`
-- **Interactive Docs:** `http://localhost:8007/docs`
+- **Base URL:** `http://localhost:8006/api/workflow/`
+- **Interactive Docs:** `http://localhost:8006/docs`
 - **Features:** Workflow orchestration, process automation, task management
 
 ## Research Service APIs
