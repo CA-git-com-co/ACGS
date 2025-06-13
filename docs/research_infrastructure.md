@@ -8,7 +8,7 @@ The ACGS-PGP Research Infrastructure provides comprehensive support for ongoing 
 
 The research infrastructure consists of several key components:
 
-### 1. Research Service (Port 8007)
+### 1. Research Service (Port 8006 - Integrated with EC Service)
 - **Experiment Tracking**: Comprehensive experiment management and tracking
 - **Data Collection**: Automated data collection from all ACGS-PGP services
 - **Statistical Analysis**: Advanced statistical analysis and insights
@@ -258,7 +258,7 @@ results = response.json()
 ```python
 # Trigger LLM reliability pipeline
 response = httpx.post(
-    "http://localhost:8007/api/v1/automation/pipelines/llm-reliability/trigger",
+    "http://localhost:8006/api/v1/automation/pipelines/llm-reliability/trigger",
     json={"parameters": {"sample_size": 1000}}
 )
 execution = response.json()
