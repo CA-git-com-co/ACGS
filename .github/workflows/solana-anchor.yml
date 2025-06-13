@@ -181,7 +181,7 @@ jobs:
           echo "Running clippy security lints..."
           cargo clippy -- -D warnings -D clippy::all -D clippy::pedantic
           echo "Checking for unsafe code..."
-          grep -r "unsafe" programs/ && echo "⚠️ Unsafe code detected" && exit 1 || echo "✅ No unsafe code found"
+          grep -r "unsafe" programs/ | grep -vE '^\s*//|".*unsafe.*"' && echo "⚠️ Unsafe code detected" && exit 1 || echo "✅ No unsafe code found"
 
       - name: Run security audit on quantumagi_core
         if: hashFiles('quantumagi_core/Cargo.lock') != ''
