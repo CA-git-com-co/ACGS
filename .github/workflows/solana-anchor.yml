@@ -72,10 +72,15 @@ jobs:
         run: |
           echo "🔧 Installing Solana CLI v${{ env.SOLANA_CLI_VERSION }} with fallback strategy..."
 
-          # Primary installation method
+          # Primary installation method with proper error detection
           install_solana_primary() {
             echo "Attempting primary installation method..."
-            sh -c "$(curl -sSfL https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install)"
+            if curl -sSfL "https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install" | sh; then
+              return 0
+            else
+              echo "Primary installation method failed with exit code $?"
+              return 1
+            fi
           }
 
           # Fallback installation method
@@ -239,14 +244,9 @@ jobs:
           RUST_VERSION="${{ env.RUST_TOOLCHAIN }}"
           echo "Using Rust toolchain: $RUST_VERSION"
 
-          # Install cargo-audit with version compatibility
-          if [[ "$RUST_VERSION" < "1.81.0" ]]; then
-            echo "Installing cargo-audit v0.21.1 for Rust < 1.81.0"
-            cargo install cargo-audit --version 0.21.1
-          else
-            echo "Installing latest cargo-audit for Rust >= 1.81.0"
-            cargo install cargo-audit
-          fi
+          # Install cargo-audit with version compatibility for Rust 1.81.0
+          echo "Installing cargo-audit v0.21.1 for Rust 1.81.0 compatibility..."
+          cargo install cargo-audit --version 0.21.1
 
           # Install cargo-deny for enhanced security scanning with version compatibility
           echo "Installing cargo-deny for enhanced security scanning..."
@@ -361,10 +361,15 @@ jobs:
         run: |
           echo "🔧 Installing Solana CLI v${{ env.SOLANA_CLI_VERSION }} for program verification..."
 
-          # Primary installation method
+          # Primary installation method with proper error detection
           install_solana_primary() {
             echo "Attempting primary installation method..."
-            sh -c "$(curl -sSfL https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install)"
+            if curl -sSfL "https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install" | sh; then
+              return 0
+            else
+              echo "Primary installation method failed with exit code $?"
+              return 1
+            fi
           }
 
           # Fallback installation method
