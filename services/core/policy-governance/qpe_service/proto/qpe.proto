@@ -1,0 +1,176 @@
+// Quantum Policy Evaluator (QPE) Protocol Buffer Definition
+// ACGS-1 Constitutional Governance Enhancement
+// Implements quantum-inspired policy evaluation with superposition states
+
+syntax = "proto3";
+
+package qpe;
+
+option go_package = "qpe_service/proto";
+
+// Quantum Policy Evaluator Service
+// Provides quantum-inspired policy evaluation with superposition states
+service QuantumPolicyEvaluator {
+  // Register a new policy in quantum superposition
+  rpc Register(RegisterRequest) returns (RegisterResponse) {}
+  
+  // Measure policy state (collapses superposition)
+  rpc Measure(MeasureRequest) returns (MeasureResponse) {}
+  
+  // Set uncertainty parameter (λ) for speed-accuracy trade-off
+  rpc SetUncertainty(UncertaintyRequest) returns (UncertaintyResponse) {}
+  
+  // Observer effect - force state collapse through stakeholder observation
+  rpc Observe(ObserveRequest) returns (ObserveResponse) {}
+  
+  // Get current quantum state without collapse (for monitoring)
+  rpc GetQuantumState(GetQuantumStateRequest) returns (GetQuantumStateResponse) {}
+  
+  // Health check endpoint
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse) {}
+}
+
+// Quantum policy representation with superposition weights
+message QuantumPolicy {
+  string policy_id = 1;
+  bytes entanglement_tag = 2;  // 32-byte HMAC with constitutional hash
+  float weight_approved = 3;   // |approved⟩ amplitude squared
+  float weight_rejected = 4;   // |rejected⟩ amplitude squared  
+  float weight_pending = 5;    // |pending⟩ amplitude squared
+  int64 created_at = 6;        // Unix timestamp
+  int64 deadline_at = 7;       // Automatic collapse deadline
+  float uncertainty_parameter = 8; // λ value for this policy
+  string criticality = 9;      // HIGH, MEDIUM, LOW
+  bool is_collapsed = 10;      // Whether superposition has collapsed
+  State collapsed_state = 11;  // Final state after collapse
+}
+
+// Policy states (quantum basis states)
+enum State {
+  APPROVED = 0;  // |approved⟩
+  REJECTED = 1;  // |rejected⟩
+  PENDING = 2;   // |pending⟩
+}
+
+// Collapse reasons for audit trail
+enum CollapseReason {
+  MEASUREMENT = 0;        // Normal measurement-induced collapse
+  OBSERVATION = 1;        // Stakeholder observation
+  DEADLINE_EXPIRED = 2;   // Automatic deadline collapse
+  DETERMINISTIC = 3;      // Hash-based deterministic collapse
+  MANUAL = 4;            // Manual administrative collapse
+}
+
+// Register new policy in superposition
+message RegisterRequest {
+  string policy_id = 1;
+  string criticality = 2;      // HIGH, MEDIUM, LOW
+  int64 deadline_hours = 3;    // Hours until automatic collapse
+  bool deterministic_mode = 4; // Use hash-based collapse
+}
+
+message RegisterResponse {
+  string policy_id = 1;
+  bytes entanglement_tag = 2;
+  QuantumPolicy quantum_state = 3;
+}
+
+// Measure policy state (triggers collapse)
+message MeasureRequest {
+  string policy_id = 1;
+  map<string, string> context = 2;  // Evaluation context
+  bool force_collapse = 3;          // Force collapse even if not needed
+}
+
+message MeasureResponse {
+  string policy_id = 1;
+  State state = 2;
+  bool pgc_result = 3;              // Actual PGC evaluation result
+  float latency_ms = 4;             // Total latency including QPE overhead
+  bytes entanglement_tag = 5;       // For audit trail
+  CollapseReason collapse_reason = 6;
+  bool was_already_collapsed = 7;
+  float heisenberg_constant = 8;    // Current K value (latency × accuracy)
+}
+
+// Set uncertainty parameter
+message UncertaintyRequest {
+  float lambda = 1;  // λ ∈ [0,1] controlling accuracy vs speed trade-off
+}
+
+message UncertaintyResponse {
+  float lambda = 1;
+  string effect_description = 2;  // Human-readable description of effect
+}
+
+// Observer effect - stakeholder observation
+message ObserveRequest {
+  string policy_id = 1;
+  string observer_id = 2;      // Stakeholder identifier
+  string observation_reason = 3; // Why observing
+}
+
+message ObserveResponse {
+  string policy_id = 1;
+  State state = 2;
+  bool was_collapsed = 3;      // Whether collapse occurred
+  bytes entanglement_tag = 4;
+  int64 observation_timestamp = 5;
+}
+
+// Get quantum state without collapse (monitoring)
+message GetQuantumStateRequest {
+  string policy_id = 1;
+}
+
+message GetQuantumStateResponse {
+  QuantumPolicy quantum_state = 1;
+  bool exists = 2;
+  float superposition_entropy = 3;  // Measure of superposition "spread"
+}
+
+// Health check
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  bool healthy = 1;
+  string status = 2;
+  map<string, string> details = 3;
+}
+
+// Batch operations for efficiency
+message BatchMeasureRequest {
+  repeated string policy_ids = 1;
+  map<string, string> context = 2;
+}
+
+message BatchMeasureResponse {
+  repeated MeasureResponse results = 1;
+  float total_latency_ms = 2;
+}
+
+// Metrics and monitoring
+message MetricsRequest {}
+
+message MetricsResponse {
+  int64 total_policies = 1;
+  int64 policies_in_superposition = 2;
+  int64 collapsed_policies = 3;
+  float average_latency_ms = 4;
+  float current_uncertainty = 5;
+  float heisenberg_constant = 6;
+  map<string, int64> state_distribution = 7;
+  map<string, int64> collapse_reasons = 8;
+}
+
+// Constitutional entanglement verification
+message VerifyEntanglementRequest {
+  string policy_id = 1;
+  bytes expected_tag = 2;
+}
+
+message VerifyEntanglementResponse {
+  bool valid = 1;
+  bytes actual_tag = 2;
+  string constitutional_hash = 3;  // Should be "cdd01ef066bc6cf2"
+}
