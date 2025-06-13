@@ -378,7 +378,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
-        port=8007,  # EC service port (matches docker-compose internal port)
+        port=8006,  # EC service port (matches documented port mapping)
         reload=True,
         log_level="info",
     )

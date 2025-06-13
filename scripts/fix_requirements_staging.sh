@@ -35,7 +35,7 @@ SERVICES=("fv_service" "gs_service" "pgc_service")
 # Create simplified requirements files for staging
 create_staging_requirements() {
     local service=$1
-    local service_dir="src/backend/$service"
+    local service_dir="services/$service"
     
     log "Creating staging requirements for $service..."
     
@@ -140,7 +140,7 @@ EOF
 # Update Dockerfiles to use staging requirements
 update_dockerfile() {
     local service=$1
-    local dockerfile_path="src/backend/$service/Dockerfile.prod"
+    local dockerfile_path="services/$service/Dockerfile.prod"
     
     log "Updating Dockerfile for $service to use staging requirements..."
     
@@ -161,7 +161,7 @@ update_dockerfile() {
 # Create staging-specific Dockerfiles
 create_staging_dockerfile() {
     local service=$1
-    local service_dir="src/backend/$service"
+    local service_dir="services/$service"
     
     log "Creating staging Dockerfile for $service..."
     
@@ -240,7 +240,7 @@ test_requirements() {
     
     # Test in a temporary container
     docker run --rm \
-        -v "$(pwd)/src/backend/$service/requirements_staging.txt:/tmp/requirements.txt" \
+        -v "$(pwd)/services/$service/requirements_staging.txt:/tmp/requirements.txt" \
         python:3.11-slim \
         bash -c "pip install --no-cache-dir -r /tmp/requirements.txt && echo 'Requirements test passed'"
     

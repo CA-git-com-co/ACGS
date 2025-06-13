@@ -14,15 +14,15 @@ def check_directory_structure():
     print("🔍 Checking directory structure...")
 
     expected_dirs = [
-        "src/backend/ac_service",
-        "src/backend/auth_service",
-        "src/backend/fv_service",
-        "src/backend/gs_service",
-        "src/backend/integrity_service",
-        "src/backend/pgc_service",
-        "src/backend/shared",
-        "src/frontend",
-        "src/alphaevolve_gs_engine",
+        "services/core/constitutional-ai/ac_service",
+        "services/platform/authentication/auth_service",
+        "services/core/formal-verification/fv_service",
+        "services/core/governance-synthesis/gs_service",
+        "services/platform/integrity/integrity_service",
+        "services/core/policy-governance/pgc_service",
+        "services/shared",
+        "applications/legacy-frontend",
+        "integrations/alphaevolve-engine",
         "tests/unit",
         "tests/integration",
         "tests/e2e",
@@ -61,9 +61,9 @@ def check_key_files():
     print("\n🔍 Checking key file locations...")
 
     key_files = [
-        "src/backend/shared/models.py",
-        "src/backend/shared/database.py",
-        "src/backend/shared/schemas.py",
+        "services/shared/models.py",
+        "services/shared/database.py",
+        "services/shared/schemas.py",
         "config/docker/docker-compose.yml",
         "config/docker/nginx.conf",
         "migrations/alembic.ini",

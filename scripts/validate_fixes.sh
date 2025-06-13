@@ -70,13 +70,13 @@ echo -e "\n${BLUE}Testing Dependencies${NC}"
 echo "===================="
 
 print_test "Checking auth service dependencies..."
-if grep -q "prometheus_client" src/backend/auth_service/requirements_simple.txt; then
+if grep -q "prometheus_client" services/platform/authentication/auth_service/requirements_simple.txt; then
     print_pass "prometheus_client dependency found in auth service"
 else
     print_fail "prometheus_client dependency missing in auth service"
 fi
 
-if grep -q "aiofiles" src/backend/auth_service/requirements_simple.txt; then
+if grep -q "aiofiles" services/platform/authentication/auth_service/requirements_simple.txt; then
     print_pass "aiofiles dependency found in auth service"
 else
     print_fail "aiofiles dependency missing in auth service"
@@ -87,13 +87,13 @@ echo -e "\n${BLUE}Testing Shared Module${NC}"
 echo "====================="
 
 print_test "Checking shared module structure..."
-if [ -f "src/backend/shared/__init__.py" ]; then
+if [ -f "services/shared/__init__.py" ]; then
     print_pass "Shared module __init__.py exists"
 else
     print_fail "Shared module __init__.py missing"
 fi
 
-if [ -f "src/backend/shared/metrics.py" ]; then
+if [ -f "services/shared/metrics.py" ]; then
     print_pass "Shared metrics module exists"
 else
     print_fail "Shared metrics module missing"
@@ -151,14 +151,14 @@ echo -e "\n${BLUE}Testing Database Configuration${NC}"
 echo "==============================="
 
 print_test "Checking Alembic configuration..."
-if [ -f "src/backend/shared/alembic.ini" ]; then
+if [ -f "services/shared/alembic.ini" ]; then
     print_pass "Alembic configuration exists"
 else
     print_fail "Alembic configuration missing"
 fi
 
 print_test "Checking migration directory..."
-if [ -d "src/backend/shared/alembic/versions" ]; then
+if [ -d "services/shared/alembic/versions" ]; then
     print_pass "Alembic versions directory exists"
 else
     print_warn "Alembic versions directory missing (will be created)"
@@ -171,7 +171,7 @@ echo "============================="
 print_test "Checking service Dockerfiles..."
 services=("auth_service" "ac_service" "integrity_service" "fv_service" "gs_service" "pgc_service")
 for service in "${services[@]}"; do
-    if [ -f "src/backend/$service/Dockerfile" ]; then
+    if [ -f "services/$service/Dockerfile" ]; then
         print_pass "Dockerfile exists for $service"
     else
         print_fail "Dockerfile missing for $service"

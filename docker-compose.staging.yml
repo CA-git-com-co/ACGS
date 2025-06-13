@@ -74,7 +74,7 @@ services:
   # AC Service - Artificial Constitution
   ac_service:
     build:
-      context: ./src/backend
+      context: ./services
       dockerfile: ac_service/Dockerfile.prod
     container_name: acgs-ac-service-staging
     environment:
@@ -116,7 +116,7 @@ services:
   # Integrity Service - Cryptographic Verification
   integrity_service:
     build:
-      context: ./src/backend
+      context: ./services
       dockerfile: integrity_service/Dockerfile.prod
     container_name: acgs-integrity-service-staging
     environment:
@@ -156,7 +156,7 @@ services:
   # FV Service - Formal Verification
   fv_service:
     build:
-      context: ./src/backend
+      context: ./services
       dockerfile: fv_service/Dockerfile.staging
     container_name: acgs-fv-service-staging
     environment:
@@ -197,7 +197,7 @@ services:
   # GS Service - Governance Synthesis
   gs_service:
     build:
-      context: ./src/backend
+      context: ./services
       dockerfile: gs_service/Dockerfile.staging
     container_name: acgs-gs-service-staging
     environment:
@@ -244,7 +244,7 @@ services:
   # PGC Service - Prompt Governance Compiler
   pgc_service:
     build:
-      context: ./src/backend
+      context: ./services
       dockerfile: pgc_service/Dockerfile.staging
     container_name: acgs-pgc-service-staging
     environment:

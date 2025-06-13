@@ -12,7 +12,7 @@ import logging
 import os
 
 # Add the backend path to sys.path for imports
-# sys.path.append('/home/dislove/ACGS-master/src/backend')  # Removed during reorganization
+# sys.path.append('/home/dislove/ACGS-master/services')  # Removed during reorganization
 
 try:
     from gs_service.app.core.nvidia_qwen_client import (

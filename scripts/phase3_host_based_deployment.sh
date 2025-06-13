@@ -147,7 +147,7 @@ create_service_venv() {
     pip install --upgrade pip
     
     # Install requirements
-    local req_file="$PROJECT_ROOT/src/backend/$service_name/requirements.txt"
+    local req_file="$PROJECT_ROOT/services/$service_name/requirements.txt"
     if [ -f "$req_file" ]; then
         pip install -r "$req_file"
     else
@@ -174,7 +174,7 @@ start_service() {
     local service_name=$1
     local port=${SERVICES[$service_name]}
     local venv_path="$VENV_BASE_DIR/$service_name"
-    local service_dir="$PROJECT_ROOT/src/backend/$service_name"
+    local service_dir="$PROJECT_ROOT/services/$service_name"
     local log_file="$LOG_DIR/${service_name}.log"
     local pid_file="$PID_DIR/${service_name}.pid"
     

@@ -277,12 +277,12 @@ class ImportPathFixer:
             
             # Update build contexts to new service locations
             service_mappings = {
-                './src/backend/ac_service': './services/core/constitutional-ai',
-                './src/backend/gs_service': './services/core/governance-synthesis',
-                './src/backend/pgc_service': './services/core/policy-governance',
-                './src/backend/fv_service': './services/core/formal-verification',
-                './src/backend/auth_service': './services/platform/authentication',
-                './src/backend/integrity_service': './services/platform/integrity',
+                './services/core/constitutional-ai/ac_service': './services/core/constitutional-ai',
+                './services/core/governance-synthesis/gs_service': './services/core/governance-synthesis',
+                './services/core/policy-governance/pgc_service': './services/core/policy-governance',
+                './services/core/formal-verification/fv_service': './services/core/formal-verification',
+                './services/platform/authentication/auth_service': './services/platform/authentication',
+                './services/platform/integrity/integrity_service': './services/platform/integrity',
             }
             
             for old_path, new_path in service_mappings.items():
@@ -311,7 +311,7 @@ class ImportPathFixer:
                 
                 # Example: update service URLs if they reference old structure
                 content = re.sub(
-                    r'(.*_SERVICE_URL=.*)/src/backend/([^/]+)',
+                    r'(.*_SERVICE_URL=.*)/services/([^/]+)',
                     r'\1/services/core/\2',
                     content
                 )

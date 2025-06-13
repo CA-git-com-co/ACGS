@@ -283,7 +283,7 @@ Submit constitutional amendment
 ## Evolutionary Computation Service (Port 8006)
 
 **Base URL**: `http://localhost:8006`
-**Implementation**: `services/core/evolutionary-computation/ec_service/`
+**Implementation**: `services/core/evolutionary-computation/`
 
 ### Core Endpoints
 

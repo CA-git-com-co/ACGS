@@ -22,7 +22,7 @@ os.environ["DATABASE_URL"] = (
     "postgresql+asyncpg://acgs_user:acgs_password@localhost:5434/acgs_pgp_db"
 )
 os.environ["PYTHONPATH"] = (
-    "/home/dislove/ACGS-master/src/backend:/home/dislove/ACGS-master/src/backend/shared"
+    "/home/dislove/ACGS-master/services:/home/dislove/ACGS-master/services/shared"
 )
 
 # Test scenarios for constitutional synthesis

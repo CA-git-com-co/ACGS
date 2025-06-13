@@ -88,12 +88,12 @@ class ACGSValidationPipeline:
 
         # Check for common import issues
         backend_services = [
-            "src/backend/auth_service",
-            "src/backend/ac_service",
-            "src/backend/gs_service",
-            "src/backend/pgc_service",
-            "src/backend/fv_service",
-            "src/backend/integrity_service",
+            "services/platform/authentication/auth_service",
+            "services/core/constitutional-ai/ac_service",
+            "services/core/governance-synthesis/gs_service",
+            "services/core/policy-governance/pgc_service",
+            "services/core/formal-verification/fv_service",
+            "services/platform/integrity/integrity_service",
         ]
 
         for service_dir in backend_services:
@@ -143,7 +143,7 @@ class ACGSValidationPipeline:
         schema_errors = []
 
         # Check shared schemas consistency
-        shared_schemas_path = self.project_root / "src/backend/shared/schemas.py"
+        shared_schemas_path = self.project_root / "services/shared/schemas.py"
         if shared_schemas_path.exists():
             errors = self._validate_shared_schemas(shared_schemas_path)
             schema_errors.extend(errors)

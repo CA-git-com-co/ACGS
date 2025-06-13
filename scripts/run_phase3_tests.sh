@@ -29,7 +29,7 @@ run_test_suite() {
     echo "----------------------------------------"
     
     if [ -n "$markers" ]; then
-        if python -m pytest "$test_path" -v -m "$markers" --tb=short --cov=src/backend/gs_service/app --cov-report=term-missing; then
+        if python -m pytest "$test_path" -v -m "$markers" --tb=short --cov=services/core/governance-synthesis/gs_service/app --cov-report=term-missing; then
             echo -e "${GREEN}✅ $test_name: PASSED${NC}"
             return 0
         else
@@ -37,7 +37,7 @@ run_test_suite() {
             return 1
         fi
     else
-        if python -m pytest "$test_path" -v --tb=short --cov=src/backend/gs_service/app --cov-report=term-missing; then
+        if python -m pytest "$test_path" -v --tb=short --cov=services/core/governance-synthesis/gs_service/app --cov-report=term-missing; then
             echo -e "${GREEN}✅ $test_name: PASSED${NC}"
             return 0
         else
@@ -52,7 +52,7 @@ run_performance_benchmarks() {
     echo -e "\n${PURPLE}⚡ Performance Benchmarks${NC}"
     echo "----------------------------------------"
     
-    if python -m pytest src/backend/gs_service/tests/performance/ -v -m "performance" --benchmark-only --benchmark-sort=mean --tb=short; then
+    if python -m pytest services/core/governance-synthesis/gs_service/tests/performance/ -v -m "performance" --benchmark-only --benchmark-sort=mean --tb=short; then
         echo -e "${GREEN}✅ Performance Benchmarks: PASSED${NC}"
         return 0
     else
@@ -66,7 +66,7 @@ run_security_tests() {
     echo -e "\n${PURPLE}🔒 Security Compliance Tests${NC}"
     echo "----------------------------------------"
     
-    if python -m pytest src/backend/gs_service/tests/security/ -v -m "security" --tb=short; then
+    if python -m pytest services/core/governance-synthesis/gs_service/tests/security/ -v -m "security" --tb=short; then
         echo -e "${GREEN}✅ Security Tests: PASSED${NC}"
         return 0
     else
@@ -119,9 +119,9 @@ setup_test_environment() {
     echo "----------------------------------------"
     
     # Create test directories if they don't exist
-    mkdir -p src/backend/gs_service/tests/performance
-    mkdir -p src/backend/gs_service/tests/security
-    mkdir -p src/backend/gs_service/tests/integration
+    mkdir -p services/core/governance-synthesis/gs_service/tests/performance
+    mkdir -p services/core/governance-synthesis/gs_service/tests/security
+    mkdir -p services/core/governance-synthesis/gs_service/tests/integration
     mkdir -p test-results
     mkdir -p coverage-reports
     
@@ -202,7 +202,7 @@ main() {
     
     # Phase 3.1: Performance Optimization Tests
     echo -e "\n${YELLOW}🔥 Phase 3.1: Performance Optimization Tests${NC}"
-    if run_test_suite "src/backend/gs_service/tests/performance/" "Performance Optimization Tests" "performance"; then
+    if run_test_suite "services/core/governance-synthesis/gs_service/tests/performance/" "Performance Optimization Tests" "performance"; then
         ((passed_tests++))
     fi
     ((total_tests++))
@@ -216,21 +216,21 @@ main() {
     
     # Phase 3.3: Advanced Caching Tests
     echo -e "\n${YELLOW}💾 Phase 3.3: Advanced Caching Tests${NC}"
-    if run_test_suite "src/backend/gs_service/tests/performance/test_governance_synthesis_performance.py::TestAdvancedCachePerformance" "Advanced Caching Tests" "performance"; then
+    if run_test_suite "services/core/governance-synthesis/gs_service/tests/performance/test_governance_synthesis_performance.py::TestAdvancedCachePerformance" "Advanced Caching Tests" "performance"; then
         ((passed_tests++))
     fi
     ((total_tests++))
     
     # Phase 3.4: Monitoring Integration Tests
     echo -e "\n${YELLOW}📊 Phase 3.4: Monitoring Integration Tests${NC}"
-    if run_test_suite "src/backend/gs_service/tests/performance/test_governance_synthesis_performance.py::TestPerformanceMonitoringOverhead" "Monitoring Integration Tests" "performance"; then
+    if run_test_suite "services/core/governance-synthesis/gs_service/tests/performance/test_governance_synthesis_performance.py::TestPerformanceMonitoringOverhead" "Monitoring Integration Tests" "performance"; then
         ((passed_tests++))
     fi
     ((total_tests++))
     
     # Phase 3.5: Enhanced OPA Integration Tests
     echo -e "\n${YELLOW}⚖️  Phase 3.5: Enhanced OPA Integration Tests${NC}"
-    if run_test_suite "src/backend/gs_service/tests/performance/test_governance_synthesis_performance.py::TestOPAIntegrationPerformance" "Enhanced OPA Integration Tests" "performance"; then
+    if run_test_suite "services/core/governance-synthesis/gs_service/tests/performance/test_governance_synthesis_performance.py::TestOPAIntegrationPerformance" "Enhanced OPA Integration Tests" "performance"; then
         ((passed_tests++))
     fi
     ((total_tests++))
@@ -244,7 +244,7 @@ main() {
     
     # Phase 3.7: Integration Tests
     echo -e "\n${YELLOW}🔗 Phase 3.7: Integration Tests${NC}"
-    if run_test_suite "src/backend/gs_service/tests/integration/" "Integration Tests" ""; then
+    if run_test_suite "services/core/governance-synthesis/gs_service/tests/integration/" "Integration Tests" ""; then
         ((passed_tests++))
     fi
     ((total_tests++))

@@ -193,7 +193,7 @@ verify_rollback() {
     log_info "Verifying rollback success..."
     
     # Check that old structure is restored
-    if [ -d "quantumagi_core" ] && [ -d "src/backend" ]; then
+    if [ -d "quantumagi_core" ] && [ -d "services" ]; then
         log_success "Original directory structure restored"
     else
         log_warning "Original directory structure may not be fully restored"

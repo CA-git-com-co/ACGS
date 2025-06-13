@@ -122,16 +122,16 @@ class DocumentationSummaryGenerator:
         logger.info("Documenting path updates...")
         
         path_updates = {
-            "src/backend/ac_service/": "services/core/constitutional-ai/",
-            "src/backend/gs_service/": "services/core/governance-synthesis/",
-            "src/backend/pgc_service/": "services/core/policy-governance/",
-            "src/backend/fv_service/": "services/core/formal-verification/",
-            "src/backend/auth_service/": "services/platform/authentication/",
-            "src/backend/integrity_service/": "services/platform/integrity/",
-            "src/backend/shared/": "services/shared/",
-            "src/frontend/": "applications/legacy-frontend/",
+            "services/core/constitutional-ai/ac_service/": "services/core/constitutional-ai/",
+            "services/core/governance-synthesis/gs_service/": "services/core/governance-synthesis/",
+            "services/core/policy-governance/pgc_service/": "services/core/policy-governance/",
+            "services/core/formal-verification/fv_service/": "services/core/formal-verification/",
+            "services/platform/authentication/auth_service/": "services/platform/authentication/",
+            "services/platform/integrity/integrity_service/": "services/platform/integrity/",
+            "services/shared/": "services/shared/",
+            "applications/legacy-frontend/": "applications/legacy-frontend/",
             "quantumagi_core/": "blockchain/",
-            "src/alphaevolve_gs_engine/": "integrations/alphaevolve-engine/"
+            "integrations/alphaevolve-engine/": "integrations/alphaevolve-engine/"
         }
         
         self.summary_data["path_updates"] = path_updates

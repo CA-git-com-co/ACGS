@@ -120,7 +120,7 @@ run_migration() {
         docker run --rm \
             --network acgs-master_acgs-staging \
             -v "$(pwd)/migrations:/app/migrations" \
-            -v "$(pwd)/src/backend/shared:/app/shared" \
+            -v "$(pwd)/services/shared:/app/shared" \
             -e DATABASE_URL="postgresql+asyncpg://acgs_user:${POSTGRES_PASSWORD}@acgs-postgres-staging:5432/acgs_staging" \
             python:3.11-slim \
             bash -c "
