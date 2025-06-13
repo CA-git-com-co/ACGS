@@ -168,9 +168,9 @@ python scripts/compute_fairness_metrics.py --domains all
 ## 📦 Artifact Availability
 
 ### Code and Data
-- [ ] **GitHub Repository**: https://github.com/soln-ai/alphaevolve-acgs
+- [ ] **GitHub Repository**: https://github.com/CA-git-com-co/ACGS.git
 - [ ] **Zenodo Archive**: DOI: 10.5281/zenodo.8234567
-- [ ] **Docker Images**: solnai/alphaevolve-acgs:latest
+- [ ] **Docker Images**: cagitco/alphaevolve-acgs:latest
 - [ ] **Documentation**: https://alphaevolve-acgs.readthedocs.io
 
 ### Evaluation Datasets
@@ -199,9 +199,9 @@ For rapid validation of core claims:
 
 ```bash
 # 1. Clone and setup (5 minutes)
-git clone https://github.com/soln-ai/alphaevolve-acgs.git
+git clone https://github.com/CA-git-com-co/ACGS.git
 cd alphaevolve-acgs
-docker run -it --gpus all -v $(pwd):/workspace solnai/alphaevolve-acgs:latest
+docker run -it --gpus all -v $(pwd):/workspace cagitco/alphaevolve-acgs:latest
 
 # 2. Run core evaluation (30 minutes)
 python scripts/quick_validation.py --domains arithmetic,symbolic_regression
@@ -218,7 +218,7 @@ python scripts/validate_core_claims.py --strict
 - **CUDA Errors**: Use CPU mode via `ALPHAEVOLVE_DEVICE=cpu`
 
 ### Getting Help
-- **GitHub Issues**: https://github.com/soln-ai/alphaevolve-acgs/issues
+- **GitHub Issues**: https://github.com/CA-git-com-co/ACGS/issues
 - **Documentation**: https://alphaevolve-acgs.readthedocs.io
 - **Email Support**: support@soln.ai
 
