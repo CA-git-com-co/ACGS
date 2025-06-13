@@ -1807,10 +1807,10 @@ class OperationalRule:
 ### C.1 Code and Data Availability
 
 The complete implementation, including all source code, configuration files, and evaluation datasets, is available through multiple channels to ensure accessibility and reproducibility:
-*   **GitHub Repository:** https://github.com/solnai/alphaevolve-acgs (MIT License, publicly available)
+*   **GitHub Repository:** https://github.com/CA-git-com-co/ACGS.git (MIT License, publicly available)
 *   **Zenodo Archive:** DOI: 10.5281/zenodo.8234567 (persistent version with full experimental artifacts)
 *   **Documentation:** Comprehensive setup and usage instructions at https://alphaevolve-acgs.readthedocs.io
-*   **Docker Images:** Pre-configured environments available on Docker Hub: solnai/alphaevolve-acgs:latest
+*   **Docker Images:** Pre-configured environments available on Docker Hub: cagitco/alphaevolve-acgs:latest
 *   **Evaluation Datasets:** All synthetic and real-world datasets used in evaluation (anonymized where required)
 
 ### C.2 Reproducibility Enhancements

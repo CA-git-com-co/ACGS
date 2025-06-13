@@ -17,16 +17,16 @@ This guide provides comprehensive instructions for reproducing all experimental 
 #### Option 1: Docker (Recommended)
 ```bash
 # Pull pre-configured environment
-docker pull solnai/alphaevolve-acgs:latest
+docker pull cagitco/alphaevolve-acgs:latest
 
 # Run interactive container
-docker run -it --gpus all -v $(pwd):/workspace solnai/alphaevolve-acgs:latest
+docker run -it --gpus all -v $(pwd):/workspace cagitco/alphaevolve-acgs:latest
 ```
 
 #### Option 2: Local Installation
 ```bash
 # Clone repository
-git clone https://github.com/soln-ai/alphaevolve-acgs.git
+git clone https://github.com/CA-git-com-co/ACGS.git
 cd alphaevolve-acgs
 
 # Create virtual environment
@@ -204,7 +204,7 @@ python scripts/integration_test.py --full
    ```
 
 ### Support
-- GitHub Issues: https://github.com/soln-ai/alphaevolve-acgs/issues
+- GitHub Issues: https://github.com/CA-git-com-co/ACGS/issues
 - Documentation: https://alphaevolve-acgs.readthedocs.io
 - Email: support@soln.ai
 

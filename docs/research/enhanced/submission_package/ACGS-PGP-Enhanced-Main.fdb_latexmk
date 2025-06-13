@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex ACGS-PGP-Enhanced-Main"] 1749840113.35647 "ACGS-PGP-Enhanced-Main.aux" "ACGS-PGP-Enhanced-Main.bbl" "ACGS-PGP-Enhanced-Main" 1749840115.3409 0
+["bibtex ACGS-PGP-Enhanced-Main"] 1749840113.35647 "ACGS-PGP-Enhanced-Main.aux" "ACGS-PGP-Enhanced-Main.bbl" "ACGS-PGP-Enhanced-Main" 1749843107.23667 0
   "./references.bib" 1749764418.50645 9678 f9b82f59b792f1df15f8fb1082351f34 ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "ACGS-PGP-Enhanced-Main.aux" 1749840115.06654 17205 f4a418588c92056cd1799d83a4b2b529 "pdflatex"
+  "ACGS-PGP-Enhanced-Main.aux" 1749843106.99488 17205 f4a418588c92056cd1799d83a4b2b529 "pdflatex"
   (generated)
   "ACGS-PGP-Enhanced-Main.bbl"
   "ACGS-PGP-Enhanced-Main.blg"
   (rewritten before read)
-["pdflatex"] 1749840113.42322 "ACGS-PGP-Enhanced-Main.tex" "ACGS-PGP-Enhanced-Main.pdf" "ACGS-PGP-Enhanced-Main" 1749840115.34107 0
+["pdflatex"] 1749843105.34017 "ACGS-PGP-Enhanced-Main.tex" "ACGS-PGP-Enhanced-Main.pdf" "ACGS-PGP-Enhanced-Main" 1749843107.23689 0
   "/etc/texmf/web2c/texmf.cnf" 1746903930.98296 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/adobe/symbol/psyr.tfm" 1136768653 1408 5937f58aa508ea2cea4901c07d10f5fe ""
@@ -266,15 +266,15 @@
   "05-discussion.tex" 1749838011.53647 2565 62667aca2e890e81e3eaf6aafd85bd36 ""
   "06-future-work.tex" 1749749056.48182 1305 3589d6849ebdb2d770e37235a74b7f9a ""
   "07-enhanced-constitutional-analyzer.tex" 1749804919.47044 7444 af0266036c45460886980fb47b7a9612 ""
-  "08-appendix.tex" 1749804919.47044 9518 52af8485c455b1081cffdda7bb98759c ""
+  "08-appendix.tex" 1749841117.89338 9517 b283a80fad776fc3ba4bc026ad7940d2 ""
   "08-quantumagi.tex" 1749763928.78203 1953 fcf3b82374afe68edd5c4146a9a25ba3 ""
   "09-conclusion.tex" 1749804919.47044 1847 04f13b1d9745629ffd87156b668d3b25 ""
-  "ACGS-PGP-Enhanced-Main.aux" 1749840115.06654 17205 f4a418588c92056cd1799d83a4b2b529 "pdflatex"
+  "ACGS-PGP-Enhanced-Main.aux" 1749843106.99488 17205 f4a418588c92056cd1799d83a4b2b529 "pdflatex"
   "ACGS-PGP-Enhanced-Main.bbl" 1749840113.41766 5648 4080c5596f17f1217f7617179ff51190 "bibtex ACGS-PGP-Enhanced-Main"
-  "ACGS-PGP-Enhanced-Main.out" 1749840115.06754 10430 b32ef3619427c93cb7c922b08639368f "pdflatex"
-  "ACGS-PGP-Enhanced-Main.tex" 1749804919.47444 4523 ac2fb74ae43bc992ae8bb32fdc1751bf ""
+  "ACGS-PGP-Enhanced-Main.out" 1749843106.99488 10430 b32ef3619427c93cb7c922b08639368f "pdflatex"
+  "ACGS-PGP-Enhanced-Main.tex" 1749840974.99179 4523 6bf35a6f6f851311dd232d6f11834cbc ""
   "performance_comparison.png" 1749740895.60315 171134 b210cf5dc31285686c8c10e7a66bb109 ""
-  "preamble.tex" 1749804919.47544 6575 d95b3f5cc51a6c9184bf080dac8f426c ""
+  "preamble.tex" 1749841054.85938 6575 7deddac925ca4852c06de6d1e70ccfdf ""
   "scaling_validation.png" 1749740895.60315 150161 8acd4706e46abbb0ea9472c6d3af8e91 ""
   "service_health.png" 1749740895.60315 118977 43855826053624717e7c56faa8d06ae8 ""
   "stability_analysis.png" 1749740895.60315 146663 7053493664c6ab3197a6949c952d9c65 ""

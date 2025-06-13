@@ -183,37 +183,74 @@ jobs:
             fi
           done
 
-      - name: Install Anchor CLI with retry logic
+      - name: Install Anchor CLI with enterprise circuit breaker
         if: steps.check_project.outputs.exists == 'true'
         run: |
-          echo "🔧 Installing Anchor CLI v${{ env.ANCHOR_CLI_VERSION }} with retry logic..."
+          echo "🔧 Installing Anchor CLI v${{ env.ANCHOR_CLI_VERSION }} with enterprise circuit breaker..."
 
-          install_anchor() {
-            npm install -g @coral-xyz/anchor-cli@${{ env.ANCHOR_CLI_VERSION }}
+          # Enterprise-grade circuit breaker implementation
+          install_anchor_with_circuit_breaker() {
+            local max_attempts=5
+            local base_delay=5
+            local max_delay=60
+            local timeout_seconds=300
+
+            echo "Initializing enterprise circuit breaker for Anchor CLI installation"
+            echo "Max attempts: $max_attempts, Base delay: ${base_delay}s, Max delay: ${max_delay}s"
+
+            for attempt in $(seq 1 $max_attempts); do
+              # Calculate exponential backoff delay
+              local delay=$((base_delay * (2 ** (attempt - 1))))
+              if [ $delay -gt $max_delay ]; then
+                delay=$max_delay
+              fi
+
+              echo "🔄 Circuit breaker attempt $attempt/$max_attempts"
+
+              # Set npm configuration for reliability
+              npm config set registry https://registry.npmjs.org/
+              npm config set timeout $((timeout_seconds * 1000))
+              npm config set fetch-retry-mintimeout 10000
+              npm config set fetch-retry-maxtimeout 60000
+              npm config set fetch-retries 3
+
+              # Attempt installation with timeout
+              if timeout $timeout_seconds npm install -g @coral-xyz/anchor-cli@${{ env.ANCHOR_CLI_VERSION }}; then
+                echo "✅ Anchor CLI installed successfully on attempt $attempt"
+
+                # Verify installation immediately
+                if timeout 30 anchor --version; then
+                  echo "✅ Anchor CLI verification successful"
+                  echo "🎯 Circuit breaker: SUCCESS after $attempt attempts"
+                  return 0
+                else
+                  echo "⚠️ Installation succeeded but verification failed on attempt $attempt"
+                fi
+              else
+                echo "❌ Installation failed on attempt $attempt"
+              fi
+
+              # Circuit breaker: check if we should continue
+              if [ $attempt -lt $max_attempts ]; then
+                echo "⏳ Circuit breaker: waiting ${delay}s before next attempt..."
+                sleep $delay
+
+                # Clear npm cache between attempts
+                npm cache clean --force 2>/dev/null || true
+              else
+                echo "💥 Circuit breaker: OPEN - All $max_attempts attempts failed"
+                echo "Enterprise installation requirements not met"
+                return 1
+              fi
+            done
           }
 
-          # Retry logic for Anchor CLI installation
-          for attempt in 1 2 3; do
-            echo "Attempt $attempt/3: Installing Anchor CLI..."
-            if install_anchor; then
-              echo "✅ Anchor CLI installed successfully on attempt $attempt"
-              break
-            else
-              if [ $attempt -eq 3 ]; then
-                echo "❌ Failed to install Anchor CLI after 3 attempts"
-                exit 1
-              else
-                echo "⚠️ Attempt $attempt failed, retrying in 10 seconds..."
-                sleep 10
-              fi
-            fi
-          done
-
-          # Verify installation
-          if anchor --version; then
-            echo "✅ Anchor CLI verification successful"
+          # Execute circuit breaker installation
+          if install_anchor_with_circuit_breaker; then
+            echo "🎉 Enterprise Anchor CLI installation completed successfully"
           else
-            echo "❌ Anchor CLI verification failed"
+            echo "❌ Enterprise circuit breaker failed - installation requirements not met"
+            echo "This violates enterprise-grade reliability standards"
             exit 1
           fi
 
@@ -405,21 +442,24 @@ jobs:
           EOF
           fi
 
-          # Run cargo audit with proper error handling
-          echo "Running cargo audit..."
-          if cargo audit; then
-            echo "✅ Cargo audit passed"
+          # Run cargo audit with strict zero-tolerance policy
+          echo "Running cargo audit with enterprise-grade zero-tolerance policy..."
+          if cargo audit --deny warnings; then
+            echo "✅ Cargo audit passed with zero warnings - enterprise security standard met"
           else
             AUDIT_EXIT_CODE=$?
-            echo "⚠️ Cargo audit found issues (exit code: $AUDIT_EXIT_CODE)"
+            echo "❌ CRITICAL: Enterprise security policy violation detected"
+            echo "Cargo audit found security issues (exit code: $AUDIT_EXIT_CODE)"
+            echo "Zero-tolerance policy requires immediate remediation"
 
-            # Check if it's only ignored vulnerabilities
-            if cargo audit --json 2>/dev/null | jq -e '.vulnerabilities.found | length == 0' > /dev/null 2>&1; then
-              echo "✅ Only ignored vulnerabilities found, continuing..."
-            else
-              echo "❌ Critical vulnerabilities found that are not ignored"
-              exit $AUDIT_EXIT_CODE
-            fi
+            # Generate comprehensive audit report
+            echo "Generating detailed security audit report..."
+            cargo audit --json > blockchain-security-audit-failure.json 2>/dev/null || true
+            cargo audit --format json --output-format json > blockchain-audit-details.json 2>/dev/null || true
+
+            echo "Security audit reports saved for analysis"
+            echo "Pipeline blocked until all security issues are resolved"
+            exit $AUDIT_EXIT_CODE
           fi
 
           # Run cargo deny check
