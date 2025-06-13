@@ -539,7 +539,7 @@ echo "✅ Docker environment validated"
 ### 1.6 Port Availability Check
 ```bash
 # Check if required ports are available (expanded for new services)
-required_ports=(8000 8001 8002 8003 8004 8005 8006 8007 5432 6379)
+required_ports=(8000 8001 8002 8003 8004 8005 8006 5432 6379)
 for port in "${required_ports[@]}"; do
     if netstat -tuln | grep -q ":$port "; then
         echo "❌ Port $port is already in use"
