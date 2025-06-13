@@ -12,8 +12,12 @@ from datetime import datetime
 from typing import Dict
 
 # Add project paths
-# sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # Removed during reorganization
-# sys.path.append(os.path.join(os.path.dirname(__file__), '../gs_engine'))  # Removed during reorganization
+import os
+import sys
+# Add blockchain directory to path for imports
+blockchain_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if blockchain_dir not in sys.path:
+    sys.path.insert(0, blockchain_dir)
 
 # Setup logging
 logging.basicConfig(
@@ -488,13 +492,18 @@ class QuantumagiDemo:
         enacted_policies = len(
             [p for p in self.demo_data["policies"] if p["status"] == "enacted"]
         )
-        compliance_success_rate = len(
-            [
-                r
-                for r in self.demo_data["compliance_results"]
-                if r["is_compliant"] == (r["expected"] == "PASS")
-            ]
-        ) / len(self.demo_data["compliance_results"])
+        # Calculate compliance success rate with division by zero protection
+        compliance_results = self.demo_data["compliance_results"]
+        if len(compliance_results) > 0:
+            compliance_success_rate = len(
+                [
+                    r
+                    for r in compliance_results
+                    if r["is_compliant"] == (r["expected"] == "PASS")
+                ]
+            ) / len(compliance_results)
+        else:
+            compliance_success_rate = 0.0
 
         print(f"🏛️  QUANTUMAGI DEMONSTRATION SUMMARY")
         print(f"    Duration: {duration.total_seconds():.1f} seconds")
@@ -511,13 +520,17 @@ class QuantumagiDemo:
         )
         print()
         print(f"🎯 PERFORMANCE METRICS:")
-        print(
-            f"    Policy Enactment Rate: {enacted_policies/self.demo_data['metrics']['policies_created']:.1%}"
-        )
+        # Calculate metrics with division by zero protection
+        policies_created = self.demo_data['metrics']['policies_created']
+        policy_enactment_rate = (enacted_policies / policies_created) if policies_created > 0 else 0.0
+
+        avg_confidence = 0.0
+        if len(compliance_results) > 0:
+            avg_confidence = sum(r['confidence'] for r in compliance_results) / len(compliance_results)
+
+        print(f"    Policy Enactment Rate: {policy_enactment_rate:.1%}")
         print(f"    PGC Accuracy: {compliance_success_rate:.1%}")
-        print(
-            f"    Average Confidence: {sum(r['confidence'] for r in self.demo_data['compliance_results'])/len(self.demo_data['compliance_results']):.1f}%"
-        )
+        print(f"    Average Confidence: {avg_confidence:.1f}%")
         print()
         print(f"✅ SYSTEM STATUS:")
         print(f"    Constitutional Framework: ACTIVE")
@@ -551,13 +564,9 @@ class QuantumagiDemo:
             "compliance_results": self.demo_data["compliance_results"],
             "appeals": self.demo_data["appeals"],
             "performance": {
-                "policy_enactment_rate": enacted_policies
-                / self.demo_data["metrics"]["policies_created"],
+                "policy_enactment_rate": policy_enactment_rate,
                 "pgc_accuracy": compliance_success_rate,
-                "average_confidence": sum(
-                    r["confidence"] for r in self.demo_data["compliance_results"]
-                )
-                / len(self.demo_data["compliance_results"]),
+                "average_confidence": avg_confidence,
             },
         }
 
