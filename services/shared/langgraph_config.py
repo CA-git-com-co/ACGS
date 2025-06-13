@@ -8,7 +8,7 @@ workflow-specific settings based on the Gemini-LangGraph patterns.
 
 import os
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from pydantic import BaseModel, Field
 
@@ -227,6 +227,174 @@ class LangGraphConfiguration(BaseModel):
             "cerebras": self.cerebras_api_key is not None,
             "ollama": True,  # Ollama typically doesn't require API key for local deployment
         }
+
+    def get_openrouter_config(self) -> Dict[str, Any]:
+        """
+        Get OpenRouter-specific configuration for enhanced Phase 2 integration.
+
+        Returns:
+            Dictionary with OpenRouter configuration including API key, base URL, and headers
+        """
+        if not self.openrouter_api_key:
+            raise ValueError("OpenRouter API key is required but not configured")
+
+        return {
+            "api_key": self.openrouter_api_key,
+            "base_url": "https://openrouter.ai/api/v1",
+            "headers": {
+                "HTTP-Referer": "https://acgs.ai",
+                "X-Title": "ACGS-1 Constitutional Governance System",
+                "Content-Type": "application/json"
+            },
+            "timeout": 30.0,
+            "max_retries": 3,
+            "supported_models": [
+                "deepseek/deepseek-chat-v3-0324:free",
+                "deepseek/deepseek-r1",
+                "qwen/qwen3-235b-a22b:free"
+            ]
+        }
+
+    def validate_openrouter_setup(self) -> Dict[str, Any]:
+        """
+        Validate OpenRouter API setup and connectivity.
+
+        Returns:
+            Dictionary with validation results
+        """
+        validation_result = {
+            "api_key_present": self.openrouter_api_key is not None,
+            "api_key_valid": False,
+            "models_accessible": [],
+            "errors": []
+        }
+
+        if not self.openrouter_api_key:
+            validation_result["errors"].append("OpenRouter API key not configured")
+            return validation_result
+
+        # Basic API key format validation
+        if len(self.openrouter_api_key) < 20:
+            validation_result["errors"].append("OpenRouter API key appears to be invalid (too short)")
+        else:
+            validation_result["api_key_valid"] = True
+
+        return validation_result
+
+    def get_model_provider(self, model_id: str) -> str:
+        """
+        Determine the provider for a given model ID.
+
+        Args:
+            model_id: Model identifier
+
+        Returns:
+            Provider name (openrouter, groq, gemini, etc.)
+        """
+        if model_id.startswith("deepseek/") or model_id.startswith("qwen/qwen3-235b"):
+            return "openrouter"
+        elif model_id.startswith("qwen/qwen3-32b") or model_id == "qwen3-32b":
+            return "groq"
+        elif model_id.startswith("gemini"):
+            return "gemini"
+        elif model_id.startswith("gpt-") or model_id.startswith("o1-"):
+            return "openai"
+        elif model_id.startswith("grok"):
+            return "xai"
+        elif model_id.startswith("llama"):
+            return "cerebras"
+        else:
+            return "unknown"
+
+    def get_model_config_for_provider(self, model_id: str, role: ModelRole) -> Dict[str, Any]:
+        """
+        Get model configuration for specific provider integration.
+
+        Args:
+            model_id: Model identifier
+            role: Model role for temperature and parameter settings
+
+        Returns:
+            Dictionary with model configuration
+        """
+        provider = self.get_model_provider(model_id)
+        temperature = self.get_temperature_for_role(role)
+
+        base_config = {
+            "model_id": model_id,
+            "provider": provider,
+            "temperature": temperature,
+            "timeout": self.timeout_seconds,
+            "max_retries": self.max_retries,
+            "role": role.value
+        }
+
+        # Provider-specific configurations
+        if provider == "openrouter":
+            base_config.update({
+                "api_key": self.openrouter_api_key,
+                "base_url": "https://openrouter.ai/api/v1",
+                "extra_headers": {
+                    "HTTP-Referer": "https://acgs.ai",
+                    "X-Title": "ACGS-1 Constitutional Governance System"
+                },
+                "max_tokens": 16384 if "qwen3-235b" in model_id else 8192
+            })
+        elif provider == "groq":
+            base_config.update({
+                "api_key": self.groq_api_key,
+                "base_url": "https://api.groq.com/openai/v1",
+                "max_tokens": 4096
+            })
+        elif provider == "gemini":
+            base_config.update({
+                "api_key": self.gemini_api_key,
+                "max_tokens": 8192
+            })
+        elif provider == "openai":
+            base_config.update({
+                "api_key": self.openai_api_key,
+                "base_url": "https://api.openai.com/v1",
+                "max_tokens": 16384
+            })
+        elif provider == "xai":
+            base_config.update({
+                "api_key": self.xai_api_key,
+                "base_url": "https://api.x.ai/v1",
+                "max_tokens": 8192
+            })
+
+        return base_config
+
+    def get_fallback_chain(self, role: ModelRole) -> List[Dict[str, Any]]:
+        """
+        Get fallback chain for a specific role with provider configurations.
+
+        Args:
+            role: Model role
+
+        Returns:
+            List of model configurations in fallback order
+        """
+        primary_model = self.get_model_for_role(role)
+        fallback_model = self.get_fallback_model_for_role(role)
+
+        chain = []
+
+        # Add primary model
+        if primary_model:
+            chain.append(self.get_model_config_for_provider(primary_model, role))
+
+        # Add fallback model if different from primary
+        if fallback_model and fallback_model != primary_model:
+            chain.append(self.get_model_config_for_provider(fallback_model, role))
+
+        # Add emergency fallback (Groq Qwen3-32B as it's most reliable)
+        emergency_fallback = "qwen/qwen3-32b"
+        if emergency_fallback not in [primary_model, fallback_model]:
+            chain.append(self.get_model_config_for_provider(emergency_fallback, role))
+
+        return chain
 
     def get_redis_key(self, workflow_type: str, workflow_id: str) -> str:
         """

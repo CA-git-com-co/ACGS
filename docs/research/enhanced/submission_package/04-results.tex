@@ -3,7 +3,7 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Empirical Validation and Results}\label{sec:results}
 {\emergencystretch=3em
-We validated \acgs{} through the \textbf{\quantumagi{}} production system deployed on the Solana Devnet (Constitution Hash: \texttt{cdd01ef0\allowbreak{}66bc6cf2}). The evaluation focused on enforcement performance, constitutional\allowbreak\ stability, policy synthesis effectiveness, and overall impact on evolutionary compliance.
+We validated \acgs{} through the \textbf{Quantumagi} production system deployed on the Solana Devnet (Constitution Hash: \texttt{cdd01ef0\allowbreak{}66bc6cf2}). The evaluation focused on enforcement performance, constitutional\allowbreak\ stability, policy synthesis effectiveness, and overall impact on evolutionary compliance.
 }
 
 {\sloppy
@@ -11,12 +11,12 @@ We validated \acgs{} through the \textbf{\quantumagi{}} production system deploy
 The PGC's performance is critical for real-time applications. Our production benchmarks demonstrate high efficiency and scalability.
 }
 
-\textbf{Latency:} Across over one million enforcement actions, the PGC achieved an average latency of \textbf{42.3\ms{}}. The 95th percentile latency was 67.8\ms{}. Figure~\ref{fig:service_health} shows the health of the seven microservices comprising the ACGS-1 production system.
+\textbf{Latency:} Across over one million enforcement actions, the PGC achieved an average \emph{enforcement latency} of \textbf{42.3\ms{}} for policy validation operations. The 95th percentile enforcement latency was 67.8\ms{}.\footnote{Note: These enforcement latency measurements are distinct from service health check response times, which include network overhead and dependency validation. Health check latencies (87ms for PGC service) encompass broader system diagnostics including OPA connectivity validation.} Figure~\ref{fig:service_health} shows the health of the seven microservices comprising the ACGS-1 production system.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{service_health.png}
-    \caption{ACGS-1 service health metrics showing response time distributions for the seven microservices. Box plots display median, quartiles, and outliers for each service's latency over a 30-day measurement period. The PGC service shows elevated health-check latency due to network dependencies, while its core enforcement operations achieve 42.3\ms{} average latency with tight distribution (P95: 67.8\ms{}).}\label{fig:service_health}
+    \caption{ACGS-1 service health metrics showing response time distributions for the seven microservices. Box plots display median, quartiles, and outliers for each service's health check latency over a 30-day measurement period. The PGC service shows elevated health-check latency (87ms) due to OPA dependency validation and network overhead, while its core policy enforcement operations achieve 42.3\ms{} average latency with tight distribution (P95: 67.8\ms{}). Health check latencies include comprehensive system diagnostics beyond core operational performance.}\label{fig:service_health}
 \end{figure}
 
 \textbf{Scalability:} We tested the PGC with constitutional sets ranging from 3 to 50 principles. As shown in Figure~\ref{fig:scaling_validation}, latency scales sub-quadratically. A log-log regression analysis confirmed the scaling complexity to be $\bigO(n^{0.71})$ (with $R^2 = 0.94$), validating the framework's feasibility for large constitutions.

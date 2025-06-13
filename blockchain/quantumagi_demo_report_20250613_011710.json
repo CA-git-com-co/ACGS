@@ -1,0 +1,112 @@
+{
+  "demo_summary": {
+    "duration_seconds": 23.825239,
+    "constitution_hash": "ad5cc33a3eae29f791496cff70833e251ab7f093447a6c97cb06b5260fd75e84",
+    "timestamp": "2025-06-13T01:17:10.874196"
+  },
+  "metrics": {
+    "start_time": "2025-06-13T01:16:47.048869",
+    "policies_created": 3,
+    "compliance_checks": 5,
+    "appeals_processed": 1
+  },
+  "policies": [
+    {
+      "id": "PC-001",
+      "rule": "DENY unauthorized_state_mutations WITHOUT governance_approval",
+      "category": "prompt_constitution",
+      "priority": "critical",
+      "validation_score": 0.9359999999999999,
+      "synthesized_at": "2025-06-13T01:16:51.053979",
+      "status": "enacted",
+      "votes_for": 18,
+      "votes_against": 2,
+      "approval_rate": 0.9,
+      "enacted_at": "2025-06-13T01:16:55.558599"
+    },
+    {
+      "id": "GV-001",
+      "rule": "REQUIRE governance_approval FOR policy_changes",
+      "category": "governance",
+      "priority": "high",
+      "validation_score": 0.9359999999999999,
+      "synthesized_at": "2025-06-13T01:16:52.054985",
+      "status": "enacted",
+      "votes_for": 16,
+      "votes_against": 3,
+      "approval_rate": 0.8421052631578947,
+      "enacted_at": "2025-06-13T01:16:56.058969"
+    },
+    {
+      "id": "FN-001",
+      "rule": "LIMIT treasury_operations TO authorized_amounts AND REQUIRE multi_sig_approval",
+      "category": "financial",
+      "priority": "critical",
+      "validation_score": 0.9359999999999999,
+      "synthesized_at": "2025-06-13T01:16:53.055976",
+      "status": "enacted",
+      "votes_for": 17,
+      "votes_against": 4,
+      "approval_rate": 0.8095238095238095,
+      "enacted_at": "2025-06-13T01:16:56.559603"
+    }
+  ],
+  "compliance_results": [
+    {
+      "action": "authorized_treasury_transfer_with_approval",
+      "policy_id": "FN-001",
+      "is_compliant": true,
+      "confidence": 96,
+      "expected": "PASS",
+      "timestamp": "2025-06-13T01:16:58.861386"
+    },
+    {
+      "action": "unauthorized_state_mutation_bypass",
+      "policy_id": "PC-001",
+      "is_compliant": false,
+      "confidence": 91,
+      "expected": "FAIL",
+      "timestamp": "2025-06-13T01:16:59.161828"
+    },
+    {
+      "action": "governance_decision_without_voting",
+      "policy_id": "GV-001",
+      "is_compliant": false,
+      "confidence": 88,
+      "expected": "FAIL",
+      "timestamp": "2025-06-13T01:16:59.462269"
+    },
+    {
+      "action": "excessive_treasury_withdrawal",
+      "policy_id": "FN-001",
+      "is_compliant": false,
+      "confidence": 88,
+      "expected": "FAIL",
+      "timestamp": "2025-06-13T01:16:59.762700"
+    },
+    {
+      "action": "standard_governance_operation_approved",
+      "policy_id": "GV-001",
+      "is_compliant": true,
+      "confidence": 99,
+      "expected": "PASS",
+      "timestamp": "2025-06-13T01:17:00.063134"
+    }
+  ],
+  "appeals": [
+    {
+      "appeal_id": "APP-001",
+      "policy_id": "PC-001",
+      "automated_decision": "escalate_to_human",
+      "automated_confidence": 72,
+      "committee_decision": "overturn",
+      "ruling": "Appeal approved. System error confirmed. Policy violation overturned.",
+      "resolved_at": "2025-06-13T01:17:05.067949"
+    }
+  ],
+  "performance": {
+    "policy_enactment_rate": 1.0,
+    "pgc_accuracy": 1.0,
+    "average_confidence": 92.4
+  }
+}
