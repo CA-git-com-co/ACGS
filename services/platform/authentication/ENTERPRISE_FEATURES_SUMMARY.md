@@ -1,7 +1,7 @@
 # ACGS-1 Enterprise Authentication Service - Implementation Summary
 
 ## Overview
-The ACGS-1 Enterprise Authentication Service has been successfully implemented and deployed on port 8001, providing comprehensive enterprise-grade authentication and authorization capabilities for the constitutional governance system.
+The ACGS-1 Enterprise Authentication Service has been successfully implemented and deployed on port 8000, providing comprehensive enterprise-grade authentication and authorization capabilities for the constitutional governance system.
 
 ## Service Status
 - **Service**: ACGS-1 Enterprise Authentication Service v1.0.0

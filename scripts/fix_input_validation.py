@@ -173,13 +173,13 @@ class EnhancedSecurityMiddleware:
         patches = {}
 
         service_paths = {
-            "auth_service": "src/backend/auth_service/app/main.py",
-            "ac_service": "src/backend/ac_service/app/main.py",
-            "integrity_service": "src/backend/integrity_service/app/main.py",
-            "fv_service": "src/backend/fv_service/app/main.py",
-            "gs_service": "src/backend/gs_service/app/main.py",
-            "pgc_service": "src/backend/pgc_service/app/main.py",
-            "ec_service": "src/backend/ec_service/app/main.py",
+            "auth_service": "services/platform/authentication/auth_service/app/main.py",
+            "ac_service": "services/core/constitutional-ai/ac_service/app/main.py",
+            "integrity_service": "services/platform/integrity/integrity_service/app/main.py",
+            "fv_service": "services/core/formal-verification/fv_service/app/main.py",
+            "gs_service": "services/core/governance-synthesis/gs_service/app/main.py",
+            "pgc_service": "services/core/policy-governance/pgc_service/app/main.py",
+            "ec_service": "services/ec_service/app/main.py",
         }
 
         for service_name, service_path in service_paths.items():

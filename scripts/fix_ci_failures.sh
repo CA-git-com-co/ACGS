@@ -41,18 +41,18 @@ print_status "Fixing Docker build dependencies..."
 
 # Ensure all services have proper requirements files
 for service in auth_service ac_service integrity_service fv_service gs_service pgc_service; do
-    if [ -f "src/backend/$service/requirements_simple.txt" ]; then
+    if [ -f "services/$service/requirements_simple.txt" ]; then
         print_status "Checking $service requirements..."
         
         # Add missing prometheus_client if not present
-        if ! grep -q "prometheus_client" "src/backend/$service/requirements_simple.txt"; then
-            echo "prometheus_client==0.21.1" >> "src/backend/$service/requirements_simple.txt"
+        if ! grep -q "prometheus_client" "services/$service/requirements_simple.txt"; then
+            echo "prometheus_client==0.21.1" >> "services/$service/requirements_simple.txt"
             print_success "Added prometheus_client to $service"
         fi
         
         # Add aiofiles if not present
-        if ! grep -q "aiofiles" "src/backend/$service/requirements_simple.txt"; then
-            echo "aiofiles==24.1.0" >> "src/backend/$service/requirements_simple.txt"
+        if ! grep -q "aiofiles" "services/$service/requirements_simple.txt"; then
+            echo "aiofiles==24.1.0" >> "services/$service/requirements_simple.txt"
             print_success "Added aiofiles to $service"
         fi
     else
@@ -64,8 +64,8 @@ done
 print_status "Fixing shared module imports..."
 
 # Ensure shared module has proper __init__.py
-if [ ! -f "src/backend/shared/__init__.py" ]; then
-    touch "src/backend/shared/__init__.py"
+if [ ! -f "services/shared/__init__.py" ]; then
+    touch "services/shared/__init__.py"
     print_success "Created shared/__init__.py"
 fi
 
@@ -73,7 +73,7 @@ fi
 print_status "Preparing database migration fixes..."
 
 # Check if Alembic configuration exists
-if [ ! -f "src/backend/shared/alembic.ini" ]; then
+if [ ! -f "services/shared/alembic.ini" ]; then
     print_error "Alembic configuration missing"
     exit 1
 fi

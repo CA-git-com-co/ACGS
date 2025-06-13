@@ -250,7 +250,7 @@ services:
     volumes:
       - ../../services/core/governance-synthesis:/app
       - ../../services/shared:/app/shared
-      - ../../integrations/alphaevolve-engine/src/alphaevolve_gs_engine:/app/alphaevolve_gs_engine
+      - ../../integrations/alphaevolve-engine/integrations/alphaevolve-engine:/app/alphaevolve_gs_engine
     restart: unless-stopped
 
   # Quantum Policy Evaluator (QPE) Service

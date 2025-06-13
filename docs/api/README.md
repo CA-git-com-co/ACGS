@@ -162,14 +162,14 @@ Each service provides Swagger UI documentation at `/docs` endpoint:
 
 **Core Services:**
 - Constitutional AI: http://localhost:8001/docs
-- Governance Synthesis: http://localhost:8002/docs
-- Policy Governance: http://localhost:8003/docs
-- Formal Verification: http://localhost:8004/docs
+- Governance Synthesis: http://localhost:8004/docs
+- Policy Governance: http://localhost:8005/docs
+- Formal Verification: http://localhost:8003/docs
 
 **Platform Services:**
-- Authentication: http://localhost:8005/docs
-- Integrity: http://localhost:8006/docs
-- Workflow: http://localhost:8007/docs
+- Authentication: http://localhost:8000/docs
+- Integrity: http://localhost:8002/docs
+- Evolutionary Computation: http://localhost:8006/docs
 
 **Research Services:**
 - Federated Evaluation: http://localhost:8008/docs

@@ -120,36 +120,36 @@ move_blockchain_components() {
 move_backend_services() {
     echo "🏗️ Phase 3: Moving backend services..."
     
-    if [ -d "src/backend" ]; then
+    if [ -d "services" ]; then
         # Move core services with renaming
         echo "Moving core services..."
-        [ -d "src/backend/ac_service" ] && git mv src/backend/ac_service services/core/constitutional-ai/
-        [ -d "src/backend/gs_service" ] && git mv src/backend/gs_service services/core/governance-synthesis/
-        [ -d "src/backend/pgc_service" ] && git mv src/backend/pgc_service services/core/policy-governance/
-        [ -d "src/backend/fv_service" ] && git mv src/backend/fv_service services/core/formal-verification/
+        [ -d "services/core/constitutional-ai/ac_service" ] && git mv services/core/constitutional-ai/ac_service services/core/constitutional-ai/
+        [ -d "services/core/governance-synthesis/gs_service" ] && git mv services/core/governance-synthesis/gs_service services/core/governance-synthesis/
+        [ -d "services/core/policy-governance/pgc_service" ] && git mv services/core/policy-governance/pgc_service services/core/policy-governance/
+        [ -d "services/core/formal-verification/fv_service" ] && git mv services/core/formal-verification/fv_service services/core/formal-verification/
         
         # Move platform services
         echo "Moving platform services..."
-        [ -d "src/backend/auth_service" ] && git mv src/backend/auth_service services/platform/authentication/
-        [ -d "src/backend/integrity_service" ] && git mv src/backend/integrity_service services/platform/integrity/
-        [ -d "src/backend/workflow_service" ] && git mv src/backend/workflow_service services/platform/workflow/
+        [ -d "services/platform/authentication/auth_service" ] && git mv services/platform/authentication/auth_service services/platform/authentication/
+        [ -d "services/platform/integrity/integrity_service" ] && git mv services/platform/integrity/integrity_service services/platform/integrity/
+        [ -d "services/workflow_service" ] && git mv services/workflow_service services/platform/workflow/
         
         # Move research services
         echo "Moving research services..."
-        [ -d "src/backend/federated_service" ] && git mv src/backend/federated_service services/research/federated-evaluation/
-        [ -d "src/backend/research_service" ] && git mv src/backend/research_service services/research/research-platform/
+        [ -d "services/federated_service" ] && git mv services/federated_service services/research/federated-evaluation/
+        [ -d "services/research_service" ] && git mv services/research_service services/research/research-platform/
         
         # Move shared components
         echo "Moving shared components..."
-        if [ -d "src/backend/shared" ]; then
-            git mv src/backend/shared/* services/shared/ 2>/dev/null || {
-                cp -r src/backend/shared/* services/shared/
+        if [ -d "services/shared" ]; then
+            git mv services/shared/* services/shared/ 2>/dev/null || {
+                cp -r services/shared/* services/shared/
                 git add services/shared/
             }
         fi
         
         # Move monitoring
-        [ -d "src/backend/monitoring" ] && git mv src/backend/monitoring services/monitoring/
+        [ -d "services/monitoring" ] && git mv services/monitoring services/monitoring/
     fi
     
     echo "✅ Backend services moved"
@@ -159,10 +159,10 @@ move_backend_services() {
 move_frontend_applications() {
     echo "🖥️ Phase 4: Moving frontend applications..."
     
-    if [ -d "src/frontend" ]; then
+    if [ -d "applications/legacy-frontend" ]; then
         echo "Moving main frontend application..."
-        git mv src/frontend/* applications/governance-dashboard/ 2>/dev/null || {
-            cp -r src/frontend/* applications/governance-dashboard/
+        git mv applications/legacy-frontend/* applications/governance-dashboard/ 2>/dev/null || {
+            cp -r applications/legacy-frontend/* applications/governance-dashboard/
             git add applications/governance-dashboard/
         }
     fi
@@ -174,9 +174,9 @@ move_frontend_applications() {
 move_alphaevolve_engine() {
     echo "🧠 Phase 5: Moving AlphaEvolve engine..."
     
-    if [ -d "src/alphaevolve_gs_engine" ]; then
+    if [ -d "integrations/alphaevolve-engine" ]; then
         echo "Moving AlphaEvolve GS Engine..."
-        git mv src/alphaevolve_gs_engine integrations/alphaevolve-engine/
+        git mv integrations/alphaevolve-engine integrations/alphaevolve-engine/
     fi
     
     echo "✅ AlphaEvolve engine moved"

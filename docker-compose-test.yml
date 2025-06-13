@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
 
   auth_service:
-    build: ./src/backend/auth_service
+    build: ./services/platform/authentication/auth_service
     container_name: acgs_auth_service_test
     ports:
       - "8000:8000" # Internal port
@@ -39,12 +39,12 @@ services:
       postgres_db:
         condition: service_healthy
     volumes:
-      - ./src/backend/auth_service:/app
-      - ./src/backend/shared:/app/shared
+      - ./services/platform/authentication/auth_service:/app
+      - ./services/shared:/app/shared
     restart: unless-stopped
 
   ac_service:
-    build: ./src/backend/ac_service
+    build: ./services/core/constitutional-ai/ac_service
     container_name: acgs_ac_service_test
     ports:
       - "8001:8001" # Internal port
@@ -57,12 +57,12 @@ services:
       postgres_db:
         condition: service_healthy
     volumes:
-      - ./src/backend/ac_service:/app
-      - ./src/backend/shared:/app/shared
+      - ./services/core/constitutional-ai/ac_service:/app
+      - ./services/shared:/app/shared
     restart: unless-stopped
 
   integrity_service:
-    build: ./src/backend/integrity_service
+    build: ./services/platform/integrity/integrity_service
     container_name: acgs_integrity_service_test
     ports:
       - "8002:8002" # Internal port
@@ -75,12 +75,12 @@ services:
       postgres_db:
         condition: service_healthy
     volumes:
-      - ./src/backend/integrity_service:/app
-      - ./src/backend/shared:/app/shared
+      - ./services/platform/integrity/integrity_service:/app
+      - ./services/shared:/app/shared
     restart: unless-stopped
 
   fv_service:
-    build: ./src/backend/fv_service
+    build: ./services/core/formal-verification/fv_service
     container_name: acgs_fv_service_test
     ports:
       - "8003:8003" # Internal port
@@ -97,12 +97,12 @@ services:
       integrity_service:
         condition: service_started
     volumes:
-      - ./src/backend/fv_service:/app
-      - ./src/backend/shared:/app/shared
+      - ./services/core/formal-verification/fv_service:/app
+      - ./services/shared:/app/shared
     restart: unless-stopped
 
   gs_service:
-    build: ./src/backend/gs_service
+    build: ./services/core/governance-synthesis/gs_service
     container_name: acgs_gs_service_test
     ports:
       - "8004:8004" # Internal port
@@ -122,12 +122,12 @@ services:
       fv_service:
         condition: service_started
     volumes:
-      - ./src/backend/gs_service:/app
-      - ./src/backend/shared:/app/shared
+      - ./services/core/governance-synthesis/gs_service:/app
+      - ./services/shared:/app/shared
     restart: unless-stopped
 
   pgc_service:
-    build: ./src/backend/pgc_service
+    build: ./services/core/policy-governance/pgc_service
     container_name: acgs_pgc_service_test
     ports:
       - "8005:8005" # Internal port
@@ -140,8 +140,8 @@ services:
       integrity_service:
         condition: service_started
     volumes:
-      - ./src/backend/pgc_service:/app
-      - ./src/backend/shared:/app/shared
+      - ./services/core/policy-governance/pgc_service:/app
+      - ./services/shared:/app/shared
     restart: unless-stopped
 
 volumes:

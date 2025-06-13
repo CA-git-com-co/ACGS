@@ -24,8 +24,8 @@ from typing import List
 # Add project paths
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(project_root, "src"))
-sys.path.insert(0, os.path.join(project_root, "src/backend"))
-sys.path.insert(0, os.path.join(project_root, "src/alphaevolve_gs_engine/src"))
+sys.path.insert(0, os.path.join(project_root, "services"))
+sys.path.insert(0, os.path.join(project_root, "integrations/alphaevolve-engine/src"))
 
 
 class ACGSGroqTester:

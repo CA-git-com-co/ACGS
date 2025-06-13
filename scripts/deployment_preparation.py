@@ -84,8 +84,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY src/backend/ac_service/ ./
-COPY src/backend/shared/ ./shared/
+COPY services/core/constitutional-ai/ac_service/ ./
+COPY services/shared/ ./shared/
 
 # Create non-root user
 RUN useradd -m -u 1000 acuser && chown -R acuser:acuser /app
@@ -120,8 +120,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY src/backend/gs_service/ ./
-COPY src/backend/shared/ ./shared/
+COPY services/core/governance-synthesis/gs_service/ ./
+COPY services/shared/ ./shared/
 
 # Create non-root user
 RUN useradd -m -u 1000 gsuser && chown -R gsuser:gsuser /app
@@ -156,8 +156,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY src/backend/pgc_service/ ./
-COPY src/backend/shared/ ./shared/
+COPY services/core/policy-governance/pgc_service/ ./
+COPY services/shared/ ./shared/
 
 # Create non-root user
 RUN useradd -m -u 1000 pgcuser && chown -R pgcuser:pgcuser /app
@@ -183,7 +183,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
 
         for service, dockerfile_content in dockerfiles.items():
             dockerfile_path = (
-                self.project_root / f"src/backend/{service}/Dockerfile.prod"
+                self.project_root / f"services/{service}/Dockerfile.prod"
             )
             dockerfile_path.parent.mkdir(parents=True, exist_ok=True)
             dockerfile_path.write_text(dockerfile_content)
@@ -195,7 +195,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
                 "ac_service": {
                     "build": {
                         "context": ".",
-                        "dockerfile": "src/backend/ac_service/Dockerfile.prod",
+                        "dockerfile": "services/core/constitutional-ai/ac_service/Dockerfile.prod",
                     },
                     "ports": ["8001:8001"],
                     "environment": [
@@ -220,7 +220,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
                 "gs_service": {
                     "build": {
                         "context": ".",
-                        "dockerfile": "src/backend/gs_service/Dockerfile.prod",
+                        "dockerfile": "services/core/governance-synthesis/gs_service/Dockerfile.prod",
                     },
                     "ports": ["8003:8003"],
                     "environment": [
@@ -245,7 +245,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
                 "pgc_service": {
                     "build": {
                         "context": ".",
-                        "dockerfile": "src/backend/pgc_service/Dockerfile.prod",
+                        "dockerfile": "services/core/policy-governance/pgc_service/Dockerfile.prod",
                     },
                     "ports": ["8004:8004"],
                     "environment": [

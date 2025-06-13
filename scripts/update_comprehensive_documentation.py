@@ -343,7 +343,7 @@ pytest
 pytest tests/backend/ac_service/
 
 # Run with coverage
-pytest --cov=src/backend
+pytest --cov=services
 ```
 
 ### API Documentation

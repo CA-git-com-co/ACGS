@@ -104,10 +104,10 @@ echo "----------------------------"
 # Check all ACGS-1 services
 check_service "Authentication" 8000
 check_service "Constitutional AI" 8001
-check_service "Governance Synthesis" 8002
-check_service "Policy Governance" 8003
-check_service "Formal Verification" 8004
-check_service "Integrity" 8005
+check_service "Integrity" 8002
+check_service "Formal Verification" 8003
+check_service "Governance Synthesis" 8004
+check_service "Policy Governance" 8005
 check_service "Evolutionary Computation" 8006
 
 echo ""
@@ -117,10 +117,10 @@ echo "------------------------------"
 # Check response times (target <2s)
 check_response_time "Authentication" 8000 "/health" 2
 check_response_time "Constitutional AI" 8001 "/health" 2
-check_response_time "Governance Synthesis" 8002 "/health" 2
-check_response_time "Policy Governance" 8003 "/health" 2
-check_response_time "Formal Verification" 8004 "/health" 2
-check_response_time "Integrity" 8005 "/health" 2
+check_response_time "Integrity" 8002 "/health" 2
+check_response_time "Formal Verification" 8003 "/health" 2
+check_response_time "Governance Synthesis" 8004 "/health" 2
+check_response_time "Policy Governance" 8005 "/health" 2
 
 echo ""
 echo "🔗 Checking Blockchain Components..."

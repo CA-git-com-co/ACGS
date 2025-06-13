@@ -61,8 +61,8 @@ FILES_TO_REMOVE = [
 
 # Documentation path mappings (old_path -> new_path)
 DOCUMENTATION_UPDATES = {
-    "src/backend/": "services/core/",
-    "src/frontend/": "applications/",
+    "services/": "services/core/",
+    "applications/legacy-frontend/": "applications/",
     "backend/ac_service/": "services/core/constitutional-ai/ac_service/",
     "backend/auth_service/": "services/core/auth/auth_service/",
     "backend/fv_service/": "services/core/formal-verification/fv_service/",

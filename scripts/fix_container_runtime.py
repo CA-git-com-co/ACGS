@@ -278,7 +278,7 @@ source venv/bin/activate
 
 # Install dependencies
 echo "Installing Python dependencies..."
-pip install -r src/backend/shared/requirements.txt
+pip install -r services/shared/requirements.txt
 
 # Run database migrations
 echo "Running database migrations..."
