@@ -49,7 +49,7 @@ This comprehensive guide provides instructions and best practices for developers
 4.  **Start Development Environment:**
     ```bash
     # Build and start all services
-    docker-compose -f config/docker/docker-compose.yml up --build -d
+    docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
 
     # Load constitutional test data
     python scripts/load_test_data.py
@@ -65,7 +65,7 @@ A thorough understanding of the core data models is essential for developing new
 
 ### 2.2 Backend Service Development (FastAPI)
 
-*   **Directory Structure (per service, e.g., `backend/auth_service/`):**
+*   **Directory Structure (per service, e.g., `services/core/auth/auth_service/`):**
     *   `app/`: Main application code.
         *   `__init__.py`: Makes `app` a Python package.
         *   `main.py`: FastAPI app instantiation, root endpoints, including routers.
@@ -108,7 +108,7 @@ A thorough understanding of the core data models is essential for developing new
     *   Run tests from the root directory or service directory. Example:
         ```bash
         # From root, to run all tests for auth_service (ensure PYTHONPATH is set or use venv)
-        # python -m pytest backend/auth_service/app/tests 
+        # python -m pytest services/core/auth/auth_service/app/tests 
         # Or via docker-compose if test script is configured in service's Dockerfile or a dedicated test service
         ```
     *   The CI pipeline (`.github/workflows/main.yml`) should also run these tests.

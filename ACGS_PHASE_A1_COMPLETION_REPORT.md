@@ -107,13 +107,13 @@ Phase A1 has been **successfully completed** with all critical infrastructure is
 ### **Service Configuration**
 ```bash
 # Core Services (All Operational)
-auth_service:        localhost:8000  ✅ Healthy (3.6ms)
-ac_service:          localhost:8001  ✅ Healthy (1.0ms)
-integrity_service:   localhost:8002  ✅ Healthy (0.8ms)
-fv_service:          localhost:8003  ✅ Healthy (1.0ms)
-gs_service:          localhost:8004  ✅ Healthy (1.0ms)
-pgc_service:         localhost:8005  ✅ Healthy (43.4ms)
-ec_service:          localhost:8006  ✅ Healthy (1.3ms)
+auth_service:8000  ✅ Healthy (3.6ms)
+ac_service:8001  ✅ Healthy (1.0ms)
+integrity_service:8002  ✅ Healthy (0.8ms)
+fv_service:8003  ✅ Healthy (1.0ms)
+gs_service:8004  ✅ Healthy (1.0ms)
+pgc_service:8005  ✅ Healthy (43.4ms)
+ec_service:8006  ✅ Healthy (1.3ms)
 ```
 
 ### **Infrastructure Components**

@@ -49,7 +49,7 @@ This document describes the integration of three Groq-hosted Llama models into t
 
 ### GS Service Integration
 
-**File**: `src/backend/gs_service/app/core/llm_integration.py`
+**File**: `services/core/gs_service/app/core/llm_integration.py`
 
 - Added `GroqLLMClient` class for constitutional principle interpretation
 - Extended `get_llm_client()` function to support "groq" provider

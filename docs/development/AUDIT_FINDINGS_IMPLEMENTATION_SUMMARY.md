@@ -9,7 +9,7 @@ This implementation successfully addresses **all critical audit findings** ident
 ### Content/Format Inconsistencies
 - **Issue**: 97% of artifacts unusable without translation (JSON/YAML vs required Rego)
 - **Solution**: Implemented `PolicyFormatRouter` with automatic format detection and conversion
-- **Files**: `backend/pgc_service/app/core/policy_format_router.py`
+- **Files**: `services/platform/pgc/pgc_service/app/core/policy_format_router.py`
 
 ### Empty Principle Text Fields  
 - **Issue**: 41.8% of items have empty principle_text fields
@@ -30,7 +30,7 @@ This implementation successfully addresses **all critical audit findings** ident
 ### Canonical Manifest Generation
 - **Implementation**: `ManifestManager` class with comprehensive manifest generation
 - **Features**: SHA-256 checksums, framework breakdown, provenance tracking
-- **File**: `backend/pgc_service/app/core/manifest_manager.py`
+- **File**: `services/platform/pgc/pgc_service/app/core/manifest_manager.py`
 
 ### Framework Homogenisation
 - **Implementation**: Multi-format converter supporting JSON/YAML/Rego/Datalog

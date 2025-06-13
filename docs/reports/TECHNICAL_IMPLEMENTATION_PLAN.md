@@ -182,7 +182,7 @@ class Principle(Base):
 
 ### **Constitutional Prompting Integration**
 
-<augment_code_snippet path="backend/gs_service/app/core/constitutional_prompting.py" mode="EXCERPT">
+<augment_code_snippet path="services/core/governance-synthesis/gs_service/app/core/constitutional_prompting.py" mode="EXCERPT">
 ````python
 class ConstitutionalPromptBuilder:
     """
@@ -209,7 +209,7 @@ class ConstitutionalPromptBuilder:
 
 ### **Z3 Formal Verification**
 
-<augment_code_snippet path="backend/fv_service/app/core/smt_solver_integration.py" mode="EXCERPT">
+<augment_code_snippet path="services/core/formal-verification/fv_service/app/core/smt_solver_integration.py" mode="EXCERPT">
 ````python
 class Z3SMTSolver:
     async def check_satisfiability(self, solver_input: SMTSolverInput) -> SMTSolverOutput:
@@ -227,7 +227,7 @@ class Z3SMTSolver:
 
 ### **Cryptographic Integrity (PGP Assurance)**
 
-<augment_code_snippet path="backend/integrity_service/app/services/crypto_service.py" mode="EXCERPT">
+<augment_code_snippet path="services/platform/integrity/integrity_service/app/services/crypto_service.py" mode="EXCERPT">
 ````python
 class CryptographicIntegrityService:
     """

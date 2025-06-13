@@ -8,7 +8,7 @@ Phase 2 AlphaEvolve Integration has been successfully implemented with comprehen
 
 ### 1. WINA (Weight Informed Neuron Activation) Core
 - **Status**: ✅ FULLY IMPLEMENTED
-- **Location**: `src/backend/shared/wina/`
+- **Location**: `services/core/shared/wina/`
 - **Features**:
   - SVD transformation with 40-70% GFLOPs reduction
   - Runtime gating mechanisms
@@ -18,7 +18,7 @@ Phase 2 AlphaEvolve Integration has been successfully implemented with comprehen
 
 ### 2. SVD Transformation Engine
 - **Status**: ✅ FULLY IMPLEMENTED  
-- **Location**: `src/backend/shared/wina/svd_transformation.py`
+- **Location**: `services/core/shared/wina/svd_transformation.py`
 - **Features**:
   - Orthogonality protocol implementation
   - Computational invariance verification
@@ -28,7 +28,7 @@ Phase 2 AlphaEvolve Integration has been successfully implemented with comprehen
 
 ### 3. Constitutional WINA Integration
 - **Status**: ✅ IMPLEMENTED
-- **Location**: `src/backend/shared/wina/constitutional_integration.py`
+- **Location**: `services/core/shared/wina/constitutional_integration.py`
 - **Features**:
   - Constitutional principle analysis
   - WINA optimization recommendations
@@ -38,7 +38,7 @@ Phase 2 AlphaEvolve Integration has been successfully implemented with comprehen
 
 ### 4. Multi-Model Coordination
 - **Status**: ✅ FULLY IMPLEMENTED
-- **Location**: `src/backend/gs_service/app/core/multi_model_coordinator.py`
+- **Location**: `services/core/gs_service/app/core/multi_model_coordinator.py`
 - **Features**:
   - Weighted voting ensemble strategy
   - Constitutional priority coordination

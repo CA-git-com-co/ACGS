@@ -44,9 +44,9 @@ This document outlines a comprehensive refactoring plan for the ACGS-master code
 
 #### Target Files for Consolidation:
 ```
-src/backend/shared/utils.py (master utility file)
-src/backend/*/app/utils/ (service-specific utilities to merge)
-src/backend/shared/common/ (new consolidated utilities)
+services/core/shared/utils.py (master utility file)
+services/core/*/app/utils/ (service-specific utilities to merge)
+services/core/shared/common/ (new consolidated utilities)
 ```
 
 #### Actions:
@@ -65,7 +65,7 @@ src/backend/shared/common/ (new consolidated utilities)
 ### 1.2 Database Model Consolidation
 
 #### Current Issues:
-- `src/backend/shared/models.py` (1000+ lines, mixed concerns)
+- `services/core/shared/models.py` (1000+ lines, mixed concerns)
 - Service-specific model files importing from shared
 - Duplicate schema definitions
 - Inconsistent relationship patterns
@@ -143,11 +143,11 @@ src/backend/shared/common/ (new consolidated utilities)
    # shared/service_mesh/registry.py
    class ServiceRegistry:
        services = {
-           "ac_service": "http://localhost:8001",
-           "auth_service": "http://localhost:8000", 
-           "fv_service": "http://localhost:8003",
-           "gs_service": "http://localhost:8004",
-           "pgc_service": "http://localhost:8005"
+           "ac_service:8001",
+           "auth_service:8000", 
+           "fv_service:8003",
+           "gs_service:8004",
+           "pgc_service:8005"
        }
    ```
 
@@ -388,7 +388,7 @@ class ACGSTestFixtures:
 ### ✅ Phase 1 Completed: Foundation Cleanup
 
 #### 1.1 Consolidated Shared Utilities ✅
-- **Created**: `src/backend/shared/common/` directory structure
+- **Created**: `services/core/shared/common/` directory structure
 - **Implemented**:
   - `http_clients.py` - Unified HTTP client patterns with circuit breaker
   - `validation.py` - Common validation functions (email, username, pagination)
@@ -396,7 +396,7 @@ class ACGSTestFixtures:
   - `formatting.py` - Unified response formatting and data serialization
 
 #### 1.2 Service Mesh Implementation ✅
-- **Created**: `src/backend/shared/service_mesh/` directory structure
+- **Created**: `services/core/shared/service_mesh/` directory structure
 - **Implemented**:
   - `registry.py` - Centralized service configuration and discovery
   - `client.py` - Unified service client with retry logic and circuit breakers
@@ -434,7 +434,7 @@ class ACGSTestFixtures:
 ### ✅ Phase 2 Completed: Module Interaction Optimization
 
 #### 2.1 Dependency Injection Framework ✅
-- **Implemented**: `src/backend/shared/di/` directory structure
+- **Implemented**: `services/core/shared/di/` directory structure
 - **Components**:
   - `container.py` - Comprehensive DI container with lifecycle management
   - `decorators.py` - Injectable, singleton, transient decorators
@@ -447,7 +447,7 @@ class ACGSTestFixtures:
   - Comprehensive testing support with mocking
 
 #### 2.2 Event-Driven Architecture ✅
-- **Implemented**: `src/backend/shared/events/` directory structure
+- **Implemented**: `services/core/shared/events/` directory structure
 - **Components**:
   - `bus.py` - Event bus with publish/subscribe patterns
   - `types.py` - Standard event types and enums
@@ -460,7 +460,7 @@ class ACGSTestFixtures:
   - Async event processing with retry logic
 
 #### 2.3 Database Connection Optimization ✅
-- **Implemented**: `src/backend/shared/database/` directory structure
+- **Implemented**: `services/core/shared/database/` directory structure
 - **Components**:
   - `pool_manager.py` - Optimized connection pooling
   - `query_optimizer.py` - Query performance optimization
@@ -506,22 +506,22 @@ class ACGSTestFixtures:
 
 #### Eliminated Redundant Files:
 ```
-src/backend/ac_service/models.py (redundant imports)
-src/backend/gs_service/app/services/performance_monitor.py (duplicate patterns)
-src/backend/fv_service/app/api/v1/verify.py (redundant imports)
+services/core/ac_service/models.py (redundant imports)
+services/core/gs_service/app/services/performance_monitor.py (duplicate patterns)
+services/core/fv_service/app/api/v1/verify.py (redundant imports)
 Multiple service-specific HTTP client implementations
 ```
 
 #### Consolidated Into:
 ```
-src/backend/shared/common/
+services/core/shared/common/
 ├── __init__.py
 ├── http_clients.py (unified HTTP patterns)
 ├── validation.py (consolidated validation)
 ├── error_handling.py (standardized errors)
 └── formatting.py (unified responses)
 
-src/backend/shared/service_mesh/
+services/core/shared/service_mesh/
 ├── __init__.py
 ├── registry.py (service configuration)
 ├── client.py (unified service client)

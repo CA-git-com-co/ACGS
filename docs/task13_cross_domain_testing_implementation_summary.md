@@ -8,7 +8,7 @@ Task 13 successfully implements a comprehensive Cross-Domain Principle Testing F
 
 ### 1. Cross-Domain Testing Engine (FV Service - Port 8003)
 
-**Location**: `src/backend/fv_service/app/core/cross_domain_testing_engine.py`
+**Location**: `services/core/fv_service/app/core/cross_domain_testing_engine.py`
 
 **Key Features**:
 - Domain-specific validation classes (HealthcareDomainValidator, FinanceDomainValidator)
@@ -26,7 +26,7 @@ Task 13 successfully implements a comprehensive Cross-Domain Principle Testing F
 
 ### 2. Domain Context Manager (AC Service - Port 8001)
 
-**Location**: `src/backend/ac_service/app/core/domain_context_manager.py`
+**Location**: `services/core/ac_service/app/core/domain_context_manager.py`
 
 **Key Features**:
 - Domain metadata management with regulatory frameworks
@@ -42,7 +42,7 @@ Task 13 successfully implements a comprehensive Cross-Domain Principle Testing F
 
 ### 3. Research Data Pipeline (Integrity Service - Port 8002)
 
-**Location**: `src/backend/integrity_service/app/services/research_data_pipeline.py`
+**Location**: `services/core/integrity_service/app/services/research_data_pipeline.py`
 
 **Key Features**:
 - Anonymized cross-domain testing results collection
@@ -59,7 +59,7 @@ Task 13 successfully implements a comprehensive Cross-Domain Principle Testing F
 
 ### 4. Database Schema (Alembic Migration)
 
-**Migration**: `src/backend/shared/alembic/versions/010_task_13_cross_domain_principle_testing_framework.py`
+**Migration**: `services/core/shared/alembic/versions/010_task_13_cross_domain_principle_testing_framework.py`
 
 **New Tables**:
 - `domain_contexts` - Domain metadata and configuration

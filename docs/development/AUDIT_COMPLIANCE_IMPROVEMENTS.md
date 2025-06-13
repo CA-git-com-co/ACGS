@@ -17,7 +17,7 @@ The audit identified critical issues with policy dataset integrity, format consi
 - Mixed line endings (CR-LF vs LF)
 
 **Solutions Implemented:**
-- **Policy Format Router** (`backend/pgc_service/app/core/policy_format_router.py`)
+- **Policy Format Router** (`services/platform/pgc/pgc_service/app/core/policy_format_router.py`)
   - Automatic format detection (JSON, YAML, Rego, Datalog)
   - Conversion pipeline with Azure Policy and AWS IAM support
   - OPA syntax validation with missing import detection
@@ -41,7 +41,7 @@ The audit identified critical issues with policy dataset integrity, format consi
   - Automatic file path recording during ingestion
   - Metadata consistency validation
 
-- **Enhanced Policy Manager** (`backend/pgc_service/app/core/policy_manager.py`)
+- **Enhanced Policy Manager** (`services/platform/pgc/pgc_service/app/core/policy_manager.py`)
   - Automatic principle_text generation from comments or rule names
   - Content hash generation for integrity verification
   - Framework detection and conversion pipeline
@@ -72,7 +72,7 @@ The audit identified critical issues with policy dataset integrity, format consi
 - Incomplete reproducibility claims
 
 **Solutions Implemented:**
-- **Manifest Management System** (`backend/pgc_service/app/core/manifest_manager.py`)
+- **Manifest Management System** (`services/platform/pgc/pgc_service/app/core/manifest_manager.py`)
   - Comprehensive manifest generation with SHA-256 checksums
   - Framework breakdown statistics
   - File integrity verification

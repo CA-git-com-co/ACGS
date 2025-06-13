@@ -25,7 +25,7 @@ This document outlines the detailed task breakdown for implementing LangGraph in
    - Include error handling for missing dependencies
 
 3. **16.3 Basic LangGraph Configuration**
-   - Create `src/backend/ac_service/workflows/` directory structure
+   - Create `services/core/ac_service/workflows/` directory structure
    - Implement basic StateGraph configuration class
    - Add environment variable management for LangGraph API keys
    - Create workflow registry for supported workflow types

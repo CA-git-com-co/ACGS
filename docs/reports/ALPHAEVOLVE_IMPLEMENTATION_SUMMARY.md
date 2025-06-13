@@ -15,14 +15,14 @@ Based on our comprehensive AlphaEvolve-ACGS framework enhancement implementation
 ## 📋 Implementation Completed
 
 ### **1. Advanced Democratic Participation System**
-**Location**: `src/backend/ac_service/app/services/collective_constitutional_ai.py`
+**Location**: `services/core/ac_service/app/services/collective_constitutional_ai.py`
 **Features**:
 - Large-scale stakeholder input processing (1000+ participants)
 - Bias detection and mitigation across 9 social dimensions
 - Constitutional alignment assessment
 - Real-time collective decision synthesis
 
-**Integration**: `src/backend/ac_service/app/integrations/polis_integration.py`
+**Integration**: `services/core/ac_service/app/integrations/polis_integration.py`
 **Features**:
 - Polis platform integration for democratic conversations
 - Stakeholder group management and weighting
@@ -30,7 +30,7 @@ Based on our comprehensive AlphaEvolve-ACGS framework enhancement implementation
 - Real-time participation monitoring
 
 ### **2. Federated Learning Orchestrator Enhancement**
-**Location**: `src/backend/federated_service/app/core/multi_model_ensemble.py`
+**Location**: `services/core/federated_service/app/core/multi_model_ensemble.py`
 **Features**:
 - Multi-model ensemble coordination (GPT-4, Claude-3, Gemini-Pro, Constitutional-LLM)
 - Weighted aggregation strategies (accuracy, constitutional alignment, bias mitigation, response time)
@@ -38,7 +38,7 @@ Based on our comprehensive AlphaEvolve-ACGS framework enhancement implementation
 - Fallback mechanisms for model failures
 
 ### **3. Hardware Acceleration Manager**
-**Location**: `src/backend/shared/hardware/gpu_acceleration_manager.py`
+**Location**: `services/core/shared/hardware/gpu_acceleration_manager.py`
 **Features**:
 - Optimized for 2 A100 GPU configuration (40GB each)
 - Dynamic GPU allocation and load balancing

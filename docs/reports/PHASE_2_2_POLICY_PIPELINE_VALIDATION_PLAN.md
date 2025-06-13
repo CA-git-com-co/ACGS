@@ -128,12 +128,12 @@ scripts/policy_latency_testing.py --target-latency 50ms
 **Implementation Steps**:
 ```bash
 # Fix middleware ordering in all services
-src/backend/auth_service/app/main.py
-src/backend/ac_service/app/main.py
-src/backend/integrity_service/app/main.py
-src/backend/gs_service/app/main.py
-src/backend/pgc_service/app/main.py
-src/backend/ec_service/app/main.py
+services/core/auth_service/app/main.py
+services/core/ac_service/app/main.py
+services/core/integrity_service/app/main.py
+services/core/gs_service/app/main.py
+services/core/pgc_service/app/main.py
+services/core/ec_service/app/main.py
 ```
 
 #### 3.2 Security Validation Re-testing

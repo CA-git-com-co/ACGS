@@ -7,7 +7,7 @@ This guide provides solutions for common issues encountered when deploying and o
 ### **System Health Check**
 ```bash
 # Check all services status
-docker-compose -f config/docker/docker-compose.yml ps
+docker-compose -f infrastructure/docker/docker-compose.yml ps
 
 # Verify deployment
 python scripts/verify_acgs_deployment.sh
@@ -19,12 +19,12 @@ python scripts/health_check.sh
 ### **Service Logs**
 ```bash
 # View all service logs
-docker-compose -f config/docker/docker-compose.yml logs
+docker-compose -f infrastructure/docker/docker-compose.yml logs
 
 # View specific service logs
-docker-compose -f config/docker/docker-compose.yml logs ac_service
-docker-compose -f config/docker/docker-compose.yml logs gs_service
-docker-compose -f config/docker/docker-compose.yml logs fv_service
+docker-compose -f infrastructure/docker/docker-compose.yml logs ac_service
+docker-compose -f infrastructure/docker/docker-compose.yml logs gs_service
+docker-compose -f infrastructure/docker/docker-compose.yml logs fv_service
 ```
 
 ## Common Issues and Solutions
@@ -39,16 +39,16 @@ docker-compose -f config/docker/docker-compose.yml logs fv_service
 #### **Solutions:**
 ```bash
 # Check PostgreSQL container status
-docker-compose -f config/docker/docker-compose.yml ps postgres
+docker-compose -f infrastructure/docker/docker-compose.yml ps postgres
 
 # Verify database URL in environment
 grep DATABASE_URL .env
 
 # Restart database service
-docker-compose -f config/docker/docker-compose.yml restart postgres
+docker-compose -f infrastructure/docker/docker-compose.yml restart postgres
 
 # Manual database connection test
-docker-compose -f config/docker/docker-compose.yml exec postgres psql -U acgs_user -d acgs_db
+docker-compose -f infrastructure/docker/docker-compose.yml exec postgres psql -U acgs_user -d acgs_db
 ```
 
 #### **Common Fixes:**
@@ -81,7 +81,7 @@ print('LLM connection successful')
 "
 
 # Check GS service logs for LLM errors
-docker-compose -f config/docker/docker-compose.yml logs gs_service | grep -i openai
+docker-compose -f infrastructure/docker/docker-compose.yml logs gs_service | grep -i openai
 ```
 
 #### **Common Fixes:**
@@ -100,10 +100,10 @@ docker-compose -f config/docker/docker-compose.yml logs gs_service | grep -i ope
 #### **Solutions:**
 ```bash
 # Check Z3 installation in FV service
-docker-compose -f config/docker/docker-compose.yml exec fv_service python -c "import z3; print(z3.get_version_string())"
+docker-compose -f infrastructure/docker/docker-compose.yml exec fv_service python -c "import z3; print(z3.get_version_string())"
 
 # Test Z3 solver functionality
-docker-compose -f config/docker/docker-compose.yml exec fv_service python -c "
+docker-compose -f infrastructure/docker/docker-compose.yml exec fv_service python -c "
 import z3
 s = z3.Solver()
 x = z3.Int('x')
@@ -112,7 +112,7 @@ print('Z3 solver status:', s.check())
 "
 
 # Check FV service logs
-docker-compose -f config/docker/docker-compose.yml logs fv_service | grep -i z3
+docker-compose -f infrastructure/docker/docker-compose.yml logs fv_service | grep -i z3
 ```
 
 #### **Common Fixes:**
@@ -134,10 +134,10 @@ docker-compose -f config/docker/docker-compose.yml logs fv_service | grep -i z3
 grep PGP_ .env
 
 # Verify PGP key availability
-docker-compose -f config/docker/docker-compose.yml exec integrity_service gpg --list-keys
+docker-compose -f infrastructure/docker/docker-compose.yml exec integrity_service gpg --list-keys
 
 # Test PGP signing functionality
-docker-compose -f config/docker/docker-compose.yml exec integrity_service python -c "
+docker-compose -f infrastructure/docker/docker-compose.yml exec integrity_service python -c "
 import gnupg
 gpg = gnupg.GPG()
 keys = gpg.list_keys()
@@ -145,7 +145,7 @@ print('Available PGP keys:', len(keys))
 "
 
 # Check integrity service logs
-docker-compose -f config/docker/docker-compose.yml logs integrity_service | grep -i pgp
+docker-compose -f infrastructure/docker/docker-compose.yml logs integrity_service | grep -i pgp
 ```
 
 #### **Common Fixes:**
@@ -164,7 +164,7 @@ docker-compose -f config/docker/docker-compose.yml logs integrity_service | grep
 #### **Solutions:**
 ```bash
 # Check Constitutional Council user roles
-docker-compose -f config/docker/docker-compose.yml exec ac_service python -c "
+docker-compose -f infrastructure/docker/docker-compose.yml exec ac_service python -c "
 from shared.database import get_db
 from shared.models import User
 db = next(get_db())
@@ -177,7 +177,7 @@ curl -H "Authorization: Bearer <token>" \
      http://localhost:8000/api/ac/constitutional-council/amendments
 
 # Check AC service logs for council operations
-docker-compose -f config/docker/docker-compose.yml logs ac_service | grep -i council
+docker-compose -f infrastructure/docker/docker-compose.yml logs ac_service | grep -i council
 ```
 
 #### **Common Fixes:**
@@ -199,7 +199,7 @@ docker-compose -f config/docker/docker-compose.yml logs ac_service | grep -i cou
 docker stats
 
 # Check database performance
-docker-compose -f config/docker/docker-compose.yml exec postgres psql -U acgs_user -d acgs_db -c "
+docker-compose -f infrastructure/docker/docker-compose.yml exec postgres psql -U acgs_user -d acgs_db -c "
 SELECT query, mean_time, calls 
 FROM pg_stat_statements 
 ORDER BY mean_time DESC 
@@ -207,7 +207,7 @@ LIMIT 10;
 "
 
 # Profile service performance
-docker-compose -f config/docker/docker-compose.yml exec pgc_service python -m cProfile -s cumtime app/main.py
+docker-compose -f infrastructure/docker/docker-compose.yml exec pgc_service python -m cProfile -s cumtime app/main.py
 ```
 
 #### **Common Fixes:**
@@ -253,17 +253,17 @@ docker-compose -f config/docker/docker-compose.yml exec pgc_service python -m cP
 ### **System Recovery**
 ```bash
 # Stop all services
-docker-compose -f config/docker/docker-compose.yml down
+docker-compose -f infrastructure/docker/docker-compose.yml down
 
 # Clean up containers and volumes
-docker-compose -f config/docker/docker-compose.yml down -v
+docker-compose -f infrastructure/docker/docker-compose.yml down -v
 docker system prune -f
 
 # Restore from backup
 python scripts/restore_database.sh
 
 # Restart system
-docker-compose -f config/docker/docker-compose.yml up --build -d
+docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
 ```
 
 ### **Database Recovery**
@@ -281,8 +281,8 @@ python scripts/restore_database.sh backup_2024_01_15.sql
 ```bash
 # Collect all logs for support
 mkdir -p logs
-docker-compose -f config/docker/docker-compose.yml logs > logs/all_services.log
-docker-compose -f config/docker/docker-compose.yml ps > logs/service_status.log
+docker-compose -f infrastructure/docker/docker-compose.yml logs > logs/all_services.log
+docker-compose -f infrastructure/docker/docker-compose.yml ps > logs/service_status.log
 ```
 
 ### **System Information**

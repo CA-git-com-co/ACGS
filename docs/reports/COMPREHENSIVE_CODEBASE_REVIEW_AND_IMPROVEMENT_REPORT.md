@@ -22,8 +22,8 @@ The ACGS-PGP project demonstrates a sophisticated architecture with advanced fea
 #### 2. Service Import Dependencies
 - **Problem:** Circular imports and missing dependencies in service modules
 - **Files Affected:** 
-  - `src/backend/ac_service/app/main.py` (Line 1-11: Import order issues)
-  - `src/backend/gs_service/app/main.py` (Line 25: Commented metrics imports)
+  - `services/core/ac_service/app/main.py` (Line 1-11: Import order issues)
+  - `services/core/gs_service/app/main.py` (Line 25: Commented metrics imports)
   - Multiple service modules with QEC import failures
 - **Impact:** Runtime failures during service initialization
 
@@ -46,7 +46,7 @@ The ACGS-PGP project demonstrates a sophisticated architecture with advanced fea
 
 #### 6. Deprecated Dependencies
 - **Problem:** Using deprecated Pydantic validators and outdated packages
-- **Files Affected:** `src/backend/gs_service/app/schemas.py` (ERR-002 in error tracking)
+- **Files Affected:** `services/core/gs_service/app/schemas.py` (ERR-002 in error tracking)
 - **Impact:** Future compatibility issues and security vulnerabilities
 
 ### 🟡 **Priority 3: Architecture Improvements**
