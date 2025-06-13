@@ -364,7 +364,7 @@ class TestWINAEnforcementOptimizer:
         cache_key = wina_optimizer._generate_cache_key(enforcement_context)
 
         assert isinstance(cache_key, str)
-        assert len(cache_key) == 32  # MD5 hash length
+        assert len(cache_key) == 64  # SHA-256 hash length
 
         # Test that same context generates same key
         cache_key2 = wina_optimizer._generate_cache_key(enforcement_context)

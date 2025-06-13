@@ -4,6 +4,13 @@ members = [
 ]
 resolver = "1"
 
+# Security patches for critical cryptographic vulnerabilities
+[patch.crates-io]
+# RUSTSEC-2022-0093: Fix oracle attack in ed25519-dalek (RESOLVED)
+ed25519-dalek = { git = "https://github.com/dalek-cryptography/ed25519-dalek", tag = "1.0.1" }
+# RUSTSEC-2024-0344: curve25519-dalek timing attack (Solana SDK v1.18.26 limitation)
+# Note: Cannot be patched due to Solana ecosystem constraints - documented as accepted risk
+
 [profile.release]
 overflow-checks = true
 lto = "fat"

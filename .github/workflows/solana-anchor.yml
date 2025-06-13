@@ -109,9 +109,11 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: cargo clippy --all-targets --all-features -- -D warnings
 
-      - name: Build Anchor programs
+      - name: Build Anchor programs with strict compilation
         if: steps.check_project.outputs.exists == 'true'
         working-directory: ${{ matrix.project }}
+        env:
+          RUSTFLAGS: "-Dwarnings -Dclippy::all -Dclippy::pedantic"
         run: |
           solana config set --url localhost
           anchor build
@@ -128,8 +130,14 @@ jobs:
           # Wait for validator to be ready
           timeout 30 bash -c 'until solana cluster-version; do sleep 1; done'
           
-          # Run tests
-          anchor test --skip-local-validator || TEST_RESULT=$?
+          # Run comprehensive test suite
+          echo "Running comprehensive test suite..."
+          if [ -f scripts/run_comprehensive_tests.sh ]; then
+            chmod +x scripts/run_comprehensive_tests.sh
+            ./scripts/run_comprehensive_tests.sh || TEST_RESULT=$?
+          else
+            anchor test --skip-local-validator || TEST_RESULT=$?
+          fi
           
           # Cleanup
           kill $VALIDATOR_PID || true
@@ -159,18 +167,28 @@ jobs:
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
 
-      - name: Install cargo-audit
-        run: cargo install cargo-audit
+      - name: Install security tools
+        run: |
+          cargo install cargo-audit
+          # Note: cargo-deny requires newer Rust version, skipping for compatibility
 
-      - name: Run security audit on blockchain
+      - name: Run strict security audit on blockchain
         if: hashFiles('blockchain/Cargo.lock') != ''
         working-directory: blockchain
-        run: cargo audit
+        run: |
+          echo "Running comprehensive security audit..."
+          cargo audit --deny warnings
+          echo "Running clippy security lints..."
+          cargo clippy -- -D warnings -D clippy::all -D clippy::pedantic
+          echo "Checking for unsafe code..."
+          grep -r "unsafe" programs/ && echo "⚠️ Unsafe code detected" && exit 1 || echo "✅ No unsafe code found"
 
       - name: Run security audit on quantumagi_core
         if: hashFiles('quantumagi_core/Cargo.lock') != ''
         working-directory: quantumagi_core
-        run: cargo audit
+        run: |
+          cargo audit
+          cargo deny check
 
   program-verification:
     runs-on: ubuntu-latest
