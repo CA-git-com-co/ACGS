@@ -45,12 +45,8 @@ try:
         LLMInterpretationInput,
         LLMStructuredOutput,
     )
-    from .llm_integration import (
-        GroqLLMClient,  # Import specific client for type checking
-    )
-    from .llm_integration import (
-        RealLLMClient,  # Import specific client for type checking
-    )
+    from .llm_integration import GroqLLMClient  # Import specific client for type checking
+    from .llm_integration import RealLLMClient  # Import specific client for type checking
     from .llm_integration import (
         get_llm_client,
         query_llm_for_constitutional_synthesis,

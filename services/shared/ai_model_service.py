@@ -355,21 +355,16 @@ class AIModelService:
                 "Authorization": f"Bearer {config.api_key}",
                 "Content-Type": "application/json",
                 "HTTP-Referer": "https://acgs.ai",
-                "X-Title": "ACGS-1 Constitutional Governance System"
+                "X-Title": "ACGS-1 Constitutional Governance System",
             }
 
             # Prepare request payload
             payload = {
                 "model": config.model_id,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
+                "messages": [{"role": "user", "content": prompt}],
                 "max_tokens": kwargs.get("max_tokens", config.max_tokens),
                 "temperature": kwargs.get("temperature", config.temperature),
-                "stream": False
+                "stream": False,
             }
 
             # Add extra_body if provided in kwargs
@@ -378,27 +373,39 @@ class AIModelService:
 
             # Make API call with timeout
             timeout = kwargs.get("timeout", 30.0)
-            async with self.client.post(url, headers=headers, json=payload, timeout=timeout) as response:
+            async with self.client.post(
+                url, headers=headers, json=payload, timeout=timeout
+            ) as response:
                 if response.status_code == 200:
                     result = response.json()
                     content = result["choices"][0]["message"]["content"]
-                    tokens_used = result.get("usage", {}).get("total_tokens", len(prompt.split()) * 2)
+                    tokens_used = result.get("usage", {}).get(
+                        "total_tokens", len(prompt.split()) * 2
+                    )
 
                     return ModelResponse(
                         content=content,
                         model_id=config.model_id,
                         provider=config.provider.value,
                         tokens_used=tokens_used,
-                        finish_reason=result["choices"][0].get("finish_reason", "completed"),
+                        finish_reason=result["choices"][0].get(
+                            "finish_reason", "completed"
+                        ),
                         metadata={
                             "provider": "openrouter",
-                            "model_type": config.model_id.split("/")[1] if "/" in config.model_id else config.model_id,
-                            "response_time_ms": kwargs.get("response_time", 0)
+                            "model_type": (
+                                config.model_id.split("/")[1]
+                                if "/" in config.model_id
+                                else config.model_id
+                            ),
+                            "response_time_ms": kwargs.get("response_time", 0),
                         },
                     )
                 else:
                     error_text = await response.text()
-                    raise Exception(f"OpenRouter API error: {response.status_code} - {error_text}")
+                    raise Exception(
+                        f"OpenRouter API error: {response.status_code} - {error_text}"
+                    )
 
         except Exception as e:
             logger.warning(f"OpenRouter API call failed for {config.model_id}: {e}")
@@ -429,21 +436,16 @@ class AIModelService:
 
             headers = {
                 "Authorization": f"Bearer {config.api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             }
 
             # Prepare request payload
             payload = {
                 "model": config.model_id,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
+                "messages": [{"role": "user", "content": prompt}],
                 "max_tokens": kwargs.get("max_tokens", config.max_tokens),
                 "temperature": kwargs.get("temperature", config.temperature),
-                "stream": False
+                "stream": False,
             }
 
             # Make API call
@@ -451,25 +453,33 @@ class AIModelService:
                 if response.status_code == 200:
                     result = response.json()
                     content = result["choices"][0]["message"]["content"]
-                    tokens_used = result.get("usage", {}).get("total_tokens", len(prompt.split()) * 2)
+                    tokens_used = result.get("usage", {}).get(
+                        "total_tokens", len(prompt.split()) * 2
+                    )
 
                     return ModelResponse(
                         content=content,
                         model_id=config.model_id,
                         provider=config.provider.value,
                         tokens_used=tokens_used,
-                        finish_reason=result["choices"][0].get("finish_reason", "completed"),
+                        finish_reason=result["choices"][0].get(
+                            "finish_reason", "completed"
+                        ),
                         metadata={
                             "provider": "cerebras",
                             "model_type": "cerebras_inference",
-                            "response_time_ms": kwargs.get("response_time", 0)
+                            "response_time_ms": kwargs.get("response_time", 0),
                         },
                     )
                 else:
-                    raise Exception(f"Cerebras API error: {response.status_code} - {response.text}")
+                    raise Exception(
+                        f"Cerebras API error: {response.status_code} - {response.text}"
+                    )
 
         except Exception as e:
-            logger.warning(f"Cerebras API call failed: {e}, falling back to mock response")
+            logger.warning(
+                f"Cerebras API call failed: {e}, falling back to mock response"
+            )
             # Fallback to mock response for development
             await asyncio.sleep(0.05)  # Simulate fast Cerebras inference
 

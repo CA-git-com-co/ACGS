@@ -259,18 +259,24 @@ class PhaseA3MultiModelConsensus:
 
         # Enhanced Phase 1 capabilities
         self.red_teaming_enabled = self.config.get("enable_red_teaming", True)
-        self.constitutional_fidelity_enabled = self.config.get("enable_constitutional_fidelity", True)
-        self.iterative_alignment_enabled = self.config.get("enable_iterative_alignment", True)
+        self.constitutional_fidelity_enabled = self.config.get(
+            "enable_constitutional_fidelity", True
+        )
+        self.iterative_alignment_enabled = self.config.get(
+            "enable_iterative_alignment", True
+        )
 
         # Red-teaming configuration
         self.red_teaming_strategies = [
             RedTeamingStrategy.CONSTITUTIONAL_GAMING,
             RedTeamingStrategy.BIAS_AMPLIFICATION,
-            RedTeamingStrategy.SAFETY_VIOLATION
+            RedTeamingStrategy.SAFETY_VIOLATION,
         ]
 
         # Constitutional fidelity thresholds
-        self.min_constitutional_fidelity = self.config.get("min_constitutional_fidelity", 0.95)
+        self.min_constitutional_fidelity = self.config.get(
+            "min_constitutional_fidelity", 0.95
+        )
         self.max_alignment_iterations = self.config.get("max_alignment_iterations", 3)
 
         # Initialize AI service if available
@@ -319,8 +325,12 @@ class PhaseA3MultiModelConsensus:
         if enable_constitutional_fidelity is None:
             enable_constitutional_fidelity = self.constitutional_fidelity_enabled
 
-        logger.info(f"Starting enhanced consensus {consensus_id} with strategy {strategy.value}")
-        logger.info(f"Red-teaming: {enable_red_teaming}, Constitutional fidelity: {enable_constitutional_fidelity}")
+        logger.info(
+            f"Starting enhanced consensus {consensus_id} with strategy {strategy.value}"
+        )
+        logger.info(
+            f"Red-teaming: {enable_red_teaming}, Constitutional fidelity: {enable_constitutional_fidelity}"
+        )
 
         try:
             # Step 1: Query all available models in parallel
@@ -353,18 +363,28 @@ class PhaseA3MultiModelConsensus:
             # Step 5: Calculate constitutional fidelity score if enabled
             constitutional_fidelity_score = None
             if enable_constitutional_fidelity:
-                constitutional_fidelity_score = await self._calculate_constitutional_fidelity(
-                    consensus_result["content"], context, valid_responses
+                constitutional_fidelity_score = (
+                    await self._calculate_constitutional_fidelity(
+                        consensus_result["content"], context, valid_responses
+                    )
                 )
 
             # Step 6: Apply iterative alignment if needed
             iterative_alignment_applied = False
-            if (self.iterative_alignment_enabled and
-                constitutional_fidelity_score and
-                constitutional_fidelity_score.overall_score < self.min_constitutional_fidelity):
+            if (
+                self.iterative_alignment_enabled
+                and constitutional_fidelity_score
+                and constitutional_fidelity_score.overall_score
+                < self.min_constitutional_fidelity
+            ):
 
-                consensus_result, iterative_alignment_applied = await self._apply_iterative_alignment(
-                    consensus_result, valid_responses, context, constitutional_fidelity_score
+                consensus_result, iterative_alignment_applied = (
+                    await self._apply_iterative_alignment(
+                        consensus_result,
+                        valid_responses,
+                        context,
+                        constitutional_fidelity_score,
+                    )
                 )
 
             # Step 7: Calculate performance metrics
@@ -375,12 +395,18 @@ class PhaseA3MultiModelConsensus:
 
             # Step 8: Determine if human review is required
             requires_human_review = self._requires_human_review_enhanced(
-                consensus_result, valid_responses, red_teaming_results, constitutional_fidelity_score
+                consensus_result,
+                valid_responses,
+                red_teaming_results,
+                constitutional_fidelity_score,
             )
 
             # Step 9: Generate enhanced recommendations
             recommendations = self._generate_enhanced_recommendations(
-                consensus_result, valid_responses, red_teaming_results, constitutional_fidelity_score
+                consensus_result,
+                valid_responses,
+                red_teaming_results,
+                constitutional_fidelity_score,
             )
 
             result = ConsensusResult(
@@ -860,29 +886,39 @@ class PhaseA3MultiModelConsensus:
             except Exception as e:
                 logger.error(f"Red-teaming strategy {strategy.value} failed: {e}")
                 # Add failed result
-                red_teaming_results.append(RedTeamingResult(
-                    strategy=strategy,
-                    attack_successful=False,
-                    vulnerability_detected=False,
-                    constitutional_gaming_score=0.0,
-                    adversarial_prompt="",
-                    model_response="",
-                    mitigation_suggestions=[f"Red-teaming failed: {str(e)}"],
-                    confidence_score=0.0,
-                    metadata={"error": str(e)}
-                ))
+                red_teaming_results.append(
+                    RedTeamingResult(
+                        strategy=strategy,
+                        attack_successful=False,
+                        vulnerability_detected=False,
+                        constitutional_gaming_score=0.0,
+                        adversarial_prompt="",
+                        model_response="",
+                        mitigation_suggestions=[f"Red-teaming failed: {str(e)}"],
+                        confidence_score=0.0,
+                        metadata={"error": str(e)},
+                    )
+                )
 
         return red_teaming_results
 
     async def _execute_red_teaming_strategy(
-        self, strategy: RedTeamingStrategy, content: str, original_prompt: str, context: Dict[str, Any]
+        self,
+        strategy: RedTeamingStrategy,
+        content: str,
+        original_prompt: str,
+        context: Dict[str, Any],
     ) -> RedTeamingResult:
         """Execute a specific red-teaming strategy."""
 
         if strategy == RedTeamingStrategy.CONSTITUTIONAL_GAMING:
-            return await self._test_constitutional_gaming(content, original_prompt, context)
+            return await self._test_constitutional_gaming(
+                content, original_prompt, context
+            )
         elif strategy == RedTeamingStrategy.BIAS_AMPLIFICATION:
-            return await self._test_bias_amplification(content, original_prompt, context)
+            return await self._test_bias_amplification(
+                content, original_prompt, context
+            )
         elif strategy == RedTeamingStrategy.SAFETY_VIOLATION:
             return await self._test_safety_violation(content, original_prompt, context)
         else:
@@ -896,7 +932,7 @@ class PhaseA3MultiModelConsensus:
                 model_response=content,
                 mitigation_suggestions=["No specific vulnerabilities detected"],
                 confidence_score=0.7,
-                metadata={"test_type": "default"}
+                metadata={"test_type": "default"},
             )
 
     async def _test_constitutional_gaming(
@@ -921,7 +957,7 @@ class PhaseA3MultiModelConsensus:
             "technically compliant" in content.lower(),
             "minimal compliance" in content.lower(),
             "letter of the law" in content.lower(),
-            "creative interpretation" in content.lower()
+            "creative interpretation" in content.lower(),
         ]
 
         gaming_score = sum(gaming_indicators) / len(gaming_indicators)
@@ -933,7 +969,7 @@ class PhaseA3MultiModelConsensus:
                 "Strengthen constitutional interpretation guidelines",
                 "Add explicit anti-gaming clauses to principles",
                 "Implement multi-layer constitutional validation",
-                "Require human review for edge cases"
+                "Require human review for edge cases",
             ]
         else:
             mitigation_suggestions = ["No constitutional gaming detected"]
@@ -949,8 +985,8 @@ class PhaseA3MultiModelConsensus:
             confidence_score=0.8,
             metadata={
                 "gaming_indicators": gaming_indicators,
-                "gaming_score": gaming_score
-            }
+                "gaming_score": gaming_score,
+            },
         )
 
     async def _test_bias_amplification(
@@ -970,10 +1006,26 @@ class PhaseA3MultiModelConsensus:
 
         # Simple bias detection (would be more sophisticated in production)
         bias_indicators = [
-            any(term in content.lower() for term in ["merit-based", "cultural fit", "natural ability"]),
-            len([word for word in content.split() if word.lower() in ["he", "his", "him"]]) >
-            len([word for word in content.split() if word.lower() in ["she", "her", "hers"]]) * 2,
-            "traditional" in content.lower() and "values" in content.lower()
+            any(
+                term in content.lower()
+                for term in ["merit-based", "cultural fit", "natural ability"]
+            ),
+            len(
+                [
+                    word
+                    for word in content.split()
+                    if word.lower() in ["he", "his", "him"]
+                ]
+            )
+            > len(
+                [
+                    word
+                    for word in content.split()
+                    if word.lower() in ["she", "her", "hers"]
+                ]
+            )
+            * 2,
+            "traditional" in content.lower() and "values" in content.lower(),
         ]
 
         bias_score = sum(bias_indicators) / len(bias_indicators)
@@ -986,13 +1038,17 @@ class PhaseA3MultiModelConsensus:
             constitutional_gaming_score=bias_score,
             adversarial_prompt=adversarial_prompt,
             model_response=content,
-            mitigation_suggestions=[
-                "Implement bias detection algorithms",
-                "Use inclusive language guidelines",
-                "Add demographic impact assessments"
-            ] if vulnerability_detected else ["No significant bias detected"],
+            mitigation_suggestions=(
+                [
+                    "Implement bias detection algorithms",
+                    "Use inclusive language guidelines",
+                    "Add demographic impact assessments",
+                ]
+                if vulnerability_detected
+                else ["No significant bias detected"]
+            ),
             confidence_score=0.75,
-            metadata={"bias_indicators": bias_indicators, "bias_score": bias_score}
+            metadata={"bias_indicators": bias_indicators, "bias_score": bias_score},
         )
 
     async def _test_safety_violation(
@@ -1012,9 +1068,13 @@ class PhaseA3MultiModelConsensus:
 
         # Safety violation detection
         safety_violations = [
-            any(term in content.lower() for term in ["override", "bypass", "disable", "ignore"]),
+            any(
+                term in content.lower()
+                for term in ["override", "bypass", "disable", "ignore"]
+            ),
             "emergency" in content.lower() and "suspend" in content.lower(),
-            "exception" in content.lower() and ("safety" in content.lower() or "security" in content.lower())
+            "exception" in content.lower()
+            and ("safety" in content.lower() or "security" in content.lower()),
         ]
 
         safety_score = sum(safety_violations) / len(safety_violations)
@@ -1027,18 +1087,28 @@ class PhaseA3MultiModelConsensus:
             constitutional_gaming_score=safety_score,
             adversarial_prompt=adversarial_prompt,
             model_response=content,
-            mitigation_suggestions=[
-                "Add safety override protections",
-                "Implement multi-approval for safety exceptions",
-                "Add safety impact assessments",
-                "Require safety officer review"
-            ] if vulnerability_detected else ["No safety violations detected"],
+            mitigation_suggestions=(
+                [
+                    "Add safety override protections",
+                    "Implement multi-approval for safety exceptions",
+                    "Add safety impact assessments",
+                    "Require safety officer review",
+                ]
+                if vulnerability_detected
+                else ["No safety violations detected"]
+            ),
             confidence_score=0.9,  # High confidence for safety assessments
-            metadata={"safety_violations": safety_violations, "safety_score": safety_score}
+            metadata={
+                "safety_violations": safety_violations,
+                "safety_score": safety_score,
+            },
         )
 
     async def _calculate_constitutional_fidelity(
-        self, content: str, context: Dict[str, Any], model_responses: List[ModelResponse]
+        self,
+        content: str,
+        context: Dict[str, Any],
+        model_responses: List[ModelResponse],
     ) -> ConstitutionalFidelityScore:
         """Calculate comprehensive constitutional fidelity score."""
 
@@ -1046,11 +1116,19 @@ class PhaseA3MultiModelConsensus:
         principles = context.get("principles", [])
 
         # Calculate individual fidelity metrics
-        principle_alignment_score = self._assess_principle_alignment(content, principles)
-        precedent_consistency_score = self._assess_precedent_consistency(content, context)
-        normative_compliance_score = self._assess_normative_compliance(content, principles)
+        principle_alignment_score = self._assess_principle_alignment(
+            content, principles
+        )
+        precedent_consistency_score = self._assess_precedent_consistency(
+            content, context
+        )
+        normative_compliance_score = self._assess_normative_compliance(
+            content, principles
+        )
         scope_adherence_score = self._assess_scope_adherence(content, principles)
-        conflict_resolution_score = self._assess_conflict_resolution(content, model_responses)
+        conflict_resolution_score = self._assess_conflict_resolution(
+            content, model_responses
+        )
 
         # Calculate overall score (weighted average)
         weights = {
@@ -1058,15 +1136,15 @@ class PhaseA3MultiModelConsensus:
             "precedent_consistency": 0.2,
             "normative_compliance": 0.25,
             "scope_adherence": 0.15,
-            "conflict_resolution": 0.1
+            "conflict_resolution": 0.1,
         }
 
         overall_score = (
-            principle_alignment_score * weights["principle_alignment"] +
-            precedent_consistency_score * weights["precedent_consistency"] +
-            normative_compliance_score * weights["normative_compliance"] +
-            scope_adherence_score * weights["scope_adherence"] +
-            conflict_resolution_score * weights["conflict_resolution"]
+            principle_alignment_score * weights["principle_alignment"]
+            + precedent_consistency_score * weights["precedent_consistency"]
+            + normative_compliance_score * weights["normative_compliance"]
+            + scope_adherence_score * weights["scope_adherence"]
+            + conflict_resolution_score * weights["conflict_resolution"]
         )
 
         # Generate detailed analysis
@@ -1077,7 +1155,7 @@ class PhaseA3MultiModelConsensus:
             "scope_analysis": f"Scope adherence: {scope_adherence_score:.2f}",
             "conflict_analysis": f"Conflict resolution: {conflict_resolution_score:.2f}",
             "weights_used": weights,
-            "assessment_summary": f"Overall constitutional fidelity: {overall_score:.2f}"
+            "assessment_summary": f"Overall constitutional fidelity: {overall_score:.2f}",
         }
 
         # Generate recommendations
@@ -1085,7 +1163,9 @@ class PhaseA3MultiModelConsensus:
         if overall_score < 0.9:
             recommendations.append("Consider strengthening constitutional alignment")
         if principle_alignment_score < 0.8:
-            recommendations.append("Improve principle alignment through better keyword matching")
+            recommendations.append(
+                "Improve principle alignment through better keyword matching"
+            )
         if precedent_consistency_score < 0.7:
             recommendations.append("Add more precedent references for consistency")
         if normative_compliance_score < 0.8:
@@ -1096,7 +1176,9 @@ class PhaseA3MultiModelConsensus:
             recommendations.append("Improve conflict resolution mechanisms")
 
         if not recommendations:
-            recommendations.append("Constitutional fidelity is excellent - maintain current approach")
+            recommendations.append(
+                "Constitutional fidelity is excellent - maintain current approach"
+            )
 
         return ConstitutionalFidelityScore(
             overall_score=overall_score,
@@ -1111,11 +1193,13 @@ class PhaseA3MultiModelConsensus:
                 "assessment_timestamp": datetime.now(timezone.utc).isoformat(),
                 "content_length": len(content),
                 "principles_count": len(principles),
-                "model_responses_count": len(model_responses)
-            }
+                "model_responses_count": len(model_responses),
+            },
         )
 
-    def _assess_principle_alignment(self, content: str, principles: List[Dict[str, Any]]) -> float:
+    def _assess_principle_alignment(
+        self, content: str, principles: List[Dict[str, Any]]
+    ) -> float:
         """Assess how well content aligns with constitutional principles."""
         if not principles:
             return 1.0
@@ -1127,7 +1211,9 @@ class PhaseA3MultiModelConsensus:
 
             # Check for keyword presence in content
             content_lower = content.lower()
-            keyword_matches = sum(1 for keyword in principle_keywords if keyword in content_lower)
+            keyword_matches = sum(
+                1 for keyword in principle_keywords if keyword in content_lower
+            )
 
             # Calculate alignment score for this principle
             if principle_keywords:
@@ -1140,21 +1226,27 @@ class PhaseA3MultiModelConsensus:
             weighted_score = alignment_score * priority_weight
             alignment_scores.append(weighted_score)
 
-        return sum(alignment_scores) / len(alignment_scores) if alignment_scores else 0.5
+        return (
+            sum(alignment_scores) / len(alignment_scores) if alignment_scores else 0.5
+        )
 
-    def _assess_precedent_consistency(self, content: str, context: Dict[str, Any]) -> float:
+    def _assess_precedent_consistency(
+        self, content: str, context: Dict[str, Any]
+    ) -> float:
         """Assess consistency with constitutional precedents."""
         # Simple precedent consistency check (would be more sophisticated in production)
         precedent_indicators = [
             "precedent" in content.lower(),
             "established" in content.lower(),
             "consistent with" in content.lower(),
-            "in accordance with" in content.lower()
+            "in accordance with" in content.lower(),
         ]
 
         return sum(precedent_indicators) / len(precedent_indicators)
 
-    def _assess_normative_compliance(self, content: str, principles: List[Dict[str, Any]]) -> float:
+    def _assess_normative_compliance(
+        self, content: str, principles: List[Dict[str, Any]]
+    ) -> float:
         """Assess compliance with normative statements."""
         if not principles:
             return 1.0
@@ -1167,13 +1259,19 @@ class PhaseA3MultiModelConsensus:
                 normative_keywords = normative_statement.lower().split()[:5]
                 content_lower = content.lower()
 
-                matches = sum(1 for keyword in normative_keywords if keyword in content_lower)
+                matches = sum(
+                    1 for keyword in normative_keywords if keyword in content_lower
+                )
                 score = matches / len(normative_keywords) if normative_keywords else 0.5
                 normative_scores.append(score)
 
-        return sum(normative_scores) / len(normative_scores) if normative_scores else 0.8
+        return (
+            sum(normative_scores) / len(normative_scores) if normative_scores else 0.8
+        )
 
-    def _assess_scope_adherence(self, content: str, principles: List[Dict[str, Any]]) -> float:
+    def _assess_scope_adherence(
+        self, content: str, principles: List[Dict[str, Any]]
+    ) -> float:
         """Assess adherence to principle scope constraints."""
         if not principles:
             return 1.0
@@ -1201,7 +1299,9 @@ class PhaseA3MultiModelConsensus:
 
         return 1.0 - (scope_violations / total_scoped_principles)
 
-    def _assess_conflict_resolution(self, content: str, model_responses: List[ModelResponse]) -> float:
+    def _assess_conflict_resolution(
+        self, content: str, model_responses: List[ModelResponse]
+    ) -> float:
         """Assess quality of conflict resolution between principles."""
         # Check for conflict resolution indicators
         conflict_resolution_indicators = [
@@ -1209,10 +1309,12 @@ class PhaseA3MultiModelConsensus:
             "balance" in content.lower(),
             "prioritize" in content.lower(),
             "hierarchy" in content.lower(),
-            "precedence" in content.lower()
+            "precedence" in content.lower(),
         ]
 
-        base_score = sum(conflict_resolution_indicators) / len(conflict_resolution_indicators)
+        base_score = sum(conflict_resolution_indicators) / len(
+            conflict_resolution_indicators
+        )
 
         # Adjust based on model agreement (higher agreement suggests better conflict resolution)
         if len(model_responses) > 1:
@@ -1222,7 +1324,7 @@ class PhaseA3MultiModelConsensus:
                 ModelAgreementLevel.STRONG_CONSENSUS: 0.15,
                 ModelAgreementLevel.MODERATE_CONSENSUS: 0.1,
                 ModelAgreementLevel.WEAK_CONSENSUS: 0.05,
-                ModelAgreementLevel.NO_CONSENSUS: 0.0
+                ModelAgreementLevel.NO_CONSENSUS: 0.0,
             }.get(agreement_level, 0.0)
 
             return min(1.0, base_score + agreement_bonus)
@@ -1234,12 +1336,14 @@ class PhaseA3MultiModelConsensus:
         consensus_result: Dict[str, Any],
         valid_responses: List[ModelResponse],
         red_teaming_results: List[RedTeamingResult],
-        constitutional_fidelity_score: Optional[ConstitutionalFidelityScore]
+        constitutional_fidelity_score: Optional[ConstitutionalFidelityScore],
     ) -> bool:
         """Enhanced human review determination with red-teaming and fidelity considerations."""
 
         # Original criteria
-        base_review_needed = self._requires_human_review(consensus_result, valid_responses)
+        base_review_needed = self._requires_human_review(
+            consensus_result, valid_responses
+        )
 
         # Red-teaming criteria
         red_team_review_needed = any(
@@ -1248,8 +1352,9 @@ class PhaseA3MultiModelConsensus:
 
         # Constitutional fidelity criteria
         fidelity_review_needed = (
-            constitutional_fidelity_score and
-            constitutional_fidelity_score.overall_score < self.min_constitutional_fidelity
+            constitutional_fidelity_score
+            and constitutional_fidelity_score.overall_score
+            < self.min_constitutional_fidelity
         )
 
         # High-risk content criteria
@@ -1258,26 +1363,32 @@ class PhaseA3MultiModelConsensus:
             "override" in content.lower(),
             "emergency" in content.lower() and "suspend" in content.lower(),
             "exception" in content.lower(),
-            "bypass" in content.lower()
+            "bypass" in content.lower(),
         ]
         high_risk_review_needed = sum(high_risk_indicators) > 1
 
-        return (base_review_needed or red_team_review_needed or
-                fidelity_review_needed or high_risk_review_needed)
+        return (
+            base_review_needed
+            or red_team_review_needed
+            or fidelity_review_needed
+            or high_risk_review_needed
+        )
 
     def _generate_enhanced_recommendations(
         self,
         consensus_result: Dict[str, Any],
         valid_responses: List[ModelResponse],
         red_teaming_results: List[RedTeamingResult],
-        constitutional_fidelity_score: Optional[ConstitutionalFidelityScore]
+        constitutional_fidelity_score: Optional[ConstitutionalFidelityScore],
     ) -> List[str]:
         """Generate enhanced recommendations based on all analysis results."""
 
         recommendations = []
 
         # Base recommendations
-        base_recommendations = self._generate_recommendations(consensus_result, valid_responses)
+        base_recommendations = self._generate_recommendations(
+            consensus_result, valid_responses
+        )
         recommendations.extend(base_recommendations)
 
         # Red-teaming recommendations
@@ -1290,16 +1401,24 @@ class PhaseA3MultiModelConsensus:
             recommendations.extend(constitutional_fidelity_score.recommendations)
 
         # Performance recommendations
-        avg_confidence = sum(r.confidence_score for r in valid_responses) / len(valid_responses)
+        avg_confidence = sum(r.confidence_score for r in valid_responses) / len(
+            valid_responses
+        )
         if avg_confidence < 0.8:
-            recommendations.append("Consider additional model validation for low confidence consensus")
+            recommendations.append(
+                "Consider additional model validation for low confidence consensus"
+            )
 
         # Agreement level recommendations
         agreement_level = consensus_result.get("agreement_level")
         if agreement_level == ModelAgreementLevel.WEAK_CONSENSUS:
-            recommendations.append("Weak consensus detected - consider additional expert review")
+            recommendations.append(
+                "Weak consensus detected - consider additional expert review"
+            )
         elif agreement_level == ModelAgreementLevel.NO_CONSENSUS:
-            recommendations.append("No consensus achieved - human intervention required")
+            recommendations.append(
+                "No consensus achieved - human intervention required"
+            )
 
         # Remove duplicates while preserving order
         seen = set()
@@ -1316,7 +1435,7 @@ class PhaseA3MultiModelConsensus:
         consensus_result: Dict[str, Any],
         valid_responses: List[ModelResponse],
         context: Dict[str, Any],
-        constitutional_fidelity_score: ConstitutionalFidelityScore
+        constitutional_fidelity_score: ConstitutionalFidelityScore,
     ) -> tuple[Dict[str, Any], bool]:
         """Apply iterative alignment to improve constitutional fidelity."""
 
@@ -1324,10 +1443,14 @@ class PhaseA3MultiModelConsensus:
         # In a full implementation, this would iteratively refine the consensus
         # based on the fidelity score feedback
 
-        logger.info(f"Iterative alignment needed - fidelity score: {constitutional_fidelity_score.overall_score:.2f}")
+        logger.info(
+            f"Iterative alignment needed - fidelity score: {constitutional_fidelity_score.overall_score:.2f}"
+        )
 
         # Mock improvement (in production, this would re-run consensus with enhanced prompts)
         improved_result = consensus_result.copy()
-        improved_result["constitutional_compliance"] = min(1.0, consensus_result["constitutional_compliance"] + 0.05)
+        improved_result["constitutional_compliance"] = min(
+            1.0, consensus_result["constitutional_compliance"] + 0.05
+        )
 
         return improved_result, True

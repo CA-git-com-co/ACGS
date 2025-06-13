@@ -16,17 +16,20 @@ Key Enhancements:
 
 import logging
 import re
-from typing import Any, Dict, List, Optional, Tuple
 from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
-    from services.core.governance_synthesis.gs_service.app.services.ac_client import ac_service_client
+    from services.core.governance_synthesis.gs_service.app.services.ac_client import (
+        ac_service_client,
+    )
 except ImportError:
     try:
         from ..services.ac_client import ac_service_client
     except ImportError:
         # Fallback for testing environments
         from unittest.mock import MagicMock
+
         ac_service_client = MagicMock()
 
 # Import WINA constitutional integration
@@ -386,7 +389,7 @@ Step 3: PROACTIVE COMPLIANCE
 - Create policies that proactively ensure constitutional adherence
 - Build in positive feedback mechanisms for constitutional compliance
 - Design systems that naturally tend toward constitutional behavior
-"""
+""",
         }
 
     def _initialize_positive_patterns(self) -> Dict[str, List[str]]:
@@ -397,29 +400,29 @@ Step 3: PROACTIVE COMPLIANCE
                 "The system MUST proactively implement",
                 "The system SHALL continuously maintain",
                 "The system MUST effectively provide",
-                "The system SHALL systematically uphold"
+                "The system SHALL systematically uphold",
             ],
             "capability_patterns": [
                 "Enable the system to",
                 "Empower the system to",
                 "Enhance the system's ability to",
                 "Strengthen the system's capacity to",
-                "Improve the system's capability to"
+                "Improve the system's capability to",
             ],
             "outcome_patterns": [
                 "to achieve constitutional compliance",
                 "to promote constitutional values",
                 "to ensure constitutional integrity",
                 "to maintain constitutional fidelity",
-                "to advance constitutional objectives"
+                "to advance constitutional objectives",
             ],
             "monitoring_patterns": [
                 "The system SHALL monitor and verify",
                 "The system MUST track and validate",
                 "The system SHALL observe and confirm",
                 "The system MUST assess and ensure",
-                "The system SHALL evaluate and maintain"
-            ]
+                "The system SHALL evaluate and maintain",
+            ],
         }
 
     async def _retrieve_constitutional_precedents(
@@ -429,8 +432,10 @@ Step 3: PROACTIVE COMPLIANCE
         try:
             # Check cache freshness (refresh every hour)
             current_time = datetime.now(timezone.utc)
-            if (self.precedent_cache_timestamp is None or
-                (current_time - self.precedent_cache_timestamp).seconds > 3600):
+            if (
+                self.precedent_cache_timestamp is None
+                or (current_time - self.precedent_cache_timestamp).seconds > 3600
+            ):
                 await self._refresh_precedent_cache()
 
             # Search for relevant precedents
@@ -439,8 +444,10 @@ Step 3: PROACTIVE COMPLIANCE
 
             for precedent_key, precedent_data in self.constitutional_precedents.items():
                 # Check if precedent is relevant to current context
-                if any(keyword in precedent_data.get("keywords", [])
-                       for keyword in context_keywords):
+                if any(
+                    keyword in precedent_data.get("keywords", [])
+                    for keyword in context_keywords
+                ):
                     relevant_precedents.append(precedent_data)
 
                 # Check if precedent involves similar principles
@@ -457,7 +464,7 @@ Step 3: PROACTIVE COMPLIANCE
             return {
                 "precedents": relevant_precedents[:5],  # Top 5 most relevant
                 "total_found": len(relevant_precedents),
-                "cache_timestamp": self.precedent_cache_timestamp
+                "cache_timestamp": self.precedent_cache_timestamp,
             }
 
         except Exception as e:
@@ -475,22 +482,27 @@ Step 3: PROACTIVE COMPLIANCE
                     "principle_ids": ["1", "2", "5"],
                     "reasoning": "Privacy principles require proactive data protection",
                     "outcome": "Implemented encryption and access controls",
-                    "relevance_score": 0.9
+                    "relevance_score": 0.9,
                 },
                 "fairness_algorithmic": {
                     "keywords": ["fairness", "bias", "discrimination", "algorithmic"],
                     "principle_ids": ["3", "4", "7"],
                     "reasoning": "Fairness requires bias detection and mitigation",
                     "outcome": "Deployed bias monitoring and correction systems",
-                    "relevance_score": 0.85
+                    "relevance_score": 0.85,
                 },
                 "transparency_accountability": {
-                    "keywords": ["transparency", "accountability", "audit", "explainable"],
+                    "keywords": [
+                        "transparency",
+                        "accountability",
+                        "audit",
+                        "explainable",
+                    ],
                     "principle_ids": ["6", "8", "9"],
                     "reasoning": "Transparency requires explainable decision processes",
                     "outcome": "Implemented audit trails and explanation systems",
-                    "relevance_score": 0.8
-                }
+                    "relevance_score": 0.8,
+                },
             }
 
             self.precedent_cache_timestamp = datetime.now(timezone.utc)
@@ -600,7 +612,7 @@ Please provide your constitutionally compliant policy synthesis following this e
         self,
         principles: List[Dict[str, Any]],
         hierarchy: List[Dict[str, Any]],
-        precedent_data: Dict[str, Any]
+        precedent_data: Dict[str, Any],
     ) -> str:
         """Build enhanced constitutional principles section with precedent context."""
         if not principles:
@@ -613,8 +625,12 @@ Please provide your constitutionally compliant policy synthesis following this e
         if precedents:
             section += "RELEVANT CONSTITUTIONAL PRECEDENTS:\n"
             for i, precedent in enumerate(precedents[:3], 1):  # Top 3 precedents
-                section += f"{i}. {precedent.get('reasoning', 'No reasoning available')}\n"
-                section += f"   Outcome: {precedent.get('outcome', 'No outcome recorded')}\n"
+                section += (
+                    f"{i}. {precedent.get('reasoning', 'No reasoning available')}\n"
+                )
+                section += (
+                    f"   Outcome: {precedent.get('outcome', 'No outcome recorded')}\n"
+                )
             section += "\n"
 
         section += "APPLICABLE PRINCIPLES (in priority order):\n\n"
@@ -627,7 +643,9 @@ Please provide your constitutionally compliant policy synthesis following this e
             priority_level = priority_info.get("priority_level", "UNSPECIFIED")
 
             # Apply positive action patterns to principle description
-            enhanced_content = self._apply_positive_patterns(principle.get('content', ''))
+            enhanced_content = self._apply_positive_patterns(
+                principle.get("content", "")
+            )
 
             section += f"{i}. PRINCIPLE {principle['id']}: {principle['name']}\n"
             section += f"   Priority: {priority_weight:.2f} ({priority_level})\n"
@@ -636,7 +654,7 @@ Please provide your constitutionally compliant policy synthesis following this e
 
             if principle.get("normative_statement"):
                 enhanced_normative = self._apply_positive_patterns(
-                    principle['normative_statement']
+                    principle["normative_statement"]
                 )
                 section += f"   Normative Statement: {enhanced_normative}\n"
 
@@ -654,7 +672,7 @@ Please provide your constitutionally compliant policy synthesis following this e
         self,
         constitutional_context: Dict[str, Any],
         synthesis_request: str,
-        precedent_data: Dict[str, Any]
+        precedent_data: Dict[str, Any],
     ) -> str:
         """Build Chain-of-Thought reasoning section for constitutional analysis."""
         principles = constitutional_context.get("principles", [])
@@ -760,11 +778,13 @@ POSITIVE LANGUAGE PATTERNS TO USE:
             r"must not\s+(\w+)": r"must proactively avoid \1",
             r"do not\s+(\w+)": r"actively ensure against \1",
             r"cannot\s+(\w+)": r"must maintain safeguards against \1",
-            r"should not\s+(\w+)": r"should actively prevent \1"
+            r"should not\s+(\w+)": r"should actively prevent \1",
         }
 
         for pattern, replacement in negative_to_positive.items():
-            enhanced_text = re.sub(pattern, replacement, enhanced_text, flags=re.IGNORECASE)
+            enhanced_text = re.sub(
+                pattern, replacement, enhanced_text, flags=re.IGNORECASE
+            )
 
         return enhanced_text
 

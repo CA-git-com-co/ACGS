@@ -77,9 +77,7 @@ SecurityMiddleware = None
 
 try:
     from app.api.v1.alphaevolve_integration import router as alphaevolve_router
-    from app.api.v1.constitutional_synthesis import (
-        router as constitutional_synthesis_router,
-    )
+    from app.api.v1.constitutional_synthesis import router as constitutional_synthesis_router
     from app.api.v1.enhanced_synthesis import router as enhanced_synthesis_router
 
     # Import Phase A3 governance workflows router

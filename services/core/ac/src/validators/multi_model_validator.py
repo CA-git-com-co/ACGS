@@ -15,19 +15,20 @@ Key Features:
 """
 
 import asyncio
+import hashlib
+import json
 import logging
+import statistics
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Tuple, Any
-import hashlib
-import json
 from enum import Enum
-import statistics
+from typing import Any, Dict, List, Optional, Tuple
 
 # Prometheus metrics
 try:
-    from prometheus_client import Counter, Histogram, Gauge
+    from prometheus_client import Counter, Gauge, Histogram
+
     PROMETHEUS_AVAILABLE = True
 except ImportError:
     PROMETHEUS_AVAILABLE = False
@@ -35,6 +36,7 @@ except ImportError:
 # Model client integration
 try:
     from services.shared.model_client import ModelClient
+
     MODEL_CLIENT_AVAILABLE = True
 except ImportError:
     MODEL_CLIENT_AVAILABLE = False
@@ -43,14 +45,23 @@ logger = logging.getLogger(__name__)
 
 # Prometheus metrics for multi-model validation
 if PROMETHEUS_AVAILABLE:
-    VALIDATION_ACCURACY = Gauge('ac_multimodel_validation_accuracy', 'Multi-model validation accuracy')
-    CONSENSUS_RATE = Gauge('ac_multimodel_consensus_rate', 'Model consensus achievement rate')
-    VALIDATION_LATENCY = Histogram('ac_multimodel_validation_latency_seconds', 'Multi-model validation latency')
-    MODEL_DISAGREEMENT = Counter('ac_multimodel_disagreement_total', 'Model disagreement events')
+    VALIDATION_ACCURACY = Gauge(
+        "ac_multimodel_validation_accuracy", "Multi-model validation accuracy"
+    )
+    CONSENSUS_RATE = Gauge(
+        "ac_multimodel_consensus_rate", "Model consensus achievement rate"
+    )
+    VALIDATION_LATENCY = Histogram(
+        "ac_multimodel_validation_latency_seconds", "Multi-model validation latency"
+    )
+    MODEL_DISAGREEMENT = Counter(
+        "ac_multimodel_disagreement_total", "Model disagreement events"
+    )
 
 
 class ValidationResult(Enum):
     """Validation result types."""
+
     COMPLIANT = "compliant"
     NON_COMPLIANT = "non_compliant"
     UNCERTAIN = "uncertain"
@@ -59,6 +70,7 @@ class ValidationResult(Enum):
 @dataclass
 class ModelResponse:
     """Individual model validation response."""
+
     model_id: str
     result: ValidationResult
     confidence: float
@@ -71,6 +83,7 @@ class ModelResponse:
 @dataclass
 class ConsensusResult:
     """Multi-model consensus validation result."""
+
     final_result: ValidationResult
     consensus_confidence: float
     model_responses: List[ModelResponse]
@@ -85,53 +98,58 @@ class ConsensusResult:
 @dataclass
 class ModelConfig:
     """Configuration for individual models."""
+
     model_id: str
     model_name: str
     weight: float  # Contribution weight (0.0-1.0)
     timeout_seconds: int
     enabled: bool
-    constitutional_specialization: bool = False  # Specialized for constitutional analysis
+    constitutional_specialization: bool = (
+        False  # Specialized for constitutional analysis
+    )
 
 
 class MultiModelValidator:
     """
     Multi-model constitutional compliance validator with ensemble consensus.
-    
+
     Features:
     - Configurable model ensemble (3-5 models)
     - Weighted consensus with confidence scoring
     - Constitutional hash validation integration
     - Performance monitoring and fallback mechanisms
     """
-    
+
     def __init__(
         self,
         consensus_threshold: float = 0.6,
         constitutional_hash: str = "cdd01ef066bc6cf2",
         enable_fallback: bool = True,
-        max_validation_time: int = 30
+        max_validation_time: int = 30,
     ):
         self.consensus_threshold = consensus_threshold
         self.constitutional_hash = constitutional_hash
         self.enable_fallback = enable_fallback
         self.max_validation_time = max_validation_time
-        
+
         # Model configuration
         self.models = self._initialize_model_configs()
         self.model_client = None
-        
+
         # Performance tracking
         self.validation_stats = {
             "total_validations": 0,
             "consensus_achieved": 0,
             "accuracy_samples": [],
             "latency_samples": [],
-            "model_performance": {}
+            "model_performance": {},
         }
-        
-        logger.info(f"Initialized MultiModelValidator with {len(self.models)} models, "
-                   f"consensus_threshold={consensus_threshold}")
-    
+
+        logger.info(
+            f"Initialized MultiModelValidator with {len(self.models)} models, "
+            f"consensus_threshold={consensus_threshold}"
+        )
+
     def _initialize_model_configs(self) -> List[ModelConfig]:
         """Initialize model configurations for ensemble."""
         return [
@@ -141,7 +159,7 @@ class MultiModelValidator:
                 weight=0.25,
                 timeout_seconds=10,
                 enabled=True,
-                constitutional_specialization=True
+                constitutional_specialization=True,
             ),
             ModelConfig(
                 model_id="deepseek_chat_v3",
@@ -149,7 +167,7 @@ class MultiModelValidator:
                 weight=0.25,
                 timeout_seconds=10,
                 enabled=True,
-                constitutional_specialization=True
+                constitutional_specialization=True,
             ),
             ModelConfig(
                 model_id="qwen3_235b",
@@ -157,7 +175,7 @@ class MultiModelValidator:
                 weight=0.20,
                 timeout_seconds=15,
                 enabled=True,
-                constitutional_specialization=False
+                constitutional_specialization=False,
             ),
             ModelConfig(
                 model_id="deepseek_r1",
@@ -165,7 +183,7 @@ class MultiModelValidator:
                 weight=0.20,
                 timeout_seconds=12,
                 enabled=True,
-                constitutional_specialization=False
+                constitutional_specialization=False,
             ),
             ModelConfig(
                 model_id="fallback_model",
@@ -173,10 +191,10 @@ class MultiModelValidator:
                 weight=0.10,
                 timeout_seconds=5,
                 enabled=True,
-                constitutional_specialization=True
-            )
+                constitutional_specialization=True,
+            ),
         ]
-    
+
     async def initialize_model_client(self):
         """Initialize model client for LLM interactions."""
         if MODEL_CLIENT_AVAILABLE:
@@ -189,95 +207,96 @@ class MultiModelValidator:
                 self.model_client = None
         else:
             logger.warning("Model client not available, using mock responses")
-    
+
     async def validate_constitutional_compliance(
         self,
         policy_content: str,
         policy_context: Dict[str, Any],
-        validation_level: str = "comprehensive"
+        validation_level: str = "comprehensive",
     ) -> ConsensusResult:
         """
         Validate constitutional compliance using multi-model consensus.
-        
+
         Args:
             policy_content: Policy text to validate
             policy_context: Additional context for validation
             validation_level: Level of validation (basic, comprehensive, strict)
-            
+
         Returns:
             ConsensusResult with ensemble validation outcome
         """
         start_time = time.time()
-        
+
         try:
             # Validate constitutional hash first
             constitutional_hash_valid = await self._validate_constitutional_hash()
-            
+
             # Get validation responses from all enabled models
             model_responses = await self._get_model_responses(
                 policy_content, policy_context, validation_level
             )
-            
+
             # Calculate consensus
             consensus_result = self._calculate_consensus(
                 model_responses, constitutional_hash_valid
             )
-            
+
             # Update performance metrics
             total_latency = (time.time() - start_time) * 1000
             consensus_result.total_latency_ms = total_latency
-            
+
             self._update_performance_stats(consensus_result)
-            
+
             # Update Prometheus metrics
             if PROMETHEUS_AVAILABLE:
                 VALIDATION_LATENCY.observe(total_latency / 1000.0)
                 CONSENSUS_RATE.set(
-                    self.validation_stats["consensus_achieved"] / 
-                    max(1, self.validation_stats["total_validations"])
+                    self.validation_stats["consensus_achieved"]
+                    / max(1, self.validation_stats["total_validations"])
                 )
-            
-            logger.info(f"Multi-model validation completed: {consensus_result.final_result.value}, "
-                       f"confidence={consensus_result.consensus_confidence:.3f}, "
-                       f"latency={total_latency:.1f}ms")
-            
+
+            logger.info(
+                f"Multi-model validation completed: {consensus_result.final_result.value}, "
+                f"confidence={consensus_result.consensus_confidence:.3f}, "
+                f"latency={total_latency:.1f}ms"
+            )
+
             return consensus_result
-            
+
         except Exception as e:
             logger.error(f"Multi-model validation failed: {e}")
-            
+
             # Fallback to single model if enabled
             if self.enable_fallback:
                 return await self._fallback_validation(policy_content, policy_context)
             else:
                 raise
-    
+
     async def _validate_constitutional_hash(self) -> bool:
         """Validate against the reference constitutional hash."""
         try:
             # In a real implementation, this would verify the current constitutional state
             # against the reference hash (cdd01ef066bc6cf2)
             reference_hash = self.constitutional_hash
-            
+
             # Mock validation - in production, this would check actual constitutional state
-            current_hash = hashlib.sha256(f"constitutional_state_{time.time()}".encode()).hexdigest()[:16]
-            
+            current_hash = hashlib.sha256(
+                f"constitutional_state_{time.time()}".encode()
+            ).hexdigest()[:16]
+
             # For testing, always return True with reference hash
             return reference_hash == "cdd01ef066bc6cf2"
-            
+
         except Exception as e:
             logger.error(f"Constitutional hash validation failed: {e}")
             return False
-    
+
     async def _get_model_responses(
-        self,
-        policy_content: str,
-        policy_context: Dict[str, Any],
-        validation_level: str
+        self, policy_content: str, policy_context: Dict[str, Any], validation_level: str
     ) -> List[ModelResponse]:
         """Get validation responses from all enabled models."""
         enabled_models = [m for m in self.models if m.enabled]
-        
+
         # Create validation tasks for parallel execution
         tasks = []
         for model_config in enabled_models:
@@ -285,76 +304,82 @@ class MultiModelValidator:
                 model_config, policy_content, policy_context, validation_level
             )
             tasks.append(task)
-        
+
         # Execute all model validations in parallel with timeout
         try:
             responses = await asyncio.wait_for(
                 asyncio.gather(*tasks, return_exceptions=True),
-                timeout=self.max_validation_time
+                timeout=self.max_validation_time,
             )
-            
+
             # Filter out exceptions and return valid responses
             valid_responses = []
             for i, response in enumerate(responses):
                 if isinstance(response, Exception):
-                    logger.warning(f"Model {enabled_models[i].model_id} failed: {response}")
+                    logger.warning(
+                        f"Model {enabled_models[i].model_id} failed: {response}"
+                    )
                 else:
                     valid_responses.append(response)
-            
+
             return valid_responses
-            
+
         except asyncio.TimeoutError:
-            logger.warning(f"Multi-model validation timed out after {self.max_validation_time}s")
+            logger.warning(
+                f"Multi-model validation timed out after {self.max_validation_time}s"
+            )
             return []
-    
+
     async def _validate_with_model(
         self,
         model_config: ModelConfig,
         policy_content: str,
         policy_context: Dict[str, Any],
-        validation_level: str
+        validation_level: str,
     ) -> ModelResponse:
         """Validate policy with a specific model."""
         start_time = time.time()
-        
+
         try:
             # Construct validation prompt
             prompt = self._construct_validation_prompt(
                 policy_content, policy_context, validation_level, model_config
             )
-            
+
             if self.model_client:
                 # Use actual model client
                 response = await self.model_client.generate_response(
                     model_config.model_id,
                     prompt,
                     max_tokens=500,
-                    temperature=0.1  # Low temperature for consistent validation
+                    temperature=0.1,  # Low temperature for consistent validation
                 )
-                
+
                 # Parse model response
-                result, confidence, reasoning, alignment = self._parse_model_response(response)
+                result, confidence, reasoning, alignment = self._parse_model_response(
+                    response
+                )
             else:
                 # Mock response for testing
                 result, confidence, reasoning, alignment = self._mock_model_response(
                     model_config, policy_content
                 )
-            
+
             latency_ms = (time.time() - start_time) * 1000
-            
+
             return ModelResponse(
                 model_id=model_config.model_id,
                 result=result,
                 confidence=confidence,
                 reasoning=reasoning,
                 latency_ms=latency_ms,
-                constitutional_alignment=alignment
+                constitutional_alignment=alignment,
             )
-            
+
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
             logger.error(f"Model {model_config.model_id} validation failed: {e}")
-            
+
             return ModelResponse(
                 model_id=model_config.model_id,
                 result=ValidationResult.UNCERTAIN,
@@ -362,15 +387,15 @@ class MultiModelValidator:
                 reasoning=f"Model error: {str(e)}",
                 latency_ms=latency_ms,
                 constitutional_alignment=0.0,
-                error=str(e)
+                error=str(e),
             )
-    
+
     def _construct_validation_prompt(
         self,
         policy_content: str,
         policy_context: Dict[str, Any],
         validation_level: str,
-        model_config: ModelConfig
+        model_config: ModelConfig,
     ) -> str:
         """Construct validation prompt for the model."""
         base_prompt = f"""
@@ -396,27 +421,29 @@ Please analyze this policy and respond with:
 Format your response as JSON:
 {{"result": "COMPLIANT|NON_COMPLIANT|UNCERTAIN", "confidence": 0.0-1.0, "reasoning": "explanation", "constitutional_alignment": 0.0-1.0}}
 """
-        
+
         return base_prompt.strip()
-    
-    def _parse_model_response(self, response: str) -> Tuple[ValidationResult, float, str, float]:
+
+    def _parse_model_response(
+        self, response: str
+    ) -> Tuple[ValidationResult, float, str, float]:
         """Parse model response into structured format."""
         try:
             # Try to parse as JSON
             data = json.loads(response.strip())
-            
+
             result_str = data.get("result", "UNCERTAIN").upper()
             result = ValidationResult(result_str.lower())
-            
+
             confidence = float(data.get("confidence", 0.0))
             reasoning = data.get("reasoning", "No reasoning provided")
             alignment = float(data.get("constitutional_alignment", 0.0))
-            
+
             return result, confidence, reasoning, alignment
-            
+
         except Exception as e:
             logger.warning(f"Failed to parse model response: {e}")
-            
+
             # Fallback parsing
             response_upper = response.upper()
             if "COMPLIANT" in response_upper and "NON_COMPLIANT" not in response_upper:
@@ -428,22 +455,28 @@ Format your response as JSON:
             else:
                 result = ValidationResult.UNCERTAIN
                 confidence = 0.3
-            
+
             return result, confidence, response[:200], 0.5
-    
+
     def _mock_model_response(
         self, model_config: ModelConfig, policy_content: str
     ) -> Tuple[ValidationResult, float, str, float]:
         """Generate mock model response for testing."""
         # Simple heuristic for mock validation
         policy_lower = policy_content.lower()
-        
-        if any(word in policy_lower for word in ["unsafe", "unauthorized", "exploit", "bypass"]):
+
+        if any(
+            word in policy_lower
+            for word in ["unsafe", "unauthorized", "exploit", "bypass"]
+        ):
             result = ValidationResult.NON_COMPLIANT
             confidence = 0.85 + (model_config.weight * 0.1)
             reasoning = f"Policy contains potentially problematic terms (validated by {model_config.model_name})"
             alignment = 0.2
-        elif any(word in policy_lower for word in ["constitutional", "governance", "compliant", "authorized"]):
+        elif any(
+            word in policy_lower
+            for word in ["constitutional", "governance", "compliant", "authorized"]
+        ):
             result = ValidationResult.COMPLIANT
             confidence = 0.90 + (model_config.weight * 0.05)
             reasoning = f"Policy aligns with constitutional principles (validated by {model_config.model_name})"
@@ -453,12 +486,12 @@ Format your response as JSON:
             confidence = 0.6
             reasoning = f"Policy requires further review (assessed by {model_config.model_name})"
             alignment = 0.5
-        
+
         # Add some model-specific variation
         if model_config.constitutional_specialization:
             confidence += 0.05
             alignment += 0.1
-        
+
         return result, min(1.0, confidence), reasoning, min(1.0, alignment)
 
     def _calculate_consensus(
@@ -475,14 +508,14 @@ Format your response as JSON:
                 weighted_confidence=0.0,
                 constitutional_hash_validated=constitutional_hash_valid,
                 validation_timestamp=datetime.now(timezone.utc),
-                total_latency_ms=0.0
+                total_latency_ms=0.0,
             )
 
         # Count votes for each result type
         result_votes = {
             ValidationResult.COMPLIANT: [],
             ValidationResult.NON_COMPLIANT: [],
-            ValidationResult.UNCERTAIN: []
+            ValidationResult.UNCERTAIN: [],
         }
 
         total_weight = 0.0
@@ -493,7 +526,9 @@ Format your response as JSON:
                 continue
 
             # Find model config for weighting
-            model_config = next((m for m in self.models if m.model_id == response.model_id), None)
+            model_config = next(
+                (m for m in self.models if m.model_id == response.model_id), None
+            )
             weight = model_config.weight if model_config else 0.1
 
             result_votes[response.result].append((response, weight))
@@ -534,7 +569,7 @@ Format your response as JSON:
             weighted_confidence=consensus_confidence,
             constitutional_hash_validated=constitutional_hash_valid,
             validation_timestamp=datetime.now(timezone.utc),
-            total_latency_ms=0.0  # Will be set by caller
+            total_latency_ms=0.0,  # Will be set by caller
         )
 
     def _update_performance_stats(self, consensus_result: ConsensusResult):
@@ -546,17 +581,25 @@ Format your response as JSON:
 
         # Track accuracy (simplified - in production, would compare against ground truth)
         if consensus_result.consensus_confidence > 0.8:
-            self.validation_stats["accuracy_samples"].append(consensus_result.consensus_confidence)
+            self.validation_stats["accuracy_samples"].append(
+                consensus_result.consensus_confidence
+            )
 
         # Track latency
-        self.validation_stats["latency_samples"].append(consensus_result.total_latency_ms)
+        self.validation_stats["latency_samples"].append(
+            consensus_result.total_latency_ms
+        )
 
         # Keep only recent samples for memory efficiency
         max_samples = 1000
         if len(self.validation_stats["accuracy_samples"]) > max_samples:
-            self.validation_stats["accuracy_samples"] = self.validation_stats["accuracy_samples"][-max_samples:]
+            self.validation_stats["accuracy_samples"] = self.validation_stats[
+                "accuracy_samples"
+            ][-max_samples:]
         if len(self.validation_stats["latency_samples"]) > max_samples:
-            self.validation_stats["latency_samples"] = self.validation_stats["latency_samples"][-max_samples:]
+            self.validation_stats["latency_samples"] = self.validation_stats[
+                "latency_samples"
+            ][-max_samples:]
 
         # Update model-specific performance
         for response in consensus_result.model_responses:
@@ -565,7 +608,7 @@ Format your response as JSON:
                     "total_calls": 0,
                     "avg_confidence": 0.0,
                     "avg_latency": 0.0,
-                    "error_count": 0
+                    "error_count": 0,
                 }
 
             model_stats = self.validation_stats["model_performance"][response.model_id]
@@ -577,12 +620,12 @@ Format your response as JSON:
                 # Update running averages
                 alpha = 0.1  # Exponential moving average factor
                 model_stats["avg_confidence"] = (
-                    alpha * response.confidence +
-                    (1 - alpha) * model_stats["avg_confidence"]
+                    alpha * response.confidence
+                    + (1 - alpha) * model_stats["avg_confidence"]
                 )
                 model_stats["avg_latency"] = (
-                    alpha * response.latency_ms +
-                    (1 - alpha) * model_stats["avg_latency"]
+                    alpha * response.latency_ms
+                    + (1 - alpha) * model_stats["avg_latency"]
                 )
 
         # Update Prometheus metrics
@@ -600,7 +643,7 @@ Format your response as JSON:
         fallback_model = max(
             [m for m in self.models if m.enabled],
             key=lambda m: m.weight,
-            default=self.models[0] if self.models else None
+            default=self.models[0] if self.models else None,
         )
 
         if not fallback_model:
@@ -614,7 +657,7 @@ Format your response as JSON:
                 weighted_confidence=0.0,
                 constitutional_hash_validated=False,
                 validation_timestamp=datetime.now(timezone.utc),
-                total_latency_ms=0.0
+                total_latency_ms=0.0,
             )
 
         # Get single model response
@@ -631,7 +674,7 @@ Format your response as JSON:
             weighted_confidence=response.confidence,
             constitutional_hash_validated=await self._validate_constitutional_hash(),
             validation_timestamp=datetime.now(timezone.utc),
-            total_latency_ms=response.latency_ms
+            total_latency_ms=response.latency_ms,
         )
 
     def get_performance_metrics(self) -> Dict[str, Any]:
@@ -644,7 +687,9 @@ Format your response as JSON:
         avg_latency = 0.0
 
         if stats["total_validations"] > 0:
-            consensus_rate = (stats["consensus_achieved"] / stats["total_validations"]) * 100.0
+            consensus_rate = (
+                stats["consensus_achieved"] / stats["total_validations"]
+            ) * 100.0
 
         if stats["accuracy_samples"]:
             avg_accuracy = statistics.mean(stats["accuracy_samples"])
@@ -662,7 +707,11 @@ Format your response as JSON:
             "enabled_models": len([m for m in self.models if m.enabled]),
             "model_performance": stats["model_performance"],
             "target_accuracy_percent": 95.0,
-            "performance_status": "optimal" if avg_accuracy >= 0.95 and consensus_rate >= 80.0 else "needs_optimization"
+            "performance_status": (
+                "optimal"
+                if avg_accuracy >= 0.95 and consensus_rate >= 80.0
+                else "needs_optimization"
+            ),
         }
 
 
@@ -671,8 +720,7 @@ _multi_model_validator: Optional[MultiModelValidator] = None
 
 
 async def get_multi_model_validator(
-    consensus_threshold: float = 0.6,
-    constitutional_hash: str = "cdd01ef066bc6cf2"
+    consensus_threshold: float = 0.6, constitutional_hash: str = "cdd01ef066bc6cf2"
 ) -> MultiModelValidator:
     """Get or create global multi-model validator instance."""
     global _multi_model_validator
@@ -680,7 +728,7 @@ async def get_multi_model_validator(
     if _multi_model_validator is None:
         _multi_model_validator = MultiModelValidator(
             consensus_threshold=consensus_threshold,
-            constitutional_hash=constitutional_hash
+            constitutional_hash=constitutional_hash,
         )
         await _multi_model_validator.initialize_model_client()
 

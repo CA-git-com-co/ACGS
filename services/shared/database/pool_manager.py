@@ -9,7 +9,7 @@ import logging
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, AsyncGenerator
+from typing import Any, AsyncGenerator, Dict, List, Optional
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -130,7 +130,9 @@ class ConnectionPool:
                     "application_name": "acgs_phase2_enhanced",
                     "jit": "off",  # Disable JIT for consistent performance
                     "statement_timeout": str(self.config.statement_timeout),
-                    "idle_in_transaction_session_timeout": str(self.config.idle_in_transaction_session_timeout),
+                    "idle_in_transaction_session_timeout": str(
+                        self.config.idle_in_transaction_session_timeout
+                    ),
                 },
                 "command_timeout": self.config.query_timeout,
             },
@@ -407,7 +409,9 @@ class DatabasePoolManager:
             yield conn
 
     @asynccontextmanager
-    async def get_session(self, pool_name: str = "default") -> AsyncGenerator[AsyncSession, None]:
+    async def get_session(
+        self, pool_name: str = "default"
+    ) -> AsyncGenerator[AsyncSession, None]:
         """
         Get a session from a specific pool.
 

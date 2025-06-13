@@ -19,6 +19,9 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
     ConstitutionalDistanceCalculator,
 )
@@ -30,9 +33,6 @@ from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_fid
 from integrations.alphaevolve_engine.services.qec_enhancement.error_prediction_model import (
     ErrorPredictionModel,
 )
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.shared.database import get_async_db
 from services.shared.models import (
     Policy,
