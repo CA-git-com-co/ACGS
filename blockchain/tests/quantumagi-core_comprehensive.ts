@@ -16,11 +16,13 @@ describe("quantumagi-core", () => {
   let proposalPDA: anchor.web3.PublicKey;
 
   before(async () => {
+    // Test isolation - unique governance per test suite
+    const testSuiteId = "quantumagi-core_comprehensive_" + Date.now();
     authority = anchor.web3.Keypair.generate();
 
     // Generate PDAs
     [governancePDA] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("governance")],
+      [Buffer.from("governance_quantumagi-core_comprehensive_" + Date.now())],
       program.programId
     );
 

@@ -3,9 +3,9 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-quantumagi_core = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
-appeals = "78zPu8eaSztb8FSefhVaQkFZi9BhBmJQ4hrqUXyiJFvW"
-logging = "4rEgetuUsuf3PEDcPCpKH4ndjbfnCReRbmdiEKMkMUxo"
+quantumagi_core = "sQyjPfFt4wueY6w2QF9iL1HJ3ZkQFoM3dq1MSaC5ztC"
+appeals = "278awDwWu5NZRyDCLufPXQk1p9Q16WAhn9cvsFwFtsfY"
+logging = "7ZVxgkky5V12gvpfDh174nsDT8vfT7vQhN77C6csamsw"
 
 [programs.devnet]
 quantumagi_core = "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4"
@@ -16,7 +16,7 @@ logging = "CjZi5hi9qggBzbXDht9YSJhN5cw7Bhz3rHhn63QQcPQo"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
