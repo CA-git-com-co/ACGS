@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount, Transfer};
+// use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
@@ -27,7 +27,7 @@ pub mod quantumagi_core {
         governance.principles = principles;
         governance.total_policies = 0;
         governance.active_proposals = 0;
-        governance.bump = *ctx.bumps.get("governance").unwrap();
+        governance.bump = ctx.bumps.governance;
 
         emit!(GovernanceInitialized {
             authority,
@@ -62,7 +62,7 @@ pub mod quantumagi_core {
         proposal.votes_for = 0;
         proposal.votes_against = 0;
         proposal.total_voters = 0;
-        proposal.bump = *ctx.bumps.get("proposal").unwrap();
+        proposal.bump = ctx.bumps.proposal;
 
         governance.active_proposals += 1;
 
@@ -95,7 +95,7 @@ pub mod quantumagi_core {
         vote_record.vote = vote;
         vote_record.voting_power = voting_power;
         vote_record.timestamp = Clock::get()?.unix_timestamp;
-        vote_record.bump = *ctx.bumps.get("vote_record").unwrap();
+        vote_record.bump = ctx.bumps.vote_record;
 
         // Update proposal vote counts
         if vote {
