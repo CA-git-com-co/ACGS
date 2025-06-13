@@ -6,7 +6,7 @@ describe("logging", () => {
   // Configure the client to use the local cluster
   anchor.setProvider(anchor.AnchorProvider.env());
 
-  const program = anchor.workspace.logging_CAMEL as Program<logging_CAMEL>;
+  const program = anchor.workspace.logging as Program<any>;
 
   // Test accounts
   let authority: anchor.web3.Keypair;

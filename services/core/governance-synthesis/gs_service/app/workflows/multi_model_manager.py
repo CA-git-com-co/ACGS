@@ -262,7 +262,9 @@ class MultiModelManager:
                         )
                         logger.info(f"Initialized Groq Llama model: {model_name}")
 
-                elif model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b":
+                elif (
+                    model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b"
+                ):
                     # Groq API support for Qwen3-32B model
                     if self.config.groq_api_key and GROQ_AVAILABLE:
                         client = Groq(api_key=self.config.groq_api_key)
@@ -272,9 +274,15 @@ class MultiModelManager:
                         )
                         logger.info(f"Initialized Groq Qwen3-32B model: {model_name}")
 
-                elif model_name.startswith("deepseek/") or model_name.startswith("qwen/qwen3-235b"):
+                elif model_name.startswith("deepseek/") or model_name.startswith(
+                    "qwen/qwen3-235b"
+                ):
                     # OpenRouter API support for DeepSeek models and Qwen3-235B
-                    if hasattr(self.config, 'openrouter_api_key') and self.config.openrouter_api_key and OPENAI_AVAILABLE:
+                    if (
+                        hasattr(self.config, "openrouter_api_key")
+                        and self.config.openrouter_api_key
+                        and OPENAI_AVAILABLE
+                    ):
                         client = OpenAI(
                             api_key=self.config.openrouter_api_key,
                             base_url="https://openrouter.ai/api/v1",
@@ -285,7 +293,9 @@ class MultiModelManager:
                         )
                         logger.info(f"Initialized OpenRouter model: {model_name}")
 
-                elif model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b":
+                elif (
+                    model_name.startswith("qwen/qwen3-32b") or model_name == "qwen3-32b"
+                ):
                     # Groq API support for Qwen3-32B model
                     if self.config.groq_api_key and GROQ_AVAILABLE:
                         client = Groq(api_key=self.config.groq_api_key)
@@ -508,7 +518,9 @@ class MultiModelManager:
             loop = asyncio.get_event_loop()
 
             # Handle different model types
-            if model_name.startswith("deepseek/") or model_name.startswith("qwen/qwen3-235b"):
+            if model_name.startswith("deepseek/") or model_name.startswith(
+                "qwen/qwen3-235b"
+            ):
                 # OpenRouter models (DeepSeek Chat v3, DeepSeek R1, Qwen3-235B)
                 extra_headers = {
                     "HTTP-Referer": "https://acgs.local",  # Optional site URL
@@ -535,7 +547,9 @@ class MultiModelManager:
                 content = response.choices[0].message.content
 
                 # DeepSeek R1 may include reasoning content
-                if "deepseek-r1" in model_name and hasattr(response.choices[0].message, "reasoning_content"):
+                if "deepseek-r1" in model_name and hasattr(
+                    response.choices[0].message, "reasoning_content"
+                ):
                     reasoning = response.choices[0].message.reasoning_content
                     if reasoning:
                         content = f"[REASONING]\n{reasoning}\n\n[RESPONSE]\n{content}"

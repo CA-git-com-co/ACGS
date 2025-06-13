@@ -1,0 +1,35 @@
+# cargo-audit configuration for ACGS-1 Quantumagi blockchain security
+# This configuration defines which security advisories to ignore during CI/CD
+
+[advisories]
+# Ignore non-critical vulnerabilities that don't affect runtime security
+ignore = [
+    # CLI-only vulnerabilities (not runtime security issues)
+    "RUSTSEC-2021-0145", # atty unsound read (CLI only, not runtime)
+    "RUSTSEC-2024-0375", # atty unmaintained (CLI only)
+    
+    # Compile-time only vulnerabilities
+    "RUSTSEC-2023-0033", # borsh ZST issue (doesn't affect Solana usage)
+    "RUSTSEC-2024-0388", # derivative unmaintained (compile-time only)
+    "RUSTSEC-2024-0436", # paste unmaintained (compile-time only)
+    
+    # Solana SDK ecosystem constraints
+    # Note: This vulnerability cannot be patched due to Solana SDK v1.18.26 dependency constraints
+    # The timing attack in curve25519-dalek affects signature verification timing
+    # but is mitigated by Solana's consensus mechanism and network-level protections
+    "RUSTSEC-2024-0344", # curve25519-dalek timing attack (Solana SDK v1.18.26 dependency)
+]
+
+# Additional configuration for vulnerability handling
+[advisories.informational]
+# Treat informational advisories as warnings, not errors
+unmaintained = "warn"
+unsound = "deny"
+yanked = "warn"
+notice = "warn"
+
+# Database configuration
+[advisories.database]
+# Use the official RustSec advisory database
+urls = ["https://github.com/rustsec/advisory-db"]
+path = "~/.cargo/advisory-db"

@@ -6,6 +6,15 @@ This directory contains the Solana/Anchor programs that implement on-chain const
 
 The blockchain layer provides decentralized, transparent, and immutable governance capabilities through Solana smart contracts built with the Anchor framework.
 
+## 🔒 Security Policy
+
+Found a security vulnerability? Please report it responsibly:
+- **Email**: dev@quantumagi.org
+- **GitHub**: Open a private security advisory
+- **Response Time**: We aim to respond within 24 hours
+
+**Do NOT** open public issues for security vulnerabilities.
+
 ## Directory Structure
 
 ```
@@ -178,6 +187,22 @@ solana config set --url mainnet-beta
 
 # Deploy with production settings
 anchor deploy --provider.cluster mainnet-beta --program-name quantumagi-core
+```
+
+### Dependency Management
+```bash
+# Update Rust dependencies
+cargo update
+
+# Update Node.js dependencies
+yarn upgrade
+
+# Security audit
+cargo audit
+cargo deny check
+
+# Check for outdated dependencies
+cargo outdated
 ```
 
 ## Account Structure
