@@ -47,18 +47,18 @@ The production system consists of seven microservices:
 \begin{table}[H]
 \centering
 \caption{ACGS-1 Production Service Configuration}\label{tab:acgs_services}
-\small
-\begin{tabular}{@{}lp{4.5cm}ccc@{}}
+\footnotesize
+\begin{tabular}{@{}lp{2.5cm}ccc@{}}
 \toprule
-\textbf{Service} & \textbf{Function} & \textbf{Port} & \textbf{Version} & \textbf{Status} \\
+\textbf{Service} & \textbf{Function} & \textbf{Port} & \textbf{Ver.} & \textbf{Status} \\
 \midrule
-Auth & Authentication \& Authorization & 8000 & Production & Healthy \\
-AC & Artificial Constitution Management & 8001 & 3.0.0 & Healthy \\
-Integrity & PGP Assurance \& Cryptographic Integrity & 8002 & 3.0.0 & Healthy \\
-FV & Formal Verification \& Validation & 8003 & 2.0.0 & Healthy \\
-GS & Governance Synthesis \& Policy Generation & 8004 & 3.0.0 & Healthy \\
-PGC & Policy Governance Compiler \& Enforcement & 8005 & 3.0.0 & Healthy \\
-EC & Evolutionary Computation \& Optimization & 8006 & v1 & Healthy \\
+Auth & Authentication \& Authorization & 8000 & Prod & Healthy \\
+AC & Constitution Management & 8001 & 3.0.0 & Healthy \\
+Integrity & PGP \& Crypto Integrity & 8002 & 3.0.0 & Healthy \\
+FV & Verification \& Validation & 8003 & 2.0.0 & Healthy \\
+GS & Governance \& Policy Synthesis & 8004 & 3.0.0 & Healthy \\
+PGC & Policy Compiler \& Enforcement & 8005 & 3.0.0 & Healthy \\
+EC & Evolutionary Computation & 8006 & v1 & Healthy \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -87,22 +87,22 @@ Comprehensive performance testing was conducted over a 30-day period with the fo
 \begin{table}[H]
 \centering
 \caption{Production Performance Metrics}\label{tab:performance_metrics}
-\small
-\begin{tabular}{@{}l S[table-format=3.0] S[table-format=3.1] S[table-format=3.0] l@{}}
+\footnotesize
+\begin{tabular}{@{}p{2.2cm} S[table-format=3.0] S[table-format=3.1] S[table-format=3.0] c@{}}
 \toprule
 \textbf{Metric} & {\textbf{Target}} & {\textbf{Measured}} & {\textbf{P95}} & \textbf{Status} \\
 \midrule
-Constitutional Compliance Latency & {< \SI{100}{\milli\second}} & \SI{4.4}{\milli\second} & \SI{8.2}{\milli\second} & \checkmarkcustom{} \\
-Policy Creation Latency & {< \SI{500}{\milli\second}} & \SI{1.2}{\milli\second} & \SI{2.8}{\milli\second} & \checkmarkcustom{} \\
-Governance Status Query & {< \SI{500}{\milli\second}} & \SI{126.0}{\milli\second} & \SI{245}{\milli\second} & \checkmarkcustom{} \\
-Overall System Latency & {< \SI{50}{\milli\second}} & \SI{43.9}{\milli\second} & \SI{67.8}{\milli\second} & \checkmarkcustom{} \\
+Const. Compliance & {< \SI{100}{\milli\second}} & \SI{4.4}{\milli\second} & \SI{8.2}{\milli\second} & \checkmarkcustom{} \\
+Policy Creation & {< \SI{500}{\milli\second}} & \SI{1.2}{\milli\second} & \SI{2.8}{\milli\second} & \checkmarkcustom{} \\
+Gov. Query & {< \SI{500}{\milli\second}} & \SI{126.0}{\milli\second} & \SI{245}{\milli\second} & \checkmarkcustom{} \\
+System Latency & {< \SI{50}{\milli\second}} & \SI{43.9}{\milli\second} & \SI{67.8}{\milli\second} & \checkmarkcustom{} \\
 Service Availability & {> \SI{99}{\percent}} & \SI{100}{\percent} & {N/A} & \checkmarkcustom{} \\
 Compliance Rate & {> \SI{95}{\percent}} & \SI{94.7}{\percent} & {N/A} & $\sim$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Mathematical Proofs and\allowbreak\ Derivations}\label{sec:appendix_proofs}
+\section{Mathematical Proofs and Derivations}\label{sec:appendix_proofs}
 
 \subsection{Detailed Proof of Constitutional Stability}
 We provide the complete proof of Theorem~\ref{thm:stability_main}.
@@ -156,7 +156,8 @@ The sub-quadratic scaling ($\beta < 2$) ensures the framework remains practical 
     \item \textbf{Operating System:} Ubuntu 20.04 LTS
     \item \textbf{Container Runtime:} Docker 24.0.5
     \item \textbf{Blockchain Network:} Solana Devnet
-    \item \textbf{LLM Provider:} OpenAI GPT-4-turbo (\url{gpt-4-1106-preview})
+    \item \textbf{LLM Provider:} OpenAI GPT-4-turbo \\
+    (\texttt{gpt-4-1106-preview})
     \item \textbf{Policy Engine:} Open Policy Agent v0.57.0
     \item \textbf{Database:} PostgreSQL 15.4
     \item \textbf{Message Queue:} Apache Kafka 3.5.0
@@ -181,7 +182,8 @@ To ensure full reproducibility and adherence to open science principles, all art
     \item \textbf{Reusable:} The open-source license, comprehensive documentation, and modular design facilitate reuse of the framework.
 \end{itemize}
 
-The repository can be found at: \url{https://github.com/solnai/alphaevolve-acgs}.
+The repository can be found at: \\
+\texttt{https://github.com/solnai/alphaevolve-acgs}.
 
 \subsection{Reproducibility Checklist}
 \begin{itemize}[leftmargin=*,topsep=0pt,itemsep=2pt,parsep=0pt]

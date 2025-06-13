@@ -22,6 +22,7 @@ This theoretical result guarantees that the governance framework will not oscill
 
 \begin{figure}[!htb]
     \centering
+    \resizebox{\columnwidth}{!}{%
     \begin{tikzpicture}[
         node distance=2.0cm,
         auto,
@@ -30,11 +31,11 @@ This theoretical result guarantees that the governance framework will not oscill
             draw=black!80,
             rectangle,
             rounded corners=6pt,
-            text width=6.8cm,
+            text width=6.5cm,
             minimum height=1.2cm,
             align=center,
             line width=1pt,
-            inner sep=8pt
+            inner sep=6pt
         },
         arrow/.style={
             ->,
@@ -79,7 +80,8 @@ This theoretical result guarantees that the governance framework will not oscill
         % Feedback loop
         \draw[feedback, bend right=60] (ec.west) to
             node[midway, left, xshift=-2mm, font=\scriptsize\bfseries, color=red!70] {Adaptation Feedback} (gs.west);
-    \end{tikzpicture}
+    \end{tikzpicture}%
+    }
     \caption{The four-layer architecture of \acgs{}. The framework creates a top-down flow of authority from principles to enforcement and a bottom-up feedback loop for adaptation.}\label{fig:architecture}
 \end{figure}
 
@@ -91,13 +93,16 @@ The \textbf{Artificial Constitution (AC)} implements a formally defined reposito
 \textbf{Failure Mode Prevention:} Learning from the Sidewalk Labs Toronto case, where ``corporate capture'' and ``power imbalance between Sidewalk Labs and the public'' led to governance failure~\cite{sidewalklabs2020lessons}, our framework implements: (1) \textbf{Anti-Capture Mechanisms:} Mandatory diverse representation quotas, rotating membership, and conflict-of-interest protocols prevent concentrated power accumulation; (2) \textbf{Binding Participation:} Unlike Sidewalk's ``post-it note participation,'' our supermajority voting requirements ensure stakeholder input has decisive effect on constitutional amendments; (3) \textbf{Technical Transparency:} Cryptographic audit trails and formal verification provide accountability mechanisms absent in prior participatory AI attempts.
 
 \subsubsection{Governance Synthesis (GS) Engine}
-{\sloppy
-The GS Engine translates high-level \textbf{Constitutional\allowbreak\ Principles} into machine-executable \textbf{Operational\allowbreak\ Rules}. This process uses an LLM (GPT-4-turbo) guided by sophisticated prompt engineering. A key challenge is preventing \textbf{loophole generation}, where the LLM creates rules that technically satisfy the principle's wording but violate its intent. Each generated rule undergoes a multi-tier validation pipeline:
-(1) \textbf{Syntactic Validation:} Checks for valid Rego syntax.
-(2) \textbf{Semantic Validation:} Uses an LLM-as-judge and formal methods (SMT solvers) to ensure the rule's logic aligns with the principle's intent and prevents loophole exploitation.
-(3) \textbf{Safety \& Conflict Checks:} Statically analyzes the rule for security anti-patterns and conflicts with existing policies.
-(4) \textbf{Human-in-the-Loop (HITL):} High-impact or low-confidence rules are flagged for mandatory human review.
-}
+The GS Engine translates high-level \textbf{Constitutional Principles} into machine-executable \textbf{Operational Rules}. This process uses an LLM (GPT-4-turbo) guided by sophisticated prompt engineering.
+
+A key challenge is preventing \textbf{loophole generation}, where the LLM creates rules that technically satisfy the principle's wording but violate its intent. Each generated rule undergoes a multi-tier validation pipeline:
+
+\begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=1pt,parsep=0pt]
+\item \textbf{Syntactic Validation:} Checks for valid Rego syntax.
+\item \textbf{Semantic Validation:} Uses an LLM-as-judge and formal methods (SMT solvers) to ensure the rule's logic aligns with the principle's intent and prevents loophole exploitation.
+\item \textbf{Safety \& Conflict Checks:} Statically analyzes the rule for security anti-patterns and conflicts with existing policies.
+\item \textbf{Human-in-the-Loop (HITL):} High-impact or low-confidence rules are flagged for mandatory human review.
+\end{enumerate}
 
 \subsubsection{Prompt Governance Compiler (PGC)}
 The PGC is the runtime enforcement engine. It loads the validated Rego policies from the GS Engine into an optimized OPA instance. Before loading, the PGC cryptographically verifies the PGP-style signature of each rule to ensure its integrity. When the EC engine proposes a new solution, the PGC intercepts it, evaluates it against the active policies in real-time, and returns an ALLOW/DENY decision. Performance is optimized through policy caching and incremental evaluation.

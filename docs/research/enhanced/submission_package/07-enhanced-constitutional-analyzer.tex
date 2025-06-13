@@ -39,11 +39,12 @@ The Enhanced Constitutional Analyzer has achieved full production readiness with
         \item \textbf{Impact:} Ensured graceful degradation when embedding services unavailable
     \end{itemize}
     
-    \item \textbf{Test Suite Failures} \checkmarkcustom{} FIXED
+    \item \textbf{Test Suite Failures} \checkmarkcustom{} PARTIALLY RESOLVED
     \begin{itemize}[leftmargin=*,topsep=1pt,itemsep=1pt,parsep=0pt]
-        \item \textbf{Before:} 2/4 tests passing (50\percent{} success rate)
-        \item \textbf{After:} 4/4 tests passing (100\percent{} success rate)
-        \item \textbf{Improvements:} Fixed analyzer\_availability and multi\_model\_manager test failures
+        \item \textbf{Baseline:} 0/4 tests passing (0\percent{} - import errors)
+        \item \textbf{Current:} 2-4/4 tests passing (50-100\percent{} success rate)
+        \item \textbf{Remaining Issues:} Intermittent analyzer availability failures, environment-dependent Prometheus metrics conflicts
+        \item \textbf{Mitigation:} Robust fallback mechanisms ensure graceful degradation
     \end{itemize}
 \end{enumerate}
 
@@ -54,8 +55,8 @@ The Enhanced Constitutional Analyzer has achieved full production readiness with
 \begin{table}[H]
 \centering
 \caption{Enhanced Constitutional Analyzer Performance Metrics}\label{tab:analyzer_performance}
-\small
-\begin{tabular}{@{}l S[table-format=3.0] S[table-format=3.0] l@{}}
+\footnotesize
+\begin{tabular}{@{}p{3.2cm} S[table-format=3.0] S[table-format=3.0] p{1.5cm}@{}}
 \toprule
 \textbf{Metric} & {\textbf{Target}} & {\textbf{Achieved}} & \textbf{Status} \\
 \midrule
@@ -68,18 +69,24 @@ Concurrent Governance Actions & {> 1000} & {> 1000} & \checkmarkcustom{} Met \\
 \end{tabular}
 \end{table}
 
-\textbf{Test Suite Results:}
+\textbf{Comprehensive Test Suite Results:}
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=2pt,parsep=0pt]
     \item \textbf{Enhanced Constitutional Analyzer Test:} 11/11 tests passing (100\percent{})
-    \item \textbf{PGC Integration Test:} 4/4 tests passing (100\percent{})
-    \item \textbf{Overall Success Rate:} 15/15 tests (100\percent{})
+    \item \textbf{PGC Integration Test:} Variable results across test runs:
+    \begin{itemize}[leftmargin=*,topsep=1pt,itemsep=1pt,parsep=0pt]
+        \item \textbf{Best Performance:} 4/4 tests passing (100\percent{})
+        \item \textbf{Typical Performance:} 2/4 tests passing (50\percent{})
+        \item \textbf{Common Failures:} Analyzer availability, Prometheus metrics collision
+    \end{itemize}
+    \item \textbf{Overall Success Rate:} 11-15/15 tests (73-100\percent{}) depending on environment
 \end{itemize}
 
 \textbf{Performance Characteristics:}
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=2pt,parsep=0pt]
     \item Average response time: <100\ms{} (well under 500\ms{} target)
     \item Initialization time: $\sim$70\ms{}
-    \item Constitution hash validation: Working (\url{cdd01ef066bc6cf2})
+    \item Constitution hash validation: Working \\
+    (\texttt{cdd01ef066bc6cf2})
     \item Governance workflow integration: All 5 workflows operational
 \end{itemize}
 
@@ -112,7 +119,7 @@ Concurrent Governance Actions & {> 1000} & {> 1000} & \checkmarkcustom{} Met \\
 
 \textbf{Quantumagi Compatibility:}
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=2pt,parsep=0pt]
-    \item \checkmarkcustom{} Constitution Hash: \url{cdd01ef066bc6cf2} validated
+    \item \checkmarkcustom{} Constitution Hash: \texttt{cdd01ef066bc6cf2} validated
     \item \checkmarkcustom{} Solana devnet deployment compatibility maintained
     \item \checkmarkcustom{} Governance costs: <0.01 SOL per action
     \item \checkmarkcustom{} End-to-end workflow validation successful

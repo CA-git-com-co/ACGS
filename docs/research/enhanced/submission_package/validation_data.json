@@ -10,7 +10,9 @@
     "p99_latency_ms": 89.2,
     "compliance_rate": 0.947,
     "scaling_exponent": 0.71,
-    "total_enforcements": 1247
+    "total_enforcements": 1247,
+    "measurement_context": "Policy validation operations only, excludes health check overhead",
+    "measurement_period": "June 2025 production deployment"
   },
   "adversarial_robustness": {
     "detection_rate": 0.938,
@@ -24,7 +26,7 @@
     "programs_deployed": {
       "quantumagi_core": "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4",
       "appeals": "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ",
-      "logging": "4rEgetuUsuf3PEDcPCpKH4ndjbfnCReRbmdiEKMkMUxo"
+      "logging": "7ZVxgkky5V12gvpfDh174nsDT8vfT7vQhN77C6csamsw"
     },
     "network": "Solana Devnet",
     "governance_active": true,
@@ -143,7 +145,7 @@
       }
     },
     "pgc": {
-      "status": "healthy",
+      "status": "degraded",
       "response_time_ms": 87.337,
       "data": {
         "status": "degraded",

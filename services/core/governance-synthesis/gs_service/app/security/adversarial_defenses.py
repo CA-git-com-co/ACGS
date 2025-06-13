@@ -180,7 +180,7 @@ class AdversarialDefenseSystem:
         
         # Create event record
         event = AdversarialEvent(
-            event_id=f"ADV-{int(time.time())}-{hashlib.md5(input_text.encode()).hexdigest()[:8]}",
+            event_id=f"ADV-{int(time.time())}-{hashlib.sha256(input_text.encode()).hexdigest()[:8]}",
             attack_type=attack_type,
             detected=is_adversarial,
             severity=self._classify_severity(confidence, attack_type),

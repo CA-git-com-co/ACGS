@@ -129,9 +129,9 @@
 
 ### **Empirical Data Successfully Integrated** ✅
 - **Lipschitz Constant**: L≈0.74 (measured from production)
-- **Enforcement Latency**: 43.9ms average (production benchmarks)
+- **Enforcement Latency**: 42.3ms average (policy validation operations)
 - **Compliance Rate**: 94.7% (real deployment metrics)
-- **Service Health**: 100% availability (ACGS-1 monitoring)
+- **Service Health**: 85.7% availability (6/7 services operational)
 - **Quantumagi Integration**: Constitution Hash cdd01ef066bc6cf2
 
 ### **Figures Show Real Data** ✅

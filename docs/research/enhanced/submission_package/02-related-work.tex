@@ -10,12 +10,14 @@ High-level AI governance frameworks, such as the NIST AI Risk Management Framewo
 \subsection{Constitutional AI and the Training-Time Limitation}
 Anthropic's Constitutional AI (CAI) represents the current state-of-the-art in principle-guided AI behavior, successfully achieving 95\percent{} jailbreak prevention through Constitutional Classifiers and engaging approximately 1,000 participants in democratic principle selection via Collective Constitutional AI~\cite{anthropic2022constitutional,anthropic2023collective}. However, CAI operates exclusively during training time, embedding principles statically into model weights. This creates what recent analysis identifies as ``normative thinness''---the inability to adapt constitutional principles to post-deployment challenges without complete retraining~\cite{digitalconstitutionalist2023}.
 
-Recent incidents demonstrate this limitation: ChatGPT's training-time safety measures proved inadequate against novel jailbreaking techniques that emerged months after deployment, requiring reactive patches rather than constitutional adaptation~\cite{wei2023jailbroken}. \acgs{} addresses this fundamental limitation by implementing the first runtime constitutional system where principles evolve dynamically while maintaining democratic legitimacy, representing a paradigmatic shift from constitutional embedding to constitutional evolution.
+Recent incidents demonstrate this limitation: ChatGPT's training-time safety measures proved inadequate against novel jailbreaking techniques that emerged months after deployment, requiring reactive patches rather than constitutional adaptation~\cite{wei2023jailbroken}.
+
+\acgs{} addresses this fundamental limitation by implementing the first runtime constitutional system where principles evolve dynamically while maintaining democratic legitimacy, representing a paradigmatic shift from constitutional embedding to constitutional evolution.
 
 \subsection{LLM-driven Policy and Code Synthesis}
 Recent work demonstrates the potential of LLMs to translate natural language into structured code and policies~\cite{propertygpt2023, veriplan2023}. However, challenges such as semantic inaccuracy and hallucination persist. We address these through a multi-stage validation pipeline that integrates syntactic checks, semantic alignment scoring, formal verification for critical rules, and human-in-the-loop oversight.
 
-\subsection{Runtime Enforcement for LLM\allowbreak~Agents}
+\subsection{Runtime Enforcement for LLM~Agents}
 Frameworks like AgentSpec~\cite{agentspec2023} and Progent~\cite{progent2023} provide runtime safety constraints for LLM~agents, demonstrating the feasibility of real-time governance enforcement. These systems excel at preventing harmful behaviors but depend on static, manually crafted rule sets that cannot adapt to novel scenarios or emergent behaviors. The PGC component of \acgs{} draws inspiration from these runtime guards but uniquely integrates enforcement with an adaptive, constitutionally-grounded rule synthesis engine, enabling governance that responds to new challenges while maintaining constitutional consistency.
 
 \subsection{Governance of Evolutionary Computation}

@@ -161,7 +161,7 @@ Anthropic's Constitutional AI (CAI) pioneered using explicit principles to guide
 \subsection{LLM-driven Policy and Code Synthesis}
 Recent work demonstrates the potential of LLMs to translate natural language into structured code and policies \cite{propertygpt2023, veriplan2023}. However, challenges such as semantic inaccuracy and hallucination persist. We address these through a multi-stage validation pipeline that integrates syntactic checks, semantic alignment scoring, formal verification for critical rules, and human-in-the-loop oversight.
 
-\subsection{Runtime Enforcement for LLM~Agents}
+\subsection{Runtime Enforcement for LLM Agents}
 Frameworks like AgentSpec \cite{agentspec2023} and Progent \cite{progent2023} provide runtime safety constraints for LLM agents. These systems excel at enforcement but depend on static, manually crafted rule sets. The PGC component of \acgs{} draws inspiration from these runtime guards but uniquely integrates enforcement with an adaptive, constitutionally-grounded rule synthesis engine.
 
 \subsection{Governance of Evolutionary Computation}
@@ -402,7 +402,7 @@ EC & Evolutionary Computation \& Optimization & 8006 & v1 & Healthy \\
 \end{tabular}
 \end{table}
 
-\subsection{Quantumagi Blockchain~Deployment}
+\subsection{Quantumagi Blockchain Deployment}
 The \quantumagi{} system is deployed on Solana Devnet with the following specifications:
 
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=2pt,parsep=0pt]
@@ -411,12 +411,9 @@ The \quantumagi{} system is deployed on Solana Devnet with the following specifi
     \item \textbf{Deployment Status:} Completed (Mission Accomplished)
     \item \textbf{Programs Deployed:} 3 core Solana programs
     \begin{itemize}
-        \item Quantumagi Core: \\
-        \texttt{8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4}
-        \item Appeals Program: \\
-        \texttt{CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ}
-        \item Logging Program: \\
-        \texttt{4rEgetuUsuf3PEDcPCpKH4ndjbfnCReRbmdiEKMkMUxo}
+        \item Quantumagi Core: \texttt{8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4}
+        \item Appeals Program: \texttt{CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ}
+        \item Logging Program: \texttt{4rEgetuUsuf3PEDcPCpKH4ndjbfnCReRbmdiEKMkMUxo}
     \end{itemize}
 \end{itemize}
 
@@ -441,10 +438,10 @@ Compliance Rate & $>95\%$ & 94.7\% & N/A & $\sim$ \\
 \end{tabular}
 \end{table}
 
-\section{Mathematical Proofs and~Derivations}
+\section{Mathematical Proofs and Derivations}
 \label{sec:appendix_proofs}
 
-\subsection{Detailed Proof of Constitutional~Stability}
+\subsection{Detailed Proof of Constitutional Stability}
 We provide the complete proof of Theorem~\ref{thm:stability_main}.
 
 \begin{proof}[Complete Proof of Constitutional Stability]
@@ -469,10 +466,7 @@ L_{f_{\text{deploy}}} &\leq 0.99 \quad \text{(atomic deployment)}
 \end{align}
 
 The composite Lipschitz constant is:
-\begin{align}
-L_T &= L_{f_{\text{deploy}}} \cdot L_{f_{\text{valid}}} \cdot L_{f_{\text{synth}}} \cdot L_{f_{\text{interp}}} \\
-&\leq 0.99 \times 0.95 \times 0.68 \times 0.42 \approx 0.27
-\end{align}
+$$L_T = L_{f_{\text{deploy}}} \cdot L_{f_{\text{valid}}} \cdot L_{f_{\text{synth}}} \cdot L_{f_{\text{interp}}} \leq 0.99 \times 0.95 \times 0.68 \times 0.42 \approx 0.27$$
 
 However, empirical measurement shows $L_T \approx 0.74$ due to system feedback loops and adaptation mechanisms. Since $L_T < 1$, $T$ is a contraction mapping.
 
@@ -491,7 +485,7 @@ The sub-quadratic scaling ($\beta < 2$) ensures the framework remains practical 
 \section{Experimental Configuration}
 \label{sec:appendix_experimental}
 
-\subsection{Hardware and Software~Environment}
+\subsection{Hardware and Software Environment}
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=2pt,parsep=0pt]
     \item \textbf{Compute Infrastructure:} AWS EC2 instances (c5.4xlarge)
     \item \textbf{Operating System:} Ubuntu 20.04 LTS
