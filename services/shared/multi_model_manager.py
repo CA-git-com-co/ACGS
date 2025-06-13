@@ -92,13 +92,47 @@ class MultiModelManager:
         self.redis_client = None
         self.metrics = get_constitutional_metrics("multi_model_manager")
         
-        # Model configurations
+        # Enhanced Phase 2 model configurations with additional models
         self.model_weights = self.config.get("model_weights", {
-            "embedding": 0.4,  # 40% weight for embedding analysis
-            "qwen3_32b": 0.25,  # 25% weight for Qwen3-32B (Groq)
-            "deepseek_chat_v3": 0.25,  # 25% weight for DeepSeek Chat v3
-            "deepseek_r1": 0.1   # 10% weight for DeepSeek R1
+            "embedding": 0.25,  # 25% weight for embedding analysis
+            "qwen3_32b": 0.20,  # 20% weight for Qwen3-32B (Groq)
+            "qwen3_235b": 0.25,  # 25% weight for Qwen3-235B (OpenRouter)
+            "deepseek_chat_v3": 0.20,  # 20% weight for DeepSeek Chat v3
+            "deepseek_r1": 0.10   # 10% weight for DeepSeek R1 (OpenRouter)
         })
+
+        # Failover configuration for model reliability
+        self.failover_config = self.config.get("failover_config", {
+            "max_retries": 3,
+            "timeout_seconds": 30.0,
+            "fallback_threshold": 0.5,  # Minimum confidence for accepting results
+            "consensus_threshold": 0.7   # Minimum agreement for high confidence
+        })
+
+        # Phase 2 enhanced model configurations
+        self.enhanced_models = {
+            "qwen3_235b": {
+                "provider": "openrouter",
+                "model_id": "qwen/qwen3-235b-a22b:free",
+                "role": "constitutional_analysis",
+                "max_tokens": 4096,
+                "temperature": 0.1,
+            },
+            "deepseek_r1": {
+                "provider": "openrouter",
+                "model_id": "deepseek/deepseek-r1",
+                "role": "reasoning_validation",
+                "max_tokens": 8192,
+                "temperature": 0.0,
+            },
+            "deepseek_chat_v3_enhanced": {
+                "provider": "direct",
+                "model_id": "deepseek-chat-v3-0324",
+                "role": "policy_synthesis",
+                "max_tokens": 4096,
+                "temperature": 0.2,
+            }
+        }
         
         # Consensus settings
         self.default_consensus_strategy = ConsensusStrategy(
@@ -289,22 +323,27 @@ class MultiModelManager:
         """Get analyses from multiple LLM models."""
         llm_results = []
         
-        # Model configurations for constitutional analysis
+        # Enhanced model configurations for constitutional analysis with 4+ models
         llm_models = [
             {
                 "role": LangGraphModelRole.CONSTITUTIONAL_PROMPTING,
-                "model_id": "qwen3_32b_groq",
-                "weight": self.model_weights.get("qwen3_32b", 0.25)
+                "model_id": "qwen3_235b_openrouter",
+                "weight": self.model_weights.get("qwen3_235b", 0.25)
             },
             {
                 "role": LangGraphModelRole.POLICY_SYNTHESIS,
-                "model_id": "deepseek_chat_v3",
-                "weight": self.model_weights.get("deepseek_chat_v3", 0.25)
+                "model_id": "deepseek_chat_v3_openrouter",
+                "weight": self.model_weights.get("deepseek_chat_v3", 0.20)
             },
             {
                 "role": LangGraphModelRole.REFLECTION,
-                "model_id": "deepseek_r1",
-                "weight": self.model_weights.get("deepseek_r1", 0.1)
+                "model_id": "deepseek_r1_openrouter_enhanced",
+                "weight": self.model_weights.get("deepseek_r1", 0.10)
+            },
+            {
+                "role": LangGraphModelRole.CONSTITUTIONAL_PROMPTING,
+                "model_id": "qwen3_32b_groq",
+                "weight": self.model_weights.get("qwen3_32b", 0.20)
             }
         ]
         
@@ -497,30 +536,56 @@ REASONING: <brief explanation>
             )
 
     def _weighted_average_consensus(self, results: List[ModelResult]) -> tuple[float, float]:
-        """Calculate weighted average consensus."""
+        """Calculate enhanced weighted average consensus with improved model recognition."""
         total_weight = 0.0
         weighted_compliance = 0.0
         weighted_confidence = 0.0
 
         for result in results:
-            if result.model_type == "embedding":
-                weight = self.model_weights.get("embedding", 0.4)
-            else:
-                weight = result.metadata.get("weight", 0.1) if result.metadata else 0.1
+            # Enhanced model weight determination
+            weight = self._get_model_weight(result)
+
+            # Apply confidence-based weight adjustment for better consensus
+            confidence_multiplier = min(1.0, result.confidence_score + 0.5)
+            adjusted_weight = weight * confidence_multiplier
 
             if result.compliance_score > 0:  # Only include successful results
-                weighted_compliance += result.compliance_score * weight
-                weighted_confidence += result.confidence_score * weight
-                total_weight += weight
+                weighted_compliance += result.compliance_score * adjusted_weight
+                weighted_confidence += result.confidence_score * adjusted_weight
+                total_weight += adjusted_weight
 
         if total_weight > 0:
             final_compliance = weighted_compliance / total_weight
             final_confidence = weighted_confidence / total_weight
+
+            # Apply consensus threshold check
+            if final_confidence < self.failover_config.get("fallback_threshold", 0.5):
+                logger.warning(f"Low consensus confidence: {final_confidence:.3f}")
         else:
             final_compliance = 0.0
             final_confidence = 0.0
 
         return final_compliance, final_confidence
+
+    def _get_model_weight(self, result: ModelResult) -> float:
+        """Get model weight based on model type and ID with enhanced recognition."""
+        if result.model_type == "embedding":
+            return self.model_weights.get("embedding", 0.25)
+
+        # Enhanced model ID recognition for OpenRouter models
+        model_id_lower = result.model_id.lower()
+
+        if "qwen3_235b" in model_id_lower or "qwen3-235b" in model_id_lower:
+            return self.model_weights.get("qwen3_235b", 0.25)
+        elif "qwen3_32b" in model_id_lower or "qwen3-32b" in model_id_lower:
+            return self.model_weights.get("qwen3_32b", 0.20)
+        elif "deepseek_chat_v3" in model_id_lower or "deepseek-chat-v3" in model_id_lower:
+            return self.model_weights.get("deepseek_chat_v3", 0.20)
+        elif "deepseek_r1" in model_id_lower or "deepseek-r1" in model_id_lower:
+            return self.model_weights.get("deepseek_r1", 0.10)
+        else:
+            # Use metadata weight if available, otherwise default
+            return result.metadata.get("weight", 0.05) if result.metadata else 0.05
 
     def _confidence_based_consensus(self, results: List[ModelResult]) -> tuple[float, float]:
         """Calculate confidence-based consensus."""

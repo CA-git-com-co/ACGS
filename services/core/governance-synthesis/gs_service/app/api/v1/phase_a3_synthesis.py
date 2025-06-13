@@ -811,6 +811,8 @@ async def get_synthesis_strategies():
                 "claude-3-sonnet",
                 "gemini-2.5-pro",
                 "perplexity-sonar",
+                "cerebras-llama-scout",
+                "cerebras-qwen3",
             ],
             "consensus_strategies": [
                 "majority_vote",

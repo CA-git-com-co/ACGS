@@ -105,6 +105,7 @@ class LangGraphConfiguration(BaseModel):
     xai_api_key: Optional[str] = Field(default=None)
     nvidia_api_key: Optional[str] = Field(default=None)
     openrouter_api_key: Optional[str] = Field(default=None)
+    cerebras_api_key: Optional[str] = Field(default=None)
     ollama_api_key: Optional[str] = Field(default=None)
     ollama_base_url: str = Field(default="http://127.0.0.1:11434")
 
@@ -133,6 +134,7 @@ class LangGraphConfiguration(BaseModel):
         xai_api_key = os.getenv("XAI_API_KEY")
         nvidia_api_key = os.getenv("NVIDIA_API_KEY")
         openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+        cerebras_api_key = os.getenv("CEREBRAS_API_KEY")
         ollama_api_key = os.getenv("OLLAMA_API_KEY")
         ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
 
@@ -177,6 +179,7 @@ class LangGraphConfiguration(BaseModel):
             xai_api_key=xai_api_key,
             nvidia_api_key=nvidia_api_key,
             openrouter_api_key=openrouter_api_key,
+            cerebras_api_key=cerebras_api_key,
             ollama_api_key=ollama_api_key,
             ollama_base_url=ollama_base_url,
             redis_url=redis_url,
@@ -221,6 +224,7 @@ class LangGraphConfiguration(BaseModel):
             "xai": self.xai_api_key is not None,
             "nvidia": self.nvidia_api_key is not None,
             "openrouter": self.openrouter_api_key is not None,
+            "cerebras": self.cerebras_api_key is not None,
             "ollama": True,  # Ollama typically doesn't require API key for local deployment
         }
 

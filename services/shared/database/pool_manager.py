@@ -9,8 +9,9 @@ import logging
 import time
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, AsyncGenerator
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import QueuePool
 
@@ -46,16 +47,25 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class PoolConfig:
-    """Database pool configuration."""
+    """Enhanced database pool configuration for Phase 2 performance optimization."""
 
-    min_connections: int = 5
-    max_connections: int = 20
-    max_overflow: int = 10
-    pool_timeout: float = 30.0
-    pool_recycle: int = 3600  # 1 hour
+    # Phase 2 enhanced connection pool settings for >1000 concurrent users
+    min_connections: int = 10  # Increased from 5 for better baseline performance
+    max_connections: int = 30  # Increased from 20 for higher concurrency
+    max_overflow: int = 20  # Increased from 10 for burst capacity
+    pool_timeout: float = 20.0  # Reduced from 30.0 for faster failover
+    pool_recycle: int = 1800  # Reduced from 3600 (30 minutes) for fresher connections
     pool_pre_ping: bool = True
     echo: bool = False
     echo_pool: bool = False
+
+    # Phase 2 performance enhancements
+    pool_reset_on_return: str = "commit"  # Reset connections on return
+    pool_invalidate_on_disconnect: bool = True  # Invalidate on disconnect
+    connect_timeout: int = 10  # Connection timeout in seconds
+    query_timeout: int = 30  # Query timeout in seconds
+    statement_timeout: int = 60000  # PostgreSQL statement timeout (ms)
+    idle_in_transaction_session_timeout: int = 300000  # 5 minutes (ms)
 
 
 @dataclass
@@ -89,7 +99,7 @@ class ConnectionPool:
     Database connection pool with monitoring and optimization.
     """
 
-    def __init__(self, database_url: str, config: PoolConfig = None):
+    def __init__(self, database_url: str, config: Optional[PoolConfig] = None):
         """
         Initialize connection pool.
 
@@ -101,7 +111,7 @@ class ConnectionPool:
         self.config = config or PoolConfig()
         self.metrics = ConnectionMetrics()
 
-        # SQLAlchemy async engine
+        # Enhanced SQLAlchemy async engine for Phase 2 performance optimization
         self.engine = create_async_engine(
             database_url,
             poolclass=QueuePool,
@@ -110,8 +120,20 @@ class ConnectionPool:
             pool_timeout=self.config.pool_timeout,
             pool_recycle=self.config.pool_recycle,
             pool_pre_ping=self.config.pool_pre_ping,
+            pool_reset_on_return=self.config.pool_reset_on_return,
+            pool_invalidate_on_disconnect=self.config.pool_invalidate_on_disconnect,
             echo=self.config.echo,
             echo_pool=self.config.echo_pool,
+            # Enhanced connection arguments for performance
+            connect_args={
+                "server_settings": {
+                    "application_name": "acgs_phase2_enhanced",
+                    "jit": "off",  # Disable JIT for consistent performance
+                    "statement_timeout": str(self.config.statement_timeout),
+                    "idle_in_transaction_session_timeout": str(self.config.idle_in_transaction_session_timeout),
+                },
+                "command_timeout": self.config.query_timeout,
+            },
         )
 
         # Session factory
@@ -129,7 +151,7 @@ class ConnectionPool:
         try:
             # Test connection
             async with self.engine.begin() as conn:
-                await conn.execute("SELECT 1")
+                await conn.execute(text("SELECT 1"))
 
             self._initialized = True
             logger.info(f"Database pool initialized: {self.database_url}")
@@ -179,7 +201,7 @@ class ConnectionPool:
             self.metrics.total_query_time += query_time
 
     @asynccontextmanager
-    async def get_session(self) -> AsyncSession:
+    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         """
         Get a database session from the pool.
 
@@ -228,7 +250,7 @@ class ConnectionPool:
             Query results as list of dictionaries
         """
         async with self.get_connection() as conn:
-            result = await conn.execute(query, params or {})
+            result = await conn.execute(text(query), params or {})
             return [dict(row) for row in result.fetchall()]
 
     async def execute_command(self, command: str, params: Dict[str, Any] = None) -> int:
@@ -243,7 +265,7 @@ class ConnectionPool:
             Number of affected rows
         """
         async with self.get_connection() as conn:
-            result = await conn.execute(command, params or {})
+            result = await conn.execute(text(command), params or {})
             return result.rowcount
 
     def get_metrics(self) -> Dict[str, Any]:
@@ -277,7 +299,7 @@ class ConnectionPool:
             start_time = time.time()
 
             async with self.get_connection() as conn:
-                await conn.execute("SELECT 1")
+                await conn.execute(text("SELECT 1"))
 
             response_time = time.time() - start_time
 
@@ -385,7 +407,7 @@ class DatabasePoolManager:
             yield conn
 
     @asynccontextmanager
-    async def get_session(self, pool_name: str = "default") -> AsyncSession:
+    async def get_session(self, pool_name: str = "default") -> AsyncGenerator[AsyncSession, None]:
         """
         Get a session from a specific pool.
 
