@@ -1,1 +1,0 @@
-# PGC Service Core Package

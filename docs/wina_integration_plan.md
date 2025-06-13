@@ -302,7 +302,7 @@ WINA_GOVERNANCE_PRINCIPLES = [
 
 #### 3.2 PGC Integration for WINA Enforcement
 ```python
-# src/backend/pgc_service/app/services/wina_policy_enforcer.py
+# services/core/pgc_service/app/services/wina_policy_enforcer.py
 from typing import Dict, Any, List
 import logging
 from .policy_enforcement_engine import PolicyEnforcementEngine

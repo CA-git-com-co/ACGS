@@ -58,7 +58,7 @@ This system builds upon the WINA performance monitoring infrastructure (Task 17.
 
 ## Implementation Details
 
-### Core Learning System (`src/backend/shared/wina/continuous_learning.py`)
+### Core Learning System (`services/core/shared/wina/continuous_learning.py`)
 
 The main learning system implements sophisticated adaptive intelligence:
 
@@ -99,7 +99,7 @@ class WINAContinuousLearningSystem:
 - Provides predictive recommendations
 - Enables proactive parameter adjustments
 
-### API Layer (`src/backend/shared/wina/learning_api.py`)
+### API Layer (`services/core/shared/wina/learning_api.py`)
 
 RESTful API for learning system interaction:
 
@@ -120,7 +120,7 @@ GET  /api/v1/wina/learning/health            # Health check
 GET  /api/v1/wina/learning/metrics           # System metrics
 ```
 
-### EC Oversight Integration (`src/backend/ec_service/app/core/wina_oversight_coordinator.py`)
+### EC Oversight Integration (`services/core/ec_service/app/core/wina_oversight_coordinator.py`)
 
 The EC oversight coordinator generates comprehensive feedback signals:
 

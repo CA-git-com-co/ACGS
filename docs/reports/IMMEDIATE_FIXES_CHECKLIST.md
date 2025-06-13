@@ -19,10 +19,10 @@
 - [ ] Test login/registration endpoints
 
 **Files to Fix:**
-- `src/backend/auth_service/main.py` (keep this one)
+- `services/core/auth_service/main.py` (keep this one)
 - `auth_service/main.py` (remove or rename)
-- `backend/auth_service/main.py` (remove or rename)
-- `src/backend/auth_service/Dockerfile` (verify CMD)
+- `services/core/auth/auth_service/main.py` (remove or rename)
+- `services/core/auth_service/Dockerfile` (verify CMD)
 
 ### 2. Database Migration and Schema Fix
 **Issue:** Missing tables, connection errors
@@ -142,7 +142,7 @@ docker-compose -f docker-compose-test.yml up -d postgres_db
 python test_comprehensive_acgs_validation.py
 
 # Run specific service tests
-python -m pytest src/backend/auth_service/app/tests/ -v
+python -m pytest services/core/auth_service/app/tests/ -v
 ```
 
 ## 🚨 Rollback Plan

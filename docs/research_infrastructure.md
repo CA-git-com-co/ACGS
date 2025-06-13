@@ -207,7 +207,7 @@ PGC_SERVICE_URL=http://localhost:8005
 ### Docker Deployment
 ```bash
 # Build research service
-docker build -t acgs-research-service ./src/backend/research_service
+docker build -t acgs-research-service ./services/core/research_service
 
 # Run with docker-compose
 docker-compose up research_service

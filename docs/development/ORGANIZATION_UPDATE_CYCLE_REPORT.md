@@ -9,10 +9,10 @@ Successfully completed a comprehensive organization and update cycle for the ACG
 ### 1. File Organization & Code Quality ✅
 
 #### Duplicate Files Removed:
-- `backend/ac_service/requirements_new.txt`
-- `backend/fv_service/requirements_base.txt` 
-- `backend/gs_service/requirements_new.txt`
-- `backend/auth_service/requirements_simple.txt`
+- `services/core/constitutional-ai/ac_service/requirements_new.txt`
+- `services/core/formal-verification/fv_service/requirements_base.txt` 
+- `services/core/governance-synthesis/gs_service/requirements_new.txt`
+- `services/core/auth/auth_service/requirements_simple.txt`
 
 #### Deprecated Files Cleaned:
 - Removed entire `backend/shared_backup_temp/` directory

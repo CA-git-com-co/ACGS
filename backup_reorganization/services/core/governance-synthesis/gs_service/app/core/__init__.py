@@ -1,1 +1,0 @@
-# GS Service Core Package

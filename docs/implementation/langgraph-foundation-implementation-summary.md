@@ -15,12 +15,12 @@ Successfully implemented **Phase 1: Foundation Setup** for LangGraph integration
 - `redis>=5.0.0` - State management backend
 
 **Services Updated**:
-- ✅ AC Service (`src/backend/ac_service/requirements.txt`)
-- ✅ GS Service (`src/backend/gs_service/requirements.txt`)
+- ✅ AC Service (`services/core/ac_service/requirements.txt`)
+- ✅ GS Service (`services/core/gs_service/requirements.txt`)
 
 ### 2. Shared Infrastructure Components ✅
 
-**State Management** (`src/backend/shared/langgraph_states.py`):
+**State Management** (`services/core/shared/langgraph_states.py`):
 - `BaseACGSState` - Common workflow state foundation
 - `ConstitutionalCouncilState` - Amendment workflow state management
 - `PolicySynthesisState` - GS Engine policy synthesis workflows
@@ -28,7 +28,7 @@ Successfully implemented **Phase 1: Foundation Setup** for LangGraph integration
 - `MultiModelLLMState` - Multi-model reliability tracking
 - Utility functions for workflow metadata and status management
 
-**Configuration Management** (`src/backend/shared/langgraph_config.py`):
+**Configuration Management** (`services/core/shared/langgraph_config.py`):
 - `LangGraphConfiguration` - Centralized configuration with environment loading
 - `ModelRole` enum - Specialized model roles (constitutional_prompting, policy_synthesis, etc.)
 - Multi-model configuration with primary/fallback model support
@@ -55,13 +55,13 @@ langgraph_redis:
 
 ### 4. AC Service Workflow Integration ✅
 
-**Workflow Manager** (`src/backend/ac_service/app/workflows/workflow_manager.py`):
+**Workflow Manager** (`services/core/ac_service/app/workflows/workflow_manager.py`):
 - `WorkflowManager` class for Constitutional Council workflow orchestration
 - Workflow initialization, status tracking, and state management
 - Integration with existing AC service infrastructure
 - Graceful fallback when LangGraph is not available
 
-**API Endpoints** (`src/backend/ac_service/app/api/v1/workflows.py`):
+**API Endpoints** (`services/core/ac_service/app/api/v1/workflows.py`):
 - `GET /api/v1/workflows/capabilities` - Workflow capabilities and configuration
 - `POST /api/v1/workflows/initialize` - Initialize new workflows
 - `GET /api/v1/workflows/{id}/status` - Workflow status monitoring
@@ -71,7 +71,7 @@ langgraph_redis:
 
 ### 5. GS Service Multi-Model Enhancement ✅
 
-**Multi-Model Manager** (`src/backend/gs_service/app/workflows/multi_model_manager.py`):
+**Multi-Model Manager** (`services/core/gs_service/app/workflows/multi_model_manager.py`):
 - `MultiModelManager` class implementing Gemini-LangGraph patterns
 - Role-based model selection with fallback mechanisms
 - `ModelPerformanceTracker` for reliability monitoring

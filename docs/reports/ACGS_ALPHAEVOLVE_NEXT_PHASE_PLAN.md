@@ -72,7 +72,7 @@ ON constitutional_principles(category, priority_weight, updated_at);
 **Timeline**: 3-4 weeks | **Priority**: High
 
 #### 1.1 Collective Constitutional AI Integration
-**Implementation Location**: `src/backend/ac_service/app/services/collective_constitutional_ai.py`
+**Implementation Location**: `services/core/ac_service/app/services/collective_constitutional_ai.py`
 
 ```python
 class CollectiveConstitutionalAI:
@@ -103,7 +103,7 @@ class CollectiveConstitutionalAI:
 ```
 
 #### 1.2 Polis Platform Integration
-**Implementation Location**: `src/backend/ac_service/app/integrations/polis_integration.py`
+**Implementation Location**: `services/core/ac_service/app/integrations/polis_integration.py`
 
 ```python
 class PolisIntegration:
@@ -133,7 +133,7 @@ class PolisIntegration:
 **Timeline**: 4-5 weeks | **Priority**: High
 
 #### 2.1 Multi-Model Ensemble Coordination
-**Implementation Location**: `src/backend/federated_service/app/core/multi_model_ensemble.py`
+**Implementation Location**: `services/core/federated_service/app/core/multi_model_ensemble.py`
 
 ```python
 class MultiModelEnsembleCoordinator:
@@ -184,7 +184,7 @@ class MultiModelEnsembleCoordinator:
 **Timeline**: 3-4 weeks | **Priority**: Medium-High
 
 #### 3.1 GPU Acceleration for Constitutional Processing
-**Implementation Location**: `src/backend/shared/hardware/gpu_acceleration_manager.py`
+**Implementation Location**: `services/core/shared/hardware/gpu_acceleration_manager.py`
 
 ```python
 class GPUAccelerationManager:
@@ -241,7 +241,7 @@ class GPUAccelerationManager:
 #### 3.1 Quantum Error Correction Integration
 - Implement QEC-inspired error correction for constitutional compliance
 - Target: 99.99% constitutional fidelity maintenance
-- Integration with existing QEC framework in `src/backend/shared/qec/`
+- Integration with existing QEC framework in `services/core/shared/qec/`
 
 #### 3.2 Self-Improving Constitutional Framework
 - Implement meta-learning for constitutional principle evolution

@@ -56,7 +56,7 @@ ACGS-1/
 
 ### Changes Made
 
-1. **Removed Duplicates**: Eliminated duplicate services from `src/backend/`
+1. **Removed Duplicates**: Eliminated duplicate services from `services/core/`
 2. **Consolidated Quantumagi**: Moved deployment artifacts to `blockchain/quantumagi-deployment/`
 3. **Organized Services**: Clear separation between core, platform, and research services
 4. **Updated Configurations**: Fixed Docker Compose and import paths

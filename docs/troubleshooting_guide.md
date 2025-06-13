@@ -83,7 +83,7 @@ curl -X GET http://localhost:8002/health
 #### Solution
 ```bash
 # 1. Update security middleware configuration
-# In src/backend/shared/security_middleware.py, whitelist health endpoints
+# In services/core/shared/security_middleware.py, whitelist health endpoints
 
 # 2. Restart affected services
 docker-compose restart integrity_service gs_service fv_service pgc_service
@@ -399,7 +399,7 @@ for i in {1..10}; do curl -s http://localhost:8000/auth/health; done
 upstream auth_service_upstream {
     least_conn;
     server auth_service:8000 max_fails=3 fail_timeout=30s;
-    server auth_service_2:8000 max_fails=3 fail_timeout=30s;
+    server auth_service:8000 max_fails=3 fail_timeout=30s;
 }
 ```
 
@@ -452,7 +452,7 @@ WINA_GATING_ENABLED=false  # Disable if causing issues
 curl http://localhost:8001/api/v1/principles/ | jq '.[] | select(.is_active == true)'
 
 # Verify AC service connectivity
-docker-compose exec ec_service curl -f http://ac_service:8001/health
+docker-compose exec ec_service:8006/health
 
 # Reset constitutional fidelity monitoring
 curl -X POST http://localhost:8006/api/v1/monitoring/validate-governance

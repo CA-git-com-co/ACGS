@@ -50,7 +50,7 @@ This document summarizes the implementation of the highest priority Phase 1 comp
 **Status: COMPLETED**
 
 #### Core Components
-- **Module**: `backend/gs_service/app/core/constitutional_prompting.py`
+- **Module**: `services/core/governance-synthesis/gs_service/app/core/constitutional_prompting.py`
 - **Main Class**: `ConstitutionalPromptBuilder`
 
 #### Key Features
@@ -89,7 +89,7 @@ This document summarizes the implementation of the highest priority Phase 1 comp
 **Status: COMPLETED**
 
 #### Core Components
-- **Module**: `backend/gs_service/app/core/contextual_analyzer.py`
+- **Module**: `services/core/governance-synthesis/gs_service/app/core/contextual_analyzer.py`
 - **Main Class**: `ContextualAnalyzer`
 - **Supporting Class**: `EnvironmentalFactor`
 
@@ -190,11 +190,11 @@ ACGS-master/
 │   └── h3c4d5e6f7g8_enhance_principle_model_phase1.py
 ├── shared/
 │   └── models.py (enhanced Principle model)
-├── backend/ac_service/
+├── services/core/constitutional-ai/ac_service/
 │   ├── app/schemas.py (enhanced principle schemas)
 │   ├── app/crud.py (enhanced CRUD operations)
 │   └── app/api/v1/principles.py (new endpoints)
-├── backend/gs_service/
+├── services/core/governance-synthesis/gs_service/
 │   ├── app/core/
 │   │   ├── constitutional_prompting.py (NEW)
 │   │   ├── contextual_analyzer.py (NEW)

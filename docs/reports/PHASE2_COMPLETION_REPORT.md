@@ -9,7 +9,7 @@ Phase 2: Module Interaction Optimization has been successfully completed, implem
 ### ✅ Phase 2 Deliverables Completed
 
 #### 1. Dependency Injection Framework
-- **Location**: `src/backend/shared/di/`
+- **Location**: `services/core/shared/di/`
 - **Components Implemented**:
   - `container.py` - Comprehensive DI container with lifecycle management
   - `decorators.py` - Injectable, singleton, transient decorators
@@ -18,7 +18,7 @@ Phase 2: Module Interaction Optimization has been successfully completed, implem
   - `registry.py` - Service registration and discovery
 
 #### 2. Event-Driven Architecture
-- **Location**: `src/backend/shared/events/`
+- **Location**: `services/core/shared/events/`
 - **Components Implemented**:
   - `bus.py` - Event bus with publish/subscribe patterns
   - `types.py` - Standard event types and enums (40+ event types)
@@ -27,7 +27,7 @@ Phase 2: Module Interaction Optimization has been successfully completed, implem
   - `decorators.py` - Event handling decorators
 
 #### 3. Database Connection Optimization
-- **Location**: `src/backend/shared/database/`
+- **Location**: `services/core/shared/database/`
 - **Components Implemented**:
   - `pool_manager.py` - Optimized connection pooling
   - Connection metrics and health monitoring

@@ -33,9 +33,9 @@ This document summarizes the completion of four critical development tasks for t
 ### 🔄 Task 2.1: Update Pydantic v2.0+ Schemas
 
 **Files Updated:**
-- `src/backend/federated_service/app/schemas.py`
-- `src/backend/ec_service/app/api/v1/wina_oversight.py`
-- `src/backend/shared/schemas.py`
+- `services/core/federated_service/app/schemas.py`
+- `services/core/ec_service/app/api/v1/wina_oversight.py`
+- `services/core/shared/schemas.py`
 
 **Objective:** Migrate all Pydantic schemas from v1.x to v2.0+ syntax and patterns.
 
@@ -56,7 +56,7 @@ This document summarizes the completion of four critical development tasks for t
 
 ### ⚙️ Task 1.3: Implement Centralized Configuration Management
 
-**File:** `src/backend/shared/utils.py`
+**File:** `services/core/shared/utils.py`
 
 **Objective:** Create a robust, environment-aware configuration management system.
 
@@ -84,7 +84,7 @@ This document summarizes the completion of four critical development tasks for t
 
 ### 🔍 Task 3.1: Enhance Multi-Model Validation
 
-**File:** `src/backend/fv_service/app/core/enhanced_multi_model_validation.py`
+**File:** `services/core/fv_service/app/core/enhanced_multi_model_validation.py`
 
 **Objective:** Improve cross-model validation with better error handling and performance.
 
