@@ -83,7 +83,7 @@ class Settings(BaseSettings):
 
     # Security settings
     SECRET_KEY: str = Field(
-        default="research-secret-key-change-in-production", env="SECRET_KEY"
+        default_factory=lambda: os.urandom(32).hex(), env="SECRET_KEY"
     )
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(
         default=30, env="ACCESS_TOKEN_EXPIRE_MINUTES"
