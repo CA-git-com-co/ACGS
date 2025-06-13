@@ -240,7 +240,7 @@ class MockLLMService:
         # Generate deterministic but varied embeddings
         import hashlib
 
-        hash_obj = hashlib.md5(text.encode())
+        hash_obj = hashlib.sha256(text.encode())
         hash_int = int(hash_obj.hexdigest(), 16)
 
         # Create 768-dimensional embedding (common size)
