@@ -1,0 +1,27 @@
+Collecting pytest-asyncio
+  Downloading pytest_asyncio-1.0.0-py3-none-any.whl (15 kB)
+Collecting pytest<9,>=8.2
+  Downloading pytest-8.4.0-py3-none-any.whl (363 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 363.8/363.8 KB 8.4 MB/s eta 0:00:00
+Collecting exceptiongroup>=1
+  Downloading exceptiongroup-1.3.0-py3-none-any.whl (16 kB)
+Requirement already satisfied: packaging>=20 in /usr/lib/python3/dist-packages (from pytest<9,>=8.2->pytest-asyncio) (21.3)
+Collecting tomli>=1
+  Downloading tomli-2.2.1-py3-none-any.whl (14 kB)
+Collecting pluggy<2,>=1.5
+  Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+Requirement already satisfied: pygments>=2.7.2 in /usr/lib/python3/dist-packages (from pytest<9,>=8.2->pytest-asyncio) (2.11.2)
+Requirement already satisfied: iniconfig>=1 in /usr/lib/python3/dist-packages (from pytest<9,>=8.2->pytest-asyncio) (1.1.1)
+Collecting typing-extensions>=4.6.0
+  Downloading typing_extensions-4.14.0-py3-none-any.whl (43 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 43.8/43.8 KB 8.0 MB/s eta 0:00:00
+Installing collected packages: typing-extensions, tomli, pluggy, exceptiongroup, pytest, pytest-asyncio
+  Attempting uninstall: pluggy
+    Found existing installation: pluggy 0.13.0
+    Not uninstalling pluggy at /usr/lib/python3/dist-packages, outside environment /usr
+    Can't uninstall 'pluggy'. No files were found to uninstall.
+  Attempting uninstall: pytest
+    Found existing installation: pytest 6.2.5
+    Not uninstalling pytest at /usr/lib/python3/dist-packages, outside environment /usr
+    Can't uninstall 'pytest'. No files were found to uninstall.
+Successfully installed exceptiongroup-1.3.0 pluggy-1.6.0 pytest-8.4.0 pytest-asyncio-1.0.0 tomli-2.2.1 typing-extensions-4.14.0
