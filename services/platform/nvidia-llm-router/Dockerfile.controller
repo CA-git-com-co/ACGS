@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
-COPY ../../../shared /app/shared
+COPY shared /app/shared
 
 # Create necessary directories
 RUN mkdir -p /app/config /app/logs
