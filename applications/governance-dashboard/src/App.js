@@ -8,6 +8,7 @@ import PolicySynthesisPage from './pages/Synthesis/PolicySynthesisPage'; // Usin
 import PolicyListPage from './pages/Policies/PolicyListPage'; // Using actual component
 import PublicConsultationPage from './pages/PublicConsultation/PublicConsultationPage'; // Public consultation component
 import ConstitutionalCouncilDashboard from './components/ConstitutionalCouncilDashboard'; // Real-time dashboard
+import ConstitutionalAmendmentWorkflow from './components/ConstitutionalAmendmentWorkflow'; // Constitutional amendment workflow
 import Layout from './components/Layout/Layout'; // Import Layout
 
 // HomePage component (can be moved to pages/Home/HomePage.js later)
@@ -21,6 +22,7 @@ const HomePage = () => {
                     <p>You are logged in as: {currentUser.profile?.username || 'User'}.</p>
                     <p>Access token (first 10 chars): {currentUser.access_token.substring(0,10)}...</p>
                     {currentUser.profile && <p>Full Name from Profile: {currentUser.profile.full_name || 'N/A'}</p>}
+                    }
                     <p>Use the navigation bar to manage different aspects of the system.</p>
                 </div>
             ) : (
@@ -58,14 +60,17 @@ function App() {
                         <Route 
                             path="/ac-management" 
                             element={<ProtectedRoute><ACManagementPage /></ProtectedRoute>} 
+                            }
                         />
                         <Route 
                             path="/policy-synthesis" 
                             element={<ProtectedRoute><PolicySynthesisPage /></ProtectedRoute>} 
+                            }
                         />
                         <Route
                             path="/policies"
                             element={<ProtectedRoute><PolicyListPage /></ProtectedRoute>}
+                            }
                         />
                         <Route
                             path="/public-consultation"
@@ -74,10 +79,17 @@ function App() {
                         <Route
                             path="/constitutional-council-dashboard"
                             element={<ProtectedRoute><ConstitutionalCouncilDashboard /></ProtectedRoute>}
+                            }
+                        />
+                        <Route
+                            path="/constitutional-amendment"
+                            element={<ProtectedRoute><ConstitutionalAmendmentWorkflow /></ProtectedRoute>}
+                            }
                         />
 
                         {/* Add more routes as needed */}
                         <Route path="*" element={<div>404 Not Found - Page does not exist</div>} />
+                        }
                     </Routes>
                 </Layout>
             </Router>
