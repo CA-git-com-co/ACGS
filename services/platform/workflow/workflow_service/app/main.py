@@ -5,12 +5,23 @@ Main FastAPI application for workflow orchestration, monitoring, and management
 
 import asyncio
 import logging
+import sys
+import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+
+# Add shared modules to path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
+
+# Import shared modules
+from services.shared.auth import get_current_active_user, require_admin
+from services.shared.metrics import get_metrics, create_metrics_endpoint, metrics_middleware
+from services.shared.security_middleware import add_security_middleware
+from services.shared.service_registry import service_registry
 
 from .api.v1.workflow_management import router as workflow_router
 from .core.workflow_engine import workflow_engine
@@ -24,6 +35,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Initialize metrics
+metrics = get_metrics("workflow_service")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,6 +45,20 @@ async def lifespan(app: FastAPI):
 
     # Startup
     logger.info("Starting ACGS-PGP Workflow Service")
+
+    # Register service in service registry
+    service_registry.register_service(
+        name="workflow_service",
+        host="localhost",
+        port=9007,
+        health_endpoint="/health",
+        version="1.0.0",
+        tags=["platform", "orchestration"],
+        metadata={"description": "Workflow orchestration service"}
+    )
+
+    # Start service registry
+    await service_registry.start()
 
     # Initialize monitoring
     await initialize_monitoring()
@@ -43,6 +71,9 @@ async def lifespan(app: FastAPI):
     finally:
         # Shutdown
         logger.info("Shutting down ACGS-PGP Workflow Service")
+
+        # Stop service registry
+        await service_registry.stop()
 
         # Cancel background tasks
         monitoring_task.cancel()
@@ -64,16 +95,21 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Set service name for metrics
+app.service_name = "workflow_service"
 
+# Add comprehensive security middleware
+add_security_middleware(app, service_name="workflow_service")
+
+# Add metrics middleware
+app.add_middleware(metrics_middleware)
+
+# Add compression middleware
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Add metrics endpoint
+metrics_endpoint = create_metrics_endpoint()
+app.get("/metrics")(metrics_endpoint)
 
 
 # Custom middleware for request logging and metrics
