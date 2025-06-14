@@ -72,12 +72,7 @@ def validate_config_file(config_path: str) -> bool:
         warnings.append("Missing 'task_routing' section")
     else:
         task_routing = config["task_routing"]
-        required_tasks = [
-            "constitutional_analysis",
-            "constitutional_compliance", 
-            "policy_synthesis",
-            "policy_review"
-        ]
+        required_tasks = list(task_routing.keys())
         
         for task in required_tasks:
             if task not in task_routing:
