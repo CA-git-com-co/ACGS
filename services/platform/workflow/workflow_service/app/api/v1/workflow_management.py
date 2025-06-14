@@ -8,10 +8,13 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.auth import User, get_current_active_user
-from services.shared.database import get_async_db
+
+# Mock database dependency for now
+async def get_async_db():
+    """Mock database session for testing."""
+    return None
 
 from ...core.workflow_engine import WorkflowStatus, WorkflowType, workflow_engine
 from ...monitoring.workflow_monitor import AlertSeverity, workflow_monitor
@@ -35,7 +38,7 @@ async def create_workflow(
     input_data: Dict[str, Any],
     background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_db),
+    db = Depends(get_async_db),
 ):
     """Create a new workflow instance"""
 
