@@ -150,6 +150,7 @@ ACGS-1/
 - **Python** 3.9+
 - **PostgreSQL** 15+
 - **Redis** 7+
+- **Docker** & **Docker Compose**
 
 ### 1. Clone and Setup
 
@@ -157,10 +158,12 @@ ACGS-1/
 git clone https://github.com/CA-git-com-co/ACGS.git
 cd ACGS-1
 
-# Install Python dependencies
+# Install dependencies
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
+# Or use the helper script
+./scripts/setup/install_dependencies.sh
 ```
 
 ### 2. Build Blockchain Programs
@@ -202,6 +205,12 @@ python -m uvicorn app.main:app --reload --port 8005
 # Start Evolutionary Computation Service (Port 8006)
 cd services/core/evolutionary-computation
 python -m uvicorn app.main:app --reload --port 8006
+```
+
+#### Or start all services with Docker Compose
+
+```bash
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 ### 4. Launch Frontend Applications
@@ -267,7 +276,7 @@ python scripts/initialize_constitution.py
 
 **Policy Governance Service** (Port 8005) - `services/core/policy-governance/pgc_service/`
 - Real-time policy enforcement using Open Policy Agent (OPA)
-- Sub-200ms policy decisions with incremental compilation
+- Sub-5ms policy decisions with hardware acceleration and incremental compilation
 - Constitutional amendment integration and workflow orchestration
 - Multi-stakeholder governance coordination
 
@@ -353,11 +362,14 @@ python scripts/validate_service_health.sh
 ### Code Quality
 
 ```bash
+# Lint & format
+./scripts/maintenance/lint_and_format.sh
+
 # Security audit
-python scripts/security_audit.py
+./scripts/validation/security_audit.py
 
 # Performance testing
-python scripts/phase2_performance_validation.py
+./scripts/validation/performance_test.py
 
 # Health checks
 python scripts/comprehensive_health_check.py
@@ -370,9 +382,11 @@ python scripts/comprehensive_health_check.py
 
 1. Create service directory in `services/core/`, `services/platform/`, or `services/research/`
 2. Follow existing service patterns (FastAPI with uvicorn)
-3. Update service registry in `service_registry_config.json`
-4. Add service to monitoring in `scripts/priority3_monitoring_infrastructure.py`
-5. Update integration tests and health checks
+3. Use the template in `tools/generators/service_template/` for boilerplate
+4. Update service registry in `service_registry_config.json`
+5. Add Docker configuration in `infrastructure/docker/`
+6. Add service to monitoring in `scripts/priority3_monitoring_infrastructure.py`
+7. Update integration tests and health checks
 
 ## 📊 Monitoring & Observability
 
@@ -443,12 +457,22 @@ ACGS-1 features a comprehensive CI/CD pipeline with **100% health score** and en
 # Each service runs on its designated port (8000-8006)
 ```
 
+### Development Environment (Docker Compose)
+```bash
+docker-compose -f infrastructure/docker/docker-compose.dev.yml up
+```
+
 ### Solana Devnet Deployment
 ```bash
 cd blockchain
 anchor deploy --provider.cluster devnet
 python scripts/initialize_constitution.py
 python scripts/validate_devnet_deployment.py
+```
+
+### Staging Environment
+```bash
+./scripts/deployment/deploy_staging.sh
 ```
 
 ### Production Environment
@@ -458,6 +482,8 @@ python scripts/validate_devnet_deployment.py
 
 # Or use Docker Compose for containerized deployment
 docker-compose -f docker-compose.prod.yml up -d
+# Or run the deployment script
+./scripts/deployment/deploy_production.sh
 ```
 
 ### Environment Configuration
