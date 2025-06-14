@@ -30,6 +30,27 @@ wina_analyzer = WINAConstitutionalPrincipleAnalyzer()
 wina_update_service = WINAConstitutionalUpdateService(analyzer=wina_analyzer)
 
 
+def _principle_to_dict(principle: Any) -> Dict[str, Any]:
+    """Convert a Principle ORM object to a dictionary for WINA analysis."""
+    dependencies: List[str] = []
+    metadata = getattr(principle, "constitutional_metadata", None)
+    if isinstance(metadata, dict):
+        dependencies = metadata.get("related_principles") or metadata.get("dependencies") or []
+
+    constraints = getattr(principle, "constraints", None)
+    if not dependencies and isinstance(constraints, dict):
+        dependencies = constraints.get("dependencies", [])
+
+    return {
+        "principle_id": str(principle.id),
+        "name": principle.name,
+        "description": principle.description,
+        "category": principle.category,
+        "policy_code": getattr(principle, "policy_code", "") or "",
+        "dependencies": dependencies,
+    }
+
+
 @router.post("/analyze-principles", response_model=Dict[str, Any])
 async def analyze_principles_for_wina_optimization(
     principle_ids: Optional[List[str]] = None,
@@ -57,30 +78,11 @@ async def analyze_principles_for_wina_optimization(
             for principle_id in principle_ids:
                 principle = await get_principle(db, int(principle_id))
                 if principle:
-                    principles.append(
-                        {
-                            "principle_id": str(principle.id),
-                            "name": principle.name,
-                            "description": principle.description,
-                            "category": principle.category,
-                            "policy_code": principle.policy_code or "",
-                            "dependencies": [],  # TODO: Add dependency resolution
-                        }
-                    )
+                    principles.append(_principle_to_dict(principle))
         else:
             # Get all principles
             db_principles = await get_principles(db)
-            principles = [
-                {
-                    "principle_id": str(p.id),
-                    "name": p.name,
-                    "description": p.description,
-                    "category": p.category,
-                    "policy_code": p.policy_code or "",
-                    "dependencies": [],
-                }
-                for p in db_principles
-            ]
+            principles = [_principle_to_dict(p) for p in db_principles]
 
         if not principles:
             raise HTTPException(
@@ -179,16 +181,7 @@ async def propose_constitutional_updates(
         for principle_id in principle_ids:
             principle = await get_principle(db, int(principle_id))
             if principle:
-                principles.append(
-                    {
-                        "principle_id": str(principle.id),
-                        "name": principle.name,
-                        "description": principle.description,
-                        "category": principle.category,
-                        "policy_code": principle.policy_code or "",
-                        "dependencies": [],
-                    }
-                )
+                principles.append(_principle_to_dict(principle))
 
         if not principles:
             raise HTTPException(
