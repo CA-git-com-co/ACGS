@@ -135,8 +135,23 @@ def test_password_hashing_and_verification():
     assert security.verify_password("wrongpassword", hashed_password) is False
 
 
+def test_token_with_non_ascii_subject():
+    subject = "测试用户"  # Chinese characters
+    token = security.create_access_token(subject=subject)
+    payload = security.verify_token(token)
+    assert payload.sub == subject
+
+
+def test_token_expiry_edge_case():
+    subject = "edgecase"
+    token = security.create_access_token(subject=subject, expires_delta=timedelta(seconds=1))
+    payload = security.verify_token(token)
+    assert payload.sub == subject
+    time.sleep(2)
+    with pytest.raises(security.HTTPException) as excinfo:
+        security.verify_token(token)
+    assert excinfo.value.status_code == 401
+
+
 # TODO:
 # - Test for tokens with different scopes if applicable.
-# - Test for tokens with non-ASCII characters in subject if relevant.
-# - Consider edge cases for token expiry (e.g., token created just before
-#   expiry).
