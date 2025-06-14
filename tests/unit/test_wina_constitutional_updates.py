@@ -395,5 +395,36 @@ class TestWINAConstitutionalIntegration:
         assert len(update_service.update_history) > 0
 
 
+class DummyPrinciple:
+    """Simple stand-in for ORM principle objects."""
+
+    def __init__(self, deps):
+        self.id = 1
+        self.name = "Dummy"
+        self.description = "desc"
+        self.category = "efficiency"
+        self.policy_code = ""
+        self.constitutional_metadata = {"related_principles": deps}
+        self.constraints = None
+
+
+def _extract_dependencies(principle):
+    deps = []
+    meta = getattr(principle, "constitutional_metadata", None)
+    if isinstance(meta, dict):
+        deps = meta.get("related_principles") or meta.get("dependencies") or []
+    cons = getattr(principle, "constraints", None)
+    if not deps and isinstance(cons, dict):
+        deps = cons.get("dependencies", [])
+    return deps
+
+
+def test_dependency_extraction_from_metadata():
+    """Ensure dependencies are extracted from constitutional metadata."""
+    p = DummyPrinciple(["CPX", "CPY"])
+    deps = _extract_dependencies(p)
+    assert deps == ["CPX", "CPY"]
+
+
 if __name__ == "__main__":
     pytest.main([__file__])
