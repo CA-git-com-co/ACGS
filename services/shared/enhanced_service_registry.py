@@ -313,15 +313,6 @@ class EnhancedServiceRegistry:
         """Parallel health checks for all services with improved performance."""
         start_time = time.time()
 
-        # Create tasks for parallel execution
-        tasks = []
-        service_names = []
-
-        for service in self.services.values():
-            if service.circuit_breaker.can_execute():
-                tasks.append(self.check_service_health(service))
-                service_names.append(service.name)
-
         # Execute health checks in parallel with semaphore for rate limiting
         semaphore = asyncio.Semaphore(10)  # Limit concurrent checks
 
@@ -329,8 +320,16 @@ class EnhancedServiceRegistry:
             async with semaphore:
                 return await self.check_service_health(service)
 
-        limited_tasks = [limited_health_check(self.services[name]) for name in service_names]
-        results = await asyncio.gather(*limited_tasks, return_exceptions=True)
+        # Create tasks for parallel execution
+        tasks = []
+        service_names = []
+
+        for service in self.services.values():
+            if service.circuit_breaker.can_execute():
+                tasks.append(limited_health_check(service))
+                service_names.append(service.name)
+
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Process results
         health_status = {}
