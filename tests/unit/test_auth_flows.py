@@ -174,6 +174,22 @@ async def test_login_success(client: AsyncClient):
 
 
 @pytest.mark.skipif(
+    not AUTH_CONFIG_AVAILABLE,
+    reason="Auth service components not available",
+)
+async def test_register_login_non_ascii_username(client: AsyncClient):
+    user_data = get_unique_user_data("non_ascii")
+    user_data["username"] = "用户" + uuid.uuid4().hex[:4]
+    user_data["email"] = f"用户{uuid.uuid4().hex[:4]}@example.com"
+    await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
+
+    login_payload = {"username": user_data["username"], "password": user_data["password"]}
+    response = await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
+    assert response.status_code == status.HTTP_200_OK
+    assert "access_token" in response.json()
+
+
+@pytest.mark.skipif(
     not AUTH_CONFIG_AVAILABLE, reason="Auth service components not available"
 )
 async def test_login_incorrect_password(client: AsyncClient):
