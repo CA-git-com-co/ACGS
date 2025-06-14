@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
-COPY ../../../shared /app/shared
+# Note: The shared directory should be mounted as a volume at runtime.
 
 # Create necessary directories
 RUN mkdir -p /app/config /app/logs
