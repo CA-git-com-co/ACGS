@@ -197,7 +197,7 @@ def initialize_acgs_errors():
             category=ErrorCategory.DATA_CORRUPTION,
             severity=ErrorSeverity.HIGH,
             status=ErrorStatus.FIXED,
-            file_path="docs/research/AlphaEvolve-ACGS_Integration_System/Research Workflow Enhancement Analysis_.md",
+            file_path="docs/research/AlphaEvolve-ACGS_Integration_System/research_workflow_enhancement_analysis.md",
             line_number=21,
             fix_description="Corrected corrupted value to '47.8%' based on pattern analysis",
         ),
@@ -219,7 +219,7 @@ def initialize_acgs_errors():
             category=ErrorCategory.NUMERICAL_MISMATCH,
             severity=ErrorSeverity.HIGH,
             status=ErrorStatus.IDENTIFIED,
-            file_path="docs/research/AlphaEvolve-ACGS_Integration_System/Research Workflow Enhancement Analysis_.md",
+            file_path="docs/research/AlphaEvolve-ACGS_Integration_System/research_workflow_enhancement_analysis.md",
         ),
         ErrorRecord(
             id="ERR-004",
@@ -228,7 +228,7 @@ def initialize_acgs_errors():
             category=ErrorCategory.FORMATTING,
             severity=ErrorSeverity.LOW,
             status=ErrorStatus.IDENTIFIED,
-            file_path="docs/research/AlphaEvolve-ACGS_Integration_System/Research Workflow Enhancement Analysis_.md",
+            file_path="docs/research/AlphaEvolve-ACGS_Integration_System/research_workflow_enhancement_analysis.md",
         ),
         ErrorRecord(
             id="ERR-005",
@@ -248,7 +248,7 @@ def initialize_acgs_errors():
             category=ErrorCategory.LOGIC,
             severity=ErrorSeverity.MEDIUM,
             status=ErrorStatus.IDENTIFIED,
-            file_path="docs/research/AlphaEvolve-ACGS_Integration_System/Research Workflow Enhancement Analysis_.md",
+            file_path="docs/research/AlphaEvolve-ACGS_Integration_System/research_workflow_enhancement_analysis.md",
         ),
         ErrorRecord(
             id="ERR-007",
