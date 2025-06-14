@@ -39,6 +39,7 @@ Welcome to the AI Compliance Governance System (ACGS-1) documentation - a compre
 - **[ACGS-PGP Framework](research/ACGS-PGP_Framework/)**: Core framework research and papers
 - **[AlphaEvolve-ACGS Integration](research/AlphaEvolve-ACGS_Integration_System/)**: Integration system documentation
 - **[arXiv Submissions](research/)**: Research papers and academic submissions
+- **[Darwin Gödel Machine Overview](../README_DGM.md)**: Self-improving software engineering agent
 
 ## Quick Navigation
 
