@@ -507,6 +507,7 @@ export GEMINI_API_KEY="your_gemini_key"
 - **[Deployment Guide](docs/deployment/README.md)**: Deployment instructions
 - **[Developer Guide](docs/development/README.md)**: Development workflows
 - **[Research Documentation](docs/research/README.md)**: Research papers and findings
+- **[AI Research Assistant Guidelines](docs/ai-research-assistant-guidelines.md)**: Development best practices emphasizing cross-referencing and customizable search parameters
 - **[Reorganization Report](ORGANIZE.md)**: Details on repository structure
 
 ## 🤝 Contributing
