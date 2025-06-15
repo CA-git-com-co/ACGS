@@ -2,23 +2,23 @@
 class MockPyDatalog:
     @staticmethod
     def clear():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
     @staticmethod
     def load(rule_str: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
     @staticmethod
     def ask(query_string: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         # Mock query result - return a simple mock result
         class MockResult:
             answers = [()]  # Mock successful query
@@ -31,26 +31,26 @@ pyDatalog = MockPyDatalog()
 
 class DatalogEngine:
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.rules = []
         self.facts = []
         self.clear_rules_and_facts()
 
     def clear_rules_and_facts(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clears all rules and facts from the datalog engine."""
         self.rules = []
         self.facts = []
         pyDatalog.clear()
 
     def load_rules(self, rules: list[str]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Loads a list of Datalog rules (as strings) into the engine.
         Each rule string should be a valid datalog rule.
@@ -64,9 +64,9 @@ class DatalogEngine:
                 print(f"Error loading Datalog rule: '{rule_str}'. Error: {e}")
 
     def add_facts(self, facts: list[str]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Adds a list of Datalog facts (as strings) into the engine.
         Each fact string should be a valid datalog fact.

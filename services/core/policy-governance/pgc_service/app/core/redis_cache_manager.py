@@ -79,9 +79,9 @@ class RedisCacheManager:
     """
     Enterprise Redis cache manager with HMAC integrity verification.
     
-    // requires: Redis connection available, HMAC secret configured
-    // ensures: cache operations complete within 2ms, integrity verified
-    // sha256: redis_cache_manager_v1.0_enterprise_acgs1
+        # requires: Redis connection available, HMAC secret configured
+        # ensures: cache operations complete within 2ms, integrity verified
+        # sha256: redis_cache_manager_v1.0_enterprise_acgs1
     """
 
     def __init__(

@@ -150,9 +150,9 @@ class HardwareAccelerationManager:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.metrics = get_metrics("hardware_acceleration_manager")
         self.ultra_low_latency_optimizer = get_ultra_low_latency_optimizer()
 
@@ -169,9 +169,9 @@ class HardwareAccelerationManager:
         asyncio.create_task(self._detect_available_hardware())
 
     async def _detect_available_hardware(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Detect and catalog available hardware acceleration capabilities."""
         logger.info("Detecting available hardware acceleration capabilities...")
 

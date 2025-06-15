@@ -175,9 +175,9 @@ class ConstitutionalDriftDetector:
         check_interval_hours: int = 24,
         embedding_model: str = "all-MiniLM-L6-v2",
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.semantic_drift_threshold = semantic_drift_threshold
         self.structural_drift_threshold = structural_drift_threshold
         self.procedural_drift_threshold = procedural_drift_threshold
@@ -218,9 +218,9 @@ class ConstitutionalDriftDetector:
         )
 
     async def initialize_embedding_model(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize semantic embedding model."""
         if EMBEDDINGS_AVAILABLE:
             try:
@@ -233,9 +233,9 @@ class ConstitutionalDriftDetector:
             logger.warning("Sentence transformers not available, using mock embeddings")
 
     async def initialize_constitutional_validator(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize constitutional compliance validator."""
         if VALIDATOR_AVAILABLE:
             try:
