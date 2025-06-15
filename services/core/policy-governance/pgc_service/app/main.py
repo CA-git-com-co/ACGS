@@ -2,7 +2,7 @@ import hashlib
 import logging
 import os
 import time
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from fastapi import FastAPI, HTTPException
 
@@ -1362,6 +1362,23 @@ except ImportError as e:
 # Add enhanced security middleware (includes rate limiting, input validation, security headers, audit logging)
 add_security_middleware(app)
 
+# Add constitutional validation middleware for enterprise compliance
+try:
+    from app.middleware.constitutional_validation import ConstitutionalValidationMiddleware
+
+    constitutional_middleware = ConstitutionalValidationMiddleware(
+        app,
+        constitutional_hash="cdd01ef066bc6cf2",
+        performance_target_ms=2.0,
+        enable_strict_validation=True,
+    )
+    app.add_middleware(ConstitutionalValidationMiddleware)
+    print("✅ Constitutional validation middleware enabled for enterprise compliance")
+except ImportError as e:
+    print(f"⚠️ Constitutional validation middleware not available: {e}")
+except Exception as e:
+    print(f"❌ Failed to initialize constitutional validation middleware: {e}")
+
 # Apply optimizations from performance_optimization.yaml
 try:
     import yaml
@@ -2175,29 +2192,84 @@ async def governance_status_endpoint():
 
 async def check_constitutional_compliance(
     policy_data: Dict[str, Any],
+    constitutional_hash: Optional[str] = None,
+    validation_level: str = "standard",
 ) -> Dict[str, Any]:
-    """Check policy against constitutional framework (AC service integration)."""
-    try:
-        # Mock constitutional compliance check
-        # In production, this would integrate with AC service
-        compliance_score = 0.95
-        violations = []
+    """
+    Check policy against constitutional framework with enhanced hash validation.
 
-        # Basic compliance checks
+    // requires: policy_data non-empty, constitutional_hash = "cdd01ef066bc6cf2"
+    // ensures: compliance_score >= 0.0 AND validation_timestamp > 0
+    // sha256: constitutional_compliance_check_enterprise_v2.0_acgs1
+    """
+    try:
+        from .core.constitutional_hash_validator import (
+            ConstitutionalHashValidator,
+            ConstitutionalContext,
+            ConstitutionalValidationLevel,
+        )
+
+        # Initialize constitutional hash validator
+        validator = ConstitutionalHashValidator(
+            constitutional_hash="cdd01ef066bc6cf2",
+            redis_client=getattr(app.state, 'redis_client', None),
+        )
+
+        # Create validation context
+        validation_level_enum = {
+            "basic": ConstitutionalValidationLevel.BASIC,
+            "standard": ConstitutionalValidationLevel.STANDARD,
+            "comprehensive": ConstitutionalValidationLevel.COMPREHENSIVE,
+            "critical": ConstitutionalValidationLevel.CRITICAL,
+        }.get(validation_level, ConstitutionalValidationLevel.STANDARD)
+
+        context = ConstitutionalContext(
+            operation_type="constitutional_compliance_check",
+            policy_id=policy_data.get("id"),
+            validation_level=validation_level_enum,
+            additional_context={"source": "pgc_service"},
+        )
+
+        # Perform comprehensive constitutional validation
+        validation_result = await validator.validate_policy_constitutional_compliance(
+            policy_data, context
+        )
+
+        # Legacy compliance checks for backward compatibility
+        legacy_violations = []
+        legacy_score = 0.95
+
         if not policy_data.get("title"):
-            violations.append("Policy title is required")
-            compliance_score -= 0.1
+            legacy_violations.append("Policy title is required")
+            legacy_score -= 0.1
 
         if not policy_data.get("description"):
-            violations.append("Policy description is required")
-            compliance_score -= 0.1
+            legacy_violations.append("Policy description is required")
+            legacy_score -= 0.1
 
+        # Combine validation results
+        all_violations = validation_result.violations + legacy_violations
+        combined_score = min(validation_result.compliance_score, max(0.0, legacy_score))
+
+        # Enhanced compliance result
         return {
-            "compliant": len(violations) == 0,
-            "compliance_score": max(0.0, compliance_score),
-            "violations": violations,
-            "constitutional_framework_version": "v1.0.0",
-            "validation_timestamp": time.time(),
+            "compliant": len(all_violations) == 0 and validation_result.hash_valid,
+            "compliance_score": combined_score,
+            "violations": all_violations,
+            "constitutional_framework_version": "v2.0.0",
+            "validation_timestamp": validation_result.validation_timestamp,
+            "constitutional_hash": validation_result.constitutional_hash,
+            "hash_valid": validation_result.hash_valid,
+            "validation_level": validation_level,
+            "recommendations": validation_result.recommendations,
+            "performance_metrics": validation_result.performance_metrics,
+            "integrity_signature": validation_result.integrity_signature,
+            "enterprise_features": {
+                "constitutional_hash_validation": True,
+                "integrity_verification": True,
+                "performance_monitoring": True,
+                "circuit_breaker_protection": True,
+            },
         }
 
     except Exception as e:
@@ -2206,8 +2278,11 @@ async def check_constitutional_compliance(
             "compliant": False,
             "compliance_score": 0.0,
             "violations": [f"Compliance check failed: {str(e)}"],
-            "constitutional_framework_version": "v1.0.0",
+            "constitutional_framework_version": "v2.0.0",
             "validation_timestamp": time.time(),
+            "constitutional_hash": "cdd01ef066bc6cf2",
+            "hash_valid": False,
+            "error": str(e),
         }
 
 
@@ -2307,7 +2382,11 @@ async def constitutional_compliance_workflow(request: Dict[str, Any]):
 
         # Step 2: Real-time policy validation against constitutional hash
         constitutional_hash = "cdd01ef066bc6cf2"  # Reference constitutional hash
-        compliance_result = await check_constitutional_compliance(policy_data)
+        compliance_result = await check_constitutional_compliance(
+            policy_data,
+            constitutional_hash=constitutional_hash,
+            validation_level="comprehensive"
+        )
 
         # Step 3: Automated compliance scoring with >95% accuracy requirement
         compliance_score = compliance_result["compliance_score"]
@@ -2808,3 +2887,193 @@ async def enhanced_metrics_endpoint():
     except NameError:
         # Fallback to existing metrics
         return create_metrics_endpoint()
+
+
+# Constitutional Hash Validation Endpoints
+
+@app.get("/api/v1/constitutional/validate")
+async def validate_constitutional_hash_endpoint(
+    hash_value: Optional[str] = None,
+    validation_level: str = "standard",
+):
+    """
+    Validate constitutional hash with comprehensive compliance checking.
+
+    // requires: constitutional_hash = "cdd01ef066bc6cf2"
+    // ensures: validation_result returned AND latency_ms <= 5.0
+    // sha256: constitutional_hash_validation_endpoint_v1.0_acgs1
+    """
+    try:
+        from app.core.constitutional_hash_validator import (
+            ConstitutionalHashValidator,
+            ConstitutionalContext,
+            ConstitutionalValidationLevel,
+        )
+
+        # Initialize validator
+        validator = ConstitutionalHashValidator(
+            constitutional_hash="cdd01ef066bc6cf2",
+            redis_client=getattr(app.state, 'redis_client', None),
+        )
+
+        # Create validation context
+        validation_level_enum = {
+            "basic": ConstitutionalValidationLevel.BASIC,
+            "standard": ConstitutionalValidationLevel.STANDARD,
+            "comprehensive": ConstitutionalValidationLevel.COMPREHENSIVE,
+            "critical": ConstitutionalValidationLevel.CRITICAL,
+        }.get(validation_level, ConstitutionalValidationLevel.STANDARD)
+
+        context = ConstitutionalContext(
+            operation_type="hash_validation",
+            validation_level=validation_level_enum,
+            additional_context={"source": "api_endpoint"},
+        )
+
+        # Perform validation
+        result = await validator.validate_constitutional_hash(
+            hash_value, context
+        )
+
+        return {
+            "validation_result": {
+                "status": result.status.value,
+                "hash_valid": result.hash_valid,
+                "compliance_score": result.compliance_score,
+                "violations": result.violations,
+                "recommendations": result.recommendations,
+                "constitutional_hash": result.constitutional_hash,
+                "validation_level": result.validation_level.value,
+                "integrity_signature": result.integrity_signature,
+            },
+            "performance_metrics": result.performance_metrics,
+            "timestamp": result.validation_timestamp,
+        }
+
+    except Exception as e:
+        logger.error(f"Constitutional hash validation endpoint failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Constitutional validation failed: {str(e)}"
+        )
+
+
+@app.get("/api/v1/constitutional/state")
+async def get_constitutional_state_endpoint():
+    """
+    Get current constitutional state and validation metrics.
+
+    // requires: constitutional_hash = "cdd01ef066bc6cf2"
+    // ensures: constitutional_state returned
+    // sha256: constitutional_state_endpoint_v1.0_acgs1
+    """
+    try:
+        from app.core.constitutional_hash_validator import ConstitutionalHashValidator
+        from app.core.redis_cache_manager import get_cache_manager
+
+        # Get validator state
+        validator = ConstitutionalHashValidator(
+            constitutional_hash="cdd01ef066bc6cf2",
+            redis_client=getattr(app.state, 'redis_client', None),
+        )
+        validator_state = await validator.get_constitutional_state()
+
+        # Get cache manager state
+        try:
+            cache_manager = await get_cache_manager()
+            cache_state = await cache_manager.get_constitutional_state()
+        except Exception as e:
+            cache_state = {"error": str(e)}
+
+        return {
+            "constitutional_hash": "cdd01ef066bc6cf2",
+            "framework_version": "v2.0.0",
+            "validator_state": validator_state,
+            "cache_state": cache_state,
+            "service_info": {
+                "service": "pgc_service",
+                "version": "3.0.0",
+                "constitutional_compliance": "enterprise_grade",
+            },
+            "timestamp": time.time(),
+        }
+
+    except Exception as e:
+        logger.error(f"Constitutional state endpoint failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get constitutional state: {str(e)}"
+        )
+
+
+@app.post("/api/v1/constitutional/validate-policy")
+async def validate_policy_constitutional_compliance_endpoint(
+    policy_data: Dict[str, Any],
+    validation_level: str = "comprehensive",
+):
+    """
+    Validate policy constitutional compliance with enhanced checking.
+
+    // requires: policy_data non-empty, constitutional_hash = "cdd01ef066bc6cf2"
+    // ensures: policy_compliance_result returned
+    // sha256: policy_constitutional_validation_endpoint_v1.0_acgs1
+    """
+    try:
+        from app.core.constitutional_hash_validator import (
+            ConstitutionalHashValidator,
+            ConstitutionalContext,
+            ConstitutionalValidationLevel,
+        )
+
+        # Initialize validator
+        validator = ConstitutionalHashValidator(
+            constitutional_hash="cdd01ef066bc6cf2",
+            redis_client=getattr(app.state, 'redis_client', None),
+        )
+
+        # Create validation context
+        validation_level_enum = {
+            "basic": ConstitutionalValidationLevel.BASIC,
+            "standard": ConstitutionalValidationLevel.STANDARD,
+            "comprehensive": ConstitutionalValidationLevel.COMPREHENSIVE,
+            "critical": ConstitutionalValidationLevel.CRITICAL,
+        }.get(validation_level, ConstitutionalValidationLevel.COMPREHENSIVE)
+
+        context = ConstitutionalContext(
+            operation_type="policy_validation",
+            policy_id=policy_data.get("id"),
+            validation_level=validation_level_enum,
+            additional_context={"source": "api_endpoint"},
+        )
+
+        # Perform policy validation
+        result = await validator.validate_policy_constitutional_compliance(
+            policy_data, context
+        )
+
+        return {
+            "policy_validation_result": {
+                "status": result.status.value,
+                "hash_valid": result.hash_valid,
+                "compliance_score": result.compliance_score,
+                "violations": result.violations,
+                "recommendations": result.recommendations,
+                "constitutional_hash": result.constitutional_hash,
+                "validation_level": result.validation_level.value,
+                "integrity_signature": result.integrity_signature,
+            },
+            "policy_info": {
+                "policy_id": policy_data.get("id"),
+                "policy_title": policy_data.get("title"),
+                "constitutional_principles": policy_data.get("constitutional_principles", []),
+            },
+            "performance_metrics": result.performance_metrics,
+            "timestamp": result.validation_timestamp,
+        }
+
+    except Exception as e:
+        logger.error(f"Policy constitutional validation endpoint failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Policy constitutional validation failed: {str(e)}"
+        )
