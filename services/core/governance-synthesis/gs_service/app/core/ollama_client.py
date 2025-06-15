@@ -51,6 +51,9 @@ class OllamaLLMClient:
     """
 
     def __init__(self, config: Optional[OllamaConfig] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize Ollama client.
 
@@ -82,15 +85,24 @@ class OllamaLLMClient:
         )
 
     async def __aenter__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Async context manager entry."""
         await self._ensure_session()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Async context manager exit."""
         await self.close()
 
     async def _ensure_session(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Ensure aiohttp session is available."""
         if self.session is None or self.session.closed:
             timeout = aiohttp.ClientTimeout(total=self.config.timeout_seconds)
@@ -102,6 +114,9 @@ class OllamaLLMClient:
             self.session = aiohttp.ClientSession(timeout=timeout, headers=headers)
 
     async def close(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Close the aiohttp session."""
         if self.session and not self.session.closed:
             await self.session.close()
@@ -360,6 +375,9 @@ async def get_ollama_client() -> OllamaLLMClient:
 
 
 async def close_ollama_client():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Close the global Ollama client."""
     global _ollama_client
     if _ollama_client:

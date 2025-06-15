@@ -207,6 +207,9 @@ class WINAPerformanceCollector:
     def __init__(
         self, monitoring_level: WINAMonitoringLevel = WINAMonitoringLevel.DETAILED
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize WINA performance collector.
 

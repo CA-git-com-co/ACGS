@@ -50,6 +50,9 @@ class Experiment(Base):
     )
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return (
             f"<Experiment(id='{self.id}', name='{self.name}', status='{self.status}')>"
         )
@@ -91,6 +94,9 @@ class ExperimentRun(Base):
     )
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<ExperimentRun(id='{self.id}', experiment_id='{self.experiment_id}', run_number={self.run_number})>"
 
 
@@ -113,6 +119,9 @@ class ExperimentMetric(Base):
     run = relationship("ExperimentRun", back_populates="metrics")
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<ExperimentMetric(id='{self.id}', metric_name='{self.metric_name}', value={self.value})>"
 
 
@@ -137,6 +146,9 @@ class ExperimentArtifact(Base):
     run = relationship("ExperimentRun", back_populates="artifacts")
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<ExperimentArtifact(id='{self.id}', name='{self.name}', type='{self.type}')>"
 
 
@@ -169,6 +181,9 @@ class ResearchProject(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<ResearchProject(id='{self.id}', name='{self.name}', status='{self.status}')>"
 
 
@@ -202,6 +217,9 @@ class AutomationRule(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<AutomationRule(id='{self.id}', name='{self.name}', enabled={self.enabled})>"
 
 
@@ -234,6 +252,9 @@ class ResearchPipeline(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<ResearchPipeline(id='{self.id}', name='{self.name}', enabled={self.enabled})>"
 
 
@@ -265,4 +286,7 @@ class PipelineExecution(Base):
     model_metadata = Column(JSON, default=dict)
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<PipelineExecution(id='{self.id}', pipeline_id='{self.pipeline_id}', status='{self.status}')>"

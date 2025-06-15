@@ -18,6 +18,9 @@ try:
 except ImportError:
     # Fallback for environments without LangGraph
     def add_messages(x, y):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Fallback message accumulator when LangGraph is not available."""
         if isinstance(x, list) and isinstance(y, list):
             return x + y

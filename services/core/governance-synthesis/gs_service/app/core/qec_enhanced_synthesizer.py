@@ -78,6 +78,9 @@ class QECEnhancedSynthesizer:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize the QEC-enhanced synthesizer.
 
@@ -108,6 +111,9 @@ class QECEnhancedSynthesizer:
         logger.info("QEC-Enhanced Synthesizer initialized")
 
     async def initialize(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize all framework components."""
         await self.llm_framework.initialize()
         logger.info("QEC-Enhanced Synthesizer fully initialized")

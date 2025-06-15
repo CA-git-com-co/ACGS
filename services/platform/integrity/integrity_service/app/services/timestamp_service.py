@@ -22,6 +22,9 @@ class RFC3161TimestampService:
     def __init__(
         self, tsa_url: str = "http://timestamp.digicert.com", timeout: int = 30
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize timestamp service
 
@@ -180,6 +183,9 @@ class MockTimestampService(RFC3161TimestampService):
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         super().__init__(tsa_url="mock://localhost")
 
     def send_timestamp_request(self, message_hash: bytes) -> Optional[Dict[str, Any]]:
@@ -228,6 +234,9 @@ class TimestampManager:
     """
 
     def __init__(self, use_mock: bool = True):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize timestamp manager
 

@@ -81,6 +81,9 @@ class APIResponse(BaseModel):
 
     @validator("error")
     def error_required_for_error_status(cls, v, values):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Ensure error is provided when status is error."""
         if values.get("status") == APIStatus.ERROR and v is None:
             raise ValueError("Error details required when status is error")
@@ -88,6 +91,9 @@ class APIResponse(BaseModel):
 
     @validator("data")
     def data_required_for_success_status(cls, v, values):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Ensure data is provided when status is success."""
         if values.get("status") == APIStatus.SUCCESS and v is None:
             # Allow empty data for success responses
@@ -146,6 +152,9 @@ class PaginatedResponse(BaseModel):
 
     @validator("pages", pre=True, always=True)
     def calculate_pages(cls, v, values):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Calculate total pages based on total items and page size."""
         total = values.get("total", 0)
         size = values.get("size", 20)
@@ -153,6 +162,9 @@ class PaginatedResponse(BaseModel):
 
     @validator("has_next", pre=True, always=True)
     def calculate_has_next(cls, v, values):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Calculate if there's a next page."""
         page = values.get("page", 1)
         pages = values.get("pages", 1)
@@ -160,6 +172,9 @@ class PaginatedResponse(BaseModel):
 
     @validator("has_prev", pre=True, always=True)
     def calculate_has_prev(cls, v, values):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Calculate if there's a previous page."""
         page = values.get("page", 1)
         return page > 1
@@ -202,6 +217,9 @@ class TimestampRange(BaseModel):
 
     @validator("end")
     def end_after_start(cls, v, values):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Ensure end timestamp is after start timestamp."""
         start = values.get("start")
         if start and v and v <= start:

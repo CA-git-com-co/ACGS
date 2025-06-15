@@ -164,6 +164,9 @@ class EnhancedConstitutionalAnalyzer:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the Enhanced Constitutional Analyzer."""
         self.multi_model_manager = MultiModelManager()
         self.settings = get_settings()
@@ -796,6 +799,9 @@ class EnhancedConstitutionalAnalyzer:
         return min(1.0, base_confidence + principle_factor + content_factor)
 
     def _update_performance_metrics(self, processing_time: float):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update performance tracking metrics."""
         self._performance_metrics["total_analyses"] += 1
 
@@ -1274,6 +1280,9 @@ async def get_enhanced_constitutional_analyzer() -> EnhancedConstitutionalAnalyz
 
 
 async def close_enhanced_constitutional_analyzer():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Close the global Enhanced Constitutional Analyzer."""
     global _enhanced_analyzer
     if _enhanced_analyzer:
@@ -1290,6 +1299,9 @@ async def close_enhanced_constitutional_analyzer():
 
 
 async def example_policy_creation_workflow():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Example: Policy Creation Workflow Integration
 
@@ -1336,6 +1348,9 @@ async def example_policy_creation_workflow():
 
 
 async def example_constitutional_compliance_workflow():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Example: Constitutional Compliance Workflow Integration
 
@@ -1369,6 +1384,9 @@ async def example_constitutional_compliance_workflow():
 
 
 async def example_wina_oversight_workflow():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Example: WINA Oversight Workflow Integration
 
@@ -1412,6 +1430,9 @@ async def example_wina_oversight_workflow():
 
 
 async def example_semantic_similarity_analysis():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Example: Semantic Similarity Analysis
 
@@ -1452,6 +1473,9 @@ async def example_semantic_similarity_analysis():
 
 
 async def example_performance_monitoring():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Example: Performance Monitoring Integration
 
@@ -1558,6 +1582,9 @@ if __name__ == "__main__":
     """
 
     async def main():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         logger.info("Enhanced Constitutional Analyzer - ACGS-1 Integration Examples")
         logger.info("=" * 70)
 

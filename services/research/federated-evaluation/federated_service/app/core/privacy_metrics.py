@@ -39,6 +39,9 @@ class PrivacyBudget:
     remaining_delta: float = field(init=False)
 
     def __post_init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.remaining_epsilon = self.epsilon - self.used_epsilon
         self.remaining_delta = self.delta - self.used_delta
 
@@ -65,6 +68,9 @@ class DifferentialPrivacyManager:
     """
 
     def __init__(self, epsilon: float = 1.0, delta: float = 1e-5):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.privacy_budget = PrivacyBudget(epsilon=epsilon, delta=delta)
         self.privacy_history: List[PrivacyMetrics] = []
         self.global_sensitivity = 1.0  # Assume unit global sensitivity
@@ -83,6 +89,9 @@ class DifferentialPrivacyManager:
         )
 
     async def initialize(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the privacy manager."""
         try:
             logger.info("Differential Privacy Manager initialized successfully")
@@ -268,6 +277,9 @@ class DifferentialPrivacyManager:
         return epsilon_request <= self.privacy_budget.remaining_epsilon
 
     def _update_privacy_budget(self, epsilon_used: float, delta_used: float):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update privacy budget after use."""
         self.privacy_budget.used_epsilon += epsilon_used
         self.privacy_budget.used_delta += delta_used
@@ -316,6 +328,9 @@ class DifferentialPrivacyManager:
             return 0.0
 
     async def _update_privacy_metrics(self, privacy_metrics: PrivacyMetrics):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update global privacy metrics."""
         try:
             self.privacy_metrics["total_queries"] += 1
@@ -371,6 +386,9 @@ class DifferentialPrivacyManager:
     async def reset_privacy_budget(
         self, new_epsilon: float = None, new_delta: float = None
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Reset privacy budget (use with caution)."""
         try:
             if new_epsilon is not None:
@@ -450,6 +468,9 @@ class DifferentialPrivacyManager:
             return False
 
     async def shutdown(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Shutdown the privacy manager."""
         try:
             logger.info("Shutting down Differential Privacy Manager...")

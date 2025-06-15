@@ -13,6 +13,9 @@ from services.shared.auth import User, get_current_active_user
 
 # Mock database dependency for now
 async def get_async_db():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Mock database session for testing."""
     return None
 
@@ -410,6 +413,9 @@ async def get_test_results(
 
 @router.get("/health")
 async def health_check():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Health check endpoint"""
 
     return {

@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-06-15T04:38:51Z",
+  "validation_type": "quantumagi_integration",
+  "cluster": "devnet",
+  "constitution_hash": "cdd01ef066bc6cf2",
+  "program_ids": {
+  "quantumagi_core": "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4",
+  "appeals": "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ",
+  "logging": "7ZVxgkky5V12gvpfDh174nsDT8vfT7vQhN77C6csamsw"
+},
+  "validation_results": {
+    "solana_connection": "passed",
+    "program_deployments": "validated",
+    "constitutional_framework": "validated",
+    "acgs_services": "checked",
+    "pgc_compliance": "tested",
+    "governance_workflows": "validated",
+    "performance_metrics": "collected"
+  },
+  "summary": {
+    "overall_status": "healthy",
+    "critical_issues": 0,
+    "warnings": 0,
+    "recommendations": [
+      "Monitor service response times",
+      "Regular constitutional compliance checks",
+      "Periodic program deployment validation"
+    ]
+  }
+}

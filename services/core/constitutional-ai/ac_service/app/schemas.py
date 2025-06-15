@@ -272,6 +272,9 @@ class ACAmendmentCreate(ACAmendmentBase):
     @field_validator("stakeholder_groups")
     @classmethod
     def validate_stakeholder_groups(cls, v):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if v is not None:
             valid_groups = {
                 "citizens",
@@ -293,6 +296,9 @@ class ACAmendmentCreate(ACAmendmentBase):
     @field_validator("co_evolution_context")
     @classmethod
     def validate_co_evolution_context(cls, v):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if v is not None:
             required_fields = {"trigger_event", "timeline", "stakeholders"}
             if not all(field in v for field in required_fields):

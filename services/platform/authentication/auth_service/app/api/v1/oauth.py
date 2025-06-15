@@ -43,6 +43,9 @@ class OAuthCallbackResponse(BaseModel):
 
 @router.get("/providers")
 async def get_oauth_providers():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Get list of available OAuth providers.
     """

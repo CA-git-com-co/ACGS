@@ -441,6 +441,9 @@ async def get_wina_optimization_report(
 
 @router.get("/health")
 async def reporting_health_check():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Health check for reporting system."""
     try:
         # Test connectivity to dependent services

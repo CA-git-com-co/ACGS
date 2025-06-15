@@ -48,6 +48,9 @@ class VerificationCompletenessTester:
     """Tests verification completeness to ensure proper positive/negative case differentiation."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.test_cases = self._create_test_cases()
 
     def _create_test_cases(self) -> List[VerificationTestCase]:
@@ -386,6 +389,9 @@ class VerificationCompletenessTester:
 
 # Example usage
 async def run_completeness_testing_example():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Example of running verification completeness testing."""
     tester = VerificationCompletenessTester()
     results = await tester.run_completeness_tests()

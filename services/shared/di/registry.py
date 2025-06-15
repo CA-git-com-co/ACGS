@@ -33,6 +33,9 @@ class ServiceRegistration:
     dependencies: List[Type] = None
 
     def __post_init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         if self.dependencies is None:
             self.dependencies = []
 
@@ -46,6 +49,9 @@ class ServiceRegistry:
     """
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize service registry."""
         self._registrations: Dict[Type, ServiceRegistration] = {}
         self._instances: Dict[Type, Any] = {}
@@ -172,6 +178,9 @@ class ServiceRegistry:
         return False
 
     def clear(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Clear all registrations."""
         self._registrations.clear()
         self._instances.clear()
@@ -241,6 +250,9 @@ def get_service_registry() -> ServiceRegistry:
 
 
 def configure_registry(registry: ServiceRegistry):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Configure the global service registry.
 

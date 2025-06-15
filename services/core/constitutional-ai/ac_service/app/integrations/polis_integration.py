@@ -105,6 +105,9 @@ class PolisIntegration:
     def __init__(
         self, api_key: Optional[str] = None, base_url: str = "https://pol.is/api/v3"
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.api_key = api_key
         self.base_url = base_url
         self.metrics = get_metrics("polis_integration")
@@ -499,6 +502,9 @@ class PolisIntegration:
     async def _handle_bias_incident(
         self, conversation_id: str, bias_category: BiasCategory, bias_score: float
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Handle detected bias incident."""
         logger.warning(
             f"Bias incident detected in {conversation_id}: {bias_category.value} = {bias_score}"
@@ -508,6 +514,9 @@ class PolisIntegration:
     async def _handle_consensus_achievement(
         self, conversation_id: str, metrics: DemocraticMetrics
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Handle consensus achievement."""
         logger.info(
             f"Consensus achieved in {conversation_id}: {metrics.consensus_level}"

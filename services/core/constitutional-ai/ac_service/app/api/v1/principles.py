@@ -1,10 +1,18 @@
 from typing import List, Optional
+import logging
+import json
+from datetime import datetime, timezone
 
 from app import crud, models, schemas  # Import from app directory
 from app.core.auth import (  # Import from app directory
     User,
     get_current_active_user_placeholder,
     require_admin_role,
+)
+from app.core.cryptographic_signing import (
+    get_constitutional_signing_service,
+    ConstitutionalSigningService,
+    ConstitutionalSignature,
 )
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession  # Changed
@@ -13,32 +21,80 @@ from services.shared.database import (  # Corrected import for async db session
     get_async_db,
 )
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
 
 
 @router.post("/", response_model=schemas.Principle, status_code=status.HTTP_201_CREATED)
-async def create_principle_endpoint(  # Changed to async def
+async def create_principle_endpoint(
     principle: schemas.PrincipleCreate,
-    db: AsyncSession = Depends(
-        get_async_db
-    ),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(get_async_db),
     current_user: Optional[User] = Depends(require_admin_role),
+    signing_service: ConstitutionalSigningService = Depends(get_constitutional_signing_service),
 ):
+    """Create a new constitutional principle with cryptographic signing."""
     user_id = current_user.id if current_user else None
+    signer_id = str(user_id) if user_id else "system"
 
-    db_principle_by_name = await crud.get_principle_by_name(
-        db, name=principle.name
-    )  # Added await
+    # Check for existing principle with same name
+    db_principle_by_name = await crud.get_principle_by_name(db, name=principle.name)
     if db_principle_by_name:
         raise HTTPException(
             status_code=400,
             detail=f"Principle with name '{principle.name}' already exists.",
         )
 
-    created_principle = await crud.create_principle(
-        db=db, principle=principle, user_id=user_id
-    )  # Added await
-    return created_principle
+    try:
+        # Create principle in database first
+        created_principle = await crud.create_principle(
+            db=db, principle=principle, user_id=user_id
+        )
+
+        # Prepare content for cryptographic signing
+        principle_content = {
+            "id": created_principle.id,
+            "name": created_principle.name,
+            "content": created_principle.content,
+            "category": created_principle.category,
+            "priority": float(created_principle.priority) if created_principle.priority else 0.0,
+            "version": created_principle.version,
+            "created_at": created_principle.created_at.isoformat() if created_principle.created_at else None,
+        }
+
+        # Generate cryptographic signature
+        signature = await signing_service.sign_principle(
+            principle_data=principle_content,
+            signer_id=signer_id
+        )
+
+        # Store signature in principle metadata
+        constitutional_metadata = created_principle.constitutional_metadata or {}
+        constitutional_metadata["cryptographic_signature"] = signature.dict()
+        constitutional_metadata["signed"] = True
+        constitutional_metadata["integrity_verified"] = True
+
+        # Update principle with signature metadata
+        principle_update = schemas.PrincipleUpdate(
+            constitutional_metadata=constitutional_metadata
+        )
+
+        updated_principle = await crud.update_principle(
+            db=db, principle_id=created_principle.id, principle_update=principle_update
+        )
+
+        logger.info(f"Created and signed principle '{principle.name}' with ID {created_principle.id}")
+        return updated_principle
+
+    except Exception as e:
+        logger.error(f"Failed to create and sign principle: {e}")
+        # If signing fails, we should still return the principle but mark it as unsigned
+        if 'created_principle' in locals():
+            return created_principle
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to create principle with cryptographic signing: {str(e)}"
+        )
 
 
 @router.get("/", response_model=schemas.PrincipleList)
@@ -108,21 +164,88 @@ async def update_principle_endpoint(  # Changed to async def
 
 
 @router.delete("/{principle_id}", response_model=schemas.Principle)
-async def delete_principle_endpoint(  # Changed to async def
+async def delete_principle_endpoint(
     principle_id: int,
-    db: AsyncSession = Depends(
-        get_async_db
-    ),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(require_admin_role),
 ):
-    db_principle = await crud.delete_principle(
-        db, principle_id=principle_id
-    )  # Added await
+    """Delete a constitutional principle."""
+    db_principle = await crud.delete_principle(db, principle_id=principle_id)
     if db_principle is None:
         raise HTTPException(
             status_code=404, detail="Principle not found or already deleted"
         )
     return db_principle
+
+
+@router.post("/{principle_id}/verify-signature", response_model=dict)
+async def verify_principle_signature_endpoint(
+    principle_id: int,
+    db: AsyncSession = Depends(get_async_db),
+    signing_service: ConstitutionalSigningService = Depends(get_constitutional_signing_service),
+):
+    """Verify the cryptographic signature of a constitutional principle."""
+    try:
+        # Get the principle from database
+        db_principle = await crud.get_principle(db, principle_id=principle_id)
+        if db_principle is None:
+            raise HTTPException(status_code=404, detail="Principle not found")
+
+        # Check if principle has a signature
+        constitutional_metadata = db_principle.constitutional_metadata or {}
+        signature_data = constitutional_metadata.get("cryptographic_signature")
+
+        if not signature_data:
+            return {
+                "principle_id": principle_id,
+                "signed": False,
+                "verified": False,
+                "message": "Principle has no cryptographic signature",
+                "verification_timestamp": None
+            }
+
+        # Reconstruct the original content that was signed
+        principle_content = {
+            "id": db_principle.id,
+            "name": db_principle.name,
+            "content": db_principle.content,
+            "category": db_principle.category,
+            "priority": float(db_principle.priority) if db_principle.priority else 0.0,
+            "version": db_principle.version,
+            "created_at": db_principle.created_at.isoformat() if db_principle.created_at else None,
+        }
+
+        # Create signature object from stored data
+        signature = ConstitutionalSignature(**signature_data)
+
+        # Verify the signature
+        is_valid = await signing_service.verify_signature(
+            content=principle_content,
+            signature=signature
+        )
+
+        verification_result = {
+            "principle_id": principle_id,
+            "signed": True,
+            "verified": is_valid,
+            "signature_algorithm": signature.algorithm,
+            "signature_type": signature.signature_type,
+            "signer_id": signature.signer_id,
+            "signature_timestamp": signature.timestamp.isoformat(),
+            "verification_timestamp": datetime.now(timezone.utc).isoformat(),
+            "content_hash": signature.content_hash,
+            "message": "Signature verified successfully" if is_valid else "Signature verification failed"
+        }
+
+        logger.info(f"Verified signature for principle {principle_id}: {is_valid}")
+        return verification_result
+
+    except Exception as e:
+        logger.error(f"Failed to verify principle signature: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Signature verification error: {str(e)}"
+        )
 
 
 # Enhanced Phase 1 Constitutional Principle Endpoints

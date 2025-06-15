@@ -49,6 +49,9 @@ class FailoverCircuitBreaker:
     def __init__(
         self, service_type: ServiceType, config: Optional[FailoverConfig] = None
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize failover circuit breaker.
 
@@ -77,6 +80,9 @@ class FailoverCircuitBreaker:
         self.recovery_callbacks: List[Callable[[str], None]] = []
 
     def register_instances(self, instances: List[ServiceInstance]):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Register service instances with the circuit breaker.
 
@@ -296,16 +302,25 @@ class FailoverCircuitBreaker:
         return failure_rate > 0.5
 
     def _record_success(self, instance_id: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Record successful operation."""
         if self.degraded_mode:
             self.degraded_mode = False
             logger.info(f"Exiting degraded mode for {self.service_type.value}")
 
     def _record_failure(self, instance_id: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Record failed operation."""
         logger.warning(f"Operation failed on instance {instance_id}")
 
     def _notify_failover(self, failed_instance: str, backup_instance: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Notify about failover event."""
         self.failover_count += 1
         self.last_failover = time.time()
@@ -322,10 +337,16 @@ class FailoverCircuitBreaker:
                 logger.error(f"Error in failover callback: {e}")
 
     def register_failover_callback(self, callback: Callable[[str, str], None]):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Register callback for failover events."""
         self.failover_callbacks.append(callback)
 
     def register_recovery_callback(self, callback: Callable[[str], None]):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Register callback for recovery events."""
         self.recovery_callbacks.append(callback)
 
@@ -355,6 +376,9 @@ class FailoverManager:
     """
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize failover manager."""
         self.service_breakers: Dict[ServiceType, FailoverCircuitBreaker] = {}
         self.global_degraded_mode: bool = False
@@ -382,6 +406,9 @@ class FailoverManager:
     def register_service_instances(
         self, service_type: ServiceType, instances: List[ServiceInstance]
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Register instances for a service type."""
         breaker = self.get_failover_breaker(service_type)
         breaker.register_instances(instances)

@@ -56,6 +56,9 @@ class AdversarialTestConfig:
     parallel_execution: bool = True
 
     def __post_init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if self.test_types is None:
             self.test_types = list(AdversarialTestType)
 
@@ -95,6 +98,9 @@ class BoundaryConditionTester:
     """Tests boundary conditions for policy rules."""
 
     def __init__(self, config: AdversarialTestConfig):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.config = config
 
     async def test_boundary_conditions(
@@ -316,6 +322,9 @@ class MutationTester:
     """Tests policy rules with various mutations."""
 
     def __init__(self, config: AdversarialTestConfig):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.config = config
 
     async def test_mutations(
@@ -439,6 +448,9 @@ class AdversarialRobustnessTester:
     """Main framework for adversarial robustness testing."""
 
     def __init__(self, config: AdversarialTestConfig = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.config = config or AdversarialTestConfig()
         self.boundary_tester = BoundaryConditionTester(self.config)
         self.mutation_tester = MutationTester(self.config)

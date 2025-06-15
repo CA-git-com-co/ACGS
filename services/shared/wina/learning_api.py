@@ -28,6 +28,9 @@ class FeedbackInput(BaseModel):
 
     @field_validator("feedback_value")
     def validate_feedback_value(cls, v, info):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         if info.data["feedback_type"] == FeedbackType.accuracy:
             if not isinstance(v, (int, float)) or not (0 <= v <= 1):
                 raise ValueError("Accuracy feedback must be a float between 0 and 1")

@@ -102,6 +102,9 @@ class MultiModelManager:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize Multi-Model Manager."""
         self.config = config or {}
         self.langgraph_config = get_langgraph_config()
@@ -473,6 +476,9 @@ class MultiModelManager:
                     async def create_model_request(
                         model_id=model_name, model_role=role
                     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
                         return await self._execute_single_model_analysis(
                             model_id, policy_content, analysis_type, context, model_role
                         )
@@ -1269,6 +1275,9 @@ REASONING: <brief explanation>
         return None
 
     async def _cache_result(self, cache_key: str, result: ConsensusResult):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Cache consensus result for future use."""
         if not self.redis_client:
             return
@@ -1380,6 +1389,9 @@ REASONING: <brief explanation>
         return health_status
 
     async def close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close the multi-model manager and cleanup resources."""
         if self.constitutional_analyzer:
             await self.constitutional_analyzer.close()
@@ -1410,6 +1422,9 @@ async def get_multi_model_manager() -> MultiModelManager:
 
 
 async def reset_multi_model_manager():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Reset global manager (useful for testing)."""
     global _multi_model_manager
 

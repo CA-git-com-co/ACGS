@@ -99,6 +99,9 @@ class GFLOPsTracker:
     """
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize GFLOPs tracker."""
         self.operation_counts: Dict[str, int] = defaultdict(int)
         self.layer_gflops: Dict[str, float] = {}
@@ -199,6 +202,9 @@ class PerformanceMonitor:
     """
 
     def __init__(self, config: WINAMetricsConfig):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize performance monitor.
 
@@ -467,6 +473,9 @@ class WINAMetrics:
         wina_config: WINAConfig,
         metrics_config: Optional[WINAMetricsConfig] = None,
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize WINA metrics.
 

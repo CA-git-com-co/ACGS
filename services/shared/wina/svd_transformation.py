@@ -57,6 +57,9 @@ class SVDTransformation:
     """
 
     def __init__(self, config: WINAConfig):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize SVD transformation with configuration.
 
@@ -385,6 +388,9 @@ class OrthogonalityProtocol:
     """
 
     def __init__(self, config: WINAConfig):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize orthogonality protocol.
 

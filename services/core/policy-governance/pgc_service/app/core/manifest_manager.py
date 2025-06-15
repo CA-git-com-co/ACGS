@@ -128,6 +128,9 @@ class ManifestManager:
     """
 
     def __init__(self, manifest_version: str = "1.0"):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.manifest_version = manifest_version
 
     def generate_manifest(

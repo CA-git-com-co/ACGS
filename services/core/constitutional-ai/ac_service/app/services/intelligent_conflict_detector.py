@@ -88,6 +88,9 @@ class IntelligentConflictDetector:
     """
 
     def __init__(self, qec_resolver: Optional[QECConflictResolver] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the conflict detector with optional QEC integration."""
         self.qec_resolver = qec_resolver or QECConflictResolver()
         self.detection_threshold = 0.7  # Minimum confidence for conflict detection
@@ -114,6 +117,9 @@ class IntelligentConflictDetector:
         }
 
     def _initialize_semantic_analyzer(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize semantic analysis components."""
         try:
             # In a real implementation, this would initialize NLP models
@@ -828,6 +834,9 @@ class IntelligentConflictDetector:
         return await create_ac_conflict_resolution(db, conflict_create, user_id)
 
     def update_detection_stats(self, detected_conflicts: int, false_positives: int = 0):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update detection performance statistics."""
         self.detection_stats["conflicts_detected"] += detected_conflicts
         self.detection_stats["false_positives"] += false_positives

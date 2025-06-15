@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# ACGS-PGP Framework Pre-commit Hook
+# Ensures code quality and constitutional governance standards
+
+echo "🏛️ ACGS-PGP Framework - Running pre-commit checks..."
+
+# Run lint-staged for staged files
+npx lint-staged
+
+# Check TypeScript compilation
+echo "🔍 Checking TypeScript compilation..."
+npm run type-check
+
+# Verify no console.log statements in production code (warnings only)
+echo "🚨 Checking for console statements..."
+if git diff --cached --name-only | grep -E '\.(ts|tsx|js|jsx)$' | xargs grep -l 'console\.log' 2>/dev/null; then
+  echo "⚠️  Warning: console.log statements found in staged files"
+  echo "   Consider removing them or using console.warn/console.error for production"
+fi
+
+# Check for TODO/FIXME comments in staged files
+echo "📝 Checking for TODO/FIXME comments..."
+if git diff --cached --name-only | grep -E '\.(ts|tsx|js|jsx)$' | xargs grep -l -E '(TODO|FIXME|XXX)' 2>/dev/null; then
+  echo "📋 TODO/FIXME comments found - ensure they are tracked in issues"
+fi
+
+# Verify ACGS service integration patterns
+echo "🔧 Checking ACGS service integration patterns..."
+if git diff --cached --name-only | grep -E '\.(ts|tsx)$' | xargs grep -l 'localhost:[0-9]' 2>/dev/null; then
+  echo "⚠️  Warning: Hardcoded localhost URLs found"
+  echo "   Ensure environment variables are used for service URLs"
+fi
+
+echo "✅ Pre-commit checks completed successfully!"

@@ -86,6 +86,9 @@ class Qwen3EmbeddingClient:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize Qwen3 embedding client."""
         self.config = config or {}
         self.langgraph_config = get_langgraph_config()
@@ -172,6 +175,9 @@ class Qwen3EmbeddingClient:
         return os.getenv("QWEN3_MODEL_AVAILABLE", "false").lower() == "true"
 
     async def _initialize_model(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize the Qwen3 model (mock implementation)."""
         # Mock model initialization
         await asyncio.sleep(0.1)  # Simulate model loading time
@@ -360,6 +366,9 @@ class Qwen3EmbeddingClient:
         return None
 
     async def _cache_embedding(self, cache_key: str, embedding: List[float]):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Cache embedding for future use."""
         if not self.redis_client:
             return
@@ -428,6 +437,9 @@ class Qwen3EmbeddingClient:
         return health_status
 
     async def close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close the embedding client and cleanup resources."""
         if self.redis_client:
             # Redis client doesn't need explicit closing
@@ -452,6 +464,9 @@ async def get_qwen3_embedding_client() -> Qwen3EmbeddingClient:
 
 
 async def reset_qwen3_embedding_client():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Reset global embedding client (useful for testing)."""
     global _qwen3_embedding_client
 

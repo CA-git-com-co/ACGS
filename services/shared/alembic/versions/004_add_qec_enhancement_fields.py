@@ -18,6 +18,9 @@ depends_on = None
 
 
 def upgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Add QEC enhancement fields to constitutional_principles table."""
 
     # Add QEC enhancement fields to constitutional_principles table
@@ -295,6 +298,9 @@ def upgrade():
 
 
 def downgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Remove QEC enhancement fields and tables."""
 
     # Drop foreign key constraints

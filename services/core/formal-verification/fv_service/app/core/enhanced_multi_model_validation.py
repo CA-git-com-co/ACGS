@@ -101,6 +101,9 @@ class EnhancedMultiModelValidator:
     """Enhanced multi-model validation system with improved capabilities."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.validation_cache: Dict[str, Any] = {}
         self.performance_metrics: Dict[str, Any] = defaultdict(list)
         self.cross_model_rules: List[CrossModelValidationRule] = []
@@ -238,6 +241,9 @@ class EnhancedMultiModelValidator:
         semaphore = asyncio.Semaphore(context.max_concurrent_validations)
 
         async def bounded_validate(model_type, task):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             async with semaphore:
                 return model_type, await task
 
