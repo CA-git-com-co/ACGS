@@ -162,20 +162,11 @@ class RedisCacheManager:
             # Test connection
             await self.redis_client.ping()
             
-            # Validate constitutional hash
-            stored_hash = await self.redis_client.get("constitutional_hash")
-            if stored_hash and stored_hash != self.constitutional_hash:
-                logger.warning(
-                    f"Constitutional hash mismatch: stored={stored_hash}, "
-                    f"expected={self.constitutional_hash}"
-                )
-            
-            # Store current constitutional hash
-            await self.redis_client.set(
-                "constitutional_hash", 
-                self.constitutional_hash,
-                ex=86400  # 24 hours
-            )
+            # Enhanced constitutional hash validation
+            await self._validate_and_update_constitutional_hash()
+
+            # Initialize constitutional hash monitoring
+            await self._setup_constitutional_hash_monitoring()
             
             logger.info("Redis cache manager initialized successfully")
             
@@ -264,6 +255,13 @@ class RedisCacheManager:
         // sha256: cache_put_with_integrity_v1.0
         """
         try:
+            # Validate constitutional compliance before caching
+            if constitutional_validation:
+                compliance_valid = await self.validate_constitutional_compliance(key, value)
+                if not compliance_valid:
+                    logger.warning(f"Constitutional compliance validation failed for key: {key}")
+                    return False
+
             # Create cache entry with integrity signature
             entry = CacheEntry(
                 key=key,
@@ -479,6 +477,170 @@ class RedisCacheManager:
         self.memory_cache_order.clear()
         
         logger.info("Redis cache manager closed")
+
+    # Constitutional hash validation methods
+
+    async def _validate_and_update_constitutional_hash(self) -> None:
+        """Validate and update constitutional hash in Redis."""
+        try:
+            # Get stored constitutional hash
+            stored_hash = await self.redis_client.get("constitutional_hash")
+
+            if stored_hash:
+                if stored_hash != self.constitutional_hash:
+                    logger.warning(
+                        f"Constitutional hash mismatch detected: "
+                        f"stored={stored_hash}, expected={self.constitutional_hash}"
+                    )
+
+                    # Invalidate all cached data due to constitutional change
+                    await self._invalidate_all_constitutional_data()
+
+                    # Update metrics
+                    self.metrics["constitutional_hash_mismatches"] = self.metrics.get(
+                        "constitutional_hash_mismatches", 0
+                    ) + 1
+                else:
+                    logger.info("Constitutional hash validation successful")
+
+            # Store/update current constitutional hash
+            await self.redis_client.set(
+                "constitutional_hash",
+                self.constitutional_hash,
+                ex=86400  # 24 hours
+            )
+
+            # Store constitutional hash metadata
+            await self.redis_client.hset(
+                "constitutional_metadata",
+                mapping={
+                    "hash": self.constitutional_hash,
+                    "last_validated": str(time.time()),
+                    "validation_count": str(self.metrics.get("constitutional_validations", 0) + 1),
+                    "service": "pgc_service",
+                }
+            )
+
+            self.metrics["constitutional_validations"] = self.metrics.get(
+                "constitutional_validations", 0
+            ) + 1
+
+        except Exception as e:
+            logger.error(f"Constitutional hash validation failed: {e}")
+            self.metrics["constitutional_validation_errors"] = self.metrics.get(
+                "constitutional_validation_errors", 0
+            ) + 1
+
+    async def _setup_constitutional_hash_monitoring(self) -> None:
+        """Setup constitutional hash monitoring and alerts."""
+        try:
+            # Set up constitutional hash expiration monitoring
+            await self.redis_client.set(
+                "constitutional_hash_monitor",
+                "active",
+                ex=3600  # 1 hour monitoring interval
+            )
+
+            # Initialize constitutional compliance metrics
+            await self.redis_client.hset(
+                "constitutional_compliance_metrics",
+                mapping={
+                    "total_validations": "0",
+                    "successful_validations": "0",
+                    "failed_validations": "0",
+                    "last_validation_time": str(time.time()),
+                    "compliance_score": "1.0",
+                }
+            )
+
+            logger.info("Constitutional hash monitoring initialized")
+
+        except Exception as e:
+            logger.error(f"Constitutional hash monitoring setup failed: {e}")
+
+    async def _invalidate_all_constitutional_data(self) -> None:
+        """Invalidate all cached data due to constitutional hash change."""
+        try:
+            # Clear all policy-related cache entries
+            policy_patterns = [
+                "pgc:policy:*",
+                "pgc:compliance:*",
+                "pgc:validation:*",
+                "pgc:constitutional:*",
+            ]
+
+            invalidated_total = 0
+            for pattern in policy_patterns:
+                keys = await self.redis_client.keys(pattern)
+                if keys:
+                    await self.redis_client.delete(*keys)
+                    invalidated_total += len(keys)
+
+            # Clear memory cache
+            self.memory_cache.clear()
+            self.memory_cache_order.clear()
+
+            logger.warning(
+                f"Invalidated {invalidated_total} cache entries due to constitutional hash change"
+            )
+
+            self.metrics["constitutional_invalidations"] = self.metrics.get(
+                "constitutional_invalidations", 0
+            ) + invalidated_total
+
+        except Exception as e:
+            logger.error(f"Constitutional data invalidation failed: {e}")
+
+    async def validate_constitutional_compliance(self, key: str, value: Any) -> bool:
+        """Validate that cached data complies with current constitutional hash."""
+        try:
+            # Check if this is constitutional data
+            if not any(keyword in key.lower() for keyword in ["policy", "compliance", "constitutional"]):
+                return True  # Non-constitutional data doesn't need validation
+
+            # Get constitutional hash from cache entry if it exists
+            if isinstance(value, dict) and "constitutional_hash" in value:
+                entry_hash = value["constitutional_hash"]
+                if entry_hash != self.constitutional_hash:
+                    logger.warning(
+                        f"Constitutional compliance violation for key {key}: "
+                        f"entry_hash={entry_hash}, current_hash={self.constitutional_hash}"
+                    )
+                    return False
+
+            return True
+
+        except Exception as e:
+            logger.error(f"Constitutional compliance validation failed for key {key}: {e}")
+            return False
+
+    async def get_constitutional_state(self) -> Dict[str, Any]:
+        """Get current constitutional state and metrics."""
+        try:
+            # Get constitutional metadata
+            metadata = await self.redis_client.hgetall("constitutional_metadata")
+            compliance_metrics = await self.redis_client.hgetall("constitutional_compliance_metrics")
+
+            return {
+                "constitutional_hash": self.constitutional_hash,
+                "metadata": metadata,
+                "compliance_metrics": compliance_metrics,
+                "cache_metrics": {
+                    "constitutional_validations": self.metrics.get("constitutional_validations", 0),
+                    "constitutional_hash_mismatches": self.metrics.get("constitutional_hash_mismatches", 0),
+                    "constitutional_validation_errors": self.metrics.get("constitutional_validation_errors", 0),
+                    "constitutional_invalidations": self.metrics.get("constitutional_invalidations", 0),
+                },
+                "timestamp": time.time(),
+            }
+
+        except Exception as e:
+            logger.error(f"Failed to get constitutional state: {e}")
+            return {
+                "constitutional_hash": self.constitutional_hash,
+                "error": str(e),
+                "timestamp": time.time(),
+            }
 
 
 # Global cache manager instance
