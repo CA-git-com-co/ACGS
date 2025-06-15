@@ -1,7 +1,12 @@
 {
-  "name": "governance-dashboard-nextjs",
+  "name": "acgs-pgp-applications",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "governance-dashboard",
+    "legacy-frontend",
+    "shared"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
