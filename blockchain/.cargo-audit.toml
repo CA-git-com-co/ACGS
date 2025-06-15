@@ -20,7 +20,17 @@ ignore = [
     
     # RUSTSEC-2021-0145: atty potential unaligned read
     # Low impact, used only in development/logging contexts
-    "RUSTSEC-2021-0145"
+    "RUSTSEC-2021-0145",
+
+    # RUSTSEC-2023-0033: borsh ZST parsing unsound behavior
+    # Required by Solana ecosystem, no viable alternative available
+    # Impact limited to specific ZST usage patterns not used in ACGS-1
+    "RUSTSEC-2023-0033",
+
+    # RUSTSEC-2024-0344: curve25519-dalek timing variability
+    # Required by Solana SDK v1.18.26, no viable alternative available
+    # Solana ecosystem limitation - vulnerability in transitive dependency
+    "RUSTSEC-2024-0344"
 ]
 
 # Deny all critical and high severity vulnerabilities

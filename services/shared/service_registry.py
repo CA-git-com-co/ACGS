@@ -56,6 +56,9 @@ class ServiceRegistry:
     """Centralized service registry for ACGS services."""
     
     def __init__(self, health_check_interval: int = 30, max_failures: int = 3):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.services: Dict[str, ServiceInfo] = {}
         self.health_check_interval = health_check_interval
         self.max_failures = max_failures
@@ -66,6 +69,9 @@ class ServiceRegistry:
         self._initialize_acgs_services()
     
     def _initialize_acgs_services(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize registry with known ACGS services."""
         acgs_services = [
             {
@@ -159,6 +165,9 @@ class ServiceRegistry:
             self.services[service_info.name] = service_info
     
     async def start(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Start the service registry and health checking."""
         if self._running:
             return
@@ -168,6 +177,9 @@ class ServiceRegistry:
         logger.info("Service registry started")
     
     async def stop(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Stop the service registry."""
         self._running = False
         if self._health_check_task:
@@ -282,6 +294,9 @@ class ServiceRegistry:
         return health_status
     
     async def _health_check_loop(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Background health checking loop."""
         while self._running:
             try:

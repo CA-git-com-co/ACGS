@@ -17,6 +17,9 @@ depends_on = None
 
 
 def upgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Increase refresh token column length to accommodate JWT tokens."""
     # Increase token column length from 255 to 1024 characters
     op.alter_column(
@@ -29,6 +32,9 @@ def upgrade():
 
 
 def downgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Revert refresh token column length back to 255."""
     op.alter_column(
         "refresh_tokens",

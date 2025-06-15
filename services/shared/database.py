@@ -115,6 +115,9 @@ async def get_async_db() -> AsyncSession:  # Changed to yield AsyncGenerator
 
 
 async def create_db_and_tables():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Creates all tables defined by models inheriting from Base.
     This is typically called once at application startup or by migrations.

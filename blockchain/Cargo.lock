@@ -884,7 +884,7 @@ dependencies = [
 [[package]]
 name = "ed25519-dalek"
 version = "1.0.1"
-source = "git+https://github.com/dalek-cryptography/ed25519-dalek?tag=1.0.1#1042cb60a07cdaacb59ca209716b69f444460f8f"
+source = "git+https://github.com/dalek-cryptography/ed25519-dalek?rev=1042cb60a07cdaacb59ca209716b69f444460f8f#1042cb60a07cdaacb59ca209716b69f444460f8f"
 dependencies = [
  "curve25519-dalek",
  "ed25519",
@@ -1154,9 +1154,9 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "libc"
-version = "0.2.172"
+version = "0.2.173"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa"
+checksum = "d8cfeafaffdbc32176b64fb251369d52ea9f0a8fbc6f8759edffef7b525d64bb"
 
 [[package]]
 name = "libsecp256k1"
@@ -2704,3 +2704,8 @@ dependencies = [
  "quote",
  "syn 2.0.103",
 ]
+
+[[patch.unused]]
+name = "curve25519-dalek"
+version = "4.1.3"
+source = "git+https://github.com/dalek-cryptography/curve25519-dalek?tag=curve25519-4.1.3#5312a0311ec40df95be953eacfa8a11b9a34bc54"

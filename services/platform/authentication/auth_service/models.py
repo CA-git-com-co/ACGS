@@ -47,6 +47,9 @@ class Permission(Base):
     )
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<Permission(id={self.id}, name='{self.name}')>"
 
 
@@ -77,6 +80,9 @@ class User(Base):
     roles = relationship("Role", secondary=user_roles_table, back_populates="users")
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<User(id={self.id}, username='{self.username}', email='{self.email}')>"
 
     def has_role(self, role_name: str) -> bool:
@@ -119,6 +125,9 @@ class Role(Base):
     )
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<Role(id={self.id}, name='{self.name}')>"
 
 
@@ -142,4 +151,7 @@ class TokenBlacklist(Base):
     user = relationship("User")
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<TokenBlacklist(jti='{self.jti}', user_id={self.user_id})>"

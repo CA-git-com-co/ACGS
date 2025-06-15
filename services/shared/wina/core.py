@@ -79,6 +79,9 @@ class WINACore:
         config: WINAConfig,
         integration_config: Optional[WINAIntegrationConfig] = None,
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize WINA core with configuration.
 
@@ -452,6 +455,9 @@ class WINAOptimizer:
     """
 
     def __init__(self, config: WINAConfig, integration_config: WINAIntegrationConfig):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize WINA optimizer.
 

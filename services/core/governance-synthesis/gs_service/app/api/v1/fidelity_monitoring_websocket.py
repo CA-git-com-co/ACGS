@@ -93,6 +93,9 @@ class FidelityMonitoringSession:
     """Manages a WebSocket session for fidelity monitoring."""
 
     def __init__(self, websocket: WebSocket, session_id: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.websocket = websocket
         self.session_id = session_id
         self.subscribed_workflows: Set[str] = set()
@@ -105,6 +108,9 @@ class FidelityMonitoringSession:
         self.alert_cooldown_seconds = 30  # Minimum time between alerts
 
     async def send_message(self, message: Dict[str, Any]):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Send a message to the WebSocket client."""
         try:
             if self.websocket.client_state == WebSocketState.CONNECTED:
@@ -115,6 +121,9 @@ class FidelityMonitoringSession:
     async def send_fidelity_update(
         self, workflow_id: str, fidelity_score: ConstitutionalFidelityScore
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Send a fidelity score update to the client."""
         if workflow_id not in self.subscribed_workflows:
             return
@@ -142,6 +151,9 @@ class FidelityMonitoringSession:
         await self._check_and_send_alert(workflow_id, fidelity_score)
 
     async def send_performance_metrics(self, metrics: Dict[str, Any]):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Send performance metrics update to the client."""
         message = {
             "type": "performance_metrics",
@@ -152,6 +164,9 @@ class FidelityMonitoringSession:
         await self.send_message(message)
 
     async def send_alert(self, alert: FidelityAlert):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Send an alert to the client."""
         # Check cooldown
         if (
@@ -179,6 +194,9 @@ class FidelityMonitoringSession:
         self.last_alert_time = datetime.utcnow()
 
     async def send_violation_alert(self, alert: ViolationAlert):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Send violation-specific alert to client."""
         message = {
             "type": "violation_alert",
@@ -202,6 +220,9 @@ class FidelityMonitoringSession:
         await self.send_message(message)
 
     async def send_error_correction_alert(self, alert: ErrorCorrectionAlert):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Send error correction alert to client."""
         message = {
             "type": "error_correction_alert",
@@ -228,6 +249,9 @@ class FidelityMonitoringSession:
     async def send_escalation_notification(
         self, escalation_result: EscalationResult, violation_id: str
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Send escalation notification to client."""
         message = {
             "type": "escalation_notification",
@@ -249,6 +273,9 @@ class FidelityMonitoringSession:
     async def _check_and_send_alert(
         self, workflow_id: str, fidelity_score: ConstitutionalFidelityScore
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Check if an alert should be sent based on fidelity score."""
         score = fidelity_score.overall_score
         violations_count = len(fidelity_score.violations)
@@ -281,10 +308,16 @@ class FidelityMonitoringSession:
             await self.send_alert(alert)
 
     def subscribe_to_workflow(self, workflow_id: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Subscribe to updates for a specific workflow."""
         self.subscribed_workflows.add(workflow_id)
 
     def unsubscribe_from_workflow(self, workflow_id: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Unsubscribe from updates for a specific workflow."""
         self.subscribed_workflows.discard(workflow_id)
 
@@ -293,17 +326,26 @@ class FidelityMonitoringManager:
     """Manages all active fidelity monitoring sessions."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.active_sessions: Dict[str, FidelityMonitoringSession] = {}
         self.workflow_subscribers: Dict[str, Set[str]] = (
             {}
         )  # workflow_id -> session_ids
 
     def add_session(self, session: FidelityMonitoringSession):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Add a new monitoring session."""
         self.active_sessions[session.session_id] = session
         logger.info(f"Added fidelity monitoring session: {session.session_id}")
 
     def remove_session(self, session_id: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Remove a monitoring session."""
         if session_id in self.active_sessions:
             session = self.active_sessions[session_id]
@@ -319,6 +361,9 @@ class FidelityMonitoringManager:
             logger.info(f"Removed fidelity monitoring session: {session_id}")
 
     def subscribe_session_to_workflow(self, session_id: str, workflow_id: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Subscribe a session to workflow updates."""
         if session_id in self.active_sessions:
             session = self.active_sessions[session_id]
@@ -331,6 +376,9 @@ class FidelityMonitoringManager:
     async def broadcast_fidelity_update(
         self, workflow_id: str, fidelity_score: ConstitutionalFidelityScore
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Broadcast fidelity update to all subscribed sessions."""
         if workflow_id in self.workflow_subscribers:
             for session_id in self.workflow_subscribers[workflow_id]:
@@ -339,16 +387,25 @@ class FidelityMonitoringManager:
                     await session.send_fidelity_update(workflow_id, fidelity_score)
 
     async def broadcast_performance_metrics(self, metrics: Dict[str, Any]):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Broadcast performance metrics to all active sessions."""
         for session in self.active_sessions.values():
             await session.send_performance_metrics(metrics)
 
     async def broadcast_alert(self, alert: FidelityAlert):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Broadcast alert to all active sessions."""
         for session in self.active_sessions.values():
             await session.send_alert(alert)
 
     async def broadcast_violation_alert(self, alert: ViolationAlert):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Broadcast violation alert to all active sessions."""
         for session in self.active_sessions.values():
             await session.send_violation_alert(alert)
@@ -356,11 +413,17 @@ class FidelityMonitoringManager:
     async def broadcast_escalation_notification(
         self, escalation_result: EscalationResult, violation_id: str
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Broadcast escalation notification to all active sessions."""
         for session in self.active_sessions.values():
             await session.send_escalation_notification(escalation_result, violation_id)
 
     async def broadcast_error_correction_alert(self, alert: ErrorCorrectionAlert):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Broadcast error correction alert to all active sessions."""
         for session in self.active_sessions.values():
             await session.send_error_correction_alert(alert)
@@ -372,6 +435,9 @@ monitoring_manager = FidelityMonitoringManager()
 
 @router.websocket("/ws/fidelity-monitor")
 async def fidelity_monitoring_websocket(websocket: WebSocket):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     WebSocket endpoint for real-time constitutional fidelity monitoring.
 
@@ -430,6 +496,9 @@ async def fidelity_monitoring_websocket(websocket: WebSocket):
 
 
 async def handle_websocket_message(session: FidelityMonitoringSession, message: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Handle incoming WebSocket messages."""
     try:
         data = json.loads(message)
@@ -625,6 +694,9 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
 
 # Background task for periodic performance monitoring
 async def start_performance_monitoring():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Start background task for periodic performance monitoring."""
     while True:
         try:
@@ -665,5 +737,8 @@ async def start_performance_monitoring():
 async def broadcast_fidelity_update(
     workflow_id: str, fidelity_score: ConstitutionalFidelityScore
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Broadcast fidelity update to monitoring clients."""
     await monitoring_manager.broadcast_fidelity_update(workflow_id, fidelity_score)

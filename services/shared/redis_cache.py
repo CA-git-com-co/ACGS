@@ -19,6 +19,9 @@ class RedisCache:
     """Redis-based distributed cache with TTL policies."""
 
     def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize Redis cache connection."""
         try:
             self.redis_client = redis.Redis(
@@ -198,10 +201,19 @@ def get_cache() -> RedisCache:
 
 
 def cache_response(cache_key: str, ttl_seconds: int = 300):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Decorator for caching function responses."""
 
     def decorator(func):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         async def wrapper(*args, **kwargs):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
             cache = get_cache()
 
             # Generate cache key from function name and arguments

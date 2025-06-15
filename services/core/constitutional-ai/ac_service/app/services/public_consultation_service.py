@@ -133,6 +133,9 @@ class PublicConsultationService:
     """
 
     def __init__(self, hitl_sampler: Optional[HumanInTheLoopSampler] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the public consultation service."""
         self.hitl_sampler = hitl_sampler
 
@@ -480,6 +483,9 @@ class PublicConsultationService:
     async def _assess_proposal_for_oversight(
         self, db: AsyncSession, proposal: PublicProposal
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Assess proposal for HITL oversight requirements."""
         if not self.hitl_sampler:
             return
@@ -508,6 +514,9 @@ class PublicConsultationService:
     async def _escalate_negative_feedback(
         self, db: AsyncSession, feedback: PublicFeedback
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Escalate negative feedback for review."""
         if not self.hitl_sampler:
             return

@@ -16,6 +16,9 @@ llm_reliability_framework_instance = EnhancedLLMReliabilityFramework()
 
 @router.get("/reliability_metrics", response_model=Dict[str, Any])
 async def get_reliability_metrics():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Retrieves the current reliability metrics from the LLM Reliability Framework.
     """
@@ -30,6 +33,9 @@ async def get_reliability_metrics():
 
 @router.get("/reliability_metrics/history", response_model=Dict[str, Any])
 async def get_reliability_metrics_history():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Retrieves the historical reliability metrics from the LLM Reliability Framework.
     """

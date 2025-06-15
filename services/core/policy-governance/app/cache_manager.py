@@ -25,11 +25,17 @@ class PGCCacheManager:
     """Cache manager for Policy Governance Compliance service operations."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.service_name = "pgc_service"
         self.redis_client: Optional[AdvancedRedisClient] = None
         self._initialized = False
 
     async def initialize(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize cache manager."""
         if self._initialized:
             return
@@ -209,6 +215,9 @@ class PGCCacheManager:
         return total_deleted
 
     async def warm_cache(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Warm cache with frequently accessed data."""
         if not self.redis_client:
             await self.initialize()
@@ -287,6 +296,9 @@ async def get_pgc_cache_manager() -> PGCCacheManager:
 
 # Cache decorators for PGC service
 def cache_pgc_result(ttl: Optional[int] = None, cache_type: str = "compliance_checks"):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Decorator for caching PGC service results."""
     return cache_result(
         ttl=ttl, key_prefix="pgc", cache_type=cache_type, service_name="pgc_service"

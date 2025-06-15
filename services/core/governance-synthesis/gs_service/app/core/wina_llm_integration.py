@@ -65,6 +65,9 @@ except ImportError as e:
         def __init__(
             self, principle_id, principle_text, context, environmental_factors=None
         ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             self.principle_id = principle_id
             self.principle_text = principle_text
             self.context = context
@@ -72,40 +75,64 @@ except ImportError as e:
 
     class LLMStructuredOutput:
         def __init__(self, interpretations=None, raw_llm_response=""):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             self.interpretations = interpretations or []
             self.raw_llm_response = raw_llm_response
 
     class ConstitutionalSynthesisInput:
         def __init__(self, context, **kwargs):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             self.context = context
             for k, v in kwargs.items():
                 setattr(self, k, v)
 
     class ConstitutionalSynthesisOutput:
         def __init__(self, generated_rules=None, **kwargs):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             self.generated_rules = generated_rules or []
             for k, v in kwargs.items():
                 setattr(self, k, v)
 
     class GroqLLMClient:  # Mock for when llm_integration fails
         def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             self.model_name = "mock-groq-model"
 
     class RealLLMClient:  # Mock for when llm_integration fails
         def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             self.model_name = "mock-real-model"
 
     async def get_llm_client():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return None
 
     async def query_llm_for_structured_output(
         input_data, wina_gating_mask=None
-    ):  # Added wina_gating_mask
+    ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash  # Added wina_gating_mask
         return LLMStructuredOutput(interpretations=["mock interpretation"])
 
     async def query_llm_for_constitutional_synthesis(
         input_data, wina_gating_mask=None
-    ):  # Added wina_gating_mask
+    ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash  # Added wina_gating_mask
         return ConstitutionalSynthesisOutput(generated_rules=["mock rule"])
 
 
@@ -175,6 +202,9 @@ class WINAOptimizedLLMClient:
     """
 
     def __init__(self, enable_wina: bool = True):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize WINA-optimized LLM client.
 

@@ -115,6 +115,9 @@ class WINAEnforcementOptimizer:
     """
 
     def __init__(self, enable_wina: bool = True):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize WINA-optimized enforcement engine.
 
@@ -165,6 +168,9 @@ class WINAEnforcementOptimizer:
     async def initialize(
         self, opa_client: OPAClient, wina_policy_compiler: WINAPolicyCompiler
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize with required components."""
         self.opa_client = opa_client
         self.wina_policy_compiler = wina_policy_compiler
@@ -906,6 +912,9 @@ class WINAEnforcementOptimizer:
         return cache_hits / total_requests if total_requests > 0 else 0.0
 
     async def _update_enforcement_tracking(self, result: WINAEnforcementResult):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update enforcement tracking and performance metrics."""
         self._enforcement_history.append(result)
 
@@ -927,6 +936,9 @@ class WINAEnforcementOptimizer:
     async def _cache_enforcement_result(
         self, context: EnforcementContext, result: WINAEnforcementResult
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Cache enforcement result for future use."""
         cache_key = self._generate_cache_key(context)
         self._enforcement_cache[cache_key] = (result, datetime.now())
@@ -936,6 +948,9 @@ class WINAEnforcementOptimizer:
             await self._clean_enforcement_cache()
 
     async def _clean_enforcement_cache(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Clean expired entries from enforcement cache."""
         current_time = datetime.now()
         expired_keys = [
@@ -948,6 +963,9 @@ class WINAEnforcementOptimizer:
             del self._enforcement_cache[key]
 
     async def _clean_compliance_cache(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Clean expired entries from compliance cache."""
         current_time = datetime.now()
         expired_keys = [

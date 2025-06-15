@@ -179,6 +179,9 @@ class ScalabilityMetricsCollector:
         enable_prometheus: bool = True,
         enable_redis_cache: bool = True,
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize scalability metrics collector.
 

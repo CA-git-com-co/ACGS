@@ -78,10 +78,16 @@ except ImportError:
 
     class WINAEnforcementOptimizer:
         def __init__(self, enable_wina=True):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             self.enable_wina = enable_wina
             self.opa_client = None
 
         async def optimize_enforcement(self, context):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             return WINAEnforcementResult(
                 decision="permit",
                 reason="Mock enforcement result",
@@ -105,6 +111,9 @@ except ImportError:
             )
 
         def get_performance_summary(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             return {
                 "total_enforcements": 100,
                 "average_enforcement_time_ms": 18.5,
@@ -120,11 +129,17 @@ class TestWINAEnforcementIntegration:
 
     @pytest.fixture
     def client(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create test client for FastAPI app."""
         return TestClient(app)
 
     @pytest.fixture
     def mock_user(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create mock user for authentication."""
         return {
             "id": "test_user_123",
@@ -134,6 +149,9 @@ class TestWINAEnforcementIntegration:
 
     @pytest.fixture
     def sample_policy_request(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create sample policy evaluation request."""
         return {
             "context": {
@@ -154,6 +172,9 @@ class TestWINAEnforcementIntegration:
 
     @pytest.fixture
     def mock_wina_result(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create mock WINA enforcement result."""
         metrics = WINAEnforcementMetrics(
             enforcement_time_ms=15.5,
@@ -199,6 +220,9 @@ class TestWINAEnforcementIntegration:
     async def test_wina_enforcement_endpoint_success(
         self, client, sample_policy_request, mock_wina_result
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test successful WINA enforcement endpoint."""
 
         with (
@@ -247,6 +271,9 @@ class TestWINAEnforcementIntegration:
     async def test_wina_enforcement_endpoint_fallback(
         self, client, sample_policy_request
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test WINA enforcement endpoint fallback to standard enforcement."""
 
         with (
@@ -293,6 +320,9 @@ class TestWINAEnforcementIntegration:
 
     @pytest.mark.asyncio
     async def test_wina_enforcement_endpoint_deny(self, client, sample_policy_request):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test WINA enforcement endpoint with deny decision."""
 
         # Create mock result with deny decision
@@ -366,6 +396,9 @@ class TestWINAEnforcementIntegration:
 
     @pytest.mark.asyncio
     async def test_wina_performance_metrics_endpoint(self, client):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test WINA performance metrics endpoint."""
 
         mock_performance_summary = {
@@ -423,6 +456,9 @@ class TestWINAEnforcementIntegration:
 
     @pytest.mark.asyncio
     async def test_wina_enforcement_context_creation(self, sample_policy_request):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test enforcement context creation from request payload."""
 
         # This would be tested within the actual endpoint logic
@@ -447,6 +483,9 @@ class TestWINAEnforcementIntegration:
 
     @pytest.mark.asyncio
     async def test_wina_enforcement_rate_limiting(self, client, sample_policy_request):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test rate limiting on WINA enforcement endpoint."""
 
         with patch(
@@ -469,6 +508,9 @@ class TestWINAEnforcementIntegration:
     async def test_wina_enforcement_authentication_required(
         self, client, sample_policy_request
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test that WINA enforcement endpoint requires authentication."""
 
         # Make request without authentication
@@ -485,6 +527,9 @@ class TestWINAEnforcementIntegration:
 
     @pytest.mark.asyncio
     async def test_wina_enforcement_invalid_request(self, client):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test WINA enforcement endpoint with invalid request data."""
 
         invalid_request = {

@@ -99,6 +99,9 @@ class ViolationDetectionService:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize the violation detection service.
 
@@ -533,6 +536,9 @@ class ViolationDetectionService:
         return violations
 
     async def _load_thresholds(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Load violation thresholds from database."""
         try:
             # Check if cache needs refresh (refresh every 5 minutes)

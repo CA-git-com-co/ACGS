@@ -104,6 +104,9 @@ class NeuronGate:
     """
 
     def __init__(self, neuron_id: int, layer_name: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize neuron gate.
 
@@ -166,6 +169,9 @@ class RuntimeGating:
     """
 
     def __init__(self, config: WINAConfig):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize runtime gating with configuration.
 

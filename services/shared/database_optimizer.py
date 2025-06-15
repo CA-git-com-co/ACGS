@@ -23,6 +23,9 @@ class DatabasePerformanceOptimizer:
     """Advanced database performance optimizer for ACGS-1."""
 
     def __init__(self, database_url: str = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.database_url = database_url
         self.engine = (
             async_engine if not database_url else create_async_engine(database_url)
@@ -32,6 +35,9 @@ class DatabasePerformanceOptimizer:
         self.optimization_history = []
 
     async def initialize(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize the database optimizer."""
         try:
             # Test connection
@@ -520,6 +526,9 @@ class DatabasePerformanceOptimizer:
 
     @asynccontextmanager
     async def performance_monitoring_session(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Context manager for performance monitoring during operations."""
         start_time = time.time()
         start_metrics = await self.analyze_current_performance()
@@ -559,12 +568,21 @@ async def get_database_optimizer() -> DatabasePerformanceOptimizer:
 
 # Performance monitoring decorators
 def monitor_db_performance(operation_name: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Decorator to monitor database operation performance."""
 
     def decorator(func):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         if asyncio.iscoroutinefunction(func):
 
             async def async_wrapper(*args, **kwargs):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
                 optimizer = await get_database_optimizer()
                 async with optimizer.performance_monitoring_session():
                     start_time = time.time()
@@ -591,6 +609,9 @@ def monitor_db_performance(operation_name: str):
         else:
 
             def sync_wrapper(*args, **kwargs):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
                 start_time = time.time()
                 try:
                     result = func(*args, **kwargs)

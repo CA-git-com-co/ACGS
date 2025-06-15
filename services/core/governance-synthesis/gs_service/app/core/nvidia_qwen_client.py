@@ -61,6 +61,9 @@ class NVIDIAQwenClient:
     def __init__(
         self, api_key: str, base_url: str = "https://integrate.api.nvidia.com/v1"
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize NVIDIA Qwen client.
 

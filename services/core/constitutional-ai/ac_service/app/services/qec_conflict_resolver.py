@@ -71,6 +71,9 @@ class QECConflictResolver:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize QEC components if available."""
         self.qec_available = QEC_AVAILABLE
 

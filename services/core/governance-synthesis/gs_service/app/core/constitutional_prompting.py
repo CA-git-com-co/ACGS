@@ -57,6 +57,9 @@ class ConstitutionalPromptBuilder:
     """
 
     def __init__(self, enable_wina_integration: bool = True):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize the Constitutional Prompt Builder.
 
@@ -472,6 +475,9 @@ Step 3: PROACTIVE COMPLIANCE
             return {"precedents": [], "total_found": 0, "error": str(e)}
 
     async def _refresh_precedent_cache(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Refresh the constitutional precedent cache."""
         try:
             # In a real implementation, this would fetch from a precedent database

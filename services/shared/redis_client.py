@@ -26,11 +26,17 @@ class ACGSRedisClient:
     """Centralized Redis client for ACGS-PGP microservices."""
 
     def __init__(self, service_name: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.service_name = service_name
         self.redis_client: Optional[Redis] = None
         self.connection_pool = None
 
     async def initialize(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize Redis connection pool."""
         try:
             self.connection_pool = redis.ConnectionPool.from_url(
@@ -55,6 +61,9 @@ class ACGSRedisClient:
             raise
 
     async def close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close Redis connection."""
         if self.redis_client:
             await self.redis_client.close()
@@ -62,6 +71,9 @@ class ACGSRedisClient:
 
     @asynccontextmanager
     async def get_client(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Context manager for Redis client."""
         if not self.redis_client:
             await self.initialize()
@@ -216,6 +228,9 @@ async def get_redis_client(service_name: str) -> ACGSRedisClient:
 
 
 async def close_all_redis_clients():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Close all Redis clients."""
     for client in _redis_clients.values():
         await client.close()

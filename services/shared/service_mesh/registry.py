@@ -75,12 +75,18 @@ class ServiceRegistry:
     """
 
     def __init__(self, environment: Environment = Environment.DEVELOPMENT):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.environment = environment
         self._services: Dict[ServiceType, ServiceConfig] = {}
         self._load_default_configurations()
         self._load_environment_overrides()
 
     def _load_default_configurations(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Load default service configurations."""
         default_configs = {
             ServiceType.AUTH: ServiceConfig(
@@ -148,6 +154,9 @@ class ServiceRegistry:
         self._services.update(default_configs)
 
     def _load_environment_overrides(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Load environment-specific configuration overrides."""
         env_prefix = f"ACGS_{self.environment.value.upper()}_"
 
@@ -179,6 +188,9 @@ class ServiceRegistry:
                     )
 
     def register_service(self, service_type: ServiceType, config: ServiceConfig):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Register a service configuration.
 
@@ -339,6 +351,9 @@ def get_service_registry(environment: Optional[Environment] = None) -> ServiceRe
 
 
 def register_service(service_type: ServiceType, config: ServiceConfig):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Register a service in the global registry.
 

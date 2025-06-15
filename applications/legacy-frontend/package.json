@@ -1,8 +1,9 @@
 {
-  "name": "frontend",
+  "name": "legacy-frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@acgs/shared": "file:../shared",
     "@coral-xyz/anchor": "^0.31.1",
     "@solana/wallet-adapter-react": "^0.15.38",
     "@solana/wallet-adapter-react-ui": "^0.9.38",

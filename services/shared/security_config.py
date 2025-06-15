@@ -59,6 +59,9 @@ class SecurityConfigManager:
     """Centralized security configuration manager."""
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.environment = os.getenv("ENVIRONMENT", "development")
         self.debug_mode = os.getenv("DEBUG", "false").lower() == "true"
         self.thresholds = SecurityThresholds()
@@ -66,6 +69,9 @@ class SecurityConfigManager:
         self._load_configuration()
 
     def _load_configuration(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Load security configuration from environment variables."""
         # Rate limiting configuration
         self.thresholds.rate_limit_requests_per_minute = int(

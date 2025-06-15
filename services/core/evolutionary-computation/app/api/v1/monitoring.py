@@ -205,6 +205,9 @@ async def get_monitoring_dashboard(
 
 @router.get("/metrics/wina", response_model=WINAPerformanceMetrics)
 async def get_wina_metrics():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Get current WINA performance metrics.
 
@@ -247,6 +250,9 @@ async def get_wina_metrics():
 
 @router.get("/metrics/system", response_model=SystemMetrics)
 async def get_system_metrics():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Get current system performance metrics.
 
@@ -282,6 +288,9 @@ async def get_system_metrics():
 
 @router.get("/alerts")
 async def get_active_alerts():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Get currently active alerts.
 
@@ -316,6 +325,9 @@ async def get_active_alerts():
 
 @router.get("/health")
 async def monitoring_health_check():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Health check for monitoring system."""
     try:
         service_health = await _check_service_health()

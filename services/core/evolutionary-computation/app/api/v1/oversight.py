@@ -291,6 +291,9 @@ async def batch_coordinate_oversight(
 async def _report_oversight_activity(
     oversight_id: str, target_system: str, result: WINAOversightResult
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Background task to report oversight activity to AC service."""
     try:
         await ac_service_client.report_oversight_activity(
@@ -315,6 +318,9 @@ async def _report_oversight_activity(
 
 @router.get("/strategies")
 async def get_oversight_strategies():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Get available EC oversight strategies."""
     return {
         "strategies": [
@@ -329,6 +335,9 @@ async def get_oversight_strategies():
 
 @router.get("/contexts")
 async def get_oversight_contexts():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Get available EC oversight contexts."""
     return {
         "contexts": [

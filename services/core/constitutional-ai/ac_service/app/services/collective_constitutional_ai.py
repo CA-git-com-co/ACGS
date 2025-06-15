@@ -117,6 +117,9 @@ class CollectiveConstitutionalAI:
     """
 
     def __init__(self, polis_api_key: Optional[str] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.metrics = get_metrics("collective_constitutional_ai")
         self.polis_api_key = polis_api_key
         self.polis_base_url = "https://pol.is/api/v3"

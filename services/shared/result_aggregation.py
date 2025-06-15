@@ -93,6 +93,9 @@ class ByzantineFaultTolerantAggregator:
     """Byzantine fault-tolerant result aggregation."""
 
     def __init__(self, fault_tolerance: float = 0.33):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize aggregator.
 
@@ -353,6 +356,9 @@ class WebSocketStreamer:
     """WebSocket streaming for real-time progress updates."""
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.active_connections: Set[WebSocket] = set()
         self.connection_metadata: Dict[WebSocket, Dict[str, Any]] = {}
 

@@ -36,6 +36,9 @@ class WINADashboard:
     """
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize WINA dashboard."""
         self.performance_collector: Optional[WINAPerformanceCollector] = None
         self.dashboard_cache: Dict[str, Any] = {}

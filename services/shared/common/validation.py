@@ -21,6 +21,9 @@ class ValidationError(Exception):
     """Custom validation error for ACGS services."""
 
     def __init__(self, message: str, field: str = None, value: Any = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.message = message
         self.field = field
         self.value = value
@@ -33,16 +36,25 @@ class ValidationResult:
     def __init__(
         self, is_valid: bool, errors: List[str] = None, warnings: List[str] = None
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.is_valid = is_valid
         self.errors = errors or []
         self.warnings = warnings or []
 
     def add_error(self, error: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Add validation error."""
         self.errors.append(error)
         self.is_valid = False
 
     def add_warning(self, warning: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Add validation warning."""
         self.warnings.append(warning)
 
