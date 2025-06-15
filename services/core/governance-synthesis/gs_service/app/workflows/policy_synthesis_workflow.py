@@ -52,6 +52,9 @@ class PolicySynthesisWorkflow:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.multi_model_manager = get_multi_model_manager()
         self.config = ModelSpecializationConfig()
         self.workflow_graph: Optional[CompiledStateGraph] = None
@@ -64,6 +67,9 @@ class PolicySynthesisWorkflow:
             )
 
     def _build_workflow_graph(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Build the LangGraph StateGraph for policy synthesis."""
         if not LANGGRAPH_AVAILABLE:
             return

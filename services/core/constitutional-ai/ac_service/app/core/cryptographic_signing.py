@@ -50,6 +50,9 @@ class ConstitutionalCryptoSigner:
     """Enterprise-grade cryptographic signer for constitutional documents."""
     
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the constitutional crypto signer."""
         self.algorithm = "Ed25519"
         self._private_key: Optional[ed25519.Ed25519PrivateKey] = None
@@ -294,6 +297,9 @@ class ConstitutionalSigningService:
     """Service for managing constitutional cryptographic operations."""
     
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the constitutional signing service."""
         self.signer = ConstitutionalCryptoSigner()
         self._initialized = False

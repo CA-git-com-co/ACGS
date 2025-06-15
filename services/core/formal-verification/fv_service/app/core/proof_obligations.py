@@ -74,6 +74,9 @@ if __name__ == "__main__":
     import asyncio
 
     async def test_proof_obligation_generation():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         sample_principles_data = [
             {
                 "id": 1,

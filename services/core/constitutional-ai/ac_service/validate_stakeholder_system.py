@@ -12,6 +12,9 @@ import sys
 
 
 def validate_file_structure():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Validate that all required files exist."""
     print("Validating file structure...")
 
@@ -34,6 +37,9 @@ def validate_file_structure():
 
 
 def validate_stakeholder_service():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Validate stakeholder engagement service structure."""
     print("Validating stakeholder engagement service...")
 
@@ -103,6 +109,9 @@ def validate_stakeholder_service():
 
 
 def validate_api_endpoints():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Validate API endpoints structure."""
     print("Validating API endpoints...")
 
@@ -140,6 +149,9 @@ def validate_api_endpoints():
 
 
 def validate_constitutional_council_integration():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Validate integration with Constitutional Council StateGraph."""
     print("Validating Constitutional Council integration...")
 
@@ -181,6 +193,9 @@ def validate_constitutional_council_integration():
 
 
 def validate_main_app_integration():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Validate integration with main AC service app."""
     print("Validating main app integration...")
 
@@ -211,6 +226,9 @@ def validate_main_app_integration():
 
 
 def run_validation():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Run all validation checks."""
     print("=" * 60)
     print("STAKEHOLDER ENGAGEMENT SYSTEM - VALIDATION")

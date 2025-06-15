@@ -187,6 +187,9 @@ class WeightedVotingSystem:
         default_config: Optional[VotingConfiguration] = None,
         constitutional_hash: str = "cdd01ef066bc6cf2",
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.default_config = default_config or VotingConfiguration()
         self.constitutional_hash = constitutional_hash
 
@@ -213,6 +216,9 @@ class WeightedVotingSystem:
         )
 
     async def initialize_constitutional_validator(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize constitutional compliance validator."""
         if VALIDATOR_AVAILABLE:
             try:

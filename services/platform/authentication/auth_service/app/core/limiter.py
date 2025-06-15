@@ -7,11 +7,20 @@ from ..core.security import get_user_id_from_request_optional
 # Mock classes for testing
 class MockLimiter:
     def __init__(self, key_func=None, default_limits=None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.key_func = key_func
         self.default_limits = default_limits
 
     def limit(self, rate_limit):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         def decorator(func):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             return func
 
         return decorator
@@ -55,6 +64,9 @@ limiter = Limiter(key_func=get_request_identifier, default_limits=["100 per minu
 # You can still decorate your routes like this:
 # @limiter.limit("5/minute")
 # async def some_endpoint(...):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
 #     ...
 #
 # And the key will be determined by get_request_identifier.

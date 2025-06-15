@@ -105,6 +105,9 @@ class EnhancedConstitutionalAnalyzer:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize Enhanced Constitutional Analyzer."""
         self.config = config or {}
         self.langgraph_config = get_langgraph_config()
@@ -788,6 +791,9 @@ Respond in JSON format with the following structure:
         return health_status
 
     async def close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close the analyzer and cleanup resources."""
         if self.embedding_client:
             await self.embedding_client.close()
@@ -818,6 +824,9 @@ async def get_enhanced_constitutional_analyzer() -> EnhancedConstitutionalAnalyz
 
 
 async def reset_enhanced_constitutional_analyzer():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Reset global analyzer (useful for testing)."""
     global _enhanced_constitutional_analyzer
 

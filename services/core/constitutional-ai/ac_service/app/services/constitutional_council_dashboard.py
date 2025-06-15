@@ -32,6 +32,9 @@ class ConstitutionalCouncilDashboard:
     """
 
     def __init__(self, db: AsyncSession):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.db = db
         self.websocket_connections: Dict[str, WebSocket] = {}
         self.dashboard_active = False

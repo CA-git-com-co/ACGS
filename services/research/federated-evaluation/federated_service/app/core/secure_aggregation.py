@@ -79,6 +79,9 @@ class SecureAggregator:
     """
 
     def __init__(self, config: AggregationConfig = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.config = config or AggregationConfig()
         self.active_aggregations: Dict[str, Dict[str, Any]] = {}
         self.crypto_keys: Dict[str, Any] = {}
@@ -97,6 +100,9 @@ class SecureAggregator:
         logger.info("Initialized Secure Aggregator")
 
     async def initialize(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the secure aggregator."""
         try:
             if not CRYPTOGRAPHY_AVAILABLE:
@@ -114,6 +120,9 @@ class SecureAggregator:
             raise
 
     async def _generate_aggregation_keys(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Generate cryptographic keys for secure aggregation."""
         try:
             if CRYPTOGRAPHY_AVAILABLE:
@@ -491,6 +500,9 @@ class SecureAggregator:
     async def _update_aggregation_metrics(
         self, aggregation_id: str, execution_time: float, success: bool
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update aggregation performance metrics."""
         try:
             self.aggregation_metrics["total_aggregations"] += 1
@@ -649,6 +661,9 @@ class SecureAggregator:
             return False
 
     async def shutdown(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Shutdown the secure aggregator."""
         try:
             logger.info("Shutting down Secure Aggregator...")

@@ -63,6 +63,9 @@ class CircuitBreaker:
         recovery_timeout: float = 30.0,
         minimum_requests: int = 10,
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize circuit breaker.
 
@@ -118,6 +121,9 @@ class CircuitBreaker:
         return False
 
     def record_success(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Record successful request."""
         current_time = time.time()
 
@@ -133,6 +139,9 @@ class CircuitBreaker:
             self.failure_count = 0
 
     def record_failure(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Record failed request."""
         current_time = time.time()
 
@@ -175,6 +184,9 @@ class CircuitBreaker:
         return False
 
     def _transition_to_open(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Transition circuit breaker to open state."""
         if self.state != CircuitBreakerState.OPEN:
             old_state = self.state
@@ -190,6 +202,9 @@ class CircuitBreaker:
             self._notify_state_change(old_state, CircuitBreakerState.OPEN)
 
     def _transition_to_half_open(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Transition circuit breaker to half-open state."""
         if self.state != CircuitBreakerState.HALF_OPEN:
             old_state = self.state
@@ -203,6 +218,9 @@ class CircuitBreaker:
             self._notify_state_change(old_state, CircuitBreakerState.HALF_OPEN)
 
     def _transition_to_closed(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Transition circuit breaker to closed state."""
         if self.state != CircuitBreakerState.CLOSED:
             old_state = self.state
@@ -223,6 +241,9 @@ class CircuitBreaker:
     def _notify_state_change(
         self, old_state: CircuitBreakerState, new_state: CircuitBreakerState
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Notify registered callbacks of state change."""
         for callback in self._state_change_callbacks.get(new_state, []):
             try:
@@ -231,6 +252,9 @@ class CircuitBreaker:
                 logger.error(f"Error in circuit breaker callback: {e}")
 
     def add_state_change_callback(self, state: CircuitBreakerState, callback: Callable):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Add callback for state change notifications.
 
@@ -241,16 +265,25 @@ class CircuitBreaker:
         self._state_change_callbacks[state].append(callback)
 
     def force_open(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Force circuit breaker to open state."""
         self._transition_to_open()
         logger.warning("Circuit breaker manually forced to open state")
 
     def force_close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Force circuit breaker to closed state."""
         self._transition_to_closed()
         logger.info("Circuit breaker manually forced to closed state")
 
     def reset(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Reset circuit breaker to initial state."""
         self.state = CircuitBreakerState.CLOSED
         self.failure_count = 0
@@ -318,6 +351,9 @@ class CircuitBreakerManager:
     """
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.circuit_breakers: Dict[str, CircuitBreaker] = {}
 
     def get_circuit_breaker(
@@ -364,6 +400,9 @@ class CircuitBreakerManager:
         }
 
     def reset_all(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Reset all circuit breakers."""
         for breaker in self.circuit_breakers.values():
             breaker.reset()

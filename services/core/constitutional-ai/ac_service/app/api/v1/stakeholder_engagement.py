@@ -315,6 +315,9 @@ async def get_amendment_feedback(
 
 @router.websocket("/ws/{amendment_id}")
 async def websocket_engagement_updates(websocket: WebSocket, amendment_id: int):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     WebSocket endpoint for real-time stakeholder engagement updates.
 

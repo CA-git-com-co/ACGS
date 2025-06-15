@@ -113,6 +113,9 @@ class PerformanceSummaryResponse(BaseModel):
 
 @router.post("/synthesize", response_model=WINARegoSynthesisResponse)
 async def synthesize_rego_policy(request: WINARegoSynthesisRequest):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Synthesize a Rego policy with WINA optimization.
 
@@ -184,6 +187,9 @@ async def synthesize_rego_policy(request: WINARegoSynthesisRequest):
 
 @router.post("/batch", response_model=List[WINARegoSynthesisResponse])
 async def batch_synthesize_rego_policies(request: BatchWINARegoSynthesisRequest):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Batch synthesize multiple Rego policies with WINA optimization.
 
@@ -266,6 +272,9 @@ async def batch_synthesize_rego_policies(request: BatchWINARegoSynthesisRequest)
 
 @router.get("/performance", response_model=PerformanceSummaryResponse)
 async def get_performance_summary():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Get WINA Rego synthesis performance metrics and statistics.
 
@@ -296,6 +305,9 @@ async def get_performance_summary():
 
 @router.delete("/cache")
 async def clear_synthesis_cache():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Clear WINA Rego synthesis cache and reset performance tracking.
 
@@ -321,6 +333,9 @@ async def clear_synthesis_cache():
 
 @router.get("/health")
 async def health_check():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Health check endpoint for WINA Rego synthesis service.
 

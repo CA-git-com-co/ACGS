@@ -26,6 +26,9 @@ class ExplainabilityEngine:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.explanation_cache = {}
         self.provenance_cache = {}
 

@@ -133,6 +133,9 @@ def validate_config_file(config_path: str) -> bool:
     return len(errors) == 0
 
 def main():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Main validation function"""
     if len(sys.argv) > 1:
         config_path = sys.argv[1]

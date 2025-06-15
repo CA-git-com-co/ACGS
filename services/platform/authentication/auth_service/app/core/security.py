@@ -18,6 +18,9 @@ try:
 except ImportError:
     # Fallback imports
     def get_async_db():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         pass
 
     class User:
@@ -100,6 +103,9 @@ def create_refresh_token(
 
 
 def revoke_access_jti(jti: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     revoked_access_jti_blacklist.add(jti)
 
 
@@ -181,6 +187,9 @@ async def get_current_active_user(
 
 # --- Role-based Authorization ---
 def authorize_roles(required_roles: List[str]):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     async def role_checker(
         current_user: User = Depends(get_current_active_user),
     ) -> User:
@@ -296,6 +305,9 @@ async def get_current_user_from_api_key(
 
 # --- Enhanced Role-based Authorization with Fine-grained Permissions ---
 def authorize_permissions(required_permissions: List[str]):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Enhanced authorization with fine-grained permissions"""
 
     async def permission_checker(

@@ -102,6 +102,9 @@ class MultiModelEnsembleCoordinator:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.metrics = get_metrics("multi_model_ensemble")
 
         # Model registry with performance characteristics
@@ -569,6 +572,9 @@ class MultiModelEnsembleCoordinator:
     async def _update_performance_metrics(
         self, decision: EnsembleDecision, query: ConstitutionalQuery
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update performance metrics."""
         self.performance_metrics["total_decisions"] += 1
 

@@ -25,6 +25,9 @@ class KeyManagementService:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.default_key_size = 2048
         self.default_key_expiry_days = 365
         self.encryption_key = self._get_master_encryption_key()

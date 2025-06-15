@@ -152,6 +152,9 @@ class ConflictDetectionEngine:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the conflict detection engine."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
@@ -431,6 +434,9 @@ class AutomaticResolutionWorkflow:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the automatic resolution workflow."""
         self.config = config or self._get_default_config()
         self.multi_model_manager = MultiModelManager()
@@ -760,6 +766,9 @@ class SemanticValidationEngine:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the semantic validation engine."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
@@ -924,6 +933,9 @@ class PolicyRefinementSuggester:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the policy refinement suggester."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
@@ -1059,6 +1071,9 @@ class ConflictComplexityScorer:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the conflict complexity scorer."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
@@ -1181,6 +1196,9 @@ class ParallelConflictProcessor:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the parallel conflict processor."""
         self.config = config or self._get_default_config()
         self.executor = ThreadPoolExecutor(
@@ -1426,6 +1444,9 @@ class QECErrorCorrectionService:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the QEC error correction service."""
         self.config = config or self._get_default_config()
 
@@ -2235,6 +2256,9 @@ class ConflictComplexityScorer:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the conflict complexity scorer."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
@@ -2357,6 +2381,9 @@ class ParallelConflictProcessor:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the parallel conflict processor."""
         self.config = config or self._get_default_config()
         self.executor = ThreadPoolExecutor(

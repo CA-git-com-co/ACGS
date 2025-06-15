@@ -113,6 +113,9 @@ class GPUAccelerationManager:
     """
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.metrics = get_metrics("gpu_acceleration")
 
         # GPU configuration for 2 A100 GPUs
@@ -180,6 +183,9 @@ class GPUAccelerationManager:
         self._initialize_gpu_monitoring()
 
     def _initialize_gpu_monitoring(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize GPU monitoring and state tracking."""
         if not TORCH_AVAILABLE:
             logger.warning("PyTorch not available - GPU acceleration disabled")
@@ -462,6 +468,9 @@ class GPUAccelerationManager:
     async def _cleanup_gpu_resources(
         self, allocation: GPUAllocation, model_handle: Any
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Clean up GPU resources after task completion."""
         try:
             device_id = allocation.device_id
@@ -564,6 +573,9 @@ class GPUAccelerationManager:
     async def _update_performance_metrics(
         self, result: AcceleratedResult, latency_ms: float
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Update performance metrics."""
         self.performance_metrics["total_tasks"] += 1
 

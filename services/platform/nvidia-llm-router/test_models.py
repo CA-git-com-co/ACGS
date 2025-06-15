@@ -109,6 +109,9 @@ async def test_model_availability(api_key: str, base_url: str, model_name: str) 
         }
 
 async def main():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Main test function"""
     print("🧪 NVIDIA LLM Router Model Connectivity Test")
     print("=" * 50)

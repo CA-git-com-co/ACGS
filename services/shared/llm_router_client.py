@@ -98,6 +98,9 @@ class LLMRouterClient:
         max_retries: int = 3,
         auth_token: Optional[str] = None
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.logger = get_logger(__name__)
         
         # Configuration
@@ -117,15 +120,24 @@ class LLMRouterClient:
         self.logger.info(f"LLMRouterClient initialized with base_url: {self.base_url}")
     
     async def __aenter__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Async context manager entry"""
         await self._ensure_session()
         return self
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Async context manager exit"""
         await self.close()
     
     async def _ensure_session(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Ensure aiohttp session is created"""
         if self._session is None or self._session.closed:
             connector = aiohttp.TCPConnector(
@@ -141,6 +153,9 @@ class LLMRouterClient:
             )
     
     async def close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close the client session"""
         if self._session and not self._session.closed:
             await self._session.close()

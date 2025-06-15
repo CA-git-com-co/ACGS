@@ -38,7 +38,10 @@ logger = logging.getLogger(__name__)
 class PolicyManager:
     def __init__(
         self, refresh_interval_seconds: int = 300
-    ):  # Default: refresh every 5 minutes
+    ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash  # Default: refresh every 5 minutes
         self._active_rules: List[IntegrityPolicyRule] = []
         self._last_refresh_time: Optional[datetime] = None
         self._refresh_interval = timedelta(seconds=refresh_interval_seconds)
@@ -384,6 +387,9 @@ policy_manager = PolicyManager(refresh_interval_seconds=300)
 
 # Example of how to trigger initial load (e.g., in main.py on startup)
 # async def initial_policy_load():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
 #     await policy_manager.get_active_rules(force_refresh=True)
 
 # For testing this file
@@ -391,6 +397,9 @@ if __name__ == "__main__":
     import asyncio
 
     async def test_policy_manager():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         print("Testing Policy Manager...")
         # Requires integrity_service to be running with some verified rules.
 

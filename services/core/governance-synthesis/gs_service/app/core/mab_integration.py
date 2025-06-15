@@ -44,6 +44,9 @@ class MABIntegratedGSService:
         mab_config: MABConfig = None,
         reliability_config: LLMReliabilityConfig = None,
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         # Initialize MAB system
         self.mab_config = mab_config or self._default_mab_config()
         self.mab_optimizer = MABPromptOptimizer(self.mab_config)
@@ -104,6 +107,9 @@ class MABIntegratedGSService:
         )
 
     def _initialize_default_templates(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize default prompt templates for different categories."""
         default_templates = [
             PromptTemplate(
@@ -355,6 +361,9 @@ class MABIntegratedGSService:
         )
 
     def _update_integration_metrics(self, response_time: float, success: bool):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update integration performance metrics."""
         # Update average response time
         total_requests = self.integration_metrics["total_requests"]

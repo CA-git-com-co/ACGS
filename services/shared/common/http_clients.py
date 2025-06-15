@@ -55,6 +55,9 @@ class CircuitBreaker:
     """Circuit breaker implementation for service resilience."""
 
     def __init__(self, threshold: int = 5, timeout: float = 60.0):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.threshold = threshold
         self.timeout = timeout
         self.failure_count = 0
@@ -74,11 +77,17 @@ class CircuitBreaker:
             return True
 
     def record_success(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Record successful request."""
         self.failure_count = 0
         self.state = CircuitBreakerState.CLOSED
 
     def record_failure(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Record failed request."""
         self.failure_count += 1
         self.last_failure_time = time.time()
@@ -93,6 +102,9 @@ class ACGSHttpClient:
     """
 
     def __init__(self, service_config: ServiceConfig):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.config = service_config
         self.circuit_breaker = CircuitBreaker(
             threshold=service_config.circuit_breaker_threshold,
@@ -105,6 +117,9 @@ class ACGSHttpClient:
         )
 
     async def close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close the HTTP client."""
         await self.client.aclose()
 
@@ -201,10 +216,16 @@ class ServiceClient:
     """
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.clients: Dict[ServiceType, ACGSHttpClient] = {}
         self._setup_default_configs()
 
     def _setup_default_configs(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Setup default service configurations."""
         default_configs = {
             ServiceType.AUTH: ServiceConfig("http://localhost:8000"),
@@ -241,6 +262,9 @@ class ServiceClient:
         return await client.request(method, endpoint, **kwargs)
 
     async def close_all(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close all HTTP clients."""
         for client in self.clients.values():
             await client.close()

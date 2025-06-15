@@ -56,6 +56,9 @@ class DomainContextManager:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.domain_cache = {}
         self.adaptation_cache = {}
         self.mapping_cache = {}

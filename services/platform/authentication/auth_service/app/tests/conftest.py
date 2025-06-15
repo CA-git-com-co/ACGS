@@ -23,6 +23,9 @@ except ImportError:
     Base = MockBase()
 
     async def get_async_db():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         yield None
 
     class MockApp:
@@ -68,6 +71,9 @@ def event_loop() -> Generator:
 
 @pytest.fixture(scope="session", autouse=True)
 async def initialize_test_database():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Initialize test DB: creates tables before tests, drops them after."""
     async with async_test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

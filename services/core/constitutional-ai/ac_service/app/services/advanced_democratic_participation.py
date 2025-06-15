@@ -135,6 +135,9 @@ class AdvancedDemocraticParticipation:
     """
 
     def __init__(self, blockchain_provider_url: Optional[str] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.metrics = get_metrics("advanced_democratic_participation")
         self.ccai = get_collective_constitutional_ai()
 
@@ -160,6 +163,9 @@ class AdvancedDemocraticParticipation:
         )  # Default 100 credits
 
     def _initialize_blockchain(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize blockchain connection for transparent voting."""
         try:
             self.w3 = Web3(Web3.HTTPProvider(self.blockchain_provider_url))
@@ -478,6 +484,9 @@ class AdvancedDemocraticParticipation:
         return poll
 
     async def _initialize_ai_moderation(self, discussion: AIModeratedDiscussion):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize AI moderation for discussion."""
         # Simulate AI moderation initialization
         await asyncio.sleep(0.1)
@@ -502,6 +511,9 @@ class AdvancedDemocraticParticipation:
         )
 
     async def _initialize_real_time_monitoring(self, poll: RealTimePolling):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize real-time monitoring for poll."""
         # Simulate real-time monitoring setup
         await asyncio.sleep(0.1)

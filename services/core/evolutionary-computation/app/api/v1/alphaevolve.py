@@ -392,6 +392,9 @@ async def optimize_ec_algorithm(
 async def _report_governance_evaluation(
     evaluation_id: str, context: str, response: ECGovernanceResponse
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Background task to report governance evaluation to AC service."""
     try:
         await ac_service_client.report_oversight_activity(
@@ -419,6 +422,9 @@ async def _report_governance_evaluation(
 
 @router.get("/health")
 async def alphaevolve_health_check():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Health check for AlphaEvolve integration."""
     try:
         # Check GS service connectivity

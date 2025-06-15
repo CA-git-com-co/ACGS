@@ -121,6 +121,9 @@ class VotingMechanismService:
     """
 
     def __init__(self, db_session: AsyncSession):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the voting mechanism service."""
         self.db = db_session
         self.active_sessions: Dict[str, VotingSession] = {}

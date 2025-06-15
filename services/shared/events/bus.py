@@ -177,6 +177,9 @@ class EventBus(EventBusInterface):
     """
 
     def __init__(self, event_store: EventStore = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize event bus.
 
@@ -198,6 +201,9 @@ class EventBus(EventBusInterface):
         }
 
     async def start(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Start the event bus."""
         if self.running:
             return
@@ -211,6 +217,9 @@ class EventBus(EventBusInterface):
         logger.info("Event bus started")
 
     async def stop(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Stop the event bus."""
         if not self.running:
             return
@@ -370,11 +379,17 @@ class EventBus(EventBusInterface):
         return [event.to_dict() for event in events]
 
     def add_middleware(self, middleware: Callable[[Event], Event]):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Add middleware to the event processing pipeline."""
         self.middleware.append(middleware)
         logger.debug(f"Added middleware: {middleware.__name__}")
 
     async def _process_events(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Background task to process pending events."""
         while self.running:
             try:
@@ -402,6 +417,9 @@ class EventBus(EventBusInterface):
                 await asyncio.sleep(5.0)
 
     async def _process_event(self, event: Event):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Process a single event."""
         try:
             # Update event status

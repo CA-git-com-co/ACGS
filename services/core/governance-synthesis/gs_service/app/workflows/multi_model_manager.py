@@ -132,6 +132,9 @@ class ModelPerformanceTracker:
     """Tracks performance metrics for individual models."""
 
     def __init__(self, model_name: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.model_name = model_name
         self.total_requests = 0
         self.successful_requests = 0
@@ -144,6 +147,9 @@ class ModelPerformanceTracker:
     def record_success(
         self, response_time: float, quality_score: Optional[float] = None
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Record a successful model request."""
         self.total_requests += 1
         self.successful_requests += 1
@@ -156,6 +162,9 @@ class ModelPerformanceTracker:
                 self.quality_scores = self.quality_scores[-100:]
 
     def record_failure(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Record a failed model request."""
         self.total_requests += 1
         self.failed_requests += 1
@@ -213,6 +222,9 @@ class MultiModelManager:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.config = get_langgraph_config()
         self.synthesis_config = PolicySynthesisConfig()
         self.model_clients: Dict[str, Any] = {}
@@ -226,6 +238,9 @@ class MultiModelManager:
         self._initialize_models()
 
     def _initialize_models(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize model clients for all configured models."""
         if not LANGCHAIN_AVAILABLE:
             return

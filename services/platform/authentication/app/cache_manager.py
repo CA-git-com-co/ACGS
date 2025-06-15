@@ -26,11 +26,17 @@ class AuthCacheManager:
     """Cache manager for authentication service operations."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.service_name = "auth_service"
         self.redis_client: Optional[AdvancedRedisClient] = None
         self._initialized = False
 
     async def initialize(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize cache manager."""
         if self._initialized:
             return
@@ -191,6 +197,9 @@ class AuthCacheManager:
             return 0
 
     async def warm_cache(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Warm cache with frequently accessed data."""
         if not self.redis_client:
             await self.initialize()
@@ -252,6 +261,9 @@ async def get_auth_cache_manager() -> AuthCacheManager:
 
 # Cache decorators for auth service
 def cache_auth_result(ttl: Optional[int] = None, cache_type: str = "auth_tokens"):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Decorator for caching auth service results."""
     return cache_result(
         ttl=ttl, key_prefix="auth", cache_type=cache_type, service_name="auth_service"

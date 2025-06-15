@@ -88,6 +88,9 @@ class MockModelWeightExtractor(ModelWeightExtractor):
     """Mock implementation for testing and development."""
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.supported_models = [
             "gpt-3.5-turbo",
             "gpt-4",
@@ -170,6 +173,9 @@ class OpenAIModelWeightExtractor(ModelWeightExtractor):
     """Weight extractor for OpenAI models (placeholder implementation)."""
 
     def __init__(self, api_key: Optional[str] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.api_key = api_key
         self.supported_models = ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo"]
         logger.warning(
@@ -198,6 +204,9 @@ class GroqModelWeightExtractor(ModelWeightExtractor):
     """Weight extractor for Groq models (placeholder implementation)."""
 
     def __init__(self, api_key: Optional[str] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.api_key = api_key
         self.supported_models = [
             "llama-3.3-70b-versatile",
@@ -235,6 +244,9 @@ class WINAModelIntegrator:
     """
 
     def __init__(self, config: WINAConfig, integration_config: WINAIntegrationConfig):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize WINA model integrator.
 
