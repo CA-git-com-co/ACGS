@@ -28,5 +28,5 @@ typing-extensions==4.13.2
 # via
 #   alembic
 #   sqlalchemy
-cryptography==44.0.1
+cryptography==45.0.4
 # via -r requirements.txt
