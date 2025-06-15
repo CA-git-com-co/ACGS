@@ -98,7 +98,11 @@ class OPADNSResolver:
         
         try:
             # Add localhost entry for OPA
+<<<<<<< HEAD
             hosts_entry = "127.0.0.1 opa\\n"
+=======
+            hosts_entry = "127.0.0.1 opa\n"
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
             
             # Check if entry already exists
             with open("/etc/hosts", "r") as f:
@@ -189,7 +193,11 @@ async def main():
     resolver = OPADNSResolver()
     results = await resolver.fix_opa_dns_resolution()
     
+<<<<<<< HEAD
     print("\\n" + "="*60)
+=======
+    print("\n" + "="*60)
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
     print("🔧 OPA DNS RESOLUTION FIX RESULTS")
     print("="*60)
     print(f"OPA Connectivity: {'✅' if results['opa_connectivity'] else '❌'}")
