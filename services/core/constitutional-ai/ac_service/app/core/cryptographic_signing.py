@@ -50,9 +50,9 @@ class ConstitutionalCryptoSigner:
     """Enterprise-grade cryptographic signer for constitutional documents."""
     
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the constitutional crypto signer."""
         self.algorithm = "Ed25519"
         self._private_key: Optional[ed25519.Ed25519PrivateKey] = None
@@ -152,12 +152,13 @@ class ConstitutionalCryptoSigner:
             # Calculate content hash
             content_hash = self._calculate_content_hash(content)
             
-            # Create signing payload
+            # Create signing payload with timestamp
+            timestamp = datetime.now(timezone.utc)
             signing_payload = {
                 "content_hash": content_hash,
                 "signer_id": signer_id,
                 "signature_type": signature_type,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": timestamp.isoformat()
             }
             
             # Create canonical JSON for signing
@@ -181,7 +182,8 @@ class ConstitutionalCryptoSigner:
                 public_key=public_key_pem,
                 content_hash=content_hash,
                 signer_id=signer_id,
-                signature_type=signature_type
+                signature_type=signature_type,
+                timestamp=timestamp
             )
             
             logger.info(f"Successfully signed {signature_type} content for {signer_id}")
@@ -297,9 +299,9 @@ class ConstitutionalSigningService:
     """Service for managing constitutional cryptographic operations."""
     
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the constitutional signing service."""
         self.signer = ConstitutionalCryptoSigner()
         self._initialized = False

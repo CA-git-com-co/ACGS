@@ -108,9 +108,9 @@ if __name__ == "__main__":
     import asyncio
 
     async def test_secure_execution_mocks():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         print("--- Testing PET Mock ---")
         pet_in1 = PETContextInput(
             data={"user_id": "u123", "query": "SELECT * FROM table"},

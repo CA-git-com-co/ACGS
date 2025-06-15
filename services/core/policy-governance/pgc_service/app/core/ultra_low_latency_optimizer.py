@@ -99,9 +99,9 @@ class SpeculativeExecutor:
     """
 
     def __init__(self, max_concurrent: int = 10):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.max_concurrent = max_concurrent
         self.executor = ThreadPoolExecutor(max_workers=max_concurrent)
         self.speculative_cache: Dict[str, Any] = {}
@@ -165,18 +165,18 @@ class FragmentLevelCache:
     """
 
     def __init__(self, max_fragments: int = 10000):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.max_fragments = max_fragments
         self.fragment_cache: OrderedDict = OrderedDict()
         self.fragment_stats: Dict[str, int] = defaultdict(int)
         self.lock = threading.RLock()
 
     def cache_fragment(self, fragment_id: str, fragment_result: Any, ttl: int = 300):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Cache a policy fragment result."""
         with self.lock:
             # Remove oldest if at capacity
@@ -246,9 +246,9 @@ class UltraLowLatencyOptimizer:
     """
 
     def __init__(self, target_latency: float = 25.0):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.target_latency = target_latency
         self.metrics = get_metrics("ultra_low_latency_optimizer")
 
@@ -418,9 +418,9 @@ class UltraLowLatencyOptimizer:
         }
 
     async def _cache_result(self, request: Dict[str, Any], result: Any):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Cache the policy result."""
         cache_key = self._generate_cache_key(request)
         fragment_id = self._generate_fragment_id(request)
