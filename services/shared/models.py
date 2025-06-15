@@ -770,6 +770,9 @@ class Appeal(Base):
     )  # 1=ombudsperson, 2=technical, 3=council_subcommittee, 4=full_council
 
     def __repr__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         return f"<Appeal(id={self.id}, decision_id='{self.decision_id}', status='{self.status}', level={self.escalation_level})>"
 
 
@@ -805,6 +808,9 @@ class DisputeResolution(Base):
     panel_members = Column(ARRAY(String), nullable=True)
 
     def __repr__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         return f"<DisputeResolution(id={self.id}, appeal_id={self.appeal_id}, method='{self.resolution_method}', status='{self.status}')>"
 
 

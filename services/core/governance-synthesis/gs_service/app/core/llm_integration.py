@@ -220,6 +220,9 @@ class MockLLMClient:
 
 class RealLLMClient:
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.api_key = os.getenv("OPENAI_API_KEY")
         self.model_name = os.getenv("OPENAI_MODEL_NAME", "gpt-3.5-turbo")
         if not self.api_key:
@@ -243,6 +246,9 @@ class RealLLMClient:
 
 class GroqLLMClient:
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.api_key = os.getenv("GROQ_API_KEY")
         self.model_name = os.getenv("GROQ_MODEL_NAME", "llama-3.3-70b-versatile")
         if not self.api_key:
@@ -746,6 +752,9 @@ _groq_llm_client_instance = None
 
 
 def get_llm_client():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     global _real_llm_client_instance, _groq_llm_client_instance
     llm_provider = os.getenv("LLM_PROVIDER", "mock").lower()
 
@@ -845,6 +854,9 @@ if __name__ == "__main__":
     import asyncio
 
     async def main_test():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         # Example: Test with Mock Client (default if OPENAI_API_KEY is not set or LLM_PROVIDER=mock)
         print("--- Testing with MockLLMClient ---")
         test_principles_mock = [

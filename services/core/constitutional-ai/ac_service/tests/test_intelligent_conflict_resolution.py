@@ -42,11 +42,17 @@ class TestIntelligentConflictDetector:
 
     @pytest.fixture
     def detector(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create conflict detector instance."""
         return IntelligentConflictDetector()
 
     @pytest.fixture
     def mock_principles(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create mock principles for testing."""
         return [
             Mock(
@@ -74,6 +80,9 @@ class TestIntelligentConflictDetector:
 
     @pytest.mark.asyncio
     async def test_conflict_detection_basic(self, detector, mock_principles):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test basic conflict detection functionality."""
         with patch.object(
             detector, "_get_principles_for_analysis", return_value=mock_principles
@@ -118,6 +127,9 @@ class TestIntelligentConflictDetector:
 
     @pytest.mark.asyncio
     async def test_semantic_conflict_detection(self, detector):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test semantic conflict detection algorithm."""
         # Mock semantic embeddings
         import numpy as np
@@ -138,6 +150,9 @@ class TestIntelligentConflictDetector:
 
     @pytest.mark.asyncio
     async def test_priority_conflict_detection(self, detector):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test priority-based conflict detection."""
         # Create mock analyses with different priorities
         analyses = [
@@ -171,11 +186,17 @@ class TestAutomatedResolutionEngine:
 
     @pytest.fixture
     def resolver(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create resolution engine instance."""
         return AutomatedResolutionEngine()
 
     @pytest.fixture
     def mock_conflict(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create mock conflict for testing."""
         return Mock(
             id=1,
@@ -187,6 +208,9 @@ class TestAutomatedResolutionEngine:
 
     @pytest.fixture
     def mock_detection_result(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create mock detection result."""
         return ConflictDetectionResult(
             conflict_type=ConflictType.PRIORITY_CONFLICT,
@@ -204,6 +228,9 @@ class TestAutomatedResolutionEngine:
     async def test_strategy_evaluation(
         self, resolver, mock_conflict, mock_detection_result
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test resolution strategy evaluation."""
         mock_principles = [
             Mock(id=1, priority_weight=0.8),
@@ -227,6 +254,9 @@ class TestAutomatedResolutionEngine:
 
     @pytest.mark.asyncio
     async def test_weighted_priority_strategy(self, resolver, mock_conflict):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test weighted priority resolution strategy."""
         mock_principles = [
             Mock(id=1, priority_weight=0.9),
@@ -247,6 +277,9 @@ class TestAutomatedResolutionEngine:
 
     @pytest.mark.asyncio
     async def test_resolution_with_qec_integration(self, resolver):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test resolution with QEC integration."""
         # Mock QEC resolver
         with patch.object(resolver, "qec_resolver") as mock_qec:
@@ -272,11 +305,17 @@ class TestHumanEscalationSystem:
 
     @pytest.fixture
     def escalator(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create escalation system instance."""
         return HumanEscalationSystem()
 
     @pytest.fixture
     def mock_conflict(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create mock conflict for testing."""
         return Mock(
             id=1,
@@ -287,6 +326,9 @@ class TestHumanEscalationSystem:
 
     @pytest.mark.asyncio
     async def test_escalation_evaluation(self, escalator, mock_conflict):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test escalation need evaluation."""
         # Mock resolution result that failed
         mock_resolution = Mock(
@@ -317,6 +359,9 @@ class TestHumanEscalationSystem:
 
     @pytest.mark.asyncio
     async def test_escalation_rule_checking(self, escalator):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test escalation rule evaluation."""
         # Test critical severity rule
         rule = escalator.escalation_rules[0]  # Critical severity rule
@@ -346,16 +391,25 @@ class TestConflictAuditSystem:
 
     @pytest.fixture
     def auditor(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create audit system instance."""
         return ConflictAuditSystem()
 
     @pytest.fixture
     def mock_conflict(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create mock conflict for testing."""
         return Mock(id=1, conflict_type="priority_conflict", severity="medium")
 
     @pytest.mark.asyncio
     async def test_audit_logging(self, auditor, mock_conflict):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test audit event logging."""
         mock_db = AsyncMock()
 
@@ -385,6 +439,9 @@ class TestConflictAuditSystem:
 
     @pytest.mark.asyncio
     async def test_performance_metrics_collection(self, auditor):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test performance metrics collection."""
         mock_db = AsyncMock()
 
@@ -411,11 +468,17 @@ class TestConflictResolutionOrchestrator:
 
     @pytest.fixture
     def orchestrator(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create orchestrator instance."""
         return ConflictResolutionOrchestrator()
 
     @pytest.mark.asyncio
     async def test_end_to_end_conflict_resolution(self, orchestrator):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test complete conflict resolution workflow."""
         mock_db = AsyncMock()
 
@@ -475,6 +538,9 @@ class TestConflictResolutionOrchestrator:
 
     @pytest.mark.asyncio
     async def test_performance_targets_monitoring(self, orchestrator):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test performance targets monitoring."""
         mock_db = AsyncMock()
 

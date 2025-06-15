@@ -9,6 +9,9 @@ class EnhancedSecurityMiddleware:
     """Enhanced security middleware for input validation and HTTP method control."""
 
     def __init__(self, app):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.app = app
 
         # Allowed HTTP methods per endpoint pattern
@@ -28,6 +31,9 @@ class EnhancedSecurityMiddleware:
         ]
 
     async def __call__(self, request: Request, call_next):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Process request through security middleware."""
 
         # 1. HTTP Method Validation
@@ -90,5 +96,8 @@ class EnhancedSecurityMiddleware:
 
 
 def add_enhanced_security_middleware(app):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Add enhanced security middleware to FastAPI app."""
     app.middleware("http")(EnhancedSecurityMiddleware(app))

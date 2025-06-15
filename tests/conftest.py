@@ -583,38 +583,7 @@ def cleanup_after_test():
             del sys.modules[module]
 
 
-@pytest_asyncio.fixture(autouse=True)
-async def comprehensive_test_teardown():
-    """Comprehensive teardown procedures to prevent test pollution."""
-    # Store initial state
-    initial_modules = set(sys.modules.keys())
-    initial_env = dict(os.environ)
-
-    # Track resources for cleanup
-    cleanup_tasks = []
-    temp_files = []
-    temp_dirs = []
-    db_connections = []
-    http_clients = []
-
-    yield {
-        "cleanup_tasks": cleanup_tasks,
-        "temp_files": temp_files,
-        "temp_dirs": temp_dirs,
-        "db_connections": db_connections,
-        "http_clients": http_clients,
-    }
-
-    # Comprehensive cleanup
-    await _perform_comprehensive_cleanup(
-        cleanup_tasks,
-        temp_files,
-        temp_dirs,
-        db_connections,
-        http_clients,
-        initial_modules,
-        initial_env,
-    )
+# Removed problematic comprehensive_test_teardown fixture that was causing pytest-asyncio conflicts
 
 
 async def _perform_comprehensive_cleanup(

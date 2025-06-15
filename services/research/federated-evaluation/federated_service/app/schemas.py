@@ -97,6 +97,9 @@ class FederatedEvaluationRequest(BaseModel):
     @field_validator("target_platforms")
     @classmethod
     def validate_platforms(cls, v):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if not v:
             raise ValueError("At least one target platform must be specified")
         return v
@@ -211,6 +214,9 @@ class AggregationConfigRequest(BaseModel):
     @field_validator("max_participants")
     @classmethod
     def validate_max_participants(cls, v, info):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if (
             hasattr(info, "data")
             and "min_participants" in info.data

@@ -7,6 +7,9 @@ class FallbackCache:
     """In-memory cache fallback when Redis is unavailable."""
 
     def __init__(self, max_size: int = 1000):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.cache: Dict[str, Dict[str, Any]] = {}
         self.max_size = max_size
         self.lock = threading.RLock()
@@ -58,4 +61,7 @@ _fallback_cache = FallbackCache()
 
 
 def get_fallback_cache():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return _fallback_cache

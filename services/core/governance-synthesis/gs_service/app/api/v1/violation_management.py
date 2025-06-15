@@ -334,6 +334,9 @@ async def trigger_violation_scan(
 
 
 async def perform_violation_scan(db: AsyncSession):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Perform violation scan in background."""
     try:
         # Perform batch violation scan

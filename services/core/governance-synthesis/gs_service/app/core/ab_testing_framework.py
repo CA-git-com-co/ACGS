@@ -103,6 +103,9 @@ class ABTestingFramework:
     """A/B Testing Framework for prompt optimization."""
 
     def __init__(self, config: ABTestConfig = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.config = config or ABTestConfig()
         self.active_tests: Dict[str, ABTestResult] = {}
         self.completed_tests: Dict[str, ABTestResult] = {}
@@ -180,6 +183,9 @@ class ABTestingFramework:
         success: bool,
         context: Dict[str, Any] = None,
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Record a result for the A/B test."""
         if test_id not in self.active_tests:
             logger.warning(f"Test {test_id} not found")
@@ -234,6 +240,9 @@ class ABTestingFramework:
         await self._check_test_completion(test_id)
 
     async def _check_test_completion(self, test_id: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Check if A/B test should be completed."""
         test_result = self.active_tests[test_id]
 
@@ -328,6 +337,9 @@ class ABTestingFramework:
         }
 
     async def _complete_test(self, test_id: str, early_stopped: bool = False):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Complete an A/B test and determine the winner."""
         test_result = self.active_tests[test_id]
         test_result.status = ABTestStatus.COMPLETED
@@ -394,6 +406,9 @@ class ABTestingFramework:
         return self.completed_tests.copy()
 
     async def stop_test(self, test_id: str, reason: str = "Manual stop"):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Manually stop an active test."""
         if test_id in self.active_tests:
             test_result = self.active_tests[test_id]

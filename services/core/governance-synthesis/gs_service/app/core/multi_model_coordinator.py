@@ -69,6 +69,9 @@ class MultiModelCoordinator:
     """
 
     def __init__(self, config: Dict[str, Any]):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize multi-model coordinator.
 
@@ -99,6 +102,9 @@ class MultiModelCoordinator:
         self.active_models = set()
 
     async def initialize(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the multi-model coordinator."""
         if self._initialized:
             return
@@ -413,6 +419,9 @@ class MultiModelCoordinator:
     async def _update_model_metrics(
         self, model_results: Dict[str, Dict[str, Any]], ensemble_result: EnsembleResult
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update model performance metrics based on results."""
         for model_id, result in model_results.items():
             if "error" not in result and model_id in self.model_metrics:

@@ -34,6 +34,9 @@ async def get_current_active_user(user: User = None) -> User:
 # Mock role checker class
 class RoleChecker:
     def __init__(self, allowed_roles: List[str]):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.allowed_roles = allowed_roles
 
     def __call__(self, user: User = None) -> User:

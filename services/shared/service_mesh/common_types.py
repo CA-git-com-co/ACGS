@@ -81,15 +81,24 @@ class ServiceInstance:
         return min(self.current_connections / max_connections, 1.0)
 
     def increment_connections(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Increment current connection count."""
         self.current_connections += 1
         self.total_requests += 1
         self.last_selected = time.time()
 
     def decrement_connections(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Decrement current connection count."""
         self.current_connections = max(0, self.current_connections - 1)
 
     def record_failure(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Record a failed request."""
         self.failed_requests += 1

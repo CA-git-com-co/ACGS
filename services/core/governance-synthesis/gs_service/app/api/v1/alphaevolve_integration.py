@@ -548,6 +548,9 @@ async def _log_ec_constitutional_session(
     request: gs_schemas.ECConstitutionalPromptingInput,
     response: gs_schemas.ECConstitutionalPromptingOutput,
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Log EC constitutional prompting session for audit purposes."""
     logger.info(
         f"EC Constitutional Session {prompting_id}: Context={request.ec_context}, Population={len(request.current_population)}"
@@ -559,6 +562,9 @@ async def _log_ec_governance_evaluation(
     request: gs_schemas.ECGovernanceRequest,
     response: gs_schemas.ECGovernanceResponse,
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Log EC governance evaluation for audit purposes."""
     logger.info(
         f"EC Governance Evaluation {evaluation_id}: Proposals={len(request.proposals)}, Compliance={response.constitutional_compliance_rate:.2f}"

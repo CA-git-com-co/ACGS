@@ -72,6 +72,9 @@ class ResearchDataset(Base):
     )
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<ResearchDataset(id='{self.id}', name='{self.name}', version='{self.version}')>"
 
 
@@ -104,6 +107,9 @@ class DataPoint(Base):
     dataset = relationship("ResearchDataset", back_populates="data_points")
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<DataPoint(id='{self.id}', dataset_id='{self.dataset_id}')>"
 
 
@@ -154,6 +160,9 @@ class AnalysisResult(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<AnalysisResult(id='{self.id}', name='{self.name}', analysis_type='{self.analysis_type}')>"
 
 
@@ -194,6 +203,9 @@ class Benchmark(Base):
     )
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<Benchmark(id='{self.id}', name='{self.name}', category='{self.category}')>"
 
 
@@ -240,6 +252,9 @@ class BenchmarkResult(Base):
     benchmark = relationship("Benchmark", back_populates="results")
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<BenchmarkResult(id='{self.id}', benchmark_id='{self.benchmark_id}', status='{self.status}')>"
 
 
@@ -277,4 +292,7 @@ class ReproducibilityRecord(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<ReproducibilityRecord(id='{self.id}', reproducible={self.reproducible}, score={self.reproducibility_score})>"

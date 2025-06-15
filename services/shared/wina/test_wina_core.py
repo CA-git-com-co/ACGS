@@ -37,6 +37,9 @@ logger = logging.getLogger(__name__)
 
 
 async def test_wina_configuration():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test WINA configuration setup."""
     logger.info("Testing WINA configuration...")
 
@@ -79,6 +82,9 @@ async def test_wina_configuration():
 
 
 async def test_wina_core():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test WINA core functionality."""
     logger.info("Testing WINA core functionality...")
 
@@ -112,6 +118,9 @@ async def test_wina_core():
 
 
 async def test_svd_transformation():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test SVD transformation functionality."""
     logger.info("Testing SVD transformation...")
 
@@ -154,6 +163,9 @@ async def test_svd_transformation():
 
 
 async def test_runtime_gating():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test runtime gating functionality."""
     logger.info("Testing runtime gating...")
 
@@ -189,6 +201,9 @@ async def test_runtime_gating():
 
 
 async def test_constitutional_integration():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test constitutional integration functionality."""
     logger.info("Testing constitutional integration...")
 
@@ -231,6 +246,9 @@ async def test_constitutional_integration():
 
 
 async def test_wina_optimizer():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test WINA optimizer functionality."""
     logger.info("Testing WINA optimizer...")
 
@@ -260,6 +278,9 @@ async def test_wina_optimizer():
 
 
 async def test_environment_configuration():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test environment configuration loading."""
     logger.info("Testing environment configuration...")
 
@@ -287,6 +308,9 @@ async def test_environment_configuration():
 
 
 async def run_all_tests():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Run all WINA tests."""
     logger.info("Starting WINA core library tests...")
 

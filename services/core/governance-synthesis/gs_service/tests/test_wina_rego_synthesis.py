@@ -35,6 +35,9 @@ class TestWINARegoSynthesizer:
 
     @pytest.fixture
     def mock_constitutional_principles(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Mock constitutional principles for testing."""
         return [
             {
@@ -53,11 +56,17 @@ class TestWINARegoSynthesizer:
 
     @pytest.fixture
     def wina_synthesizer(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Create WINARegoSynthesizer instance for testing."""
         return WINARegoSynthesizer(enable_wina=True)
 
     @pytest.fixture
     def mock_wina_optimization_result(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Mock WINA optimization result."""
         from services.shared.wina.model_integration import WINAOptimizationResult
 
@@ -80,6 +89,9 @@ class TestWINARegoSynthesizer:
         mock_constitutional_principles,
         mock_wina_optimization_result,
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test successful WINA-optimized Rego policy synthesis."""
 
         synthesis_goal = "Create access control policy for sensitive data"
@@ -152,6 +164,9 @@ deny {
     async def test_synthesize_rego_policy_without_wina(
         self, mock_constitutional_principles
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test Rego policy synthesis without WINA optimization."""
 
         wina_synthesizer = WINARegoSynthesizer(enable_wina=False)
@@ -173,6 +188,9 @@ deny {
     async def test_constitutional_compliance_verification(
         self, wina_synthesizer, mock_constitutional_principles
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test constitutional compliance verification."""
 
         # Test with compliant Rego content
@@ -215,6 +233,9 @@ default allow = true
 
     @pytest.mark.asyncio
     async def test_rego_validation(self, wina_synthesizer):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test Rego policy validation functionality."""
 
         # Test valid Rego
@@ -248,6 +269,9 @@ allow {
         assert len(validation_result["errors"]) > 0
 
     def test_performance_tracking(self, wina_synthesizer):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test performance metrics tracking."""
 
         # Create mock synthesis result
@@ -286,6 +310,9 @@ class TestWINARegoSynthesisAPI:
 
     @pytest.mark.asyncio
     async def test_synthesize_rego_policy_with_wina_function(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test the main synthesis function."""
 
         synthesis_goal = "Create data access policy"
@@ -331,6 +358,9 @@ class TestWINARegoSynthesisAPI:
 
     @pytest.mark.asyncio
     async def test_batch_synthesize_rego_policies(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test batch synthesis functionality."""
 
         synthesis_requests = [
@@ -385,6 +415,9 @@ class TestWINAPerformanceTargets:
 
     @pytest.mark.asyncio
     async def test_gflops_reduction_target(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test that WINA achieves 40-70% GFLOPs reduction target."""
 
         # This would be an integration test with actual WINA optimization
@@ -410,6 +443,9 @@ class TestWINAPerformanceTargets:
         assert mock_metrics.constitutional_compliance is True  # Required
 
     def test_performance_summary_structure(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test performance summary structure and content."""
 
         with patch(

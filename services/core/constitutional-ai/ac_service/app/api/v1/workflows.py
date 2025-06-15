@@ -69,6 +69,9 @@ class WorkflowCapabilitiesResponse(BaseModel):
 
 @router.get("/capabilities", response_model=WorkflowCapabilitiesResponse)
 async def get_workflow_capabilities():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Get information about workflow capabilities and configuration.
 

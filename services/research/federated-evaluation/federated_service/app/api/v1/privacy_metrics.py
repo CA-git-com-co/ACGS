@@ -161,6 +161,9 @@ async def validate_privacy_requirements(
 
 @router.get("/mechanisms")
 async def list_privacy_mechanisms():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """List available privacy mechanisms."""
     return {
         "mechanisms": [

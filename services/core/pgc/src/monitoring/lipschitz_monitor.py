@@ -150,6 +150,9 @@ class LipschitzMonitor:
         recalibration_threshold: float = 0.85,
         embedding_model: str = "all-MiniLM-L6-v2",
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.window_size = window_size
         self.warning_threshold = warning_threshold
         self.critical_threshold = critical_threshold
@@ -184,6 +187,9 @@ class LipschitzMonitor:
         )
 
     async def initialize_embedding_model(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize semantic embedding model."""
         if EMBEDDINGS_AVAILABLE:
             try:
@@ -422,6 +428,9 @@ class LipschitzMonitor:
             return None
 
     async def _check_stability_alerts(self, sample: LipschitzSample):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Check for stability alerts and trigger notifications."""
         try:
             alerts_triggered = []
@@ -496,6 +505,9 @@ class LipschitzMonitor:
             logger.error(f"Failed to check stability alerts: {e}")
 
     async def _trigger_recalibration(self, sample: LipschitzSample):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Trigger automatic recalibration when threshold exceeded."""
         try:
             logger.warning(

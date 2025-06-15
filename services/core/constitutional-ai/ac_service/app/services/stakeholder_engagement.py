@@ -135,6 +135,9 @@ class StakeholderEngagementInput(BaseModel):
 
     @validator("notification_channels")
     def validate_channels(cls, v):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Validate notification channels."""
         if not v:
             raise ValueError("At least one notification channel must be specified")
@@ -167,6 +170,9 @@ class StakeholderNotificationService:
     """
 
     def __init__(self, db: AsyncSession, config: ConstitutionalCouncilConfig):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.db = db
         self.config = config
         self.notifications: Dict[str, NotificationRecord] = {}

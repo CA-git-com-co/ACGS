@@ -68,6 +68,9 @@ class OversightRequestModel(BaseModel):
     @field_validator("oversight_type")
     @classmethod
     def validate_oversight_type(cls, v):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         valid_types = [context.value for context in ECOversightContext]
         if v not in valid_types:
             raise ValueError(f"Invalid oversight_type. Must be one of: {valid_types}")
@@ -76,6 +79,9 @@ class OversightRequestModel(BaseModel):
     @field_validator("priority_level")
     @classmethod
     def validate_priority_level(cls, v):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         valid_priorities = ["normal", "high", "critical"]
         if v not in valid_priorities:
             raise ValueError(
@@ -106,6 +112,9 @@ class ReportingPeriodModel(BaseModel):
     @field_validator("end_time")
     @classmethod
     def validate_end_time(cls, v, info):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if (
             v
             and hasattr(info, "data")

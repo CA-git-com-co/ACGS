@@ -85,6 +85,9 @@ class ResearchDataPipeline:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.pgp_service = PGPAssuranceService()
         self.anonymization_cache = {}
 

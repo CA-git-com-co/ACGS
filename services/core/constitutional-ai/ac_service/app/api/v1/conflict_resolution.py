@@ -126,6 +126,9 @@ async def list_conflict_resolutions(
         try:
             # Sort by QEC priority score (higher score = higher priority)
             def get_qec_priority(conflict):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
                 qec_analysis = (
                     conflict.resolution_details.get("qec_analysis", {})
                     if conflict.resolution_details

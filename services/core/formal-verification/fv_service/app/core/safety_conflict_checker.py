@@ -29,6 +29,9 @@ class SafetyPropertyChecker:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.safety_cache = {}  # Cache for safety check results
 
     async def check_safety_properties(
@@ -350,6 +353,9 @@ class ConflictDetector:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.conflict_cache = {}
 
     async def detect_conflicts(

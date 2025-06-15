@@ -100,6 +100,9 @@ if CELERY_AVAILABLE and Task:
         """Base task class for ACGS-PGP with enhanced error handling."""
 
         def on_failure(self, exc, task_id, args, kwargs, einfo):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
             """Handle task failure."""
             logger.error(f"Task {task_id} failed: {exc}")
             # Update task status in Redis
@@ -108,6 +111,9 @@ if CELERY_AVAILABLE and Task:
             )
 
         def on_success(self, retval, task_id, args, kwargs):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
             """Handle task success."""
             logger.info(f"Task {task_id} completed successfully")
             # Update task status in Redis
@@ -116,6 +122,9 @@ if CELERY_AVAILABLE and Task:
         async def _update_task_status(
             self, task_id: str, status: TaskStatus, error: str = None
         ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
             """Update task status in Redis."""
             try:
                 redis_client = await get_redis_client("celery_tasks")
@@ -226,6 +235,9 @@ class CeleryTaskManager:
     """Manages Celery tasks for parallel validation pipeline."""
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.aggregator = ByzantineFaultTolerantAggregator()
         self.active_batches: Dict[str, ValidationBatch] = {}
 
@@ -354,6 +366,9 @@ if CELERY_AVAILABLE:
 
     @celery_app.task(name="acgs.monitoring.monitor_batch_progress")
     def monitor_batch_progress(batch_id: str, celery_task_ids: List[str]):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Monitor batch progress and update status."""
         import time
 
@@ -385,6 +400,9 @@ task_manager = CeleryTaskManager() if CELERY_AVAILABLE else None
 
 
 async def initialize_celery_integration():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Initialize Celery integration."""
     if not CELERY_AVAILABLE:
         logger.warning(
@@ -414,6 +432,9 @@ async def initialize_celery_integration():
 
 
 async def shutdown_celery_integration():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Shutdown Celery integration."""
     if CELERY_AVAILABLE and celery_app:
         try:

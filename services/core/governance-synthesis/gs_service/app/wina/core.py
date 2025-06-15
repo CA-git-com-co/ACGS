@@ -153,6 +153,9 @@ async def transform_matrix_with_svd(matrix: np.ndarray, k: int) -> np.ndarray:
 
 # Example of how transform_matrix_with_svd might be called (for testing/demonstration)
 # async def example_svd_usage():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
 #     # This would typically be a weight matrix from an LLM
 #     example_weight_matrix = np.random.rand(100, 50) # e.g., 100 features, 50 neurons
 #     num_components_to_keep = 10

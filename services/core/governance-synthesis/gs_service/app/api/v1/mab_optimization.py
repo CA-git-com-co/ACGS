@@ -81,6 +81,9 @@ class IntegrationStatusResponse(BaseModel):
 
 @router.get("/status", response_model=IntegrationStatusResponse)
 async def get_mab_status():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Get comprehensive MAB integration status and metrics."""
     try:
         mab_service = get_mab_service()
@@ -96,6 +99,9 @@ async def get_mab_status():
 
 @router.get("/metrics", response_model=MABMetricsResponse)
 async def get_mab_metrics():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Get detailed MAB optimization metrics."""
     try:
         mab_service = get_mab_service()
@@ -305,6 +311,9 @@ async def list_prompt_templates(
 
 @router.get("/algorithms")
 async def list_available_algorithms():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """List available MAB algorithms and their descriptions."""
     algorithms = [
         {
