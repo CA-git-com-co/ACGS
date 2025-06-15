@@ -1,41 +1,48 @@
-# ACGS-1/.gitignore
-# Comprehensive ignore patterns for ACGS-1 blockchain-first constitutional AI governance system
+# ACGS-1 Constitutional Governance System
+# Comprehensive .gitignore for blockchain-first constitutional AI governance
 
 # ============================================================================
-# RUST / SOLANA / ANCHOR BLOCKCHAIN
+# PROJECT SPECIFIC
 # ============================================================================
 
-# Rust build artifacts
+# ACGS specific files
+.kilocode/mcp.json
+.roo/mcp.json
+.cursor/mcp.json
+**/mcp.json
+
+# Backup files
+**/*-20*-*/
+.github/workflows/backup-*/
+
+# ============================================================================
+# BLOCKCHAIN (SOLANA/ANCHOR)
+# ============================================================================
+
+# Anchor/Solana build artifacts
 **/target/
 **/*.rs.bk
-**/target/debug/
-**/target/release/
-**/target/deploy/
-**/target/debug/deps/test-*
+blockchain/target/
+blockchain/**/target/
+**/target/deploy/*.so
 
 # Anchor specific
 **/.anchor/
 **/test-ledger/
 **/keypairs/
-**/target/deploy/*.so
-**/migrations/
-**/idl/
+tests/keypairs/
+/migrations/
+/idl/
 Anchor.toml.lock
 
-# Solana CLI
-**/.config/solana/
-
 # ============================================================================
-# PYTHON
+# PYTHON SERVICES
 # ============================================================================
 
-# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
-*.so
 
 # Distribution / packaging
 .Python
@@ -51,133 +58,80 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
-# PyInstaller
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
 # Unit test / coverage reports
 htmlcov/
 .tox/
-.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
 .hypothesis/
 .pytest_cache/
-**/test-results/
-**/coverage/
 
 # Virtual environments
 .env
 .env.*
-.env.local
-.env.*.local
-.venv
-env/
+!.env.example
+.venv/
 venv/
 ENV/
-env.bak/
-venv.bak/
 
 # ============================================================================
-# NODE.JS / JAVASCRIPT
+# JAVASCRIPT/TYPESCRIPT
 # ============================================================================
 
-# Dependency directories
+# Dependencies
 node_modules/
 **/node_modules/
 
 # Build outputs
-build/
-dist/
-**/build/
 **/dist/
+**/build/
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
-.pnpm-debug.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory
-coverage/
-**/coverage/
-.nyc_output
-
-# TypeScript cache
-*.tsbuildinfo
 
 # ============================================================================
-# DOCKER
+# DOCKER & INFRASTRUCTURE
 # ============================================================================
 
 # Docker artifacts
 *.tar
 docker-compose.override.yml
 
-# ============================================================================
-# KUBERNETES / HELM
-# ============================================================================
-
-# Kubernetes / Helm artifacts
+# Kubernetes / Helm
 *.yaml.lock
 
 # ============================================================================
-# ENHANCED DEVELOPMENT TOOLS & IDEs
+# TOOLS & EDITORS
 # ============================================================================
-
-# IntelliJ IDEA
-**/.idea/
-*.iml
-*.ipr
-*.iws
 
 # VS Code
 .vscode/
 **/.vscode/
 
+# JetBrains IDEs
+.idea/
+**/.idea/
+*.iml
+*.ipr
+*.iws
+
 # Vim
 *.swp
 *.swo
 *~
-
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
-
-# Sublime Text
-*.sublime-workspace
-*.sublime-project
 
 # OS specific
 .DS_Store
@@ -189,22 +143,7 @@ ehthumbs.db
 Thumbs.db
 
 # ============================================================================
-# DATABASES & CACHING
-# ============================================================================
-
-# SQLite
-*.sqlite
-*.sqlite3
-
-# PostgreSQL
-*.dump
-*.sql.gz
-
-# Redis
-dump.rdb
-
-# ============================================================================
-# SECURITY & SECRETS
+# SECURITY & CREDENTIALS
 # ============================================================================
 
 # Environment files with secrets
@@ -212,66 +151,35 @@ dump.rdb
 .env.staging
 .env.secrets
 
-# SSH keys
-*.pem
-id_rsa*
-id_ed25519*
-
-# SSL certificates
-*.crt
-*.cert
-*.p12
-*.pfx
-
-# API keys and secrets
-secrets/
-**/.secrets/
-api_keys.json
-credentials.json
+# API keys and credentials
+**/credentials.json
 **/*credentials*
 **/*secrets*
 **/*tokens*
 *.key
-
-# Security and sensitive files
-auth_tokens.json
-auth_tokens.env
-cookies.txt
-private/
+*.pem
 
 # ============================================================================
-# CI/CD ARTIFACTS
+# TEMPORARY & GENERATED FILES
 # ============================================================================
 
-# CI/CD artifacts
-/.circleci/
-/.github/workflows/
-
-# ============================================================================
-# GENERATED DOCUMENTATION
-# ============================================================================
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
 
 # Generated documentation
 /docs/generated/
 
 # ============================================================================
-# MISCELLANEOUS
+# TESTING & DEBUGGING
 # ============================================================================
 
-# Large archive files
-*.zip
-ACGS.zip
+# Test results
+**/test-results/
+**/coverage/
+.nyc_output
 
-# Security - Credential files and MCP configurations
-.kilocode/mcp.json
-.roo/mcp.json
-.cursor/mcp.json
-**/mcp.json
-
-# Reports
-*_report.json
-*_report.html
-
-# Allow template and setup files
-!.kilocode/mcp.json.template
-!scripts/setup_secure_credentials.sh
+# Debug files
+.ipynb_checkpoints/
