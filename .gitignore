@@ -15,6 +15,13 @@
 **/*-20*-*/
 .github/workflows/backup-*/
 
+# MCP Inspector workspace files
+*-workspace/
+tools/mcp-inspector/client/tsconfig.app.tsbuildinfo
+tools/mcp-inspector/client/tsconfig.node.tsbuildinfo
+tools/mcp-inspector/cli/build
+tools/mcp-inspector/test-output
+
 # ============================================================================
 # BLOCKCHAIN (SOLANA/ANCHOR)
 # ============================================================================
@@ -34,6 +41,9 @@ tests/keypairs/
 /migrations/
 /idl/
 Anchor.toml.lock
+
+# Solana CLI configuration
+.config/solana/
 
 # ============================================================================
 # PYTHON SERVICES
@@ -79,6 +89,7 @@ coverage.xml
 .env
 .env.*
 !.env.example
+!.env.development
 .venv/
 venv/
 ENV/
@@ -94,6 +105,12 @@ node_modules/
 # Build outputs
 **/dist/
 **/build/
+storybook-static/
+server/build/
+client/dist/
+
+# TypeScript cache
+*.tsbuildinfo
 
 # Logs
 logs/
@@ -159,6 +176,9 @@ Thumbs.db
 *.key
 *.pem
 
+# GitHub tokens
+GITHUB_PERSONAL_ACCESS_TOKEN
+
 # ============================================================================
 # TEMPORARY & GENERATED FILES
 # ============================================================================
@@ -168,6 +188,7 @@ tmp/
 temp/
 *.tmp
 *.temp
+.tmp/
 
 # Generated documentation
 /docs/generated/
@@ -183,3 +204,10 @@ temp/
 
 # Debug files
 .ipynb_checkpoints/
+
+# ============================================================================
+# CI/CD ARTIFACTS
+# ============================================================================
+
+# SARIF reports
+*.sarif
