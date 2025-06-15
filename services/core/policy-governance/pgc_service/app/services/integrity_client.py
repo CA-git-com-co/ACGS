@@ -13,9 +13,9 @@ INTEGRITY_SERVICE_URL = os.getenv(
 
 class IntegrityServiceClient:
     def __init__(self, base_url: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.base_url = base_url
         timeout_config = httpx.Timeout(10.0, connect=5.0)
         # Handle SSL verification issues for development/testing
@@ -79,9 +79,9 @@ class IntegrityServiceClient:
             return []
 
     async def close(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         await self.client.aclose()
 
 
@@ -93,9 +93,9 @@ if __name__ == "__main__":
     pass
 
     async def test_integrity_client_for_pgc():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         print(
             f"Testing Integrity Client for PGC Service against URL: {INTEGRITY_SERVICE_URL}"
         )

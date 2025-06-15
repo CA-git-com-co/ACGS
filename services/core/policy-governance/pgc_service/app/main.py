@@ -1547,8 +1547,8 @@ async def root():
             "fv_service": FV_CLIENT_AVAILABLE,
             "integrity_service": INTEGRITY_CLIENT_AVAILABLE,
             "ac_service": True,
-            "opentelemetry": service_config.get("telemetry", {}).get("enabled", True),
-            "istio": service_config.get("security", {}).get("enable_mtls", True),
+            "opentelemetry": service_config.get_section("telemetry").get("enabled", True),
+            "istio": service_config.get_section("security").get("enable_mtls", True),
         },
         "performance_targets": {
             "p99_latency_ms": service_config.get("performance", {}).get("p99_latency_target_ms", 500),
@@ -1588,22 +1588,22 @@ async def health_check():
         "integrations": {
             "fv_service": FV_CLIENT_AVAILABLE,
             "integrity_service": INTEGRITY_CLIENT_AVAILABLE,
-            "opentelemetry": service_config.get("telemetry", {}).get("enabled", True),
-            "service_mesh": service_config.get("security", {}).get("enable_mtls", True),
+            "opentelemetry": service_config.get_section("telemetry").get("enabled", True),
+            "service_mesh": service_config.get_section("security").get("enable_mtls", True),
         },
         "performance": {
-            "p99_latency_target": f"<{service_config.get('performance', {}).get('p99_latency_target_ms', 500)}ms",
-            "p95_latency_target": f"<{service_config.get('performance', {}).get('p95_latency_target_ms', 25)}ms",
+            "p99_latency_target": f"<{service_config.get_section('performance').get('p99_latency_target_ms', 500)}ms",
+            "p95_latency_target": f"<{service_config.get_section('performance').get('p95_latency_target_ms', 25)}ms",
             "response_time_target": "<100ms for governance operations",
             "workflow_processing_target": "<500ms for workflow steps",
             "enforcement_target": "<50ms for policy enforcement",
             "availability_target": ">99.9%",
         },
         "telemetry": {
-            "enabled": service_config.get("telemetry", {}).get("enabled", True),
-            "otlp_version": service_config.get("telemetry", {}).get("otlp_version", "v1.37.0"),
-            "service_name": service_config.get("telemetry", {}).get("service_name", "pgc_service"),
-            "environment": service_config.get("telemetry", {}).get("environment", "production"),
+            "enabled": service_config.get_section("telemetry").get("enabled", True),
+            "otlp_version": service_config.get_section("telemetry").get("otlp_version", "v1.37.0"),
+            "service_name": service_config.get_section("telemetry").get("service_name", "pgc_service"),
+            "environment": service_config.get_section("telemetry").get("environment", "production"),
         },
     }
 
@@ -1672,22 +1672,22 @@ async def health_check():
                 "status": "unhealthy",
                 "error": str(e),
             }
-            
-    # Check FV Service connectivity
-    if FV_CLIENT_AVAILABLE:
-        try:
-            fv_service_url = service_config.get("integrations", {}).get("fv_service", {}).get("url", "http://fv_service:8083")
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                fv_response = await client.get(f"{fv_service_url}/health")
+
+        # Check FV Service connectivity
+        if FV_CLIENT_AVAILABLE:
+            try:
+                fv_service_url = service_config.get_section("integrations").get("fv_service", {}).get("url", "http://fv_service:8083")
+                async with httpx.AsyncClient(timeout=5.0) as client:
+                    fv_response = await client.get(f"{fv_service_url}/health")
+                    health_status["dependencies"]["fv_service"] = {
+                        "status": "healthy" if fv_response.status_code == 200 else "unhealthy",
+                        "response_time_ms": fv_response.elapsed.total_seconds() * 1000 if hasattr(fv_response, "elapsed") else 0,
+                    }
+            except Exception as e:
                 health_status["dependencies"]["fv_service"] = {
-                    "status": "healthy" if fv_response.status_code == 200 else "unhealthy",
-                    "response_time_ms": fv_response.elapsed.total_seconds() * 1000 if hasattr(fv_response, "elapsed") else 0,
+                    "status": "unhealthy",
+                    "error": str(e),
                 }
-        except Exception as e:
-            health_status["dependencies"]["fv_service"] = {
-                "status": "unhealthy",
-                "error": str(e),
-            }
 
         # Determine overall health status
         critical_deps = ["opa"]
@@ -1734,7 +1734,7 @@ async def readiness_check():
             
         # Check if FV service is reachable (if enabled)
         if FV_CLIENT_AVAILABLE:
-            fv_service_url = service_config.get("integrations", {}).get("fv_service", {}).get("url", "http://fv_service:8083")
+            fv_service_url = service_config.get_section("integrations").get("fv_service", {}).get("url", "http://fv_service:8083")
             try:
                 async with httpx.AsyncClient(timeout=2.0) as client:
                     await client.get(f"{fv_service_url}/health")
@@ -1752,7 +1752,7 @@ async def readiness_check():
             "timestamp": time.time(),
             "service": "pgc_service",
             "port": port,
-            "telemetry_enabled": service_config.get("telemetry", {}).get("enabled", True),
+            "telemetry_enabled": service_config.get_section("telemetry").get("enabled", True),
         }
     except Exception as e:
         return {"status": "not_ready", "reason": str(e)}, 503

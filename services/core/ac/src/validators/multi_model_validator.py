@@ -127,9 +127,9 @@ class MultiModelValidator:
         enable_fallback: bool = True,
         max_validation_time: int = 30,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.consensus_threshold = consensus_threshold
         self.constitutional_hash = constitutional_hash
         self.enable_fallback = enable_fallback
@@ -199,9 +199,9 @@ class MultiModelValidator:
         ]
 
     async def initialize_model_client(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize model client for LLM interactions."""
         if MODEL_CLIENT_AVAILABLE:
             try:
@@ -579,9 +579,9 @@ Format your response as JSON:
         )
 
     def _update_performance_stats(self, consensus_result: ConsensusResult):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update performance statistics."""
         self.validation_stats["total_validations"] += 1
 
