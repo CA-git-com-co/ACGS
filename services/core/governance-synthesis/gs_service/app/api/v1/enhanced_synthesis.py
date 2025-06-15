@@ -419,6 +419,175 @@ async def health_check() -> HealthCheckResponseAPI:
         )
 
 
+@router.post("/multi-model-consensus", response_model=Dict[str, Any])
+async def multi_model_consensus_synthesis(
+    request: EnhancedSynthesisRequestAPI, background_tasks: BackgroundTasks
+) -> Dict[str, Any]:
+    """
+    Phase 2 Enhanced Multi-Model Consensus Synthesis with DeepSeek and Qwen Integration.
+
+    This endpoint provides advanced policy synthesis using:
+    - DeepSeek Chat v3 and DeepSeek R1 models for constitutional reasoning
+    - Qwen3-235B for governance analysis
+    - Multi-model consensus with weighted voting
+    - Constitutional compliance validation
+    - Performance targets: >95% accuracy, <2s response times
+    """
+    import time
+    import uuid
+    from ..core.phase_a3_multi_model_consensus import (
+        PhaseA3MultiModelConsensusEngine,
+        ConsensusStrategy,
+    )
+
+    synthesis_id = str(uuid.uuid4())[:8]
+    start_time = time.time()
+
+    logger.info(f"Starting Phase 2 multi-model consensus synthesis {synthesis_id}")
+
+    try:
+        # Initialize consensus engine with Phase 2 configuration
+        consensus_config = {
+            "consensus_threshold": 0.95,  # High accuracy target
+            "timeout_seconds": 2.0,      # <2s response time target
+            "enable_red_teaming": True,
+            "enable_constitutional_fidelity": True,
+        }
+
+        consensus_engine = PhaseA3MultiModelConsensusEngine(config=consensus_config)
+        await consensus_engine.initialize()
+
+        # Construct synthesis prompt
+        prompt_parts = [
+            f"CONSTITUTIONAL POLICY SYNTHESIS: {request.synthesis_goal}",
+            "",
+            "CONSTITUTIONAL PRINCIPLES:",
+        ]
+
+        for i, principle in enumerate(request.constitutional_principles, 1):
+            prompt_parts.append(f"{i}. {principle.description} (Type: {principle.type})")
+
+        if request.constraints:
+            prompt_parts.extend(["", "CONSTRAINTS:"])
+            for i, constraint in enumerate(request.constraints, 1):
+                prompt_parts.append(f"{i}. {constraint}")
+
+        prompt_parts.extend([
+            "",
+            "REQUIREMENTS:",
+            "- Ensure full constitutional compliance",
+            "- Provide actionable policy recommendations",
+            "- Consider democratic governance principles",
+            "- Include implementation guidance",
+            "",
+            "Provide a comprehensive policy synthesis addressing the goal while maintaining constitutional integrity."
+        ])
+
+        synthesis_prompt = "\n".join(prompt_parts)
+
+        # Prepare context for consensus
+        synthesis_context = {
+            "goal": request.synthesis_goal,
+            "principles": [p.description for p in request.constitutional_principles],
+            "constraints": request.constraints or [],
+            "context": request.context_data or {},
+            "synthesis_id": synthesis_id,
+        }
+
+        # Execute multi-model consensus
+        consensus_result = await consensus_engine.get_consensus(
+            prompt=synthesis_prompt,
+            context=synthesis_context,
+            strategy=ConsensusStrategy.WEIGHTED_AVERAGE,
+            require_constitutional_compliance=True,
+            enable_red_teaming=True,
+            enable_constitutional_fidelity=True,
+        )
+
+        # Calculate performance metrics
+        synthesis_time = (time.time() - start_time) * 1000
+
+        # Extract participating models
+        participating_models = [
+            {
+                "model_id": response.model_id,
+                "provider": response.provider,
+                "confidence": response.confidence_score,
+                "constitutional_compliance": response.constitutional_compliance,
+                "response_time_ms": response.response_time_ms,
+                "error": response.error,
+            }
+            for response in consensus_result.model_responses
+        ]
+
+        # Calculate accuracy based on consensus metrics
+        accuracy_achieved = (
+            consensus_result.overall_confidence * 0.6 +
+            consensus_result.constitutional_compliance * 0.4
+        )
+
+        # Prepare comprehensive response
+        response_data = {
+            "synthesis_id": synthesis_id,
+            "synthesized_policy": consensus_result.consensus_content,
+            "consensus_metrics": {
+                "strategy_used": consensus_result.consensus_strategy.value,
+                "agreement_level": consensus_result.agreement_level.value,
+                "overall_confidence": consensus_result.overall_confidence,
+                "constitutional_compliance": consensus_result.constitutional_compliance,
+                "accuracy_achieved": accuracy_achieved,
+            },
+            "performance_metrics": {
+                "synthesis_time_ms": synthesis_time,
+                "target_response_time_ms": 2000,
+                "target_accuracy": 0.95,
+                "performance_targets_met": {
+                    "response_time": synthesis_time < 2000,
+                    "accuracy": accuracy_achieved >= 0.95,
+                },
+            },
+            "participating_models": participating_models,
+            "quality_assurance": {
+                "red_teaming_passed": consensus_result.adversarial_validation_passed,
+                "constitutional_fidelity_score": (
+                    consensus_result.constitutional_fidelity_score.overall_score
+                    if consensus_result.constitutional_fidelity_score else None
+                ),
+                "requires_human_review": consensus_result.requires_human_review,
+                "iterative_alignment_applied": consensus_result.iterative_alignment_applied,
+            },
+            "recommendations": consensus_result.recommendations,
+            "timestamp": time.time(),
+        }
+
+        # Add warnings if performance targets not met
+        warnings = []
+        if synthesis_time >= 2000:
+            warnings.append(f"Response time {synthesis_time:.0f}ms exceeded 2s target")
+        if accuracy_achieved < 0.95:
+            warnings.append(f"Accuracy {accuracy_achieved:.2%} below 95% target")
+        if not consensus_result.adversarial_validation_passed:
+            warnings.append("Adversarial validation detected potential issues")
+
+        response_data["warnings"] = warnings
+
+        logger.info(
+            f"Phase 2 consensus synthesis {synthesis_id} completed in {synthesis_time:.2f}ms "
+            f"with {accuracy_achieved:.2%} accuracy"
+        )
+
+        return response_data
+
+    except Exception as e:
+        synthesis_time = (time.time() - start_time) * 1000
+        logger.error(f"Phase 2 consensus synthesis {synthesis_id} failed after {synthesis_time:.2f}ms: {e}")
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Multi-model consensus synthesis failed: {str(e)}"
+        )
+
+
 @router.get("/metrics")
 async def get_metrics() -> Dict[str, Any]:
     """
