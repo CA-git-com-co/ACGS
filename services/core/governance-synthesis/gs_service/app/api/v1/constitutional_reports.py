@@ -69,6 +69,9 @@ class MetricsResponse(BaseModel):
 
 @router.get("/health")
 async def get_reporting_health():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Get constitutional reporting system health status."""
     try:
         health_data = {

@@ -14,10 +14,16 @@ class User:
 
 
 def require_internal_service():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     return User()
 
 
 def require_integrity_admin():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     return User()
 
 

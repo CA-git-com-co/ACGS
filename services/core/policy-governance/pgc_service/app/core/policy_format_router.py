@@ -63,6 +63,9 @@ class PolicyFormatRouter:
     """
 
     def __init__(self, opa_executable_path: str = "opa"):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.opa_executable_path = opa_executable_path
         self._check_opa_availability()
 

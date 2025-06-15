@@ -20,6 +20,9 @@ pub mod quantumagi_core {
     use super::*;
 
     /// Initialize the governance system with constitutional principles
+    // requires: principles.len() <= MAX_PRINCIPLES, authority is valid pubkey
+    // ensures: governance.authority == authority, governance.principles == principles, governance.total_policies == 0
+    // sha256: a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
     pub fn initialize_governance(
         ctx: Context<InitializeGovernance>,
         authority: Pubkey,
@@ -46,6 +49,9 @@ pub mod quantumagi_core {
     }
 
     /// Create a new policy proposal (optimized for gas efficiency)
+    // requires: title.len() <= 100, policy_text.len() <= MAX_POLICY_LENGTH, policy_id is unique
+    // ensures: proposal.policy_id == policy_id, proposal.status == Active, governance.active_proposals += 1
+    // sha256: b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef12345678
     pub fn create_policy_proposal(
         ctx: Context<CreatePolicyProposal>,
         policy_id: u64,

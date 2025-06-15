@@ -1,17 +1,58 @@
-# ACGS-1/.gitignore
-# Comprehensive ignore patterns for ACGS-1 blockchain-first constitutional AI governance system
+# ACGS-1 Constitutional Governance System
+# Comprehensive .gitignore for blockchain-first constitutional AI governance
 
 # ============================================================================
-# PYTHON
+# PROJECT SPECIFIC
 # ============================================================================
 
-# Byte-compiled / optimized / DLL files
+# ACGS specific files
+.kilocode/mcp.json
+.roo/mcp.json
+.cursor/mcp.json
+**/mcp.json
+
+# Backup files
+**/*-20*-*/
+.github/workflows/backup-*/
+
+# MCP Inspector workspace files
+*-workspace/
+tools/mcp-inspector/client/tsconfig.app.tsbuildinfo
+tools/mcp-inspector/client/tsconfig.node.tsbuildinfo
+tools/mcp-inspector/cli/build
+tools/mcp-inspector/test-output
+
+# ============================================================================
+# BLOCKCHAIN (SOLANA/ANCHOR)
+# ============================================================================
+
+# Anchor/Solana build artifacts
+**/target/
+**/*.rs.bk
+blockchain/target/
+blockchain/**/target/
+**/target/deploy/*.so
+
+# Anchor specific
+**/.anchor/
+**/test-ledger/
+**/keypairs/
+tests/keypairs/
+/migrations/
+/idl/
+Anchor.toml.lock
+
+# Solana CLI configuration
+.config/solana/
+
+# ============================================================================
+# PYTHON SERVICES
+# ============================================================================
+
+# Byte-compiled / optimized files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
-*.so
 
 # Distribution / packaging
 .Python
@@ -27,265 +68,78 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
-# PyInstaller
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
 # Unit test / coverage reports
 htmlcov/
 .tox/
-.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
 .hypothesis/
 .pytest_cache/
-**/test-results/
-**/coverage/
 
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# PEP 582; __pypackages__ directory
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath files
-*.sage.py
-
-# Environments
+# Virtual environments
 .env
 .env.*
-.env.local
-.env.*.local
-.venv
-env/
+!.env.example
+!.env.development
+.venv/
 venv/
 ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# poetry
-poetry.lock
 
 # ============================================================================
-# NODE.JS / JAVASCRIPT
+# JAVASCRIPT/TYPESCRIPT
 # ============================================================================
 
-# Dependency directories
+# Dependencies
 node_modules/
 **/node_modules/
 
 # Build outputs
-build/
-dist/
-**/build/
 **/dist/
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-**/coverage/
-
-# nyc test coverage
-.nyc_output
-
-# Grunt intermediate storage
-.grunt
-
-# Bower dependency directory
-bower_components
-
-# node-waf configuration
-.lock-wscript
-
-# Compiled binary addons
-build/Release
-
-# Dependency directories
-jspm_packages/
+**/build/
+storybook-static/
+server/build/
+client/dist/
 
 # TypeScript cache
 *.tsbuildinfo
 
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# parcel-bundler cache
-.cache
-.parcel-cache
-
-# Next.js build output
-.next
-
-# Nuxt.js build / generate output
-.nuxt
-dist
-
-# Gatsby files
-.cache/
-public
-
-# Storybook build outputs
-.out
-.storybook-out
-
-# Temporary folders
-tmp/
-temp/
-
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
-
-# Added by Claude Task Master
-logs
-dev-debug.log
-# Dependency directories
-node_modules/
-# Environment variables
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-# OS specific
-.DS_Store
-# Task files
-tasks.json
-tasks/
-
-# Large archive files
-*.zip
-ACGS.zip
-
-# Security - Credential files and MCP configurations
-.kilocode/mcp.json
-.roo/mcp.json
-.cursor/mcp.json
-**/mcp.json
 
 # ============================================================================
-# RUST / SOLANA / ANCHOR BLOCKCHAIN
+# DOCKER & INFRASTRUCTURE
 # ============================================================================
 
-# Rust build artifacts
-**/target/
-**/target/debug/
-**/target/release/
-**/target/deploy/
-**/target/debug/deps/test-*
+# Docker artifacts
+*.tar
+docker-compose.override.yml
 
-# Anchor specific
-**/.anchor/
-**/test-ledger/
-**/keypairs/
-**/target/deploy/*.so
-
-# Solana CLI
-**/.config/solana/
+# Kubernetes / Helm
+*.yaml.lock
 
 # ============================================================================
-# ENHANCED DEVELOPMENT TOOLS & IDEs
+# TOOLS & EDITORS
 # ============================================================================
 
-# IntelliJ IDEA
+# VS Code
+.vscode/
+**/.vscode/
+
+# JetBrains IDEs
+.idea/
 **/.idea/
 *.iml
 *.ipr
@@ -296,80 +150,17 @@ ACGS.zip
 *.swo
 *~
 
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
-
-# Sublime Text
-*.sublime-workspace
-*.sublime-project
+# OS specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
 # ============================================================================
-# COMPREHENSIVE LOGGING & MONITORING
-# ============================================================================
-
-# Service-specific logs
-**/*.log
-**/service-*.log
-**/quantumagi-*.log
-**/governance-*.log
-**/constitutional-ai-*.log
-**/integrity-*.log
-**/formal-verification-*.log
-**/policy-governance-*.log
-**/evolutionary-computation-*.log
-**/auth-service-*.log
-
-# System logs
-syslog
-auth.log
-kern.log
-
-# ============================================================================
-# DATABASES & CACHING
-# ============================================================================
-
-# SQLite
-*.sqlite
-*.sqlite3
-
-# PostgreSQL
-*.dump
-*.sql.gz
-
-# Redis
-dump.rdb
-
-# ============================================================================
-# ENHANCED TEMPORARY & BUILD FILES
-# ============================================================================
-
-# Temporary files
-**/tmp/
-**/*.tmp
-**/*.temp
-
-# Backup files
-*.bak
-*.backup
-
-# ============================================================================
-# TESTING & COVERAGE
-# ============================================================================
-
-# Enhanced test artifacts
-**/test-results/
-**/target/debug/deps/test-*
-**/.pytest_cache/
-
-# ============================================================================
-# SECURITY & SECRETS (ENHANCED)
+# SECURITY & CREDENTIALS
 # ============================================================================
 
 # Environment files with secrets
@@ -377,74 +168,145 @@ dump.rdb
 .env.staging
 .env.secrets
 
-# SSH keys
-*.pem
-id_rsa*
-id_ed25519*
-
-# SSL certificates
-*.crt
-*.cert
-*.p12
-*.pfx
-
-# API keys and secrets
-secrets/
-**/.secrets/
-api_keys.json
-credentials.json
+# API keys and credentials
+**/credentials.json
 **/*credentials*
 **/*secrets*
 **/*tokens*
 *.key
 *.pem
-*.p12
-*.pfx
 
-# Allow template and setup files
-!.kilocode/mcp.json.template
-!scripts/setup_secure_credentials.sh
+# GitHub tokens
+GITHUB_PERSONAL_ACCESS_TOKEN
 
-# API Keys and sensitive configuration
-**/config/**/secrets/
-**/config/**/credentials/
-**/.secrets/
-**/.credentials/
+# ============================================================================
+# TEMPORARY & GENERATED FILES
+# ============================================================================
 
-# Task Master configuration with potential API keys
-.taskmaster/config.json
-.taskmaster/logs/
-.taskmaster/cache/
-# Security and sensitive files
-*.env
-*.env.local
-*.env.production
-auth_tokens.json
-auth_tokens.env
-cookies.txt
-private/
-# Database and backup files
-*.sqlite
-*.sqlite3
-backup_*/
-*.backup
-# Log files with potential sensitive data
-# Build artifacts and caches
-*.pyc
-*.pyo
-*.pyd
-# Node.js
-# Rust
-Cargo.lock
-# IDE files
-.idea/
-*.swp
-*.swo
-*~
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+.tmp/
 
-# Python
-.venv/
-*.crt
-# Reports
+# Generated documentation
+/docs/generated/
+
+# ============================================================================
+# TESTING & DEBUGGING
+# ============================================================================
+
+# Test results
+**/test-results/
+**/coverage/
+.nyc_output
+
+# Debug files
+.ipynb_checkpoints/
+
+# ============================================================================
+# CI/CD ARTIFACTS & REPORTS
+# ============================================================================
+
+# SARIF reports
+*.sarif
+
+# Report files (generated by CI/CD, testing, security scans)
 *_report.json
-*_report.html
+*_audit.json
+*_report_*.json
+*_audit_*.json
+*_health_report_*.json
+*_security_*.json
+*_cleanup_*.json
+*_validation_*.json
+*_test_*.json
+*_deployment_*.json
+*_performance_*.json
+bandit_*.json
+pip_audit_*.json
+security_*.json
+coverage.json
+comprehensive_*.json
+enterprise_*.json
+final_*.json
+post_*.json
+reorganization_*.json
+service_*.json
+
+# ============================================================================
+# ACGS-1 SPECIFIC ARTIFACTS
+# ============================================================================
+
+# Process ID files
+*.pid
+pids/
+**/pids/
+
+# Cache directories
+.mypy_cache/
+**/.mypy_cache/
+.pytest_cache/
+**/.pytest_cache/
+.cache/
+**/.cache/
+
+# Backup and temporary directories
+backup_*/
+**/backup_*/
+backup_reorganization/
+.tmp/
+tmp/
+temp/
+**/tmp/
+**/temp/
+
+# SSL certificates and keys (should be managed separately)
+ssl/
+**/ssl/
+*.crt
+*.cert
+*.ca-bundle
+
+# Task management
+.taskmaster/tasks/
+**/.taskmaster/tasks/
+
+# Next.js build artifacts
+.next/
+**/.next/
+out/
+**/out/
+
+# Docker artifacts
+.dockerignore
+docker_cleanup_commands.sh
+
+# Large binary files and executables
+qpe_service
+**/qpe_service
+*.gif
+*.png
+*.jpg
+*.jpeg
+*.svg
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.svg
+
+# ============================================================================
+# ENVIRONMENT & PRODUCTION FILES
+# ============================================================================
+
+# Production environment files (these should NEVER be tracked)
+.env.production
+.env.staging
+.env.secrets
+.env.prod
+.env.local
+.env.*.local
+
+# Alembic migration artifacts
+alembic.ini
+**/alembic.ini

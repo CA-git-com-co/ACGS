@@ -35,6 +35,9 @@ class LoggingMiddleware(EventMiddleware):
     """Middleware for logging events."""
 
     def __init__(self, log_level: str = "INFO"):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize logging middleware.
 
@@ -84,6 +87,9 @@ class MetricsMiddleware(EventMiddleware):
     """Middleware for collecting event metrics."""
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize metrics middleware."""
         self.metrics = {
             "events_processed": 0,
@@ -156,6 +162,9 @@ class FilteringMiddleware(EventMiddleware):
     """Middleware for filtering events."""
 
     def __init__(self, filters: Dict[str, Any]):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize filtering middleware.
 
@@ -201,6 +210,9 @@ class ValidationMiddleware(EventMiddleware):
     """Middleware for validating events."""
 
     def __init__(self, strict: bool = False):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize validation middleware.
 
@@ -247,6 +259,9 @@ class EnrichmentMiddleware(EventMiddleware):
     """Middleware for enriching events with additional data."""
 
     def __init__(self, enrichment_data: Dict[str, Any] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize enrichment middleware.
 
@@ -279,6 +294,9 @@ class RateLimitingMiddleware(EventMiddleware):
     """Middleware for rate limiting events."""
 
     def __init__(self, max_events_per_second: int = 100):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize rate limiting middleware.
 

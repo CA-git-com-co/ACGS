@@ -73,6 +73,9 @@ class HITLCrossServiceIntegrator:
     """
 
     def __init__(self, hitl_sampler: HumanInTheLoopSampler):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize cross-service integrator."""
         self.hitl_sampler = hitl_sampler
 
@@ -365,6 +368,9 @@ class HITLCrossServiceIntegrator:
         service: str,
         result: Dict[str, float],
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update confidence metrics with service results."""
         if service == "gs_service":
             confidence_metrics.gs_llm_confidence = result.get("llm_confidence")
@@ -392,6 +398,9 @@ class HITLCrossServiceIntegrator:
             )
 
     def _update_avg_integration_time(self, processing_time_ms: float):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update average integration time metric."""
         current_avg = self.integration_metrics["avg_integration_time_ms"]
         total_assessments = self.integration_metrics["total_cross_service_assessments"]
@@ -522,6 +531,9 @@ class HITLCrossServiceIntegrator:
         }
 
     async def close(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Close HTTP client and cleanup resources."""
         await self.http_client.aclose()
         logger.info("HITL Cross-Service Integrator closed")

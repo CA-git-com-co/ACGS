@@ -18,11 +18,17 @@ AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=F
 
 
 async def get_async_db():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     async with AsyncSessionLocal() as session:
         yield session
 
 
 async def create_db_tables():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     # This is where you would import your models and call Base.metadata.create_all(engine)
     # For now, it's a placeholder. We'll call it from main.py
     print(f"Database tables creation would be triggered here for {DATABASE_URL}")

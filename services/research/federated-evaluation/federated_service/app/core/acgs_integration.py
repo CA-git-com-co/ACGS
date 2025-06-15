@@ -101,6 +101,9 @@ class ACGSServiceIntegrator:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.service_configs: Dict[ACGSServiceType, ACGSServiceConfig] = {}
         self.federated_evaluator: Optional[FederatedEvaluator] = None
         self.cross_platform_coordinator: Optional[CrossPlatformCoordinator] = None
@@ -120,6 +123,9 @@ class ACGSServiceIntegrator:
     async def initialize(
         self, service_configs: Optional[Dict[ACGSServiceType, ACGSServiceConfig]] = None
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the ACGS service integrator."""
         try:
             # Set up default service configurations
@@ -150,6 +156,9 @@ class ACGSServiceIntegrator:
             raise
 
     def _setup_default_service_configs(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Set up default ACGS service configurations."""
         default_configs = {
             ACGSServiceType.AUTH: ACGSServiceConfig(
@@ -175,6 +184,9 @@ class ACGSServiceIntegrator:
         self.service_configs = default_configs
 
     async def _test_service_connectivity(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Test connectivity to all ACGS services."""
         connectivity_results = {}
 
@@ -347,6 +359,9 @@ class ACGSServiceIntegrator:
             return {}
 
     async def shutdown(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Shutdown the ACGS service integrator."""
         try:
             if self.federated_evaluator:

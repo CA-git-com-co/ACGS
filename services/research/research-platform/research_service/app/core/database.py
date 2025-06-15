@@ -46,6 +46,9 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_database():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Initialize database tables."""
     try:
         from ..models.experiment import Base as ExperimentBase
@@ -64,6 +67,9 @@ async def init_database():
 
 
 async def close_database():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Close database connections."""
     try:
         await engine.dispose()

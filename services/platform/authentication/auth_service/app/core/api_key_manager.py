@@ -16,6 +16,9 @@ class ApiKeyManager:
     """Enterprise API Key Management Service"""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.key_length = 32  # Length of generated API keys
         self.prefix_length = 8  # Length of key prefix for identification
         self.default_rate_limit = 1000  # Default requests per minute

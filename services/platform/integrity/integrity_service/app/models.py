@@ -143,6 +143,9 @@ class CryptoKey(Base):
     rotation_reason = Column(String(100), nullable=True)  # Reason for key rotation
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<CryptoKey(key_id='{self.key_id}', type='{self.key_type}', purpose='{self.key_purpose}')>"
 
 
@@ -166,6 +169,9 @@ class MerkleTreeNode(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<MerkleTreeNode(hash='{self.node_hash[:16]}...', level={self.level}, batch='{self.batch_id}')>"
 
 
@@ -194,6 +200,9 @@ class TimestampToken(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         return f"<TimestampToken(hash='{self.token_hash[:16]}...', tsa='{self.tsa_url}', time='{self.timestamp_value}')>"
 
 

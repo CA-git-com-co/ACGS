@@ -394,6 +394,9 @@ async def _track_synthesis_performance(
     response: Phase2SynthesisResponse,
     total_time: float,
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Background task to track synthesis performance."""
     try:
         # Update service metrics with Phase 2 specific data

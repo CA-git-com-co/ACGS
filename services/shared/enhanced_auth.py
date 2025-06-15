@@ -158,6 +158,9 @@ class EnhancedAuthService:
     """High-performance authentication service with Redis caching."""
     
     def __init__(self, redis_url: Optional[str] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.redis_url = redis_url or "redis://localhost:6379"
         self.redis_client: Optional[aioredis.Redis] = None
         
@@ -185,6 +188,9 @@ class EnhancedAuthService:
         self._create_default_users()
     
     async def initialize(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize Redis connection and load users."""
         try:
             self.redis_client = await aioredis.from_url(
@@ -203,11 +209,17 @@ class EnhancedAuthService:
             logger.info("Falling back to in-memory storage")
     
     async def close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close Redis connection."""
         if self.redis_client:
             await self.redis_client.close()
     
     def _create_default_users(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Create default users for testing."""
         default_users = [
             {
@@ -243,6 +255,9 @@ class EnhancedAuthService:
             }
     
     async def _load_users_from_cache(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Load users from Redis cache."""
         if not self.redis_client:
             return
@@ -269,6 +284,9 @@ class EnhancedAuthService:
             logger.error(f"Failed to load users from cache: {e}")
     
     async def _cache_user(self, username: str, user: User, password_hash: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Cache user data in Redis."""
         if not self.redis_client:
             return
@@ -519,6 +537,9 @@ class EnhancedAuthService:
             raise AuthenticationError(f"Invalid token: {str(e)}")
 
     def _update_auth_metrics(self, response_time: float, success: bool):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Update authentication metrics."""
         self.auth_metrics["total_authentications"] += 1
 

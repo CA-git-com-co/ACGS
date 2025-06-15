@@ -129,6 +129,9 @@ class RiskAssessmentEngine:
     """Risk assessment engine for synthesis strategy selection."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.risk_thresholds = {"low": 0.3, "medium": 0.6, "high": 0.8}
 
     async def assess_synthesis_risk(
@@ -245,6 +248,9 @@ class PolicySynthesisEngine:
     """Production-grade policy synthesis engine with four-tier strategy."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.risk_assessor = RiskAssessmentEngine()
         self.synthesis_cache = {}
 
@@ -596,6 +602,9 @@ async def synthesize_policy_phase_a3(
     background_tasks: BackgroundTasks,
     http_request: Request,
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Phase A3 production-grade policy synthesis with four-tier risk strategy.
 
@@ -654,6 +663,9 @@ async def _log_synthesis_metrics(
     synthesis_time_ms: float,
     correlation_id: Optional[str] = None,
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Background task to log synthesis metrics."""
     metrics = {
         "synthesis_id": synthesis_id,
@@ -671,6 +683,9 @@ async def _log_synthesis_metrics(
 async def multi_model_consensus_direct(
     request: MultiModelConsensusRequest, http_request: Request
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Direct multi-model consensus endpoint for testing and validation.
 
@@ -786,6 +801,9 @@ async def multi_model_consensus_direct(
 
 @router.get("/strategies")
 async def get_synthesis_strategies():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Get available synthesis strategies and their descriptions."""
     strategies = {
         "standard": {

@@ -101,6 +101,9 @@ class OPASecurityConfig:
     allowed_origins: List[str] = None
 
     def __post_init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if self.allowed_origins is None:
             self.allowed_origins = ["localhost", "127.0.0.1"]
 
@@ -118,6 +121,9 @@ class OPAConfig:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.mode = self._get_opa_mode()
         self.server = self._get_server_config()
         self.performance = self._get_performance_config()

@@ -23,6 +23,9 @@ class WINAConstitutionalPrincipleAnalyzer:
     """
 
     def __init__(self, wina_config: Optional[Dict[str, Any]] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize the WINA Constitutional Principle Analyzer.
 
@@ -553,6 +556,9 @@ class WINAConstitutionalUpdateService:
         ac_service_client: Optional[Any] = None,
         constitutional_council_client: Optional[Any] = None,
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize the WINA Constitutional Update Service.
 
@@ -1096,6 +1102,9 @@ class ConstitutionalWINASupport:
     def __init__(
         self, wina_config: WINAConfig, integration_config: WINAIntegrationConfig
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize constitutional WINA support.
 

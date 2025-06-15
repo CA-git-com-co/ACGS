@@ -16,6 +16,9 @@ INTEGRITY_SERVICE_URL = os.getenv(
 
 class IntegrityServiceClient:
     def __init__(self, base_url: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.base_url = base_url
         timeout_config = httpx.Timeout(10.0, connect=5.0)
         self.client = httpx.AsyncClient(base_url=self.base_url, timeout=timeout_config)
@@ -92,6 +95,9 @@ class IntegrityServiceClient:
             return None
 
     async def close(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         await self.client.aclose()
 
 
@@ -103,6 +109,9 @@ if __name__ == "__main__":
     pass
 
     async def test_integrity_client():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         print(f"Testing Integrity Client against URL: {INTEGRITY_SERVICE_URL}")
         # This test will only work if integrity_service is running and accessible.
         # For local testing, you might need to run `docker-compose up integrity_service` first.

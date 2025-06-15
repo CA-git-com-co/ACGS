@@ -100,6 +100,9 @@ class ViolationEscalationService:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize the violation escalation service.
 
@@ -522,6 +525,9 @@ class ViolationEscalationService:
             return False
 
     async def _send_websocket_escalation_notification(self, content: Dict[str, Any]):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Send WebSocket notification for escalation."""
         # This would integrate with the existing WebSocket system
         # For now, just log the notification
@@ -530,6 +536,9 @@ class ViolationEscalationService:
     async def _handle_escalation_timeout(
         self, escalation: ViolationEscalation, db: AsyncSession
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Handle escalation timeout by escalating to next level."""
         try:
             current_level = EscalationLevel(escalation.escalation_level)

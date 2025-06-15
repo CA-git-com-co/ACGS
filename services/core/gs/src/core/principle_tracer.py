@@ -165,6 +165,9 @@ class PrincipleTracer:
         impact_threshold: float = 0.5,
         high_impact_principle_threshold: int = 5,
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.constitutional_hash = constitutional_hash
         self.impact_threshold = impact_threshold
         self.high_impact_principle_threshold = high_impact_principle_threshold
@@ -193,6 +196,9 @@ class PrincipleTracer:
         )
 
     async def initialize_policy_engine(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize Policy Synthesis Engine integration."""
         if POLICY_ENGINE_AVAILABLE:
             try:

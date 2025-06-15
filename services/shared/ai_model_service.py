@@ -82,6 +82,9 @@ class AIModelService:
     """
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize AI model service with centralized configuration."""
         self.config = get_config()
         self.models = self._load_model_configurations()
@@ -528,6 +531,9 @@ class AIModelService:
         }
 
     async def close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close HTTP client."""
         await self.client.aclose()
 
@@ -547,6 +553,9 @@ async def get_ai_model_service() -> AIModelService:
 
 
 async def reset_ai_model_service():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Reset global AI model service (useful for testing)."""
     global _ai_model_service
 

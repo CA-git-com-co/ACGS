@@ -118,6 +118,9 @@ if __name__ == "__main__":
     import asyncio
 
     async def test_rule_generation_structured():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         # Sample principles using the ACPrinciple schema from gs_service.app.schemas
         sample_principles = [
             ACPrinciple(

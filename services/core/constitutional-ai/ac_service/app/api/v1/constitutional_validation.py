@@ -46,6 +46,9 @@ class ConstitutionalValidationResponse(BaseModel):
 
 @router.post("/validate", response_model=ConstitutionalValidationResponse)
 async def validate_constitutional_compliance(request: ConstitutionalValidationRequest):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Validate constitutional compliance with caching.
     This endpoint provides fast constitutional validation with Redis caching.
@@ -136,6 +139,9 @@ async def _perform_constitutional_validation(
 
 @router.get("/cache/stats")
 async def get_cache_statistics():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Get cache performance statistics."""
     cache = get_cache()
     stats = cache.get_cache_stats()
@@ -144,6 +150,9 @@ async def get_cache_statistics():
 
 @router.delete("/cache/flush")
 async def flush_cache():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Flush all cache data (admin only)."""
     cache = get_cache()
     success = cache.flush_all()

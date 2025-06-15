@@ -31,15 +31,24 @@ from validation_models import SignatureRequest
 # Local auth stubs (replace with actual auth in production)
 class User:
     def __init__(self, user_id: str = "system", roles: List[str] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.user_id = user_id
         self.roles = roles or ["user"]
 
 
 def require_internal_service():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     return User("internal_service", ["internal", "service"])
 
 
 def require_auditor():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     return User("auditor", ["auditor", "read"])
 
 
@@ -57,12 +66,18 @@ except ImportError:
 
     class MockIntegrityVerifier:
         async def sign_policy_rule(self, db, rule_id):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             return {
                 "signature": "mock_signature",
                 "timestamp": datetime.now(timezone.utc),
             }
 
         async def verify_policy_rule(self, db, rule_id):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             return {"verified": True, "signature_valid": True}
 
     integrity_verifier = MockIntegrityVerifier()

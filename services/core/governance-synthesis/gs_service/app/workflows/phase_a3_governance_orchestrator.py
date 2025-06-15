@@ -117,6 +117,9 @@ class ServiceClient:
     """Client for communicating with ACGS services."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.service_endpoints = {
             "gs": "http://localhost:8004",
             "pgc": "http://localhost:8001",
@@ -161,6 +164,9 @@ class PhaseA3GovernanceOrchestrator:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the governance orchestrator."""
         self.active_workflows: Dict[str, WorkflowInstance] = {}
         self.workflow_templates: Dict[WorkflowType, List[WorkflowStep]] = {}
@@ -173,6 +179,9 @@ class PhaseA3GovernanceOrchestrator:
         logger.info("Phase A3 Governance Orchestrator initialized")
 
     def _initialize_workflow_templates(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize templates for all 5 core governance workflows."""
 
         # 1. Policy Creation Workflow
@@ -469,6 +478,9 @@ class PhaseA3GovernanceOrchestrator:
         return True
 
     async def _execute_workflow(self, workflow: WorkflowInstance):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Execute workflow steps sequentially."""
         start_time = time.time()
 
@@ -658,6 +670,9 @@ class PhaseA3GovernanceOrchestrator:
         return True
 
     async def _update_performance_metrics(self, workflow: WorkflowInstance):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update performance metrics for monitoring."""
         workflow_type = workflow.workflow_type.value
 

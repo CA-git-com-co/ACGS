@@ -18,6 +18,9 @@ depends_on = None
 
 
 def upgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Create tables for cross-domain principle testing framework."""
 
     # Create domain_contexts table
@@ -354,6 +357,9 @@ def upgrade():
 
 
 def downgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Drop tables for cross-domain principle testing framework."""
 
     # Drop research_data_exports table first

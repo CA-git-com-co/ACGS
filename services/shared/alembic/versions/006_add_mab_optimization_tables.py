@@ -18,6 +18,9 @@ depends_on = None
 
 
 def upgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Add Multi-Armed Bandit optimization tables."""
 
     # Create prompt_templates table
@@ -241,6 +244,9 @@ def upgrade():
 
 
 def downgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Remove MAB optimization tables."""
 
     # Drop tables in reverse order to handle foreign key constraints

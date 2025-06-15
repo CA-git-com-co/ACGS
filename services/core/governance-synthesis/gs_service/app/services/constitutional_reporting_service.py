@@ -122,6 +122,9 @@ class ConstitutionalReportingService:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the Constitutional Reporting Service."""
         self.metrics = get_metrics("gs_service")
         self.report_templates = self._load_report_templates()

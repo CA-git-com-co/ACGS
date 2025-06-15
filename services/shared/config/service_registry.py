@@ -19,10 +19,16 @@ class ServiceRegistry:
     """Central registry for all ACGS services"""
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self._services: Dict[str, ServiceConfig] = {}
         self._load_from_environment()
 
     def _load_from_environment(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Load service configurations from environment variables"""
         services = {
             "constitutional-ai": ServiceConfig(

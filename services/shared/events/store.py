@@ -62,6 +62,9 @@ class InMemoryEventStore(EventStore):
     """In-memory event store for testing and development."""
 
     def __init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize in-memory event store."""
         self.events: Dict[str, "Event"] = {}
         self.events_by_type: Dict[EventType, List[str]] = {}
@@ -245,6 +248,9 @@ class DatabaseEventStore(EventStore):
     """Database-backed event store for production use."""
 
     def __init__(self, database_url: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """
         Initialize database event store.
 

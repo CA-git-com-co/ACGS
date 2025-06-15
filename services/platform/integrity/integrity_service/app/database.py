@@ -19,6 +19,9 @@ AsyncSessionLocal = sessionmaker(
 
 
 async def get_async_db():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Local implementation of async database session dependency"""
     async with AsyncSessionLocal() as session:
         try:

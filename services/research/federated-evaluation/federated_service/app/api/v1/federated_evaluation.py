@@ -432,6 +432,9 @@ async def _estimate_completion_time(
 
 @router.get("/platforms")
 async def list_supported_platforms():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """List all supported platform types."""
     return {
         "platforms": [

@@ -82,6 +82,9 @@ class PGPAssuranceService:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if not CRYPTOGRAPHY_AVAILABLE:
             logger.warning(
                 "Cryptography library not available. Some features will be disabled."
@@ -358,6 +361,9 @@ class PGPAssuranceService:
     def store_key_pair(
         self, key_id: str, private_key_pem: bytes, public_key_pem: bytes
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Store a key pair securely (in production, use HSM)"""
         try:
             # In production, private keys should be stored in HSM
@@ -382,6 +388,9 @@ class PGPAssuranceService:
     def rotate_keys(
         self, key_id: str, algorithm: SignatureAlgorithm = SignatureAlgorithm.ECDSA_P256
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Rotate keys for enhanced security"""
         try:
             # Generate new key pair

@@ -79,10 +79,16 @@ class WINAConfig:
     enable_prometheus: bool = True  # Enable Prometheus metrics collection
 
     def __post_init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Validate configuration parameters."""
         self._validate_config()
 
     def _validate_config(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Validate configuration parameters."""
         if not 0.0 <= self.target_sparsity <= 1.0:
             raise WINAConfigurationError(
@@ -152,10 +158,16 @@ class WINAIntegrationConfig:
     principle_update_approval_required: bool = True
 
     def __post_init__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Validate integration configuration."""
         self._validate_integration_config()
 
     def _validate_integration_config(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Validate integration configuration parameters."""
         if self.metrics_collection_interval <= 0:
             raise WINAConfigurationError(

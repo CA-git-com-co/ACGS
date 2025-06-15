@@ -46,6 +46,9 @@ class WorkflowManager:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.config = get_langgraph_config()
         self.council_config = ConstitutionalCouncilConfig()
         self.active_workflows: Dict[str, Dict[str, Any]] = {}

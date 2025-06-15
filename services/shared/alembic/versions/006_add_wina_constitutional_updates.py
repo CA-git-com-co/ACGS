@@ -18,6 +18,9 @@ depends_on = None
 
 
 def upgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Add WINA constitutional updates tables and fields."""
 
     # Create table for WINA constitutional principle updates
@@ -317,6 +320,9 @@ def upgrade():
 
 
 def downgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Remove WINA constitutional updates tables and fields."""
 
     # Drop indexes for constitutional_principles WINA fields

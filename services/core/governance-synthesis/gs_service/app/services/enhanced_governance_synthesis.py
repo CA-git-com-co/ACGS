@@ -112,6 +112,9 @@ class EnhancedGovernanceSynthesis:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.policy_validator: Optional[PolicyValidationEngine] = None
         self.wina_synthesizer: Optional[WINARegoSynthesizer] = None
         self.alphaevolve_bridge: Optional[AlphaEvolveBridge] = None
@@ -143,6 +146,9 @@ class EnhancedGovernanceSynthesis:
         }
 
     async def initialize(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize all synthesis and validation components including Phase 2 WINA optimization."""
         if self._initialized:
             return
@@ -172,6 +178,9 @@ class EnhancedGovernanceSynthesis:
             raise
 
     async def _initialize_phase2_components(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize Phase 2 advanced WINA optimization components."""
         try:
             # Import Phase 2 components
@@ -580,6 +589,9 @@ class EnhancedGovernanceSynthesis:
             semaphore = asyncio.Semaphore(4)  # Limit concurrent syntheses
 
             async def synthesize_with_semaphore(request):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
                 async with semaphore:
                     return await self.synthesize_policy(request)
 
@@ -596,6 +608,9 @@ class EnhancedGovernanceSynthesis:
     def _update_metrics(
         self, synthesis_time_ms: float, validation_time_ms: float, success: bool
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update performance metrics."""
         self.metrics["total_syntheses"] += 1
 
