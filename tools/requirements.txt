@@ -24,7 +24,7 @@ sqlalchemy==2.0.41
 #   alembic
 tomli==2.2.1
 # via alembic
-typing-extensions==4.13.2
+typing-extensions==4.14.0
 # via
 #   alembic
 #   sqlalchemy
