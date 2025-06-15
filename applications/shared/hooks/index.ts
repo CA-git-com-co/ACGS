@@ -21,5 +21,8 @@ export {
   useServiceApi
 } from './useApiExtended';
 
+// Blockchain hooks
+export { useQuantumagiClient } from './useQuantumagiClient';
+
 // Re-export default
 export { default as useApi } from './useApi';
