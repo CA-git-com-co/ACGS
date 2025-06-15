@@ -183,7 +183,11 @@ async def main():
     manager = SecondaryServiceManager()
     results = await manager.fix_secondary_instances()
     
+<<<<<<< HEAD
     print("\\n" + "="*60)
+=======
+    print("\n" + "="*60)
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
     print("🔧 SECONDARY SERVICE INSTANCES FIX RESULTS")
     print("="*60)
     print(f"Services Fixed: {len(results['services_fixed'])}")
@@ -191,12 +195,20 @@ async def main():
     print(f"Overall Success: {'✅' if results['overall_success'] else '❌'}")
     
     if results['services_fixed']:
+<<<<<<< HEAD
         print("\\n✅ Successfully Fixed:")
+=======
+        print("\n✅ Successfully Fixed:")
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
         for service in results['services_fixed']:
             print(f"  - {service}")
     
     if results['services_failed']:
+<<<<<<< HEAD
         print("\\n❌ Failed to Fix:")
+=======
+        print("\n❌ Failed to Fix:")
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
         for service in results['services_failed']:
             print(f"  - {service}")
     

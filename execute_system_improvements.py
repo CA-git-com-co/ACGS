@@ -96,7 +96,11 @@ class SystemImprovementExecutor:
         
         # Execute each improvement
         for step in execution_plan:
+<<<<<<< HEAD
             logger.info(f"\\n{'='*60}")
+=======
+            logger.info(f"\n{'='*60}")
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
             logger.info(f"🔧 Executing: {step['name']}")
             logger.info(f"📝 Description: {step['description']}")
             logger.info(f"⚡ Priority: {step['priority'].upper()}")
@@ -204,7 +208,11 @@ class SystemImprovementExecutor:
     
     def print_execution_summary(self, results):
         """Print execution summary"""
+<<<<<<< HEAD
         print("\\n" + "="*80)
+=======
+        print("\n" + "="*80)
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
         print("🎯 ACGS-1 SYSTEM IMPROVEMENTS EXECUTION SUMMARY")
         print("="*80)
         
@@ -212,7 +220,11 @@ class SystemImprovementExecutor:
         print(f"Overall Success: {'✅ YES' if results['overall_success'] else '❌ NO'}")
         
         # Step results
+<<<<<<< HEAD
         print(f"\\nStep Results ({len(results['execution_results'])}):") 
+=======
+        print(f"\nStep Results ({len(results['execution_results'])}):")
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
         for result in results["execution_results"]:
             status = "✅" if result["success"] else "❌"
             duration = f"{result['duration']:.1f}s"
@@ -220,7 +232,11 @@ class SystemImprovementExecutor:
         
         # Target achievements
         if results.get("targets_achieved"):
+<<<<<<< HEAD
             print(f"\\nTarget Achievements:")
+=======
+            print(f"\nTarget Achievements:")
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
             for target, achieved in results["targets_achieved"].items():
                 status = "✅" if achieved else "❌"
                 print(f"  {status} {target.replace('_', ' ').title()}")
@@ -230,19 +246,31 @@ class SystemImprovementExecutor:
         total_steps = len(results["execution_results"])
         success_rate = (successful_steps / total_steps) * 100 if total_steps > 0 else 0
         
+<<<<<<< HEAD
         print(f"\\nExecution Metrics:")
+=======
+        print(f"\nExecution Metrics:")
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
         print(f"  Success Rate: {success_rate:.1f}% ({successful_steps}/{total_steps})")
         print(f"  Critical Steps: {'✅ PASSED' if successful_steps >= total_steps - 1 else '❌ FAILED'}")
         
         # Next steps
         if not results["overall_success"]:
+<<<<<<< HEAD
             print(f"\\n⚠️ Next Steps:")
+=======
+            print(f"\n⚠️ Next Steps:")
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
             print(f"  1. Review failed steps in execution log")
             print(f"  2. Address any critical issues")
             print(f"  3. Re-run specific improvement scripts as needed")
             print(f"  4. Run comprehensive validation again")
         else:
+<<<<<<< HEAD
             print(f"\\n🎉 All improvements completed successfully!")
+=======
+            print(f"\n🎉 All improvements completed successfully!")
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
             print(f"  System is ready for production deployment")
         
         print("="*80)
@@ -264,12 +292,20 @@ async def main():
     
     # Confirm execution
     try:
+<<<<<<< HEAD
         confirm = input("\\nProceed with execution? (y/N): ").strip().lower()
+=======
+        confirm = input("\nProceed with execution? (y/N): ").strip().lower()
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
         if confirm != 'y':
             print("Execution cancelled.")
             return
     except KeyboardInterrupt:
+<<<<<<< HEAD
         print("\\nExecution cancelled.")
+=======
+        print("\nExecution cancelled.")
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
         return
     
     # Execute improvements
