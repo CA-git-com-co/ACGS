@@ -31,9 +31,9 @@ class CryptographicIntegrityService:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.hash_algorithm = hashes.SHA3_256()
         self.signature_algorithm = "RSA-PSS-SHA256"
 
@@ -189,9 +189,9 @@ class MerkleTreeService:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.crypto_service = CryptographicIntegrityService()
 
     def build_merkle_tree(self, data_hashes: List[str]) -> Dict[str, Any]:

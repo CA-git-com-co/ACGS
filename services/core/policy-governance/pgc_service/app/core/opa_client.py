@@ -92,9 +92,9 @@ class OPAClient:
         max_connections: int = 100,
         max_keepalive_connections: int = 20,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.server_url = server_url.rstrip("/")
         self.bundle_name = bundle_name
         self.timeout = timeout

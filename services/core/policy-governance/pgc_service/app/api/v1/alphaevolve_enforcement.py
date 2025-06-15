@@ -31,9 +31,9 @@ class ECProposal:
         generation: int,
         fitness_context: Dict[str, Any],
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.proposal_id = proposal_id
         self.solution_code = solution_code
         self.generation = generation
@@ -51,9 +51,9 @@ class ECEnforcementDecision:
         governance_penalty: float = 0.0,
         explanation: str = "",
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.proposal_id = proposal_id
         self.decision = decision
         self.latency_ms = latency_ms
@@ -66,9 +66,9 @@ class ECEnforcementCache:
     """High-performance cache for EC enforcement decisions."""
 
     def __init__(self, max_size: int = 10000, ttl_seconds: int = 300):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.cache = {}
         self.access_times = {}
         self.max_size = max_size
@@ -90,9 +90,9 @@ class ECEnforcementCache:
         return self.cache[key]
 
     def put(self, key: str, decision: ECEnforcementDecision):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Cache enforcement decision."""
         # Evict oldest if cache is full
         if len(self.cache) >= self.max_size:
@@ -106,9 +106,9 @@ class ECEnforcementCache:
         self.access_times[key] = time.time()
 
     def clear(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear the cache."""
         self.cache.clear()
         self.access_times.clear()
@@ -120,9 +120,9 @@ ec_enforcement_cache = ECEnforcementCache()
 
 @router.post("/evaluate-batch")
 async def evaluate_ec_batch(request_data: Dict[str, Any]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
     """
     Evaluate a batch of EC proposals for real-time enforcement.
 
@@ -221,9 +221,9 @@ async def evaluate_ec_batch(request_data: Dict[str, Any]):
 
 @router.post("/evaluate-single")
 async def evaluate_single_proposal(request_data: Dict[str, Any]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
     """
     Evaluate a single EC proposal with maximum performance optimization.
 
@@ -278,9 +278,9 @@ async def evaluate_single_proposal(request_data: Dict[str, Any]):
 
 @router.get("/cache/stats")
 async def get_cache_statistics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
     """Get enforcement cache statistics for monitoring."""
     return {
         "cache_size": len(ec_enforcement_cache.cache),
@@ -294,9 +294,9 @@ async def get_cache_statistics():
 
 @router.post("/cache/clear")
 async def clear_enforcement_cache():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
     """Clear the enforcement cache (admin operation)."""
     ec_enforcement_cache.clear()
     logger.info("EC enforcement cache cleared")
