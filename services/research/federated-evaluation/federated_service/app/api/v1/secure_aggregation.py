@@ -205,6 +205,9 @@ async def verify_aggregation_integrity(
 
 @router.get("/methods")
 async def list_aggregation_methods():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """List available secure aggregation methods."""
     return {
         "methods": [

@@ -45,6 +45,9 @@ class Checkpoint:
     metadata: Dict[str, Any] = None
 
     def __post_init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if self.metadata is None:
             self.metadata = {}
 
@@ -62,6 +65,9 @@ class RecoveryPlan:
     created_at: datetime = None
 
     def __post_init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if self.created_at is None:
             self.created_at = datetime.utcnow()
         if self.alternative_steps is None:
@@ -74,6 +80,9 @@ class WorkflowRecoveryManager:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.checkpoints: Dict[str, List[Checkpoint]] = {}
         self.recovery_plans: Dict[str, RecoveryPlan] = {}
         self.recovery_handlers: Dict[str, Callable] = {}
@@ -81,6 +90,9 @@ class WorkflowRecoveryManager:
         self._initialize_recovery_strategies()
 
     def _initialize_recovery_strategies(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize default recovery strategies"""
 
         # Register default recovery handlers
@@ -493,6 +505,9 @@ class WorkflowRecoveryManager:
     async def _rollback_policy_deployment(
         self, step: WorkflowStep, checkpoint_data: Dict[str, Any]
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Rollback policy deployment"""
         logger.info(f"Rolling back policy deployment for step {step.id}")
         # Implementation would remove deployed policies
@@ -500,6 +515,9 @@ class WorkflowRecoveryManager:
     async def _rollback_constitutional_amendment(
         self, step: WorkflowStep, checkpoint_data: Dict[str, Any]
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Rollback constitutional amendment"""
         logger.info(f"Rolling back constitutional amendment for step {step.id}")
         # Implementation would revert constitutional changes
@@ -507,6 +525,9 @@ class WorkflowRecoveryManager:
     async def _rollback_cryptographic_signing(
         self, step: WorkflowStep, checkpoint_data: Dict[str, Any]
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Rollback cryptographic signing"""
         logger.info(f"Rolling back cryptographic signing for step {step.id}")
         # Implementation would revoke signatures

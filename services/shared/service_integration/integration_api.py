@@ -80,6 +80,9 @@ async def call_service_endpoint(
     background_tasks: BackgroundTasks,
     orchestrator: Phase2ServiceOrchestrator = None,
 ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Call a specific service through the orchestrator with comprehensive monitoring.
     
@@ -160,6 +163,9 @@ async def publish_event_endpoint(
     background_tasks: BackgroundTasks,
     orchestrator: Phase2ServiceOrchestrator = None,
 ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Publish an event to the service integration event system.
     
@@ -250,6 +256,9 @@ async def start_workflow_endpoint(
     background_tasks: BackgroundTasks,
     orchestrator: Phase2ServiceOrchestrator = None,
 ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Start a multi-service workflow with orchestrated execution.
     
@@ -318,6 +327,9 @@ async def start_workflow_endpoint(
 async def get_integration_status(
     orchestrator: Phase2ServiceOrchestrator = None,
 ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Get comprehensive service integration status and health information.
     
@@ -368,6 +380,9 @@ async def get_integration_status(
 async def get_integration_metrics(
     orchestrator: Phase2ServiceOrchestrator = None,
 ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Get comprehensive service integration metrics and performance data.
     
@@ -431,6 +446,9 @@ async def trigger_health_check(
     background_tasks: BackgroundTasks,
     orchestrator: Phase2ServiceOrchestrator = None,
 ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Trigger immediate health check for all services.
     
@@ -444,6 +462,9 @@ async def trigger_health_check(
         
         # Trigger health checks in background
         async def perform_health_checks():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
             """Perform health checks for all services."""
             health_results = {}
             

@@ -87,8 +87,10 @@ services:
     container_name: acgs_haproxy
     volumes:
       - ./scripts/docker/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./ssl/certs/acgs.pem:/usr/local/etc/haproxy/ssl/acgs.pem:ro
     ports:
       - "80:80"
+      - "443:443"  # HTTPS
       - "8080:8080"  # Stats interface
     networks:
       - acgs_network

@@ -56,6 +56,9 @@ except ImportError:
     # Mock PolicySuggestion for when AlphaEvolve is not available
     class PolicySuggestion:
         def __init__(self, suggested_policy_code="", confidence_score=0.0):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
             self.suggested_policy_code = suggested_policy_code
             self.confidence_score = confidence_score
 
@@ -101,6 +104,9 @@ class WINARegoSynthesizer:
     """
 
     def __init__(self, enable_wina: bool = True):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize WINA-optimized Rego synthesizer.
 

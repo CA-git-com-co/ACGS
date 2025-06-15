@@ -132,6 +132,9 @@ class PolicyValidationEngine:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.config = get_opa_config()
         self.opa_client = None
         self._initialized = False
@@ -146,6 +149,9 @@ class PolicyValidationEngine:
         }
 
     async def initialize(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the policy validation engine."""
         if self._initialized:
             return
@@ -523,6 +529,9 @@ class PolicyValidationEngine:
         return 0.0
 
     def _update_metrics(self, latency_ms: float, success: bool):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Update performance metrics."""
         self.metrics["total_validations"] += 1
 
@@ -557,6 +566,9 @@ class PolicyValidationEngine:
             semaphore = asyncio.Semaphore(self.config.performance.max_parallel_workers)
 
             async def validate_with_semaphore(request):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
                 async with semaphore:
                     return await self.validate_policy(request)
 

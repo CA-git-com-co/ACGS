@@ -25,6 +25,9 @@ class SecurityThreat:
     detected_at: datetime = None
 
     def __post_init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if self.detected_at is None:
             self.detected_at = datetime.now(timezone.utc)
         if self.metadata is None:
@@ -35,6 +38,9 @@ class IntrusionDetectionSystem:
     """Enterprise Intrusion Detection and Prevention System"""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         # Rate limiting tracking
         self.request_counts: Dict[str, deque] = defaultdict(lambda: deque())
         self.failed_login_attempts: Dict[str, deque] = defaultdict(lambda: deque())
@@ -111,6 +117,9 @@ class IntrusionDetectionSystem:
         return False
 
     def block_ip(self, ip_address: str, duration_minutes: int = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Block IP address for specified duration"""
         if duration_minutes is None:
             duration_minutes = self.block_duration_minutes

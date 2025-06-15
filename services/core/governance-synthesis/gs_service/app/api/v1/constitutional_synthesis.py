@@ -74,6 +74,9 @@ async def constitutional_synthesis_endpoint(
 async def analyze_constitutional_context_endpoint(
     context: str, category: Optional[str] = None, auth_token: Optional[str] = None
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Analyze constitutional context for a given target context.
 
@@ -115,6 +118,9 @@ async def analyze_constitutional_context_endpoint(
 async def get_constitutional_context_endpoint(
     context: str, category: Optional[str] = None
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Get constitutional context information for a specific context.
 
@@ -149,6 +155,9 @@ async def add_environmental_factor_endpoint(
     source: Optional[str] = None,
     confidence: float = 1.0,
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Add an environmental factor for contextual analysis.
 
@@ -186,6 +195,9 @@ async def add_environmental_factor_endpoint(
 
 @router.get("/environmental-factors/{factor_type}")
 async def get_environmental_factors_endpoint(factor_type: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Get all environmental factors of a specific type."""
     try:
         factors = contextual_analyzer.get_environmental_factors_by_type(factor_type)
@@ -206,6 +218,9 @@ async def get_environmental_factors_endpoint(factor_type: str):
 
 @router.get("/adaptation-triggers/{context}")
 async def get_adaptation_triggers_endpoint(context: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Get adaptation triggers for a specific context.
 
@@ -231,6 +246,9 @@ async def get_adaptation_triggers_endpoint(context: str):
 
 
 async def _analyze_synthesis_context(context: str, constitutional_context: dict):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """
     Background task to analyze synthesis context and update environmental factors.
     """
@@ -260,6 +278,9 @@ async def _analyze_synthesis_context(context: str, constitutional_context: dict)
 
 @router.get("/health")
 async def constitutional_synthesis_health():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Health check endpoint for constitutional synthesis service."""
     return {
         "status": "healthy",

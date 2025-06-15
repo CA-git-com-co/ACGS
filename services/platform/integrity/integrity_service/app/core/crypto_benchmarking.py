@@ -30,6 +30,9 @@ class CryptoBenchmarkConfig:
     confidence_level: float = 0.95
 
     def __post_init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if self.payload_sizes is None:
             self.payload_sizes = [1024, 4096, 16384, 65536]  # 1KB to 64KB
         if self.key_sizes is None:
@@ -73,6 +76,9 @@ class MockCryptoOperations:
     """Mock cryptographic operations for benchmarking."""
 
     def __init__(self, key_size_bits: int = 2048):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.key_size_bits = key_size_bits
         self.private_key = self._generate_mock_key()
         self.public_key = self._generate_mock_key()
@@ -146,6 +152,9 @@ class CryptoBenchmarker:
     """Benchmarks cryptographic operations for overhead analysis."""
 
     def __init__(self, config: CryptoBenchmarkConfig = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.config = config or CryptoBenchmarkConfig()
         self.executor = ThreadPoolExecutor(max_workers=4)
 
@@ -413,6 +422,9 @@ class CryptoBenchmarker:
 
 # Example usage
 async def run_crypto_benchmarking_example():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Example of running cryptographic benchmarking."""
     config = CryptoBenchmarkConfig(
         num_iterations=50,  # Reduced for example

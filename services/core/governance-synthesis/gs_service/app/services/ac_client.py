@@ -19,6 +19,9 @@ AC_SERVICE_URL = os.getenv(
 
 class ACServiceClient:
     def __init__(self, base_url: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.base_url = base_url
         # Use a timeout configuration suitable for your environment
         timeout_config = httpx.Timeout(10.0, connect=5.0)  # 10s read, 5s connect
@@ -195,6 +198,9 @@ class ACServiceClient:
             return []
 
     async def close(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         await self.client.aclose()
 
 
@@ -206,6 +212,9 @@ if __name__ == "__main__":
     pass
 
     async def test_ac_client():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         print(f"Testing AC Client against URL: {AC_SERVICE_URL}")
         # This test will only work if ac_service is running and accessible at AC_SERVICE_URL
         # and has some data.

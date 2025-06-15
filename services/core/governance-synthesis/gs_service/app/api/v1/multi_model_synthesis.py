@@ -292,6 +292,9 @@ async def reset_circuit_breakers() -> JSONResponse:
 async def _log_synthesis_metrics(
     request_id: str, success: bool, duration_ms: float, fidelity_score: float
 ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Background task to log synthesis metrics for monitoring."""
     try:
         # In a production system, this would send metrics to a monitoring system

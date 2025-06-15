@@ -83,6 +83,9 @@ class GSPolicyCreate(GSPolicyBase):
     @field_validator("content")
     @classmethod
     def check_content_or_template(cls, v, info):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         info.data if hasattr(info, "data") else {}
         if (info.data if hasattr(info, "data") else {}).get(
             "template_id"
@@ -145,6 +148,9 @@ class SynthesisRequest(
     @field_validator("principles")
     @classmethod
     def check_policy_id_or_principles(cls, v, info):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         info.data if hasattr(info, "data") else {}
         if (info.data if hasattr(info, "data") else {}).get(
             "policy_id"

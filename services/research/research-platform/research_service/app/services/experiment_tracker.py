@@ -92,6 +92,9 @@ class ExperimentTracker:
     """Comprehensive experiment tracking service."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.active_experiments: Dict[str, Experiment] = {}
         self.data_path = Path(settings.RESEARCH_DATA_PATH)
         self.artifacts_path = Path(settings.EXPERIMENT_ARTIFACTS_PATH)

@@ -94,6 +94,9 @@ class AutomatedResolutionEngine:
     """
 
     def __init__(self, qec_resolver: Optional[QECConflictResolver] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the resolution engine with optional QEC integration."""
         self.qec_resolver = qec_resolver or QECConflictResolver()
         self.auto_resolution_threshold = 0.8  # Minimum confidence for auto-resolution

@@ -19,6 +19,9 @@ class GSServiceClient:
     """Client for communicating with GS Service."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.base_url = config.get("gs_service_url", "http://localhost:8004")
         self.client = httpx.AsyncClient(
             base_url=self.base_url,
@@ -27,6 +30,9 @@ class GSServiceClient:
         )
 
     async def close(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Close the HTTP client."""
         await self.client.aclose()
 

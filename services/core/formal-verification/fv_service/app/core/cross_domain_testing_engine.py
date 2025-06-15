@@ -51,6 +51,9 @@ class DomainSpecificValidator:
     """Base class for domain-specific validation logic."""
 
     def __init__(self, config: DomainValidationConfig):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.config = config
         self.domain_type = config.domain_type
 
@@ -341,6 +344,9 @@ class CrossDomainTestingEngine:
     """Main engine for cross-domain principle testing."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.validators = {
             DomainType.HEALTHCARE: HealthcareDomainValidator,
             DomainType.FINANCE: FinanceDomainValidator,

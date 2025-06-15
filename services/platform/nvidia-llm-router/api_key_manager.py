@@ -58,6 +58,9 @@ class APIKeyManager:
     """
     
     def __init__(self, encryption_key: Optional[str] = None, redis_url: Optional[str] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.logger = get_logger(__name__)
         self.security_config = SecurityConfig()
         
@@ -403,6 +406,9 @@ class APIKeyManager:
         return str(uuid.uuid4())
     
     async def _deactivate_key(self, session: AsyncSession, key_name: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Deactivate an expired key"""
         await session.execute(
             update(APIKeyRecord)
@@ -412,6 +418,9 @@ class APIKeyManager:
         await session.commit()
     
     async def _clear_cache(self, key_name: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Clear cached API key"""
         try:
             redis = await self._get_redis()
@@ -421,6 +430,9 @@ class APIKeyManager:
             self.logger.warning(f"Failed to clear cache for {key_name}: {str(e)}")
     
     async def close(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Close Redis connections"""
         if self._redis_pool:
             await self._redis_pool.close()

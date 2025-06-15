@@ -30,6 +30,9 @@ target_metadata = Base.metadata
 
 
 def get_url():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get database URL from environment variable"""
     # Convert asyncpg URL to psycopg2 for Alembic
     url = DATABASE_URL

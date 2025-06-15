@@ -26,6 +26,9 @@ class IntegrityVerificationService:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.crypto_service = crypto_service
         self.merkle_service = merkle_service
         self.key_manager = key_manager

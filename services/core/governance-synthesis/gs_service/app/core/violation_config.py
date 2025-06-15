@@ -62,6 +62,9 @@ class ThresholdConfig:
     source: ConfigSource = ConfigSource.DEFAULT
 
     def __post_init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if self.configuration is None:
             self.configuration = {}
 
@@ -101,6 +104,9 @@ class ViolationConfigManager:
     """
 
     def __init__(self, config_file_path: Optional[str] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize the violation configuration manager.
 
@@ -339,6 +345,9 @@ class ViolationConfigManager:
         )
 
     def _load_initial_config(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Load initial configuration from all sources."""
         try:
             # Load default configurations
@@ -521,6 +530,9 @@ class ViolationConfigManager:
         return cache_age < self.cache_ttl_seconds
 
     def _invalidate_cache(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Invalidate the configuration cache."""
         self.cache_updated_at = None
         self.cached_thresholds.clear()

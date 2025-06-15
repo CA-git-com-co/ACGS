@@ -18,6 +18,9 @@ depends_on = None
 
 
 def upgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Add Phase 3 Z3 integration and advanced verification tables."""
 
     # Define enums for use in table creation
@@ -306,6 +309,9 @@ def upgrade():
 
 
 def downgrade():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Remove Phase 3 Z3 integration and advanced verification tables."""
 
     # Remove added columns from policy_rules

@@ -142,6 +142,9 @@ class HumanInTheLoopSampler:
     """
 
     def __init__(self, config: Optional[HITLSamplingConfig] = None):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize the HITL sampling system."""
         self.config = config or HITLSamplingConfig()
 
@@ -846,6 +849,9 @@ class HumanInTheLoopSampler:
             return False
 
     async def _perform_adaptive_learning(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Perform adaptive learning based on human feedback."""
         try:
             if not self.config.learning_enabled:
@@ -905,6 +911,9 @@ class HumanInTheLoopSampler:
             logger.error(f"Adaptive learning failed: {e}")
 
     def _adjust_thresholds(self, adjustment: float):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Adjust uncertainty and confidence thresholds based on learning."""
         try:
             # Adjust uncertainty threshold

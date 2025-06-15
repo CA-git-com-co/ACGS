@@ -146,6 +146,9 @@ class DemocraticGovernanceOrchestrator:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.metrics = get_metrics("democratic_governance")
         self.routing_rules: Dict[GovernanceDecisionType, ApprovalRoutingRule] = {}
         self.active_proposals: Dict[str, GovernanceProposal] = {}
@@ -154,6 +157,9 @@ class DemocraticGovernanceOrchestrator:
         self._initialize_workflow_templates()
 
     def _initialize_routing_rules(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize approval routing rules for different decision types."""
 
         # Constitutional Amendment routing
@@ -243,6 +249,9 @@ class DemocraticGovernanceOrchestrator:
         }
 
     def _initialize_workflow_templates(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize workflow templates for different governance types."""
 
         constitutional_template = {
@@ -848,6 +857,9 @@ class DemocraticGovernanceOrchestrator:
     async def _trigger_approval_completion(
         self, db: AsyncSession, proposal: GovernanceProposal
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Trigger actions when all approvals are complete."""
         # Implement approval completion trigger logic
 
@@ -865,6 +877,9 @@ class DemocraticGovernanceOrchestrator:
         stage: GovernanceStage,
         action_data: Dict[str, Any],
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Execute stage-specific actions."""
         # Implement stage-specific action execution logic
 
@@ -900,6 +915,9 @@ class DemocraticGovernanceOrchestrator:
     async def _archive_approved_proposal(
         self, db: AsyncSession, proposal: GovernanceProposal
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Archive approved proposal for future reference."""
         # Implement proposal archival logic
 

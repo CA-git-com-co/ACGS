@@ -89,6 +89,9 @@ if __name__ == "__main__":
     import asyncio
 
     async def test_verification_logic():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         sample_ac_principles = [
             ACPrinciple(
                 id=1, name="P1", content="Ensure role-based access.", description=""

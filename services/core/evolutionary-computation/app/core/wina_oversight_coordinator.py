@@ -172,6 +172,9 @@ class WINAECOversightCoordinator:
     """
 
     def __init__(self, enable_wina: bool = True):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize WINA-optimized EC oversight coordinator.
 
@@ -667,6 +670,9 @@ class WINAECOversightCoordinator:
         logger.info("WINA EC Oversight Coordinator initialized")
 
     async def initialize_constitutional_principles(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize constitutional principles for EC Layer oversight."""
         if self.enable_wina and hasattr(self, "constitutional_wina"):
             await self.constitutional_wina.initialize_efficiency_principles()

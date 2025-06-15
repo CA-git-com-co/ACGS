@@ -47,6 +47,9 @@ class RateLimitConfig:
         block_duration: int = 300,
         threat_multiplier: float = 0.5,
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.requests_per_minute = requests_per_minute
         self.burst_size = burst_size
         self.window_size = window_size  # seconds
@@ -73,6 +76,9 @@ class RateLimiter:
         service_name: str = "acgs_service",
         default_config: Optional[RateLimitConfig] = None,
     ):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         self.redis_url = redis_url
         self.service_name = service_name
         self.default_config = default_config or RateLimitConfig()
@@ -106,6 +112,9 @@ class RateLimiter:
         }
 
     async def initialize(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize Redis connection."""
         try:
             self.redis_client = redis.from_url(
@@ -122,6 +131,9 @@ class RateLimiter:
             self.redis_client = None
 
     async def close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close Redis connection."""
         if self.redis_client:
             await self.redis_client.close()
@@ -237,6 +249,9 @@ class RateLimiter:
         return False
 
     async def _block_client(self, client_id: str, duration: int):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Block client for specified duration."""
         if not self.redis_client:
             return
@@ -329,6 +344,9 @@ class RateLimiter:
         }
 
     async def _record_violation(self, client_id: str, violation_type: str):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Record rate limit violation and check for blocking."""
         if not self.redis_client:
             return

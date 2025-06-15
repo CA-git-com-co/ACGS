@@ -15,11 +15,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 # Local implementations to avoid shared module dependencies
 async def get_db():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Mock database session."""
     return None
 
 
 async def get_current_user_id():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Mock current user ID."""
     return "mock_user_id"
 

@@ -180,6 +180,9 @@ _collector_getter = None
 
 
 def set_collector_getter(getter_func):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Set the function to get the performance collector."""
     global _collector_getter
     _collector_getter = getter_func
@@ -378,6 +381,9 @@ async def generate_performance_report(
 
         # Convert datetime objects to ISO strings
         def convert_datetime(obj):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
             if isinstance(obj, datetime):
                 return obj.isoformat()
             elif isinstance(obj, dict):

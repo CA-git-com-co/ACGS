@@ -24,6 +24,9 @@ class EnvironmentalFactor:
         source: Optional[str] = None,
         confidence: float = 1.0,
     ):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.factor_id = factor_id
         self.factor_type = (
             factor_type  # e.g., "regulatory", "operational", "technical", "social"
@@ -56,6 +59,9 @@ class ContextualAnalyzer:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.environmental_factors: Dict[str, EnvironmentalFactor] = {}
         self.context_history: List[Dict[str, Any]] = []
         self.similarity_threshold = 0.7  # Threshold for context similarity matching

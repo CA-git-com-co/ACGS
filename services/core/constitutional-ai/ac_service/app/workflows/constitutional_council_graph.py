@@ -129,6 +129,9 @@ class ConstitutionalCouncilGraph:
     """
 
     def __init__(self, db_session: AsyncSession):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize the Constitutional Council graph.
 

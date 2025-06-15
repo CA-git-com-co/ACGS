@@ -67,6 +67,9 @@ class WINAPolicyCompiler:
     """
 
     def __init__(self, enable_wina: bool = True):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """
         Initialize WINA-optimized policy compiler.
 

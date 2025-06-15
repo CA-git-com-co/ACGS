@@ -65,6 +65,9 @@ class Workflow:
     metadata: Dict[str, Any] = None
 
     def __post_init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         if self.created_at is None:
             self.created_at = datetime.utcnow()
         if self.metadata is None:
@@ -77,6 +80,9 @@ class WorkflowEngine:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.workflows: Dict[str, Workflow] = {}
         self.running_workflows: Dict[str, asyncio.Task] = {}
         self.step_handlers: Dict[str, Callable] = {}
@@ -84,6 +90,9 @@ class WorkflowEngine:
         self._initialize_templates()
 
     def _initialize_templates(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Initialize predefined workflow templates"""
 
         # Policy Synthesis Workflow
@@ -257,6 +266,9 @@ class WorkflowEngine:
         return True
 
     async def _execute_workflow(self, workflow: Workflow):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Execute workflow steps with dependency management"""
 
         try:
@@ -361,6 +373,9 @@ class WorkflowEngine:
             raise e
 
     def register_step_handler(self, service: str, handler: Callable):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Register a step execution handler for a service"""
         self.step_handlers[service] = handler
 

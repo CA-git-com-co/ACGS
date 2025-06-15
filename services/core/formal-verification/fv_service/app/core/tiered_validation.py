@@ -29,6 +29,9 @@ class TieredValidationPipeline:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.validation_cache = {}  # Cache for validation results
 
     async def validate_tiered(

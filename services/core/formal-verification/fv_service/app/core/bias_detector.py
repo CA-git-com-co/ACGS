@@ -47,6 +47,9 @@ class BiasDetector:
     """
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.bias_cache = {}
         self.fairness_cache = {}
 

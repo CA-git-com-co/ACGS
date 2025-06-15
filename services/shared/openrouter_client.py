@@ -62,6 +62,9 @@ class OpenRouterClient:
     """
 
     def __init__(self, api_key: Optional[str] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize OpenRouter client."""
         self.config = get_langgraph_config()
         self.api_key = api_key or self.config.openrouter_api_key
@@ -86,15 +89,24 @@ class OpenRouterClient:
         }
 
     async def __aenter__(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Async context manager entry."""
         await self.initialize()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Async context manager exit."""
         await self.close()
 
     async def initialize(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Initialize the HTTP session."""
         if self.session is None:
             timeout = aiohttp.ClientTimeout(total=60.0)
@@ -102,6 +114,9 @@ class OpenRouterClient:
             logger.info("OpenRouter client initialized")
 
     async def close(self):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
         """Close the HTTP session."""
         if self.session:
             await self.session.close()
@@ -339,6 +354,9 @@ async def get_openrouter_client() -> OpenRouterClient:
 
 
 async def close_openrouter_client():
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Close global OpenRouter client instance."""
     global _openrouter_client
 

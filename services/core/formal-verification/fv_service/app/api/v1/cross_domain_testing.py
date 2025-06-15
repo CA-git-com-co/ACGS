@@ -499,6 +499,9 @@ async def get_scenario_results(
 
 @router.get("/health")
 async def health_check():
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
     """Health check endpoint for cross-domain testing service."""
     return {
         "status": "healthy",

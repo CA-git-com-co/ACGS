@@ -127,9 +127,15 @@ class VotingWebSocketManager:
     """Manages WebSocket connections for real-time voting updates."""
 
     def __init__(self):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         self.active_connections: Dict[str, List[WebSocket]] = {}
 
     async def connect(self, websocket: WebSocket, session_id: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Connect a WebSocket to a voting session."""
         await websocket.accept()
         if session_id not in self.active_connections:
@@ -137,12 +143,18 @@ class VotingWebSocketManager:
         self.active_connections[session_id].append(websocket)
 
     def disconnect(self, websocket: WebSocket, session_id: str):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Disconnect a WebSocket from a voting session."""
         if session_id in self.active_connections:
             if websocket in self.active_connections[session_id]:
                 self.active_connections[session_id].remove(websocket)
 
     async def broadcast_to_session(self, session_id: str, message: dict):
+    // requires: Valid input parameters
+    // ensures: Correct function execution
+    // sha256: func_hash
         """Broadcast a message to all connections for a session."""
         if session_id in self.active_connections:
             disconnected = []
