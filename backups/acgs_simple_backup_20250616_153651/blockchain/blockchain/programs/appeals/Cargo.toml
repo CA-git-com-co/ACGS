@@ -1,0 +1,20 @@
+[package]
+name = "appeals"
+version = "0.1.0"
+description = "Quantumagi Appeals System - Democratic Appeal Process for Policy Violations"
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "appeals"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.29.0"
