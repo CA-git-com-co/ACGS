@@ -11,20 +11,51 @@ from typing import Any, Callable, Dict, List, Optional
 
 from fastapi import FastAPI, Request, Response
 from opentelemetry import metrics, trace
-from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.sdk.metrics.export import (
-    ConsoleMetricExporter,
-    PeriodicExportingMetricReader,
-)
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
-from opentelemetry.semconv.resource import ResourceAttributes
-from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
+
+# Set up logger first
+logger = logging.getLogger(__name__)
+
+try:
+    from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+    from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+    from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
+    from opentelemetry.sdk.metrics import MeterProvider
+    from opentelemetry.sdk.metrics.export import (
+        ConsoleMetricExporter,
+        PeriodicExportingMetricReader,
+    )
+    from opentelemetry.sdk.resources import Resource
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+    from opentelemetry.semconv.resource import ResourceAttributes
+    from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
+    TELEMETRY_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"OpenTelemetry components not available: {e}")
+    TELEMETRY_AVAILABLE = False
+    # Create fallback classes
+    class NoOpTelemetry:
+        def __init__(self, *args, **kwargs):
+            pass
+        def __call__(self, *args, **kwargs):
+            return self
+        def __getattr__(self, name):
+            return self
+
+    OTLPMetricExporter = NoOpTelemetry
+    OTLPSpanExporter = NoOpTelemetry
+    FastAPIInstrumentor = NoOpTelemetry
+    HTTPXClientInstrumentor = NoOpTelemetry
+    MeterProvider = NoOpTelemetry
+    ConsoleMetricExporter = NoOpTelemetry
+    PeriodicExportingMetricReader = NoOpTelemetry
+    Resource = NoOpTelemetry
+    TracerProvider = NoOpTelemetry
+    BatchSpanProcessor = NoOpTelemetry
+    ConsoleSpanExporter = NoOpTelemetry
+    ResourceAttributes = NoOpTelemetry
+    TraceContextTextMapPropagator = NoOpTelemetry
 
 from .config.service_config import get_service_config
 
@@ -72,6 +103,10 @@ class TelemetryManager:
             logger.info("Telemetry is disabled. Skipping setup.")
             return
 
+        if not TELEMETRY_AVAILABLE:
+            logger.warning("OpenTelemetry not available. Running without telemetry.")
+            return
+
         logger.info(
             f"Setting up OpenTelemetry instrumentation (version {self.otlp_version}) "
             f"for {self.service_name} in {self.environment} environment"
@@ -114,12 +149,13 @@ class TelemetryManager:
         )
         trace.set_tracer_provider(self.tracer_provider)
 
-        # Add OTLP exporter
-        otlp_span_exporter = OTLPSpanExporter(endpoint=self.otlp_endpoint)
-        self.tracer_provider.add_span_processor(BatchSpanProcessor(otlp_span_exporter))
+        # Add OTLP exporter if available
+        if OTLP_AVAILABLE and OTLPSpanExporter:
+            otlp_span_exporter = OTLPSpanExporter(endpoint=self.otlp_endpoint)
+            self.tracer_provider.add_span_processor(BatchSpanProcessor(otlp_span_exporter))
 
-        # Add console exporter in development
-        if self.environment == "development":
+        # Add console exporter in development or as fallback
+        if self.environment == "development" or not OTLP_AVAILABLE:
             self.tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
 
         # Get tracer
@@ -132,11 +168,14 @@ class TelemetryManager:
             resource: OpenTelemetry resource
         """
         # Create exporters
-        otlp_metric_exporter = OTLPMetricExporter(endpoint=self.otlp_endpoint)
-        metric_readers = [PeriodicExportingMetricReader(otlp_metric_exporter)]
+        metric_readers = []
 
-        # Add console exporter in development
-        if self.environment == "development":
+        if OTLP_AVAILABLE and OTLPMetricExporter:
+            otlp_metric_exporter = OTLPMetricExporter(endpoint=self.otlp_endpoint)
+            metric_readers.append(PeriodicExportingMetricReader(otlp_metric_exporter))
+
+        # Add console exporter in development or as fallback
+        if self.environment == "development" or not OTLP_AVAILABLE:
             metric_readers.append(PeriodicExportingMetricReader(ConsoleMetricExporter()))
 
         # Create meter provider
@@ -198,7 +237,7 @@ class TelemetryManager:
         Args:
             app: FastAPI application
         """
-        if not self.enabled:
+        if not self.enabled or not TELEMETRY_AVAILABLE:
             return
 
         try:
