@@ -23,9 +23,9 @@ class LoadBalancer:
         self,
         default_strategy: LoadBalancingStrategy = LoadBalancingStrategy.LEAST_RESPONSE_TIME,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize load balancer.
 
@@ -85,9 +85,7 @@ class LoadBalancer:
         elif strategy == LoadBalancingStrategy.LEAST_RESPONSE_TIME:
             return self._least_response_time_select(healthy_instances)
         elif strategy == LoadBalancingStrategy.CONSISTENT_HASH:
-            return self._consistent_hash_select(
-                healthy_instances, hash_key or session_id
-            )
+            return self._consistent_hash_select(healthy_instances, hash_key or session_id)
         elif strategy == LoadBalancingStrategy.RANDOM:
             return self._random_select(healthy_instances)
         else:
@@ -110,15 +108,11 @@ class LoadBalancer:
 
         return selected
 
-    def _least_connections_select(
-        self, instances: List[ServiceInstance]
-    ) -> ServiceInstance:
+    def _least_connections_select(self, instances: List[ServiceInstance]) -> ServiceInstance:
         """Select instance with least connections."""
         return min(instances, key=lambda x: x.current_connections)
 
-    def _weighted_round_robin_select(
-        self, instances: List[ServiceInstance]
-    ) -> ServiceInstance:
+    def _weighted_round_robin_select(self, instances: List[ServiceInstance]) -> ServiceInstance:
         """Weighted round robin selection based on instance weights."""
         # Create weighted list
         weighted_instances = []
@@ -131,14 +125,10 @@ class LoadBalancer:
 
         return self._round_robin_select(weighted_instances)
 
-    def _least_response_time_select(
-        self, instances: List[ServiceInstance]
-    ) -> ServiceInstance:
+    def _least_response_time_select(self, instances: List[ServiceInstance]) -> ServiceInstance:
         """Select instance with best response time and load score."""
         # Sort by load score (combines response time, connections, failure rate)
-        instances_with_scores = [
-            (instance, instance.load_score) for instance in instances
-        ]
+        instances_with_scores = [(instance, instance.load_score) for instance in instances]
         instances_with_scores.sort(key=lambda x: x[1])
 
         return instances_with_scores[0][0]
@@ -186,12 +176,10 @@ class LoadBalancer:
         """Random selection."""
         return random.choice(instances)
 
-    def _build_hash_ring(
-        self, service_type: ServiceType, instances: List[ServiceInstance]
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def _build_hash_ring(self, service_type: ServiceType, instances: List[ServiceInstance]):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Build consistent hash ring for service type."""
         ring = []
 
@@ -208,22 +196,20 @@ class LoadBalancer:
         self._consistent_hash_ring[service_type] = ring
 
     def set_session_affinity(self, session_id: str, instance_id: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set session affinity for a session."""
         self._session_affinity[session_id] = instance_id
 
     def clear_session_affinity(self, session_id: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear session affinity for a session."""
         self._session_affinity.pop(session_id, None)
 
-    def get_load_balancing_stats(
-        self, instances: List[ServiceInstance]
-    ) -> Dict[str, Any]:
+    def get_load_balancing_stats(self, instances: List[ServiceInstance]) -> Dict[str, Any]:
         """Get load balancing statistics."""
         if not instances:
             return {}
@@ -241,9 +227,7 @@ class LoadBalancer:
             "total_requests": total_requests,
             "total_failures": total_failures,
             "failure_rate": (total_failures / max(total_requests, 1)) * 100,
-            "average_response_time": sum(
-                inst.response_time or 0 for inst in healthy_instances
-            )
+            "average_response_time": sum(inst.response_time or 0 for inst in healthy_instances)
             / max(len(healthy_instances), 1),
             "load_distribution": [
                 {
@@ -266,9 +250,9 @@ class SessionAffinityManager:
     """
 
     def __init__(self, ttl_seconds: int = 3600):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize session affinity manager.
 
@@ -301,12 +285,10 @@ class SessionAffinityManager:
 
         return session_data.get("affinities", {}).get(service_type.value)
 
-    def set_affinity(
-        self, session_id: str, service_type: ServiceType, instance_id: str
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def set_affinity(self, session_id: str, service_type: ServiceType, instance_id: str):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Set instance affinity for a session and service type.
 
@@ -326,16 +308,16 @@ class SessionAffinityManager:
         self._sessions[session_id]["last_used"] = time.time()
 
     def clear_session(self, session_id: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear all affinities for a session."""
         self._sessions.pop(session_id, None)
 
     def cleanup_expired_sessions(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Remove expired session affinities."""
         current_time = time.time()
         expired_sessions = [

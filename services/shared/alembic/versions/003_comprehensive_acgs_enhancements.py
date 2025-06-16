@@ -35,30 +35,20 @@ def upgrade() -> None:
     )
     op.add_column(
         "principles",
-        sa.Column(
-            "scope", sa.String(length=100), nullable=False, server_default="general"
-        ),
+        sa.Column("scope", sa.String(length=100), nullable=False, server_default="general"),
     )
-    op.add_column(
-        "principles", sa.Column("normative_statement", sa.Text(), nullable=True)
-    )
+    op.add_column("principles", sa.Column("normative_statement", sa.Text(), nullable=True))
     op.add_column("principles", sa.Column("constraints", sa.JSON(), nullable=True))
     op.add_column("principles", sa.Column("rationale", sa.Text(), nullable=True))
 
     # Add enhanced fields to policy_rules table
     op.add_column(
         "policy_rules",
-        sa.Column(
-            "framework", sa.String(length=50), nullable=False, server_default="rego"
-        ),
+        sa.Column("framework", sa.String(length=50), nullable=False, server_default="rego"),
     )
-    op.add_column(
-        "policy_rules", sa.Column("hash_sha256", sa.String(length=64), nullable=True)
-    )
+    op.add_column("policy_rules", sa.Column("hash_sha256", sa.String(length=64), nullable=True))
     op.add_column("policy_rules", sa.Column("pgp_signature", sa.Text(), nullable=True))
-    op.add_column(
-        "policy_rules", sa.Column("signature_timestamp", sa.DateTime(), nullable=True)
-    )
+    op.add_column("policy_rules", sa.Column("signature_timestamp", sa.DateTime(), nullable=True))
 
     # Create meta_rules table
     op.create_table(
@@ -69,12 +59,8 @@ def upgrade() -> None:
         sa.Column("priority", sa.Integer(), nullable=False, server_default="1"),
         sa.Column("condition", sa.Text(), nullable=False),
         sa.Column("resolution_strategy", sa.String(length=100), nullable=False),
-        sa.Column(
-            "created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
-        sa.Column(
-            "updated_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
+        sa.Column("created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
+        sa.Column("updated_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
         sa.Column("created_by_user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["created_by_user_id"],
@@ -83,9 +69,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_meta_rules_id"), "meta_rules", ["id"], unique=False)
-    op.create_index(
-        op.f("ix_meta_rules_priority"), "meta_rules", ["priority"], unique=False
-    )
+    op.create_index(op.f("ix_meta_rules_priority"), "meta_rules", ["priority"], unique=False)
 
     # Create conflict_resolutions table
     op.create_table(
@@ -95,9 +79,7 @@ def upgrade() -> None:
         sa.Column("principle_ids", sa.JSON(), nullable=False),
         sa.Column("resolution", sa.Text(), nullable=False),
         sa.Column("meta_rule_id", sa.Integer(), nullable=True),
-        sa.Column(
-            "created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
+        sa.Column("created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
         sa.Column("resolved_by_user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["meta_rule_id"],
@@ -121,16 +103,10 @@ def upgrade() -> None:
         sa.Column("description", sa.Text(), nullable=False),
         sa.Column("proposed_changes", sa.Text(), nullable=False),
         sa.Column("rationale", sa.Text(), nullable=False),
-        sa.Column(
-            "status", sa.String(length=50), nullable=False, server_default="proposed"
-        ),
+        sa.Column("status", sa.String(length=50), nullable=False, server_default="proposed"),
         sa.Column("voting_deadline", sa.DateTime(), nullable=True),
-        sa.Column(
-            "created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
-        sa.Column(
-            "updated_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
+        sa.Column("created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
+        sa.Column("updated_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
         sa.Column("proposed_by_user_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["proposed_by_user_id"],
@@ -138,9 +114,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_amendment_proposals_id"), "amendment_proposals", ["id"], unique=False
-    )
+    op.create_index(op.f("ix_amendment_proposals_id"), "amendment_proposals", ["id"], unique=False)
     op.create_index(
         op.f("ix_amendment_proposals_status"),
         "amendment_proposals",
@@ -156,24 +130,16 @@ def upgrade() -> None:
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("vote", sa.String(length=20), nullable=False),
         sa.Column("comment", sa.Text(), nullable=True),
-        sa.Column(
-            "created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
-        sa.ForeignKeyConstraint(
-            ["amendment_id"], ["amendment_proposals.id"], ondelete="CASCADE"
-        ),
+        sa.Column("created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
+        sa.ForeignKeyConstraint(["amendment_id"], ["amendment_proposals.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(
             ["user_id"],
             ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint(
-            "amendment_id", "user_id", name="unique_vote_per_amendment"
-        ),
+        sa.UniqueConstraint("amendment_id", "user_id", name="unique_vote_per_amendment"),
     )
-    op.create_index(
-        op.f("ix_amendment_votes_id"), "amendment_votes", ["id"], unique=False
-    )
+    op.create_index(op.f("ix_amendment_votes_id"), "amendment_votes", ["id"], unique=False)
 
     # Create amendment_comments table
     op.create_table(
@@ -182,24 +148,16 @@ def upgrade() -> None:
         sa.Column("amendment_id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("content", sa.Text(), nullable=False),
-        sa.Column(
-            "created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
-        sa.Column(
-            "updated_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
-        sa.ForeignKeyConstraint(
-            ["amendment_id"], ["amendment_proposals.id"], ondelete="CASCADE"
-        ),
+        sa.Column("created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
+        sa.Column("updated_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
+        sa.ForeignKeyConstraint(["amendment_id"], ["amendment_proposals.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(
             ["user_id"],
             ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_amendment_comments_id"), "amendment_comments", ["id"], unique=False
-    )
+    op.create_index(op.f("ix_amendment_comments_id"), "amendment_comments", ["id"], unique=False)
 
     # Create environmental_factors table
     op.create_table(
@@ -208,9 +166,7 @@ def upgrade() -> None:
         sa.Column("factor_type", sa.String(length=100), nullable=False),
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column("value", sa.JSON(), nullable=False),
-        sa.Column(
-            "timestamp", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
+        sa.Column("timestamp", sa.DateTime(), nullable=True, server_default=sa.func.now()),
         sa.Column("source", sa.String(length=100), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -236,16 +192,10 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("default_content", sa.Text(), nullable=False),
-        sa.Column(
-            "parameters_schema", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("parameters_schema", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("version", sa.Integer(), nullable=False, server_default=sa.text("1")),
-        sa.Column(
-            "created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
-        sa.Column(
-            "updated_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
+        sa.Column("created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
+        sa.Column("updated_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
         sa.Column("created_by_user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["created_by_user_id"],
@@ -254,9 +204,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("name"),
     )
-    op.create_index(
-        op.f("ix_policy_templates_id"), "policy_templates", ["id"], unique=False
-    )
+    op.create_index(op.f("ix_policy_templates_id"), "policy_templates", ["id"], unique=False)
 
     # Create policies table
     op.create_table(
@@ -273,12 +221,8 @@ def upgrade() -> None:
             postgresql.JSONB(astext_type=sa.Text()),
             nullable=True,
         ),
-        sa.Column(
-            "created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
-        sa.Column(
-            "updated_at", sa.DateTime(), nullable=True, server_default=sa.func.now()
-        ),
+        sa.Column("created_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
+        sa.Column("updated_at", sa.DateTime(), nullable=True, server_default=sa.func.now()),
         sa.Column("created_by_user_id", sa.Integer(), nullable=True),
         sa.Column("previous_version_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
@@ -312,12 +256,8 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_policy_templates_id"), table_name="policy_templates")
     op.drop_table("policy_templates")
 
-    op.drop_index(
-        op.f("ix_environmental_factors_factor_type"), table_name="environmental_factors"
-    )
-    op.drop_index(
-        op.f("ix_environmental_factors_id"), table_name="environmental_factors"
-    )
+    op.drop_index(op.f("ix_environmental_factors_factor_type"), table_name="environmental_factors")
+    op.drop_index(op.f("ix_environmental_factors_id"), table_name="environmental_factors")
     op.drop_table("environmental_factors")
 
     op.drop_index(op.f("ix_amendment_comments_id"), table_name="amendment_comments")
@@ -326,9 +266,7 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_amendment_votes_id"), table_name="amendment_votes")
     op.drop_table("amendment_votes")
 
-    op.drop_index(
-        op.f("ix_amendment_proposals_status"), table_name="amendment_proposals"
-    )
+    op.drop_index(op.f("ix_amendment_proposals_status"), table_name="amendment_proposals")
     op.drop_index(op.f("ix_amendment_proposals_id"), table_name="amendment_proposals")
     op.drop_table("amendment_proposals")
 

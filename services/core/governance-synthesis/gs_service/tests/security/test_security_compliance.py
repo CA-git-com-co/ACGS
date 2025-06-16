@@ -24,18 +24,18 @@ from services.core.governance_synthesis.app.services.security_compliance import 
 
 @pytest.fixture
 def security_service():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Security compliance service fixture."""
     return SecurityComplianceService("test-secret-key-for-testing-only")
 
 
 @pytest.fixture
 def mock_request():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Mock FastAPI request fixture."""
     request = MagicMock(spec=Request)
     request.client.host = "192.168.1.100"
@@ -50,9 +50,9 @@ def mock_request():
 
 @pytest.fixture
 def valid_jwt_credentials():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Valid JWT credentials fixture."""
     jwt_manager = JWTManager("test-secret-key")
     token = jwt_manager.create_token("test_user", ["admin", "policy_manager"])
@@ -64,9 +64,9 @@ class TestInputValidation:
 
     @pytest.mark.security
     def test_sql_injection_detection(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test SQL injection pattern detection."""
         malicious_inputs = [
             "'; DROP TABLE users; --",
@@ -84,9 +84,9 @@ class TestInputValidation:
 
     @pytest.mark.security
     def test_xss_detection(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test XSS pattern detection."""
         malicious_inputs = [
             "<script>alert('xss')</script>",
@@ -104,9 +104,9 @@ class TestInputValidation:
 
     @pytest.mark.security
     def test_command_injection_detection(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test command injection pattern detection."""
         malicious_inputs = [
             "; cat /etc/passwd",
@@ -125,9 +125,9 @@ class TestInputValidation:
 
     @pytest.mark.security
     def test_valid_input_acceptance(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that valid inputs are accepted."""
         valid_inputs = [
             "normal text input",
@@ -145,9 +145,9 @@ class TestInputValidation:
 
     @pytest.mark.security
     def test_input_sanitization(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test input sanitization functionality."""
         test_cases = [
             ("normal text", "normal text"),
@@ -172,9 +172,9 @@ class TestRateLimiting:
 
     @pytest.mark.security
     def test_rate_limit_enforcement(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test rate limit enforcement."""
         rate_limiter = RateLimiter()
         client_id = "test_client_1"
@@ -194,9 +194,9 @@ class TestRateLimiting:
 
     @pytest.mark.security
     def test_rate_limit_per_client(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test rate limiting is enforced per client."""
         rate_limiter = RateLimiter()
         max_requests = 3
@@ -217,9 +217,9 @@ class TestRateLimiting:
 
     @pytest.mark.security
     def test_rate_limit_window_sliding(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test sliding window rate limiting."""
         rate_limiter = RateLimiter()
         client_id = "test_client_sliding"
@@ -244,9 +244,9 @@ class TestJWTAuthentication:
 
     @pytest.mark.security
     def test_jwt_token_creation_and_verification(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test JWT token creation and verification."""
         jwt_manager = JWTManager("test-secret-key")
         user_id = "test_user"
@@ -267,9 +267,9 @@ class TestJWTAuthentication:
 
     @pytest.mark.security
     def test_jwt_token_expiration(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test JWT token expiration handling."""
         jwt_manager = JWTManager("test-secret-key")
         jwt_manager.expiry_minutes = -1  # Expired token
@@ -284,9 +284,9 @@ class TestJWTAuthentication:
 
     @pytest.mark.security
     def test_jwt_token_revocation(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test JWT token revocation."""
         jwt_manager = JWTManager("test-secret-key")
         token = jwt_manager.create_token("test_user", ["admin"])
@@ -307,9 +307,9 @@ class TestJWTAuthentication:
 
     @pytest.mark.security
     def test_invalid_jwt_token(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test handling of invalid JWT tokens."""
         jwt_manager = JWTManager("test-secret-key")
 
@@ -333,9 +333,9 @@ class TestAuditLogging:
 
     @pytest.mark.security
     def test_audit_event_logging(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test audit event logging functionality."""
         audit_logger = AuditLogger()
 
@@ -412,18 +412,16 @@ class TestAuditLogging:
         failed_events = audit_logger.get_events(hours=1, severity="high")
         assert len(failed_events) == 2
 
-        auth_events = audit_logger.get_events(
-            hours=1, event_type="authentication_failed"
-        )
+        auth_events = audit_logger.get_events(hours=1, event_type="authentication_failed")
         assert len(auth_events) == 1
         assert auth_events[0].user_id is None
         assert not auth_events[0].success
 
     @pytest.mark.security
     def test_audit_log_retention(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test audit log retention policy."""
         audit_logger = AuditLogger()
 
@@ -448,22 +446,20 @@ class TestSecurityComplianceIntegration:
     @pytest.mark.security
     @pytest.mark.asyncio
     async def test_request_validation_flow(self, security_service, mock_request):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test complete request validation flow."""
         # Should pass validation for normal request
-        result = security_service.validate_request(
-            mock_request, max_requests=100, window_minutes=1
-        )
+        result = security_service.validate_request(mock_request, max_requests=100, window_minutes=1)
         assert result is True
 
     @pytest.mark.security
     @pytest.mark.asyncio
     async def test_authentication_flow(self, security_service, valid_jwt_credentials):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test authentication flow."""
         payload = await security_service.authenticate_request(valid_jwt_credentials)
         assert payload["user_id"] == "test_user"
@@ -471,9 +467,9 @@ class TestSecurityComplianceIntegration:
 
     @pytest.mark.security
     def test_authorization_flow(self, security_service):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test authorization flow."""
         user_payload = {"user_id": "test_user", "roles": ["admin", "policy_manager"]}
 
@@ -489,9 +485,9 @@ class TestSecurityComplianceIntegration:
 
     @pytest.mark.security
     def test_input_validation_flow(self, security_service):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test input validation flow."""
         # Valid input should pass
         valid_data = {"policy": "normal policy content", "user": "admin"}
@@ -507,9 +503,9 @@ class TestSecurityComplianceIntegration:
 
     @pytest.mark.security
     def test_security_summary_generation(self, security_service):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test security summary generation."""
         # Generate some security events
         security_service.audit_logger.log_event(
@@ -552,9 +548,9 @@ class TestSecurityPerformance:
     @pytest.mark.security
     @pytest.mark.performance
     def test_input_validation_performance(self, security_service):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test input validation performance impact."""
         test_data = {"policy": "normal policy content", "data": "x" * 1000}
 
@@ -565,28 +561,22 @@ class TestSecurityPerformance:
         end_time = time.time()
 
         avg_time_ms = ((end_time - start_time) / 1000) * 1000
-        assert (
-            avg_time_ms < 1.0
-        ), f"Input validation too slow: {avg_time_ms:.2f}ms per validation"
+        assert avg_time_ms < 1.0, f"Input validation too slow: {avg_time_ms:.2f}ms per validation"
 
     @pytest.mark.security
     @pytest.mark.performance
     def test_rate_limiting_performance(self, security_service):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test rate limiting performance impact."""
         rate_limiter = security_service.rate_limiter
 
         # Measure rate limit checking time
         start_time = time.time()
         for i in range(10000):
-            rate_limiter.is_allowed(
-                f"client_{i % 100}", max_requests=100, window_minutes=1
-            )
+            rate_limiter.is_allowed(f"client_{i % 100}", max_requests=100, window_minutes=1)
         end_time = time.time()
 
         avg_time_ms = ((end_time - start_time) / 10000) * 1000
-        assert (
-            avg_time_ms < 0.1
-        ), f"Rate limiting too slow: {avg_time_ms:.4f}ms per check"
+        assert avg_time_ms < 0.1, f"Rate limiting too slow: {avg_time_ms:.4f}ms per check"

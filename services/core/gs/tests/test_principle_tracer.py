@@ -41,9 +41,9 @@ class TestRelationshipType:
     """Test RelationshipType enum."""
 
     def test_relationship_type_values(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test relationship type enum values."""
         assert RelationshipType.DIRECT_IMPLEMENTATION.value == "direct_implementation"
         assert RelationshipType.INDIRECT_SUPPORT.value == "indirect_support"
@@ -56,9 +56,9 @@ class TestImpactLevel:
     """Test ImpactLevel enum."""
 
     def test_impact_level_values(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test impact level enum values."""
         assert ImpactLevel.CRITICAL.value == "critical"
         assert ImpactLevel.HIGH.value == "high"
@@ -71,9 +71,9 @@ class TestConstitutionalPrinciple:
     """Test ConstitutionalPrinciple dataclass."""
 
     def test_principle_creation(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test constitutional principle creation."""
         principle = ConstitutionalPrinciple(
             principle_id="PRIN-001",
@@ -96,9 +96,9 @@ class TestGovernanceRule:
     """Test GovernanceRule dataclass."""
 
     def test_rule_creation(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test governance rule creation."""
         rule = GovernanceRule(
             rule_id="RULE-001",
@@ -122,9 +122,9 @@ class TestPrincipleRuleRelationship:
     """Test PrincipleRuleRelationship dataclass."""
 
     def test_relationship_creation(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test principle-rule relationship creation."""
         relationship = PrincipleRuleRelationship(
             principle_id="PRIN-001",
@@ -151,9 +151,9 @@ class TestPrincipleTracer:
 
     @pytest.fixture
     def tracer(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create principle tracer for testing."""
         return PrincipleTracer(
             constitutional_hash="cdd01ef066bc6cf2",
@@ -163,9 +163,9 @@ class TestPrincipleTracer:
 
     @pytest.fixture
     def sample_principle(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Sample constitutional principle."""
         return ConstitutionalPrinciple(
             principle_id="PRIN-TEST-001",
@@ -180,9 +180,9 @@ class TestPrincipleTracer:
 
     @pytest.fixture
     def sample_rule(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Sample governance rule."""
         return GovernanceRule(
             rule_id="RULE-TEST-001",
@@ -197,9 +197,9 @@ class TestPrincipleTracer:
         )
 
     def test_tracer_initialization(self, tracer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test tracer initialization."""
         assert tracer.constitutional_hash == "cdd01ef066bc6cf2"
         assert tracer.impact_threshold == 0.5
@@ -211,9 +211,9 @@ class TestPrincipleTracer:
 
     @pytest.mark.asyncio
     async def test_add_principle(self, tracer, sample_principle):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test adding constitutional principle."""
         result = await tracer.add_principle(sample_principle)
 
@@ -229,9 +229,9 @@ class TestPrincipleTracer:
 
     @pytest.mark.asyncio
     async def test_add_rule(self, tracer, sample_rule):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test adding governance rule."""
         result = await tracer.add_rule(sample_rule)
 
@@ -247,9 +247,9 @@ class TestPrincipleTracer:
 
     @pytest.mark.asyncio
     async def test_add_relationship(self, tracer, sample_principle, sample_rule):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test adding principle-rule relationship."""
         # First add principle and rule
         await tracer.add_principle(sample_principle)
@@ -281,18 +281,15 @@ class TestPrincipleTracer:
         edge_data = tracer.traceability_graph.edges[
             sample_principle.principle_id, sample_rule.rule_id
         ]
-        assert (
-            edge_data["relationship_type"]
-            == RelationshipType.DIRECT_IMPLEMENTATION.value
-        )
+        assert edge_data["relationship_type"] == RelationshipType.DIRECT_IMPLEMENTATION.value
         assert edge_data["impact_score"] == 0.8
         assert edge_data["confidence"] == 0.9
 
     @pytest.mark.asyncio
     async def test_add_relationship_missing_principle(self, tracer, sample_rule):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test adding relationship with missing principle."""
         await tracer.add_rule(sample_rule)
 
@@ -312,9 +309,9 @@ class TestPrincipleTracer:
         assert result is False
 
     def test_calculate_impact_score(self, tracer, sample_principle, sample_rule):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test impact score calculation."""
         # Test with different parameters
         impact_score = tracer.calculate_impact_score(
@@ -326,9 +323,7 @@ class TestPrincipleTracer:
         )
 
         assert 0.0 <= impact_score <= 1.0
-        assert (
-            impact_score > 0.5
-        )  # Should be high due to high priority and direct implementation
+        assert impact_score > 0.5  # Should be high due to high priority and direct implementation
 
         # Test with low impact parameters
         low_impact_score = tracer.calculate_impact_score(
@@ -342,9 +337,9 @@ class TestPrincipleTracer:
         assert low_impact_score < impact_score  # Should be lower
 
     def test_get_impact_level(self, tracer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test impact level classification."""
         assert tracer.get_impact_level(0.9) == ImpactLevel.CRITICAL
         assert tracer.get_impact_level(0.7) == ImpactLevel.HIGH
@@ -353,12 +348,10 @@ class TestPrincipleTracer:
         assert tracer.get_impact_level(0.1) == ImpactLevel.MINIMAL
 
     @pytest.mark.asyncio
-    async def test_analyze_principle_influence(
-        self, tracer, sample_principle, sample_rule
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_analyze_principle_influence(self, tracer, sample_principle, sample_rule):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test principle influence analysis."""
         # Setup principle and rule with relationship
         await tracer.add_principle(sample_principle)
@@ -378,9 +371,7 @@ class TestPrincipleTracer:
         await tracer.add_relationship(relationship)
 
         # Analyze influence
-        analysis = await tracer.analyze_principle_influence(
-            sample_principle.principle_id
-        )
+        analysis = await tracer.analyze_principle_influence(sample_principle.principle_id)
 
         assert analysis["principle_id"] == sample_principle.principle_id
         assert analysis["connected_rules_count"] == 1
@@ -392,9 +383,9 @@ class TestPrincipleTracer:
 
     @pytest.mark.asyncio
     async def test_analyze_principle_influence_nonexistent(self, tracer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test principle influence analysis for nonexistent principle."""
         analysis = await tracer.analyze_principle_influence("NONEXISTENT")
 
@@ -403,9 +394,9 @@ class TestPrincipleTracer:
 
     @pytest.mark.asyncio
     async def test_identify_high_impact_rules(self, tracer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test high-impact rule identification."""
         # Create multiple principles and one rule that affects all of them
         principles = []
@@ -462,12 +453,10 @@ class TestPrincipleTracer:
         assert high_impact_rules[0]["average_impact_score"] == 0.7
 
     @pytest.mark.asyncio
-    async def test_calculate_traceability_coverage(
-        self, tracer, sample_principle, sample_rule
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_calculate_traceability_coverage(self, tracer, sample_principle, sample_rule):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test traceability coverage calculation."""
         # Add principle and rule with relationship
         await tracer.add_principle(sample_principle)
@@ -501,9 +490,9 @@ class TestPrincipleTracer:
 
     @pytest.mark.asyncio
     async def test_calculate_traceability_coverage_with_orphans(self, tracer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test traceability coverage with orphaned principles and rules."""
         # Add orphaned principle (no rules)
         orphaned_principle = ConstitutionalPrinciple(
@@ -547,9 +536,9 @@ class TestPrincipleTracerIntegration:
 
     @pytest.mark.asyncio
     async def test_global_tracer_singleton(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test global tracer singleton pattern."""
         tracer1 = await get_principle_tracer()
         tracer2 = await get_principle_tracer()
@@ -559,9 +548,9 @@ class TestPrincipleTracerIntegration:
 
     @pytest.mark.asyncio
     async def test_generate_traceability_report(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test comprehensive traceability report generation."""
         tracer = await get_principle_tracer()
 

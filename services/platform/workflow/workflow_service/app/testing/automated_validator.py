@@ -44,9 +44,9 @@ class TestCase:
     metadata: Dict[str, Any] = None
 
     def __post_init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.dependencies is None:
             self.dependencies = []
         if self.metadata is None:
@@ -65,9 +65,9 @@ class TestResult:
     metrics: Dict[str, Any] = None
 
     def __post_init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.metrics is None:
             self.metrics = {}
 
@@ -82,9 +82,9 @@ class TestSuite:
     created_at: datetime = None
 
     def __post_init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.created_at is None:
             self.created_at = datetime.utcnow()
 
@@ -95,9 +95,9 @@ class AutomatedValidator:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.test_suites: Dict[str, TestSuite] = {}
         self.test_results: Dict[str, List[TestResult]] = {}
         self.validation_rules: Dict[str, Callable] = {}
@@ -105,9 +105,9 @@ class AutomatedValidator:
         self._initialize_test_suites()
 
     def _initialize_test_suites(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize predefined test suites"""
 
         # Constitutional Compliance Test Suite
@@ -206,9 +206,7 @@ class AutomatedValidator:
             test_cases=performance_tests,
         )
 
-    async def run_test_suite(
-        self, suite_id: str, context: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    async def run_test_suite(self, suite_id: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Run a complete test suite"""
 
         if suite_id not in self.test_suites:
@@ -283,15 +281,11 @@ class AutomatedValidator:
             "test_results": [asdict(r) for r in test_results],
         }
 
-        logger.info(
-            f"Test suite {suite.name} completed: {passed}/{len(suite.test_cases)} passed"
-        )
+        logger.info(f"Test suite {suite.name} completed: {passed}/{len(suite.test_cases)} passed")
 
         return suite_result
 
-    async def _run_test_case(
-        self, test_case: TestCase, context: Dict[str, Any]
-    ) -> TestResult:
+    async def _run_test_case(self, test_case: TestCase, context: Dict[str, Any]) -> TestResult:
         """Run a single test case"""
 
         start_time = datetime.utcnow()
@@ -388,9 +382,7 @@ class AutomatedValidator:
         # Validate conflict resolution logic
         for conflict in conflicts:
             if not conflict.get("resolution_strategy"):
-                raise Exception(
-                    f"Conflict {conflict.get('id')} has no resolution strategy"
-                )
+                raise Exception(f"Conflict {conflict.get('id')} has no resolution strategy")
 
         return True
 
@@ -469,9 +461,7 @@ class AutomatedValidator:
 
         return True
 
-    async def _test_policy_synthesis_performance(
-        self, context: Dict[str, Any]
-    ) -> Dict[str, float]:
+    async def _test_policy_synthesis_performance(self, context: Dict[str, Any]) -> Dict[str, float]:
         """Test policy synthesis performance"""
         logger.info("Testing policy synthesis performance")
 
@@ -484,20 +474,14 @@ class AutomatedValidator:
         duration = (end_time - start_time).total_seconds()
 
         # Check against baseline
-        baseline = self.performance_baselines.get("policy_synthesis", {}).get(
-            "duration", 1.0
-        )
+        baseline = self.performance_baselines.get("policy_synthesis", {}).get("duration", 1.0)
 
         if duration > baseline * 1.5:  # 50% slower than baseline
-            raise Exception(
-                f"Performance degradation: {duration}s vs baseline {baseline}s"
-            )
+            raise Exception(f"Performance degradation: {duration}s vs baseline {baseline}s")
 
         return {"duration": duration, "baseline": baseline}
 
-    async def _test_concurrent_workflows(
-        self, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _test_concurrent_workflows(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Test concurrent workflow execution"""
         logger.info("Testing concurrent workflow execution")
 
@@ -521,9 +505,7 @@ class AutomatedValidator:
             "avg_duration_per_workflow": duration / concurrent_count,
         }
 
-    async def _test_database_performance(
-        self, context: Dict[str, Any]
-    ) -> Dict[str, float]:
+    async def _test_database_performance(self, context: Dict[str, Any]) -> Dict[str, float]:
         """Test database performance"""
         logger.info("Testing database performance")
 
@@ -534,9 +516,9 @@ class AutomatedValidator:
         return {"query_time": 0.05, "connection_time": 0.01, "throughput": 1000.0}
 
     def add_test_case(self, suite_id: str, test_case: TestCase):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add a test case to a suite"""
 
         if suite_id in self.test_suites:
@@ -553,9 +535,9 @@ class AutomatedValidator:
         return None
 
     def set_performance_baseline(self, test_name: str, metrics: Dict[str, float]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set performance baseline for a test"""
         self.performance_baselines[test_name] = metrics
 

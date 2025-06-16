@@ -25,9 +25,7 @@ async def create_refresh_token(
     return db_refresh_token
 
 
-async def get_refresh_token_by_jti(
-    db: AsyncSession, jti: str
-) -> Optional[RefreshToken]:
+async def get_refresh_token_by_jti(db: AsyncSession, jti: str) -> Optional[RefreshToken]:
     result = await db.execute(select(RefreshToken).filter(RefreshToken.jti == jti))
     return result.scalars().first()
 
@@ -49,12 +47,10 @@ async def is_valid_refresh_token(db: AsyncSession, user_id: int, jti: str) -> bo
     return True
 
 
-async def revoke_refresh_token(
-    db: AsyncSession, jti: str, user_id: Optional[int] = None
-):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+async def revoke_refresh_token(db: AsyncSession, jti: str, user_id: Optional[int] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     stmt = update(RefreshToken).where(RefreshToken.jti == jti)
     if user_id is not None:
         stmt = stmt.where(RefreshToken.user_id == user_id)
@@ -64,14 +60,10 @@ async def revoke_refresh_token(
 
 
 async def revoke_all_refresh_tokens_for_user(db: AsyncSession, user_id: int):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
-    stmt = (
-        update(RefreshToken)
-        .where(RefreshToken.user_id == user_id)
-        .values(is_revoked=True)
-    )
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
+    stmt = update(RefreshToken).where(RefreshToken.user_id == user_id).values(is_revoked=True)
     await db.execute(stmt)
     await db.commit()
 
@@ -85,22 +77,18 @@ async def create_user_refresh_token(
 
 
 async def revoke_refresh_token_by_jti(db: AsyncSession, jti: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Revoke a refresh token by its JTI."""
     stmt = update(RefreshToken).where(RefreshToken.jti == jti).values(is_revoked=True)
     await db.execute(stmt)
     await db.commit()
 
 
-async def get_active_refresh_token_by_jti(
-    db: AsyncSession, jti: str
-) -> Optional[RefreshToken]:
+async def get_active_refresh_token_by_jti(db: AsyncSession, jti: str) -> Optional[RefreshToken]:
     """Get an active (non-revoked) refresh token by its JTI."""
     result = await db.execute(
-        select(RefreshToken).filter(
-            RefreshToken.jti == jti, RefreshToken.is_revoked == False
-        )
+        select(RefreshToken).filter(RefreshToken.jti == jti, RefreshToken.is_revoked == False)
     )
     return result.scalars().first()

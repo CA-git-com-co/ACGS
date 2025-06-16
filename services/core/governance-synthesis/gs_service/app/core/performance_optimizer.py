@@ -118,9 +118,9 @@ class WINAPerformanceOptimizer:
     """
 
     def __init__(self, config: Dict[str, Any]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize WINA performance optimizer.
 
@@ -129,9 +129,7 @@ class WINAPerformanceOptimizer:
         """
         self.config = config
         self.target_gflops_reduction = config.get("target_gflops_reduction", 0.5)
-        self.accuracy_retention_threshold = config.get(
-            "accuracy_retention_threshold", 0.95
-        )
+        self.accuracy_retention_threshold = config.get("accuracy_retention_threshold", 0.95)
         self.constitutional_compliance_threshold = config.get(
             "constitutional_compliance_threshold", 0.85
         )
@@ -161,9 +159,7 @@ class WINAPerformanceOptimizer:
 
         # Synthesis performance tracking
         self.strategy_performance: Dict[str, StrategyPerformance] = {}
-        self.recent_synthesis_metrics: deque = deque(
-            maxlen=config.get("max_recent_metrics", 1000)
-        )
+        self.recent_synthesis_metrics: deque = deque(maxlen=config.get("max_recent_metrics", 1000))
 
         # Dynamic strategy weights for synthesis
         self.synthesis_strategy_weights = {
@@ -190,9 +186,9 @@ class WINAPerformanceOptimizer:
         self._initialized = False
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the performance optimizer."""
         if self._initialized:
             return
@@ -233,9 +229,7 @@ class WINAPerformanceOptimizer:
             logger.info("Starting WINA performance optimization")
 
             # Determine optimization strategy
-            strategy = await self._select_optimization_strategy(
-                synthesis_context, current_metrics
-            )
+            strategy = await self._select_optimization_strategy(synthesis_context, current_metrics)
 
             # Apply optimization based on strategy
             optimization_result = await self._apply_optimization_strategy(
@@ -316,42 +310,24 @@ class WINAPerformanceOptimizer:
         warnings = []
 
         if strategy == OptimizationStrategy.AGGRESSIVE:
-            gflops_reduction = min(
-                self.adaptive_thresholds["gflops_reduction_max"], 0.7
-            )
-            accuracy_target = max(
-                self.adaptive_thresholds["accuracy_threshold_relaxed"], 0.92
-            )
+            gflops_reduction = min(self.adaptive_thresholds["gflops_reduction_max"], 0.7)
+            accuracy_target = max(self.adaptive_thresholds["accuracy_threshold_relaxed"], 0.92)
             compliance_target = max(
                 self.adaptive_thresholds["constitutional_threshold_relaxed"], 0.8
             )
-            recommendations.append(
-                "Aggressive optimization applied - monitor accuracy closely"
-            )
+            recommendations.append("Aggressive optimization applied - monitor accuracy closely")
 
         elif strategy == OptimizationStrategy.CONSERVATIVE:
-            gflops_reduction = max(
-                self.adaptive_thresholds["gflops_reduction_min"], 0.3
-            )
+            gflops_reduction = max(self.adaptive_thresholds["gflops_reduction_min"], 0.3)
             accuracy_target = self.adaptive_thresholds["accuracy_threshold_strict"]
-            compliance_target = self.adaptive_thresholds[
-                "constitutional_threshold_strict"
-            ]
-            recommendations.append(
-                "Conservative optimization - prioritizing accuracy retention"
-            )
+            compliance_target = self.adaptive_thresholds["constitutional_threshold_strict"]
+            recommendations.append("Conservative optimization - prioritizing accuracy retention")
 
         elif strategy == OptimizationStrategy.CONSTITUTIONAL:
-            gflops_reduction = max(
-                self.adaptive_thresholds["gflops_reduction_min"], 0.35
-            )
+            gflops_reduction = max(self.adaptive_thresholds["gflops_reduction_min"], 0.35)
             accuracy_target = 0.95
-            compliance_target = self.adaptive_thresholds[
-                "constitutional_threshold_strict"
-            ]
-            recommendations.append(
-                "Constitutional priority optimization - ensuring compliance"
-            )
+            compliance_target = self.adaptive_thresholds["constitutional_threshold_strict"]
+            recommendations.append("Constitutional priority optimization - ensuring compliance")
 
         elif strategy == OptimizationStrategy.BALANCED:
             gflops_reduction = self.target_gflops_reduction
@@ -366,9 +342,7 @@ class WINAPerformanceOptimizer:
 
         # Simulate optimization application
         # In a real implementation, this would apply WINA transformations
-        actual_gflops_reduction = gflops_reduction * np.random.uniform(
-            0.8, 1.0
-        )  # Some variance
+        actual_gflops_reduction = gflops_reduction * np.random.uniform(0.8, 1.0)  # Some variance
         actual_accuracy = min(1.0, accuracy_target * np.random.uniform(0.98, 1.02))
         actual_compliance = min(1.0, compliance_target * np.random.uniform(0.95, 1.05))
 
@@ -401,9 +375,7 @@ class WINAPerformanceOptimizer:
             warnings=warnings,
         )
 
-    async def _validate_optimization(
-        self, result: OptimizationResult
-    ) -> OptimizationResult:
+    async def _validate_optimization(self, result: OptimizationResult) -> OptimizationResult:
         """Validate optimization results and add additional recommendations."""
         additional_recommendations = []
         additional_warnings = []
@@ -411,9 +383,7 @@ class WINAPerformanceOptimizer:
         # Check GFLOPs reduction achievement
         if result.gflops_reduction_achieved < self.target_gflops_reduction * 0.8:
             additional_warnings.append("GFLOPs reduction below 80% of target")
-            additional_recommendations.append(
-                "Consider more aggressive optimization strategy"
-            )
+            additional_recommendations.append("Consider more aggressive optimization strategy")
 
         # Check accuracy retention
         if result.accuracy_retained < self.accuracy_retention_threshold:
@@ -421,14 +391,9 @@ class WINAPerformanceOptimizer:
             additional_recommendations.append("Reduce optimization aggressiveness")
 
         # Check constitutional compliance
-        if (
-            result.constitutional_compliance_maintained
-            < self.constitutional_compliance_threshold
-        ):
+        if result.constitutional_compliance_maintained < self.constitutional_compliance_threshold:
             additional_warnings.append("Constitutional compliance below threshold")
-            additional_recommendations.append(
-                "Apply constitutional priority optimization"
-            )
+            additional_recommendations.append("Apply constitutional priority optimization")
 
         # Update result with additional feedback
         result.recommendations.extend(additional_recommendations)
@@ -442,9 +407,9 @@ class WINAPerformanceOptimizer:
         optimization_time_ms: float,
         strategy: OptimizationStrategy,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update performance tracking metrics."""
         # Add to history
         metrics = OptimizationMetrics(
@@ -468,44 +433,36 @@ class WINAPerformanceOptimizer:
         if recent_history:
             self.current_performance.update(
                 {
-                    "average_gflops_reduction": sum(
-                        m.gflops_reduction for m in recent_history
-                    )
+                    "average_gflops_reduction": sum(m.gflops_reduction for m in recent_history)
                     / len(recent_history),
-                    "average_accuracy_retention": sum(
-                        m.accuracy_retention for m in recent_history
-                    )
+                    "average_accuracy_retention": sum(m.accuracy_retention for m in recent_history)
                     / len(recent_history),
                     "average_constitutional_compliance": sum(
                         m.constitutional_compliance for m in recent_history
                     )
                     / len(recent_history),
-                    "optimization_success_rate": sum(
-                        1 for m in recent_history if m.success
-                    )
+                    "optimization_success_rate": sum(1 for m in recent_history if m.success)
                     / len(recent_history),
                     "total_optimizations": len(self.optimization_history),
                 }
             )
 
     async def _load_historical_performance(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Load historical performance data for calibration."""
         # In a real implementation, this would load from database
         # For now, we'll initialize with baseline values
         logger.info("Loading historical performance data")
 
     async def _calibrate_adaptive_thresholds(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Calibrate adaptive thresholds based on historical performance."""
         if len(self.optimization_history) < 10:
-            logger.info(
-                "Insufficient history for threshold calibration, using defaults"
-            )
+            logger.info("Insufficient history for threshold calibration, using defaults")
             return
 
         # Analyze recent performance to adjust thresholds
@@ -523,12 +480,8 @@ class WINAPerformanceOptimizer:
                 "gflops_reduction_max": min(0.8, np.percentile(gflops_reductions, 75)),
                 "accuracy_threshold_strict": max(0.95, np.percentile(accuracies, 75)),
                 "accuracy_threshold_relaxed": max(0.90, np.percentile(accuracies, 25)),
-                "constitutional_threshold_strict": max(
-                    0.85, np.percentile(compliances, 75)
-                ),
-                "constitutional_threshold_relaxed": max(
-                    0.75, np.percentile(compliances, 25)
-                ),
+                "constitutional_threshold_strict": max(0.85, np.percentile(compliances, 75)),
+                "constitutional_threshold_relaxed": max(0.75, np.percentile(compliances, 25)),
             }
         )
 
@@ -545,17 +498,12 @@ class WINAPerformanceOptimizer:
             "current_performance": self.current_performance,
             "recent_performance": {
                 "optimizations": len(recent_history),
-                "success_rate": sum(1 for m in recent_history if m.success)
-                / len(recent_history),
-                "average_gflops_reduction": sum(
-                    m.gflops_reduction for m in recent_history
-                )
+                "success_rate": sum(1 for m in recent_history if m.success) / len(recent_history),
+                "average_gflops_reduction": sum(m.gflops_reduction for m in recent_history)
                 / len(recent_history),
                 "average_accuracy": sum(m.accuracy_retention for m in recent_history)
                 / len(recent_history),
-                "average_compliance": sum(
-                    m.constitutional_compliance for m in recent_history
-                )
+                "average_compliance": sum(m.constitutional_compliance for m in recent_history)
                 / len(recent_history),
             },
             "target_achievement": {
@@ -593,19 +541,13 @@ class WINAPerformanceOptimizer:
         if recent_performance["success_rate"] < 0.8:
             recommendations.append("Consider more conservative optimization strategy")
 
-        if (
-            recent_performance["average_gflops_reduction"]
-            < self.target_gflops_reduction * 0.8
-        ):
+        if recent_performance["average_gflops_reduction"] < self.target_gflops_reduction * 0.8:
             recommendations.append("Consider more aggressive GFLOPs reduction")
 
         if recent_performance["average_accuracy"] < self.accuracy_retention_threshold:
             recommendations.append("Prioritize accuracy retention in optimization")
 
-        if (
-            recent_performance["average_compliance"]
-            < self.constitutional_compliance_threshold
-        ):
+        if recent_performance["average_compliance"] < self.constitutional_compliance_threshold:
             recommendations.append("Apply constitutional priority optimization")
 
         return {
@@ -676,9 +618,7 @@ class WINAPerformanceOptimizer:
         strategy = metrics.strategy_used
 
         if strategy not in self.strategy_performance:
-            self.strategy_performance[strategy] = StrategyPerformance(
-                strategy_name=strategy
-            )
+            self.strategy_performance[strategy] = StrategyPerformance(strategy_name=strategy)
 
         perf = self.strategy_performance[strategy]
         perf.total_uses += 1
@@ -693,9 +633,7 @@ class WINAPerformanceOptimizer:
     async def _check_synthesis_optimization_trigger(self) -> None:
         """Check if synthesis strategy weight optimization should be triggered."""
         now = datetime.now(timezone.utc)
-        time_since_last = (
-            now - self.last_synthesis_optimization
-        ).total_seconds() / 3600
+        time_since_last = (now - self.last_synthesis_optimization).total_seconds() / 3600
 
         if (
             time_since_last >= self.synthesis_optimization_interval
@@ -731,21 +669,16 @@ class WINAPerformanceOptimizer:
                     ),
                 )
                 quality_score = (
-                    performance.average_quality_score
-                    / self.synthesis_targets["quality_score"]
+                    performance.average_quality_score / self.synthesis_targets["quality_score"]
                 )
 
                 # Weighted composite score
-                composite_score = (
-                    success_score * 0.5 + time_score * 0.3 + quality_score * 0.2
-                )
+                composite_score = success_score * 0.5 + time_score * 0.3 + quality_score * 0.2
 
                 strategy_scores[strategy_name] = composite_score
 
             if not strategy_scores:
-                logger.warning(
-                    "No synthesis strategy performance data available for optimization"
-                )
+                logger.warning("No synthesis strategy performance data available for optimization")
                 return self.synthesis_strategy_weights
 
             # Adjust weights based on performance
@@ -772,9 +705,7 @@ class WINAPerformanceOptimizer:
 
             self.last_synthesis_optimization = datetime.now(timezone.utc)
 
-            logger.info(
-                f"Synthesis strategy weights optimized: {self.synthesis_strategy_weights}"
-            )
+            logger.info(f"Synthesis strategy weights optimized: {self.synthesis_strategy_weights}")
             return self.synthesis_strategy_weights
 
         except Exception as e:
@@ -799,9 +730,7 @@ class WINAPerformanceOptimizer:
             avg_response_time = statistics.mean(
                 m.response_time_seconds for m in recent_metrics_list
             )
-            avg_quality_score = statistics.mean(
-                m.quality_score for m in recent_metrics_list
-            )
+            avg_quality_score = statistics.mean(m.quality_score for m in recent_metrics_list)
 
             # Strategy breakdown
             strategy_breakdown = {}
@@ -811,9 +740,7 @@ class WINAPerformanceOptimizer:
                     "success_rate": performance.success_rate,
                     "average_response_time": performance.average_response_time,
                     "average_quality_score": performance.average_quality_score,
-                    "current_weight": self.synthesis_strategy_weights.get(
-                        strategy_name, 1.0
-                    ),
+                    "current_weight": self.synthesis_strategy_weights.get(strategy_name, 1.0),
                 }
 
             # Target achievement
@@ -822,8 +749,7 @@ class WINAPerformanceOptimizer:
                 <= self.synthesis_targets["response_time_seconds"],
                 "success_rate": (successful_operations / total_operations)
                 >= self.synthesis_targets["success_rate"],
-                "quality_score": avg_quality_score
-                >= self.synthesis_targets["quality_score"],
+                "quality_score": avg_quality_score >= self.synthesis_targets["quality_score"],
             }
 
             return {

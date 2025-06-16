@@ -15,17 +15,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 # Local implementations to avoid shared module dependencies
 async def get_db():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Mock database session."""
     return None
 
 
 async def get_current_user_id():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Mock current user ID."""
     return "mock_user_id"
 
@@ -53,12 +53,8 @@ class ValidationRequest(BaseModel):
         default_factory=list, description="Constitutional requirements"
     )
     bias_sensitivity: float = Field(default=0.5, description="Bias sensitivity (0-1)")
-    uncertainty_tolerance: float = Field(
-        default=0.3, description="Uncertainty tolerance (0-1)"
-    )
-    target_cluster: Optional[ModelCluster] = Field(
-        default=None, description="Target model cluster"
-    )
+    uncertainty_tolerance: float = Field(default=0.3, description="Uncertainty tolerance (0-1)")
+    target_cluster: Optional[ModelCluster] = Field(default=None, description="Target model cluster")
     strategy: ValidationStrategy = Field(
         default=ValidationStrategy.HYBRID_ENSEMBLE, description="Validation strategy"
     )
@@ -228,9 +224,7 @@ async def get_validation_metrics(
             total_validations=metrics.get("total_validations", 0),
             recent_validations=metrics.get("recent_validations", 0),
             average_confidence=metrics.get("average_confidence", 0.0),
-            average_constitutional_fidelity=metrics.get(
-                "average_constitutional_fidelity", 0.0
-            ),
+            average_constitutional_fidelity=metrics.get("average_constitutional_fidelity", 0.0),
             average_consensus_level=metrics.get("average_consensus_level", 0.0),
             average_validation_time=metrics.get("average_validation_time", 0.0),
             strategy_usage_distribution=metrics.get("strategy_usage_distribution", {}),

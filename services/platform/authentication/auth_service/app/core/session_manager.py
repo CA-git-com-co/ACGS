@@ -17,9 +17,9 @@ class SessionManager:
     """Enterprise Session Management Service"""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.default_session_timeout = 480  # 8 hours in minutes
         self.max_concurrent_sessions = 5
         self.session_cleanup_interval = 3600  # 1 hour in seconds
@@ -54,9 +54,7 @@ class SessionManager:
 
         # Check for new device fingerprint
         current_fingerprint = self.generate_device_fingerprint(request)
-        known_fingerprints = {
-            session.device_fingerprint for session in existing_sessions
-        }
+        known_fingerprints = {session.device_fingerprint for session in existing_sessions}
         if current_fingerprint not in known_fingerprints:
             risk_score += 20
 
@@ -91,9 +89,7 @@ class SessionManager:
 
         return "unknown"
 
-    async def create_session(
-        self, db: AsyncSession, user: User, request: Request
-    ) -> UserSession:
+    async def create_session(self, db: AsyncSession, user: User, request: Request) -> UserSession:
         """Create new user session"""
         # Check concurrent session limit
         active_sessions = await self.get_active_sessions(db, user.id)
@@ -125,9 +121,7 @@ class SessionManager:
 
         return session
 
-    async def get_session(
-        self, db: AsyncSession, session_id: str
-    ) -> Optional[UserSession]:
+    async def get_session(self, db: AsyncSession, session_id: str) -> Optional[UserSession]:
         """Get session by ID"""
         result = await db.execute(
             select(UserSession).where(
@@ -136,9 +130,7 @@ class SessionManager:
         )
         return result.scalar_one_or_none()
 
-    async def get_active_sessions(
-        self, db: AsyncSession, user_id: int
-    ) -> List[UserSession]:
+    async def get_active_sessions(self, db: AsyncSession, user_id: int) -> List[UserSession]:
         """Get all active sessions for a user"""
         result = await db.execute(
             select(UserSession).where(
@@ -221,9 +213,7 @@ class SessionManager:
         await db.commit()
         return len(expired_sessions)
 
-    async def get_session_info(
-        self, db: AsyncSession, session_id: str
-    ) -> Optional[Dict[str, Any]]:
+    async def get_session_info(self, db: AsyncSession, session_id: str) -> Optional[Dict[str, Any]]:
         """Get detailed session information"""
         session = await self.get_session(db, session_id)
         if not session:

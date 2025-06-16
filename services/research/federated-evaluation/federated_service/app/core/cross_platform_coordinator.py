@@ -42,15 +42,15 @@ except Exception as e:
     # Create a mock metrics object for testing
     class MockMetrics:
         def counter(self, name, labels=None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return type("MockCounter", (), {"inc": lambda: None})()
 
         def histogram(self, name, labels=None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return type("MockHistogram", (), {"observe": lambda x: None})()
 
     metrics = MockMetrics()
@@ -128,9 +128,9 @@ class CrossPlatformCoordinator:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.adapters: Dict[PlatformType, BasePlatformAdapter] = {}
         self.secure_aggregator: Optional[SecureAggregator] = None
         self.active_evaluations: Dict[str, CrossPlatformEvaluationRequest] = {}
@@ -231,9 +231,7 @@ class CrossPlatformCoordinator:
                 logger.warning(f"Failed to initialize Groq adapter: {e}")
 
         if not self.adapters:
-            logger.warning(
-                "No platform adapters initialized - check API key configuration"
-            )
+            logger.warning("No platform adapters initialized - check API key configuration")
 
     async def evaluate_cross_platform(
         self, request: CrossPlatformEvaluationRequest
@@ -252,9 +250,7 @@ class CrossPlatformCoordinator:
             self.active_evaluations[request.request_id] = request
 
             # Select available platforms
-            available_platforms = self._select_available_platforms(
-                request.target_platforms
-            )
+            available_platforms = self._select_available_platforms(request.target_platforms)
             if len(available_platforms) < request.min_consensus_platforms:
                 raise ValueError(
                     f"Insufficient platforms available: {len(available_platforms)} < {request.min_consensus_platforms}"
@@ -314,10 +310,7 @@ class CrossPlatformCoordinator:
         """Select available platforms from target list."""
         available = []
         for platform in target_platforms:
-            if (
-                platform in self.adapters
-                and self.adapters[platform].status == AdapterStatus.ACTIVE
-            ):
+            if platform in self.adapters and self.adapters[platform].status == AdapterStatus.ACTIVE:
                 available.append(platform)
         return available
 
@@ -371,9 +364,7 @@ class CrossPlatformCoordinator:
         try:
             # Only consider successful results
             successful_results = {
-                platform: result
-                for platform, result in platform_results.items()
-                if result.success
+                platform: result for platform, result in platform_results.items() if result.success
             }
 
             if len(successful_results) < request.min_consensus_platforms:
@@ -438,9 +429,7 @@ class CrossPlatformCoordinator:
                 "safety_score",
                 "fairness_score",
             ]:
-                values = [
-                    metrics[metric_name] for metrics in metrics_by_platform.values()
-                ]
+                values = [metrics[metric_name] for metrics in metrics_by_platform.values()]
                 platforms = list(metrics_by_platform.keys())
 
                 # Calculate median and MAD (Median Absolute Deviation)
@@ -507,15 +496,9 @@ class CrossPlatformCoordinator:
 
             # Perform secure aggregation
             if aggregation_data:
-                aggregated_scores = await self._secure_aggregate_scores(
-                    aggregation_data
-                )
-                consensus_achieved = (
-                    len(aggregation_data) >= request.min_consensus_platforms
-                )
-                consensus_confidence = len(aggregation_data) / len(
-                    request.target_platforms
-                )
+                aggregated_scores = await self._secure_aggregate_scores(aggregation_data)
+                consensus_achieved = len(aggregation_data) >= request.min_consensus_platforms
+                consensus_confidence = len(aggregation_data) / len(request.target_platforms)
             else:
                 aggregated_scores = {
                     "policy_compliance_score": 0.0,
@@ -529,30 +512,21 @@ class CrossPlatformCoordinator:
             # Detect Byzantine nodes
             all_platforms = set(platform_results.keys())
             successful_platforms = set(
-                platform
-                for platform, result in platform_results.items()
-                if result.success
+                platform for platform, result in platform_results.items() if result.success
             )
             byzantine_platforms = all_platforms - successful_platforms
 
             return CrossPlatformEvaluationResult(
                 request_id=request.request_id,
                 success=consensus_achieved,
-                aggregated_policy_compliance=aggregated_scores[
-                    "policy_compliance_score"
-                ],
-                aggregated_constitutional_alignment=aggregated_scores[
-                    "constitutional_alignment"
-                ],
+                aggregated_policy_compliance=aggregated_scores["policy_compliance_score"],
+                aggregated_constitutional_alignment=aggregated_scores["constitutional_alignment"],
                 aggregated_safety_score=aggregated_scores["safety_score"],
                 aggregated_fairness_score=aggregated_scores["fairness_score"],
                 platform_results={
-                    platform.value: result
-                    for platform, result in platform_results.items()
+                    platform.value: result for platform, result in platform_results.items()
                 },
-                byzantine_nodes_detected=[
-                    platform.value for platform in byzantine_platforms
-                ],
+                byzantine_nodes_detected=[platform.value for platform in byzantine_platforms],
                 consensus_achieved=consensus_achieved,
                 consensus_confidence=consensus_confidence,
                 total_execution_time_ms=execution_time,
@@ -624,9 +598,7 @@ class CrossPlatformCoordinator:
             "initialized": self._initialized,
             "total_adapters": len(self.adapters),
             "active_adapters": sum(
-                1
-                for adapter in self.adapters.values()
-                if adapter.status == AdapterStatus.ACTIVE
+                1 for adapter in self.adapters.values() if adapter.status == AdapterStatus.ACTIVE
             ),
             "active_evaluations": len(self.active_evaluations),
             "coordinator_metrics": self.coordinator_metrics,
@@ -640,9 +612,7 @@ class CrossPlatformCoordinator:
 
             # Determine overall health
             healthy_adapters = sum(
-                1
-                for adapter in self.adapters.values()
-                if adapter.status == AdapterStatus.ACTIVE
+                1 for adapter in self.adapters.values() if adapter.status == AdapterStatus.ACTIVE
             )
 
             overall_health = "healthy" if healthy_adapters > 0 else "unhealthy"

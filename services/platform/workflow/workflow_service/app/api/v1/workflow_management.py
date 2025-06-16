@@ -11,13 +11,15 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 
 from services.shared.auth import User, get_current_active_user
 
+
 # Mock database dependency for now
 async def get_async_db():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Mock database session for testing."""
     return None
+
 
 from ...core.workflow_engine import WorkflowStatus, WorkflowType, workflow_engine
 from ...monitoring.workflow_monitor import AlertSeverity, workflow_monitor
@@ -41,7 +43,7 @@ async def create_workflow(
     input_data: Dict[str, Any],
     background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_active_user),
-    db = Depends(get_async_db),
+    db=Depends(get_async_db),
 ):
     """Create a new workflow instance"""
 
@@ -119,9 +121,7 @@ async def get_workflow_status(
     status_info = workflow_engine.get_workflow_status(workflow_id)
 
     if not status_info:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found")
 
     # Add recovery information
     recovery_status = recovery_manager.get_recovery_status(workflow_id)
@@ -149,9 +149,7 @@ async def list_workflows(
 
 
 @router.post("/workflows/{workflow_id}/pause")
-async def pause_workflow(
-    workflow_id: str, current_user: User = Depends(get_current_active_user)
-):
+async def pause_workflow(workflow_id: str, current_user: User = Depends(get_current_active_user)):
     """Pause workflow execution"""
 
     success = await workflow_engine.pause_workflow(workflow_id)
@@ -169,9 +167,7 @@ async def pause_workflow(
 
 
 @router.post("/workflows/{workflow_id}/resume")
-async def resume_workflow(
-    workflow_id: str, current_user: User = Depends(get_current_active_user)
-):
+async def resume_workflow(workflow_id: str, current_user: User = Depends(get_current_active_user)):
     """Resume paused workflow"""
 
     success = await workflow_engine.resume_workflow(workflow_id)
@@ -239,17 +235,13 @@ async def get_alerts(
 
 
 @router.post("/monitoring/alerts/{alert_id}/resolve")
-async def resolve_alert(
-    alert_id: str, current_user: User = Depends(get_current_active_user)
-):
+async def resolve_alert(alert_id: str, current_user: User = Depends(get_current_active_user)):
     """Mark an alert as resolved"""
 
     success = workflow_monitor.resolve_alert(alert_id)
 
     if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Alert not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alert not found")
 
     return {
         "alert_id": alert_id,
@@ -374,9 +366,7 @@ async def run_test_suite(
 
     try:
         # Run test suite in background
-        background_tasks.add_task(
-            automated_validator.run_test_suite, suite_id, context or {}
-        )
+        background_tasks.add_task(automated_validator.run_test_suite, suite_id, context or {})
 
         return {
             "suite_id": suite_id,
@@ -393,17 +383,13 @@ async def run_test_suite(
 
 
 @router.get("/testing/suites/{suite_id}/results")
-async def get_test_results(
-    suite_id: str, current_user: User = Depends(get_current_active_user)
-):
+async def get_test_results(suite_id: str, current_user: User = Depends(get_current_active_user)):
     """Get test results for a suite"""
 
     results = automated_validator.get_test_results(suite_id)
 
     if results is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Test results not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Test results not found")
 
     return {"suite_id": suite_id, "results": results}
 
@@ -413,9 +399,9 @@ async def get_test_results(
 
 @router.get("/health")
 async def health_check():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Health check endpoint"""
 
     return {

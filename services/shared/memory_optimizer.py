@@ -27,31 +27,27 @@ except ImportError:
     class MockPsutil:
         @staticmethod
         def virtual_memory():
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             # Fallback using /proc/meminfo on Linux
             try:
                 with open("/proc/meminfo", "r") as f:
                     meminfo = {}
                     for line in f:
                         key, value = line.split(":")
-                        meminfo[key.strip()] = (
-                            int(value.split()[0]) * 1024
-                        )  # Convert KB to bytes
+                        meminfo[key.strip()] = int(value.split()[0]) * 1024  # Convert KB to bytes
 
                     total = meminfo.get("MemTotal", 8 * 1024**3)  # Default 8GB
-                    available = meminfo.get(
-                        "MemAvailable", meminfo.get("MemFree", total // 2)
-                    )
+                    available = meminfo.get("MemAvailable", meminfo.get("MemFree", total // 2))
                     used = total - available
                     percent = (used / total) * 100
 
                     class MemoryInfo:
                         def __init__(self, total, used, available, percent):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                            # requires: Valid input parameters
+                            # ensures: Correct function execution
+                            # sha256: func_hash
                             self.total = total
                             self.used = used
                             self.available = available
@@ -62,9 +58,9 @@ except ImportError:
                 # Ultimate fallback
                 class MemoryInfo:
                     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                        # requires: Valid input parameters
+                        # ensures: Correct function execution
+                        # sha256: func_hash
                         self.total = 8 * 1024**3  # 8GB default
                         self.used = 4 * 1024**3  # 4GB default
                         self.available = 4 * 1024**3  # 4GB default
@@ -74,48 +70,48 @@ except ImportError:
 
         @staticmethod
         def Process():
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             class MockProcess:
                 def memory_info(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                    # requires: Valid input parameters
+                    # ensures: Correct function execution
+                    # sha256: func_hash
                     class MemInfo:
                         def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                            # requires: Valid input parameters
+                            # ensures: Correct function execution
+                            # sha256: func_hash
                             self.rss = 100 * 1024 * 1024  # 100MB default
 
                     return MemInfo()
 
                 def nice(self, value=None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                    # requires: Valid input parameters
+                    # ensures: Correct function execution
+                    # sha256: func_hash
                     return 0  # Normal priority
 
             return MockProcess()
 
         @staticmethod
         def cpu_percent(interval=None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return 25.0  # Default 25% CPU usage
 
         @staticmethod
         def disk_usage(path):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             class DiskInfo:
                 def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                    # requires: Valid input parameters
+                    # ensures: Correct function execution
+                    # sha256: func_hash
                     self.total = 100 * 1024**3  # 100GB default
                     self.used = 50 * 1024**3  # 50GB default
                     self.free = 50 * 1024**3  # 50GB default
@@ -166,12 +162,10 @@ class MemoryOptimizer:
     - Process restart recommendations
     """
 
-    def __init__(
-        self, service_name: str, thresholds: Optional[MemoryThresholds] = None
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def __init__(self, service_name: str, thresholds: Optional[MemoryThresholds] = None):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.service_name = service_name
         self.thresholds = thresholds or MemoryThresholds()
         self.process = psutil.Process()
@@ -198,16 +192,14 @@ class MemoryOptimizer:
         self.optimization_callbacks: List[Callable] = []
 
     async def initialize(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize memory optimizer."""
         try:
             # Log psutil availability
             if not self.psutil_available:
-                logger.warning(
-                    "psutil not available - using fallback memory monitoring"
-                )
+                logger.warning("psutil not available - using fallback memory monitoring")
             else:
                 logger.info("psutil available - using full memory monitoring")
 
@@ -220,9 +212,7 @@ class MemoryOptimizer:
             # Get baseline memory usage
             self.baseline_memory = self.get_current_memory_usage()
             logger.info(f"Memory optimizer initialized for {self.service_name}")
-            logger.info(
-                f"Baseline memory: {self.baseline_memory.process_memory_mb:.1f} MB"
-            )
+            logger.info(f"Baseline memory: {self.baseline_memory.process_memory_mb:.1f} MB")
 
         except Exception as e:
             logger.error(f"Failed to initialize memory optimizer: {e}")
@@ -253,9 +243,9 @@ class MemoryOptimizer:
         )
 
     async def start_monitoring(self, interval: float = 10.0):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start continuous memory monitoring."""
         if self.monitoring_active:
             logger.warning("Memory monitoring already active")
@@ -266,9 +256,9 @@ class MemoryOptimizer:
         logger.info(f"Started memory monitoring with {interval}s interval")
 
     async def stop_monitoring(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop memory monitoring."""
         self.monitoring_active = False
         if self.monitoring_task:
@@ -280,9 +270,9 @@ class MemoryOptimizer:
         logger.info("Stopped memory monitoring")
 
     async def _monitoring_loop(self, interval: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Main monitoring loop."""
         while self.monitoring_active:
             try:
@@ -315,9 +305,9 @@ class MemoryOptimizer:
                 await asyncio.sleep(interval)
 
     async def _check_thresholds_and_optimize(self, metrics: MemoryMetrics):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Check memory thresholds and trigger optimizations."""
         memory_percent = metrics.memory_percent
 
@@ -352,9 +342,9 @@ class MemoryOptimizer:
                 self.last_gc_time = current_time
 
     async def _standard_memory_cleanup(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Standard memory cleanup procedures."""
         logger.info("Performing standard memory cleanup")
 
@@ -368,9 +358,9 @@ class MemoryOptimizer:
         await self._trigger_optimization_callbacks("standard_cleanup", None)
 
     async def _aggressive_memory_cleanup(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Aggressive memory cleanup procedures."""
         logger.info("Performing aggressive memory cleanup")
 
@@ -390,17 +380,17 @@ class MemoryOptimizer:
         await self._trigger_optimization_callbacks("aggressive_cleanup", None)
 
     async def _trigger_garbage_collection(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Trigger garbage collection."""
         collected = gc.collect()
         logger.debug(f"Garbage collection freed {collected} objects")
 
     def _cleanup_request_tracking(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clean up completed request tracking."""
         current_time = time.time()
         expired_requests = [
@@ -413,9 +403,9 @@ class MemoryOptimizer:
             del self.request_memory_tracking[req_id]
 
     async def _detect_memory_leaks(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Detect potential memory leaks."""
         if not self.leak_detection_enabled:
             return
@@ -431,8 +421,7 @@ class MemoryOptimizer:
                 # Check for significant memory growth
                 for stat in top_stats[:5]:  # Top 5 memory growth areas
                     if (
-                        stat.size_diff
-                        > self.thresholds.leak_detection_threshold * 1024 * 1024
+                        stat.size_diff > self.thresholds.leak_detection_threshold * 1024 * 1024
                     ):  # Convert MB to bytes
                         logger.warning(
                             f"Potential memory leak detected: {stat.traceback.format()[-1]} "
@@ -448,18 +437,18 @@ class MemoryOptimizer:
             logger.error(f"Memory leak detection failed: {e}")
 
     def add_optimization_callback(self, callback: Callable):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add callback for optimization events."""
         self.optimization_callbacks.append(callback)
 
     async def _trigger_optimization_callbacks(
         self, event_type: str, metrics: Optional[MemoryMetrics]
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Trigger optimization callbacks."""
         for callback in self.optimization_callbacks:
             try:
@@ -472,9 +461,9 @@ class MemoryOptimizer:
 
     @asynccontextmanager
     async def track_request_memory(self, request_id: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Context manager to track memory usage for a request."""
         start_time = time.time()
         start_memory = self.process.memory_info().rss
@@ -506,10 +495,7 @@ class MemoryOptimizer:
         current = self.get_current_memory_usage()
 
         # Add to history if not already there
-        if (
-            not self.memory_history
-            or self.memory_history[-1].timestamp != current.timestamp
-        ):
+        if not self.memory_history or self.memory_history[-1].timestamp != current.timestamp:
             self.memory_history.append(current)
             # Trim history
             if len(self.memory_history) > self.max_history_size:
@@ -551,8 +537,7 @@ class MemoryOptimizer:
                 < self.thresholds.critical_threshold,
                 "within_warning_threshold": current.memory_percent
                 < self.thresholds.warning_threshold,
-                "production_ready": current.memory_percent
-                < self.thresholds.critical_threshold,
+                "production_ready": current.memory_percent < self.thresholds.critical_threshold,
             },
         }
 

@@ -65,9 +65,9 @@ class Workflow:
     metadata: Dict[str, Any] = None
 
     def __post_init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.created_at is None:
             self.created_at = datetime.utcnow()
         if self.metadata is None:
@@ -80,9 +80,9 @@ class WorkflowEngine:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.workflows: Dict[str, Workflow] = {}
         self.running_workflows: Dict[str, asyncio.Task] = {}
         self.step_handlers: Dict[str, Callable] = {}
@@ -90,9 +90,9 @@ class WorkflowEngine:
         self._initialize_templates()
 
     def _initialize_templates(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize predefined workflow templates"""
 
         # Policy Synthesis Workflow
@@ -266,9 +266,9 @@ class WorkflowEngine:
         return True
 
     async def _execute_workflow(self, workflow: Workflow):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Execute workflow steps with dependency management"""
 
         try:
@@ -331,9 +331,7 @@ class WorkflowEngine:
             if workflow.id in self.running_workflows:
                 del self.running_workflows[workflow.id]
 
-    async def _execute_step(
-        self, workflow: Workflow, step: WorkflowStep
-    ) -> Dict[str, Any]:
+    async def _execute_step(self, workflow: Workflow, step: WorkflowStep) -> Dict[str, Any]:
         """Execute a single workflow step"""
 
         step.status = WorkflowStatus.RUNNING
@@ -357,9 +355,7 @@ class WorkflowEngine:
 
                 except asyncio.TimeoutError:
                     if attempt == step.retry_count - 1:
-                        raise Exception(
-                            f"Step timed out after {step.timeout_seconds} seconds"
-                        )
+                        raise Exception(f"Step timed out after {step.timeout_seconds} seconds")
                     await asyncio.sleep(2**attempt)  # Exponential backoff
 
                 except Exception as e:
@@ -373,9 +369,9 @@ class WorkflowEngine:
             raise e
 
     def register_step_handler(self, service: str, handler: Callable):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Register a step execution handler for a service"""
         self.step_handlers[service] = handler
 
@@ -387,9 +383,7 @@ class WorkflowEngine:
 
         workflow = self.workflows[workflow_id]
 
-        completed_steps = len(
-            [s for s in workflow.steps if s.status == WorkflowStatus.COMPLETED]
-        )
+        completed_steps = len([s for s in workflow.steps if s.status == WorkflowStatus.COMPLETED])
         total_steps = len(workflow.steps)
 
         return {
@@ -399,12 +393,8 @@ class WorkflowEngine:
             "status": workflow.status.value,
             "progress": f"{completed_steps}/{total_steps}",
             "created_at": workflow.created_at.isoformat(),
-            "started_at": (
-                workflow.started_at.isoformat() if workflow.started_at else None
-            ),
-            "completed_at": (
-                workflow.completed_at.isoformat() if workflow.completed_at else None
-            ),
+            "started_at": (workflow.started_at.isoformat() if workflow.started_at else None),
+            "completed_at": (workflow.completed_at.isoformat() if workflow.completed_at else None),
             "steps": [
                 {
                     "id": step.id,
@@ -451,9 +441,7 @@ class WorkflowEngine:
         logger.info(f"Resumed workflow {workflow_id}")
         return True
 
-    def list_workflows(
-        self, status: Optional[WorkflowStatus] = None
-    ) -> List[Dict[str, Any]]:
+    def list_workflows(self, status: Optional[WorkflowStatus] = None) -> List[Dict[str, Any]]:
         """List all workflows with optional status filter"""
 
         workflows = list(self.workflows.values())

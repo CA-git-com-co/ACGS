@@ -21,9 +21,7 @@ try:
 except ImportError:
     PROMETHEUS_AVAILABLE = False
     logger = logging.getLogger(__name__)
-    logger.warning(
-        "Prometheus client not available, metrics will be stored locally only"
-    )
+    logger.warning("Prometheus client not available, metrics will be stored locally only")
 
 from .config import WINAConfig
 from .exceptions import WINAMetricsError
@@ -99,9 +97,9 @@ class GFLOPsTracker:
     """
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize GFLOPs tracker."""
         self.operation_counts: Dict[str, int] = defaultdict(int)
         self.layer_gflops: Dict[str, float] = {}
@@ -202,9 +200,9 @@ class PerformanceMonitor:
     """
 
     def __init__(self, config: WINAMetricsConfig):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize performance monitor.
 
@@ -301,18 +299,10 @@ class PerformanceMonitor:
 
             # Update Prometheus metrics
             if PROMETHEUS_AVAILABLE and hasattr(self, "prometheus_metrics"):
-                self.prometheus_metrics["gflops_reduction"].set(
-                    snapshot.gflops_reduction
-                )
-                self.prometheus_metrics["accuracy_retention"].set(
-                    snapshot.accuracy_retention
-                )
-                self.prometheus_metrics["sparsity_achieved"].set(
-                    snapshot.sparsity_achieved
-                )
-                self.prometheus_metrics["optimization_time"].observe(
-                    snapshot.optimization_overhead
-                )
+                self.prometheus_metrics["gflops_reduction"].set(snapshot.gflops_reduction)
+                self.prometheus_metrics["accuracy_retention"].set(snapshot.accuracy_retention)
+                self.prometheus_metrics["sparsity_achieved"].set(snapshot.sparsity_achieved)
+                self.prometheus_metrics["optimization_time"].observe(snapshot.optimization_overhead)
                 self.prometheus_metrics["optimizations_total"].inc()
 
             # Check for alerts
@@ -378,9 +368,7 @@ class PerformanceMonitor:
             )
 
         # Check optimization overhead
-        if snapshot.optimization_overhead > thresholds.get(
-            "optimization_overhead_max", 0.05
-        ):
+        if snapshot.optimization_overhead > thresholds.get("optimization_overhead_max", 0.05):
             alerts.append(
                 {
                     "type": "optimization_overhead_high",
@@ -396,9 +384,7 @@ class PerformanceMonitor:
             self.alerts_triggered.append(alert)
             logger.warning(f"WINA Performance Alert: {alert['message']}")
 
-    def get_performance_summary(
-        self, window_minutes: Optional[int] = None
-    ) -> Dict[str, Any]:
+    def get_performance_summary(self, window_minutes: Optional[int] = None) -> Dict[str, Any]:
         """
         Get performance summary for a time window.
 
@@ -473,9 +459,9 @@ class WINAMetrics:
         wina_config: WINAConfig,
         metrics_config: Optional[WINAMetricsConfig] = None,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize WINA metrics.
 
@@ -514,12 +500,8 @@ class WINAMetrics:
                 gflops_optimized=metrics.get("optimized_gflops", 0.0),
                 gflops_reduction=metrics.get("gflops_reduction", 0.0),
                 accuracy_baseline=1.0,  # Placeholder
-                accuracy_optimized=accuracy_metrics.get(
-                    "estimated_accuracy_retention", 0.95
-                ),
-                accuracy_retention=accuracy_metrics.get(
-                    "estimated_accuracy_retention", 0.95
-                ),
+                accuracy_optimized=accuracy_metrics.get("estimated_accuracy_retention", 0.95),
+                accuracy_retention=accuracy_metrics.get("estimated_accuracy_retention", 0.95),
                 latency_baseline=1.0,  # Placeholder
                 latency_optimized=1.0,  # Placeholder
                 sparsity_achieved=metrics.get("average_sparsity", 0.0),

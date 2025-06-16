@@ -46,9 +46,9 @@ class ConstitutionalValidationResponse(BaseModel):
 
 @router.post("/validate", response_model=ConstitutionalValidationResponse)
 async def validate_constitutional_compliance(request: ConstitutionalValidationRequest):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Validate constitutional compliance with caching.
     This endpoint provides fast constitutional validation with Redis caching.
@@ -58,18 +58,14 @@ async def validate_constitutional_compliance(request: ConstitutionalValidationRe
 
     try:
         # Check cache first
-        cached_result = cache.get_cached_policy_decision(
-            request.policy_content, request.input_data
-        )
+        cached_result = cache.get_cached_policy_decision(request.policy_content, request.input_data)
 
         if cached_result:
             # Return cached result
             processing_time = (time.time() - start_time) * 1000
             cached_result["cached"] = True
             cached_result["processing_time_ms"] = processing_time
-            logger.info(
-                f"Cache hit for constitutional validation - {processing_time:.2f}ms"
-            )
+            logger.info(f"Cache hit for constitutional validation - {processing_time:.2f}ms")
             return cached_result
 
         # Simulate constitutional validation processing
@@ -77,9 +73,7 @@ async def validate_constitutional_compliance(request: ConstitutionalValidationRe
         validation_result = await _perform_constitutional_validation(request)
 
         # Cache the result
-        cache.cache_policy_decision(
-            request.policy_content, request.input_data, validation_result
-        )
+        cache.cache_policy_decision(request.policy_content, request.input_data, validation_result)
 
         processing_time = (time.time() - start_time) * 1000
         validation_result["cached"] = False
@@ -139,9 +133,9 @@ async def _perform_constitutional_validation(
 
 @router.get("/cache/stats")
 async def get_cache_statistics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get cache performance statistics."""
     cache = get_cache()
     stats = cache.get_cache_stats()
@@ -150,9 +144,9 @@ async def get_cache_statistics():
 
 @router.delete("/cache/flush")
 async def flush_cache():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Flush all cache data (admin only)."""
     cache = get_cache()
     success = cache.flush_all()

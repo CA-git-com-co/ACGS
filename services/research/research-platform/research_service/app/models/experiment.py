@@ -45,17 +45,13 @@ class Experiment(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    runs = relationship(
-        "ExperimentRun", back_populates="experiment", cascade="all, delete-orphan"
-    )
+    runs = relationship("ExperimentRun", back_populates="experiment", cascade="all, delete-orphan")
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
-        return (
-            f"<Experiment(id='{self.id}', name='{self.name}', status='{self.status}')>"
-        )
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
+        return f"<Experiment(id='{self.id}', name='{self.name}', status='{self.status}')>"
 
 
 class ExperimentRun(Base):
@@ -64,9 +60,7 @@ class ExperimentRun(Base):
     __tablename__ = "experiment_runs"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    experiment_id = Column(
-        String, ForeignKey("experiments.id"), nullable=False, index=True
-    )
+    experiment_id = Column(String, ForeignKey("experiments.id"), nullable=False, index=True)
     run_number = Column(Integer, nullable=False)
     config = Column(JSON, default=dict)
     status = Column(String(50), nullable=False, default="created", index=True)
@@ -86,17 +80,15 @@ class ExperimentRun(Base):
 
     # Relationships
     experiment = relationship("Experiment", back_populates="runs")
-    metrics = relationship(
-        "ExperimentMetric", back_populates="run", cascade="all, delete-orphan"
-    )
+    metrics = relationship("ExperimentMetric", back_populates="run", cascade="all, delete-orphan")
     artifacts = relationship(
         "ExperimentArtifact", back_populates="run", cascade="all, delete-orphan"
     )
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<ExperimentRun(id='{self.id}', experiment_id='{self.experiment_id}', run_number={self.run_number})>"
 
 
@@ -106,9 +98,7 @@ class ExperimentMetric(Base):
     __tablename__ = "experiment_metrics"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    run_id = Column(
-        String, ForeignKey("experiment_runs.id"), nullable=False, index=True
-    )
+    run_id = Column(String, ForeignKey("experiment_runs.id"), nullable=False, index=True)
     metric_name = Column(String(255), nullable=False, index=True)
     value = Column(Float, nullable=False)
     step = Column(Integer)
@@ -119,9 +109,9 @@ class ExperimentMetric(Base):
     run = relationship("ExperimentRun", back_populates="metrics")
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<ExperimentMetric(id='{self.id}', metric_name='{self.metric_name}', value={self.value})>"
 
 
@@ -131,9 +121,7 @@ class ExperimentArtifact(Base):
     __tablename__ = "experiment_artifacts"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    run_id = Column(
-        String, ForeignKey("experiment_runs.id"), nullable=False, index=True
-    )
+    run_id = Column(String, ForeignKey("experiment_runs.id"), nullable=False, index=True)
     name = Column(String(255), nullable=False)
     type = Column(String(50), nullable=False)  # json, pickle, text, binary, etc.
     path = Column(String(500), nullable=False)
@@ -146,9 +134,9 @@ class ExperimentArtifact(Base):
     run = relationship("ExperimentRun", back_populates="artifacts")
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<ExperimentArtifact(id='{self.id}', name='{self.name}', type='{self.type}')>"
 
 
@@ -181,9 +169,9 @@ class ResearchProject(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<ResearchProject(id='{self.id}', name='{self.name}', status='{self.status}')>"
 
 
@@ -217,9 +205,9 @@ class AutomationRule(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<AutomationRule(id='{self.id}', name='{self.name}', enabled={self.enabled})>"
 
 
@@ -252,9 +240,9 @@ class ResearchPipeline(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<ResearchPipeline(id='{self.id}', name='{self.name}', enabled={self.enabled})>"
 
 
@@ -264,9 +252,7 @@ class PipelineExecution(Base):
     __tablename__ = "pipeline_executions"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    pipeline_id = Column(
-        String, ForeignKey("research_pipelines.id"), nullable=False, index=True
-    )
+    pipeline_id = Column(String, ForeignKey("research_pipelines.id"), nullable=False, index=True)
     status = Column(String(50), nullable=False, default="running", index=True)
 
     # Timing
@@ -286,7 +272,7 @@ class PipelineExecution(Base):
     model_metadata = Column(JSON, default=dict)
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<PipelineExecution(id='{self.id}', pipeline_id='{self.pipeline_id}', status='{self.status}')>"

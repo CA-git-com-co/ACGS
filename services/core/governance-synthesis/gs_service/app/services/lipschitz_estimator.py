@@ -33,9 +33,9 @@ try:
 except ImportError:
 
     def get_llm_service():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return None
 
 
@@ -57,9 +57,7 @@ class LipschitzEstimationConfig:
     empirical_adjustment_factor: float = 1.2  # Safety factor for empirical estimates
     bounded_evolution_enabled: bool = True  # Enable bounded evolution constraints
     lipschitz_validation_threshold: float = 0.8  # Threshold for Lipschitz validation
-    discrepancy_resolution_mode: str = (
-        "conservative"  # "conservative", "adaptive", "theoretical"
-    )
+    discrepancy_resolution_mode: str = "conservative"  # "conservative", "adaptive", "theoretical"
 
 
 @dataclass
@@ -154,9 +152,9 @@ class ConstitutionDistanceFunction:
     """Improved distance function for constitutional principle spaces."""
 
     def __init__(self, embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.embedding_model = embedding_model
         self._embeddings_cache = {}
 
@@ -190,9 +188,9 @@ class ConstitutionDistanceFunction:
         """Compute normalized edit distance."""
 
         def levenshtein(s1, s2):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             if len(s1) < len(s2):
                 return levenshtein(s2, s1)
             if len(s2) == 0:
@@ -234,18 +232,18 @@ class LipschitzEstimator:
     """Estimates Lipschitz constants for ACGS policy synthesis components."""
 
     def __init__(self, config: LipschitzEstimationConfig = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config or LipschitzEstimationConfig()
         self.distance_func = ConstitutionDistanceFunction()
         self.policy_synthesizer = None
         self.llm_service = None
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize services for estimation."""
         try:
             self.llm_service = get_llm_service()
@@ -284,9 +282,7 @@ class LipschitzEstimator:
             principle1, principle2 = test_principles[idx1], test_principles[idx2]
 
             # Compute input distance
-            input_distance = self.distance_func.combined_distance(
-                principle1, principle2
-            )
+            input_distance = self.distance_func.combined_distance(principle1, principle2)
 
             if input_distance < 1e-6:  # Skip nearly identical inputs
                 continue
@@ -320,9 +316,7 @@ class LipschitzEstimator:
         """
 
         try:
-            response = await self.llm_service.generate_text(
-                prompt, max_tokens=500, temperature=0.1
-            )
+            response = await self.llm_service.generate_text(prompt, max_tokens=500, temperature=0.1)
             return response.strip()
         except Exception as e:
             logger.error(f"LLM generation failed: {e}")
@@ -425,9 +419,7 @@ class LipschitzEstimator:
             validation_passed=validation_passed,
         )
 
-    async def validate_metric_properties(
-        self, test_principles: List[str]
-    ) -> Dict[str, Any]:
+    async def validate_metric_properties(self, test_principles: List[str]) -> Dict[str, Any]:
         """Validate that distance function satisfies metric properties."""
         validator = MetricSpaceValidator()
 
@@ -446,16 +438,15 @@ class LipschitzEstimator:
         return {
             "triangle_inequality": triangle_result,
             "symmetry": symmetry_result,
-            "is_valid_metric": triangle_result["is_metric"]
-            and symmetry_result["is_symmetric"],
+            "is_valid_metric": triangle_result["is_metric"] and symmetry_result["is_symmetric"],
         }
 
 
 # Example usage and testing
 async def run_lipschitz_estimation_example():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Example of running Lipschitz constant estimation."""
     estimator = LipschitzEstimator()
     await estimator.initialize()

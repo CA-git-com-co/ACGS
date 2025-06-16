@@ -133,9 +133,9 @@ class PublicConsultationService:
     """
 
     def __init__(self, hitl_sampler: Optional[HumanInTheLoopSampler] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the public consultation service."""
         self.hitl_sampler = hitl_sampler
 
@@ -184,10 +184,7 @@ class PublicConsultationService:
             if not proposal.description or len(proposal.description.strip()) < 50:
                 raise ValueError("Proposal description must be at least 50 characters")
 
-            if (
-                not proposal.proposed_changes
-                or len(proposal.proposed_changes.strip()) < 20
-            ):
+            if not proposal.proposed_changes or len(proposal.proposed_changes.strip()) < 20:
                 raise ValueError("Proposed changes must be at least 20 characters")
 
             # Set initial status
@@ -212,9 +209,7 @@ class PublicConsultationService:
             if self.hitl_sampler:
                 await self._assess_proposal_for_oversight(db, proposal)
 
-            logger.info(
-                f"Public proposal submitted: {proposal.title} (ID: {proposal.id})"
-            )
+            logger.info(f"Public proposal submitted: {proposal.title} (ID: {proposal.id})")
 
             return proposal
 
@@ -248,18 +243,14 @@ class PublicConsultationService:
 
             # Perform sentiment analysis
             if self.config["auto_sentiment_analysis"]:
-                feedback.sentiment_score = await self._analyze_sentiment(
-                    feedback.content
-                )
+                feedback.sentiment_score = await self._analyze_sentiment(feedback.content)
                 feedback.feedback_type = self._classify_feedback_type(
                     feedback.content, feedback.sentiment_score
                 )
 
             # Verify submitter if required
             if verify_submitter and feedback.submitter_email:
-                feedback.is_verified = await self._verify_submitter_email(
-                    feedback.submitter_email
-                )
+                feedback.is_verified = await self._verify_submitter_email(feedback.submitter_email)
 
             # Store feedback (simplified - would use actual database model)
             feedback.id = self.consultation_stats["total_feedback_collected"] + 1
@@ -271,11 +262,7 @@ class PublicConsultationService:
                 self.consultation_stats["unique_participants"] += 1
 
             # Integrate with HITL sampling for feedback analysis
-            if (
-                self.hitl_sampler
-                and feedback.sentiment_score
-                and feedback.sentiment_score < 0.3
-            ):
+            if self.hitl_sampler and feedback.sentiment_score and feedback.sentiment_score < 0.3:
                 await self._escalate_negative_feedback(db, feedback)
 
             logger.info(
@@ -384,9 +371,7 @@ class PublicConsultationService:
             proposal.status = ConsultationStatus.IMPLEMENTED
             self.consultation_stats["proposals_advanced"] += 1
 
-            logger.info(
-                f"Public proposal {proposal_id} advanced to Constitutional Council"
-            )
+            logger.info(f"Public proposal {proposal_id} advanced to Constitutional Council")
 
             return {
                 "success": True,
@@ -401,13 +386,13 @@ class PublicConsultationService:
             return {"success": False, "error": str(e)}
 
     # Helper methods
-    async def _review_proposal_content(
-        self, proposal: PublicProposal
-    ) -> Dict[str, Any]:
+    async def _review_proposal_content(self, proposal: PublicProposal) -> Dict[str, Any]:
         """Review proposal content for appropriateness and completeness."""
         # Simplified content review
         inappropriate_keywords = ["spam", "offensive", "irrelevant"]
-        content_to_check = f"{proposal.title} {proposal.description} {proposal.proposed_changes}".lower()
+        content_to_check = (
+            f"{proposal.title} {proposal.description} {proposal.proposed_changes}".lower()
+        )
 
         has_inappropriate_content = any(
             keyword in content_to_check for keyword in inappropriate_keywords
@@ -480,12 +465,10 @@ class PublicConsultationService:
         # Simplified email verification
         return "@" in email and "." in email.split("@")[1]
 
-    async def _assess_proposal_for_oversight(
-        self, db: AsyncSession, proposal: PublicProposal
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def _assess_proposal_for_oversight(self, db: AsyncSession, proposal: PublicProposal):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Assess proposal for HITL oversight requirements."""
         if not self.hitl_sampler:
             return
@@ -511,12 +494,10 @@ class PublicConsultationService:
                 f"{assessment.recommended_oversight_level.value}"
             )
 
-    async def _escalate_negative_feedback(
-        self, db: AsyncSession, feedback: PublicFeedback
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def _escalate_negative_feedback(self, db: AsyncSession, feedback: PublicFeedback):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Escalate negative feedback for review."""
         if not self.hitl_sampler:
             return

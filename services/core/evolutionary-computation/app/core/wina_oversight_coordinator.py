@@ -172,9 +172,9 @@ class WINAECOversightCoordinator:
     """
 
     def __init__(self, enable_wina: bool = True):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize WINA-optimized EC oversight coordinator.
 
@@ -203,9 +203,7 @@ class WINAECOversightCoordinator:
 
         # Task #4: PGC service integration
         self.pgc_integration_enabled = True
-        self.pgc_service_url = (
-            "http://localhost:8015"  # Enhanced PGC service from Task #3
-        )
+        self.pgc_service_url = "http://localhost:8015"  # Enhanced PGC service from Task #3
 
         # Task #4: Advanced analytics and reporting
         self.analytics_data = {
@@ -226,9 +224,7 @@ class WINAECOversightCoordinator:
 
     # Task #4: Advanced Optimization Algorithm Implementations
 
-    async def _optimize_resource_allocation(
-        self, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _optimize_resource_allocation(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Advanced resource allocation optimization algorithm.
 
@@ -262,9 +258,7 @@ class WINAECOversightCoordinator:
                 "allocated_resources": round(optimized_allocation, 2),
                 "load_factor": round(load_factor, 3),
                 "optimization_time_ms": round(optimization_time, 2),
-                "efficiency_gain": round(
-                    (optimized_allocation / available_resources) * 100, 1
-                ),
+                "efficiency_gain": round((optimized_allocation / available_resources) * 100, 1),
                 "status": "optimized",
             }
 
@@ -276,9 +270,7 @@ class WINAECOversightCoordinator:
                 "optimization_time_ms": round((time.time() - start_time) * 1000, 2),
             }
 
-    async def _optimize_coordination_efficiency(
-        self, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _optimize_coordination_efficiency(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Coordination efficiency optimization algorithm.
 
@@ -328,9 +320,7 @@ class WINAECOversightCoordinator:
                 "optimization_time_ms": round((time.time() - start_time) * 1000, 2),
             }
 
-    async def _optimize_performance_tuning(
-        self, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _optimize_performance_tuning(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Performance tuning optimization algorithm.
 
@@ -388,9 +378,7 @@ class WINAECOversightCoordinator:
                 "optimization_time_ms": round((time.time() - start_time) * 1000, 2),
             }
 
-    async def _optimize_governance_compliance(
-        self, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def _optimize_governance_compliance(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Governance compliance optimization algorithm with PGC service integration.
 
@@ -413,9 +401,7 @@ class WINAECOversightCoordinator:
             # Calculate compliance optimization
             base_compliance_score = context.get("compliance_score", 0.85)
             pgc_compliance_boost = pgc_result.get("compliance_boost", 0.05)
-            optimized_compliance = min(
-                1.0, base_compliance_score + pgc_compliance_boost
-            )
+            optimized_compliance = min(1.0, base_compliance_score + pgc_compliance_boost)
 
             # Determine optimization actions
             optimization_actions = []
@@ -496,9 +482,7 @@ class WINAECOversightCoordinator:
                         "enforcement_rate", 0.98
                     )
 
-                    compliance_boost = (
-                        compliance_score + enforcement_rate
-                    ) / 20  # Max 0.1 boost
+                    compliance_boost = (compliance_score + enforcement_rate) / 20  # Max 0.1 boost
 
                     return {
                         "status": "success",
@@ -519,9 +503,7 @@ class WINAECOversightCoordinator:
 
     # Task #4: Real-time Monitoring and Alerting Methods
 
-    async def check_alert_conditions(
-        self, metrics: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    async def check_alert_conditions(self, metrics: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Check for alert conditions based on real-time metrics.
 
@@ -540,8 +522,7 @@ class WINAECOversightCoordinator:
                         "type": "performance",
                         "severity": (
                             "high"
-                            if response_time
-                            > self.alert_thresholds["response_time_ms"] * 2
+                            if response_time > self.alert_thresholds["response_time_ms"] * 2
                             else "medium"
                         ),
                         "message": f"Response time {response_time}ms exceeds threshold {self.alert_thresholds['response_time_ms']}ms",
@@ -577,9 +558,7 @@ class WINAECOversightCoordinator:
                         "message": f"Resource utilization {resource_util}% exceeds threshold {self.alert_thresholds['resource_utilization_percent']}%",
                         "metric": "resource_utilization_percent",
                         "value": resource_util,
-                        "threshold": self.alert_thresholds[
-                            "resource_utilization_percent"
-                        ],
+                        "threshold": self.alert_thresholds["resource_utilization_percent"],
                         "timestamp": current_time,
                     }
                 )
@@ -606,9 +585,7 @@ class WINAECOversightCoordinator:
             # Keep only recent alerts (last 24 hours)
             cutoff_time = current_time - 86400  # 24 hours
             self.active_alerts = [
-                alert
-                for alert in self.active_alerts
-                if alert["timestamp"] > cutoff_time
+                alert for alert in self.active_alerts if alert["timestamp"] > cutoff_time
             ]
 
             return alerts
@@ -620,9 +597,7 @@ class WINAECOversightCoordinator:
         # Initialize WINA components
         if enable_wina and WINA_AVAILABLE:
             try:
-                self.wina_config, self.wina_integration_config = (
-                    load_wina_config_from_env()
-                )
+                self.wina_config, self.wina_integration_config = load_wina_config_from_env()
                 self.wina_core = WINACore(self.wina_config)
                 self.wina_metrics = WINAMetrics(self.wina_config)
                 self.constitutional_wina = ConstitutionalWINASupport(
@@ -637,9 +612,7 @@ class WINAECOversightCoordinator:
                 self.learning_system = None  # Will be initialized asynchronously
                 logger.info("WINA optimization enabled for EC Layer oversight")
             except Exception as e:
-                logger.warning(
-                    f"Failed to initialize WINA: {e}. Disabling WINA optimization."
-                )
+                logger.warning(f"Failed to initialize WINA: {e}. Disabling WINA optimization.")
                 self.enable_wina = False
         else:
             self.enable_wina = False
@@ -670,9 +643,9 @@ class WINAECOversightCoordinator:
         logger.info("WINA EC Oversight Coordinator initialized")
 
     async def initialize_constitutional_principles(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize constitutional principles for EC Layer oversight."""
         if self.enable_wina and hasattr(self, "constitutional_wina"):
             await self.constitutional_wina.initialize_efficiency_principles()
@@ -683,13 +656,8 @@ class WINAECOversightCoordinator:
             try:
                 self.learning_system = await get_wina_learning_system()
                 # Integrate learning system with performance collector
-                if (
-                    hasattr(self, "performance_collector")
-                    and self.performance_collector
-                ):
-                    self.learning_system.set_performance_collector(
-                        self.performance_collector
-                    )
+                if hasattr(self, "performance_collector") and self.performance_collector:
+                    self.learning_system.set_performance_collector(self.performance_collector)
                 logger.info("Continuous learning system initialized and integrated")
             except Exception as e:
                 logger.warning(f"Failed to initialize continuous learning system: {e}")
@@ -715,9 +683,7 @@ class WINAECOversightCoordinator:
         errors = []
 
         try:
-            logger.info(
-                f"Starting WINA-optimized EC oversight for {request.target_system}"
-            )
+            logger.info(f"Starting WINA-optimized EC oversight for {request.target_system}")
 
             # Record system health metrics if performance monitoring is enabled
             if self.enable_wina and self.performance_collector:
@@ -732,9 +698,7 @@ class WINAECOversightCoordinator:
                     latency=50.0,
                     availability=0.999,
                 )
-                await self.performance_collector.record_system_health_metrics(
-                    system_health_metrics
-                )
+                await self.performance_collector.record_system_health_metrics(system_health_metrics)
 
             # Phase 1: Check cache for previous oversight decisions
             cache_result = await self._check_oversight_cache(request)
@@ -743,9 +707,7 @@ class WINAECOversightCoordinator:
                 return cache_result
 
             # Phase 2: Select optimal oversight strategy
-            strategy = await self._select_oversight_strategy(
-                request, optimization_hints
-            )
+            strategy = await self._select_oversight_strategy(request, optimization_hints)
 
             # Phase 3: Apply WINA-informed governance optimization
             optimized_requirements = await self._optimize_governance_requirements(
@@ -820,9 +782,7 @@ class WINAECOversightCoordinator:
                     component_type=WINAComponentType.EC_OVERSIGHT,
                     integration_latency=oversight_time,
                     throughput=1.0,  # Operations per second
-                    success_rate=(
-                        1.0 if result.oversight_decision != "requires_review" else 0.5
-                    ),
+                    success_rate=(1.0 if result.oversight_decision != "requires_review" else 0.5),
                     error_rate=0.01 if not result.errors else 0.1,
                     resource_utilization=0.6,
                     optimization_effectiveness=metrics.governance_efficiency_improvement,
@@ -872,9 +832,7 @@ class WINAECOversightCoordinator:
         else:
             start_time, end_time = reporting_period
 
-        logger.info(
-            f"Generating EC oversight report for period {start_time} to {end_time}"
-        )
+        logger.info(f"Generating EC oversight report for period {start_time} to {end_time}")
 
         try:
             # Filter oversight operations for reporting period
@@ -893,9 +851,7 @@ class WINAECOversightCoordinator:
 
             # Calculate constitutional compliance summary
             constitutional_compliance_summary = (
-                await self._calculate_constitutional_compliance_summary(
-                    period_operations
-                )
+                await self._calculate_constitutional_compliance_summary(period_operations)
             )
 
             # Calculate performance improvements
@@ -904,19 +860,13 @@ class WINAECOversightCoordinator:
             )
 
             # Collect governance decisions
-            governance_decisions = await self._collect_governance_decisions(
-                period_operations
-            )
+            governance_decisions = await self._collect_governance_decisions(period_operations)
 
             # Collect proposed constitutional updates
-            constitutional_updates_proposed = (
-                self._constitutional_updates_proposed.copy()
-            )
+            constitutional_updates_proposed = self._constitutional_updates_proposed.copy()
 
             # Analyze learning adaptations
-            learning_adaptations = await self._analyze_learning_adaptations(
-                period_operations
-            )
+            learning_adaptations = await self._analyze_learning_adaptations(period_operations)
 
             # Calculate system health indicators
             system_health_indicators = await self._calculate_system_health_indicators(
@@ -955,9 +905,7 @@ class WINAECOversightCoordinator:
             if len(self._oversight_reports) > 100:
                 self._oversight_reports = self._oversight_reports[-50:]
 
-            logger.info(
-                f"Generated comprehensive EC oversight report: {report.report_id}"
-            )
+            logger.info(f"Generated comprehensive EC oversight report: {report.report_id}")
 
             return report
 
@@ -978,9 +926,7 @@ class WINAECOversightCoordinator:
             has_constitutional_constraints = bool(request.constitutional_constraints)
             has_performance_thresholds = bool(request.performance_thresholds)
             is_high_priority = request.priority_level in ["high", "critical"]
-            is_emergency = (
-                request.oversight_type == ECOversightContext.INCIDENT_RESPONSE
-            )
+            is_emergency = request.oversight_type == ECOversightContext.INCIDENT_RESPONSE
 
             # Get WINA insights for strategy selection
             wina_insights = await self._get_wina_strategy_insights(request)
@@ -989,8 +935,7 @@ class WINAECOversightCoordinator:
             if is_emergency:
                 return ECOversightStrategy.EMERGENCY_PROTOCOL
             elif (
-                has_constitutional_constraints
-                and wina_insights.get("constitutional_risk", 0) > 0.6
+                has_constitutional_constraints and wina_insights.get("constitutional_risk", 0) > 0.6
             ):
                 return ECOversightStrategy.CONSTITUTIONAL_PRIORITY
             elif (
@@ -999,10 +944,7 @@ class WINAECOversightCoordinator:
                 > self.governance_efficiency_threshold
             ):
                 return ECOversightStrategy.EFFICIENCY_FOCUSED
-            elif (
-                is_high_priority
-                and wina_insights.get("optimization_potential", 0) > 0.8
-            ):
+            elif is_high_priority and wina_insights.get("optimization_potential", 0) > 0.8:
                 return ECOversightStrategy.WINA_OPTIMIZED
             elif wina_insights.get("learning_adaptation_recommended", False):
                 return ECOversightStrategy.ADAPTIVE_LEARNING
@@ -1033,16 +975,12 @@ class WINAECOversightCoordinator:
 
             for requirement in request.governance_requirements:
                 # Calculate requirement relevance for current context
-                relevance_score = await self._calculate_requirement_relevance(
-                    requirement, request
-                )
+                relevance_score = await self._calculate_requirement_relevance(requirement, request)
 
                 if relevance_score > 0.2:  # Only include relevant requirements
                     # Apply WINA optimization based on strategy
-                    optimized_requirement = (
-                        await self._apply_wina_requirement_optimization(
-                            requirement, request, strategy, optimization_hints
-                        )
+                    optimized_requirement = await self._apply_wina_requirement_optimization(
+                        requirement, request, strategy, optimization_hints
                     )
                     optimized_requirements.append(optimized_requirement)
 
@@ -1052,9 +990,7 @@ class WINAECOversightCoordinator:
             return optimized_requirements
 
         except Exception as e:
-            logger.warning(
-                f"Requirement optimization failed: {e}. Using original requirements."
-            )
+            logger.warning(f"Requirement optimization failed: {e}. Using original requirements.")
             return request.governance_requirements
 
     async def _verify_constitutional_compliance(
@@ -1069,9 +1005,7 @@ class WINAECOversightCoordinator:
             # Check cache first
             compliance_key = self._generate_compliance_cache_key(request, requirements)
             if compliance_key in self._constitutional_compliance_cache:
-                compliance, timestamp = self._constitutional_compliance_cache[
-                    compliance_key
-                ]
+                compliance, timestamp = self._constitutional_compliance_cache[compliance_key]
                 if datetime.now() - timestamp < self.cache_ttl:
                     return compliance
 
@@ -1085,10 +1019,8 @@ class WINAECOversightCoordinator:
                 "priority_level": request.priority_level,
             }
 
-            compliance_results = (
-                await self.constitutional_wina.evaluate_wina_compliance(
-                    optimization_context
-                )
+            compliance_results = await self.constitutional_wina.evaluate_wina_compliance(
+                optimization_context
             )
             is_compliant = compliance_results.get("overall_compliant", False)
 
@@ -1134,9 +1066,7 @@ class WINAECOversightCoordinator:
 
             # Execute strategy-specific oversight logic
             if strategy == ECOversightStrategy.EMERGENCY_PROTOCOL:
-                result = await self._execute_emergency_oversight(
-                    oversight_analysis, request
-                )
+                result = await self._execute_emergency_oversight(oversight_analysis, request)
             elif strategy == ECOversightStrategy.CONSTITUTIONAL_PRIORITY:
                 result = await self._execute_constitutional_priority_oversight(
                     oversight_analysis, request
@@ -1150,13 +1080,9 @@ class WINAECOversightCoordinator:
                     oversight_analysis, request
                 )
             elif strategy == ECOversightStrategy.WINA_OPTIMIZED:
-                result = await self._execute_wina_optimized_oversight(
-                    oversight_analysis, request
-                )
+                result = await self._execute_wina_optimized_oversight(oversight_analysis, request)
             else:
-                result = await self._execute_standard_oversight(
-                    oversight_analysis, request
-                )
+                result = await self._execute_standard_oversight(oversight_analysis, request)
 
             # Add timing information
             oversight_time = (time.time() - oversight_start_time) * 1000
@@ -1277,9 +1203,7 @@ class WINAECOversightCoordinator:
     ) -> Dict[str, Any]:
         """Execute WINA-optimized oversight strategy."""
         # Apply comprehensive WINA optimization
-        wina_optimization_result = await self._apply_wina_optimization(
-            analysis, request
-        )
+        wina_optimization_result = await self._apply_wina_optimization(analysis, request)
 
         return {
             "decision": "approved",
@@ -1315,9 +1239,7 @@ class WINAECOversightCoordinator:
 
     # Helper methods for oversight operations
 
-    async def _get_wina_strategy_insights(
-        self, request: ECOversightRequest
-    ) -> Dict[str, Any]:
+    async def _get_wina_strategy_insights(self, request: ECOversightRequest) -> Dict[str, Any]:
         """Get WINA insights for strategy selection."""
 
         if not self.enable_wina:
@@ -1373,12 +1295,8 @@ class WINAECOversightCoordinator:
 
         feedback_data = {
             "strategy_effectiveness": oversight_result.get("confidence_score", 0.0),
-            "decision_accuracy": (
-                1.0 if oversight_result.get("decision") == "approved" else 0.5
-            ),
-            "constitutional_compliance": oversight_result.get(
-                "constitutional_compliance", True
-            ),
+            "decision_accuracy": (1.0 if oversight_result.get("decision") == "approved" else 0.5),
+            "constitutional_compliance": oversight_result.get("constitutional_compliance", True),
             "timestamp": datetime.now(),
             "context": request.oversight_type.value,
         }
@@ -1392,9 +1310,7 @@ class WINAECOversightCoordinator:
 
         # Keep only recent feedback
         if len(self._learning_feedback[context_key]) > 100:
-            self._learning_feedback[context_key] = self._learning_feedback[context_key][
-                -50:
-            ]
+            self._learning_feedback[context_key] = self._learning_feedback[context_key][-50:]
 
         # Send feedback to continuous learning system
         if self.learning_system and self.enable_wina:
@@ -1434,7 +1350,9 @@ class WINAECOversightCoordinator:
         """Generate cache key for oversight request."""
         import hashlib
 
-        key_data = f"{request.target_system}:{request.oversight_type.value}:{request.priority_level}"
+        key_data = (
+            f"{request.target_system}:{request.oversight_type.value}:{request.priority_level}"
+        )
         if request.governance_requirements:
             key_data += f":{sorted(request.governance_requirements)}"
         if request.constitutional_constraints:
@@ -1547,9 +1465,7 @@ class WINAECOversightCoordinator:
 
             # Cache and analysis timing
             cache_hit_rate = 0.8 if hasattr(self, "_cache_hits") else 0.0
-            wina_analysis_time = (
-                oversight_time * 0.3 if wina_optimization_applied else 0.0
-            )
+            wina_analysis_time = oversight_time * 0.3 if wina_optimization_applied else 0.0
             constitutional_analysis_time = oversight_time * 0.2
 
             return WINAOversightMetrics(
@@ -1569,9 +1485,7 @@ class WINAECOversightCoordinator:
                     0 if constitutional_compliance_score > 0.9 else 1
                 ),
                 oversight_accuracy=accuracy_retention,
-                feedback_loop_updates=(
-                    len(learning_feedback) if learning_feedback else 0
-                ),
+                feedback_loop_updates=(len(learning_feedback) if learning_feedback else 0),
                 learning_adaptations_applied=(
                     1 if strategy == ECOversightStrategy.ADAPTIVE_LEARNING else 0
                 ),
@@ -1662,9 +1576,7 @@ class WINAECOversightCoordinator:
 
             # Keep strategy performance manageable
             if len(self._strategy_performance[strategy]) > 100:
-                self._strategy_performance[strategy] = self._strategy_performance[
-                    strategy
-                ][-50:]
+                self._strategy_performance[strategy] = self._strategy_performance[strategy][-50:]
 
             # Log governance decisions
             governance_decision = {
@@ -1791,9 +1703,7 @@ class WINAECOversightCoordinator:
         except Exception as e:
             logger.warning(f"Compliance cache cleaning failed: {e}")
 
-    async def _get_learning_insights(
-        self, request: ECOversightRequest
-    ) -> Dict[str, Any]:
+    async def _get_learning_insights(self, request: ECOversightRequest) -> Dict[str, Any]:
         """Get learning insights for adaptive oversight."""
         try:
             context_key = request.oversight_type.value
@@ -1814,9 +1724,9 @@ class WINAECOversightCoordinator:
             feedback_data = self._learning_feedback[context_key]
 
             # Calculate average effectiveness
-            avg_effectiveness = sum(
-                fb["strategy_effectiveness"] for fb in feedback_data
-            ) / len(feedback_data)
+            avg_effectiveness = sum(fb["strategy_effectiveness"] for fb in feedback_data) / len(
+                feedback_data
+            )
 
             # Calculate compliance rate
             compliance_rate = sum(
@@ -1830,9 +1740,7 @@ class WINAECOversightCoordinator:
                     "High effectiveness patterns detected - continue current approach"
                 )
             else:
-                recommendations.append(
-                    "Adjust strategy based on effectiveness feedback"
-                )
+                recommendations.append("Adjust strategy based on effectiveness feedback")
 
             if compliance_rate > 0.9:
                 recommendations.append("Excellent constitutional compliance maintained")
@@ -1878,27 +1786,19 @@ class WINAECOversightCoordinator:
                     "target_system": request.target_system,
                     "strategy_used": strategy.value,
                     "decision": oversight_result.get("decision", "unknown"),
-                    "governance_requirements_count": len(
-                        request.governance_requirements
-                    ),
-                    "constitutional_constraints_count": len(
-                        request.constitutional_constraints
-                    ),
+                    "governance_requirements_count": len(request.governance_requirements),
+                    "constitutional_constraints_count": len(request.constitutional_constraints),
                     "priority_level": request.priority_level,
                 },
                 timestamp=datetime.now(),
                 confidence=1.0,
                 source="ec_oversight_coordinator",
                 metadata={
-                    "oversight_time_ms": oversight_result.get(
-                        "oversight_execution_time_ms", 0
-                    ),
+                    "oversight_time_ms": oversight_result.get("oversight_execution_time_ms", 0),
                     "wina_optimization_applied": oversight_result.get(
                         "wina_optimization_applied", False
                     ),
-                    "strategy_effectiveness": feedback_data.get(
-                        "strategy_effectiveness", 0.0
-                    ),
+                    "strategy_effectiveness": feedback_data.get("strategy_effectiveness", 0.0),
                 },
             )
 
@@ -1918,9 +1818,7 @@ class WINAECOversightCoordinator:
                         "optimization_strategy": wina_insights.get(
                             "optimization_strategy", "unknown"
                         ),
-                        "accuracy_retention": wina_insights.get(
-                            "accuracy_retention", 0.95
-                        ),
+                        "accuracy_retention": wina_insights.get("accuracy_retention", 0.95),
                         "runtime_gating_applied": wina_insights.get(
                             "runtime_gating_applied", False
                         ),
@@ -1930,9 +1828,7 @@ class WINAECOversightCoordinator:
                     source="ec_oversight_coordinator",
                     metadata={
                         "gating_details": wina_insights.get("gating_details", {}),
-                        "optimization_context": wina_insights.get(
-                            "optimization_context", ""
-                        ),
+                        "optimization_context": wina_insights.get("optimization_context", ""),
                     },
                 )
 
@@ -1949,9 +1845,7 @@ class WINAECOversightCoordinator:
                 context={
                     "oversight_type": request.oversight_type.value,
                     "constitutional_constraints": request.constitutional_constraints,
-                    "governance_requirements": request.governance_requirements[
-                        :5
-                    ],  # Limit size
+                    "governance_requirements": request.governance_requirements[:5],  # Limit size
                     "decision": oversight_result.get("decision", "unknown"),
                 },
                 timestamp=datetime.now(),
@@ -1966,9 +1860,7 @@ class WINAECOversightCoordinator:
             await self.learning_system.process_feedback_signal(constitutional_feedback)
 
             # Create accuracy retention feedback if available
-            accuracy_retention = oversight_result.get("wina_insights", {}).get(
-                "accuracy_retention"
-            )
+            accuracy_retention = oversight_result.get("wina_insights", {}).get("accuracy_retention")
             if accuracy_retention is not None:
                 accuracy_feedback = FeedbackSignal(
                     component_type=WINAComponentType.EC_OVERSIGHT,
@@ -2061,9 +1953,7 @@ class WINAECOversightCoordinator:
                     threshold_applied=0.5,
                     optimization_strategy="wina_ec_oversight",
                 )
-                await self.performance_collector.record_neuron_activation_metrics(
-                    neuron_metrics
-                )
+                await self.performance_collector.record_neuron_activation_metrics(neuron_metrics)
 
                 # Record dynamic gating metrics
                 gating_metrics = WINADynamicGatingMetrics(
@@ -2077,9 +1967,7 @@ class WINAECOversightCoordinator:
                     adaptive_threshold=0.6,
                     gating_strategy=gating_result.get("strategy", "balanced"),
                 )
-                await self.performance_collector.record_dynamic_gating_metrics(
-                    gating_metrics
-                )
+                await self.performance_collector.record_dynamic_gating_metrics(gating_metrics)
 
             return {
                 "confidence": optimization["confidence"],
@@ -2103,9 +1991,7 @@ class WINAECOversightCoordinator:
             return {
                 "confidence": 0.7,
                 "gflops_reduction": 0.0,
-                "recommendations": [
-                    "WINA optimization failed - using standard approach"
-                ],
+                "recommendations": ["WINA optimization failed - using standard approach"],
                 "wina_specific_insights": {"error": str(e)},
             }
 
@@ -2130,9 +2016,7 @@ class WINAECOversightCoordinator:
                 "target_system": request.target_system,
                 "oversight_type": request.oversight_type.value,
                 "priority": request.priority_level,
-                "strategy": (
-                    strategy.value if hasattr(strategy, "value") else str(strategy)
-                ),
+                "strategy": (strategy.value if hasattr(strategy, "value") else str(strategy)),
             }
 
             return {
@@ -2165,15 +2049,13 @@ class WINAECOversightCoordinator:
 
             if wina_operations:
                 avg_gflops_reduction = sum(
-                    op.oversight_metrics.gflops_reduction_achieved
-                    for op in wina_operations
+                    op.oversight_metrics.gflops_reduction_achieved for op in wina_operations
                 ) / len(wina_operations)
                 avg_accuracy_retention = sum(
                     op.oversight_metrics.accuracy_retention for op in wina_operations
                 ) / len(wina_operations)
                 avg_efficiency_improvement = sum(
-                    op.oversight_metrics.governance_efficiency_improvement
-                    for op in wina_operations
+                    op.oversight_metrics.governance_efficiency_improvement for op in wina_operations
                 ) / len(wina_operations)
 
             return {
@@ -2201,18 +2083,14 @@ class WINAECOversightCoordinator:
             if not operations:
                 return {"total_operations": 0, "compliant_operations": 0}
 
-            compliant_operations = [
-                op for op in operations if op.constitutional_compliance
-            ]
+            compliant_operations = [op for op in operations if op.constitutional_compliance]
 
             avg_compliance_score = sum(
-                op.oversight_metrics.constitutional_compliance_score
-                for op in operations
+                op.oversight_metrics.constitutional_compliance_score for op in operations
             ) / len(operations)
 
             violations_detected = sum(
-                op.oversight_metrics.constitutional_violations_detected
-                for op in operations
+                op.oversight_metrics.constitutional_violations_detected for op in operations
             )
 
             return {
@@ -2245,17 +2123,16 @@ class WINAECOversightCoordinator:
             avg_cache_hit_rate = sum(
                 op.oversight_metrics.cache_hit_rate for op in operations
             ) / len(operations)
-            avg_accuracy = sum(
-                op.oversight_metrics.oversight_accuracy for op in operations
-            ) / len(operations)
+            avg_accuracy = sum(op.oversight_metrics.oversight_accuracy for op in operations) / len(
+                operations
+            )
 
             return {
                 "avg_oversight_time_ms": avg_oversight_time,
                 "avg_cache_hit_rate": avg_cache_hit_rate,
                 "avg_oversight_accuracy": avg_accuracy,
                 "total_learning_adaptations": sum(
-                    op.oversight_metrics.learning_adaptations_applied
-                    for op in operations
+                    op.oversight_metrics.learning_adaptations_applied for op in operations
                 ),
             }
 
@@ -2296,17 +2173,14 @@ class WINAECOversightCoordinator:
             adaptive_operations = [
                 op
                 for op in operations
-                if op.oversight_metrics.strategy_used
-                == ECOversightStrategy.ADAPTIVE_LEARNING
+                if op.oversight_metrics.strategy_used == ECOversightStrategy.ADAPTIVE_LEARNING
             ]
 
             for operation in adaptive_operations:
                 if operation.feedback_data:
                     adaptation = {
                         "adaptation_type": "strategy_learning",
-                        "effectiveness": operation.feedback_data.get(
-                            "strategy_effectiveness", 0.0
-                        ),
+                        "effectiveness": operation.feedback_data.get("strategy_effectiveness", 0.0),
                         "context": operation.feedback_data.get("context", "unknown"),
                         "improvements_applied": operation.oversight_metrics.learning_adaptations_applied,
                     }
@@ -2335,9 +2209,7 @@ class WINAECOversightCoordinator:
             warning_rate = len(warning_operations) / len(operations)
 
             # Average confidence
-            avg_confidence = sum(op.confidence_score for op in operations) / len(
-                operations
-            )
+            avg_confidence = sum(op.confidence_score for op in operations) / len(operations)
 
             # Strategy distribution
             strategy_counts = {}
@@ -2373,8 +2245,7 @@ class WINAECOversightCoordinator:
                 "wina_enabled": self.enable_wina,
                 "timestamp": time.time(),
                 "oversight_operations_count": len(self._oversight_history),
-                "constitutional_principles_loaded": len(self._constitutional_principles)
-                > 0,
+                "constitutional_principles_loaded": len(self._constitutional_principles) > 0,
             }
 
             # Check WINA components if enabled
@@ -2436,21 +2307,15 @@ class WINAECOversightCoordinator:
 
             # Health-based recommendations
             if system_health.get("error_rate", 0) > 0.1:
-                recommendations.append(
-                    "High error rate detected - review system stability"
-                )
+                recommendations.append("High error rate detected - review system stability")
 
             if system_health.get("avg_confidence", 0) < 0.7:
-                recommendations.append(
-                    "Low average confidence - consider strategy tuning"
-                )
+                recommendations.append("Low average confidence - consider strategy tuning")
 
             # WINA-specific recommendations
             wina_operations = [op for op in operations if op.wina_optimization_applied]
             if len(wina_operations) < len(operations) * 0.5:
-                recommendations.append(
-                    "Low WINA adoption rate - review optimization enablement"
-                )
+                recommendations.append("Low WINA adoption rate - review optimization enablement")
 
             if not recommendations:
                 recommendations.append("System operating within normal parameters")
@@ -2555,9 +2420,7 @@ async def get_wina_ec_oversight_coordinator() -> WINAECOversightCoordinator:
 
         enable_wina = os.getenv("ENABLE_WINA", "true").lower() == "true"
 
-        _wina_ec_oversight_coordinator = WINAECOversightCoordinator(
-            enable_wina=enable_wina
-        )
+        _wina_ec_oversight_coordinator = WINAECOversightCoordinator(enable_wina=enable_wina)
         await _wina_ec_oversight_coordinator.initialize_constitutional_principles()
         logger.info("WINA EC Oversight Coordinator instance created")
 

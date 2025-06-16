@@ -948,7 +948,8 @@ jobs:
     name: Notify Results
     needs:
       - preflight
-      - rust_build_test
+      - rust_quality_build
+      - anchor_testing
       - security_scan
       - python_code_quality
       - python_unit_tests
@@ -956,7 +957,7 @@ jobs:
     if: always()
     steps:
       - name: Notify on success
-        if: success() && (needs.python_unit_tests.result == 'success' || needs.python_unit_tests.result == 'skipped') && (needs.rust_build_test.result == 'success' || needs.rust_build_test.result == 'skipped')
+        if: success() && (needs.python_unit_tests.result == 'success' || needs.python_unit_tests.result == 'skipped') && (needs.rust_quality_build.result == 'success' || needs.rust_quality_build.result == 'skipped') && (needs.anchor_testing.result == 'success' || needs.anchor_testing.result == 'skipped')
         run: |
           echo "✅ All tests passed successfully!"
           echo "Workflow Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -976,7 +977,8 @@ jobs:
           echo "Workflow Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> test-report.md
           echo "" >> test-report.md
           echo "## Overall Status Summary" >> test-report.md
-          echo "- Rust/Anchor Build: ${{ needs.rust_build_test.result }}" >> test-report.md
+          echo "- Rust Quality & Build: ${{ needs.rust_quality_build.result }}" >> test-report.md
+          echo "- Anchor Testing: ${{ needs.anchor_testing.result }}" >> test-report.md
           echo "- Security Scan: ${{ needs.security_scan.result }}" >> test-report.md
           echo "- Python Code Quality: ${{ needs.python_code_quality.result }}" >> test-report.md
           echo "- Python Unit Tests: ${{ needs.python_unit_tests.result }}" >> test-report.md

@@ -1,7 +1,7 @@
 """
 NVIDIA LLM Router Service
 
-Intelligent routing of LLM requests to optimal NVIDIA models based on 
+Intelligent routing of LLM requests to optimal NVIDIA models based on
 task complexity, content type, and performance requirements.
 """
 

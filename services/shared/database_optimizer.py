@@ -23,21 +23,19 @@ class DatabasePerformanceOptimizer:
     """Advanced database performance optimizer for ACGS-1."""
 
     def __init__(self, database_url: str = None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.database_url = database_url
-        self.engine = (
-            async_engine if not database_url else create_async_engine(database_url)
-        )
+        self.engine = async_engine if not database_url else create_async_engine(database_url)
         self.performance_metrics = {}
         self.slow_queries = []
         self.optimization_history = []
 
     async def initialize(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the database optimizer."""
         try:
             # Test connection
@@ -121,9 +119,7 @@ class DatabasePerformanceOptimizer:
                 """
                     )
                 )
-                metrics["index_usage"] = [
-                    dict(row._mapping) for row in index_stats.fetchall()
-                ]
+                metrics["index_usage"] = [dict(row._mapping) for row in index_stats.fetchall()]
 
                 # Table statistics
                 table_stats = await conn.execute(
@@ -146,9 +142,7 @@ class DatabasePerformanceOptimizer:
                 """
                     )
                 )
-                metrics["table_stats"] = [
-                    dict(row._mapping) for row in table_stats.fetchall()
-                ]
+                metrics["table_stats"] = [dict(row._mapping) for row in table_stats.fetchall()]
 
                 # Database size information
                 db_size = await conn.execute(
@@ -291,12 +285,8 @@ class DatabasePerformanceOptimizer:
                         logger.info(f"Created index: {index_def['name']}")
 
                     except Exception as e:
-                        index_results["failed"].append(
-                            {"name": index_def["name"], "error": str(e)}
-                        )
-                        logger.warning(
-                            f"Failed to create index {index_def['name']}", error=str(e)
-                        )
+                        index_results["failed"].append({"name": index_def["name"], "error": str(e)})
+                        logger.warning(f"Failed to create index {index_def['name']}", error=str(e))
 
         except Exception as e:
             logger.error("Error creating performance indexes", error=str(e))
@@ -368,9 +358,7 @@ class DatabasePerformanceOptimizer:
 
         return optimization_results
 
-    async def identify_slow_queries(
-        self, threshold_ms: int = 1000
-    ) -> List[Dict[str, Any]]:
+    async def identify_slow_queries(self, threshold_ms: int = 1000) -> List[Dict[str, Any]]:
         """Identify and analyze slow queries."""
         slow_queries = []
 
@@ -405,15 +393,11 @@ class DatabasePerformanceOptimizer:
                         {"threshold": threshold_ms},
                     )
 
-                    slow_queries = [
-                        dict(row._mapping) for row in query_stats.fetchall()
-                    ]
+                    slow_queries = [dict(row._mapping) for row in query_stats.fetchall()]
 
                 except Exception:
                     # pg_stat_statements not available, use alternative method
-                    logger.warning(
-                        "pg_stat_statements not available for slow query analysis"
-                    )
+                    logger.warning("pg_stat_statements not available for slow query analysis")
 
         except Exception as e:
             logger.error("Error identifying slow queries", error=str(e))
@@ -526,9 +510,9 @@ class DatabasePerformanceOptimizer:
 
     @asynccontextmanager
     async def performance_monitoring_session(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Context manager for performance monitoring during operations."""
         start_time = time.time()
         start_metrics = await self.analyze_current_performance()
@@ -574,15 +558,15 @@ def monitor_db_performance(operation_name: str):
     """Decorator to monitor database operation performance."""
 
     def decorator(func):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if asyncio.iscoroutinefunction(func):
 
             async def async_wrapper(*args, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 optimizer = await get_database_optimizer()
                 async with optimizer.performance_monitoring_session():
                     start_time = time.time()
@@ -609,9 +593,9 @@ def monitor_db_performance(operation_name: str):
         else:
 
             def sync_wrapper(*args, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 start_time = time.time()
                 try:
                     result = func(*args, **kwargs)

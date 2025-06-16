@@ -104,9 +104,9 @@ except ImportError:
 
     class WINAEnforcementOptimizer:
         def __init__(self, enable_wina=True):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             self.enable_wina = enable_wina
             self.cache_ttl = timedelta(minutes=5)
             self.max_cache_size = 1000
@@ -115,49 +115,49 @@ except ImportError:
             self._enforcement_history = []
 
         async def _select_enforcement_strategy(self, context, rules, opa_client):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             if not self.enable_wina:
                 return EnforcementStrategy.STANDARD
             return EnforcementStrategy.WINA_OPTIMIZED
 
         async def _calculate_policy_relevance(self, rule, context):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return 0.8  # Mock relevance score
 
         async def _verify_constitutional_compliance(self, context, rules):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return True  # Mock compliance
 
         def _generate_cache_key(self, context):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             import hashlib
 
             return hashlib.sha256(str(context).encode()).hexdigest()
 
         def _calculate_confidence_score(self, response, strategy, compliance):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return 0.9  # Mock confidence
 
         def _generate_enforcement_reason(self, response, decision, strategy, context):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return f"Action '{context.action_type}' on resource '{context.resource_id}' by user '{context.user_id}' is {decision} by policy"
 
         def get_performance_summary(self):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return {
                 "total_enforcements": len(self._enforcement_history),
                 "average_enforcement_time_ms": 25.0,
@@ -166,9 +166,9 @@ except ImportError:
             }
 
         async def _get_wina_strategy_insights(self, context, rules):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return {
                 "constitutional_risk": 0.3,
                 "performance_benefit": 0.4,
@@ -177,15 +177,15 @@ except ImportError:
             }
 
         async def _update_node_health_score(self, node_id):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         async def _update_load_balancing_weights(self):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
     async def get_wina_enforcement_optimizer():
@@ -314,9 +314,7 @@ class TestWINAEnforcementOptimizer:
         # sha256: func_hash
         """Test strategy selection for constitutional priority."""
         # Mock WINA insights to trigger constitutional priority
-        with patch.object(
-            wina_optimizer, "_get_wina_strategy_insights"
-        ) as mock_insights:
+        with patch.object(wina_optimizer, "_get_wina_strategy_insights") as mock_insights:
             mock_insights.return_value = {
                 "constitutional_risk": 0.6,  # High risk
                 "performance_benefit": 0.3,
@@ -339,9 +337,7 @@ class TestWINAEnforcementOptimizer:
         # sha256: func_hash
         """Test strategy selection for performance-focused enforcement."""
         # Mock WINA insights to trigger performance focus
-        with patch.object(
-            wina_optimizer, "_get_wina_strategy_insights"
-        ) as mock_insights:
+        with patch.object(wina_optimizer, "_get_wina_strategy_insights") as mock_insights:
             mock_insights.return_value = {
                 "constitutional_risk": 0.2,  # Low risk
                 "performance_benefit": 0.5,  # High benefit
@@ -364,9 +360,7 @@ class TestWINAEnforcementOptimizer:
         # sha256: func_hash
         """Test policy relevance calculation."""
         # Test with policy containing relevant terms
-        mock_policy_rule.rule_content = (
-            "allow { user.id == 'test_user' && action.type == 'read' }"
-        )
+        mock_policy_rule.rule_content = "allow { user.id == 'test_user' && action.type == 'read' }"
 
         relevance = await wina_optimizer._calculate_policy_relevance(
             mock_policy_rule, enforcement_context
@@ -403,9 +397,7 @@ class TestWINAEnforcementOptimizer:
         """Test constitutional compliance verification."""
         # Mock constitutional WINA integration
         mock_constitutional_wina = AsyncMock()
-        mock_constitutional_wina.verify_enforcement_compliance.return_value = (
-            0.9  # High compliance
-        )
+        mock_constitutional_wina.verify_enforcement_compliance.return_value = 0.9  # High compliance
         wina_optimizer.constitutional_wina = mock_constitutional_wina
 
         compliance = await wina_optimizer._verify_constitutional_compliance(
@@ -425,9 +417,7 @@ class TestWINAEnforcementOptimizer:
         """Test constitutional compliance verification with low compliance."""
         # Mock constitutional WINA integration with low compliance
         mock_constitutional_wina = AsyncMock()
-        mock_constitutional_wina.verify_enforcement_compliance.return_value = (
-            0.7  # Low compliance
-        )
+        mock_constitutional_wina.verify_enforcement_compliance.return_value = 0.7  # Low compliance
         wina_optimizer.constitutional_wina = mock_constitutional_wina
 
         compliance = await wina_optimizer._verify_constitutional_compliance(
@@ -451,9 +441,7 @@ class TestWINAEnforcementOptimizer:
             hashlib.sha256().hexdigest()
         )  # Dynamically compute SHA-256 hash length
         assert len(cache_key) == expected_length
-        assert all(
-            c in "0123456789abcdef" for c in cache_key
-        )  # Verify hexadecimal format
+        assert all(c in "0123456789abcdef" for c in cache_key)  # Verify hexadecimal format
 
         # Test that same context generates same key
         cache_key2 = wina_optimizer._generate_cache_key(enforcement_context)
@@ -482,9 +470,7 @@ class TestWINAEnforcementOptimizer:
         assert confidence <= 1.0
 
     @pytest.mark.asyncio
-    async def test_enforcement_reason_generation(
-        self, wina_optimizer, enforcement_context
-    ):
+    async def test_enforcement_reason_generation(self, wina_optimizer, enforcement_context):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

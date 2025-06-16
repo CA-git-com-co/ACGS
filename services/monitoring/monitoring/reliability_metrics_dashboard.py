@@ -34,9 +34,7 @@ try:
 except ImportError:
     # Fallback for development/testing
     logger = logging.getLogger(__name__)
-    logger.warning(
-        "Could not import QEC enhancement modules. Using mock implementations."
-    )
+    logger.warning("Could not import QEC enhancement modules. Using mock implementations.")
 
     class FidelityLevel(Enum):
         GREEN = "green"
@@ -138,9 +136,9 @@ class ReliabilityMetricsDashboard:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the reliability metrics dashboard."""
         self.config = config or self._get_default_config()
         self.app = FastAPI(title="Reliability Metrics Dashboard", version="1.0.0")
@@ -195,24 +193,24 @@ class ReliabilityMetricsDashboard:
         }
 
     def _setup_routes(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Setup FastAPI routes for the dashboard API."""
 
         @self.app.get("/", response_class=HTMLResponse)
         async def dashboard_home():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             """Serve the main dashboard HTML page."""
             return self._generate_dashboard_html()
 
         @self.app.get("/api/metrics/current")
         async def get_current_metrics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             """Get current reliability metrics."""
             return {
                 "timestamp": datetime.now().isoformat(),
@@ -236,9 +234,7 @@ class ReliabilityMetricsDashboard:
 
                 historical = self.historical_data.get(metric_enum, [])
                 filtered_data = [
-                    asdict(metric)
-                    for metric in historical
-                    if metric.timestamp >= cutoff_time
+                    asdict(metric) for metric in historical if metric.timestamp >= cutoff_time
                 ]
 
                 trend = self._calculate_trend(metric_enum, hours)
@@ -250,15 +246,13 @@ class ReliabilityMetricsDashboard:
                     "summary": self._calculate_metric_summary(filtered_data),
                 }
             except ValueError:
-                raise HTTPException(
-                    status_code=400, detail=f"Invalid metric type: {metric_type}"
-                )
+                raise HTTPException(status_code=400, detail=f"Invalid metric type: {metric_type}")
 
         @self.app.get("/api/alerts/active")
         async def get_active_alerts():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             """Get currently active alerts."""
             return {
                 "alerts": [asdict(alert) for alert in self.active_alerts],
@@ -268,9 +262,9 @@ class ReliabilityMetricsDashboard:
 
         @self.app.post("/api/alerts/{alert_id}/acknowledge")
         async def acknowledge_alert(alert_id: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             """Acknowledge a specific alert."""
             for alert in self.active_alerts:
                 if alert.id == alert_id:
@@ -280,9 +274,9 @@ class ReliabilityMetricsDashboard:
 
         @self.app.get("/api/dashboard/summary")
         async def get_dashboard_summary():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             """Get high-level dashboard summary."""
             return {
                 "overall_reliability": self._calculate_overall_reliability(),
@@ -303,9 +297,9 @@ class ReliabilityMetricsDashboard:
 
         @self.app.get("/api/metrics/export")
         async def export_metrics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             """Export metrics data for external analysis."""
             return {
                 "export_timestamp": datetime.now().isoformat(),
@@ -318,26 +312,24 @@ class ReliabilityMetricsDashboard:
                     for metric_type, data in self.historical_data.items()
                 },
                 "configuration": {
-                    "targets": {
-                        k.value: v for k, v in self.reliability_targets.items()
-                    },
+                    "targets": {k.value: v for k, v in self.reliability_targets.items()},
                     "update_interval": self.config["update_interval_seconds"],
                 },
             }
 
     async def start_monitoring(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start the background monitoring tasks."""
         if self.monitoring_task is None:
             self.monitoring_task = asyncio.create_task(self._monitoring_loop())
             logger.info("Started reliability metrics monitoring")
 
     async def stop_monitoring(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop the background monitoring tasks."""
         if self.monitoring_task:
             self.monitoring_task.cancel()
@@ -349,9 +341,9 @@ class ReliabilityMetricsDashboard:
             logger.info("Stopped reliability metrics monitoring")
 
     async def _monitoring_loop(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Main monitoring loop for collecting metrics."""
         while True:
             try:
@@ -366,9 +358,9 @@ class ReliabilityMetricsDashboard:
                 await asyncio.sleep(5)  # Brief pause before retrying
 
     async def _collect_metrics(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Collect current reliability metrics from various sources."""
         timestamp = datetime.now()
 
@@ -409,9 +401,9 @@ class ReliabilityMetricsDashboard:
         await self._collect_availability_metrics(timestamp)
 
     async def _collect_prometheus_metrics(self, timestamp: datetime):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Collect metrics from Prometheus endpoint."""
         prometheus_url = self.config["prometheus_url"]
 
@@ -445,9 +437,9 @@ class ReliabilityMetricsDashboard:
             logger.warning(f"Could not collect Prometheus metrics: {e}")
 
     async def _collect_llm_metrics(self, timestamp: datetime):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Collect LLM-specific reliability metrics."""
         # Mock implementation - would integrate with actual LLM monitoring
         try:
@@ -491,9 +483,9 @@ class ReliabilityMetricsDashboard:
             logger.error(f"Error collecting LLM metrics: {e}")
 
     async def _collect_availability_metrics(self, timestamp: datetime):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Collect system availability and performance metrics."""
         # Mock implementation - would integrate with actual monitoring
         try:
@@ -519,9 +511,9 @@ class ReliabilityMetricsDashboard:
             logger.error(f"Error collecting availability metrics: {e}")
 
     def _update_metric(self, metric: ReliabilityMetric):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update a reliability metric and maintain historical data."""
         # Update current metric
         self.current_metrics[metric.metric_type] = metric
@@ -535,9 +527,9 @@ class ReliabilityMetricsDashboard:
         # Maintain maximum historical data points
         max_points = self.config["max_metrics_per_type"]
         if len(self.historical_data[metric.metric_type]) > max_points:
-            self.historical_data[metric.metric_type] = self.historical_data[
-                metric.metric_type
-            ][-max_points:]
+            self.historical_data[metric.metric_type] = self.historical_data[metric.metric_type][
+                -max_points:
+            ]
 
     async def _get_fidelity_components(self) -> FidelityComponents:
         """Get current fidelity components from the monitor."""
@@ -611,9 +603,9 @@ class ReliabilityMetricsDashboard:
             return "critical"
 
     async def _analyze_trends(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Analyze trends for all metrics and update predictions."""
         for metric_type in ReliabilityMetricType:
             if metric_type in self.historical_data:
@@ -676,9 +668,9 @@ class ReliabilityMetricsDashboard:
         )
 
     async def _check_alerts(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Check for alert conditions and generate alerts."""
         new_alerts = []
 
@@ -715,10 +707,7 @@ class ReliabilityMetricsDashboard:
         for alert in self.active_alerts:
             if not alert.resolved:
                 current_metric = self.current_metrics.get(alert.metric_type)
-                if (
-                    current_metric
-                    and current_metric.value >= current_metric.target_threshold
-                ):
+                if current_metric and current_metric.value >= current_metric.target_threshold:
                     alert.resolved = True
                     alert.resolution_notes = "Metric returned to healthy threshold"
 
@@ -737,9 +726,9 @@ class ReliabilityMetricsDashboard:
             return "info"
 
     async def _cleanup_old_data(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clean up old historical data and resolved alerts."""
         retention_days = self.config["historical_retention_days"]
         cutoff_time = datetime.now() - timedelta(days=retention_days)
@@ -755,9 +744,7 @@ class ReliabilityMetricsDashboard:
         # Move resolved alerts to history
         resolved_alerts = [alert for alert in self.active_alerts if alert.resolved]
         self.alert_history.extend(resolved_alerts)
-        self.active_alerts = [
-            alert for alert in self.active_alerts if not alert.resolved
-        ]
+        self.active_alerts = [alert for alert in self.active_alerts if not alert.resolved]
 
         # Clean up old alert history
         self.alert_history = [
@@ -766,18 +753,14 @@ class ReliabilityMetricsDashboard:
 
     def _get_metrics_summary(self) -> Dict[str, Any]:
         """Get summary of current metrics."""
-        healthy_count = sum(
-            1 for metric in self.current_metrics.values() if metric.is_healthy
-        )
+        healthy_count = sum(1 for metric in self.current_metrics.values() if metric.is_healthy)
         total_count = len(self.current_metrics)
 
         return {
             "total_metrics": total_count,
             "healthy_metrics": healthy_count,
             "unhealthy_metrics": total_count - healthy_count,
-            "health_percentage": (
-                (healthy_count / total_count * 100) if total_count > 0 else 0
-            ),
+            "health_percentage": ((healthy_count / total_count * 100) if total_count > 0 else 0),
             "last_update": max(
                 (metric.timestamp for metric in self.current_metrics.values()),
                 default=datetime.now(),
@@ -816,13 +799,9 @@ class ReliabilityMetricsDashboard:
                     f"Address {metric_type.value}: current {metric.value:.3f} < target {metric.target_threshold:.3f}"
                 )
 
-        critical_alerts = [
-            alert for alert in self.active_alerts if alert.severity == "critical"
-        ]
+        critical_alerts = [alert for alert in self.active_alerts if alert.severity == "critical"]
         if critical_alerts:
-            recommendations.append(
-                f"Resolve {len(critical_alerts)} critical alert(s) immediately"
-            )
+            recommendations.append(f"Resolve {len(critical_alerts)} critical alert(s) immediately")
 
         if not recommendations:
             recommendations.append("System is operating within all reliability targets")
@@ -868,7 +847,7 @@ class ReliabilityMetricsDashboard:
                 Loading dashboard...
             </div>
             <script>
-                // Basic script to fetch and display data (conceptual)
+                # Basic script to fetch and display data (conceptual)
                 async function loadDashboard() {
                     try {
                         const response = await fetch('/api/dashboard/summary');

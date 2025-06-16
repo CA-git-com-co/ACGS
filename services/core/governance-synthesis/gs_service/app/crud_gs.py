@@ -31,12 +31,8 @@ async def create_policy_template(
     return db_template
 
 
-async def get_policy_template(
-    db: AsyncSession, template_id: int
-) -> Optional[PolicyTemplate]:
-    result = await db.execute(
-        select(PolicyTemplate).filter(PolicyTemplate.id == template_id)
-    )
+async def get_policy_template(db: AsyncSession, template_id: int) -> Optional[PolicyTemplate]:
+    result = await db.execute(select(PolicyTemplate).filter(PolicyTemplate.id == template_id))
     return result.scalars().first()
 
 
@@ -159,9 +155,7 @@ async def get_policy(db: AsyncSession, policy_id: int) -> Optional[Policy]:
     return result.scalars().first()
 
 
-async def get_policies(
-    db: AsyncSession, skip: int = 0, limit: int = 100
-) -> List[Policy]:
+async def get_policies(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[Policy]:
     result = await db.execute(select(Policy).offset(skip).limit(limit))
     return result.scalars().all()
 
@@ -178,9 +172,7 @@ async def update_policy(
     update_data.pop("id", None)
     update_data.pop("created_by_user_id", None)
     update_data.pop("created_at", None)
-    update_data.pop(
-        "template_id", None
-    )  # template_id should not be changed after creation
+    update_data.pop("template_id", None)  # template_id should not be changed after creation
 
     # Get current policy to access instance version
     current_policy = await get_policy(db, policy_id)

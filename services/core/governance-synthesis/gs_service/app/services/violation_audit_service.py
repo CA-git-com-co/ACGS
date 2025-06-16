@@ -101,9 +101,9 @@ class ViolationAuditService:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize the violation audit service.
 
@@ -265,9 +265,7 @@ class ViolationAuditService:
         """
         if db is None:
             async for db_session in get_async_db():
-                return await self.generate_analytics(
-                    period, start_time, end_time, db_session
-                )
+                return await self.generate_analytics(period, start_time, end_time, db_session)
 
         try:
             # Set default time range
@@ -333,14 +331,10 @@ class ViolationAuditService:
             )
 
             # Get top violation sources (simplified)
-            top_sources = await self._get_top_violation_sources(
-                start_time, end_time, db
-            )
+            top_sources = await self._get_top_violation_sources(start_time, end_time, db)
 
             # Generate trend analysis
-            trend_analysis = await self._generate_trend_analysis(
-                period, start_time, end_time, db
-            )
+            trend_analysis = await self._generate_trend_analysis(period, start_time, end_time, db)
 
             return ViolationAnalytics(
                 period=period,
@@ -391,15 +385,11 @@ class ViolationAuditService:
         """
         if db is None:
             async for db_session in get_async_db():
-                return await self.generate_compliance_report(
-                    start_time, end_time, db_session
-                )
+                return await self.generate_compliance_report(start_time, end_time, db_session)
 
         try:
             # Generate analytics for the period
-            analytics = await self.generate_analytics(
-                AnalyticsPeriod.DAY, start_time, end_time, db
-            )
+            analytics = await self.generate_analytics(AnalyticsPeriod.DAY, start_time, end_time, db)
 
             # Calculate compliance metrics
             critical_violations = analytics.violations_by_severity.get("critical", 0)
@@ -415,9 +405,7 @@ class ViolationAuditService:
 
             # Calculate policy adherence rate
             policy_adherence_rate = 100 - (
-                analytics.total_violations
-                / max(1, analytics.total_violations + 100)
-                * 100
+                analytics.total_violations / max(1, analytics.total_violations + 100) * 100
             )
 
             # Calculate escalation effectiveness
@@ -494,9 +482,7 @@ class ViolationAuditService:
         """
         if db is None:
             async for db_session in get_async_db():
-                return await self.export_audit_trail(
-                    start_time, end_time, format_type, db_session
-                )
+                return await self.export_audit_trail(start_time, end_time, format_type, db_session)
 
         try:
             # Get audit logs for the period
@@ -578,9 +564,7 @@ class ViolationAuditService:
 
         return protected_data
 
-    def _get_period_start_time(
-        self, period: AnalyticsPeriod, end_time: datetime
-    ) -> datetime:
+    def _get_period_start_time(self, period: AnalyticsPeriod, end_time: datetime) -> datetime:
         """Get start time for analytics period."""
         if period == AnalyticsPeriod.HOUR:
             return end_time - timedelta(hours=1)
@@ -666,12 +650,8 @@ class ViolationAuditService:
 
             # Calculate trend direction (simplified)
             if len(daily_counts) >= 2:
-                recent_avg = sum(d["count"] for d in daily_counts[-3:]) / min(
-                    3, len(daily_counts)
-                )
-                earlier_avg = sum(d["count"] for d in daily_counts[:3]) / min(
-                    3, len(daily_counts)
-                )
+                recent_avg = sum(d["count"] for d in daily_counts[-3:]) / min(3, len(daily_counts))
+                earlier_avg = sum(d["count"] for d in daily_counts[:3]) / min(3, len(daily_counts))
 
                 if recent_avg > earlier_avg * 1.1:
                     trend_direction = "increasing"
@@ -719,9 +699,7 @@ class ViolationAuditService:
         recommendations = []
 
         if critical_violations > 0:
-            recommendations.append(
-                f"Address {critical_violations} critical violations immediately"
-            )
+            recommendations.append(f"Address {critical_violations} critical violations immediately")
 
         if analytics.resolution_rate < 80:
             recommendations.append(
@@ -729,20 +707,14 @@ class ViolationAuditService:
             )
 
         if analytics.average_resolution_time_minutes > 60:
-            recommendations.append(
-                "Reduce average resolution time - currently exceeds 1 hour"
-            )
+            recommendations.append("Reduce average resolution time - currently exceeds 1 hour")
 
         if analytics.escalations_count > analytics.total_violations * 0.3:
-            recommendations.append(
-                "Review escalation thresholds - high escalation rate detected"
-            )
+            recommendations.append("Review escalation thresholds - high escalation rate detected")
 
         # Analyze violation types
         if analytics.violations_by_type:
-            most_common_type = max(
-                analytics.violations_by_type.items(), key=lambda x: x[1]
-            )
+            most_common_type = max(analytics.violations_by_type.items(), key=lambda x: x[1])
             if most_common_type[1] > analytics.total_violations * 0.4:
                 recommendations.append(
                     f"Focus on reducing {most_common_type[0]} violations - most common type"

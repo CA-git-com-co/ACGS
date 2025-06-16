@@ -18,9 +18,9 @@ try:
 except ImportError:
     # Fallback for environments without LangGraph
     def add_messages(x, y):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Fallback message accumulator when LangGraph is not available."""
         if isinstance(x, list) and isinstance(y, list):
             return x + y
@@ -113,9 +113,7 @@ class ConstitutionalCouncilState(BaseACGSState):
     escalation_required: Optional[bool]
 
     # Workflow state tracking
-    current_phase: Optional[
-        str
-    ]  # "proposal", "feedback", "analysis", "voting", "implementation"
+    current_phase: Optional[str]  # "proposal", "feedback", "analysis", "voting", "implementation"
     phase_deadlines: Optional[Dict[str, str]]
     automated_processing: Optional[bool]
 

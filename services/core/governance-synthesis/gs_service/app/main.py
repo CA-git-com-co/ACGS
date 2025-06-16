@@ -33,9 +33,7 @@ try:
 except ImportError as e:
     SHARED_COMPONENTS_AVAILABLE = False
     logger_shared = logging.getLogger("shared_components")
-    logger_shared.warning(
-        f"Shared components not available: {e}. Using fallback implementations."
-    )
+    logger_shared.warning(f"Shared components not available: {e}. Using fallback implementations.")
 
 # Configure enhanced logging for Phase A3 production
 logging.basicConfig(
@@ -99,9 +97,7 @@ try:
     from app.workflows.policy_synthesis_workflow import PolicySynthesisWorkflow
 
     ROUTERS_AVAILABLE = True
-    logger.info(
-        "All API routers and services imported successfully (including Phase A3)"
-    )
+    logger.info("All API routers and services imported successfully (including Phase A3)")
 except ImportError as e:
     logger.warning(f"Some routers not available: {e}. Running in minimal mode.")
     phase_a3_synthesis_router = None
@@ -114,9 +110,9 @@ policy_workflow = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Application lifespan management with service initialization."""
     global enhanced_synthesis_service, multi_model_coordinator, policy_workflow
 
@@ -212,9 +208,7 @@ try:
         endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
         return await endpoint_func()
 
-    logger.info(
-        "✅ Enhanced Prometheus metrics enabled for Governance Synthesis Service"
-    )
+    logger.info("✅ Enhanced Prometheus metrics enabled for Governance Synthesis Service")
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
 
@@ -230,9 +224,9 @@ except ImportError as e:
 
 @app.middleware("http")
 async def add_process_time_header(request, call_next):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Add response time tracking."""
     start_time = time.time()
     response = await call_next(request)
@@ -243,9 +237,9 @@ async def add_process_time_header(request, call_next):
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Global exception handler for production error management."""
     logger.error(f"Unhandled exception: {exc}", exc_info=True)
     return JSONResponse(
@@ -260,9 +254,9 @@ async def global_exception_handler(request, exc):
 
 @app.get("/")
 async def root(request: Request):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Root endpoint with comprehensive service information."""
     correlation_id = getattr(request.state, "correlation_id", None)
     response_time_ms = getattr(request.state, "response_time_ms", None)
@@ -319,9 +313,9 @@ async def root(request: Request):
 
 @app.get("/health")
 async def health_check(request: Request):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Enhanced health check with comprehensive service status."""
     correlation_id = getattr(request.state, "correlation_id", None)
     uptime_seconds = time.time() - service_start_time
@@ -334,16 +328,12 @@ async def health_check(request: Request):
         "uptime_seconds": uptime_seconds,
         "dependencies": {
             "enhanced_synthesis": (
-                "operational"
-                if enhanced_synthesis_service is not None
-                else "unavailable"
+                "operational" if enhanced_synthesis_service is not None else "unavailable"
             ),
             "multi_model_coordinator": (
                 "operational" if multi_model_coordinator is not None else "unavailable"
             ),
-            "policy_workflow": (
-                "operational" if policy_workflow is not None else "unavailable"
-            ),
+            "policy_workflow": ("operational" if policy_workflow is not None else "unavailable"),
             "shared_components": (
                 "operational" if SHARED_COMPONENTS_AVAILABLE else "fallback_mode"
             ),
@@ -357,8 +347,7 @@ async def health_check(request: Request):
         "synthesis_capabilities": {
             "standard_synthesis": True,
             "enhanced_validation": ROUTERS_AVAILABLE,
-            "multi_model_consensus": ROUTERS_AVAILABLE
-            and multi_model_coordinator is not None,
+            "multi_model_consensus": ROUTERS_AVAILABLE and multi_model_coordinator is not None,
             "human_review_integration": ROUTERS_AVAILABLE,
             "proactive_error_prediction": ROUTERS_AVAILABLE,
         },
@@ -384,9 +373,9 @@ async def health_check(request: Request):
 
 @app.get("/api/v1/status")
 async def api_status():
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Enhanced API status endpoint with detailed service information."""
     return {
         "api_version": "v1",
@@ -429,9 +418,9 @@ async def api_status():
 
 @app.get("/api/v1/performance")
 async def performance_metrics():
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get current performance metrics."""
     metrics = {
         "timestamp": time.time(),
@@ -448,9 +437,7 @@ async def performance_metrics():
     ):
         try:
             # Get performance metrics from enhanced synthesis service
-            synthesis_metrics = (
-                await enhanced_synthesis_service.get_performance_metrics()
-            )
+            synthesis_metrics = await enhanced_synthesis_service.get_performance_metrics()
             metrics["synthesis_performance"] = synthesis_metrics
         except Exception as e:
             logger.warning(f"Failed to get synthesis metrics: {e}")
@@ -530,9 +517,9 @@ if ROUTERS_AVAILABLE:
 # Production-grade startup validation
 @app.on_event("startup")
 async def startup_validation():
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Validate service readiness on startup."""
     logger.info("🔍 Performing startup validation...")
 
@@ -570,7 +557,5 @@ if __name__ == "__main__":
         "lifespan": "on",
     }
 
-    logger.info(
-        f"🚀 Starting ACGS-1 Phase 3 Production GS Service on port {config['port']}"
-    )
+    logger.info(f"🚀 Starting ACGS-1 Phase 3 Production GS Service on port {config['port']}")
     uvicorn.run(app, **config)

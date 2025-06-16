@@ -19,9 +19,9 @@ class ACServiceClient:
     """Client for communicating with AC Service."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.base_url = config.get("ac_service_url", "http://localhost:8001")
         self.client = httpx.AsyncClient(
             base_url=self.base_url,
@@ -30,9 +30,9 @@ class ACServiceClient:
         )
 
     async def close(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Close the HTTP client."""
         await self.client.aclose()
 
@@ -140,9 +140,7 @@ class ACServiceClient:
                 "source": "ec_service",
             }
 
-            response = await self.client.post(
-                "/api/v1/fidelity/report-activity", json=request_data
-            )
+            response = await self.client.post("/api/v1/fidelity/report-activity", json=request_data)
             response.raise_for_status()
 
             return response.json()

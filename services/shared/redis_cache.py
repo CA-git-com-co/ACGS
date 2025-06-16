@@ -19,9 +19,9 @@ class RedisCache:
     """Redis-based distributed cache with TTL policies."""
 
     def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize Redis cache connection."""
         try:
             self.redis_client = redis.Redis(
@@ -105,18 +105,14 @@ class RedisCache:
             logger.error(f"Error in get_or_set for key {key}: {e}")
             return None
 
-    def cache_policy_decision(
-        self, policy_content: str, input_data: Dict, result: Any
-    ) -> str:
+    def cache_policy_decision(self, policy_content: str, input_data: Dict, result: Any) -> str:
         """Cache a policy decision with 5-minute TTL."""
         cache_data = {"policy_content": policy_content, "input_data": input_data}
         key = self._generate_key("policy_decision", cache_data)
         self.set(key, result, ttl_seconds=300)  # 5 minutes
         return key
 
-    def get_cached_policy_decision(
-        self, policy_content: str, input_data: Dict
-    ) -> Optional[Any]:
+    def get_cached_policy_decision(self, policy_content: str, input_data: Dict) -> Optional[Any]:
         """Get cached policy decision."""
         cache_data = {"policy_content": policy_content, "input_data": input_data}
         key = self._generate_key("policy_decision", cache_data)
@@ -207,13 +203,13 @@ def cache_response(cache_key: str, ttl_seconds: int = 300):
     """Decorator for caching function responses."""
 
     def decorator(func):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         async def wrapper(*args, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             cache = get_cache()
 
             # Generate cache key from function name and arguments

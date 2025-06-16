@@ -7,9 +7,9 @@ class FallbackCache:
     """In-memory cache fallback when Redis is unavailable."""
 
     def __init__(self, max_size: int = 1000):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.cache: Dict[str, Dict[str, Any]] = {}
         self.max_size = max_size
         self.lock = threading.RLock()
@@ -19,9 +19,9 @@ class FallbackCache:
         with self.lock:
             if len(self.cache) >= self.max_size:
                 # Remove oldest entries
-                oldest_keys = sorted(
-                    self.cache.keys(), key=lambda k: self.cache[k]["timestamp"]
-                )[:10]
+                oldest_keys = sorted(self.cache.keys(), key=lambda k: self.cache[k]["timestamp"])[
+                    :10
+                ]
                 for old_key in oldest_keys:
                     del self.cache[old_key]
 

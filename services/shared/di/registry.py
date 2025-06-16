@@ -33,9 +33,9 @@ class ServiceRegistration:
     dependencies: List[Type] = None
 
     def __post_init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.dependencies is None:
             self.dependencies = []
 
@@ -49,9 +49,9 @@ class ServiceRegistry:
     """
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize service registry."""
         self._registrations: Dict[Type, ServiceRegistration] = {}
         self._instances: Dict[Type, Any] = {}
@@ -90,21 +90,15 @@ class ServiceRegistry:
 
         return self
 
-    def register_singleton(
-        self, interface: Type, implementation: Type = None
-    ) -> "ServiceRegistry":
+    def register_singleton(self, interface: Type, implementation: Type = None) -> "ServiceRegistry":
         """Register a singleton service."""
         return self.register(interface, implementation, ServiceScope.SINGLETON)
 
-    def register_transient(
-        self, interface: Type, implementation: Type = None
-    ) -> "ServiceRegistry":
+    def register_transient(self, interface: Type, implementation: Type = None) -> "ServiceRegistry":
         """Register a transient service."""
         return self.register(interface, implementation, ServiceScope.TRANSIENT)
 
-    def register_scoped(
-        self, interface: Type, implementation: Type = None
-    ) -> "ServiceRegistry":
+    def register_scoped(self, interface: Type, implementation: Type = None) -> "ServiceRegistry":
         """Register a scoped service."""
         return self.register(interface, implementation, ServiceScope.SCOPED)
 
@@ -178,9 +172,9 @@ class ServiceRegistry:
         return False
 
     def clear(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear all registrations."""
         self._registrations.clear()
         self._instances.clear()
@@ -210,9 +204,7 @@ class ServiceRegistry:
         for interface, registration in self._registrations.items():
             for dependency in registration.dependencies:
                 if not self.is_registered(dependency):
-                    errors.append(
-                        f"Service {interface} depends on unregistered {dependency}"
-                    )
+                    errors.append(f"Service {interface} depends on unregistered {dependency}")
 
         return errors
 

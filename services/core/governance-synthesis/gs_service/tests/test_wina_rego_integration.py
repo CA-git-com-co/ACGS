@@ -18,16 +18,14 @@ class TestWINARegoIntegration:
 
     @pytest.mark.asyncio
     async def test_wina_rego_synthesis_basic_functionality(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test basic WINA Rego synthesis functionality."""
 
         # Mock the WINA components to avoid dependency issues
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", True):
-            with patch(
-                "app.core.wina_rego_synthesis.load_wina_config_from_env"
-            ) as mock_config:
+            with patch("app.core.wina_rego_synthesis.load_wina_config_from_env") as mock_config:
                 # Mock WINA configuration
                 mock_wina_config = Mock()
                 mock_wina_integration_config = Mock()
@@ -49,9 +47,9 @@ class TestWINARegoIntegration:
 
     @pytest.mark.asyncio
     async def test_wina_rego_synthesis_without_dependencies(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test WINA Rego synthesis gracefully handles missing dependencies."""
 
         # Test with WINA not available
@@ -66,9 +64,9 @@ class TestWINARegoIntegration:
 
     @pytest.mark.asyncio
     async def test_rego_policy_validation_basic(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test basic Rego policy validation functionality."""
 
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", False):
@@ -98,9 +96,9 @@ allow {
 
     @pytest.mark.asyncio
     async def test_constitutional_compliance_verification(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test constitutional compliance verification."""
 
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", False):
@@ -138,9 +136,9 @@ allow {
 
     @pytest.mark.asyncio
     async def test_fallback_rego_generation(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test fallback Rego policy generation."""
 
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", False):
@@ -161,9 +159,9 @@ allow {
 
     @pytest.mark.asyncio
     async def test_rego_format_enforcement(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test Rego format enforcement functionality."""
 
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", False):
@@ -189,9 +187,9 @@ allow {
 
     @pytest.mark.asyncio
     async def test_performance_metrics_calculation(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance metrics calculation."""
 
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", False):
@@ -232,9 +230,9 @@ allow {
             assert metrics.optimization_applied is False
 
     def test_performance_summary_structure(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance summary structure."""
 
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", False):
@@ -260,9 +258,9 @@ allow {
 
     @pytest.mark.asyncio
     async def test_global_function_interfaces(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test global function interfaces work correctly."""
 
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", False):
@@ -283,9 +281,9 @@ allow {
 
     @pytest.mark.asyncio
     async def test_api_integration_readiness(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that the implementation is ready for API integration."""
 
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", False):

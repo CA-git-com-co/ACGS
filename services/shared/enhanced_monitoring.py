@@ -95,9 +95,9 @@ class GovernanceWorkflowMonitor:
     """Monitor governance workflow performance and compliance."""
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.workflow_metrics: Dict[str, Dict[str, Any]] = {}
         self.compliance_targets = {
             "policy_creation": {"max_time_hours": 24, "approval_rate": 0.8},
@@ -114,9 +114,9 @@ class GovernanceWorkflowMonitor:
         success: bool,
         metadata: Dict[str, Any] = None,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record governance workflow execution."""
         if workflow_type not in self.workflow_metrics:
             self.workflow_metrics[workflow_type] = {
@@ -137,9 +137,7 @@ class GovernanceWorkflowMonitor:
         if success:
             metrics["successful_executions"] += 1
 
-        metrics["success_rate"] = (
-            metrics["successful_executions"] / metrics["total_executions"]
-        )
+        metrics["success_rate"] = metrics["successful_executions"] / metrics["total_executions"]
 
     def check_compliance(self) -> Dict[str, Dict[str, Any]]:
         """Check governance workflow compliance against targets."""
@@ -150,19 +148,16 @@ class GovernanceWorkflowMonitor:
             compliance = {"compliant": True, "issues": [], "metrics": metrics}
 
             # Check time compliance
-            if (
-                "max_time_ms" in targets
-                and metrics.get("avg_time", 0) > targets["max_time_ms"]
-            ):
+            if "max_time_ms" in targets and metrics.get("avg_time", 0) > targets["max_time_ms"]:
                 compliance["compliant"] = False
                 compliance["issues"].append(
                     f"Average time {metrics['avg_time']:.2f}ms exceeds target {targets['max_time_ms']}ms"
                 )
 
             # Check success rate compliance
-            if "success_rate" in targets and metrics.get(
+            if "success_rate" in targets and metrics.get("success_rate", 0) < targets.get(
                 "success_rate", 0
-            ) < targets.get("success_rate", 0):
+            ):
                 compliance["compliant"] = False
                 compliance["issues"].append(
                     f"Success rate {metrics['success_rate']:.2%} below target {targets.get('success_rate', 0):.2%}"
@@ -177,9 +172,9 @@ class EnhancedMonitoringService:
     """Enhanced monitoring service for ACGS-1."""
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.health_checks: Dict[str, HealthCheck] = {}
         self.alerts: List[Alert] = []
         self.service_metrics: Dict[str, List[ServiceMetrics]] = {}
@@ -202,9 +197,9 @@ class EnhancedMonitoringService:
         port: int,
         check_interval: float = 30.0,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Register a service for monitoring."""
         self.health_checks[service_name] = HealthCheck(
             service_name=service_name,
@@ -215,16 +210,16 @@ class EnhancedMonitoringService:
         logger.info(f"Registered service for monitoring: {service_name}")
 
     def add_alert_callback(self, callback: Callable[[Alert], None]):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add callback for alert notifications."""
         self.alert_callbacks.append(callback)
 
     async def start_monitoring(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start continuous monitoring of all services."""
         self.monitoring_active = True
         logger.info("🔍 Starting enhanced monitoring service")
@@ -247,17 +242,17 @@ class EnhancedMonitoringService:
             self.monitoring_active = False
 
     async def stop_monitoring(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop monitoring service."""
         self.monitoring_active = False
         logger.info("🔄 Stopping enhanced monitoring service")
 
     async def _monitor_service_health(self, service_name: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Monitor individual service health."""
         health_check = self.health_checks[service_name]
 
@@ -277,28 +272,18 @@ class EnhancedMonitoringService:
 
                     if (
                         health_check.status != ServiceStatus.HEALTHY
-                        and health_check.consecutive_successes
-                        >= health_check.success_threshold
+                        and health_check.consecutive_successes >= health_check.success_threshold
                     ):
-                        await self._update_service_status(
-                            service_name, ServiceStatus.HEALTHY
-                        )
+                        await self._update_service_status(service_name, ServiceStatus.HEALTHY)
                 else:
                     health_check.consecutive_failures += 1
                     health_check.consecutive_successes = 0
 
-                    if (
-                        health_check.consecutive_failures
-                        >= health_check.failure_threshold
-                    ):
-                        await self._update_service_status(
-                            service_name, ServiceStatus.UNHEALTHY
-                        )
+                    if health_check.consecutive_failures >= health_check.failure_threshold:
+                        await self._update_service_status(service_name, ServiceStatus.UNHEALTHY)
 
                 # Record metrics
-                await self._record_service_metrics(
-                    service_name, response_time, is_healthy
-                )
+                await self._record_service_metrics(service_name, response_time, is_healthy)
 
                 health_check.last_check = datetime.now(timezone.utc)
 
@@ -309,12 +294,10 @@ class EnhancedMonitoringService:
 
             await asyncio.sleep(health_check.interval)
 
-    async def _update_service_status(
-        self, service_name: str, new_status: ServiceStatus
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    async def _update_service_status(self, service_name: str, new_status: ServiceStatus):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update service status and generate alerts if needed."""
         health_check = self.health_checks[service_name]
         old_status = health_check.status
@@ -338,9 +321,9 @@ class EnhancedMonitoringService:
     async def _record_service_metrics(
         self, service_name: str, response_time: float, is_healthy: bool
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record service performance metrics."""
         metrics = ServiceMetrics(
             service_name=service_name,
@@ -362,9 +345,9 @@ class EnhancedMonitoringService:
             self.service_metrics[service_name] = service_metrics_list[-1000:]
 
     async def _monitor_sla_compliance(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Monitor SLA compliance and generate alerts."""
         while self.monitoring_active:
             try:
@@ -404,40 +387,31 @@ class EnhancedMonitoringService:
             # Calculate uptime
             total_checks = len(metrics_list)
             healthy_checks = sum(1 for m in metrics_list if m.error_rate == 0.0)
-            uptime_percentage = (
-                (healthy_checks / total_checks) * 100 if total_checks > 0 else 0
-            )
+            uptime_percentage = (healthy_checks / total_checks) * 100 if total_checks > 0 else 0
 
             # Calculate average response time
-            avg_response_time = sum(m.response_time_ms for m in metrics_list) / len(
-                metrics_list
-            )
+            avg_response_time = sum(m.response_time_ms for m in metrics_list) / len(metrics_list)
 
             # Calculate error rate
-            error_rate = (
-                sum(m.error_rate for m in metrics_list) / len(metrics_list) * 100
-            )
+            error_rate = sum(m.error_rate for m in metrics_list) / len(metrics_list) * 100
 
             compliance_report[service_name] = {
                 "uptime": {
                     "value": uptime_percentage,
                     "target": self.sla_targets["uptime_percentage"],
-                    "compliant": uptime_percentage
-                    >= self.sla_targets["uptime_percentage"],
+                    "compliant": uptime_percentage >= self.sla_targets["uptime_percentage"],
                     "message": f"Uptime {uptime_percentage:.2f}% (target: {self.sla_targets['uptime_percentage']}%)",
                 },
                 "response_time": {
                     "value": avg_response_time,
                     "target": self.sla_targets["response_time_ms"],
-                    "compliant": avg_response_time
-                    <= self.sla_targets["response_time_ms"],
+                    "compliant": avg_response_time <= self.sla_targets["response_time_ms"],
                     "message": f"Avg response time {avg_response_time:.2f}ms (target: <{self.sla_targets['response_time_ms']}ms)",
                 },
                 "error_rate": {
                     "value": error_rate,
                     "target": self.sla_targets["error_rate_percentage"],
-                    "compliant": error_rate
-                    <= self.sla_targets["error_rate_percentage"],
+                    "compliant": error_rate <= self.sla_targets["error_rate_percentage"],
                     "message": f"Error rate {error_rate:.2f}% (target: <{self.sla_targets['error_rate_percentage']}%)",
                 },
             }
@@ -451,9 +425,9 @@ class EnhancedMonitoringService:
         message: str,
         metadata: Dict[str, Any] = None,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create and process alert."""
         alert = Alert(
             id=f"{service}_{int(time.time())}",
@@ -491,9 +465,7 @@ class EnhancedMonitoringService:
                 name: {
                     "status": health_check.status.value,
                     "last_check": (
-                        health_check.last_check.isoformat()
-                        if health_check.last_check
-                        else None
+                        health_check.last_check.isoformat() if health_check.last_check else None
                     ),
                     "consecutive_failures": health_check.consecutive_failures,
                     "consecutive_successes": health_check.consecutive_successes,
@@ -520,9 +492,7 @@ class EnhancedMonitoringService:
             "system_health": {
                 "total_services": len(self.health_checks),
                 "healthy_services": sum(
-                    1
-                    for hc in self.health_checks.values()
-                    if hc.status == ServiceStatus.HEALTHY
+                    1 for hc in self.health_checks.values() if hc.status == ServiceStatus.HEALTHY
                 ),
                 "monitoring_active": self.monitoring_active,
             },

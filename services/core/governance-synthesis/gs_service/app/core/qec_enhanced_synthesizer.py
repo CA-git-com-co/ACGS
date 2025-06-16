@@ -78,9 +78,9 @@ class QECEnhancedSynthesizer:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize the QEC-enhanced synthesizer.
 
@@ -111,16 +111,14 @@ class QECEnhancedSynthesizer:
         logger.info("QEC-Enhanced Synthesizer initialized")
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize all framework components."""
         await self.llm_framework.initialize()
         logger.info("QEC-Enhanced Synthesizer fully initialized")
 
-    async def synthesize_with_qec(
-        self, synthesis_input: QECSynthesisInput
-    ) -> QECSynthesisOutput:
+    async def synthesize_with_qec(self, synthesis_input: QECSynthesisInput) -> QECSynthesisOutput:
         """
         Synthesize policy with QEC-inspired enhancements.
 
@@ -141,9 +139,7 @@ class QECEnhancedSynthesizer:
             )
 
             # Phase 2: Error Prediction
-            prediction_result = self.error_predictor.predict_synthesis_challenges(
-                principle
-            )
+            prediction_result = self.error_predictor.predict_synthesis_challenges(principle)
             logger.debug(
                 f"Error prediction for {principle.principle_id}: risk={prediction_result.overall_risk_score:.3f}"
             )
@@ -201,10 +197,8 @@ class QECEnhancedSynthesizer:
         for attempt in range(max_attempts):
             try:
                 # Attempt synthesis
-                llm_output, reliability_metrics = (
-                    await self.llm_framework.process_with_reliability(
-                        synthesis_input.llm_input
-                    )
+                llm_output, reliability_metrics = await self.llm_framework.process_with_reliability(
+                    synthesis_input.llm_input
                 )
 
                 # Validate synthesis result
@@ -254,13 +248,11 @@ class QECEnhancedSynthesizer:
                     recovery_strategy_used = recovery_strategy
 
                     # Execute recovery strategy
-                    recovery_result = (
-                        self.recovery_dispatcher.execute_recovery_strategy(
-                            recovery_strategy,
-                            principle.principle_id,
-                            synthesis_input.llm_input.dict(),
-                            {"error": str(e), "attempt": attempt},
-                        )
+                    recovery_result = self.recovery_dispatcher.execute_recovery_strategy(
+                        recovery_strategy,
+                        principle.principle_id,
+                        synthesis_input.llm_input.dict(),
+                        {"error": str(e), "attempt": attempt},
                     )
 
                     if (
@@ -393,9 +385,7 @@ class QECEnhancedSynthesizer:
             "qec_interventions": interventions,
             "recovery_successes": recovery_successes,
             "recovery_success_rate": recovery_successes / max(interventions, 1),
-            "improvement_from_qec": (
-                (recovery_successes / max(total, 1)) if total > 0 else 0.0
-            ),
+            "improvement_from_qec": ((recovery_successes / max(total, 1)) if total > 0 else 0.0),
         }
 
     def _get_default_config(self) -> Dict[str, Any]:

@@ -25,9 +25,9 @@ class ConstitutionalPrinciple:
         policy_code: str = "",
         metadata: Dict[str, Any] = None,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.principle_id = principle_id
         self.name = name
         self.description = description
@@ -46,9 +46,9 @@ class OperationalRule:
         derived_from_principles: List[str] = None,
         metadata: Dict[str, Any] = None,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.rule_id = rule_id
         self.name = name
         self.description = description
@@ -76,9 +76,9 @@ class PolicySynthesisInput:
         constraints: List[str],
         context_data: Dict[str, Any],
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.synthesis_goal = synthesis_goal
         self.policy_type = policy_type
         self.desired_format = desired_format
@@ -88,23 +88,21 @@ class PolicySynthesisInput:
 
 class PolicySuggestion:
     def __init__(self, policy_code: str, confidence: float = 0.8):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.policy_code = policy_code
         self.confidence = confidence
 
 
 class LLMPolicyGenerator:
     def __init__(self, llm_service=None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.llm_service = llm_service
 
-    def synthesize_policy(
-        self, synthesis_input: PolicySynthesisInput
-    ) -> PolicySuggestion:
+    def synthesize_policy(self, synthesis_input: PolicySynthesisInput) -> PolicySuggestion:
         # Mock policy generation
         mock_policy = f"""
 package {synthesis_input.policy_type}
@@ -121,14 +119,14 @@ allow {{
 
 class SyntacticValidator:
     def validate(self, policy_code: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         class ValidationResult:
             def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 self.is_valid = True
                 self.errors = []
 
@@ -140,9 +138,9 @@ class ScenarioBasedSemanticValidator:
 
 
 def get_llm_service(service_type: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return None
 
 
@@ -167,9 +165,9 @@ class AlphaEvolveBridge:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.llm_service = None
         self.policy_synthesizer = None
         self.syntactic_validator = None
@@ -177,21 +175,17 @@ class AlphaEvolveBridge:
         self._initialized = False
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the AlphaEvolve bridge with required services."""
         if not ALPHAEVOLVE_AVAILABLE:
-            logger.error(
-                "AlphaEvolve engine not available - bridge cannot be initialized"
-            )
+            logger.error("AlphaEvolve engine not available - bridge cannot be initialized")
             return False
 
         try:
             # Initialize LLM service for AlphaEvolve
-            self.llm_service = get_llm_service(
-                "mock"
-            )  # Use mock for now, can be configured
+            self.llm_service = get_llm_service("mock")  # Use mock for now, can be configured
 
             # Initialize policy synthesizer
             self.policy_synthesizer = LLMPolicyGenerator(llm_service=self.llm_service)
@@ -220,9 +214,7 @@ class AlphaEvolveBridge:
             List of ConstitutionalPrinciple objects in AlphaEvolve format
         """
         if not self.is_available():
-            logger.warning(
-                "AlphaEvolve bridge not available for principle synchronization"
-            )
+            logger.warning("AlphaEvolve bridge not available for principle synchronization")
             return []
 
         try:
@@ -248,9 +240,7 @@ class AlphaEvolveBridge:
                 )
                 alphaevolve_principles.append(principle)
 
-            logger.info(
-                f"Synchronized {len(alphaevolve_principles)} constitutional principles"
-            )
+            logger.info(f"Synchronized {len(alphaevolve_principles)} constitutional principles")
             return alphaevolve_principles
 
         except Exception as e:
@@ -296,9 +286,7 @@ class AlphaEvolveBridge:
             )
 
             # Synthesize policy using AlphaEvolve
-            policy_suggestion = self.policy_synthesizer.synthesize_policy(
-                synthesis_input
-            )
+            policy_suggestion = self.policy_synthesizer.synthesize_policy(synthesis_input)
 
             if not policy_suggestion:
                 logger.warning("Policy synthesis returned no suggestions")
@@ -308,9 +296,7 @@ class AlphaEvolveBridge:
                 }
 
             # Validate synthesized policy
-            validation_results = await self._validate_synthesized_policy(
-                policy_suggestion
-            )
+            validation_results = await self._validate_synthesized_policy(policy_suggestion)
 
             # Convert to operational rule
             operational_rule = OperationalRule(
@@ -338,9 +324,7 @@ class AlphaEvolveBridge:
                 "metadata": {
                     "synthesis_successful": True,
                     "rule_count": 1,
-                    "validation_passed": validation_results.get(
-                        "syntactic_valid", False
-                    ),
+                    "validation_passed": validation_results.get("syntactic_valid", False),
                     "ec_context": ec_context,
                     "target_format": target_format,
                 },
@@ -403,9 +387,7 @@ class AlphaEvolveBridge:
 
         except Exception as e:
             logger.error(f"Failed to evaluate EC proposal: {e}")
-            return self._create_fallback_decision(
-                proposal, f"Evaluation error: {str(e)}"
-            )
+            return self._create_fallback_decision(proposal, f"Evaluation error: {str(e)}")
 
     def _convert_to_rego_policy(self, ac_principle: Dict[str, Any]) -> str:
         """Convert AC principle to Rego policy format."""
@@ -461,9 +443,7 @@ violation[msg] {{
         try:
             # Syntactic validation
             if self.syntactic_validator:
-                syntactic_result = self.syntactic_validator.validate(
-                    policy_suggestion.policy_code
-                )
+                syntactic_result = self.syntactic_validator.validate(policy_suggestion.policy_code)
                 validation_results["syntactic_valid"] = syntactic_result.is_valid
                 if not syntactic_result.is_valid:
                     validation_results["errors"].extend(syntactic_result.errors)
@@ -497,14 +477,10 @@ violation[msg] {{
 
             # Simple keyword-based checks (in production, use more sophisticated analysis)
             if "safety" in principle.category.lower():
-                if any(
-                    keyword in code for keyword in ["unsafe", "dangerous", "harmful"]
-                ):
+                if any(keyword in code for keyword in ["unsafe", "dangerous", "harmful"]):
                     principle_violated = True
             elif "privacy" in principle.category.lower():
-                if any(
-                    keyword in code for keyword in ["leak", "expose", "unauthorized"]
-                ):
+                if any(keyword in code for keyword in ["leak", "expose", "unauthorized"]):
                     principle_violated = True
 
             if principle_violated:

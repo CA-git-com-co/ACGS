@@ -20,9 +20,7 @@ role_permissions_table = Table(
     "auth_role_permissions",
     Base.metadata,
     Column("role_id", Integer, ForeignKey("auth_roles.id"), primary_key=True),
-    Column(
-        "permission_id", Integer, ForeignKey("auth_permissions.id"), primary_key=True
-    ),
+    Column("permission_id", Integer, ForeignKey("auth_permissions.id"), primary_key=True),
 )
 
 
@@ -42,14 +40,12 @@ class Permission(Base):
         nullable=False,
     )
 
-    roles = relationship(
-        "Role", secondary=role_permissions_table, back_populates="permissions"
-    )
+    roles = relationship("Role", secondary=role_permissions_table, back_populates="permissions")
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<Permission(id={self.id}, name='{self.name}')>"
 
 
@@ -80,9 +76,9 @@ class User(Base):
     roles = relationship("Role", secondary=user_roles_table, back_populates="users")
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<User(id={self.id}, username='{self.username}', email='{self.email}')>"
 
     def has_role(self, role_name: str) -> bool:
@@ -125,9 +121,9 @@ class Role(Base):
     )
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<Role(id={self.id}, name='{self.name}')>"
 
 
@@ -139,19 +135,15 @@ class TokenBlacklist(Base):
     jti = Column(
         String(36), unique=True, nullable=False, index=True
     )  # JWT ID (unique identifier for the token)
-    token_type = Column(
-        String(50), nullable=False
-    )  # e.g., 'access_token', 'refresh_token'
+    token_type = Column(String(50), nullable=False)  # e.g., 'access_token', 'refresh_token'
     user_id = Column(Integer, ForeignKey("auth_users.id"), nullable=False)
-    expires_at = Column(
-        DateTime, nullable=False
-    )  # The original expiry time of the token
+    expires_at = Column(DateTime, nullable=False)  # The original expiry time of the token
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
 
     user = relationship("User")
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<TokenBlacklist(jti='{self.jti}', user_id={self.user_id})>"

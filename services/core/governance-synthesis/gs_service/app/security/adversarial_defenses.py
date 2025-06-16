@@ -80,9 +80,9 @@ class AdversarialDefenseSystem:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.defense_level = DefenseLevel.ACTIVE
         self.attack_history = deque(maxlen=1000)
         self.refusal_features = {}
@@ -104,9 +104,9 @@ class AdversarialDefenseSystem:
         self._initialize_consensus_validators()
 
     def _initialize_refusal_features(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize refusal features for adversarial training"""
         # Constitutional integrity refusal features
         self.refusal_features["constitutional_integrity"] = RefusalFeature(
@@ -134,9 +134,9 @@ class AdversarialDefenseSystem:
         )
 
     def _initialize_semantic_monitors(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize semantic drift monitoring"""
         self.semantic_baselines = {
             "constitutional_principles": {
@@ -152,9 +152,9 @@ class AdversarialDefenseSystem:
         }
 
     def _initialize_consensus_validators(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize multi-model consensus validators"""
         self.consensus_validators = [
             {"model_id": "primary_llm", "weight": 0.4, "specialization": "general"},
@@ -194,9 +194,7 @@ class AdversarialDefenseSystem:
         detection_results.append(semantic_result)
 
         # Layer 3: Constitutional manipulation detection
-        manipulation_result = await self._detect_constitutional_manipulation(
-            input_text, context
-        )
+        manipulation_result = await self._detect_constitutional_manipulation(input_text, context)
         detection_results.append(manipulation_result)
 
         # Layer 4: Consensus validation
@@ -233,9 +231,7 @@ class AdversarialDefenseSystem:
                 self.defense_metrics["jailbreaks_blocked"] += 1
 
         processing_time = (time.time() - start_time) * 1000
-        logger.info(
-            f"Adversarial detection completed in {processing_time:.2f}ms: {is_adversarial}"
-        )
+        logger.info(f"Adversarial detection completed in {processing_time:.2f}ms: {is_adversarial}")
 
         return is_adversarial, event
 
@@ -256,10 +252,7 @@ class AdversarialDefenseSystem:
 
                 activations[feature_id] = activation
 
-                if (
-                    activation > feature.activation_threshold
-                    and activation > max_activation
-                ):
+                if activation > feature.activation_threshold and activation > max_activation:
                     max_activation = activation
                     triggered_feature = feature_id
 
@@ -296,14 +289,11 @@ class AdversarialDefenseSystem:
             min_similarity = 1.0
             drifted_principle = None
 
-            for principle, baseline in self.semantic_baselines[
-                "constitutional_principles"
-            ].items():
+            for principle, baseline in self.semantic_baselines["constitutional_principles"].items():
                 # Simulate semantic similarity calculation
                 text_embedding = np.random.randn(256)  # Mock embedding
                 similarity = np.dot(text_embedding, baseline["embedding"]) / (
-                    np.linalg.norm(text_embedding)
-                    * np.linalg.norm(baseline["embedding"])
+                    np.linalg.norm(text_embedding) * np.linalg.norm(baseline["embedding"])
                 )
 
                 if similarity < baseline["threshold"] and similarity < min_similarity:
@@ -335,9 +325,7 @@ class AdversarialDefenseSystem:
                 "error": str(e),
             }
 
-    async def _detect_constitutional_manipulation(
-        self, input_text: str, context: Dict
-    ) -> Dict:
+    async def _detect_constitutional_manipulation(self, input_text: str, context: Dict) -> Dict:
         """Detect attempts to manipulate constitutional principles"""
         try:
             # Check for manipulation patterns
@@ -374,8 +362,7 @@ class AdversarialDefenseSystem:
                         if (
                             negation in input_text.lower()
                             and abs(
-                                input_text.lower().find(negation)
-                                - input_text.lower().find(term)
+                                input_text.lower().find(negation) - input_text.lower().find(term)
                             )
                             < 50
                         ):
@@ -421,10 +408,7 @@ class AdversarialDefenseSystem:
                 score = abs(hash(model_hash) % 100) / 100.0
 
                 # Apply specialization bias
-                if (
-                    validator["specialization"] == "security"
-                    and "security" in input_text.lower()
-                ):
+                if validator["specialization"] == "security" and "security" in input_text.lower():
                     score *= 1.2
                 elif validator["specialization"] == "constitutional" and any(
                     term in input_text.lower()
@@ -441,9 +425,7 @@ class AdversarialDefenseSystem:
             # High disagreement or low consensus indicates potential attack
             is_detected = consensus_score < 0.4 or disagreement > 0.3
             attack_type = AttackType.CONSENSUS_MANIPULATION if is_detected else None
-            confidence = (
-                max(0.4 - consensus_score, disagreement) if is_detected else 0.0
-            )
+            confidence = max(0.4 - consensus_score, disagreement) if is_detected else 0.0
 
             return {
                 "method": "consensus_validation",
@@ -467,9 +449,7 @@ class AdversarialDefenseSystem:
                 "error": str(e),
             }
 
-    def _aggregate_detection_results(
-        self, results: List[Dict]
-    ) -> Tuple[bool, AttackType, float]:
+    def _aggregate_detection_results(self, results: List[Dict]) -> Tuple[bool, AttackType, float]:
         """Aggregate detection results from multiple layers"""
         detected_attacks = [r for r in results if r.get("detected", False)]
 
@@ -485,9 +465,7 @@ class AdversarialDefenseSystem:
 
         return True, best_detection.get("attack_type"), avg_confidence
 
-    def _classify_severity(
-        self, confidence: float, attack_type: Optional[AttackType]
-    ) -> str:
+    def _classify_severity(self, confidence: float, attack_type: Optional[AttackType]) -> str:
         """Classify attack severity based on confidence and type"""
         if not attack_type:
             return "none"
@@ -560,9 +538,9 @@ class AdversarialDefenseSystem:
         return mitigation_result
 
     async def _trigger_emergency_lockdown(self, event: AdversarialEvent):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Trigger emergency lockdown procedures"""
         logger.critical(f"EMERGENCY LOCKDOWN triggered for event {event.event_id}")
         # Implementation would include:
@@ -572,9 +550,9 @@ class AdversarialDefenseSystem:
         # - Initiate incident response
 
     async def _apply_immediate_block(self, event: AdversarialEvent):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Apply immediate blocking measures"""
         logger.warning(f"IMMEDIATE BLOCK applied for event {event.event_id}")
         # Implementation would include:
@@ -584,9 +562,9 @@ class AdversarialDefenseSystem:
         # - Update security rules
 
     async def _enable_enhanced_monitoring(self, event: AdversarialEvent):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Enable enhanced monitoring for suspicious activity"""
         logger.info(f"Enhanced monitoring enabled for event {event.event_id}")
         # Implementation would include:
@@ -596,9 +574,9 @@ class AdversarialDefenseSystem:
         # - Generate alerts
 
     async def _log_warning(self, event: AdversarialEvent):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Log warning for low-severity events"""
         logger.info(f"Security warning logged for event {event.event_id}")
         # Implementation would include:
@@ -640,9 +618,7 @@ class AdversarialDefenseSystem:
 adversarial_defense_system = AdversarialDefenseSystem()
 
 
-async def detect_and_mitigate_attack(
-    input_text: str, context: Dict[str, Any]
-) -> Tuple[bool, Dict]:
+async def detect_and_mitigate_attack(input_text: str, context: Dict[str, Any]) -> Tuple[bool, Dict]:
     """
     Main interface for adversarial detection and mitigation
 

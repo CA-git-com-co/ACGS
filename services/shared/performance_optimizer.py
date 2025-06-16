@@ -101,9 +101,9 @@ class PerformanceMetrics:
         return (self.successful_requests / max(self.total_requests, 1)) * 100
 
     def add_response_time(self, response_time_ms: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add a response time measurement."""
         self.response_times.append(response_time_ms)
 
@@ -123,8 +123,7 @@ class PerformanceMetrics:
         """Check if current metrics meet service-level performance targets."""
         return (
             self.p95_response_time_ms < 50.0
-            and self.success_rate_percent  # <50ms for 95% of requests
-            >= 99.5  # 99.5% uptime
+            and self.success_rate_percent >= 99.5  # <50ms for 95% of requests  # 99.5% uptime
         )
 
     def meets_consensus_targets(self) -> bool:
@@ -132,8 +131,7 @@ class PerformanceMetrics:
         return (
             self.p95_response_time_ms < 2000
             and self.avg_response_time_ms < 1500  # <2s for 95% of requests
-            and self.cache_hit_rate_percent  # <1.5s average
-            > 70.0  # >70% cache hit rate
+            and self.cache_hit_rate_percent > 70.0  # <1.5s average  # >70% cache hit rate
         )
 
 
@@ -164,17 +162,17 @@ class CircuitBreakerState:
         return False
 
     def record_success(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record a successful request."""
         self.failure_count = 0
         self.state = "closed"
 
     def record_failure(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record a failed request."""
         self.failure_count += 1
         self.last_failure_time = time.time()
@@ -187,9 +185,9 @@ class FallbackCache:
     """Fallback cache implementation when Redis is not available."""
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.cache: Dict[str, Tuple[Any, float]] = {}
         self.stats = {"hits": 0, "misses": 0, "invalidations": 0}
 
@@ -223,9 +221,9 @@ class AsyncBatchProcessor:
     """Batch processor for async operations to improve throughput."""
 
     def __init__(self, batch_size: int = 10, max_wait_time: float = 0.1):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.batch_size = batch_size
         self.max_wait_time = max_wait_time
         self.pending_operations: List[Dict[str, Any]] = []
@@ -249,17 +247,16 @@ class AsyncBatchProcessor:
             # Process batch if size threshold reached or timeout exceeded
             if len(self.pending_operations) >= self.batch_size or (
                 self.pending_operations
-                and time.time() - self.pending_operations[0]["timestamp"]
-                > self.max_wait_time
+                and time.time() - self.pending_operations[0]["timestamp"] > self.max_wait_time
             ):
                 await self._process_batch()
 
         return await future
 
     async def _process_batch(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Process pending operations in batch."""
         if not self.pending_operations:
             return
@@ -283,9 +280,7 @@ class AsyncBatchProcessor:
             except Exception as e:
                 future.set_exception(e)
 
-    async def _execute_operation(
-        self, operation: Callable, args: tuple, kwargs: dict
-    ) -> Any:
+    async def _execute_operation(self, operation: Callable, args: tuple, kwargs: dict) -> Any:
         """Execute individual operation."""
         if asyncio.iscoroutinefunction(operation):
             return await operation(*args, **kwargs)
@@ -297,9 +292,9 @@ class IntelligentCache:
     """Intelligent caching system with TTL and invalidation strategies."""
 
     def __init__(self, cache_backend=None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if REDIS_AVAILABLE and cache_backend is None:
             try:
                 self.cache_backend = RedisCache()
@@ -311,16 +306,12 @@ class IntelligentCache:
         self.local_cache: Dict[str, Dict[str, Any]] = {}
         self.cache_stats = {"hits": 0, "misses": 0, "invalidations": 0}
 
-    def _generate_cache_key(
-        self, service: str, operation: str, params: Dict[str, Any]
-    ) -> str:
+    def _generate_cache_key(self, service: str, operation: str, params: Dict[str, Any]) -> str:
         """Generate consistent cache key."""
         key_data = f"{service}:{operation}:{json.dumps(params, sort_keys=True)}"
         return hashlib.sha256(key_data.encode()).hexdigest()[:16]
 
-    async def get(
-        self, service: str, operation: str, params: Dict[str, Any]
-    ) -> Optional[Any]:
+    async def get(self, service: str, operation: str, params: Dict[str, Any]) -> Optional[Any]:
         """Get cached result."""
         cache_key = self._generate_cache_key(service, operation, params)
 
@@ -396,9 +387,9 @@ class PerformanceOptimizer:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize performance optimizer."""
         self.config = config or {}
 
@@ -435,9 +426,9 @@ class PerformanceOptimizer:
         self.adaptive_timeout_enabled = self.config.get("adaptive_timeout", True)
 
     async def initialize(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize performance optimizer."""
         try:
             if hasattr(self.intelligent_cache.cache_backend, "initialize"):

@@ -86,9 +86,7 @@ class FederatedEvaluationRequest(BaseModel):
     evaluation_criteria: Dict[str, Any] = Field(
         ..., description="Evaluation criteria and parameters"
     )
-    target_platforms: List[PlatformType] = Field(
-        ..., description="Target platforms for evaluation"
-    )
+    target_platforms: List[PlatformType] = Field(..., description="Target platforms for evaluation")
     privacy_requirements: Dict[str, Any] = Field(
         default_factory=lambda: {"epsilon": 1.0, "mechanism": "laplace"},
         description="Privacy requirements for evaluation",
@@ -97,9 +95,9 @@ class FederatedEvaluationRequest(BaseModel):
     @field_validator("target_platforms")
     @classmethod
     def validate_platforms(cls, v):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if not v:
             raise ValueError("At least one target platform must be specified")
         return v
@@ -214,9 +212,9 @@ class AggregationConfigRequest(BaseModel):
     @field_validator("max_participants")
     @classmethod
     def validate_max_participants(cls, v, info):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if (
             hasattr(info, "data")
             and "min_participants" in info.data
@@ -268,12 +266,8 @@ PolicyEvaluationRequest = FederatedEvaluationRequest
 class FederatedLearningRequest(BaseModel):
     """Request for federated learning coordination."""
 
-    min_participants: int = Field(
-        ..., ge=2, description="Minimum number of participants required"
-    )
-    max_participants: int = Field(
-        ..., ge=2, description="Maximum number of participants allowed"
-    )
+    min_participants: int = Field(..., ge=2, description="Minimum number of participants required")
+    max_participants: int = Field(..., ge=2, description="Maximum number of participants allowed")
     aggregation_method: AggregationMethod = Field(
         AggregationMethod.FEDERATED_AVERAGING,
         description="Method for aggregating results",
@@ -281,9 +275,7 @@ class FederatedLearningRequest(BaseModel):
     privacy_budget: float = Field(
         1.0, ge=0.1, le=10.0, description="Privacy budget for differential privacy"
     )
-    timeout_seconds: int = Field(
-        300, ge=30, le=3600, description="Timeout for federated operation"
-    )
+    timeout_seconds: int = Field(300, ge=30, le=3600, description="Timeout for federated operation")
 
     model_config = {
         "json_schema_extra": {

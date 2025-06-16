@@ -52,9 +52,7 @@ def upgrade() -> None:
         sa.Column("status", sa.String(length=50), nullable=False),
         sa.Column("started_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column(
-            "aggregated_data", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("aggregated_data", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("privacy_budget_consumed", sa.Float(), nullable=False),
         sa.Column("byzantine_nodes_detected", sa.Integer(), nullable=False),
         sa.Column("error_message", sa.Text(), nullable=True),
@@ -110,9 +108,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_secure_shares_id"), "secure_shares", ["id"], unique=False)
-    op.create_index(
-        op.f("ix_secure_shares_share_id"), "secure_shares", ["share_id"], unique=True
-    )
+    op.create_index(op.f("ix_secure_shares_share_id"), "secure_shares", ["share_id"], unique=True)
 
     # Create privacy_metrics table
     op.create_table(
@@ -126,12 +122,8 @@ def upgrade() -> None:
         sa.Column("data_minimization_score", sa.Float(), nullable=True),
         sa.Column("anonymization_level", sa.Float(), nullable=True),
         sa.Column("inference_resistance", sa.Float(), nullable=True),
-        sa.Column(
-            "mechanisms_applied", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
-        sa.Column(
-            "noise_parameters", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("mechanisms_applied", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column("noise_parameters", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("gdpr_compliant", sa.Boolean(), nullable=True),
         sa.Column("ccpa_compliant", sa.Boolean(), nullable=True),
         sa.Column("hipaa_compliant", sa.Boolean(), nullable=True),
@@ -146,18 +138,14 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_privacy_metrics_id"), "privacy_metrics", ["id"], unique=False
-    )
+    op.create_index(op.f("ix_privacy_metrics_id"), "privacy_metrics", ["id"], unique=False)
 
     # Create constitutional_validations table
     op.create_table(
         "constitutional_validations",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("evaluation_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "principle_ids_validated", postgresql.ARRAY(sa.Integer()), nullable=True
-        ),
+        sa.Column("principle_ids_validated", postgresql.ARRAY(sa.Integer()), nullable=True),
         sa.Column("compliance_score", sa.Float(), nullable=True),
         sa.Column(
             "constitutional_violations",
@@ -232,16 +220,12 @@ def downgrade() -> None:
         table_name="constitutional_validations",
     )
     op.drop_index("ix_privacy_metric_evaluation_measured", table_name="privacy_metrics")
-    op.drop_index(
-        "ix_secure_aggregation_session_status", table_name="secure_aggregation_sessions"
-    )
+    op.drop_index("ix_secure_aggregation_session_status", table_name="secure_aggregation_sessions")
     op.drop_index(
         "ix_evaluation_node_result_evaluation_node",
         table_name="evaluation_node_results",
     )
-    op.drop_index(
-        "ix_federated_evaluation_status_created", table_name="federated_evaluations"
-    )
+    op.drop_index("ix_federated_evaluation_status_created", table_name="federated_evaluations")
     op.drop_index("ix_federated_node_platform_status", table_name="federated_nodes")
 
     # Drop tables in reverse order

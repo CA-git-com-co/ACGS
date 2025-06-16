@@ -124,9 +124,7 @@ class InputValidator:
         # Check XSS
         for pattern in cls.XSS_PATTERNS:
             if re.search(pattern, input_lower, re.IGNORECASE):
-                logger.warning(
-                    "XSS attempt detected", input=input_data[:100], pattern=pattern
-                )
+                logger.warning("XSS attempt detected", input=input_data[:100], pattern=pattern)
                 return False
 
         # Check command injection
@@ -148,16 +146,12 @@ class InputValidator:
         sanitized = input_data.replace("\x00", "Null")
 
         # Remove other control characters except newline and tab
-        sanitized = "".join(
-            char for char in sanitized if ord(char) >= 32 or char in "\n\t"
-        )
+        sanitized = "".join(char for char in sanitized if ord(char) >= 32 or char in "\n\t")
 
         # Limit length
         if len(sanitized) > 10000:
             sanitized = sanitized[:10000]
-            logger.warning(
-                "Input truncated due to length", original_length=len(input_data)
-            )
+            logger.warning("Input truncated due to length", original_length=len(input_data))
 
         return sanitized
 
@@ -166,9 +160,9 @@ class RateLimiter:
     """Advanced rate limiting with sliding window."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.requests: Dict[str, List[float]] = {}
         self.blocked_ips: Dict[str, datetime] = {}
         self._lock = threading.Lock()
@@ -186,9 +180,7 @@ class RateLimiter:
                 if datetime.now() < self.blocked_ips[identifier]:
                     return RateLimitInfo(
                         requests=max_requests,
-                        window_start=datetime.fromtimestamp(
-                            current_time - window_seconds
-                        ),
+                        window_start=datetime.fromtimestamp(current_time - window_seconds),
                         blocked=True,
                         reset_time=self.blocked_ips[identifier],
                     )
@@ -210,9 +202,7 @@ class RateLimiter:
             # Check rate limit
             if len(self.requests[identifier]) >= max_requests:
                 # Block IP for lockout duration
-                lockout_duration = timedelta(
-                    minutes=SECURITY_CONFIG["lockout_duration_minutes"]
-                )
+                lockout_duration = timedelta(minutes=SECURITY_CONFIG["lockout_duration_minutes"])
                 self.blocked_ips[identifier] = datetime.now() + lockout_duration
 
                 logger.warning(
@@ -244,9 +234,9 @@ class AuditLogger:
     """Security audit logging service."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.events: List[SecurityEvent] = []
         self._lock = threading.Lock()
 
@@ -261,9 +251,9 @@ class AuditLogger:
         severity: str = "medium",
         success: bool = True,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Log security event."""
         event = SecurityEvent(
             event_type=event_type,
@@ -308,17 +298,13 @@ class AuditLogger:
         cutoff_time = datetime.now() - timedelta(hours=hours)
 
         with self._lock:
-            filtered_events = [
-                event for event in self.events if event.timestamp > cutoff_time
-            ]
+            filtered_events = [event for event in self.events if event.timestamp > cutoff_time]
 
             if severity:
                 filtered_events = [e for e in filtered_events if e.severity == severity]
 
             if event_type:
-                filtered_events = [
-                    e for e in filtered_events if e.event_type == event_type
-                ]
+                filtered_events = [e for e in filtered_events if e.event_type == event_type]
 
             return filtered_events
 
@@ -327,9 +313,9 @@ class JWTManager:
     """JWT token management with enhanced security."""
 
     def __init__(self, secret_key: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.secret_key = secret_key
         self.algorithm = SECURITY_CONFIG["jwt_algorithm"]
         self.expiry_minutes = SECURITY_CONFIG["jwt_expiry_minutes"]
@@ -400,9 +386,9 @@ class JWTManager:
             )
 
     def revoke_token(self, token: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Revoke JWT token."""
         try:
             payload = jwt.decode(
@@ -414,9 +400,7 @@ class JWTManager:
             jti = payload.get("jti")
             if jti:
                 self.revoked_tokens.add(jti)
-                logger.info(
-                    "JWT token revoked", jti=jti, user_id=payload.get("user_id")
-                )
+                logger.info("JWT token revoked", jti=jti, user_id=payload.get("user_id"))
         except jwt.InvalidTokenError:
             logger.warning("Attempted to revoke invalid token")
 
@@ -425,9 +409,9 @@ class VulnerabilityScanner:
     """Vulnerability scanning and security assessment."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.scan_results: List[Dict[str, Any]] = []
         self.last_scan_time: Optional[datetime] = None
 
@@ -448,13 +432,9 @@ class VulnerabilityScanner:
             "duration_seconds": (datetime.now() - scan_start).total_seconds(),
             "vulnerabilities": vulnerabilities,
             "total_issues": len(vulnerabilities),
-            "critical_issues": len(
-                [v for v in vulnerabilities if v["severity"] == "critical"]
-            ),
+            "critical_issues": len([v for v in vulnerabilities if v["severity"] == "critical"]),
             "high_issues": len([v for v in vulnerabilities if v["severity"] == "high"]),
-            "medium_issues": len(
-                [v for v in vulnerabilities if v["severity"] == "medium"]
-            ),
+            "medium_issues": len([v for v in vulnerabilities if v["severity"] == "medium"]),
             "low_issues": len([v for v in vulnerabilities if v["severity"] == "low"]),
         }
 
@@ -559,9 +539,9 @@ class SecurityComplianceService:
     """Main security compliance service."""
 
     def __init__(self, secret_key: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.jwt_manager = JWTManager(secret_key)
         self.rate_limiter = RateLimiter()
         self.audit_logger = AuditLogger()
@@ -627,9 +607,7 @@ class SecurityComplianceService:
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
             )
 
-    def authorize_request(
-        self, user_payload: Dict[str, Any], required_roles: List[str]
-    ) -> bool:
+    def authorize_request(self, user_payload: Dict[str, Any], required_roles: List[str]) -> bool:
         """Authorize request based on user roles."""
         user_roles = user_payload.get("roles", [])
 
@@ -651,10 +629,7 @@ class SecurityComplianceService:
             return self.input_validator.sanitize_input(data)
 
         elif isinstance(data, dict):
-            return {
-                key: self.validate_input_data(value, input_type)
-                for key, value in data.items()
-            }
+            return {key: self.validate_input_data(value, input_type) for key, value in data.items()}
 
         elif isinstance(data, list):
             return [self.validate_input_data(item, input_type) for item in data]
@@ -719,12 +694,8 @@ class SecurityComplianceService:
             ),
             "latest_vulnerability_scan": {
                 "timestamp": latest_scan["timestamp"] if latest_scan else None,
-                "total_vulnerabilities": (
-                    latest_scan["total_issues"] if latest_scan else 0
-                ),
-                "critical_vulnerabilities": (
-                    latest_scan["critical_issues"] if latest_scan else 0
-                ),
+                "total_vulnerabilities": (latest_scan["total_issues"] if latest_scan else 0),
+                "critical_vulnerabilities": (latest_scan["critical_issues"] if latest_scan else 0),
                 "scan_duration": latest_scan["duration_seconds"] if latest_scan else 0,
             },
         }
@@ -744,20 +715,20 @@ def get_security_service() -> SecurityComplianceService:
 
 
 def security_required(required_roles: List[str] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Decorator for endpoints requiring authentication and authorization."""
 
     def decorator(func: Callable):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         @wraps(func)
         async def wrapper(*args, **kwargs):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             # Extract request and credentials from function arguments
             request = None
             credentials = None

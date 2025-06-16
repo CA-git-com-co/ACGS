@@ -44,13 +44,9 @@ logger = logging.getLogger(__name__)
 class MetricsTimeRangeRequest(BaseModel):
     """Request model for time-range based metrics queries."""
 
-    start_time: Optional[datetime] = Field(
-        None, description="Start time for metrics query"
-    )
+    start_time: Optional[datetime] = Field(None, description="Start time for metrics query")
     end_time: Optional[datetime] = Field(None, description="End time for metrics query")
-    component_types: Optional[List[str]] = Field(
-        None, description="Filter by component types"
-    )
+    component_types: Optional[List[str]] = Field(None, description="Filter by component types")
 
     class Config:
         json_encoders = {datetime: lambda v: v.isoformat()}
@@ -192,15 +188,11 @@ async def get_performance_collector() -> WINAPerformanceCollector:
     """Dependency to get the performance collector instance."""
     try:
         if _collector_getter is None:
-            raise HTTPException(
-                status_code=503, detail="Performance monitoring not initialized"
-            )
+            raise HTTPException(status_code=503, detail="Performance monitoring not initialized")
 
         collector = _collector_getter()
         if collector is None:
-            raise HTTPException(
-                status_code=503, detail="Performance collector not available"
-            )
+            raise HTTPException(status_code=503, detail="Performance collector not available")
 
         return collector
 
@@ -208,9 +200,7 @@ async def get_performance_collector() -> WINAPerformanceCollector:
         raise
     except Exception as e:
         logger.error(f"Failed to get performance collector: {e}")
-        raise HTTPException(
-            status_code=500, detail="Performance monitoring service unavailable"
-        )
+        raise HTTPException(status_code=500, detail="Performance monitoring service unavailable")
 
 
 @router.get("/health")
@@ -238,26 +228,21 @@ async def get_health_status(
                 "gflops_reduction_achieved": overall_performance.get(
                     "gflops_reduction_achieved", 0.0
                 ),
-                "accuracy_retention": overall_performance.get(
-                    "accuracy_retention", 0.95
-                ),
+                "accuracy_retention": overall_performance.get("accuracy_retention", 0.95),
                 "constitutional_compliance_rate": overall_performance.get(
                     "constitutional_compliance_rate", 0.95
                 ),
                 "performance_targets_met": overall_performance.get(
                     "performance_targets_met", False
                 ),
-                "optimization_status": overall_performance.get(
-                    "optimization_status", "unknown"
-                ),
+                "optimization_status": overall_performance.get("optimization_status", "unknown"),
             },
             "components_monitored": len([comp for comp in WINAComponentType]),
             "recent_alerts": len(
                 [
                     alert
                     for alert in collector.alerts_history
-                    if datetime.now(timezone.utc) - alert["timestamp"]
-                    < timedelta(hours=1)
+                    if datetime.now(timezone.utc) - alert["timestamp"] < timedelta(hours=1)
                 ]
             ),
         }
@@ -274,9 +259,7 @@ async def get_health_status(
 
     except Exception as e:
         logger.error(f"Health status check failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Health status check failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Health status check failed: {str(e)}")
 
 
 @router.get("/metrics/realtime")
@@ -293,9 +276,7 @@ async def get_realtime_metrics(
 
     except Exception as e:
         logger.error(f"Real-time metrics retrieval failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Real-time metrics retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Real-time metrics retrieval failed: {str(e)}")
 
 
 @router.get("/metrics/summary")
@@ -351,9 +332,7 @@ async def get_metrics_summary(
 
     except Exception as e:
         logger.error(f"Metrics summary retrieval failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics summary retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics summary retrieval failed: {str(e)}")
 
 
 @router.post("/report/generate")
@@ -381,9 +360,9 @@ async def generate_performance_report(
 
         # Convert datetime objects to ISO strings
         def convert_datetime(obj):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             if isinstance(obj, datetime):
                 return obj.isoformat()
             elif isinstance(obj, dict):
@@ -426,9 +405,7 @@ async def get_prometheus_metrics(
 
     except Exception as e:
         logger.error(f"Prometheus metrics export failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Prometheus metrics export failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Prometheus metrics export failed: {str(e)}")
 
 
 @router.get("/alerts")
@@ -451,15 +428,11 @@ async def get_recent_alerts(
         cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
 
         recent_alerts = [
-            alert
-            for alert in collector.alerts_history
-            if alert["timestamp"] >= cutoff_time
+            alert for alert in collector.alerts_history if alert["timestamp"] >= cutoff_time
         ]
 
         if severity:
-            recent_alerts = [
-                alert for alert in recent_alerts if alert.get("severity") == severity
-            ]
+            recent_alerts = [alert for alert in recent_alerts if alert.get("severity") == severity]
 
         # Convert datetime objects to ISO strings
         for alert in recent_alerts:
@@ -478,9 +451,7 @@ async def get_recent_alerts(
 
     except Exception as e:
         logger.error(f"Alerts retrieval failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Alerts retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Alerts retrieval failed: {str(e)}")
 
 
 # Metrics recording endpoints
@@ -515,9 +486,7 @@ async def record_neuron_activation_metrics(
 
     except Exception as e:
         logger.error(f"Neuron activation metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
 
 
 @router.post("/metrics/svd-transformation")
@@ -548,9 +517,7 @@ async def record_svd_transformation_metrics(
 
     except Exception as e:
         logger.error(f"SVD transformation metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
 
 
 @router.post("/metrics/dynamic-gating")
@@ -582,9 +549,7 @@ async def record_dynamic_gating_metrics(
 
     except Exception as e:
         logger.error(f"Dynamic gating metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
 
 
 @router.post("/metrics/constitutional-compliance")
@@ -615,9 +580,7 @@ async def record_constitutional_compliance_metrics(
 
     except Exception as e:
         logger.error(f"Constitutional compliance metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
 
 
 @router.post("/metrics/learning-feedback")
@@ -648,9 +611,7 @@ async def record_learning_feedback_metrics(
 
     except Exception as e:
         logger.error(f"Learning feedback metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
 
 
 @router.post("/metrics/integration")
@@ -682,9 +643,7 @@ async def record_integration_metrics(
 
     except Exception as e:
         logger.error(f"Integration metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
 
 
 @router.post("/metrics/system-health")
@@ -712,9 +671,7 @@ async def record_system_health_metrics(
 
     except Exception as e:
         logger.error(f"System health metrics recording failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Metrics recording failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
 
 
 # Configuration endpoints
@@ -745,9 +702,7 @@ async def get_monitoring_configuration(
 
     except Exception as e:
         logger.error(f"Configuration retrieval failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Configuration retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Configuration retrieval failed: {str(e)}")
 
 
 @router.post("/config")
@@ -784,9 +739,7 @@ async def update_monitoring_configuration(
         raise
     except Exception as e:
         logger.error(f"Configuration update failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Configuration update failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Configuration update failed: {str(e)}")
 
 
 @router.post("/monitoring/start")
@@ -800,9 +753,7 @@ async def start_monitoring(
 
     except Exception as e:
         logger.error(f"Monitoring start failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Monitoring start failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Monitoring start failed: {str(e)}")
 
 
 @router.post("/monitoring/stop")

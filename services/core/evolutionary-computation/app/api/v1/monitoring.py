@@ -34,19 +34,11 @@ class WINAPerformanceMetrics(BaseModel):
     """WINA-specific performance metrics model."""
 
     gflops_reduction: float = Field(..., description="GFLOPs reduction percentage")
-    synthesis_latency_ms: float = Field(
-        ..., description="Synthesis latency in milliseconds"
-    )
-    optimization_success_rate: float = Field(
-        ..., description="Optimization success rate"
-    )
+    synthesis_latency_ms: float = Field(..., description="Synthesis latency in milliseconds")
+    optimization_success_rate: float = Field(..., description="Optimization success rate")
     cache_hit_rate: float = Field(..., description="Cache hit rate")
-    strategy_selection_accuracy: float = Field(
-        ..., description="Strategy selection accuracy"
-    )
-    constitutional_compliance_rate: float = Field(
-        ..., description="Constitutional compliance rate"
-    )
+    strategy_selection_accuracy: float = Field(..., description="Strategy selection accuracy")
+    constitutional_compliance_rate: float = Field(..., description="Constitutional compliance rate")
     timestamp: str = Field(..., description="Metrics timestamp")
 
 
@@ -56,9 +48,7 @@ class AlertRule(BaseModel):
     rule_id: str = Field(..., description="Unique rule identifier")
     metric_name: str = Field(..., description="Metric to monitor")
     threshold_value: float = Field(..., description="Alert threshold value")
-    comparison_operator: str = Field(
-        ..., description="Comparison operator (>, <, >=, <=, ==)"
-    )
+    comparison_operator: str = Field(..., description="Comparison operator (>, <, >=, <=, ==)")
     severity: str = Field(..., description="Alert severity (critical, warning, info)")
     enabled: bool = Field(default=True, description="Whether rule is enabled")
     description: str = Field(..., description="Rule description")
@@ -75,23 +65,17 @@ class Alert(BaseModel):
     severity: str = Field(..., description="Alert severity")
     message: str = Field(..., description="Alert message")
     triggered_at: str = Field(..., description="Alert trigger timestamp")
-    acknowledged: bool = Field(
-        default=False, description="Whether alert is acknowledged"
-    )
+    acknowledged: bool = Field(default=False, description="Whether alert is acknowledged")
 
 
 class MonitoringDashboard(BaseModel):
     """Monitoring dashboard data model."""
 
     system_metrics: SystemMetrics = Field(..., description="System performance metrics")
-    wina_metrics: WINAPerformanceMetrics = Field(
-        ..., description="WINA performance metrics"
-    )
+    wina_metrics: WINAPerformanceMetrics = Field(..., description="WINA performance metrics")
     active_alerts: List[Alert] = Field(..., description="Active alerts")
     service_health: Dict[str, str] = Field(..., description="Service health status")
-    oversight_statistics: Dict[str, Any] = Field(
-        ..., description="Oversight operation statistics"
-    )
+    oversight_statistics: Dict[str, Any] = Field(..., description="Oversight operation statistics")
     last_updated: str = Field(..., description="Dashboard last update timestamp")
 
 
@@ -131,29 +115,19 @@ async def get_monitoring_dashboard(
 
         # Collect WINA performance metrics
         try:
-            wina_synthesis_metrics = (
-                await gs_service_client.get_wina_synthesis_metrics()
-            )
-            enforcement_metrics = (
-                await pgc_service_client.get_wina_enforcement_metrics()
-            )
+            wina_synthesis_metrics = await gs_service_client.get_wina_synthesis_metrics()
+            enforcement_metrics = await pgc_service_client.get_wina_enforcement_metrics()
             fidelity_metrics = await ac_service_client.get_fidelity_metrics()
 
             wina_metrics = WINAPerformanceMetrics(
                 gflops_reduction=wina_synthesis_metrics.get("gflops_reduction", 0.0),
-                synthesis_latency_ms=wina_synthesis_metrics.get(
-                    "average_latency_ms", 0.0
-                ),
+                synthesis_latency_ms=wina_synthesis_metrics.get("average_latency_ms", 0.0),
                 optimization_success_rate=wina_synthesis_metrics.get(
                     "optimization_success_rate", 0.0
                 ),
                 cache_hit_rate=enforcement_metrics.get("cache_hit_rate", 0.0),
-                strategy_selection_accuracy=enforcement_metrics.get(
-                    "strategy_accuracy", 0.0
-                ),
-                constitutional_compliance_rate=fidelity_metrics.get(
-                    "overall_fidelity_score", 0.0
-                ),
+                strategy_selection_accuracy=enforcement_metrics.get("strategy_accuracy", 0.0),
+                constitutional_compliance_rate=fidelity_metrics.get("overall_fidelity_score", 0.0),
                 timestamp=datetime.utcnow().isoformat(),
             )
         except Exception as e:
@@ -198,16 +172,14 @@ async def get_monitoring_dashboard(
 
     except Exception as e:
         logger.error(f"Failed to generate monitoring dashboard: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Dashboard generation failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Dashboard generation failed: {str(e)}")
 
 
 @router.get("/metrics/wina", response_model=WINAPerformanceMetrics)
 async def get_wina_metrics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Get current WINA performance metrics.
 
@@ -225,16 +197,10 @@ async def get_wina_metrics():
         metrics = WINAPerformanceMetrics(
             gflops_reduction=wina_synthesis_metrics.get("gflops_reduction", 0.0),
             synthesis_latency_ms=wina_synthesis_metrics.get("average_latency_ms", 0.0),
-            optimization_success_rate=wina_synthesis_metrics.get(
-                "optimization_success_rate", 0.0
-            ),
+            optimization_success_rate=wina_synthesis_metrics.get("optimization_success_rate", 0.0),
             cache_hit_rate=enforcement_metrics.get("cache_hit_rate", 0.0),
-            strategy_selection_accuracy=enforcement_metrics.get(
-                "strategy_accuracy", 0.0
-            ),
-            constitutional_compliance_rate=fidelity_metrics.get(
-                "overall_fidelity_score", 0.0
-            ),
+            strategy_selection_accuracy=enforcement_metrics.get("strategy_accuracy", 0.0),
+            constitutional_compliance_rate=fidelity_metrics.get("overall_fidelity_score", 0.0),
             timestamp=datetime.utcnow().isoformat(),
         )
 
@@ -243,16 +209,14 @@ async def get_wina_metrics():
 
     except Exception as e:
         logger.error(f"Failed to collect WINA metrics: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"WINA metrics collection failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"WINA metrics collection failed: {str(e)}")
 
 
 @router.get("/metrics/system", response_model=SystemMetrics)
 async def get_system_metrics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Get current system performance metrics.
 
@@ -281,16 +245,14 @@ async def get_system_metrics():
 
     except Exception as e:
         logger.error(f"Failed to collect system metrics: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"System metrics collection failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"System metrics collection failed: {str(e)}")
 
 
 @router.get("/alerts")
 async def get_active_alerts():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Get currently active alerts.
 
@@ -309,12 +271,8 @@ async def get_active_alerts():
         return {
             "active_alerts": active_alerts,
             "total_count": len(active_alerts),
-            "critical_count": sum(
-                1 for alert in active_alerts if alert.severity == "critical"
-            ),
-            "warning_count": sum(
-                1 for alert in active_alerts if alert.severity == "warning"
-            ),
+            "critical_count": sum(1 for alert in active_alerts if alert.severity == "critical"),
+            "warning_count": sum(1 for alert in active_alerts if alert.severity == "warning"),
             "last_checked": datetime.utcnow().isoformat(),
         }
 
@@ -325,9 +283,9 @@ async def get_active_alerts():
 
 @router.get("/health")
 async def monitoring_health_check():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Health check for monitoring system."""
     try:
         service_health = await _check_service_health()
@@ -347,9 +305,7 @@ async def monitoring_health_check():
 
     except Exception as e:
         logger.error(f"Monitoring health check failed: {e}")
-        raise HTTPException(
-            status_code=503, detail=f"Monitoring system unhealthy: {str(e)}"
-        )
+        raise HTTPException(status_code=503, detail=f"Monitoring system unhealthy: {str(e)}")
 
 
 async def _check_active_alerts(

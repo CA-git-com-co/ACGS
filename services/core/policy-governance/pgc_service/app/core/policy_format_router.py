@@ -129,15 +129,11 @@ class PolicyFormatRouter:
                 pass
 
         # Rego detection
-        if re.search(r"\bpackage\s+\w+", content) or re.search(
-            r"\bdefault\s+\w+\s*=", content
-        ):
+        if re.search(r"\bpackage\s+\w+", content) or re.search(r"\bdefault\s+\w+\s*=", content):
             return PolicyFramework.REGO
 
         # Datalog detection (fallback for rule-like syntax)
-        if re.search(r"\w+\([^)]*\)\s*<=", content) or re.search(
-            r"\w+\([^)]*\)\s*:-", content
-        ):
+        if re.search(r"\w+\([^)]*\)\s*<=", content) or re.search(r"\w+\([^)]*\)\s*:-", content):
             return PolicyFramework.DATALOG
 
         return PolicyFramework.UNKNOWN
@@ -203,31 +199,22 @@ class PolicyFormatRouter:
                 import_dependencies=[],
             )
 
-    def _convert_json_to_rego(
-        self, json_content: str, policy_name: str
-    ) -> PolicyConversionResult:
+    def _convert_json_to_rego(self, json_content: str, policy_name: str) -> PolicyConversionResult:
         """Convert JSON policy (e.g., Azure Policy) to Rego"""
         try:
             policy_data = json.loads(json_content)
             warnings = []
 
             # Handle Azure Policy format
-            if (
-                "properties" in policy_data
-                and "policyRule" in policy_data["properties"]
-            ):
+            if "properties" in policy_data and "policyRule" in policy_data["properties"]:
                 azure_rule = policy_data["properties"]["policyRule"]
                 rego_content = self._azure_policy_to_rego(azure_rule, policy_name)
-                warnings.append(
-                    "Converted from Azure Policy format - manual review recommended"
-                )
+                warnings.append("Converted from Azure Policy format - manual review recommended")
 
             # Handle AWS IAM Policy format
             elif "Statement" in policy_data:
                 rego_content = self._aws_iam_to_rego(policy_data, policy_name)
-                warnings.append(
-                    "Converted from AWS IAM Policy format - manual review recommended"
-                )
+                warnings.append("Converted from AWS IAM Policy format - manual review recommended")
 
             else:
                 # Generic JSON to Rego conversion
@@ -253,9 +240,7 @@ class PolicyFormatRouter:
                 import_dependencies=[],
             )
 
-    def _convert_yaml_to_rego(
-        self, yaml_content: str, policy_name: str
-    ) -> PolicyConversionResult:
+    def _convert_yaml_to_rego(self, yaml_content: str, policy_name: str) -> PolicyConversionResult:
         """Convert YAML policy to Rego"""
         try:
             policy_data = yaml.safe_load(yaml_content)
@@ -278,9 +263,7 @@ class PolicyFormatRouter:
         self, datalog_content: str, policy_name: str
     ) -> PolicyConversionResult:
         """Convert Datalog rules to Rego format"""
-        warnings = [
-            "Datalog to Rego conversion is experimental - manual review required"
-        ]
+        warnings = ["Datalog to Rego conversion is experimental - manual review required"]
 
         # Basic Datalog to Rego conversion
         rego_lines = [
@@ -322,9 +305,7 @@ class PolicyFormatRouter:
             import_dependencies=[],
         )
 
-    def _azure_policy_to_rego(
-        self, azure_rule: Dict[str, Any], policy_name: str
-    ) -> str:
+    def _azure_policy_to_rego(self, azure_rule: Dict[str, Any], policy_name: str) -> str:
         """Convert Azure Policy rule to Rego"""
         package_name = policy_name.replace("-", "_").replace(" ", "_").lower()
 
@@ -454,9 +435,7 @@ class PolicyFormatRouter:
             PolicyValidationResult with validation details
         """
         try:
-            with tempfile.NamedTemporaryFile(
-                mode="w", suffix=".rego", delete=False
-            ) as f:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".rego", delete=False) as f:
                 f.write(rego_content)
                 temp_file = f.name
 
@@ -473,9 +452,7 @@ class PolicyFormatRouter:
 
             if result.returncode == 0:
                 # Extract import dependencies
-                missing_imports = self._extract_missing_imports(
-                    rego_content, result.stderr
-                )
+                missing_imports = self._extract_missing_imports(rego_content, result.stderr)
 
                 return PolicyValidationResult(
                     is_valid=True,
@@ -496,9 +473,7 @@ class PolicyFormatRouter:
                 is_valid=False, error_message=str(e), warnings=[], missing_imports=[]
             )
 
-    def _extract_missing_imports(
-        self, rego_content: str, stderr_output: str
-    ) -> List[str]:
+    def _extract_missing_imports(self, rego_content: str, stderr_output: str) -> List[str]:
         """Extract missing import dependencies from Rego content and OPA output"""
 
         # Look for data.* references in the code
@@ -507,7 +482,9 @@ class PolicyFormatRouter:
 
         # Check stderr for undefined references
         if "undefined" in stderr_output.lower():
-            undefined_pattern = r"undefined.*?data\.([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*)"
+            undefined_pattern = (
+                r"undefined.*?data\.([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*)"
+            )
             undefined_imports = re.findall(undefined_pattern, stderr_output)
             imports.extend(undefined_imports)
 

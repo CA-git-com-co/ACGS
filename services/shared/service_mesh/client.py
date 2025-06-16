@@ -35,12 +35,10 @@ class ACGSServiceClient:
     retry logic, authentication, and standardized error handling.
     """
 
-    def __init__(
-        self, service_type: ServiceType, registry: Optional[ServiceRegistry] = None
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def __init__(self, service_type: ServiceType, registry: Optional[ServiceRegistry] = None):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.service_type = service_type
         self.registry = registry or get_service_registry()
         self.config = self.registry.get_service_config(service_type)
@@ -70,16 +68,16 @@ class ACGSServiceClient:
         self._error_count = 0
 
     async def close(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Close the HTTP client."""
         await self.client.aclose()
 
     def set_auth_token(self, token: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Set authentication token for requests.
 
@@ -89,15 +87,13 @@ class ACGSServiceClient:
         self._auth_token = token
 
     def clear_auth_token(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear authentication token."""
         self._auth_token = None
 
-    @retry(
-        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
-    )
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def request(
         self,
         method: str,
@@ -314,9 +310,9 @@ class ServiceMesh:
     """
 
     def __init__(self, registry: Optional[ServiceRegistry] = None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.registry = registry or get_service_registry()
         self.clients: Dict[ServiceType, ACGSServiceClient] = {}
         self._auth_token: Optional[str] = None
@@ -341,9 +337,9 @@ class ServiceMesh:
         return self.clients[service_type]
 
     def set_auth_token(self, token: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Set authentication token for all clients.
 
@@ -355,9 +351,9 @@ class ServiceMesh:
             client.set_auth_token(token)
 
     def clear_auth_token(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear authentication token from all clients."""
         self._auth_token = None
         for client in self.clients.values():
@@ -417,14 +413,12 @@ class ServiceMesh:
         for service_type, client in self.clients.items():
             metrics[service_type.value] = client.get_metrics()
 
-        return format_response(
-            data=metrics, metadata={"active_clients": len(self.clients)}
-        )
+        return format_response(data=metrics, metadata={"active_clients": len(self.clients)})
 
     async def close_all(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Close all service clients."""
         for client in self.clients.values():
             await client.close()
@@ -432,9 +426,9 @@ class ServiceMesh:
 
     @asynccontextmanager
     async def managed_clients(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Context manager for automatic client cleanup.
 

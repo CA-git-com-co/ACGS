@@ -29,9 +29,9 @@ class SafetyPropertyChecker:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.safety_cache = {}  # Cache for safety check results
 
     async def check_safety_properties(
@@ -61,10 +61,7 @@ class SafetyPropertyChecker:
             results.append(result)
 
             # Track critical violations
-            if (
-                result.status == "violated"
-                and safety_property.criticality_level == "critical"
-            ):
+            if result.status == "violated" and safety_property.criticality_level == "critical":
                 critical_violations.append(
                     f"Critical violation: {safety_property.property_description}"
                 )
@@ -101,15 +98,11 @@ class SafetyPropertyChecker:
             rules_hash = hashlib.sha256(
                 "".join(rule.rule_content for rule in policy_rules).encode()
             ).hexdigest()
-            cache_key = (
-                f"{safety_property.property_id}_{rules_hash}_{verification_method}"
-            )
+            cache_key = f"{safety_property.property_id}_{rules_hash}_{verification_method}"
 
             # Check cache
             if cache_key in self.safety_cache:
-                logger.debug(
-                    f"Using cached result for property {safety_property.property_id}"
-                )
+                logger.debug(f"Using cached result for property {safety_property.property_id}")
                 return self.safety_cache[cache_key]
 
             # Perform verification based on method
@@ -118,13 +111,9 @@ class SafetyPropertyChecker:
                     safety_property, policy_rules, depth_limit
                 )
             elif verification_method == "symbolic_execution":
-                result = await self._symbolic_execution_check(
-                    safety_property, policy_rules
-                )
+                result = await self._symbolic_execution_check(safety_property, policy_rules)
             elif verification_method == "abstract_interpretation":
-                result = await self._abstract_interpretation_check(
-                    safety_property, policy_rules
-                )
+                result = await self._abstract_interpretation_check(safety_property, policy_rules)
             else:
                 # Default to pattern-based checking
                 result = await self._pattern_based_check(safety_property, policy_rules)
@@ -186,9 +175,7 @@ class SafetyPropertyChecker:
                     "discriminate" in rule_content
                     and "fairness" in safety_property.formal_specification.lower()
                 ):
-                    violations.append(
-                        f"Rule {rule.id} may contain discriminatory logic"
-                    )
+                    violations.append(f"Rule {rule.id} may contain discriminatory logic")
 
         if violations:
             return SafetyCheckResult(
@@ -221,16 +208,10 @@ class SafetyPropertyChecker:
                 "null" in rule.rule_content.lower()
                 and "null_pointer" in safety_property.formal_specification.lower()
             ):
-                violations.append(
-                    f"Potential null pointer dereference in rule {rule.id}"
-                )
+                violations.append(f"Potential null pointer dereference in rule {rule.id}")
 
         status = "violated" if violations else "satisfied"
-        trace = (
-            "; ".join(violations)
-            if violations
-            else f"Explored {paths_explored} symbolic paths"
-        )
+        trace = "; ".join(violations) if violations else f"Explored {paths_explored} symbolic paths"
 
         return SafetyCheckResult(
             property_id=safety_property.property_id,
@@ -259,9 +240,7 @@ class SafetyPropertyChecker:
 
         status = "violated" if violations else "satisfied"
         trace = (
-            "; ".join(violations)
-            if violations
-            else f"Analyzed {abstract_states} abstract states"
+            "; ".join(violations) if violations else f"Analyzed {abstract_states} abstract states"
         )
 
         return SafetyCheckResult(
@@ -353,9 +332,9 @@ class ConflictDetector:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.conflict_cache = {}
 
     async def detect_conflicts(
@@ -368,9 +347,7 @@ class ConflictDetector:
         """
         start_time = time.time()
 
-        logger.info(
-            f"Starting conflict detection for {len(request.rule_sets)} rule sets"
-        )
+        logger.info(f"Starting conflict detection for {len(request.rule_sets)} rule sets")
 
         conflicts = []
 
@@ -478,9 +455,7 @@ class ConflictDetector:
         if conflict_type == ConflictType.LOGICAL_CONTRADICTION:
             conflict = await self._check_logical_contradiction(rule_1, rule_2, context)
         elif conflict_type == ConflictType.PRACTICAL_INCOMPATIBILITY:
-            conflict = await self._check_practical_incompatibility(
-                rule_1, rule_2, context
-            )
+            conflict = await self._check_practical_incompatibility(rule_1, rule_2, context)
         elif conflict_type == ConflictType.PRIORITY_CONFLICT:
             conflict = await self._check_priority_conflict(rule_1, rule_2, context)
         elif conflict_type == ConflictType.RESOURCE_CONFLICT:
