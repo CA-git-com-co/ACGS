@@ -52,9 +52,9 @@ class Metric:
     labels: Dict[str, str] = None
 
     def __post_init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.labels is None:
             self.labels = {}
 
@@ -65,9 +65,9 @@ class WorkflowMonitor:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.metrics: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
         self.alerts: Dict[str, Alert] = {}
         self.alert_handlers: List[Callable] = []
@@ -76,9 +76,9 @@ class WorkflowMonitor:
         self._initialize_thresholds()
 
     def _initialize_thresholds(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize monitoring thresholds"""
 
         self.thresholds = {
@@ -107,9 +107,9 @@ class WorkflowMonitor:
         metric_type: MetricType,
         labels: Dict[str, str] = None,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record a metric value"""
 
         metric = Metric(
@@ -126,9 +126,9 @@ class WorkflowMonitor:
         self._check_thresholds(name, value, labels)
 
     def _check_thresholds(self, metric_name: str, value: float, labels: Dict[str, str]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Check if metric value violates thresholds"""
 
         if metric_name not in self.thresholds:
@@ -173,9 +173,9 @@ class WorkflowMonitor:
         service: str = None,
         metadata: Dict[str, Any] = None,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create and dispatch an alert"""
 
         alert_id = f"{int(time.time())}_{hash(title + description) % 10000}"
@@ -203,16 +203,16 @@ class WorkflowMonitor:
         logger.warning(f"Alert created: {title}")
 
     def register_alert_handler(self, handler: Callable):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Register an alert handler"""
         self.alert_handlers.append(handler)
 
     async def monitor_workflow(self, workflow_id: str, workflow_engine):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Monitor a specific workflow"""
 
         start_time = time.time()
@@ -267,9 +267,9 @@ class WorkflowMonitor:
             del self.monitoring_tasks[workflow_id]
 
     async def monitor_service_health(self, service_name: str, health_endpoint: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Monitor service health continuously"""
 
         consecutive_failures = 0
@@ -328,30 +328,26 @@ class WorkflowMonitor:
             await asyncio.sleep(30)  # Check every 30 seconds
 
     def start_workflow_monitoring(self, workflow_id: str, workflow_engine):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start monitoring a workflow"""
 
         if workflow_id not in self.monitoring_tasks:
-            task = asyncio.create_task(
-                self.monitor_workflow(workflow_id, workflow_engine)
-            )
+            task = asyncio.create_task(self.monitor_workflow(workflow_id, workflow_engine))
             self.monitoring_tasks[workflow_id] = task
 
     def stop_workflow_monitoring(self, workflow_id: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop monitoring a workflow"""
 
         if workflow_id in self.monitoring_tasks:
             self.monitoring_tasks[workflow_id].cancel()
             del self.monitoring_tasks[workflow_id]
 
-    def get_metrics(
-        self, metric_name: str, time_range: timedelta = None
-    ) -> List[Dict[str, Any]]:
+    def get_metrics(self, metric_name: str, time_range: timedelta = None) -> List[Dict[str, Any]]:
         """Get metrics for a specific name and time range"""
 
         if metric_name not in self.metrics:
@@ -378,9 +374,7 @@ class WorkflowMonitor:
         if resolved is not None:
             alerts = [a for a in alerts if a.resolved == resolved]
 
-        return [
-            asdict(a) for a in sorted(alerts, key=lambda x: x.timestamp, reverse=True)
-        ]
+        return [asdict(a) for a in sorted(alerts, key=lambda x: x.timestamp, reverse=True)]
 
     def resolve_alert(self, alert_id: str) -> bool:
         """Mark an alert as resolved"""
@@ -418,17 +412,11 @@ class WorkflowMonitor:
             "timestamp": now.isoformat(),
             "alerts": {
                 "active": len(active_alerts),
-                "critical": len(
-                    [a for a in active_alerts if a.severity == AlertSeverity.CRITICAL]
-                ),
-                "high": len(
-                    [a for a in active_alerts if a.severity == AlertSeverity.HIGH]
-                ),
+                "critical": len([a for a in active_alerts if a.severity == AlertSeverity.CRITICAL]),
+                "high": len([a for a in active_alerts if a.severity == AlertSeverity.HIGH]),
                 "recent": [
                     asdict(a)
-                    for a in sorted(
-                        active_alerts, key=lambda x: x.timestamp, reverse=True
-                    )[:10]
+                    for a in sorted(active_alerts, key=lambda x: x.timestamp, reverse=True)[:10]
                 ],
             },
             "metrics": recent_metrics,
@@ -445,9 +433,9 @@ workflow_monitor = WorkflowMonitor()
 
 # Example alert handlers
 async def email_alert_handler(alert: Alert):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Send email alerts for critical issues"""
     if alert.severity in [AlertSeverity.CRITICAL, AlertSeverity.HIGH]:
         # Implement email sending logic
@@ -455,18 +443,18 @@ async def email_alert_handler(alert: Alert):
 
 
 async def slack_alert_handler(alert: Alert):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Send Slack notifications"""
     # Implement Slack webhook logic
     logger.info(f"Slack alert sent: {alert.title}")
 
 
 async def constitutional_violation_handler(alert: Alert):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Special handler for constitutional violations"""
     if alert.metadata and "constitutional_violation" in alert.metadata:
         # Implement special constitutional violation handling

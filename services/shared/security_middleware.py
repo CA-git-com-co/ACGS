@@ -101,32 +101,26 @@ def add_security_middleware(
 
     # Add comprehensive security middleware if components are available
     if SHARED_COMPONENTS_AVAILABLE:
-        app.add_middleware(
-            SecurityMiddleware, service_name=service_name, redis_url=redis_url
-        )
+        app.add_middleware(SecurityMiddleware, service_name=service_name, redis_url=redis_url)
     else:
         # Add basic security headers middleware
         @app.middleware("http")
         async def add_security_headers(request, call_next):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             response = await call_next(request)
 
             # Security headers
             response.headers["X-Content-Type-Options"] = "nosniff"
             response.headers["X-Frame-Options"] = "DENY"
             response.headers["X-XSS-Protection"] = "1; mode=block"
-            response.headers["Strict-Transport-Security"] = (
-                "max-age=31536000; includeSubDomains"
-            )
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
             response.headers["Content-Security-Policy"] = (
                 "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
             )
             response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-            response.headers["Permissions-Policy"] = (
-                "geolocation=(), microphone=(), camera=()"
-            )
+            response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
 
             return response
 
@@ -139,9 +133,9 @@ class SecurityConfig:
     """Security configuration for middleware."""
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         # Security headers
         self.security_headers = {
             "X-Content-Type-Options": "nosniff",
@@ -241,9 +235,9 @@ class ThreatDetector:
     """Threat detection and analysis."""
 
     def __init__(self, config: SecurityConfig):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
         self.compiled_patterns = {}
 
@@ -272,9 +266,7 @@ class ThreatDetector:
         threats.extend(header_threats)
 
         # Analyze user agent
-        user_agent_threats = self._analyze_user_agent(
-            request.headers.get("user-agent", "")
-        )
+        user_agent_threats = self._analyze_user_agent(request.headers.get("user-agent", ""))
         threats.extend(user_agent_threats)
 
         # Determine overall threat level
@@ -397,9 +389,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         redis_url: str = "redis://localhost:6379",
         config: Optional[SecurityConfig] = None,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(app)
         self.service_name = service_name
         self.config = config or SecurityConfig()
@@ -414,9 +406,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         self._initialized = False
 
     async def _ensure_initialized(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Ensure middleware is initialized."""
         if not self._initialized and self.rate_limiter:
             await self.rate_limiter.initialize()
@@ -442,9 +434,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
             # Block critical threats immediately
             if threat_analysis["threat_level"] == SecurityThreatLevel.CRITICAL:
-                await self._log_security_event(
-                    request, "critical_threat_blocked", threat_analysis
-                )
+                await self._log_security_event(request, "critical_threat_blocked", threat_analysis)
                 return self._create_security_error_response(
                     "Request blocked due to security policy",
                     correlation_id,
@@ -453,16 +443,12 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
             # 3. Rate limiting (if available)
             if self.rate_limiter:
-                rate_limit_allowed, rate_limit_info = (
-                    await self.rate_limiter.check_rate_limit(request)
+                rate_limit_allowed, rate_limit_info = await self.rate_limiter.check_rate_limit(
+                    request
                 )
                 if not rate_limit_allowed:
-                    await self._log_security_event(
-                        request, "rate_limit_exceeded", rate_limit_info
-                    )
-                    return self._create_rate_limit_error_response(
-                        rate_limit_info, correlation_id
-                    )
+                    await self._log_security_event(request, "rate_limit_exceeded", rate_limit_info)
+                    return self._create_rate_limit_error_response(rate_limit_info, correlation_id)
             else:
                 rate_limit_info = {}
 
@@ -487,9 +473,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 SecurityThreatLevel.HIGH,
                 SecurityThreatLevel.MEDIUM,
             ]:
-                await self._log_security_event(
-                    request, "threat_detected", threat_analysis
-                )
+                await self._log_security_event(request, "threat_detected", threat_analysis)
 
             return response
 
@@ -538,30 +522,24 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         return None
 
     def _add_security_headers(self, response: Response):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add security headers to response."""
         for header, value in self.config.security_headers.items():
             response.headers[header] = value
 
-    def _add_rate_limit_headers(
-        self, response: Response, rate_limit_info: Dict[str, Any]
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def _add_rate_limit_headers(self, response: Response, rate_limit_info: Dict[str, Any]):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add rate limiting headers to response."""
         if "limit" in rate_limit_info:
             response.headers["X-RateLimit-Limit"] = str(rate_limit_info["limit"])
         if "remaining" in rate_limit_info:
-            response.headers["X-RateLimit-Remaining"] = str(
-                rate_limit_info["remaining"]
-            )
+            response.headers["X-RateLimit-Remaining"] = str(rate_limit_info["remaining"])
         if "reset_time" in rate_limit_info:
-            response.headers["X-RateLimit-Reset"] = str(
-                int(rate_limit_info["reset_time"])
-            )
+            response.headers["X-RateLimit-Reset"] = str(int(rate_limit_info["reset_time"]))
 
     def _create_security_error_response(
         self, message: str, correlation_id: str, status_code: int
@@ -635,12 +613,10 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             headers=headers,
         )
 
-    async def _log_security_event(
-        self, request: Request, event_type: str, details: Dict[str, Any]
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    async def _log_security_event(self, request: Request, event_type: str, details: Dict[str, Any]):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Log security events for audit and monitoring."""
         event = {
             "timestamp": datetime.now(timezone.utc).isoformat(),

@@ -148,9 +148,9 @@ class RoleChecker:
     """
 
     def __init__(self, allowed_roles: List[str]):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.allowed_roles = allowed_roles
 
     def __call__(self, user: User = Depends(get_current_active_user)):
@@ -240,9 +240,9 @@ class AuthServiceClient:
     """Client for communicating with auth service"""
 
     def __init__(self, base_url: str = AUTH_SERVICE_URL):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.base_url = base_url
         self.client = httpx.AsyncClient(base_url=base_url, timeout=10.0)
 
@@ -265,9 +265,9 @@ class AuthServiceClient:
             return None
 
     async def close(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         await self.client.aclose()
 
 

@@ -24,39 +24,39 @@ except ImportError:
     # Define a minimal interface if DI module is not available
     class DatabaseInterface:
         async def connect(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         async def disconnect(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         async def execute_query(self, query, params=None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         async def execute_command(self, command, params=None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         async def begin_transaction(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         async def health_check(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
 
@@ -118,9 +118,9 @@ class ConnectionPool:
     """
 
     def __init__(self, database_url: str, config: Optional[PoolConfig] = None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize connection pool.
 
@@ -167,9 +167,9 @@ class ConnectionPool:
         self._initialized = False
 
     async def initialize(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the connection pool."""
         if self._initialized:
             return
@@ -189,9 +189,9 @@ class ConnectionPool:
             )
 
     async def close(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Close the connection pool."""
         if self.engine:
             await self.engine.dispose()
@@ -199,9 +199,9 @@ class ConnectionPool:
 
     @asynccontextmanager
     async def get_connection(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Get a database connection from the pool.
 
@@ -219,9 +219,7 @@ class ConnectionPool:
 
         except Exception as e:
             self.metrics.connection_errors += 1
-            raise DatabaseError(
-                f"Database connection error: {str(e)}", operation="get_connection"
-            )
+            raise DatabaseError(f"Database connection error: {str(e)}", operation="get_connection")
 
         finally:
             if connection:
@@ -254,9 +252,7 @@ class ConnectionPool:
             if session:
                 await session.rollback()
             self.metrics.connection_errors += 1
-            raise DatabaseError(
-                f"Database session error: {str(e)}", operation="get_session"
-            )
+            raise DatabaseError(f"Database session error: {str(e)}", operation="get_session")
 
         finally:
             if session:
@@ -358,9 +354,9 @@ class DatabasePoolManager:
     """
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the pool manager."""
         self.pools: Dict[str, ConnectionPool] = {}
         self.default_config = PoolConfig()
@@ -401,9 +397,9 @@ class DatabasePoolManager:
         return self.pools.get(name)
 
     async def initialize_all(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize all registered pools."""
         for name, pool in self.pools.items():
             try:
@@ -414,9 +410,9 @@ class DatabasePoolManager:
                 raise
 
     async def close_all(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Close all registered pools."""
         for name, pool in self.pools.items():
             try:
@@ -429,9 +425,9 @@ class DatabasePoolManager:
 
     @asynccontextmanager
     async def get_connection(self, pool_name: str = "default"):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Get a connection from a specific pool.
 
@@ -451,9 +447,7 @@ class DatabasePoolManager:
             yield conn
 
     @asynccontextmanager
-    async def get_session(
-        self, pool_name: str = "default"
-    ) -> AsyncGenerator[AsyncSession, None]:
+    async def get_session(self, pool_name: str = "default") -> AsyncGenerator[AsyncSession, None]:
         """
         Get a session from a specific pool.
 
@@ -465,9 +459,7 @@ class DatabasePoolManager:
         """
         pool = self.get_pool(pool_name)
         if not pool:
-            raise DatabaseError(
-                f"Database pool '{pool_name}' not found", operation="get_session"
-            )
+            raise DatabaseError(f"Database pool '{pool_name}' not found", operation="get_session")
 
         async with pool.get_session() as session:
             yield session
@@ -488,9 +480,7 @@ class DatabasePoolManager:
         """
         pool = self.get_pool(pool_name)
         if not pool:
-            raise DatabaseError(
-                f"Database pool '{pool_name}' not found", operation="execute_query"
-            )
+            raise DatabaseError(f"Database pool '{pool_name}' not found", operation="execute_query")
 
         return await pool.execute_query(query, params)
 

@@ -101,9 +101,9 @@ class ACGSServiceIntegrator:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.service_configs: Dict[ACGSServiceType, ACGSServiceConfig] = {}
         self.federated_evaluator: Optional[FederatedEvaluator] = None
         self.cross_platform_coordinator: Optional[CrossPlatformCoordinator] = None
@@ -123,9 +123,9 @@ class ACGSServiceIntegrator:
     async def initialize(
         self, service_configs: Optional[Dict[ACGSServiceType, ACGSServiceConfig]] = None
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the ACGS service integrator."""
         try:
             # Set up default service configurations
@@ -156,9 +156,9 @@ class ACGSServiceIntegrator:
             raise
 
     def _setup_default_service_configs(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set up default ACGS service configurations."""
         default_configs = {
             ACGSServiceType.AUTH: ACGSServiceConfig(
@@ -184,9 +184,9 @@ class ACGSServiceIntegrator:
         self.service_configs = default_configs
 
     async def _test_service_connectivity(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test connectivity to all ACGS services."""
         connectivity_results = {}
 
@@ -209,9 +209,9 @@ class ACGSServiceIntegrator:
 
         # Update availability metrics
         for service_type, result in connectivity_results.items():
-            self.integration_metrics["service_availability"][service_type.value] = (
-                result["available"]
-            )
+            self.integration_metrics["service_availability"][service_type.value] = result[
+                "available"
+            ]
 
         available_services = sum(
             1 for result in connectivity_results.values() if result["available"]
@@ -253,9 +253,7 @@ class ACGSServiceIntegrator:
                         "target_services": [s.value for s in request.target_services],
                         "integration_context": request.integration_context,
                     },
-                    "target_platforms": request.integration_context.get(
-                        "target_platforms", []
-                    ),
+                    "target_platforms": request.integration_context.get("target_platforms", []),
                     "privacy_requirements": request.integration_context.get(
                         "privacy_requirements", {}
                     ),
@@ -283,9 +281,7 @@ class ACGSServiceIntegrator:
 
         try:
             # Get federated evaluation status
-            federated_status = await self.federated_evaluator.get_evaluation_status(
-                task_id
-            )
+            federated_status = await self.federated_evaluator.get_evaluation_status(task_id)
 
             if not federated_status:
                 return None
@@ -294,13 +290,9 @@ class ACGSServiceIntegrator:
             acgs_status = {
                 **federated_status,
                 "acgs_integration": True,
-                "service_availability": self.integration_metrics[
-                    "service_availability"
-                ],
+                "service_availability": self.integration_metrics["service_availability"],
                 "integration_metrics": {
-                    "total_integrations": self.integration_metrics[
-                        "total_integrations"
-                    ],
+                    "total_integrations": self.integration_metrics["total_integrations"],
                     "success_rate": self._calculate_success_rate(),
                 },
             }
@@ -337,17 +329,16 @@ class ACGSServiceIntegrator:
                     service_type.value: {
                         "base_url": config.base_url,
                         "timeout_seconds": config.timeout_seconds,
-                        "available": self.integration_metrics[
-                            "service_availability"
-                        ].get(service_type.value, False),
+                        "available": self.integration_metrics["service_availability"].get(
+                            service_type.value, False
+                        ),
                     }
                     for service_type, config in self.service_configs.items()
                 },
                 "system_health": {
                     "integrator_initialized": self._initialized,
                     "federated_evaluator_ready": self.federated_evaluator is not None,
-                    "cross_platform_coordinator_ready": self.cross_platform_coordinator
-                    is not None,
+                    "cross_platform_coordinator_ready": self.cross_platform_coordinator is not None,
                     "http_client_ready": self.http_client is not None,
                 },
             }
@@ -359,9 +350,9 @@ class ACGSServiceIntegrator:
             return {}
 
     async def shutdown(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Shutdown the ACGS service integrator."""
         try:
             if self.federated_evaluator:

@@ -81,15 +81,11 @@ class WINAPolicyCompiler:
         # Initialize WINA components
         if enable_wina and WINA_AVAILABLE:
             try:
-                self.wina_config, self.wina_integration_config = (
-                    load_wina_config_from_env()
-                )
+                self.wina_config, self.wina_integration_config = load_wina_config_from_env()
                 self.wina_metrics = WINAMetrics(self.wina_config)
                 logger.info("WINA optimization enabled for policy compilation")
             except Exception as e:
-                logger.warning(
-                    f"Failed to initialize WINA: {e}. Disabling WINA optimization."
-                )
+                logger.warning(f"Failed to initialize WINA: {e}. Disabling WINA optimization.")
                 self.enable_wina = False
         else:
             self.enable_wina = False
@@ -128,9 +124,7 @@ class WINAPolicyCompiler:
         errors = []
 
         try:
-            logger.info(
-                f"Starting WINA-optimized compilation for {len(policies)} policies"
-            )
+            logger.info(f"Starting WINA-optimized compilation for {len(policies)} policies")
 
             # Phase 1: Pre-compilation optimization
             optimized_policies = await self._optimize_policies_for_compilation(
@@ -138,9 +132,7 @@ class WINAPolicyCompiler:
             )
 
             # Phase 2: Validate policies with WINA insights
-            validation_results = await self._validate_policies_with_wina(
-                optimized_policies
-            )
+            validation_results = await self._validate_policies_with_wina(optimized_policies)
 
             # Phase 3: Perform incremental compilation
             compilation_metrics = await self.incremental_compiler.compile_policies(
@@ -225,9 +217,7 @@ class WINAPolicyCompiler:
 
             for policy in policies:
                 # Apply WINA-informed optimizations
-                optimized_policy = await self._optimize_single_policy(
-                    policy, optimization_hints
-                )
+                optimized_policy = await self._optimize_single_policy(policy, optimization_hints)
                 optimized_policies.append(optimized_policy)
 
             logger.debug(f"Optimized {len(policies)} policies for compilation")
@@ -258,9 +248,7 @@ class WINAPolicyCompiler:
         for policy in policies:
             try:
                 # Use format router for validation
-                validation_result = self.format_router.validate_rego_syntax(
-                    policy.rule_content
-                )
+                validation_result = self.format_router.validate_rego_syntax(policy.rule_content)
                 validation_results[policy.rule_id] = validation_result
 
             except Exception as e:
@@ -284,17 +272,13 @@ class WINAPolicyCompiler:
         """Calculate WINA-specific compilation metrics."""
 
         # Calculate validation success rate
-        valid_policies = sum(
-            1 for result in validation_results.values() if result.is_valid
-        )
+        valid_policies = sum(1 for result in validation_results.values() if result.is_valid)
         validation_success_rate = (
             valid_policies / len(validation_results) if validation_results else 0.0
         )
 
         # Calculate performance improvement (simplified)
-        performance_improvement = (
-            0.1 if self.enable_wina else 0.0
-        )  # 10% improvement with WINA
+        performance_improvement = 0.1 if self.enable_wina else 0.0  # 10% improvement with WINA
 
         # Calculate bundle size reduction (simplified)
         bundle_size_reduction = 0.05 if self.enable_wina else 0.0  # 5% size reduction
@@ -360,8 +344,7 @@ class WINAPolicyCompiler:
 
             # Performance improvement average
             performance_improvements = [
-                r.wina_metrics.performance_improvement
-                for r in self._compilation_history
+                r.wina_metrics.performance_improvement for r in self._compilation_history
             ]
             self._performance_metrics["average_performance_improvement"] = (
                 sum(performance_improvements) / total
@@ -369,9 +352,7 @@ class WINAPolicyCompiler:
 
             # Compliance rate
             compliant_compilations = sum(
-                1
-                for r in self._compilation_history
-                if r.wina_metrics.constitutional_compliance
+                1 for r in self._compilation_history if r.wina_metrics.constitutional_compliance
             )
             self._performance_metrics["constitutional_compliance_rate"] = (
                 compliant_compilations / total
@@ -379,12 +360,9 @@ class WINAPolicyCompiler:
 
             # Validation success rate
             validation_rates = [
-                r.wina_metrics.validation_success_rate
-                for r in self._compilation_history
+                r.wina_metrics.validation_success_rate for r in self._compilation_history
             ]
-            self._performance_metrics["validation_success_rate"] = (
-                sum(validation_rates) / total
-            )
+            self._performance_metrics["validation_success_rate"] = sum(validation_rates) / total
 
         except Exception as e:
             logger.error(f"Failed to update compilation tracking: {e}")

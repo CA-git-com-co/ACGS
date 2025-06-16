@@ -13,15 +13,13 @@ DATABASE_URL = os.getenv(
     "postgresql+asyncpg://acgs_user:acgs_password@10.42.0.15:5435/integrity_db",  # use host-mapped port 5435
 )
 async_engine = create_async_engine(DATABASE_URL, echo=True)
-AsyncSessionLocal = sessionmaker(
-    async_engine, class_=AsyncSession, expire_on_commit=False
-)
+AsyncSessionLocal = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
 
 
 async def get_async_db():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Local implementation of async database session dependency"""
     async with AsyncSessionLocal() as session:
         try:

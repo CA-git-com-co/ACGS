@@ -154,9 +154,7 @@ class LearningAlgorithm(ABC):
     """Abstract base class for learning algorithms."""
 
     @abstractmethod
-    async def process_feedback(
-        self, feedback: List[FeedbackSignal]
-    ) -> List[LearningAction]:
+    async def process_feedback(self, feedback: List[FeedbackSignal]) -> List[LearningAction]:
         """Process feedback signals and generate learning actions."""
 
     @abstractmethod
@@ -170,19 +168,15 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
     """Reinforcement learning algorithm for WINA optimization."""
 
     def __init__(self, learning_rate: float = 0.01, exploration_rate: float = 0.1):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.learning_rate = learning_rate
         self.exploration_rate = exploration_rate
-        self.q_table: Dict[str, Dict[str, float]] = defaultdict(
-            lambda: defaultdict(float)
-        )
+        self.q_table: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
         self.experience_replay: deque = deque(maxlen=10000)
 
-    async def process_feedback(
-        self, feedback: List[FeedbackSignal]
-    ) -> List[LearningAction]:
+    async def process_feedback(self, feedback: List[FeedbackSignal]) -> List[LearningAction]:
         """Process feedback using reinforcement learning."""
         actions = []
 
@@ -196,12 +190,8 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
 
             # Q-learning update
             current_q = self.q_table[state_key][action_key]
-            max_future_q = (
-                max(self.q_table[state_key].values()) if self.q_table[state_key] else 0
-            )
-            new_q = current_q + self.learning_rate * (
-                reward + 0.9 * max_future_q - current_q
-            )
+            max_future_q = max(self.q_table[state_key].values()) if self.q_table[state_key] else 0
+            new_q = current_q + self.learning_rate * (reward + 0.9 * max_future_q - current_q)
             self.q_table[state_key][action_key] = new_q
 
             # Generate learning action if improvement opportunity detected
@@ -244,10 +234,7 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
             if signal.component_type == WINAComponentType.NEURON_ACTIVATION:
                 if signal.feedback_type == FeedbackType.EFFICIENCY_GAIN and reward > 0:
                     adjustments["activation_threshold"] = 0.05 * reward
-                elif (
-                    signal.feedback_type == FeedbackType.ACCURACY_RETENTION
-                    and reward < 0
-                ):
+                elif signal.feedback_type == FeedbackType.ACCURACY_RETENTION and reward < 0:
                     adjustments["activation_threshold"] = -0.02 * abs(reward)
 
             elif signal.component_type == WINAComponentType.DYNAMIC_GATING:
@@ -256,10 +243,7 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
                     adjustments["adaptive_rate"] = 0.01 * reward
 
             elif signal.component_type == WINAComponentType.SVD_TRANSFORMATION:
-                if (
-                    signal.feedback_type == FeedbackType.ACCURACY_RETENTION
-                    and reward > 0
-                ):
+                if signal.feedback_type == FeedbackType.ACCURACY_RETENTION and reward > 0:
                     adjustments["rank_threshold"] = 0.02 * reward
 
             if adjustments:
@@ -301,17 +285,15 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
     """Pattern recognition algorithm for identifying optimization opportunities."""
 
     def __init__(self, window_size: int = 100, similarity_threshold: float = 0.8):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.window_size = window_size
         self.similarity_threshold = similarity_threshold
         self.pattern_database: List[Dict[str, Any]] = []
         self.feedback_history: deque = deque(maxlen=window_size)
 
-    async def process_feedback(
-        self, feedback: List[FeedbackSignal]
-    ) -> List[LearningAction]:
+    async def process_feedback(self, feedback: List[FeedbackSignal]) -> List[LearningAction]:
         """Process feedback using pattern recognition."""
         actions = []
 
@@ -394,9 +376,7 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
 
         return abs((values[-1] - values[0]) / len(values))
 
-    async def _pattern_to_action(
-        self, pattern: Dict[str, Any]
-    ) -> Optional[LearningAction]:
+    async def _pattern_to_action(self, pattern: Dict[str, Any]) -> Optional[LearningAction]:
         """Convert identified pattern to learning action."""
         try:
             if pattern["type"] == "increasing_performance":
@@ -415,9 +395,7 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
                 return LearningAction(
                     action_type="reverse_trend",
                     component_target=pattern["component"],
-                    parameter_adjustments={
-                        "correction_factor": -0.1 * pattern["strength"]
-                    },
+                    parameter_adjustments={"correction_factor": -0.1 * pattern["strength"]},
                     expected_impact=pattern["strength"],
                     confidence=0.6,
                     rationale="Correcting declining performance pattern",
@@ -444,9 +422,9 @@ class WINAContinuousLearningSystem:
     """
 
     def __init__(self, config: Optional[WINAConfig] = None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize continuous learning system."""
         self.config = config
         self.learning_state = LearningState(
@@ -493,9 +471,9 @@ class WINAContinuousLearningSystem:
         logger.info("WINA Continuous Learning System initialized")
 
     def _initialize_component_profiles(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize learning profiles for all WINA components."""
         for component_type in WINAComponentType:
             if component_type in [
@@ -563,9 +541,9 @@ class WINAContinuousLearningSystem:
                 )
 
     async def start_learning_loop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start the continuous learning loop."""
         logger.info("Starting WINA continuous learning loop")
 
@@ -579,9 +557,9 @@ class WINAContinuousLearningSystem:
         asyncio.create_task(self._performance_monitoring_loop())
 
     async def process_feedback_signal(self, feedback: FeedbackSignal):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Process a single feedback signal."""
         try:
             await self.feedback_queue.put(feedback)
@@ -593,9 +571,9 @@ class WINAContinuousLearningSystem:
             logger.error(f"Failed to process feedback signal: {e}")
 
     async def _feedback_processing_loop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Main feedback processing loop."""
         batch_size = 10
         batch_timeout = 1.0  # seconds
@@ -635,9 +613,9 @@ class WINAContinuousLearningSystem:
                 await asyncio.sleep(1)  # Prevent tight error loop
 
     async def _process_feedback_batch(self, feedback_batch: List[FeedbackSignal]):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Process a batch of feedback signals."""
         try:
             all_actions = []
@@ -663,16 +641,14 @@ class WINAContinuousLearningSystem:
             logger.error(f"Feedback batch processing failed: {e}")
 
     async def _execute_learning_action(self, action: LearningAction):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Execute a learning action."""
         try:
             component_profile = self.component_profiles.get(action.component_target)
             if not component_profile:
-                logger.warning(
-                    f"No profile found for component {action.component_target}"
-                )
+                logger.warning(f"No profile found for component {action.component_target}")
                 return
 
             # Apply parameter adjustments within bounds
@@ -696,15 +672,11 @@ class WINAContinuousLearningSystem:
 
             # Record in learning history
             performance_estimate = action.expected_impact
-            component_profile.learning_history.append(
-                (updated_params.copy(), performance_estimate)
-            )
+            component_profile.learning_history.append((updated_params.copy(), performance_estimate))
 
             # Keep history manageable
             if len(component_profile.learning_history) > 100:
-                component_profile.learning_history = component_profile.learning_history[
-                    -50:
-                ]
+                component_profile.learning_history = component_profile.learning_history[-50:]
 
             logger.debug(
                 f"Learning action executed for {action.component_target.value}: {action.rationale}"
@@ -723,9 +695,7 @@ class WINAContinuousLearningSystem:
                     strategy_effectiveness=action.confidence,
                     feedback_quality=0.8,  # Placeholder
                 )
-                await self.performance_collector.record_learning_feedback_metrics(
-                    learning_metrics
-                )
+                await self.performance_collector.record_learning_feedback_metrics(learning_metrics)
 
             self.learning_metrics["successful_adaptations"] += 1
 
@@ -736,9 +706,9 @@ class WINAContinuousLearningSystem:
     async def _update_learning_state(
         self, feedback_batch: List[FeedbackSignal], actions: List[LearningAction]
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update the overall learning state."""
         try:
             # Calculate current performance trend
@@ -755,9 +725,9 @@ class WINAContinuousLearningSystem:
 
                 # Keep trend history manageable
                 if len(self.learning_state.performance_trend) > 100:
-                    self.learning_state.performance_trend = (
-                        self.learning_state.performance_trend[-50:]
-                    )
+                    self.learning_state.performance_trend = self.learning_state.performance_trend[
+                        -50:
+                    ]
 
                 # Update average performance improvement metric
                 if len(self.learning_state.performance_trend) > 1:
@@ -765,9 +735,7 @@ class WINAContinuousLearningSystem:
                         self.learning_state.performance_trend[-1]
                         - self.learning_state.performance_trend[0]
                     ) / len(self.learning_state.performance_trend)
-                    self.learning_metrics["average_performance_improvement"] = (
-                        improvement
-                    )
+                    self.learning_metrics["average_performance_improvement"] = improvement
 
             # Determine learning phase
             await self._update_learning_phase()
@@ -779,9 +747,9 @@ class WINAContinuousLearningSystem:
             logger.warning(f"Learning state update failed: {e}")
 
     async def _update_learning_phase(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update the current learning phase."""
         try:
             trend = self.learning_state.performance_trend
@@ -806,9 +774,9 @@ class WINAContinuousLearningSystem:
             logger.warning(f"Learning phase update failed: {e}")
 
     async def _adjust_learning_parameters(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Adjust learning parameters based on current phase."""
         try:
             if self.learning_state.current_phase == LearningPhase.EXPLORATION:
@@ -837,9 +805,9 @@ class WINAContinuousLearningSystem:
             logger.warning(f"Learning parameter adjustment failed: {e}")
 
     async def _adaptation_loop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Periodic adaptation and optimization loop."""
         adaptation_interval = 300  # 5 minutes
 
@@ -851,9 +819,9 @@ class WINAContinuousLearningSystem:
                 logger.error(f"Adaptation loop error: {e}")
 
     async def _perform_periodic_adaptation(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Perform periodic adaptation and optimization."""
         try:
             logger.info("Performing periodic WINA learning adaptation")
@@ -874,9 +842,9 @@ class WINAContinuousLearningSystem:
     async def _analyze_component_performance(
         self, component_type: WINAComponentType, profile: ComponentLearningProfile
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Analyze performance of specific component."""
         try:
             if len(profile.learning_history) < 5:
@@ -886,9 +854,7 @@ class WINAContinuousLearningSystem:
             recent_performance = [perf for _, perf in profile.learning_history[-10:]]
 
             if len(recent_performance) > 1:
-                trend = (recent_performance[-1] - recent_performance[0]) / len(
-                    recent_performance
-                )
+                trend = (recent_performance[-1] - recent_performance[0]) / len(recent_performance)
 
                 # Update stability score
                 variance = np.var(recent_performance)
@@ -901,14 +867,12 @@ class WINAContinuousLearningSystem:
                     profile.adaptation_rate = min(0.2, profile.adaptation_rate + 0.02)
 
         except Exception as e:
-            logger.warning(
-                f"Component performance analysis failed for {component_type}: {e}"
-            )
+            logger.warning(f"Component performance analysis failed for {component_type}: {e}")
 
     async def _optimize_learning_strategy(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Optimize the overall learning strategy."""
         try:
             # Analyze effectiveness of different strategies
@@ -944,9 +908,9 @@ class WINAContinuousLearningSystem:
             logger.warning(f"Learning strategy optimization failed: {e}")
 
     async def _cleanup_learning_data(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clean up old learning data to prevent memory issues."""
         try:
             # Clean up feedback history
@@ -966,9 +930,9 @@ class WINAContinuousLearningSystem:
             logger.warning(f"Learning data cleanup failed: {e}")
 
     async def _performance_monitoring_loop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Integration loop with performance monitoring system."""
         monitoring_interval = 60  # 1 minute
 
@@ -984,9 +948,9 @@ class WINAContinuousLearningSystem:
                 logger.error(f"Performance monitoring loop error: {e}")
 
     async def _generate_performance_feedback(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Generate feedback signals from performance monitoring data."""
         try:
             # This would integrate with actual performance monitoring
@@ -1111,9 +1075,9 @@ class WINAContinuousLearningSystem:
             return {"error": str(e)}
 
     def set_performance_collector(self, collector: WINAPerformanceCollector):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set the performance collector for integration."""
         self.performance_collector = collector
         logger.info("Performance collector integrated with learning system")

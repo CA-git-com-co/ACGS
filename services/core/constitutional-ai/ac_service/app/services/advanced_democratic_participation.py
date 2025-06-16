@@ -135,16 +135,14 @@ class AdvancedDemocraticParticipation:
     """
 
     def __init__(self, blockchain_provider_url: Optional[str] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.metrics = get_metrics("advanced_democratic_participation")
         self.ccai = get_collective_constitutional_ai()
 
         # Blockchain integration
-        self.blockchain_provider_url = (
-            blockchain_provider_url or "http://localhost:8545"
-        )
+        self.blockchain_provider_url = blockchain_provider_url or "http://localhost:8545"
         self.w3 = None
         self.voting_contract_address = None
 
@@ -158,14 +156,12 @@ class AdvancedDemocraticParticipation:
         self.real_time_polls: Dict[str, RealTimePolling] = {}
 
         # Voting credits for quadratic voting
-        self.voter_credits: Dict[str, int] = defaultdict(
-            lambda: 100
-        )  # Default 100 credits
+        self.voter_credits: Dict[str, int] = defaultdict(lambda: 100)  # Default 100 credits
 
     def _initialize_blockchain(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize blockchain connection for transparent voting."""
         try:
             self.w3 = Web3(Web3.HTTPProvider(self.blockchain_provider_url))
@@ -178,9 +174,7 @@ class AdvancedDemocraticParticipation:
             else:
                 logger.warning("Blockchain connection failed - using local storage")
         except Exception as e:
-            logger.warning(
-                f"Blockchain initialization failed: {e} - using local storage"
-            )
+            logger.warning(f"Blockchain initialization failed: {e} - using local storage")
 
     async def create_blockchain_vote(
         self,
@@ -274,9 +268,7 @@ class AdvancedDemocraticParticipation:
         available_credits = self.voter_credits[voter_id]
 
         if total_credits > available_credits:
-            raise ValueError(
-                f"Insufficient credits: {total_credits} > {available_credits}"
-            )
+            raise ValueError(f"Insufficient credits: {total_credits} > {available_credits}")
 
         # Calculate quadratic vote strength
         vote_strength = {}
@@ -330,9 +322,7 @@ class AdvancedDemocraticParticipation:
 
         # Record metrics
         self.metrics.increment("quadratic_votes_cast")
-        self.metrics.record_value(
-            "vote_preference_intensity", total_preference_intensity
-        )
+        self.metrics.record_value("vote_preference_intensity", total_preference_intensity)
 
         logger.info(f"Quadratic vote cast by {voter_id} for {vote_id}")
 
@@ -382,9 +372,7 @@ class AdvancedDemocraticParticipation:
         self.metrics.increment("delegations_created")
         self.metrics.record_value("delegation_weight", delegation_weight)
 
-        logger.info(
-            f"Delegation created: {delegator_id} -> {delegate_id} for {topic_scope}"
-        )
+        logger.info(f"Delegation created: {delegator_id} -> {delegate_id} for {topic_scope}")
 
         return delegation
 
@@ -484,9 +472,9 @@ class AdvancedDemocraticParticipation:
         return poll
 
     async def _initialize_ai_moderation(self, discussion: AIModeratedDiscussion):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize AI moderation for discussion."""
         # Simulate AI moderation initialization
         await asyncio.sleep(0.1)
@@ -506,14 +494,12 @@ class AdvancedDemocraticParticipation:
             "neutral": 1.0,
         }
 
-        logger.debug(
-            f"AI moderation initialized for discussion {discussion.discussion_id}"
-        )
+        logger.debug(f"AI moderation initialized for discussion {discussion.discussion_id}")
 
     async def _initialize_real_time_monitoring(self, poll: RealTimePolling):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize real-time monitoring for poll."""
         # Simulate real-time monitoring setup
         await asyncio.sleep(0.1)
@@ -546,23 +532,15 @@ class AdvancedDemocraticParticipation:
 
     async def get_democratic_participation_metrics(self) -> Dict[str, Any]:
         """Get comprehensive democratic participation metrics."""
-        active_votes_count = len(
-            [v for v in self.active_votes.values() if v["status"] == "active"]
-        )
-        total_delegations = sum(
-            len(chains) for chains in self.delegation_chains.values()
-        )
-        active_discussions = len(
-            [d for d in self.ai_discussions.values() if d.status == "active"]
-        )
+        active_votes_count = len([v for v in self.active_votes.values() if v["status"] == "active"])
+        total_delegations = sum(len(chains) for chains in self.delegation_chains.values())
+        active_discussions = len([d for d in self.ai_discussions.values() if d.status == "active"])
         active_polls = len(self.real_time_polls)
 
         # Calculate participation rates
         total_participants = set()
         for vote in self.active_votes.values():
-            total_participants.update(
-                vote_data["voter_id"] for vote_data in vote["votes"]
-            )
+            total_participants.update(vote_data["voter_id"] for vote_data in vote["votes"])
 
         for chains in self.delegation_chains.values():
             for chain in chains:
@@ -581,9 +559,7 @@ class AdvancedDemocraticParticipation:
             "unique_participants": len(total_participants),
             "participation_rate": participation_rate,
             "blockchain_integration": self.w3 is not None and self.w3.is_connected(),
-            "voting_mechanisms_available": [
-                mechanism.value for mechanism in VotingMechanism
-            ],
+            "voting_mechanisms_available": [mechanism.value for mechanism in VotingMechanism],
             "democratic_legitimacy_enhancement": {
                 "quadratic_voting": "preference_intensity_measurement",
                 "liquid_democracy": "delegation_chains",

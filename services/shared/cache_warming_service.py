@@ -76,9 +76,9 @@ class CacheWarmingService:
     """
 
     def __init__(self, cache_client, config: Optional[CacheWarmingConfig] = None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.cache_client = cache_client
         self.config = config or CacheWarmingConfig()
         self.warming_active = False
@@ -97,9 +97,9 @@ class CacheWarmingService:
         self.access_times: Dict[str, List[datetime]] = {}
 
     async def initialize(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize cache warming service."""
         try:
             logger.info("Initializing cache warming service")
@@ -125,14 +125,12 @@ class CacheWarmingService:
             raise
 
     async def _register_default_warming_sources(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Register default warming data sources."""
         # Constitutional principles
-        self.warming_sources["constitutional_principles"] = (
-            self._get_constitutional_principles
-        )
+        self.warming_sources["constitutional_principles"] = self._get_constitutional_principles
 
         # Governance rules
         self.warming_sources["governance_rules"] = self._get_governance_rules
@@ -168,9 +166,9 @@ class CacheWarmingService:
         return metrics
 
     async def start_scheduled_warming(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start scheduled cache warming."""
         if self.warming_active:
             logger.warning("Scheduled warming already active")
@@ -183,9 +181,9 @@ class CacheWarmingService:
         )
 
     async def stop_scheduled_warming(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop scheduled cache warming."""
         self.warming_active = False
         if self.warming_task:
@@ -197,9 +195,9 @@ class CacheWarmingService:
         logger.info("Stopped scheduled warming")
 
     async def _scheduled_warming_loop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Scheduled warming loop."""
         while self.warming_active:
             try:
@@ -260,9 +258,9 @@ class CacheWarmingService:
         predicted_items = []
 
         # Analyze access frequency
-        frequent_keys = sorted(
-            self.access_frequency.items(), key=lambda x: x[1], reverse=True
-        )[: self.config.max_warming_items // 2]
+        frequent_keys = sorted(self.access_frequency.items(), key=lambda x: x[1], reverse=True)[
+            : self.config.max_warming_items // 2
+        ]
 
         # Analyze access timing patterns
         time_based_keys = await self._analyze_time_patterns()
@@ -297,9 +295,7 @@ class CacheWarmingService:
             recent_accesses = [
                 t
                 for t in access_times
-                if t
-                > datetime.now()
-                - timedelta(hours=self.config.usage_pattern_window_hours)
+                if t > datetime.now() - timedelta(hours=self.config.usage_pattern_window_hours)
             ]
 
             if not recent_accesses:
@@ -308,9 +304,7 @@ class CacheWarmingService:
             # Check if key is frequently accessed at this time
             same_hour_accesses = [t for t in recent_accesses if t.hour == current_hour]
 
-            same_day_accesses = [
-                t for t in recent_accesses if t.weekday() == current_day
-            ]
+            same_day_accesses = [t for t in recent_accesses if t.weekday() == current_day]
 
             # Predict if likely to be accessed soon
             if len(same_hour_accesses) >= 2 or len(same_day_accesses) >= 3:
@@ -318,9 +312,7 @@ class CacheWarmingService:
 
         return time_based_keys
 
-    async def _execute_warming(
-        self, warming_items: List[CacheWarmingItem]
-    ) -> WarmingMetrics:
+    async def _execute_warming(self, warming_items: List[CacheWarmingItem]) -> WarmingMetrics:
         """Execute cache warming for items."""
         total_items = len(warming_items)
         successful = 0
@@ -333,9 +325,7 @@ class CacheWarmingService:
             # Warm batch
             for item in batch:
                 try:
-                    await self.cache_client.put(
-                        item.key, item.value, item.ttl, item.tags
-                    )
+                    await self.cache_client.put(item.key, item.value, item.ttl, item.tags)
                     successful += 1
                 except Exception as e:
                     logger.error(f"Failed to warm cache item {item.key}: {e}")
@@ -355,9 +345,9 @@ class CacheWarmingService:
         )
 
     def record_cache_access(self, key: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record cache access for predictive warming."""
         # Update access frequency
         self.access_frequency[key] = self.access_frequency.get(key, 0) + 1

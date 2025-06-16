@@ -42,13 +42,9 @@ SYSTEM_RESOURCE_USAGE = Gauge(
     "system_resource_usage", "System resource usage metrics", ["resource_type"]
 )
 
-CONCURRENT_REQUESTS = Gauge(
-    "concurrent_requests", "Number of concurrent requests being processed"
-)
+CONCURRENT_REQUESTS = Gauge("concurrent_requests", "Number of concurrent requests being processed")
 
-ERROR_RATE = Counter(
-    "error_rate_total", "Total number of errors", ["error_type", "endpoint"]
-)
+ERROR_RATE = Counter("error_rate_total", "Total number of errors", ["error_type", "endpoint"])
 
 THROUGHPUT = Counter(
     "throughput_total", "Total number of requests processed", ["endpoint", "status"]
@@ -89,21 +85,19 @@ class PerformanceProfiler:
     """Advanced performance profiler with bottleneck detection."""
 
     def __init__(self, max_samples: int = 10000):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.max_samples = max_samples
-        self.latency_samples: Dict[str, deque] = defaultdict(
-            lambda: deque(maxlen=max_samples)
-        )
+        self.latency_samples: Dict[str, deque] = defaultdict(lambda: deque(maxlen=max_samples))
         self.operation_counts: Dict[str, int] = defaultdict(int)
         self.bottlenecks: List[Dict[str, Any]] = []
         self._lock = threading.Lock()
 
     def record_latency(self, operation: str, latency_ms: float):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record latency measurement for an operation."""
         with self._lock:
             self.latency_samples[operation].append(
@@ -116,9 +110,9 @@ class PerformanceProfiler:
                 self._record_bottleneck(operation, latency_ms)
 
     def _record_bottleneck(self, operation: str, latency_ms: float):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record performance bottleneck."""
         bottleneck = {
             "operation": operation,
@@ -186,9 +180,9 @@ class SystemResourceMonitor:
     """System resource monitoring with alerting."""
 
     def __init__(self, check_interval: int = 30):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.check_interval = check_interval
         self.monitoring = False
         self.monitor_task: Optional[asyncio.Task] = None
@@ -199,9 +193,9 @@ class SystemResourceMonitor:
         }
 
     async def start_monitoring(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start system resource monitoring."""
         if self.monitoring:
             return
@@ -211,9 +205,9 @@ class SystemResourceMonitor:
         logger.info("System resource monitoring started")
 
     async def stop_monitoring(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop system resource monitoring."""
         self.monitoring = False
         if self.monitor_task:
@@ -225,9 +219,9 @@ class SystemResourceMonitor:
         logger.info("System resource monitoring stopped")
 
     async def _monitor_loop(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Main monitoring loop."""
         while self.monitoring:
             try:
@@ -240,9 +234,9 @@ class SystemResourceMonitor:
                 await asyncio.sleep(self.check_interval)
 
     async def _collect_metrics(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Collect system resource metrics."""
         # CPU usage
         cpu_percent = psutil.cpu_percent(interval=1)
@@ -262,12 +256,8 @@ class SystemResourceMonitor:
 
         # Network I/O
         network = psutil.net_io_counters()
-        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_sent").set(
-            network.bytes_sent
-        )
-        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_recv").set(
-            network.bytes_recv
-        )
+        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_sent").set(network.bytes_sent)
+        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_recv").set(network.bytes_recv)
 
         # Check thresholds and alert
         await self._check_thresholds(cpu_percent, memory.percent, disk_percent)
@@ -275,9 +265,9 @@ class SystemResourceMonitor:
     async def _check_thresholds(
         self, cpu_percent: float, memory_percent: float, disk_percent: float
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Check resource usage against thresholds."""
         alerts = []
 
@@ -298,9 +288,9 @@ class PerformanceMonitor:
     """Main performance monitoring service."""
 
     def __init__(self, redis_client: Optional[redis.Redis] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.redis_client = redis_client
         self.profiler = PerformanceProfiler()
         self.resource_monitor = SystemResourceMonitor()
@@ -308,26 +298,26 @@ class PerformanceMonitor:
         self._lock = threading.Lock()
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize performance monitoring."""
         await self.resource_monitor.start_monitoring()
         logger.info("Performance monitoring initialized")
 
     async def shutdown(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Shutdown performance monitoring."""
         await self.resource_monitor.stop_monitoring()
         logger.info("Performance monitoring shutdown")
 
     @asynccontextmanager
     async def monitor_request(self, endpoint: str, operation_type: str = "default"):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Context manager for monitoring request performance."""
         start_time = time.time()
 
@@ -398,22 +388,22 @@ def get_performance_monitor() -> PerformanceMonitor:
 
 
 def performance_monitor_decorator(endpoint: str, operation_type: str = "default"):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Decorator for monitoring function performance."""
 
     def decorator(func: Callable):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if asyncio.iscoroutinefunction(func):
 
             @wraps(func)
             async def async_wrapper(*args, **kwargs):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 monitor = get_performance_monitor()
                 async with monitor.monitor_request(endpoint, operation_type):
                     return await func(*args, **kwargs)
@@ -423,22 +413,18 @@ def performance_monitor_decorator(endpoint: str, operation_type: str = "default"
 
             @wraps(func)
             def sync_wrapper(*args, **kwargs):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 monitor = get_performance_monitor()
                 start_time = time.time()
                 try:
                     result = func(*args, **kwargs)
                     latency_ms = (time.time() - start_time) * 1000
-                    monitor.profiler.record_latency(
-                        f"{endpoint}:{operation_type}", latency_ms
-                    )
+                    monitor.profiler.record_latency(f"{endpoint}:{operation_type}", latency_ms)
                     return result
                 except Exception as e:
-                    ERROR_RATE.labels(
-                        error_type=type(e).__name__, endpoint=endpoint
-                    ).inc()
+                    ERROR_RATE.labels(error_type=type(e).__name__, endpoint=endpoint).inc()
                     raise
 
             return sync_wrapper

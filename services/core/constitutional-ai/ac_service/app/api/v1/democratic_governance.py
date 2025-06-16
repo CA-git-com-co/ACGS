@@ -61,9 +61,7 @@ class StageAdvancementRequest(BaseModel):
     """Request model for advancing workflow stages."""
 
     target_stage: str = Field(..., description="Target workflow stage")
-    action_data: Dict = Field(
-        default_factory=dict, description="Additional action data"
-    )
+    action_data: Dict = Field(default_factory=dict, description="Additional action data")
 
 
 class ApprovalRequest(BaseModel):
@@ -72,9 +70,7 @@ class ApprovalRequest(BaseModel):
     approval_level: str = Field(..., description="Level of approval")
     approved: bool = Field(..., description="Approval decision")
     rationale: str = Field(default="", description="Approval rationale")
-    supporting_data: Dict = Field(
-        default_factory=dict, description="Supporting approval data"
-    )
+    supporting_data: Dict = Field(default_factory=dict, description="Supporting approval data")
 
 
 class FinalizationRequest(BaseModel):
@@ -114,9 +110,7 @@ async def create_proposal(
                 "current_stage": proposal.current_stage.value,
                 "created_at": proposal.created_at,
                 "integrity_hash": proposal.integrity_hash,
-                "required_approvals": [
-                    level.value for level in proposal.required_approvals
-                ],
+                "required_approvals": [level.value for level in proposal.required_approvals],
             },
         }
 
@@ -190,9 +184,9 @@ async def list_proposals(
 
 @router.get("/proposals/{proposal_id}")
 async def get_proposal(proposal_id: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Get detailed information about a specific governance proposal.
 
@@ -220,12 +214,9 @@ async def get_proposal(proposal_id: str):
                 "constitutional_implications": proposal.constitutional_implications,
                 "workflow_history": proposal.workflow_history,
                 "current_approvals": {
-                    level.value: approved
-                    for level, approved in proposal.current_approvals.items()
+                    level.value: approved for level, approved in proposal.current_approvals.items()
                 },
-                "required_approvals": [
-                    level.value for level in proposal.required_approvals
-                ],
+                "required_approvals": [level.value for level in proposal.required_approvals],
                 "public_comments": proposal.public_comments,
                 "voting_sessions": proposal.voting_sessions,
                 "decision_rationale": proposal.decision_rationale,
@@ -360,9 +351,9 @@ async def finalize_proposal(
 
 @router.get("/proposals/{proposal_id}/audit-trail")
 async def get_audit_trail(proposal_id: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Get the complete cryptographic audit trail for a governance proposal.
 
@@ -392,9 +383,9 @@ async def get_audit_trail(proposal_id: str):
 
 @router.get("/workflow-templates")
 async def get_workflow_templates():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Get available workflow templates for different governance decision types.
 
@@ -409,9 +400,7 @@ async def get_workflow_templates():
                     {
                         "stage": stage_info["stage"].value,
                         "required_actions": stage_info["required_actions"],
-                        "participants": [
-                            role.value for role in stage_info["participants"]
-                        ],
+                        "participants": [role.value for role in stage_info["participants"]],
                         "duration_estimate_days": stage_info["duration_estimate"].days,
                     }
                     for stage_info in template["stages"]
@@ -428,9 +417,7 @@ async def get_workflow_templates():
                     [level.value for level in parallel_group]
                     for parallel_group in rule.parallel_approvals
                 ],
-                "sequential_approvals": [
-                    level.value for level in rule.sequential_approvals
-                ],
+                "sequential_approvals": [level.value for level in rule.sequential_approvals],
                 "timeout_rules": {
                     level.value: timeout.total_seconds()
                     for level, timeout in rule.timeout_rules.items()
@@ -454,9 +441,9 @@ async def get_workflow_templates():
 
 @router.get("/metrics")
 async def get_governance_metrics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Get governance workflow metrics and statistics.
 

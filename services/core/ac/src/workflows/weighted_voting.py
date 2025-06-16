@@ -48,19 +48,13 @@ logger = logging.getLogger(__name__)
 
 # Prometheus metrics for weighted voting
 if PROMETHEUS_AVAILABLE:
-    VOTING_SESSIONS_TOTAL = Counter(
-        "ac_voting_sessions_total", "Total voting sessions created"
-    )
+    VOTING_SESSIONS_TOTAL = Counter("ac_voting_sessions_total", "Total voting sessions created")
     VOTES_CAST_TOTAL = Counter("ac_votes_cast_total", "Total votes cast", ["vote_type"])
     QUORUM_ACHIEVEMENT_RATE = Gauge(
         "ac_quorum_achievement_rate", "Percentage of sessions achieving quorum"
     )
-    VOTING_PARTICIPATION_RATE = Gauge(
-        "ac_voting_participation_rate", "Average participation rate"
-    )
-    VOTE_PROCESSING_TIME = Histogram(
-        "ac_vote_processing_time_seconds", "Vote processing time"
-    )
+    VOTING_PARTICIPATION_RATE = Gauge("ac_voting_participation_rate", "Average participation rate")
+    VOTE_PROCESSING_TIME = Histogram("ac_vote_processing_time_seconds", "Vote processing time")
 
 
 class VoteType(Enum):
@@ -187,9 +181,9 @@ class WeightedVotingSystem:
         default_config: Optional[VotingConfiguration] = None,
         constitutional_hash: str = "cdd01ef066bc6cf2",
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.default_config = default_config or VotingConfiguration()
         self.constitutional_hash = constitutional_hash
 
@@ -216,9 +210,9 @@ class WeightedVotingSystem:
         )
 
     async def initialize_constitutional_validator(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize constitutional compliance validator."""
         if VALIDATOR_AVAILABLE:
             try:
@@ -241,9 +235,7 @@ class WeightedVotingSystem:
         try:
             # Validate voting weight
             if not 0.0 <= voting_weight <= 1.0:
-                raise ValueError(
-                    f"Voting weight must be between 0.0 and 1.0, got {voting_weight}"
-                )
+                raise ValueError(f"Voting weight must be between 0.0 and 1.0, got {voting_weight}")
 
             # Check if stakeholder already exists
             if stakeholder_id in self.stakeholders:
@@ -301,14 +293,13 @@ class WeightedVotingSystem:
 
             # Check constitutional compliance if required
             constitutional_score = None
-            if (
-                config.constitutional_compliance_required
-                and self.constitutional_validator
-            ):
+            if config.constitutional_compliance_required and self.constitutional_validator:
                 try:
-                    compliance_result = await self.constitutional_validator.validate_constitutional_compliance(
-                        f"Proposal: {title}\n\nDescription: {description}",
-                        {"proposal_id": proposal_id, "voting_session": True},
+                    compliance_result = (
+                        await self.constitutional_validator.validate_constitutional_compliance(
+                            f"Proposal: {title}\n\nDescription: {description}",
+                            {"proposal_id": proposal_id, "voting_session": True},
+                        )
                     )
                     constitutional_score = compliance_result.consensus_confidence
 
@@ -325,9 +316,7 @@ class WeightedVotingSystem:
             session_id = str(uuid.uuid4())
             current_time = datetime.now(timezone.utc)
             voting_starts_at = current_time + timedelta(hours=start_delay_hours)
-            voting_ends_at = voting_starts_at + timedelta(
-                hours=config.voting_period_hours
-            )
+            voting_ends_at = voting_starts_at + timedelta(hours=config.voting_period_hours)
 
             session = VotingSession(
                 session_id=session_id,
@@ -398,18 +387,13 @@ class WeightedVotingSystem:
 
             # Check voting period
             current_time = datetime.now(timezone.utc)
-            if (
-                current_time < session.voting_starts_at
-                or current_time > session.voting_ends_at
-            ):
+            if current_time < session.voting_starts_at or current_time > session.voting_ends_at:
                 logger.error(f"Voting session {session_id} is outside voting period")
                 return False
 
             # Validate stakeholder
             if stakeholder_id not in session.stakeholders:
-                logger.error(
-                    f"Stakeholder {stakeholder_id} not eligible for session {session_id}"
-                )
+                logger.error(f"Stakeholder {stakeholder_id} not eligible for session {session_id}")
                 return False
 
             stakeholder = session.stakeholders[stakeholder_id]
@@ -426,19 +410,12 @@ class WeightedVotingSystem:
 
                 # Update stakeholder delegation
                 stakeholder.delegation_target = delegate_to
-                logger.info(
-                    f"Stakeholder {stakeholder_id} delegated vote to {delegate_to}"
-                )
+                logger.info(f"Stakeholder {stakeholder_id} delegated vote to {delegate_to}")
                 return True
 
             # Check if vote change is allowed
-            if (
-                stakeholder_id in session.votes
-                and not session.configuration.allow_vote_changes
-            ):
-                logger.error(
-                    f"Vote changes not allowed for stakeholder {stakeholder_id}"
-                )
+            if stakeholder_id in session.votes and not session.configuration.allow_vote_changes:
+                logger.error(f"Vote changes not allowed for stakeholder {stakeholder_id}")
                 return False
 
             # Validate reasoning requirement
@@ -471,18 +448,14 @@ class WeightedVotingSystem:
                 processing_time = (time.time() - start_time) * 1000
                 VOTE_PROCESSING_TIME.observe(processing_time / 1000.0)
 
-            logger.info(
-                f"Vote cast by {stakeholder_id} in session {session_id}: {vote_type.value}"
-            )
+            logger.info(f"Vote cast by {stakeholder_id} in session {session_id}: {vote_type.value}")
             return True
 
         except Exception as e:
             logger.error(f"Failed to cast vote: {e}")
             return False
 
-    async def close_voting_session(
-        self, session_id: str, force_close: bool = False
-    ) -> bool:
+    async def close_voting_session(self, session_id: str, force_close: bool = False) -> bool:
         """Close a voting session and finalize results."""
         try:
             if session_id not in self.active_sessions:
@@ -528,9 +501,7 @@ class WeightedVotingSystem:
             logger.error(f"Failed to close voting session {session_id}: {e}")
             return False
 
-    async def calculate_voting_results(
-        self, session_id: str
-    ) -> Optional[VotingResults]:
+    async def calculate_voting_results(self, session_id: str) -> Optional[VotingResults]:
         """Calculate comprehensive voting results for a session."""
         try:
             if session_id not in self.active_sessions:
@@ -539,9 +510,7 @@ class WeightedVotingSystem:
             session = self.active_sessions[session_id]
 
             # Calculate total eligible voting weight
-            total_eligible_weight = sum(
-                s.voting_weight for s in session.stakeholders.values()
-            )
+            total_eligible_weight = sum(s.voting_weight for s in session.stakeholders.values())
 
             # Calculate vote weights by type
             approve_weight = 0.0
@@ -594,9 +563,7 @@ class WeightedVotingSystem:
                 if total_eligible_weight > 0
                 else 0.0
             )
-            quorum_achieved = (
-                participation_rate >= session.configuration.quorum_threshold
-            )
+            quorum_achieved = participation_rate >= session.configuration.quorum_threshold
 
             # Calculate approval rate (excluding abstentions from denominator)
             voting_weight_for_decision = approve_weight + reject_weight
@@ -638,11 +605,7 @@ class WeightedVotingSystem:
         try:
             # Calculate active session statistics
             active_sessions_count = len(
-                [
-                    s
-                    for s in self.active_sessions.values()
-                    if s.status == VotingSessionStatus.ACTIVE
-                ]
+                [s for s in self.active_sessions.values() if s.status == VotingSessionStatus.ACTIVE]
             )
 
             pending_sessions_count = len(
@@ -657,8 +620,7 @@ class WeightedVotingSystem:
             completed_sessions = [
                 s
                 for s in self.active_sessions.values()
-                if s.status
-                in [VotingSessionStatus.APPROVED, VotingSessionStatus.REJECTED]
+                if s.status in [VotingSessionStatus.APPROVED, VotingSessionStatus.REJECTED]
             ]
 
             avg_session_duration_hours = 0.0
@@ -673,12 +635,8 @@ class WeightedVotingSystem:
                 "system_statistics": {
                     "total_sessions": self.voting_stats["total_sessions"],
                     "total_votes_cast": self.voting_stats["total_votes_cast"],
-                    "avg_participation_rate": self.voting_stats[
-                        "avg_participation_rate"
-                    ],
-                    "quorum_achievement_rate": self.voting_stats[
-                        "quorum_achievement_rate"
-                    ],
+                    "avg_participation_rate": self.voting_stats["avg_participation_rate"],
+                    "quorum_achievement_rate": self.voting_stats["quorum_achievement_rate"],
                 },
                 "current_state": {
                     "active_sessions": active_sessions_count,
@@ -696,18 +654,12 @@ class WeightedVotingSystem:
                 "stakeholder_analytics": {
                     "stakeholder_type_distribution": {
                         st.value: len(
-                            [
-                                s
-                                for s in self.stakeholders.values()
-                                if s.stakeholder_type == st
-                            ]
+                            [s for s in self.stakeholders.values() if s.stakeholder_type == st]
                         )
                         for st in StakeholderType
                     },
                     "total_voting_weight": sum(
-                        s.voting_weight
-                        for s in self.stakeholders.values()
-                        if s.is_active
+                        s.voting_weight for s in self.stakeholders.values() if s.is_active
                     ),
                 },
             }

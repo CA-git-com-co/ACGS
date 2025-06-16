@@ -39,18 +39,10 @@ def upgrade():
             postgresql.JSONB(astext_type=sa.Text()),
             nullable=True,
         ),
-        sa.Column(
-            "cultural_contexts", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
-        sa.Column(
-            "domain_constraints", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
-        sa.Column(
-            "risk_factors", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
-        sa.Column(
-            "stakeholder_groups", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("cultural_contexts", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column("domain_constraints", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column("risk_factors", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column("stakeholder_groups", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
@@ -78,9 +70,7 @@ def upgrade():
         ["domain_name"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_domain_contexts_id"), "domain_contexts", ["id"], unique=False
-    )
+    op.create_index(op.f("ix_domain_contexts_id"), "domain_contexts", ["id"], unique=False)
     op.create_index(
         op.f("ix_domain_contexts_is_active"),
         "domain_contexts",
@@ -101,19 +91,11 @@ def upgrade():
         sa.Column("scenario_name", sa.String(length=255), nullable=False),
         sa.Column("scenario_description", sa.Text(), nullable=True),
         sa.Column("primary_domain_id", sa.Integer(), nullable=False),
-        sa.Column(
-            "secondary_domains", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("secondary_domains", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("test_type", sa.String(length=50), nullable=False),
-        sa.Column(
-            "test_parameters", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
-        sa.Column(
-            "expected_outcomes", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
-        sa.Column(
-            "principle_ids", postgresql.JSONB(astext_type=sa.Text()), nullable=False
-        ),
+        sa.Column("test_parameters", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column("expected_outcomes", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column("principle_ids", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
         sa.Column(
             "principle_adaptations",
             postgresql.JSONB(astext_type=sa.Text()),
@@ -200,13 +182,9 @@ def upgrade():
             postgresql.JSONB(astext_type=sa.Text()),
             nullable=True,
         ),
-        sa.Column(
-            "validation_details", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("validation_details", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("conflict_detected", sa.Boolean(), nullable=False),
-        sa.Column(
-            "conflict_details", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("conflict_details", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("execution_time_ms", sa.Integer(), nullable=True),
         sa.Column("memory_usage_mb", sa.Float(), nullable=True),
         sa.Column(
@@ -289,12 +267,8 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("export_name", sa.String(length=255), nullable=False),
         sa.Column("export_description", sa.Text(), nullable=True),
-        sa.Column(
-            "domain_ids", postgresql.JSONB(astext_type=sa.Text()), nullable=False
-        ),
-        sa.Column(
-            "principle_ids", postgresql.JSONB(astext_type=sa.Text()), nullable=False
-        ),
+        sa.Column("domain_ids", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+        sa.Column("principle_ids", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
         sa.Column("date_range_start", sa.DateTime(timezone=True), nullable=False),
         sa.Column("date_range_end", sa.DateTime(timezone=True), nullable=False),
         sa.Column("anonymization_method", sa.String(length=100), nullable=False),
@@ -304,9 +278,7 @@ def upgrade():
             nullable=True,
         ),
         sa.Column("privacy_budget_used", sa.Float(), nullable=True),
-        sa.Column(
-            "export_data", postgresql.JSONB(astext_type=sa.Text()), nullable=False
-        ),
+        sa.Column("export_data", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
         sa.Column(
             "statistical_summary",
             postgresql.JSONB(astext_type=sa.Text()),
@@ -363,18 +335,10 @@ def downgrade():
     """Drop tables for cross-domain principle testing framework."""
 
     # Drop research_data_exports table first
-    op.drop_index(
-        "ix_research_export_created_domains", table_name="research_data_exports"
-    )
-    op.drop_index(
-        op.f("ix_research_data_exports_id"), table_name="research_data_exports"
-    )
-    op.drop_index(
-        op.f("ix_research_data_exports_export_name"), table_name="research_data_exports"
-    )
-    op.drop_index(
-        op.f("ix_research_data_exports_data_hash"), table_name="research_data_exports"
-    )
+    op.drop_index("ix_research_export_created_domains", table_name="research_data_exports")
+    op.drop_index(op.f("ix_research_data_exports_id"), table_name="research_data_exports")
+    op.drop_index(op.f("ix_research_data_exports_export_name"), table_name="research_data_exports")
+    op.drop_index(op.f("ix_research_data_exports_data_hash"), table_name="research_data_exports")
     op.drop_table("research_data_exports")
 
     # Drop cross_domain_test_results table
@@ -382,9 +346,7 @@ def downgrade():
         "ix_cross_domain_result_principle_executed",
         table_name="cross_domain_test_results",
     )
-    op.drop_index(
-        "ix_cross_domain_result_scenario_domain", table_name="cross_domain_test_results"
-    )
+    op.drop_index("ix_cross_domain_result_scenario_domain", table_name="cross_domain_test_results")
     op.drop_index(
         op.f("ix_cross_domain_test_results_test_type"),
         table_name="cross_domain_test_results",
@@ -401,9 +363,7 @@ def downgrade():
         op.f("ix_cross_domain_test_results_principle_id"),
         table_name="cross_domain_test_results",
     )
-    op.drop_index(
-        op.f("ix_cross_domain_test_results_id"), table_name="cross_domain_test_results"
-    )
+    op.drop_index(op.f("ix_cross_domain_test_results_id"), table_name="cross_domain_test_results")
     op.drop_index(
         op.f("ix_cross_domain_test_results_domain_id"),
         table_name="cross_domain_test_results",

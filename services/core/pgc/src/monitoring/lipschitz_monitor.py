@@ -48,9 +48,7 @@ logger = logging.getLogger(__name__)
 
 # Prometheus metrics for Lipschitz monitoring
 if PROMETHEUS_AVAILABLE:
-    LIPSCHITZ_CONSTANT = Gauge(
-        "pgc_lipschitz_constant", "Current Lipschitz constant value"
-    )
+    LIPSCHITZ_CONSTANT = Gauge("pgc_lipschitz_constant", "Current Lipschitz constant value")
     STABILITY_THRESHOLD_VIOLATIONS = Counter(
         "pgc_stability_violations_total", "Stability threshold violations", ["severity"]
     )
@@ -150,9 +148,9 @@ class LipschitzMonitor:
         recalibration_threshold: float = 0.85,
         embedding_model: str = "all-MiniLM-L6-v2",
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.window_size = window_size
         self.warning_threshold = warning_threshold
         self.critical_threshold = critical_threshold
@@ -187,9 +185,9 @@ class LipschitzMonitor:
         )
 
     async def initialize_embedding_model(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize semantic embedding model."""
         if EMBEDDINGS_AVAILABLE:
             try:
@@ -220,9 +218,7 @@ class LipschitzMonitor:
         else:
             return self._generate_mock_embedding(text)
 
-    async def update_policy_state(
-        self, policy_id: str, content: str, version: int = 1
-    ) -> bool:
+    async def update_policy_state(self, policy_id: str, content: str, version: int = 1) -> bool:
         """Update policy state for monitoring."""
         try:
             # Generate embedding
@@ -265,18 +261,14 @@ class LipschitzMonitor:
 
             self.principle_states[principle_id] = principle_state
 
-            logger.debug(
-                f"Updated principle state for {principle_id} (weight {weight})"
-            )
+            logger.debug(f"Updated principle state for {principle_id} (weight {weight})")
             return True
 
         except Exception as e:
             logger.error(f"Failed to update principle state for {principle_id}: {e}")
             return False
 
-    def _calculate_semantic_distance(
-        self, embedding1: np.ndarray, embedding2: np.ndarray
-    ) -> float:
+    def _calculate_semantic_distance(self, embedding1: np.ndarray, embedding2: np.ndarray) -> float:
         """Calculate semantic distance between embeddings using cosine distance."""
         try:
             # Cosine similarity
@@ -319,18 +311,13 @@ class LipschitzMonitor:
             for j in range(i + 1, len(principle_list)):
                 principle1, principle2 = principle_list[i], principle_list[j]
 
-                if (
-                    principle1.embedding is not None
-                    and principle2.embedding is not None
-                ):
+                if principle1.embedding is not None and principle2.embedding is not None:
                     distance = self._calculate_semantic_distance(
                         principle1.embedding, principle2.embedding
                     )
 
                     # Weight the distance by principle importance
-                    weighted_distance = (
-                        distance * (principle1.weight + principle2.weight) / 2.0
-                    )
+                    weighted_distance = distance * (principle1.weight + principle2.weight) / 2.0
                     distances.append(weighted_distance)
 
         return distances
@@ -401,9 +388,7 @@ class LipschitzMonitor:
                 * (self.monitoring_stats["total_samples"] - 1)
                 + calculation_time
             ) / self.monitoring_stats["total_samples"]
-            self.monitoring_stats["last_calculation_timestamp"] = datetime.now(
-                timezone.utc
-            )
+            self.monitoring_stats["last_calculation_timestamp"] = datetime.now(timezone.utc)
 
             # Update Prometheus metrics
             if PROMETHEUS_AVAILABLE:
@@ -428,9 +413,9 @@ class LipschitzMonitor:
             return None
 
     async def _check_stability_alerts(self, sample: LipschitzSample):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Check for stability alerts and trigger notifications."""
         try:
             alerts_triggered = []
@@ -505,9 +490,9 @@ class LipschitzMonitor:
             logger.error(f"Failed to check stability alerts: {e}")
 
     async def _trigger_recalibration(self, sample: LipschitzSample):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Trigger automatic recalibration when threshold exceeded."""
         try:
             logger.warning(
@@ -573,8 +558,7 @@ class LipschitzMonitor:
                     [
                         a
                         for a in self.alert_history
-                        if a.timestamp
-                        > datetime.now(timezone.utc) - timedelta(hours=24)
+                        if a.timestamp > datetime.now(timezone.utc) - timedelta(hours=24)
                     ]
                 ),
             }

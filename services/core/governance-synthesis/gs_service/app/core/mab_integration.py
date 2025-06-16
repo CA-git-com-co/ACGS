@@ -44,17 +44,15 @@ class MABIntegratedGSService:
         mab_config: MABConfig = None,
         reliability_config: LLMReliabilityConfig = None,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         # Initialize MAB system
         self.mab_config = mab_config or self._default_mab_config()
         self.mab_optimizer = MABPromptOptimizer(self.mab_config)
 
         # Initialize LLM reliability framework
-        self.reliability_config = (
-            reliability_config or self._default_reliability_config()
-        )
+        self.reliability_config = reliability_config or self._default_reliability_config()
         self.reliability_framework = LLMReliabilityFramework(self.reliability_config)
 
         # Initialize constitutional prompting
@@ -107,9 +105,9 @@ class MABIntegratedGSService:
         )
 
     def _initialize_default_templates(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize default prompt templates for different categories."""
         default_templates = [
             PromptTemplate(
@@ -223,21 +221,17 @@ class MABIntegratedGSService:
                 "principle_complexity": len(synthesis_input.context.split()),
             }
 
-            selected_template = await self.mab_optimizer.select_optimal_prompt(
-                prompt_context
-            )
+            selected_template = await self.mab_optimizer.select_optimal_prompt(prompt_context)
             if not selected_template:
                 raise ValueError("No suitable prompt template available")
 
             self.integration_metrics["mab_selections"] += 1
 
             # 2. Build constitutional context
-            constitutional_context = (
-                await self.constitutional_builder.build_constitutional_context(
-                    context=synthesis_input.context,
-                    category=prompt_context.get("category", "general"),
-                    auth_token=context.get("auth_token"),
-                )
+            constitutional_context = await self.constitutional_builder.build_constitutional_context(
+                context=synthesis_input.context,
+                category=prompt_context.get("category", "general"),
+                auth_token=context.get("auth_token"),
             )
 
             # 3. Generate optimized prompt
@@ -283,9 +277,7 @@ class MABIntegratedGSService:
                 ),
                 "mab_metrics": self.mab_optimizer.get_optimization_metrics(),
                 "response_time_seconds": response_time,
-                "constitutional_context_size": len(
-                    constitutional_context.get("principles", [])
-                ),
+                "constitutional_context_size": len(constitutional_context.get("principles", [])),
             }
 
             return synthesis_output, integration_metadata
@@ -361,9 +353,9 @@ class MABIntegratedGSService:
         )
 
     def _update_integration_metrics(self, response_time: float, success: bool):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update integration performance metrics."""
         # Update average response time
         total_requests = self.integration_metrics["total_requests"]
@@ -374,19 +366,11 @@ class MABIntegratedGSService:
 
         # Update success rate
         if success:
-            current_successes = self.integration_metrics["success_rate"] * (
-                total_requests - 1
-            )
-            self.integration_metrics["success_rate"] = (
-                current_successes + 1
-            ) / total_requests
+            current_successes = self.integration_metrics["success_rate"] * (total_requests - 1)
+            self.integration_metrics["success_rate"] = (current_successes + 1) / total_requests
         else:
-            current_successes = self.integration_metrics["success_rate"] * (
-                total_requests - 1
-            )
-            self.integration_metrics["success_rate"] = (
-                current_successes / total_requests
-            )
+            current_successes = self.integration_metrics["success_rate"] * (total_requests - 1)
+            self.integration_metrics["success_rate"] = current_successes / total_requests
 
     async def get_integration_status(self) -> Dict[str, Any]:
         """Get comprehensive integration status and metrics."""
@@ -403,8 +387,6 @@ class MABIntegratedGSService:
                 "consensus_threshold": self.reliability_config.consensus_threshold,
             },
             "system_status": (
-                "operational"
-                if self.integration_metrics["success_rate"] > 0.95
-                else "degraded"
+                "operational" if self.integration_metrics["success_rate"] > 0.95 else "degraded"
             ),
         }

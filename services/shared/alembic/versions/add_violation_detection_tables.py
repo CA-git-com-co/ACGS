@@ -23,9 +23,7 @@ def upgrade() -> None:
     # Create constitutional_violations table
     op.create_table(
         "constitutional_violations",
-        sa.Column(
-            "id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False
-        ),
+        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
         sa.Column("violation_type", sa.String(100), nullable=False, index=True),
         sa.Column("severity", sa.String(20), nullable=False, index=True),
         sa.Column("principle_id", postgresql.UUID(as_uuid=True), nullable=True),
@@ -36,9 +34,7 @@ def upgrade() -> None:
         sa.Column("distance_score", sa.Numeric(5, 4), nullable=True),
         sa.Column("context_data", postgresql.JSONB, nullable=True),
         sa.Column("detection_metadata", postgresql.JSONB, nullable=True),
-        sa.Column(
-            "status", sa.String(50), nullable=False, default="detected", index=True
-        ),
+        sa.Column("status", sa.String(50), nullable=False, default="detected", index=True),
         sa.Column("resolution_status", sa.String(50), nullable=True),
         sa.Column("resolution_description", sa.Text, nullable=True),
         sa.Column("escalated", sa.Boolean, nullable=False, default=False, index=True),
@@ -96,9 +92,7 @@ def upgrade() -> None:
     # Create violation_alerts table
     op.create_table(
         "violation_alerts",
-        sa.Column(
-            "id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False
-        ),
+        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
         sa.Column("violation_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("alert_type", sa.String(50), nullable=False, index=True),
         sa.Column("alert_level", sa.String(20), nullable=False, index=True),
@@ -107,18 +101,14 @@ def upgrade() -> None:
         sa.Column("message", sa.Text, nullable=False),
         sa.Column("recommended_actions", postgresql.JSONB, nullable=True),
         sa.Column("notification_channels", postgresql.JSONB, nullable=True),
-        sa.Column(
-            "notification_status", sa.String(50), nullable=False, default="pending"
-        ),
+        sa.Column("notification_status", sa.String(50), nullable=False, default="pending"),
         sa.Column("notification_attempts", sa.Integer, nullable=False, default=0),
         sa.Column("last_notification_attempt", sa.DateTime, nullable=True),
         sa.Column("acknowledged", sa.Boolean, nullable=False, default=False),
         sa.Column("acknowledged_at", sa.DateTime, nullable=True),
         sa.Column("acknowledged_by", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("response_actions", postgresql.JSONB, nullable=True),
-        sa.Column(
-            "created_at", sa.DateTime, nullable=False, default=sa.func.now(), index=True
-        ),
+        sa.Column("created_at", sa.DateTime, nullable=False, default=sa.func.now(), index=True),
         sa.Column(
             "updated_at",
             sa.DateTime,
@@ -132,9 +122,7 @@ def upgrade() -> None:
     )
 
     # Create indexes for violation_alerts
-    op.create_index(
-        "idx_alert_type_level", "violation_alerts", ["alert_type", "alert_level"]
-    )
+    op.create_index("idx_alert_type_level", "violation_alerts", ["alert_type", "alert_level"])
     op.create_index(
         "idx_alert_status_created",
         "violation_alerts",
@@ -149,12 +137,8 @@ def upgrade() -> None:
     # Create violation_thresholds table
     op.create_table(
         "violation_thresholds",
-        sa.Column(
-            "id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False
-        ),
-        sa.Column(
-            "threshold_name", sa.String(100), nullable=False, unique=True, index=True
-        ),
+        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
+        sa.Column("threshold_name", sa.String(100), nullable=False, unique=True, index=True),
         sa.Column("threshold_type", sa.String(50), nullable=False, index=True),
         sa.Column("green_threshold", sa.Numeric(5, 4), nullable=False),
         sa.Column("amber_threshold", sa.Numeric(5, 4), nullable=False),
@@ -180,9 +164,7 @@ def upgrade() -> None:
     # Create violation_escalations table
     op.create_table(
         "violation_escalations",
-        sa.Column(
-            "id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False
-        ),
+        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
         sa.Column("violation_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("escalation_type", sa.String(50), nullable=False, index=True),
         sa.Column("escalation_level", sa.String(50), nullable=False, index=True),
@@ -193,9 +175,7 @@ def upgrade() -> None:
         sa.Column("assigned_role", sa.String(50), nullable=True),
         sa.Column("notification_sent", sa.Boolean, nullable=False, default=False),
         sa.Column("notification_channels", postgresql.JSONB, nullable=True),
-        sa.Column(
-            "status", sa.String(50), nullable=False, default="pending", index=True
-        ),
+        sa.Column("status", sa.String(50), nullable=False, default="pending", index=True),
         sa.Column("response_time_seconds", sa.Integer, nullable=True),
         sa.Column("resolution_time_seconds", sa.Integer, nullable=True),
         sa.Column("response_actions", postgresql.JSONB, nullable=True),

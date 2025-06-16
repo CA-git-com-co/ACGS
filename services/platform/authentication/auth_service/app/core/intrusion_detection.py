@@ -25,9 +25,9 @@ class SecurityThreat:
     detected_at: datetime = None
 
     def __post_init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.detected_at is None:
             self.detected_at = datetime.now(timezone.utc)
         if self.metadata is None:
@@ -38,9 +38,9 @@ class IntrusionDetectionSystem:
     """Enterprise Intrusion Detection and Prevention System"""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         # Rate limiting tracking
         self.request_counts: Dict[str, deque] = defaultdict(lambda: deque())
         self.failed_login_attempts: Dict[str, deque] = defaultdict(lambda: deque())
@@ -117,9 +117,9 @@ class IntrusionDetectionSystem:
         return False
 
     def block_ip(self, ip_address: str, duration_minutes: int = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Block IP address for specified duration"""
         if duration_minutes is None:
             duration_minutes = self.block_duration_minutes
@@ -139,18 +139,13 @@ class IntrusionDetectionSystem:
             return True
         return False
 
-    def detect_rate_limiting_violation(
-        self, ip_address: str
-    ) -> Optional[SecurityThreat]:
+    def detect_rate_limiting_violation(self, ip_address: str) -> Optional[SecurityThreat]:
         """Detect rate limiting violations"""
         current_time = time.time()
         minute_ago = current_time - 60
 
         # Clean old entries
-        while (
-            self.request_counts[ip_address]
-            and self.request_counts[ip_address][0] < minute_ago
-        ):
+        while self.request_counts[ip_address] and self.request_counts[ip_address][0] < minute_ago:
             self.request_counts[ip_address].popleft()
 
         # Add current request
@@ -186,26 +181,19 @@ class IntrusionDetectionSystem:
         self.failed_login_attempts[ip_address].append(current_time)
 
         # Check if brute force threshold exceeded
-        if (
-            len(self.failed_login_attempts[ip_address])
-            > self.max_failed_logins_per_hour
-        ):
+        if len(self.failed_login_attempts[ip_address]) > self.max_failed_logins_per_hour:
             return SecurityThreat(
                 threat_type="brute_force_attack",
                 severity="high",
                 description=f"Brute force attack detected: {len(self.failed_login_attempts[ip_address])} failed logins in 1 hour",
                 ip_address=ip_address,
                 user_id=user_id,
-                metadata={
-                    "failed_attempts": len(self.failed_login_attempts[ip_address])
-                },
+                metadata={"failed_attempts": len(self.failed_login_attempts[ip_address])},
             )
 
         return None
 
-    def detect_suspicious_user_agent(
-        self, request: Request
-    ) -> Optional[SecurityThreat]:
+    def detect_suspicious_user_agent(self, request: Request) -> Optional[SecurityThreat]:
         """Detect suspicious user agents"""
         user_agent = request.headers.get("user-agent", "").lower()
         ip_address = self.get_client_ip(request)
@@ -249,9 +237,7 @@ class IntrusionDetectionSystem:
 
         return None
 
-    def detect_sql_injection_attempt(
-        self, request: Request
-    ) -> Optional[SecurityThreat]:
+    def detect_sql_injection_attempt(self, request: Request) -> Optional[SecurityThreat]:
         """Detect potential SQL injection attempts"""
         ip_address = self.get_client_ip(request)
 

@@ -58,38 +58,38 @@ class LifecycleManager:
     """Manages service lifecycle events."""
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self._startup_callbacks: List[Callable] = []
         self._shutdown_callbacks: List[Callable] = []
         self._instances: weakref.WeakSet = weakref.WeakSet()
 
     def add_startup_callback(self, callback: Callable):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add startup callback."""
         self._startup_callbacks.append(callback)
 
     def add_shutdown_callback(self, callback: Callable):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add shutdown callback."""
         self._shutdown_callbacks.append(callback)
 
     def register_instance(self, instance: Any):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Register instance for lifecycle management."""
         self._instances.add(instance)
 
     async def startup(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Execute startup callbacks."""
         for callback in self._startup_callbacks:
             try:
@@ -101,9 +101,9 @@ class LifecycleManager:
                 logger.error(f"Error in startup callback: {e}")
 
     async def shutdown(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Execute shutdown callbacks and cleanup instances."""
         # Execute shutdown callbacks
         for callback in self._shutdown_callbacks:
@@ -117,9 +117,7 @@ class LifecycleManager:
 
         # Cleanup instances
         for instance in list(self._instances):
-            if hasattr(instance, "close") and asyncio.iscoroutinefunction(
-                instance.close
-            ):
+            if hasattr(instance, "close") and asyncio.iscoroutinefunction(instance.close):
                 try:
                     await instance.close()
                 except Exception as e:
@@ -135,9 +133,9 @@ class DIContainer:
     """
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self._services: Dict[Type, ServiceRegistration] = {}
         self._instances: Dict[Type, Any] = {}
         self._scoped_instances: Dict[str, Dict[Type, Any]] = {}
@@ -184,9 +182,7 @@ class DIContainer:
         )
 
         self._services[interface] = registration
-        logger.debug(
-            f"Registered {interface} -> {implementation or factory} ({scope.value})"
-        )
+        logger.debug(f"Registered {interface} -> {implementation or factory} ({scope.value})")
 
         return self
 
@@ -202,9 +198,7 @@ class DIContainer:
         """Register a transient service."""
         return self.register(interface, implementation, Scope.TRANSIENT)
 
-    def register_scoped(
-        self, interface: Type[T], implementation: Type[T] = None
-    ) -> "DIContainer":
+    def register_scoped(self, interface: Type[T], implementation: Type[T] = None) -> "DIContainer":
         """Register a scoped service."""
         return self.register(interface, implementation, Scope.SCOPED)
 
@@ -336,9 +330,7 @@ class DIContainer:
             instance = registration.implementation(*dependencies)
 
             # Call initialization if available
-            if hasattr(instance, "initialize") and asyncio.iscoroutinefunction(
-                instance.initialize
-            ):
+            if hasattr(instance, "initialize") and asyncio.iscoroutinefunction(instance.initialize):
                 # Schedule async initialization
                 asyncio.create_task(instance.initialize())
             elif hasattr(instance, "initialize"):
@@ -373,9 +365,9 @@ class DIContainer:
 
     @asynccontextmanager
     async def scope(self, scope_name: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Create a dependency injection scope.
 
@@ -392,9 +384,7 @@ class DIContainer:
             if scope_name in self._scoped_instances:
                 scoped_instances = self._scoped_instances[scope_name]
                 for instance in scoped_instances.values():
-                    if hasattr(instance, "close") and asyncio.iscoroutinefunction(
-                        instance.close
-                    ):
+                    if hasattr(instance, "close") and asyncio.iscoroutinefunction(instance.close):
                         try:
                             await instance.close()
                         except Exception as e:
@@ -405,17 +395,17 @@ class DIContainer:
             self._current_scope = old_scope
 
     async def startup(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the container and execute startup callbacks."""
         await self._lifecycle_manager.startup()
         logger.info("DI Container started")
 
     async def shutdown(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Shutdown the container and cleanup resources."""
         await self._lifecycle_manager.shutdown()
 
@@ -437,9 +427,7 @@ class DIContainer:
         for interface, registration in self._services.items():
             for dep_type in registration.dependencies:
                 if not self.is_registered(dep_type):
-                    errors.append(
-                        f"Service {interface} depends on unregistered {dep_type}"
-                    )
+                    errors.append(f"Service {interface} depends on unregistered {dep_type}")
 
         return errors
 

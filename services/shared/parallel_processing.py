@@ -71,9 +71,9 @@ class ParallelTask:
     timeout_seconds: float = 30.0
 
     def __post_init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if not self.task_id:
             self.task_id = self._generate_task_id()
 
@@ -112,9 +112,9 @@ class ValidationBatch:
     timeout_seconds: float = 120.0
 
     def __post_init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if not self.batch_id:
             self.batch_id = f"batch_{int(time.time() * 1000)}"
 
@@ -141,9 +141,9 @@ class DependencyGraphAnalyzer:
     """Analyzes task dependencies using NetworkX for optimal execution ordering."""
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if NETWORKX_AVAILABLE:
             self.graph = nx.DiGraph()
         else:
@@ -191,9 +191,7 @@ class DependencyGraphAnalyzer:
 
                 if not ready_tasks:
                     # This shouldn't happen with a valid DAG
-                    raise ValueError(
-                        "Unable to find ready tasks - possible graph corruption"
-                    )
+                    raise ValueError("Unable to find ready tasks - possible graph corruption")
 
                 levels.append(ready_tasks)
                 remaining_tasks -= set(ready_tasks)
@@ -243,9 +241,7 @@ class DependencyGraphAnalyzer:
             "total_tasks": len(self.task_registry),
             "total_edges": self.graph.number_of_edges(),
             "is_dag": nx.is_directed_acyclic_graph(self.graph),
-            "max_depth": (
-                len(nx.dag_longest_path(self.graph)) if self.graph.nodes() else 0
-            ),
+            "max_depth": (len(nx.dag_longest_path(self.graph)) if self.graph.nodes() else 0),
             "parallelization_factor": (
                 len(self.task_registry) / max(len(nx.dag_longest_path(self.graph)), 1)
                 if self.graph.nodes()
@@ -259,9 +255,9 @@ class TaskPartitioner:
     """Intelligent task partitioning using policy similarity clustering."""
 
     def __init__(self, max_batch_size: int = 50):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.max_batch_size = max_batch_size
 
     def partition_tasks(self, tasks: List[ParallelTask]) -> List[ValidationBatch]:
@@ -323,9 +319,9 @@ class ParallelExecutor:
     """Executes tasks in parallel with concurrency control."""
 
     def __init__(self, max_concurrent: int = 10, thread_pool_size: int = 4):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.max_concurrent = max_concurrent
         self.thread_pool = ThreadPoolExecutor(max_workers=thread_pool_size)
         self.active_tasks: Dict[str, asyncio.Task] = {}
@@ -342,9 +338,7 @@ class ParallelExecutor:
             try:
                 # Execute task with timeout
                 result = await asyncio.wait_for(
-                    asyncio.get_event_loop().run_in_executor(
-                        self.thread_pool, executor_func, task
-                    ),
+                    asyncio.get_event_loop().run_in_executor(self.thread_pool, executor_func, task),
                     timeout=task.timeout_seconds,
                 )
 
@@ -401,9 +395,9 @@ class ParallelExecutor:
         return batch
 
     async def shutdown(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Shutdown executor and cleanup resources."""
         # Cancel active tasks
         for task in self.active_tasks.values():

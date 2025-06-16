@@ -26,9 +26,9 @@ except ImportError as e:
         async def record_enforcement_event(
             self, latency_ms, policy_count, compliance_result, context=None
         ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         async def record_policy_synthesis(
@@ -38,31 +38,31 @@ except ImportError as e:
             constitutional_state,
             synthesis_time_ms,
         ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         async def record_adversarial_event(
             self, attack_type, detected, severity, defense_mechanism=None
         ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         def get_paper_validation_report(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return {"status": "monitoring_unavailable"}
 
     metrics_collector = MockMetricsCollector()
 
     async def initialize_acgs_pgp_monitoring():
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
 
@@ -82,9 +82,9 @@ def add_security_middleware(app: FastAPI):
 
 class MockSecurityConfig:
     def get(self, key, default=None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return default
 
 
@@ -93,9 +93,9 @@ security_config = MockSecurityConfig()
 
 class MockMetrics:
     def record_verification_operation(self, verification_type: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
 
@@ -108,9 +108,9 @@ def metrics_middleware(service_name: str):
     # ensures: Correct function execution
     # sha256: func_hash
     def middleware(request, call_next):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return call_next(request)
 
     return middleware
@@ -121,9 +121,9 @@ def create_metrics_endpoint():
     # ensures: Correct function execution
     # sha256: func_hash
     def metrics():
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {"status": "ok", "metrics": {}}
 
     return metrics
@@ -141,9 +141,9 @@ except ImportError as e:
     # Mock policy manager
     class MockPolicyManager:
         async def get_active_rules(self, force_refresh=False):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return []
 
     policy_manager = MockPolicyManager()
@@ -159,9 +159,9 @@ except ImportError as e:
     # Mock integrity client
     class MockIntegrityClient:
         async def close(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
     integrity_service_client = MockIntegrityClient()
@@ -240,29 +240,29 @@ ENHANCED_GOVERNANCE_AVAILABLE = True
 # Initialize enhanced governance components
 class PolicyLifecycleManager:
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.policies = {}
 
     async def create_policy(self, policy_data):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {"status": "created", "policy_id": f"POL-{int(time.time())}"}
 
     async def get_policy_status(self, policy_id):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {"policy_id": policy_id, "status": "active"}
 
 
 class WorkflowOrchestrator:
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.workflows = {}
         self.workflow_templates = {
             "policy_creation": {
@@ -374,9 +374,9 @@ class WorkflowOrchestrator:
         }
 
     async def initiate_policy_workflow(self, policy_id, workflow_type, stakeholders):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         workflow_id = f"WF-{int(time.time())}-{policy_id}"
         template = self.workflow_templates.get(
             workflow_type, self.workflow_templates["policy_creation"]
@@ -402,32 +402,24 @@ class WorkflowOrchestrator:
         return workflow_id
 
     async def get_workflow_status(self, workflow_id):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         workflow = self.workflows.get(workflow_id)
         if not workflow:
             return {"status": "not_found"}
 
         # Calculate progress
         total_steps = len(workflow["steps"])
-        completed_steps = sum(
-            1 for step in workflow["steps"] if step["status"] == "completed"
-        )
-        progress_percentage = (
-            (completed_steps / total_steps) * 100 if total_steps > 0 else 0
-        )
+        completed_steps = sum(1 for step in workflow["steps"] if step["status"] == "completed")
+        progress_percentage = (completed_steps / total_steps) * 100 if total_steps > 0 else 0
 
         return {
             "workflow_id": workflow_id,
             "status": workflow["state"],
             "progress": f"{completed_steps}/{total_steps} ({progress_percentage:.1f}%)",
             "current_step": next(
-                (
-                    step["step"]
-                    for step in workflow["steps"]
-                    if step["status"] == "pending"
-                ),
+                (step["step"] for step in workflow["steps"] if step["status"] == "pending"),
                 "completed",
             ),
             "stakeholders": workflow["stakeholders"],
@@ -435,9 +427,9 @@ class WorkflowOrchestrator:
         }
 
     async def advance_workflow_step(self, workflow_id, step_name, result):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Advance a workflow step with result validation."""
         if workflow_id not in self.workflows:
             raise ValueError(f"Workflow {workflow_id} not found")
@@ -447,9 +439,7 @@ class WorkflowOrchestrator:
 
         for step in workflow["steps"]:
             if step["step"] == step_name and step["status"] == "pending":
-                step["status"] = (
-                    "completed" if result.get("success", False) else "failed"
-                )
+                step["status"] = "completed" if result.get("success", False) else "failed"
                 step["result"] = result
                 step["completed_at"] = time.time()
                 step_found = True
@@ -479,9 +469,9 @@ class WorkflowOrchestrator:
 
 class EnforcementEngine:
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.violation_history = {}
         self.enforcement_metrics = {
             "total_enforcements": 0,
@@ -491,9 +481,9 @@ class EnforcementEngine:
         }
 
     async def enforce_policy(self, policy_id, context):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Enhanced policy enforcement with violation detection and remediation."""
         start_time = time.time()
 
@@ -508,9 +498,7 @@ class EnforcementEngine:
             remediation_plan = await self.plan_remediation(violation_result, severity)
 
             # Step 4: Enforcement Action
-            enforcement_action = await self.execute_enforcement(
-                remediation_plan, context
-            )
+            enforcement_action = await self.execute_enforcement(remediation_plan, context)
 
             # Update metrics
             self.enforcement_metrics["total_enforcements"] += 1
@@ -571,9 +559,9 @@ class EnforcementEngine:
             }
 
     async def detect_violations(self, policy_id, context):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Detect policy violations with automated scanning."""
         violations = []
 
@@ -594,11 +582,7 @@ class EnforcementEngine:
 
         if user_id in self.violation_history:
             recent_violations = len(
-                [
-                    v
-                    for v in self.violation_history[user_id]
-                    if time.time() - v["timestamp"] < 3600
-                ]
+                [v for v in self.violation_history[user_id] if time.time() - v["timestamp"] < 3600]
             )
             if recent_violations > 5:
                 violations.append(
@@ -616,9 +600,9 @@ class EnforcementEngine:
         }
 
     async def classify_severity(self, violation_result, context):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Classify violation severity for appropriate response."""
         if violation_result["violations_found"] == 0:
             return "none"
@@ -639,9 +623,9 @@ class EnforcementEngine:
         return max_severity
 
     async def plan_remediation(self, violation_result, severity):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Plan remediation actions based on violations and severity."""
         if violation_result["violations_found"] == 0:
             return {"action": "none", "reason": "No violations detected"}
@@ -673,9 +657,9 @@ class EnforcementEngine:
         return plan
 
     async def execute_enforcement(self, remediation_plan, context):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Execute enforcement actions based on remediation plan."""
         action = remediation_plan["action"]
 
@@ -715,9 +699,9 @@ class EnforcementEngine:
 
 class StakeholderManager:
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.stakeholder_registry = {
             "governance_team": {
                 "role": "governance",
@@ -758,12 +742,10 @@ class StakeholderManager:
         self.notification_history = []
         self.concurrent_sessions = {}
 
-    async def notify_stakeholders(
-        self, stakeholders, message, workflow_id=None, priority="medium"
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    async def notify_stakeholders(self, stakeholders, message, workflow_id=None, priority="medium"):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Enhanced stakeholder notification with role-based routing and tracking."""
         start_time = time.time()
         notification_results = []
@@ -802,11 +784,7 @@ class StakeholderManager:
         return {
             "notified": successful_notifications,
             "total_stakeholders": len(stakeholders),
-            "status": (
-                "success"
-                if successful_notifications == len(stakeholders)
-                else "partial"
-            ),
+            "status": ("success" if successful_notifications == len(stakeholders) else "partial"),
             "results": notification_results,
             "notification_id": f"NOTIF-{int(time.time())}",
         }
@@ -814,9 +792,9 @@ class StakeholderManager:
     async def _send_notification(
         self, stakeholder, stakeholder_info, message, workflow_id, priority
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Send individual notification with delivery confirmation."""
         try:
             # Simulate notification delivery (email, Slack, etc.)
@@ -839,12 +817,10 @@ class StakeholderManager:
                 "contact": stakeholder_info.get("contact", "unknown"),
             }
 
-    async def coordinate_multi_stakeholder_process(
-        self, workflow_id, stakeholders, process_type
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    async def coordinate_multi_stakeholder_process(self, workflow_id, stakeholders, process_type):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Coordinate concurrent multi-stakeholder governance processes."""
         session_id = f"SESSION-{workflow_id}-{int(time.time())}"
 
@@ -873,17 +849,13 @@ class StakeholderManager:
             "status": "initiated",
             "concurrent_participants": len(stakeholders),
             "process_type": process_type,
-            "estimated_duration": self._estimate_process_duration(
-                process_type, len(stakeholders)
-            ),
+            "estimated_duration": self._estimate_process_duration(process_type, len(stakeholders)),
         }
 
-    async def record_stakeholder_decision(
-        self, session_id, stakeholder, decision, rationale=None
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    async def record_stakeholder_decision(self, session_id, stakeholder, decision, rationale=None):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record stakeholder decision in multi-stakeholder process."""
         if session_id not in self.concurrent_sessions:
             raise ValueError(f"Session {session_id} not found")
@@ -891,9 +863,7 @@ class StakeholderManager:
         session = self.concurrent_sessions[session_id]
 
         if stakeholder not in session["participants"]:
-            raise ValueError(
-                f"Stakeholder {stakeholder} not part of session {session_id}"
-            )
+            raise ValueError(f"Stakeholder {stakeholder} not part of session {session_id}")
 
         # Record decision
         session["decisions"][stakeholder] = {
@@ -924,9 +894,9 @@ class StakeholderManager:
         }
 
     def _estimate_process_duration(self, process_type, participant_count):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Estimate process duration based on type and participant count."""
         base_times = {
             "policy_review": 3600,  # 1 hour
@@ -937,18 +907,16 @@ class StakeholderManager:
 
         base_time = base_times.get(process_type, 3600)
         # Add time for coordination overhead
-        coordination_overhead = min(
-            participant_count * 300, 1800
-        )  # Max 30 min overhead
+        coordination_overhead = min(participant_count * 300, 1800)  # Max 30 min overhead
 
         return base_time + coordination_overhead
 
 
 class AuditTrail:
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.events = []
         self.immutable_storage = []
         self.transparency_reports = []
@@ -961,9 +929,9 @@ class AuditTrail:
         }
 
     async def log_policy_creation(self, policy_id, record):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Log policy creation with comprehensive audit trail."""
         event = {
             "event_id": f"POL-CREATE-{int(time.time())}-{policy_id}",
@@ -971,9 +939,7 @@ class AuditTrail:
             "policy_id": policy_id,
             "timestamp": time.time(),
             "record": record,
-            "immutable_hash": self._generate_event_hash(
-                policy_id, "policy_creation", record
-            ),
+            "immutable_hash": self._generate_event_hash(policy_id, "policy_creation", record),
             "blockchain_ready": True,
         }
 
@@ -985,9 +951,9 @@ class AuditTrail:
         return event["event_id"]
 
     async def log_workflow_initiation(self, workflow_id, record):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Log workflow initiation with stakeholder tracking."""
         event = {
             "event_id": f"WF-INIT-{int(time.time())}-{workflow_id}",
@@ -996,9 +962,7 @@ class AuditTrail:
             "timestamp": time.time(),
             "record": record,
             "stakeholders": record.get("stakeholders", []),
-            "immutable_hash": self._generate_event_hash(
-                workflow_id, "workflow_initiation", record
-            ),
+            "immutable_hash": self._generate_event_hash(workflow_id, "workflow_initiation", record),
             "blockchain_ready": True,
         }
 
@@ -1010,9 +974,9 @@ class AuditTrail:
         return event["event_id"]
 
     async def log_enforcement_action(self, enforcement_id, action_details):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Log policy enforcement actions with violation tracking."""
         event = {
             "event_id": f"ENF-ACTION-{int(time.time())}-{enforcement_id}",
@@ -1036,9 +1000,9 @@ class AuditTrail:
         return event["event_id"]
 
     async def log_compliance_check(self, compliance_id, check_results):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Log constitutional compliance checks."""
         event = {
             "event_id": f"COMP-CHECK-{int(time.time())}-{compliance_id}",
@@ -1061,12 +1025,10 @@ class AuditTrail:
 
         return event["event_id"]
 
-    async def generate_transparency_report(
-        self, report_type="comprehensive", time_range=None
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    async def generate_transparency_report(self, report_type="comprehensive", time_range=None):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Generate public transparency report with privacy controls."""
         start_time = time.time()
 
@@ -1085,15 +1047,11 @@ class AuditTrail:
 
         # Generate report based on type
         if report_type == "comprehensive":
-            report = await self._generate_comprehensive_report(
-                filtered_events, time_range
-            )
+            report = await self._generate_comprehensive_report(filtered_events, time_range)
         elif report_type == "compliance":
             report = await self._generate_compliance_report(filtered_events, time_range)
         elif report_type == "enforcement":
-            report = await self._generate_enforcement_report(
-                filtered_events, time_range
-            )
+            report = await self._generate_enforcement_report(filtered_events, time_range)
         else:
             report = await self._generate_summary_report(filtered_events, time_range)
 
@@ -1119,9 +1077,9 @@ class AuditTrail:
         return final_report
 
     def _generate_event_hash(self, entity_id, event_type, record):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Generate immutable hash for blockchain storage."""
         import hashlib
 
@@ -1129,44 +1087,30 @@ class AuditTrail:
         return hashlib.sha256(hash_input.encode()).hexdigest()
 
     async def _generate_comprehensive_report(self, events, time_range):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Generate comprehensive transparency report."""
         return {
             "summary": {
                 "total_events": len(events),
-                "policy_events": len(
-                    [e for e in events if e["type"] == "policy_creation"]
-                ),
-                "workflow_events": len(
-                    [e for e in events if e["type"] == "workflow_initiation"]
-                ),
-                "enforcement_events": len(
-                    [e for e in events if e["type"] == "enforcement_action"]
-                ),
-                "compliance_events": len(
-                    [e for e in events if e["type"] == "compliance_check"]
-                ),
+                "policy_events": len([e for e in events if e["type"] == "policy_creation"]),
+                "workflow_events": len([e for e in events if e["type"] == "workflow_initiation"]),
+                "enforcement_events": len([e for e in events if e["type"] == "enforcement_action"]),
+                "compliance_events": len([e for e in events if e["type"] == "compliance_check"]),
             },
             "governance_activity": {
-                "policies_created": len(
-                    [e for e in events if e["type"] == "policy_creation"]
-                ),
+                "policies_created": len([e for e in events if e["type"] == "policy_creation"]),
                 "workflows_initiated": len(
                     [e for e in events if e["type"] == "workflow_initiation"]
                 ),
                 "enforcement_actions": len(
                     [e for e in events if e["type"] == "enforcement_action"]
                 ),
-                "compliance_checks": len(
-                    [e for e in events if e["type"] == "compliance_check"]
-                ),
+                "compliance_checks": len([e for e in events if e["type"] == "compliance_check"]),
             },
             "transparency_metrics": {
-                "public_events": len(
-                    events
-                ),  # All events are public in this implementation
+                "public_events": len(events),  # All events are public in this implementation
                 "immutable_records": len(self.immutable_storage),
                 "blockchain_ready_events": len(
                     [e for e in events if e.get("blockchain_ready", False)]
@@ -1175,18 +1119,16 @@ class AuditTrail:
         }
 
     async def _generate_compliance_report(self, events, time_range):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Generate compliance-focused transparency report."""
         compliance_events = [e for e in events if e["type"] == "compliance_check"]
 
         return {
             "compliance_summary": {
                 "total_checks": len(compliance_events),
-                "average_score": sum(
-                    e.get("compliance_score", 0) for e in compliance_events
-                )
+                "average_score": sum(e.get("compliance_score", 0) for e in compliance_events)
                 / max(len(compliance_events), 1),
                 "constitutional_references": len(
                     set(
@@ -1207,9 +1149,9 @@ class AuditTrail:
         }
 
     async def _generate_enforcement_report(self, events, time_range):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Generate enforcement-focused transparency report."""
         enforcement_events = [e for e in events if e["type"] == "enforcement_action"]
 
@@ -1217,45 +1159,27 @@ class AuditTrail:
             "enforcement_summary": {
                 "total_actions": len(enforcement_events),
                 "decisions": {
-                    "allow": len(
-                        [e for e in enforcement_events if e.get("decision") == "allow"]
-                    ),
-                    "deny": len(
-                        [e for e in enforcement_events if e.get("decision") == "deny"]
-                    ),
+                    "allow": len([e for e in enforcement_events if e.get("decision") == "allow"]),
+                    "deny": len([e for e in enforcement_events if e.get("decision") == "deny"]),
                     "conditional": len(
-                        [
-                            e
-                            for e in enforcement_events
-                            if "conditional" in e.get("decision", "")
-                        ]
+                        [e for e in enforcement_events if "conditional" in e.get("decision", "")]
                     ),
                 },
                 "severity_distribution": {
-                    "low": len(
-                        [e for e in enforcement_events if e.get("severity") == "low"]
-                    ),
-                    "medium": len(
-                        [e for e in enforcement_events if e.get("severity") == "medium"]
-                    ),
-                    "high": len(
-                        [e for e in enforcement_events if e.get("severity") == "high"]
-                    ),
+                    "low": len([e for e in enforcement_events if e.get("severity") == "low"]),
+                    "medium": len([e for e in enforcement_events if e.get("severity") == "medium"]),
+                    "high": len([e for e in enforcement_events if e.get("severity") == "high"]),
                     "critical": len(
-                        [
-                            e
-                            for e in enforcement_events
-                            if e.get("severity") == "critical"
-                        ]
+                        [e for e in enforcement_events if e.get("severity") == "critical"]
                     ),
                 },
             }
         }
 
     async def _generate_summary_report(self, events, time_range):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Generate summary transparency report."""
         return {
             "summary": {
@@ -1270,9 +1194,9 @@ class AuditTrail:
 
 class GovernanceMonitor:
     async def get_governance_metrics(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {
             "active_policies": 15,
             "active_workflows": 3,
@@ -1298,28 +1222,34 @@ from app.telemetry import get_telemetry_manager
 # Import FV service client
 try:
     from app.services.fv_client import get_fv_service_client
-    
+
     FV_CLIENT_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: FV service client not available: {e}")
     FV_CLIENT_AVAILABLE = False
-    
+
     # Create mock FV client for graceful degradation
     class MockFVServiceClient:
         async def initialize(self):
             pass
-            
+
         async def close(self):
             pass
-            
+
         async def verify_policy(self, policy_content, policy_id, verification_level="standard"):
             return {"verified": True, "issues": []}
-            
+
         async def verify_policy_batch(self, policies, verification_level="standard"):
-            return {"verified": True, "results": [{"policy_id": p.get("policy_id", "unknown"), "verified": True} for p in policies]}
-            
+            return {
+                "verified": True,
+                "results": [
+                    {"policy_id": p.get("policy_id", "unknown"), "verified": True} for p in policies
+                ],
+            }
+
     async def get_fv_service_client():
         return MockFVServiceClient()
+
 
 # Get service configuration
 service_config = get_service_config()
@@ -1381,44 +1311,52 @@ except Exception as e:
 
 # Apply optimizations from performance_optimization.yaml
 try:
-    import yaml
     import os
-    
+
+    import yaml
+
     optimization_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
-        "config", 
-        "performance_optimization.yaml"
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "config",
+        "performance_optimization.yaml",
     )
-    
+
     if os.path.exists(optimization_path):
-        with open(optimization_path, 'r') as f:
+        with open(optimization_path, "r") as f:
             optimizations = yaml.safe_load(f)
-            
+
         # Apply relevant optimizations
         if optimizations.get("optimization_level") == "Enhanced":
             print("✅ Enhanced performance optimizations enabled")
-            
+
             # Apply cache settings if enabled
             if optimizations.get("caching", {}).get("enabled", False):
                 from app.core.ultra_low_latency_optimizer import enable_advanced_caching
+
                 enable_advanced_caching(
-                    fragment_cache_ttl=optimizations.get("caching", {}).get("policy_fragment_cache", {}).get("ttl_seconds", 300),
-                    validation_cache_ttl=optimizations.get("caching", {}).get("validation_result_cache", {}).get("ttl_seconds", 600)
+                    fragment_cache_ttl=optimizations.get("caching", {})
+                    .get("policy_fragment_cache", {})
+                    .get("ttl_seconds", 300),
+                    validation_cache_ttl=optimizations.get("caching", {})
+                    .get("validation_result_cache", {})
+                    .get("ttl_seconds", 600),
                 )
                 print("✅ Enhanced caching enabled")
-                
+
             # Apply parallel processing if enabled
             if optimizations.get("parallel_processing", {}).get("enabled", False):
-                worker_pool_size = optimizations.get("parallel_processing", {}).get("worker_pool_size", 8)
+                worker_pool_size = optimizations.get("parallel_processing", {}).get(
+                    "worker_pool_size", 8
+                )
                 batch_size = optimizations.get("parallel_processing", {}).get("batch_size", 16)
-                print(f"✅ Parallel processing enabled with {worker_pool_size} workers and batch size {batch_size}")
+                print(
+                    f"✅ Parallel processing enabled with {worker_pool_size} workers and batch size {batch_size}"
+                )
 except Exception as e:
     print(f"⚠️ Error applying performance optimizations: {e}")
 
 # Include the API router for policy enforcement
-app.include_router(
-    enforcement_router, prefix="/api/v1/enforcement", tags=["Policy Enforcement"]
-)
+app.include_router(enforcement_router, prefix="/api/v1/enforcement", tags=["Policy Enforcement"])
 app.include_router(
     alphaevolve_enforcement_router,
     prefix="/api/v1/alphaevolve",
@@ -1441,10 +1379,10 @@ async def on_startup():
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
-    
+
     # Start with configured port announcement
     print(f"Starting PGC Service on port {port}...")
-    
+
     # Initialize the PolicyManager: fetch initial set of policies
     # This ensures that the service has policies loaded when it starts serving requests.
     print("PGC Service startup: Initializing Policy Manager and loading policies...")
@@ -1463,7 +1401,9 @@ async def on_startup():
             fv_client = await get_fv_service_client()
             await fv_client.initialize()
             health = await fv_client.get_service_health()
-            print(f"✅ PGC Service: FV Service client initialized and connected to {service_config.get('integrations', {}).get('fv_service', {}).get('url', 'http://fv_service:8083')}")
+            print(
+                f"✅ PGC Service: FV Service client initialized and connected to {service_config.get('integrations', {}).get('fv_service', {}).get('url', 'http://fv_service:8083')}"
+            )
         except Exception as e:
             print(f"❌ PGC Service: FV Service client initialization failed: {e}")
     else:
@@ -1478,14 +1418,16 @@ async def on_startup():
             print(f"❌ PGC Service: Failed to initialize ACGS-PGP monitoring: {e}")
     else:
         print("⚠️ PGC Service: ACGS-PGP monitoring not available")
-    
+
     # Initialize OpenTelemetry
     try:
         telemetry_manager = get_telemetry_manager()
-        print(f"✅ PGC Service: OpenTelemetry v{service_config.get('telemetry', {}).get('otlp_version', 'v1.37.0')} initialized")
+        print(
+            f"✅ PGC Service: OpenTelemetry v{service_config.get('telemetry', {}).get('otlp_version', 'v1.37.0')} initialized"
+        )
     except Exception as e:
         print(f"❌ PGC Service: OpenTelemetry initialization failed: {e}")
-    
+
     # Log startup success
     print(f"✅ PGC Service: Startup complete, listening on port {port}")
 
@@ -1495,9 +1437,9 @@ async def on_shutdown():
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
-    
+
     print("PGC Service shutdown: Gracefully shutting down services...")
-    
+
     # Gracefully close HTTPX clients
     if INTEGRITY_CLIENT_AVAILABLE:
         try:
@@ -1505,7 +1447,7 @@ async def on_shutdown():
             print("✅ PGC Service shutdown: Integrity service client closed.")
         except Exception as e:
             print(f"❌ PGC Service shutdown error when closing integrity client: {e}")
-    
+
     # Close FV service client
     if FV_CLIENT_AVAILABLE:
         try:
@@ -1514,7 +1456,7 @@ async def on_shutdown():
             print("✅ PGC Service shutdown: FV service client closed.")
         except Exception as e:
             print(f"❌ PGC Service shutdown error when closing FV client: {e}")
-    
+
     # Shutdown OpenTelemetry
     try:
         telemetry_manager = get_telemetry_manager()
@@ -1522,7 +1464,7 @@ async def on_shutdown():
         print("✅ PGC Service shutdown: OpenTelemetry shutdown complete.")
     except Exception as e:
         print(f"❌ PGC Service shutdown error when shutting down OpenTelemetry: {e}")
-    
+
     print("✅ PGC Service shutdown: Complete")
 
 
@@ -1568,8 +1510,12 @@ async def root():
             "istio": service_config.get_section("security").get("enable_mtls", True),
         },
         "performance_targets": {
-            "p99_latency_ms": service_config.get("performance", {}).get("p99_latency_target_ms", 500),
-            "p95_latency_ms": service_config.get("performance", {}).get("p95_latency_target_ms", 25),
+            "p99_latency_ms": service_config.get("performance", {}).get(
+                "p99_latency_target_ms", 500
+            ),
+            "p95_latency_ms": service_config.get("performance", {}).get(
+                "p95_latency_target_ms", 25
+            ),
         },
         "api_documentation": "/docs",
     }
@@ -1619,17 +1565,16 @@ async def health_check():
         "telemetry": {
             "enabled": service_config.get_section("telemetry").get("enabled", True),
             "otlp_version": service_config.get_section("telemetry").get("otlp_version", "v1.37.0"),
-            "service_name": service_config.get_section("telemetry").get("service_name", "pgc_service"),
+            "service_name": service_config.get_section("telemetry").get(
+                "service_name", "pgc_service"
+            ),
             "environment": service_config.get_section("telemetry").get("environment", "production"),
         },
     }
 
     try:
         # Check policy manager status
-        if (
-            hasattr(policy_manager, "_last_refresh_time")
-            and policy_manager._last_refresh_time
-        ):
+        if hasattr(policy_manager, "_last_refresh_time") and policy_manager._last_refresh_time:
             health_status["components"]["policy_manager"] = {
                 "status": "healthy",
                 "last_refresh": str(policy_manager._last_refresh_time),
@@ -1650,9 +1595,7 @@ async def health_check():
             async with httpx.AsyncClient(timeout=5.0) as client:
                 opa_response = await client.get(f"{opa_url}/health")
                 health_status["dependencies"]["opa"] = {
-                    "status": (
-                        "healthy" if opa_response.status_code == 200 else "unhealthy"
-                    ),
+                    "status": ("healthy" if opa_response.status_code == 200 else "unhealthy"),
                     "response_time_ms": (
                         opa_response.elapsed.total_seconds() * 1000
                         if hasattr(opa_response, "elapsed")
@@ -1667,17 +1610,11 @@ async def health_check():
 
         # Check Integrity Service connectivity
         try:
-            integrity_url = os.getenv(
-                "INTEGRITY_SERVICE_URL", "http://integrity_service:8002"
-            )
+            integrity_url = os.getenv("INTEGRITY_SERVICE_URL", "http://integrity_service:8002")
             async with httpx.AsyncClient(timeout=5.0) as client:
                 integrity_response = await client.get(f"{integrity_url}/health")
                 health_status["dependencies"]["integrity_service"] = {
-                    "status": (
-                        "healthy"
-                        if integrity_response.status_code == 200
-                        else "unhealthy"
-                    ),
+                    "status": ("healthy" if integrity_response.status_code == 200 else "unhealthy"),
                     "response_time_ms": (
                         integrity_response.elapsed.total_seconds() * 1000
                         if hasattr(integrity_response, "elapsed")
@@ -1693,12 +1630,20 @@ async def health_check():
         # Check FV Service connectivity
         if FV_CLIENT_AVAILABLE:
             try:
-                fv_service_url = service_config.get_section("integrations").get("fv_service", {}).get("url", "http://fv_service:8083")
+                fv_service_url = (
+                    service_config.get_section("integrations")
+                    .get("fv_service", {})
+                    .get("url", "http://fv_service:8083")
+                )
                 async with httpx.AsyncClient(timeout=5.0) as client:
                     fv_response = await client.get(f"{fv_service_url}/health")
                     health_status["dependencies"]["fv_service"] = {
                         "status": "healthy" if fv_response.status_code == 200 else "unhealthy",
-                        "response_time_ms": fv_response.elapsed.total_seconds() * 1000 if hasattr(fv_response, "elapsed") else 0,
+                        "response_time_ms": (
+                            fv_response.elapsed.total_seconds() * 1000
+                            if hasattr(fv_response, "elapsed")
+                            else 0
+                        ),
                     }
             except Exception as e:
                 health_status["dependencies"]["fv_service"] = {
@@ -1731,8 +1676,8 @@ async def health_check():
         health_status["error"] = str(e)
 
     return health_status
-    
-    
+
+
 @app.get("/health/ready")
 async def readiness_check():
     """
@@ -1748,21 +1693,28 @@ async def readiness_check():
                 await client.get(f"{opa_url}/health")
         except Exception as e:
             return {"status": "not_ready", "reason": f"OPA not reachable: {str(e)}"}, 503
-            
+
         # Check if FV service is reachable (if enabled)
         if FV_CLIENT_AVAILABLE:
-            fv_service_url = service_config.get_section("integrations").get("fv_service", {}).get("url", "http://fv_service:8083")
+            fv_service_url = (
+                service_config.get_section("integrations")
+                .get("fv_service", {})
+                .get("url", "http://fv_service:8083")
+            )
             try:
                 async with httpx.AsyncClient(timeout=2.0) as client:
                     await client.get(f"{fv_service_url}/health")
             except Exception as e:
                 return {"status": "not_ready", "reason": f"FV service not reachable: {str(e)}"}, 503
-        
+
         # Verify policy manager has loaded policies
         if POLICY_MANAGER_AVAILABLE and hasattr(policy_manager, "_last_refresh_time"):
             if not policy_manager._last_refresh_time:
-                return {"status": "not_ready", "reason": "Policy manager hasn't loaded policies yet"}, 503
-        
+                return {
+                    "status": "not_ready",
+                    "reason": "Policy manager hasn't loaded policies yet",
+                }, 503
+
         # All checks passed
         return {
             "status": "ready",
@@ -1878,7 +1830,9 @@ async def create_policy(request: Dict[str, Any]):
     stakeholders = request.get("stakeholders", [])
     workflow_type = request.get("workflow_type", "standard")
 
-    policy_id = f"POL-{int(time.time())}-{hashlib.sha256(str(policy_data).encode()).hexdigest()[:8]}"
+    policy_id = (
+        f"POL-{int(time.time())}-{hashlib.sha256(str(policy_data).encode()).hexdigest()[:8]}"
+    )
 
     # Initialize policy in lifecycle management
     policy_record = {
@@ -2139,9 +2093,7 @@ async def initiate_workflow_endpoint(request: Dict[str, Any]):
 
     except Exception as e:
         logger.error(f"Workflow initiation failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Workflow initiation failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Workflow initiation failed: {str(e)}")
 
 
 @app.get("/governance/status")
@@ -2185,9 +2137,7 @@ async def governance_status_endpoint():
 
     except Exception as e:
         logger.error(f"Governance status check failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Governance status check failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Governance status check failed: {str(e)}")
 
 
 async def check_constitutional_compliance(
@@ -2198,21 +2148,21 @@ async def check_constitutional_compliance(
     """
     Check policy against constitutional framework with enhanced hash validation.
 
-    // requires: policy_data non-empty, constitutional_hash = "cdd01ef066bc6cf2"
-    // ensures: compliance_score >= 0.0 AND validation_timestamp > 0
-    // sha256: constitutional_compliance_check_enterprise_v2.0_acgs1
+    # requires: policy_data non-empty, constitutional_hash = "cdd01ef066bc6cf2"
+    # ensures: compliance_score >= 0.0 AND validation_timestamp > 0
+    # sha256: constitutional_compliance_check_enterprise_v2.0_acgs1
     """
     try:
         from .core.constitutional_hash_validator import (
-            ConstitutionalHashValidator,
             ConstitutionalContext,
+            ConstitutionalHashValidator,
             ConstitutionalValidationLevel,
         )
 
         # Initialize constitutional hash validator
         validator = ConstitutionalHashValidator(
             constitutional_hash="cdd01ef066bc6cf2",
-            redis_client=getattr(app.state, 'redis_client', None),
+            redis_client=getattr(app.state, "redis_client", None),
         )
 
         # Create validation context
@@ -2352,9 +2302,7 @@ async def policy_creation_workflow(request: Dict[str, Any]):
 
     except Exception as e:
         logger.error(f"Policy creation workflow failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Policy creation workflow failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Policy creation workflow failed: {str(e)}")
 
 
 @app.post("/api/v1/workflows/constitutional-compliance")
@@ -2383,9 +2331,7 @@ async def constitutional_compliance_workflow(request: Dict[str, Any]):
         # Step 2: Real-time policy validation against constitutional hash
         constitutional_hash = "cdd01ef066bc6cf2"  # Reference constitutional hash
         compliance_result = await check_constitutional_compliance(
-            policy_data,
-            constitutional_hash=constitutional_hash,
-            validation_level="comprehensive"
+            policy_data, constitutional_hash=constitutional_hash, validation_level="comprehensive"
         )
 
         # Step 3: Automated compliance scoring with >95% accuracy requirement
@@ -2466,9 +2412,7 @@ async def policy_enforcement_workflow(request: Dict[str, Any]):
         )
 
         # Step 2: Enhanced policy enforcement with violation detection
-        enforcement_result = await enforcement_engine.enforce_policy(
-            policy_id, enforcement_context
-        )
+        enforcement_result = await enforcement_engine.enforce_policy(policy_id, enforcement_context)
 
         # Step 3: Automated violation detection and remediation triggers
         violations = enforcement_result.get("violations", {})
@@ -2509,9 +2453,7 @@ async def policy_enforcement_workflow(request: Dict[str, Any]):
 
     except Exception as e:
         logger.error(f"Policy enforcement workflow failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Policy enforcement workflow failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Policy enforcement workflow failed: {str(e)}")
 
 
 @app.post("/api/v1/workflows/wina-oversight")
@@ -2536,9 +2478,7 @@ async def wina_oversight_workflow(request: Dict[str, Any]):
         performance_metrics = await _collect_wina_performance_metrics(system_id)
 
         # Step 3: Integration with EC service advanced coordination features
-        ec_integration_result = await _integrate_with_ec_service(
-            workflow_id, performance_metrics
-        )
+        ec_integration_result = await _integrate_with_ec_service(workflow_id, performance_metrics)
 
         # Step 4: Automated alert generation for performance degradation
         alert_result = await _generate_performance_alerts(
@@ -2576,9 +2516,7 @@ async def wina_oversight_workflow(request: Dict[str, Any]):
 
     except Exception as e:
         logger.error(f"WINA oversight workflow failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"WINA oversight workflow failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"WINA oversight workflow failed: {str(e)}")
 
 
 @app.post("/api/v1/workflows/audit-transparency")
@@ -2614,9 +2552,7 @@ async def audit_transparency_workflow(request: Dict[str, Any]):
         }
 
         # Step 3: Immutable audit trail storage with blockchain integration
-        blockchain_preparation = await _prepare_blockchain_storage(
-            audit_trail.immutable_storage
-        )
+        blockchain_preparation = await _prepare_blockchain_storage(audit_trail.immutable_storage)
 
         # Step 4: Public transparency reporting with privacy controls
         transparency_report = await audit_trail.generate_transparency_report(
@@ -2663,9 +2599,7 @@ async def get_workflow_status(workflow_id: str):
         workflow_status = await workflow_orchestrator.get_workflow_status(workflow_id)
 
         if workflow_status.get("status") == "not_found":
-            raise HTTPException(
-                status_code=404, detail=f"Workflow {workflow_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found")
 
         return {
             "workflow_status": workflow_status,
@@ -2678,9 +2612,7 @@ async def get_workflow_status(workflow_id: str):
         raise
     except Exception as e:
         logger.error(f"Workflow status retrieval failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Workflow status retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Workflow status retrieval failed: {str(e)}")
 
 
 @app.get("/api/v1/governance/metrics")
@@ -2754,9 +2686,7 @@ async def _classify_compliance_violations(violations):
     return severity_classification
 
 
-async def _handle_enforcement_escalation(
-    workflow_id, violations, severity, auto_remediation
-):
+async def _handle_enforcement_escalation(workflow_id, violations, severity, auto_remediation):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -2891,6 +2821,7 @@ async def enhanced_metrics_endpoint():
 
 # Constitutional Hash Validation Endpoints
 
+
 @app.get("/api/v1/constitutional/validate")
 async def validate_constitutional_hash_endpoint(
     hash_value: Optional[str] = None,
@@ -2899,21 +2830,21 @@ async def validate_constitutional_hash_endpoint(
     """
     Validate constitutional hash with comprehensive compliance checking.
 
-    // requires: constitutional_hash = "cdd01ef066bc6cf2"
-    // ensures: validation_result returned AND latency_ms <= 5.0
-    // sha256: constitutional_hash_validation_endpoint_v1.0_acgs1
+    # requires: constitutional_hash = "cdd01ef066bc6cf2"
+    # ensures: validation_result returned AND latency_ms <= 5.0
+    # sha256: constitutional_hash_validation_endpoint_v1.0_acgs1
     """
     try:
         from app.core.constitutional_hash_validator import (
-            ConstitutionalHashValidator,
             ConstitutionalContext,
+            ConstitutionalHashValidator,
             ConstitutionalValidationLevel,
         )
 
         # Initialize validator
         validator = ConstitutionalHashValidator(
             constitutional_hash="cdd01ef066bc6cf2",
-            redis_client=getattr(app.state, 'redis_client', None),
+            redis_client=getattr(app.state, "redis_client", None),
         )
 
         # Create validation context
@@ -2931,9 +2862,7 @@ async def validate_constitutional_hash_endpoint(
         )
 
         # Perform validation
-        result = await validator.validate_constitutional_hash(
-            hash_value, context
-        )
+        result = await validator.validate_constitutional_hash(hash_value, context)
 
         return {
             "validation_result": {
@@ -2952,10 +2881,7 @@ async def validate_constitutional_hash_endpoint(
 
     except Exception as e:
         logger.error(f"Constitutional hash validation endpoint failed: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Constitutional validation failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Constitutional validation failed: {str(e)}")
 
 
 @app.get("/api/v1/constitutional/state")
@@ -2963,9 +2889,9 @@ async def get_constitutional_state_endpoint():
     """
     Get current constitutional state and validation metrics.
 
-    // requires: constitutional_hash = "cdd01ef066bc6cf2"
-    // ensures: constitutional_state returned
-    // sha256: constitutional_state_endpoint_v1.0_acgs1
+    # requires: constitutional_hash = "cdd01ef066bc6cf2"
+    # ensures: constitutional_state returned
+    # sha256: constitutional_state_endpoint_v1.0_acgs1
     """
     try:
         from app.core.constitutional_hash_validator import ConstitutionalHashValidator
@@ -2974,7 +2900,7 @@ async def get_constitutional_state_endpoint():
         # Get validator state
         validator = ConstitutionalHashValidator(
             constitutional_hash="cdd01ef066bc6cf2",
-            redis_client=getattr(app.state, 'redis_client', None),
+            redis_client=getattr(app.state, "redis_client", None),
         )
         validator_state = await validator.get_constitutional_state()
 
@@ -3000,10 +2926,7 @@ async def get_constitutional_state_endpoint():
 
     except Exception as e:
         logger.error(f"Constitutional state endpoint failed: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to get constitutional state: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get constitutional state: {str(e)}")
 
 
 @app.post("/api/v1/constitutional/validate-policy")
@@ -3014,21 +2937,21 @@ async def validate_policy_constitutional_compliance_endpoint(
     """
     Validate policy constitutional compliance with enhanced checking.
 
-    // requires: policy_data non-empty, constitutional_hash = "cdd01ef066bc6cf2"
-    // ensures: policy_compliance_result returned
-    // sha256: policy_constitutional_validation_endpoint_v1.0_acgs1
+    # requires: policy_data non-empty, constitutional_hash = "cdd01ef066bc6cf2"
+    # ensures: policy_compliance_result returned
+    # sha256: policy_constitutional_validation_endpoint_v1.0_acgs1
     """
     try:
         from app.core.constitutional_hash_validator import (
-            ConstitutionalHashValidator,
             ConstitutionalContext,
+            ConstitutionalHashValidator,
             ConstitutionalValidationLevel,
         )
 
         # Initialize validator
         validator = ConstitutionalHashValidator(
             constitutional_hash="cdd01ef066bc6cf2",
-            redis_client=getattr(app.state, 'redis_client', None),
+            redis_client=getattr(app.state, "redis_client", None),
         )
 
         # Create validation context
@@ -3047,9 +2970,7 @@ async def validate_policy_constitutional_compliance_endpoint(
         )
 
         # Perform policy validation
-        result = await validator.validate_policy_constitutional_compliance(
-            policy_data, context
-        )
+        result = await validator.validate_policy_constitutional_compliance(policy_data, context)
 
         return {
             "policy_validation_result": {
@@ -3074,6 +2995,5 @@ async def validate_policy_constitutional_compliance_endpoint(
     except Exception as e:
         logger.error(f"Policy constitutional validation endpoint failed: {e}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Policy constitutional validation failed: {str(e)}"
+            status_code=500, detail=f"Policy constitutional validation failed: {str(e)}"
         )

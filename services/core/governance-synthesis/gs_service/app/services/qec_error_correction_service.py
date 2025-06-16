@@ -152,9 +152,9 @@ class ConflictDetectionEngine:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the conflict detection engine."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
@@ -190,21 +190,15 @@ class ConflictDetectionEngine:
 
         try:
             # 1. Principle-to-principle conflicts
-            principle_conflicts = await self._detect_principle_conflicts(
-                principles, context_data
-            )
+            principle_conflicts = await self._detect_principle_conflicts(principles, context_data)
             conflicts.extend(principle_conflicts)
 
             # 2. Policy-to-policy conflicts
-            policy_conflicts = await self._detect_policy_conflicts(
-                policies, context_data
-            )
+            policy_conflicts = await self._detect_policy_conflicts(policies, context_data)
             conflicts.extend(policy_conflicts)
 
             # 3. Principle-to-policy conflicts
-            cross_conflicts = await self._detect_cross_conflicts(
-                principles, policies, context_data
-            )
+            cross_conflicts = await self._detect_cross_conflicts(principles, policies, context_data)
             conflicts.extend(cross_conflicts)
 
             # 4. Semantic ambiguity detection
@@ -249,9 +243,7 @@ class ConflictDetectionEngine:
                 )
 
                 # Check for contradiction threshold
-                contradiction_threshold = self.config.get(
-                    "contradiction_threshold", 0.8
-                )
+                contradiction_threshold = self.config.get("contradiction_threshold", 0.8)
                 if distance_score > contradiction_threshold:
                     conflicts.append(
                         ConflictDetectionResult(
@@ -390,9 +382,7 @@ class ConflictDetectionEngine:
 
         return False
 
-    async def _policy_violates_principle(
-        self, policy: Policy, principle: Principle
-    ) -> bool:
+    async def _policy_violates_principle(self, policy: Policy, principle: Principle) -> bool:
         """Check if a policy violates a constitutional principle."""
         # Use error prediction model to assess violation likelihood
         try:
@@ -434,9 +424,9 @@ class AutomaticResolutionWorkflow:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the automatic resolution workflow."""
         self.config = config or self._get_default_config()
         self.multi_model_manager = MultiModelManager()
@@ -476,9 +466,7 @@ class AutomaticResolutionWorkflow:
             strategy = await self._select_resolution_strategy(conflict)
 
             # Apply resolution strategy
-            result = await self._apply_resolution_strategy(
-                conflict, strategy, correction_id, db
-            )
+            result = await self._apply_resolution_strategy(conflict, strategy, correction_id, db)
 
             # Update statistics
             if result.status == ErrorCorrectionStatus.RESOLVED_AUTOMATICALLY:
@@ -515,10 +503,8 @@ class AutomaticResolutionWorkflow:
     ) -> ResolutionStrategy:
         """Select the best resolution strategy for a conflict."""
         # Use recommended strategy if available and confidence is high
-        if (
-            conflict.recommended_strategy
-            and conflict.confidence_score
-            > self.config.get("high_confidence_threshold", 0.8)
+        if conflict.recommended_strategy and conflict.confidence_score > self.config.get(
+            "high_confidence_threshold", 0.8
         ):
             return conflict.recommended_strategy
 
@@ -532,9 +518,7 @@ class AutomaticResolutionWorkflow:
             ConflictType.IMPLEMENTATION_MISMATCH: ResolutionStrategy.AUTOMATIC_MERGE,
         }
 
-        return strategy_map.get(
-            conflict.conflict_type, ResolutionStrategy.HUMAN_ESCALATION
-        )
+        return strategy_map.get(conflict.conflict_type, ResolutionStrategy.HUMAN_ESCALATION)
 
     async def _apply_resolution_strategy(
         self,
@@ -766,9 +750,9 @@ class SemanticValidationEngine:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the semantic validation engine."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
@@ -800,15 +784,11 @@ class SemanticValidationEngine:
 
         try:
             # Calculate constitutional distance
-            distance_score = await self.distance_calculator.calculate_distance(
-                principle, policy
-            )
+            distance_score = await self.distance_calculator.calculate_distance(principle, policy)
 
             # Get current fidelity score
             current_fidelity = self.fidelity_monitor.get_current_fidelity()
-            baseline_fidelity = (
-                current_fidelity.composite_score if current_fidelity else 0.5
-            )
+            baseline_fidelity = current_fidelity.composite_score if current_fidelity else 0.5
 
             # Determine if correction is needed
             distance_threshold = self.config.get("distance_threshold", 0.7)
@@ -821,9 +801,7 @@ class SemanticValidationEngine:
                 # Calculate fidelity improvement
                 if correction_result.correction_applied:
                     # Simulate fidelity improvement (in real implementation, recalculate)
-                    estimated_improvement = min(
-                        0.1, (distance_score - distance_threshold) * 0.2
-                    )
+                    estimated_improvement = min(0.1, (distance_score - distance_threshold) * 0.2)
                     correction_result.fidelity_improvement = estimated_improvement
 
                 correction_result.response_time_seconds = time.time() - start_time
@@ -933,9 +911,9 @@ class PolicyRefinementSuggester:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the policy refinement suggester."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
@@ -1025,9 +1003,7 @@ class PolicyRefinementSuggester:
 
             if response and response.get("success"):
                 # Parse response (simplified - in real implementation, use structured output)
-                suggestion_id = (
-                    f"suggestion_{int(time.time() * 1000)}_{policy.id}_{principle.id}"
-                )
+                suggestion_id = f"suggestion_{int(time.time() * 1000)}_{policy.id}_{principle.id}"
 
                 return PolicyRefinementSuggestion(
                     suggestion_id=suggestion_id,
@@ -1071,9 +1047,9 @@ class ConflictComplexityScorer:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the conflict complexity scorer."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
@@ -1107,8 +1083,7 @@ class ConflictComplexityScorer:
                 factors["stakeholder_count"] * weights.get("stakeholder_impact", 0.25)
                 + factors["principle_count"] * weights.get("principle_complexity", 0.20)
                 + factors["policy_count"] * weights.get("policy_complexity", 0.20)
-                + factors["semantic_ambiguity"]
-                * weights.get("semantic_complexity", 0.15)
+                + factors["semantic_ambiguity"] * weights.get("semantic_complexity", 0.15)
                 + factors["historical_failures"] * weights.get("historical_risk", 0.10)
                 + factors["urgency_level"] * weights.get("urgency", 0.10)
             )
@@ -1141,9 +1116,7 @@ class ConflictComplexityScorer:
         factors["stakeholder_count"] = min(1.0, stakeholder_count / 5.0)
 
         # Principle complexity (0.0 - 1.0)
-        factors["principle_count"] = min(
-            1.0, len(conflict.conflicting_principles) / 3.0
-        )
+        factors["principle_count"] = min(1.0, len(conflict.conflicting_principles) / 3.0)
 
         # Policy complexity (0.0 - 1.0)
         factors["policy_count"] = min(1.0, len(conflict.conflicting_policies) / 3.0)
@@ -1196,14 +1169,12 @@ class ParallelConflictProcessor:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the parallel conflict processor."""
         self.config = config or self._get_default_config()
-        self.executor = ThreadPoolExecutor(
-            max_workers=self.config.get("max_workers", 4)
-        )
+        self.executor = ThreadPoolExecutor(max_workers=self.config.get("max_workers", 4))
 
         # Performance monitoring
         self.processing_stats = {
@@ -1239,15 +1210,11 @@ class ParallelConflictProcessor:
 
         try:
             # Check cache for known patterns
-            cached_results, uncached_conflicts = await self._check_pattern_cache(
-                conflicts
-            )
+            cached_results, uncached_conflicts = await self._check_pattern_cache(conflicts)
 
             # Process uncached conflicts in parallel
             if uncached_conflicts:
-                parallel_results = await self._process_parallel_batch(
-                    uncached_conflicts, db
-                )
+                parallel_results = await self._process_parallel_batch(uncached_conflicts, db)
 
                 # Update cache with new results
                 await self._update_pattern_cache(uncached_conflicts, parallel_results)
@@ -1259,9 +1226,7 @@ class ParallelConflictProcessor:
 
             # Update performance statistics
             processing_time = time.time() - start_time
-            self._update_performance_stats(
-                len(conflicts), processing_time, len(cached_results)
-            )
+            self._update_performance_stats(len(conflicts), processing_time, len(cached_results))
 
             logger.info(
                 f"Processed {len(conflicts)} conflicts in {processing_time:.2f}s "
@@ -1308,9 +1273,7 @@ class ParallelConflictProcessor:
         # Process conflicts concurrently
         tasks = []
         for conflict in conflicts:
-            task = asyncio.create_task(
-                resolution_workflow.resolve_conflict(conflict, db)
-            )
+            task = asyncio.create_task(resolution_workflow.resolve_conflict(conflict, db))
             tasks.append(task)
 
         # Wait for all tasks to complete
@@ -1341,9 +1304,7 @@ class ParallelConflictProcessor:
                 pattern_key = self._generate_pattern_key(conflict)
 
                 # Add timestamp for cache expiry
-                result.correction_metadata["cached_at"] = datetime.now(
-                    timezone.utc
-                ).isoformat()
+                result.correction_metadata["cached_at"] = datetime.now(timezone.utc).isoformat()
                 self.pattern_cache[pattern_key] = result
 
         # Clean up old cache entries
@@ -1403,15 +1364,11 @@ class ParallelConflictProcessor:
         if total_conflicts > 0:
             current_hit_rate = self.processing_stats["cache_hit_rate"]
             new_hit_rate = cached_count / total_conflicts
-            self.processing_stats["cache_hit_rate"] = (
-                current_hit_rate + new_hit_rate
-            ) / 2
+            self.processing_stats["cache_hit_rate"] = (current_hit_rate + new_hit_rate) / 2
 
         # Calculate parallel efficiency (simplified metric)
         target_time = self.config.get("target_response_time_seconds", 30)
-        self.processing_stats["parallel_efficiency"] = min(
-            1.0, target_time / processing_time
-        )
+        self.processing_stats["parallel_efficiency"] = min(1.0, target_time / processing_time)
 
     def _get_default_config(self) -> Dict[str, Any]:
         """Get default configuration for parallel processing."""
@@ -1444,16 +1401,14 @@ class QECErrorCorrectionService:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the QEC error correction service."""
         self.config = config or self._get_default_config()
 
         # Initialize component services
-        self.conflict_detector = ConflictDetectionEngine(
-            self.config.get("conflict_detection", {})
-        )
+        self.conflict_detector = ConflictDetectionEngine(self.config.get("conflict_detection", {}))
         self.resolution_workflow = AutomaticResolutionWorkflow(
             self.config.get("automatic_resolution", {})
         )
@@ -1463,9 +1418,7 @@ class QECErrorCorrectionService:
         self.refinement_suggester = PolicyRefinementSuggester(
             self.config.get("policy_refinement", {})
         )
-        self.complexity_scorer = ConflictComplexityScorer(
-            self.config.get("complexity_scoring", {})
-        )
+        self.complexity_scorer = ConflictComplexityScorer(self.config.get("complexity_scoring", {}))
         self.parallel_processor = ParallelConflictProcessor(
             self.config.get("parallel_processing", {})
         )
@@ -1511,18 +1464,14 @@ class QECErrorCorrectionService:
 
             # Calculate individual risk components
             ambiguity_risk = await self._calculate_ambiguity_risk(principle_features)
-            misalignment_risk = await self._calculate_misalignment_risk(
-                principle_features
-            )
+            misalignment_risk = await self._calculate_misalignment_risk(principle_features)
             implementation_risk = await self._calculate_implementation_risk(
                 principle_features, context_data
             )
 
             # Calculate overall risk score
             overall_risk = (
-                ambiguity_risk * 0.4
-                + misalignment_risk * 0.35
-                + implementation_risk * 0.25
+                ambiguity_risk * 0.4 + misalignment_risk * 0.35 + implementation_risk * 0.25
             )
 
             # Recommend synthesis strategy based on risk assessment
@@ -1546,25 +1495,13 @@ class QECErrorCorrectionService:
                 },
                 "risk_factors": {
                     "high_complexity_principles": len(
-                        [
-                            f
-                            for f in principle_features
-                            if f.get("complexity_score", 0) > 0.7
-                        ]
+                        [f for f in principle_features if f.get("complexity_score", 0) > 0.7]
                     ),
                     "ambiguous_statements": len(
-                        [
-                            f
-                            for f in principle_features
-                            if f.get("ambiguity_score", 0) > 0.6
-                        ]
+                        [f for f in principle_features if f.get("ambiguity_score", 0) > 0.6]
                     ),
                     "conflicting_requirements": len(
-                        [
-                            f
-                            for f in principle_features
-                            if f.get("conflict_potential", 0) > 0.5
-                        ]
+                        [f for f in principle_features if f.get("conflict_potential", 0) > 0.5]
                     ),
                 },
             }
@@ -1634,12 +1571,8 @@ class QECErrorCorrectionService:
                     "pursuant",
                     "aforementioned",
                 ]
-                complexity_count = sum(
-                    1 for word in complex_words if word in combined_text.lower()
-                )
-                complexity_score = min(
-                    1.0, (avg_sentence_length / 20) + (complexity_count / 10)
-                )
+                complexity_count = sum(1 for word in complex_words if word in combined_text.lower())
+                complexity_score = min(1.0, (avg_sentence_length / 20) + (complexity_count / 10))
 
                 # Conflict potential indicators
                 conflict_words = [
@@ -1651,9 +1584,7 @@ class QECErrorCorrectionService:
                     "despite",
                     "nevertheless",
                 ]
-                conflict_count = sum(
-                    1 for word in conflict_words if word in combined_text.lower()
-                )
+                conflict_count = sum(1 for word in conflict_words if word in combined_text.lower())
                 conflict_potential = min(1.0, conflict_count / max(word_count / 50, 1))
 
                 # Technical requirement indicators
@@ -1669,9 +1600,7 @@ class QECErrorCorrectionService:
                 technical_count = sum(
                     1 for word in technical_words if word in combined_text.lower()
                 )
-                technical_complexity = min(
-                    1.0, technical_count / max(word_count / 30, 1)
-                )
+                technical_complexity = min(1.0, technical_count / max(word_count / 30, 1))
 
                 features.append(
                     {
@@ -1683,19 +1612,14 @@ class QECErrorCorrectionService:
                         "complexity_score": complexity_score,
                         "conflict_potential": conflict_potential,
                         "technical_complexity": technical_complexity,
-                        "priority_weight": getattr(principle, "priority_weight", 0.5)
-                        or 0.5,
-                        "has_constraints": bool(
-                            getattr(principle, "constraints", None)
-                        ),
+                        "priority_weight": getattr(principle, "priority_weight", 0.5) or 0.5,
+                        "has_constraints": bool(getattr(principle, "constraints", None)),
                         "scope_breadth": len(getattr(principle, "scope", []) or []),
                     }
                 )
 
             except Exception as e:
-                logger.warning(
-                    f"Error extracting features for principle {principle.id}: {e}"
-                )
+                logger.warning(f"Error extracting features for principle {principle.id}: {e}")
                 # Add minimal feature set for failed extractions
                 features.append(
                     {
@@ -1711,9 +1635,7 @@ class QECErrorCorrectionService:
 
         return features
 
-    async def _calculate_ambiguity_risk(
-        self, principle_features: List[Dict[str, Any]]
-    ) -> float:
+    async def _calculate_ambiguity_risk(self, principle_features: List[Dict[str, Any]]) -> float:
         """Calculate risk score based on ambiguity in principles."""
         if not principle_features:
             return 0.5
@@ -1738,9 +1660,7 @@ class QECErrorCorrectionService:
 
         return min(1.0, weighted_ambiguity)
 
-    async def _calculate_misalignment_risk(
-        self, principle_features: List[Dict[str, Any]]
-    ) -> float:
+    async def _calculate_misalignment_risk(self, principle_features: List[Dict[str, Any]]) -> float:
         """Calculate risk score based on potential principle misalignment."""
         if not principle_features:
             return 0.5
@@ -1767,9 +1687,7 @@ class QECErrorCorrectionService:
             return 0.5
 
         # Technical complexity from principles
-        technical_scores = [
-            f.get("technical_complexity", 0.5) for f in principle_features
-        ]
+        technical_scores = [f.get("technical_complexity", 0.5) for f in principle_features]
         avg_technical = sum(technical_scores) / len(technical_scores)
 
         # Complexity from text analysis
@@ -1790,9 +1708,7 @@ class QECErrorCorrectionService:
                 context_risk += 0.1
 
         # Combine all implementation risk factors
-        implementation_risk = (
-            (avg_technical * 0.4) + (avg_complexity * 0.4) + (context_risk * 0.2)
-        )
+        implementation_risk = (avg_technical * 0.4) + (avg_complexity * 0.4) + (context_risk * 0.2)
 
         return min(1.0, implementation_risk)
 
@@ -1867,9 +1783,7 @@ class QECErrorCorrectionService:
             escalation_decisions = []
             for conflict in conflicts:
                 complexity_score, requires_escalation = (
-                    await self.complexity_scorer.score_complexity(
-                        conflict, context_data
-                    )
+                    await self.complexity_scorer.score_complexity(conflict, context_data)
                 )
                 escalation_decisions.append(
                     {
@@ -1908,10 +1822,8 @@ class QECErrorCorrectionService:
             refinement_suggestions = []
             for principle in principles:
                 for policy in policies:
-                    suggestions = (
-                        await self.refinement_suggester.generate_refinement_suggestions(
-                            policy, [principle], context_data
-                        )
+                    suggestions = await self.refinement_suggester.generate_refinement_suggestions(
+                        policy, [principle], context_data
                     )
                     refinement_suggestions.extend(suggestions)
 
@@ -1955,9 +1867,7 @@ class QECErrorCorrectionService:
             # Create violation record for escalation
             violation = ConstitutionalViolation(
                 violation_type=(
-                    conflict.conflict_type.value
-                    if conflict.conflict_type
-                    else "unknown"
+                    conflict.conflict_type.value if conflict.conflict_type else "unknown"
                 ),
                 severity=conflict.severity.value if conflict.severity else "medium",
                 violation_description=conflict.conflict_description,
@@ -1969,9 +1879,7 @@ class QECErrorCorrectionService:
                     "correction_id": correction_id,
                     "escalation_reason": "Complex conflict requiring human review",
                     "conflict_type": (
-                        conflict.conflict_type.value
-                        if conflict.conflict_type
-                        else "unknown"
+                        conflict.conflict_type.value if conflict.conflict_type else "unknown"
                     ),
                 },
             )
@@ -1980,9 +1888,7 @@ class QECErrorCorrectionService:
             await db.flush()
 
             # Escalate using existing escalation service
-            escalation_result = await self.violation_escalation.evaluate_escalation(
-                violation, db
-            )
+            escalation_result = await self.violation_escalation.evaluate_escalation(violation, db)
 
             if escalation_result:
                 escalation_level = EscalationLevel.CONSTITUTIONAL_COUNCIL
@@ -2060,11 +1966,7 @@ class QECErrorCorrectionService:
 
         # Count successful automatic resolutions
         successful_auto = len(
-            [
-                r
-                for r in auto_results
-                if r.status == ErrorCorrectionStatus.RESOLVED_AUTOMATICALLY
-            ]
+            [r for r in auto_results if r.status == ErrorCorrectionStatus.RESOLVED_AUTOMATICALLY]
         )
 
         # Count escalations
@@ -2072,15 +1974,11 @@ class QECErrorCorrectionService:
 
         # Calculate accuracy (simplified metric)
         total_processed = len(auto_results) + len(escalation_results)
-        accuracy_rate = (
-            (successful_auto / total_processed) if total_processed > 0 else 0.0
-        )
+        accuracy_rate = (successful_auto / total_processed) if total_processed > 0 else 0.0
 
         # Calculate fidelity improvements
         fidelity_improvements = [
-            r.fidelity_improvement
-            for r in auto_results
-            if r.fidelity_improvement is not None
+            r.fidelity_improvement for r in auto_results if r.fidelity_improvement is not None
         ]
         avg_fidelity_improvement = (
             sum(fidelity_improvements) / len(fidelity_improvements)
@@ -2125,9 +2023,7 @@ class QECErrorCorrectionService:
                         "correction_id": r.correction_id,
                         "status": r.status.value,
                         "strategy": (
-                            r.resolution_strategy.value
-                            if r.resolution_strategy
-                            else "unknown"
+                            r.resolution_strategy.value if r.resolution_strategy else "unknown"
                         ),
                         "response_time": r.response_time_seconds,
                         "fidelity_improvement": r.fidelity_improvement,
@@ -2158,15 +2054,11 @@ class QECErrorCorrectionService:
 
     def _update_performance_metrics(self, workflow_results: Dict[str, Any]) -> None:
         """Update service performance metrics."""
-        self.performance_metrics["total_corrections"] += workflow_results[
-            "conflicts_detected"
-        ]
+        self.performance_metrics["total_corrections"] += workflow_results["conflicts_detected"]
         self.performance_metrics["automatic_resolutions"] += workflow_results[
             "automatic_resolutions"
         ]
-        self.performance_metrics["escalated_conflicts"] += workflow_results[
-            "escalations_required"
-        ]
+        self.performance_metrics["escalated_conflicts"] += workflow_results["escalations_required"]
 
         # Update average response time
         current_avg = self.performance_metrics["average_response_time"]
@@ -2175,8 +2067,7 @@ class QECErrorCorrectionService:
 
         if total_corrections > 0:
             self.performance_metrics["average_response_time"] = (
-                current_avg
-                * (total_corrections - workflow_results["conflicts_detected"])
+                current_avg * (total_corrections - workflow_results["conflicts_detected"])
                 + new_time * workflow_results["conflicts_detected"]
             ) / total_corrections
 
@@ -2191,9 +2082,9 @@ class QECErrorCorrectionService:
 
             # Keep only recent improvements (last 100)
             if len(self.performance_metrics["fidelity_improvements"]) > 100:
-                self.performance_metrics["fidelity_improvements"] = (
-                    self.performance_metrics["fidelity_improvements"][-100:]
-                )
+                self.performance_metrics["fidelity_improvements"] = self.performance_metrics[
+                    "fidelity_improvements"
+                ][-100:]
 
     def get_performance_summary(self) -> Dict[str, Any]:
         """Get current performance summary."""
@@ -2214,9 +2105,7 @@ class QECErrorCorrectionService:
         return {
             "total_corrections_processed": total_corrections,
             "automatic_resolution_rate": automatic_resolution_rate,
-            "average_response_time_seconds": self.performance_metrics[
-                "average_response_time"
-            ],
+            "average_response_time_seconds": self.performance_metrics["average_response_time"],
             "current_accuracy_rate": self.performance_metrics["accuracy_rate"],
             "average_fidelity_improvement": avg_fidelity_improvement,
             "escalation_rate": (
@@ -2229,12 +2118,8 @@ class QECErrorCorrectionService:
                     "target_automatic_resolution_rate", 0.8
                 ),
                 "accuracy_target": self.config.get("target_accuracy_rate", 0.95),
-                "response_time_target": self.config.get(
-                    "target_response_time_seconds", 30
-                ),
-                "escalation_time_target": self.config.get(
-                    "target_escalation_time_seconds", 300
-                ),
+                "response_time_target": self.config.get("target_response_time_seconds", 30),
+                "escalation_time_target": self.config.get("target_escalation_time_seconds", 300),
             },
             "targets_met": {
                 "automatic_resolution": automatic_resolution_rate
@@ -2256,9 +2141,9 @@ class ConflictComplexityScorer:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the conflict complexity scorer."""
         self.config = config or self._get_default_config()
         self.distance_calculator = ConstitutionalDistanceCalculator()
@@ -2292,8 +2177,7 @@ class ConflictComplexityScorer:
                 factors["stakeholder_count"] * weights.get("stakeholder_impact", 0.25)
                 + factors["principle_count"] * weights.get("principle_complexity", 0.20)
                 + factors["policy_count"] * weights.get("policy_complexity", 0.20)
-                + factors["semantic_ambiguity"]
-                * weights.get("semantic_complexity", 0.15)
+                + factors["semantic_ambiguity"] * weights.get("semantic_complexity", 0.15)
                 + factors["historical_failures"] * weights.get("historical_risk", 0.10)
                 + factors["urgency_level"] * weights.get("urgency", 0.10)
             )
@@ -2326,9 +2210,7 @@ class ConflictComplexityScorer:
         factors["stakeholder_count"] = min(1.0, stakeholder_count / 5.0)
 
         # Principle complexity (0.0 - 1.0)
-        factors["principle_count"] = min(
-            1.0, len(conflict.conflicting_principles) / 3.0
-        )
+        factors["principle_count"] = min(1.0, len(conflict.conflicting_principles) / 3.0)
 
         # Policy complexity (0.0 - 1.0)
         factors["policy_count"] = min(1.0, len(conflict.conflicting_policies) / 3.0)
@@ -2381,14 +2263,12 @@ class ParallelConflictProcessor:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the parallel conflict processor."""
         self.config = config or self._get_default_config()
-        self.executor = ThreadPoolExecutor(
-            max_workers=self.config.get("max_workers", 4)
-        )
+        self.executor = ThreadPoolExecutor(max_workers=self.config.get("max_workers", 4))
 
         # Performance monitoring
         self.processing_stats = {
@@ -2424,15 +2304,11 @@ class ParallelConflictProcessor:
 
         try:
             # Check cache for known patterns
-            cached_results, uncached_conflicts = await self._check_pattern_cache(
-                conflicts
-            )
+            cached_results, uncached_conflicts = await self._check_pattern_cache(conflicts)
 
             # Process uncached conflicts in parallel
             if uncached_conflicts:
-                parallel_results = await self._process_parallel_batch(
-                    uncached_conflicts, db
-                )
+                parallel_results = await self._process_parallel_batch(uncached_conflicts, db)
 
                 # Update cache with new results
                 await self._update_pattern_cache(uncached_conflicts, parallel_results)
@@ -2444,9 +2320,7 @@ class ParallelConflictProcessor:
 
             # Update performance statistics
             processing_time = time.time() - start_time
-            self._update_performance_stats(
-                len(conflicts), processing_time, len(cached_results)
-            )
+            self._update_performance_stats(len(conflicts), processing_time, len(cached_results))
 
             logger.info(
                 f"Processed {len(conflicts)} conflicts in {processing_time:.2f}s "

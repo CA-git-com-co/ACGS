@@ -57,9 +57,9 @@ class ConstitutionalPromptBuilder:
     """
 
     def __init__(self, enable_wina_integration: bool = True):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize the Constitutional Prompt Builder.
 
@@ -71,9 +71,7 @@ class ConstitutionalPromptBuilder:
         # Initialize WINA services if available
         if self.enable_wina_integration:
             self.wina_analyzer = WINAConstitutionalPrincipleAnalyzer()
-            self.wina_update_service = WINAConstitutionalUpdateService(
-                analyzer=self.wina_analyzer
-            )
+            self.wina_update_service = WINAConstitutionalUpdateService(analyzer=self.wina_analyzer)
             logger.info("WINA constitutional integration enabled")
         else:
             self.wina_analyzer = None
@@ -138,15 +136,9 @@ CONSTITUTIONAL COMPLIANCE REQUIREMENTS:
                 "category": category,
                 "principles": relevant_principles,
                 "principle_count": len(relevant_principles),
-                "constitutional_hierarchy": self._build_principle_hierarchy(
-                    relevant_principles
-                ),
-                "scope_constraints": self._extract_scope_constraints(
-                    relevant_principles
-                ),
-                "normative_framework": self._build_normative_framework(
-                    relevant_principles
-                ),
+                "constitutional_hierarchy": self._build_principle_hierarchy(relevant_principles),
+                "scope_constraints": self._extract_scope_constraints(relevant_principles),
+                "normative_framework": self._build_normative_framework(relevant_principles),
             }
 
             logger.info(
@@ -173,50 +165,32 @@ CONSTITUTIONAL COMPLIANCE REQUIREMENTS:
         """Fetch principles relevant to the given context and category."""
         try:
             # Use the enhanced AC service endpoints for context-specific principles
-            relevant_principles_objs = (
-                await ac_service_client.get_principles_for_context(
-                    context=context, category=category, auth_token=auth_token
-                )
+            relevant_principles_objs = await ac_service_client.get_principles_for_context(
+                context=context, category=category, auth_token=auth_token
             )
 
             # Convert to dictionaries and sort by priority weight
-            relevant_principles = [
-                principle.model_dump() for principle in relevant_principles_objs
-            ]
+            relevant_principles = [principle.model_dump() for principle in relevant_principles_objs]
 
             # Sort by priority weight (highest first)
-            relevant_principles.sort(
-                key=lambda p: p.get("priority_weight", 0.0), reverse=True
-            )
+            relevant_principles.sort(key=lambda p: p.get("priority_weight", 0.0), reverse=True)
 
             # If no context-specific principles found, fall back to category-based search
             if not relevant_principles and category:
-                category_principles = (
-                    await ac_service_client.get_principles_by_category(
-                        category=category, auth_token=auth_token
-                    )
+                category_principles = await ac_service_client.get_principles_by_category(
+                    category=category, auth_token=auth_token
                 )
-                relevant_principles = [
-                    principle.model_dump() for principle in category_principles
-                ]
-                relevant_principles.sort(
-                    key=lambda p: p.get("priority_weight", 0.0), reverse=True
-                )
+                relevant_principles = [principle.model_dump() for principle in category_principles]
+                relevant_principles.sort(key=lambda p: p.get("priority_weight", 0.0), reverse=True)
 
             # If still no principles, try keyword-based search
             if not relevant_principles:
                 context_keywords = context.lower().split()
-                keyword_principles = (
-                    await ac_service_client.search_principles_by_keywords(
-                        keywords=context_keywords, auth_token=auth_token
-                    )
+                keyword_principles = await ac_service_client.search_principles_by_keywords(
+                    keywords=context_keywords, auth_token=auth_token
                 )
-                relevant_principles = [
-                    principle.model_dump() for principle in keyword_principles
-                ]
-                relevant_principles.sort(
-                    key=lambda p: p.get("priority_weight", 0.0), reverse=True
-                )
+                relevant_principles = [principle.model_dump() for principle in keyword_principles]
+                relevant_principles.sort(key=lambda p: p.get("priority_weight", 0.0), reverse=True)
 
             return relevant_principles
 
@@ -224,9 +198,7 @@ CONSTITUTIONAL COMPLIANCE REQUIREMENTS:
             logger.error(f"Failed to fetch relevant principles: {e}")
             # Fallback to the original method
             try:
-                all_principles = await ac_service_client.list_principles(
-                    auth_token=auth_token
-                )
+                all_principles = await ac_service_client.list_principles(auth_token=auth_token)
 
                 relevant_principles = []
                 for principle in all_principles:
@@ -235,25 +207,18 @@ CONSTITUTIONAL COMPLIANCE REQUIREMENTS:
                     # Check if principle applies to the context
                     if self._principle_applies_to_context(principle_dict, context):
                         # Check category filter if provided
-                        if (
-                            category is None
-                            or principle_dict.get("category") == category
-                        ):
+                        if category is None or principle_dict.get("category") == category:
                             relevant_principles.append(principle_dict)
 
                 # Sort by priority weight (highest first)
-                relevant_principles.sort(
-                    key=lambda p: p.get("priority_weight", 0.0), reverse=True
-                )
+                relevant_principles.sort(key=lambda p: p.get("priority_weight", 0.0), reverse=True)
 
                 return relevant_principles
             except Exception as fallback_error:
                 logger.error(f"Fallback principle fetch also failed: {fallback_error}")
                 return []
 
-    def _principle_applies_to_context(
-        self, principle: Dict[str, Any], context: str
-    ) -> bool:
+    def _principle_applies_to_context(self, principle: Dict[str, Any], context: str) -> bool:
         """Check if a principle applies to the given context."""
         scope = principle.get("scope", [])
 
@@ -264,9 +229,7 @@ CONSTITUTIONAL COMPLIANCE REQUIREMENTS:
         # Check if context matches any scope item
         return context in scope or any(context.lower() in s.lower() for s in scope)
 
-    def _build_principle_hierarchy(
-        self, principles: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+    def _build_principle_hierarchy(self, principles: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Build a hierarchical representation of principles based on priority weights."""
         hierarchy = []
 
@@ -298,9 +261,7 @@ CONSTITUTIONAL COMPLIANCE REQUIREMENTS:
 
         return hierarchy
 
-    def _extract_scope_constraints(
-        self, principles: List[Dict[str, Any]]
-    ) -> Dict[str, List[str]]:
+    def _extract_scope_constraints(self, principles: List[Dict[str, Any]]) -> Dict[str, List[str]]:
         """Extract scope constraints from principles."""
         constraints = {}
 
@@ -311,9 +272,7 @@ CONSTITUTIONAL COMPLIANCE REQUIREMENTS:
 
         return constraints
 
-    def _build_normative_framework(
-        self, principles: List[Dict[str, Any]]
-    ) -> Dict[str, str]:
+    def _build_normative_framework(self, principles: List[Dict[str, Any]]) -> Dict[str, str]:
         """Build a normative framework from principle normative statements."""
         framework = {}
 
@@ -448,8 +407,7 @@ Step 3: PROACTIVE COMPLIANCE
             for precedent_key, precedent_data in self.constitutional_precedents.items():
                 # Check if precedent is relevant to current context
                 if any(
-                    keyword in precedent_data.get("keywords", [])
-                    for keyword in context_keywords
+                    keyword in precedent_data.get("keywords", []) for keyword in context_keywords
                 ):
                     relevant_precedents.append(precedent_data)
 
@@ -460,9 +418,7 @@ Step 3: PROACTIVE COMPLIANCE
                     relevant_precedents.append(precedent_data)
 
             # Sort by relevance score
-            relevant_precedents.sort(
-                key=lambda p: p.get("relevance_score", 0.0), reverse=True
-            )
+            relevant_precedents.sort(key=lambda p: p.get("relevance_score", 0.0), reverse=True)
 
             return {
                 "precedents": relevant_precedents[:5],  # Top 5 most relevant
@@ -475,9 +431,9 @@ Step 3: PROACTIVE COMPLIANCE
             return {"precedents": [], "total_found": 0, "error": str(e)}
 
     async def _refresh_precedent_cache(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Refresh the constitutional precedent cache."""
         try:
             # In a real implementation, this would fetch from a precedent database
@@ -545,9 +501,7 @@ Step 3: PROACTIVE COMPLIANCE
         # Retrieve constitutional precedents if RAG is enabled
         precedent_data = {}
         if enable_rag:
-            precedent_data = await self._retrieve_constitutional_precedents(
-                context, principles
-            )
+            precedent_data = await self._retrieve_constitutional_precedents(context, principles)
 
         # Build enhanced sections
         constitutional_principles_section = self._build_enhanced_principles_section(
@@ -631,27 +585,19 @@ Please provide your constitutionally compliant policy synthesis following this e
         if precedents:
             section += "RELEVANT CONSTITUTIONAL PRECEDENTS:\n"
             for i, precedent in enumerate(precedents[:3], 1):  # Top 3 precedents
-                section += (
-                    f"{i}. {precedent.get('reasoning', 'No reasoning available')}\n"
-                )
-                section += (
-                    f"   Outcome: {precedent.get('outcome', 'No outcome recorded')}\n"
-                )
+                section += f"{i}. {precedent.get('reasoning', 'No reasoning available')}\n"
+                section += f"   Outcome: {precedent.get('outcome', 'No outcome recorded')}\n"
             section += "\n"
 
         section += "APPLICABLE PRINCIPLES (in priority order):\n\n"
 
         for i, principle in enumerate(principles, 1):
             priority_weight = principle.get("priority_weight", 0.0)
-            priority_info = next(
-                (h for h in hierarchy if h["id"] == principle["id"]), {}
-            )
+            priority_info = next((h for h in hierarchy if h["id"] == principle["id"]), {})
             priority_level = priority_info.get("priority_level", "UNSPECIFIED")
 
             # Apply positive action patterns to principle description
-            enhanced_content = self._apply_positive_patterns(
-                principle.get("content", "")
-            )
+            enhanced_content = self._apply_positive_patterns(principle.get("content", ""))
 
             section += f"{i}. PRINCIPLE {principle['id']}: {principle['name']}\n"
             section += f"   Priority: {priority_weight:.2f} ({priority_level})\n"
@@ -659,9 +605,7 @@ Please provide your constitutionally compliant policy synthesis following this e
             section += f"   Enhanced Content: {enhanced_content}\n"
 
             if principle.get("normative_statement"):
-                enhanced_normative = self._apply_positive_patterns(
-                    principle["normative_statement"]
-                )
+                enhanced_normative = self._apply_positive_patterns(principle["normative_statement"])
                 section += f"   Normative Statement: {enhanced_normative}\n"
 
             if principle.get("scope"):
@@ -788,9 +732,7 @@ POSITIVE LANGUAGE PATTERNS TO USE:
         }
 
         for pattern, replacement in negative_to_positive.items():
-            enhanced_text = re.sub(
-                pattern, replacement, enhanced_text, flags=re.IGNORECASE
-            )
+            enhanced_text = re.sub(pattern, replacement, enhanced_text, flags=re.IGNORECASE)
 
         return enhanced_text
 
@@ -805,9 +747,7 @@ POSITIVE LANGUAGE PATTERNS TO USE:
 
         for i, principle in enumerate(principles, 1):
             priority_weight = principle.get("priority_weight", 0.0)
-            priority_info = next(
-                (h for h in hierarchy if h["id"] == principle["id"]), {}
-            )
+            priority_info = next((h for h in hierarchy if h["id"] == principle["id"]), {})
             priority_level = priority_info.get("priority_level", "UNSPECIFIED")
 
             section += f"{i}. PRINCIPLE {principle['id']}: {principle['name']}\n"
@@ -816,9 +756,7 @@ POSITIVE LANGUAGE PATTERNS TO USE:
             section += f"   Content: {principle['content']}\n"
 
             if principle.get("normative_statement"):
-                section += (
-                    f"   Normative Statement: {principle['normative_statement']}\n"
-                )
+                section += f"   Normative Statement: {principle['normative_statement']}\n"
 
             if principle.get("scope"):
                 section += f"   Scope: {', '.join(principle['scope'])}\n"
@@ -944,20 +882,14 @@ If principles conflict, resolve using this hierarchy:
 
         return constitutional_context
 
-    def _build_wina_summary(
-        self, wina_analysis_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _build_wina_summary(self, wina_analysis_results: Dict[str, Any]) -> Dict[str, Any]:
         """Build summary of WINA analysis results."""
         if not wina_analysis_results:
             return {"total_principles": 0, "optimization_potential": 0.0}
 
         total_principles = len(wina_analysis_results)
         high_potential = len(
-            [
-                r
-                for r in wina_analysis_results.values()
-                if r.get("optimization_potential", 0) > 0.7
-            ]
+            [r for r in wina_analysis_results.values() if r.get("optimization_potential", 0) > 0.7]
         )
         medium_potential = len(
             [
@@ -967,18 +899,11 @@ If principles conflict, resolve using this hierarchy:
             ]
         )
         low_potential = len(
-            [
-                r
-                for r in wina_analysis_results.values()
-                if r.get("optimization_potential", 0) < 0.4
-            ]
+            [r for r in wina_analysis_results.values() if r.get("optimization_potential", 0) < 0.4]
         )
 
         avg_potential = (
-            sum(
-                r.get("optimization_potential", 0)
-                for r in wina_analysis_results.values()
-            )
+            sum(r.get("optimization_potential", 0) for r in wina_analysis_results.values())
             / total_principles
         )
 
@@ -1022,12 +947,8 @@ If principles conflict, resolve using this hierarchy:
                 f"Implement additional safety monitoring for: {', '.join(safety_critical_principles)}"
             )
 
-        recommendations.append(
-            "Monitor constitutional compliance continuously during optimization"
-        )
-        recommendations.append(
-            "Implement fallback mechanisms for optimization failures"
-        )
+        recommendations.append("Monitor constitutional compliance continuously during optimization")
+        recommendations.append("Implement fallback mechanisms for optimization failures")
 
         return recommendations
 
@@ -1060,7 +981,9 @@ If principles conflict, resolve using this hierarchy:
             # Insert WINA section before synthesis instructions
             prompt_parts = base_prompt.split("SYNTHESIS INSTRUCTIONS:")
             if len(prompt_parts) == 2:
-                enhanced_prompt = f"{prompt_parts[0]}\n{wina_section}\n\nSYNTHESIS INSTRUCTIONS:{prompt_parts[1]}"
+                enhanced_prompt = (
+                    f"{prompt_parts[0]}\n{wina_section}\n\nSYNTHESIS INSTRUCTIONS:{prompt_parts[1]}"
+                )
             else:
                 enhanced_prompt = f"{base_prompt}\n\n{wina_section}"
         else:
@@ -1068,9 +991,7 @@ If principles conflict, resolve using this hierarchy:
 
         return enhanced_prompt
 
-    def _build_wina_optimization_section(
-        self, constitutional_context: Dict[str, Any]
-    ) -> str:
+    def _build_wina_optimization_section(self, constitutional_context: Dict[str, Any]) -> str:
         """Build WINA optimization section for constitutional prompt."""
         wina_summary = constitutional_context.get("wina_summary", {})
         optimization_recommendations = constitutional_context.get(

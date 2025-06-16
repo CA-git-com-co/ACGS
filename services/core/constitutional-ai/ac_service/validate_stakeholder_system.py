@@ -12,9 +12,9 @@ import sys
 
 
 def validate_file_structure():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Validate that all required files exist."""
     print("Validating file structure...")
 
@@ -37,9 +37,9 @@ def validate_file_structure():
 
 
 def validate_stakeholder_service():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Validate stakeholder engagement service structure."""
     print("Validating stakeholder engagement service...")
 
@@ -92,9 +92,7 @@ def validate_stakeholder_service():
             "StakeholderNotificationService.get_stakeholder_feedback",
         ]
 
-        missing_methods = [
-            method for method in required_methods if method not in methods_found
-        ]
+        missing_methods = [method for method in required_methods if method not in methods_found]
 
         if missing_methods:
             print(f"❌ Missing methods: {missing_methods}")
@@ -109,9 +107,9 @@ def validate_stakeholder_service():
 
 
 def validate_api_endpoints():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Validate API endpoints structure."""
     print("Validating API endpoints...")
 
@@ -149,9 +147,9 @@ def validate_api_endpoints():
 
 
 def validate_constitutional_council_integration():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Validate integration with Constitutional Council StateGraph."""
     print("Validating Constitutional Council integration...")
 
@@ -179,9 +177,7 @@ def validate_constitutional_council_integration():
 
         # Check for stakeholder service initialization
         if "self.stakeholder_service = StakeholderNotificationService" not in content:
-            print(
-                "❌ Missing stakeholder service initialization in Constitutional Council"
-            )
+            print("❌ Missing stakeholder service initialization in Constitutional Council")
             return False
 
         print("✓ Constitutional Council integration is correct")
@@ -193,9 +189,9 @@ def validate_constitutional_council_integration():
 
 
 def validate_main_app_integration():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Validate integration with main AC service app."""
     print("Validating main app integration...")
 
@@ -210,10 +206,7 @@ def validate_main_app_integration():
             print("❌ Missing stakeholder engagement router in main app")
             return False
 
-        if (
-            "app.include_router" not in content
-            or "stakeholder_engagement_router" not in content
-        ):
+        if "app.include_router" not in content or "stakeholder_engagement_router" not in content:
             print("❌ Stakeholder engagement router not included in main app")
             return False
 
@@ -226,9 +219,9 @@ def validate_main_app_integration():
 
 
 def run_validation():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Run all validation checks."""
     print("=" * 60)
     print("STAKEHOLDER ENGAGEMENT SYSTEM - VALIDATION")
@@ -276,9 +269,7 @@ def run_validation():
         print("\n🎉 ALL VALIDATIONS PASSED!")
         print("Stakeholder Engagement System is properly implemented and integrated.")
         print("\nKey Features Implemented:")
-        print(
-            "- Multi-channel notification system (email, dashboard, webhook, websocket)"
-        )
+        print("- Multi-channel notification system (email, dashboard, webhook, websocket)")
         print("- Role-based stakeholder management (4 stakeholder roles)")
         print("- Real-time feedback collection and tracking")
         print("- Integration with Constitutional Council StateGraph")
@@ -286,9 +277,7 @@ def run_validation():
         print("- WebSocket support for real-time updates")
         print("- Comprehensive status tracking and reporting")
     else:
-        print(
-            f"\n⚠️  {total - passed} validation(s) failed. Please review the issues above."
-        )
+        print(f"\n⚠️  {total - passed} validation(s) failed. Please review the issues above.")
 
     print("=" * 60)
 

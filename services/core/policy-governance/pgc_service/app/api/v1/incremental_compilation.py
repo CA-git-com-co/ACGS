@@ -30,9 +30,7 @@ class PolicyDeploymentRequest(BaseModel):
 
     policies: List[Dict[str, Any]] = Field(..., description="Policy rules to deploy")
     amendment_id: Optional[int] = Field(None, description="Constitutional amendment ID")
-    force_hot_swap: bool = Field(
-        False, description="Force hot-swap deployment strategy"
-    )
+    force_hot_swap: bool = Field(False, description="Force hot-swap deployment strategy")
     deployment_notes: Optional[str] = Field(None, description="Deployment notes")
 
 
@@ -40,9 +38,7 @@ class PolicyRollbackRequest(BaseModel):
     """Request model for policy rollback."""
 
     policy_id: str = Field(..., description="Policy ID to rollback")
-    target_version: Optional[int] = Field(
-        None, description="Target version (defaults to previous)"
-    )
+    target_version: Optional[int] = Field(None, description="Target version (defaults to previous)")
     rollback_reason: str = Field("Manual rollback", description="Reason for rollback")
 
 
@@ -197,9 +193,7 @@ async def get_compilation_metrics(
     try:
         # Validate user permissions
         if current_user.role not in ["admin", "policy_manager", "auditor"]:
-            raise HTTPException(
-                status_code=403, detail="Insufficient permissions to view metrics"
-            )
+            raise HTTPException(status_code=403, detail="Insufficient permissions to view metrics")
 
         metrics = compiler.get_metrics()
 

@@ -99,9 +99,7 @@ async def enable_mfa(
     Enable MFA for the current user after verifying TOTP code.
     """
     try:
-        success = await mfa_service.enable_mfa(
-            db, current_user.id, mfa_request.totp_code
-        )
+        success = await mfa_service.enable_mfa(db, current_user.id, mfa_request.totp_code)
 
         if success:
             await security_audit.log_event(
@@ -158,9 +156,7 @@ async def disable_mfa(
     Disable MFA for the current user after verification.
     """
     try:
-        success = await mfa_service.disable_mfa(
-            db, current_user.id, mfa_request.verification_code
-        )
+        success = await mfa_service.disable_mfa(db, current_user.id, mfa_request.verification_code)
 
         if success:
             await security_audit.log_event(
@@ -326,7 +322,5 @@ async def get_mfa_status(
     """
     return {
         "mfa_enabled": current_user.mfa_enabled,
-        "backup_codes_count": (
-            len(current_user.backup_codes) if current_user.backup_codes else 0
-        ),
+        "backup_codes_count": (len(current_user.backup_codes) if current_user.backup_codes else 0),
     }

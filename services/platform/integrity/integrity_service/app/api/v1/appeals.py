@@ -17,46 +17,46 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # Local auth stubs to avoid shared module dependencies
 class User:
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.id = "test_user"
         self.roles = ["user"]
 
 
 def get_current_user():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return User()
 
 
 def require_integrity_admin():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return User()
 
 
 def require_auditor():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return User()
 
 
 # Mock explainability engine
 class MockExplainabilityEngine:
     async def generate_explanation(self, request_data, db):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {"explanation": "Mock explanation", "confidence": 0.8}
 
     async def get_rule_provenance(self, rule_id, db):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {"rule_id": rule_id, "provenance": "Mock provenance"}
 
 
@@ -67,9 +67,7 @@ router = APIRouter()
 # --- Appeal Management Endpoints ---
 
 
-@router.post(
-    "/appeals", response_model=schemas.Appeal, status_code=status.HTTP_201_CREATED
-)
+@router.post("/appeals", response_model=schemas.Appeal, status_code=status.HTTP_201_CREATED)
 async def create_appeal(
     appeal_data: schemas.AppealCreate,
     db: AsyncSession = Depends(get_async_db),
@@ -104,9 +102,7 @@ async def create_appeal(
         raise HTTPException(status_code=500, detail=f"Error creating appeal: {str(e)}")
 
 
-@router.get(
-    "/appeals", response_model=schemas.AppealList, status_code=status.HTTP_200_OK
-)
+@router.get("/appeals", response_model=schemas.AppealList, status_code=status.HTTP_200_OK)
 async def get_appeals(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
@@ -123,10 +119,7 @@ async def get_appeals(
     try:
         # Determine access level
         assigned_reviewer_id = None
-        if (
-            "integrity_admin" not in current_user.roles
-            and "auditor" not in current_user.roles
-        ):
+        if "integrity_admin" not in current_user.roles and "auditor" not in current_user.roles:
             # Regular users see only their appeals
             assigned_reviewer_id = current_user.id
 
@@ -150,9 +143,7 @@ async def get_appeals(
         return schemas.AppealList(appeals=appeals, total=total)
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error retrieving appeals: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error retrieving appeals: {str(e)}")
 
 
 @router.get(
@@ -186,9 +177,7 @@ async def get_appeal(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error retrieving appeal: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error retrieving appeal: {str(e)}")
 
 
 @router.patch(
@@ -248,9 +237,7 @@ async def escalate_appeal(
     try:
         appeal = await crud.escalate_appeal(db, appeal_id)
         if not appeal:
-            raise HTTPException(
-                status_code=404, detail="Appeal not found or cannot be escalated"
-            )
+            raise HTTPException(status_code=404, detail="Appeal not found or cannot be escalated")
 
         # Log the escalation
         await crud.create_audit_log(
@@ -271,9 +258,7 @@ async def escalate_appeal(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error escalating appeal: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error escalating appeal: {str(e)}")
 
 
 # --- Dispute Resolution Endpoints ---
@@ -320,9 +305,7 @@ async def create_dispute_resolution(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error creating dispute resolution: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error creating dispute resolution: {str(e)}")
 
 
 @router.get(
@@ -433,9 +416,7 @@ async def update_dispute_resolution(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error updating dispute resolution: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error updating dispute resolution: {str(e)}")
 
 
 # --- Explainability Endpoints ---
@@ -476,9 +457,7 @@ async def explain_decision(
         return explanation
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error generating explanation: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error generating explanation: {str(e)}")
 
 
 @router.get(
@@ -512,6 +491,4 @@ async def get_rule_provenance(
         return provenance
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error retrieving rule provenance: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error retrieving rule provenance: {str(e)}")

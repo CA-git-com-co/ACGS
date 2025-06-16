@@ -57,9 +57,7 @@ def sanitize_input(text: Optional[str]) -> str:  # text can be Optional[str]
     This is a very basic example and should be expanded based on specific needs
     and supplemented by context-aware escaping (e.g., HTML escaping, SQL parameterization).
     """
-    if not isinstance(
-        text, str
-    ):  # If text is None or not a string, return empty string
+    if not isinstance(text, str):  # If text is None or not a string, return empty string
         return ""
     # Remove control characters except for common whitespace like newline, tab, carriage return
     text = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", "", text)
@@ -94,9 +92,9 @@ class CommonHTTPErrorMessages:
 # Example utility for pagination (can be expanded)
 class Paginator:
     def __init__(self, items: list, page: int = 1, per_page: int = 10):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if not isinstance(page, int) or page < 1:
             page = 1
         if not isinstance(per_page, int) or per_page < 1:
@@ -115,9 +113,7 @@ class Paginator:
         # Adjust page if it's out of bounds after total_pages calculation
         if self.total_items > 0 and self.page > self.total_pages:
             self.page = self.total_pages
-        elif (
-            self.total_items == 0
-        ):  # if no items, page should be 1 or 0 depending on convention
+        elif self.total_items == 0:  # if no items, page should be 1 or 0 depending on convention
             self.page = 1
 
     def get_page_items(self) -> list:
@@ -131,9 +127,7 @@ class Paginator:
         return self.page < self.total_pages
 
     def has_prev(self) -> bool:
-        return (
-            self.page > 1 and self.total_pages > 0
-        )  # No prev if on page 1 or no pages
+        return self.page > 1 and self.total_pages > 0  # No prev if on page 1 or no pages
 
     def get_pagination_details(self) -> dict:
         return {
@@ -165,16 +159,14 @@ class DatabaseConfig(BaseModel):
     url: str = Field(..., description="Database connection URL")
     echo_log: bool = Field(False, description="Enable SQL query logging")
     pool_size: int = Field(10, ge=1, le=50, description="Connection pool size")
-    max_overflow: int = Field(
-        20, ge=0, le=100, description="Maximum overflow connections"
-    )
+    max_overflow: int = Field(20, ge=0, le=100, description="Maximum overflow connections")
 
     @field_validator("url")
     @classmethod
     def validate_database_url(cls, v):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if not v.startswith(
             (
                 "postgresql://",
@@ -200,9 +192,9 @@ class ServiceUrlsConfig(BaseModel):
     @field_validator("auth", "ac", "integrity", "fv", "gs", "pgc")
     @classmethod
     def validate_service_url(cls, v):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if not v.startswith(("http://", "https://")):
             raise ValueError("Service URL must start with http:// or https://")
         return v
@@ -216,19 +208,15 @@ class SecurityConfig(BaseModel):
     jwt_access_token_expire_minutes: int = Field(
         30, ge=1, le=1440, description="Access token expiry"
     )
-    jwt_refresh_token_expire_days: int = Field(
-        7, ge=1, le=30, description="Refresh token expiry"
-    )
-    cors_origins: List[str] = Field(
-        default_factory=list, description="CORS allowed origins"
-    )
+    jwt_refresh_token_expire_days: int = Field(7, ge=1, le=30, description="Refresh token expiry")
+    cors_origins: List[str] = Field(default_factory=list, description="CORS allowed origins")
 
     @field_validator("jwt_secret_key")
     @classmethod
     def validate_jwt_secret(cls, v, info):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         # Allow default secret key in testing and development environments
         if hasattr(info, "context") and info.context:
             env = info.context.get("environment")
@@ -257,16 +245,14 @@ class MonitoringConfig(BaseModel):
 
     log_level: str = Field("INFO", description="Logging level")
     metrics_enabled: bool = Field(True, description="Enable metrics collection")
-    prometheus_port: int = Field(
-        9090, ge=1024, le=65535, description="Prometheus metrics port"
-    )
+    prometheus_port: int = Field(9090, ge=1024, le=65535, description="Prometheus metrics port")
 
     @field_validator("log_level")
     @classmethod
     def validate_log_level(cls, v):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         if v.upper() not in valid_levels:
             raise ValueError(f"Log level must be one of: {valid_levels}")
@@ -276,9 +262,7 @@ class MonitoringConfig(BaseModel):
 class ACGSConfigModel(BaseModel):
     """Complete ACGS configuration model with Pydantic validation."""
 
-    environment: Environment = Field(
-        Environment.DEVELOPMENT, description="Application environment"
-    )
+    environment: Environment = Field(Environment.DEVELOPMENT, description="Application environment")
     debug: bool = Field(False, description="Enable debug mode")
 
     # Configuration sections
@@ -303,9 +287,7 @@ class ACGSConfigModel(BaseModel):
     )
 
     # Feature flags
-    model_features: Dict[str, bool] = Field(
-        default_factory=dict, description="Model feature flags"
-    )
+    model_features: Dict[str, bool] = Field(default_factory=dict, description="Model feature flags")
 
     # Testing configuration
     test_mode: bool = Field(False, description="Enable test mode")
@@ -321,12 +303,10 @@ class ACGSConfig:
     Handles environment variables, service URLs, and cross-service communication settings.
     """
 
-    def __init__(
-        self, env_file: Optional[str] = None, environment: Optional[str] = None
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def __init__(self, env_file: Optional[str] = None, environment: Optional[str] = None):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize configuration with optional environment file and environment-specific profiles.
 
@@ -338,9 +318,7 @@ class ACGSConfig:
         self._load_environment_files(env_file)
 
         # Determine environment
-        self.environment = Environment(
-            environment or os.getenv("ENVIRONMENT", "development")
-        )
+        self.environment = Environment(environment or os.getenv("ENVIRONMENT", "development"))
 
         # Load environment-specific configuration
         self._load_environment_specific_config()
@@ -367,9 +345,7 @@ class ACGSConfig:
             for env_file_name in env_files_to_try:
                 env_path = os.path.join(base_path, env_file_name)
                 if os.path.exists(env_path):
-                    load_dotenv(
-                        env_path, override=False
-                    )  # Don't override already set values
+                    load_dotenv(env_path, override=False)  # Don't override already set values
                     logger.info(f"Loaded environment file: {env_path}")
 
     def _load_environment_specific_config(self) -> None:
@@ -420,9 +396,7 @@ class ACGSConfig:
                     "jwt_access_token_expire_minutes": self._config[
                         "jwt_access_token_expire_minutes"
                     ],
-                    "jwt_refresh_token_expire_days": self._config[
-                        "jwt_refresh_token_expire_days"
-                    ],
+                    "jwt_refresh_token_expire_days": self._config["jwt_refresh_token_expire_days"],
                     "cors_origins": self._config["cors_origins"],
                 },
                 "ai_models": {
@@ -431,9 +405,7 @@ class ACGSConfig:
                     "fallback": self._config["ai_models"]["fallback"],
                     "max_tokens": self._config["llm_settings"]["max_tokens"],
                     "temperature": self._config["llm_settings"]["temperature"],
-                    "research_temperature": self._config["llm_settings"][
-                        "research_temperature"
-                    ],
+                    "research_temperature": self._config["llm_settings"]["research_temperature"],
                 },
                 "monitoring": {
                     "log_level": self._config["log_level"],
@@ -471,18 +443,14 @@ class ACGSConfig:
             "service_urls": {
                 "auth": os.getenv("AUTH_SERVICE_URL", "http://localhost:8000"),
                 "ac": os.getenv("AC_SERVICE_URL", "http://localhost:8001"),
-                "integrity": os.getenv(
-                    "INTEGRITY_SERVICE_URL", "http://localhost:8002"
-                ),
+                "integrity": os.getenv("INTEGRITY_SERVICE_URL", "http://localhost:8002"),
                 "fv": os.getenv("FV_SERVICE_URL", "http://localhost:8003"),
                 "gs": os.getenv("GS_SERVICE_URL", "http://localhost:8004"),
                 "pgc": os.getenv("PGC_SERVICE_URL", "http://localhost:8005"),
             },
             # Docker internal service URLs (for container-to-container communication)
             "internal_service_urls": {
-                "auth": os.getenv(
-                    "AUTH_SERVICE_INTERNAL_URL", "http://auth_service:8000"
-                ),
+                "auth": os.getenv("AUTH_SERVICE_INTERNAL_URL", "http://auth_service:8000"),
                 "ac": os.getenv("AC_SERVICE_INTERNAL_URL", "http://ac_service:8001"),
                 "integrity": os.getenv(
                     "INTEGRITY_SERVICE_INTERNAL_URL", "http://integrity_service:8002"
@@ -497,25 +465,17 @@ class ACGSConfig:
                 "BACKEND_CORS_ORIGINS", "http://localhost:3000,http://localhost:3001"
             ).split(","),
             # Security settings
-            "jwt_secret_key": os.getenv(
-                "JWT_SECRET_KEY", "your-secret-key-change-in-production"
-            ),
+            "jwt_secret_key": os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production"),
             "jwt_algorithm": os.getenv("JWT_ALGORITHM", "HS256"),
             "jwt_access_token_expire_minutes": int(
                 os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30")
             ),
-            "jwt_refresh_token_expire_days": int(
-                os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "7")
-            ),
+            "jwt_refresh_token_expire_days": int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "7")),
             # External service configuration
-            "llm_api_endpoint": os.getenv(
-                "LLM_API_ENDPOINT", "http://mock_llm_service/generate"
-            ),
+            "llm_api_endpoint": os.getenv("LLM_API_ENDPOINT", "http://mock_llm_service/generate"),
             # AI Model Configuration for ACGS-PGP
             "ai_models": {
-                "primary": os.getenv(
-                    "ACGS_PRIMARY_LLM_MODEL", "claude-3-7-sonnet-20250219"
-                ),
+                "primary": os.getenv("ACGS_PRIMARY_LLM_MODEL", "claude-3-7-sonnet-20250219"),
                 "research": os.getenv("ACGS_RESEARCH_LLM_MODEL", "sonar-pro"),
                 "fallback": os.getenv("ACGS_FALLBACK_LLM_MODEL", "claude-3-5-sonnet"),
                 "gemini_2_5_flash": "gemini-2.5-flash-preview-04-17",
@@ -528,23 +488,15 @@ class ACGSConfig:
             "llm_settings": {
                 "max_tokens": int(os.getenv("ACGS_LLM_MAX_TOKENS", "64000")),
                 "temperature": float(os.getenv("ACGS_LLM_TEMPERATURE", "0.2")),
-                "research_temperature": float(
-                    os.getenv("ACGS_RESEARCH_TEMPERATURE", "0.1")
-                ),
+                "research_temperature": float(os.getenv("ACGS_RESEARCH_TEMPERATURE", "0.1")),
             },
             # Model enablement flags
             "model_features": {
-                "enable_gemini_2_5_flash": os.getenv(
-                    "ENABLE_GEMINI_2_5_FLASH", "true"
-                ).lower()
+                "enable_gemini_2_5_flash": os.getenv("ENABLE_GEMINI_2_5_FLASH", "true").lower()
                 == "true",
-                "enable_deepseek_r1": os.getenv("ENABLE_DEEPSEEK_R1", "true").lower()
-                == "true",
-                "enable_cerebras": os.getenv("ENABLE_CEREBRAS", "true").lower()
-                == "true",
-                "enable_bias_detection_llm": os.getenv(
-                    "ENABLE_BIAS_DETECTION_LLM", "true"
-                ).lower()
+                "enable_deepseek_r1": os.getenv("ENABLE_DEEPSEEK_R1", "true").lower() == "true",
+                "enable_cerebras": os.getenv("ENABLE_CEREBRAS", "true").lower() == "true",
+                "enable_bias_detection_llm": os.getenv("ENABLE_BIAS_DETECTION_LLM", "true").lower()
                 == "true",
             },
             # API Keys for AI services
@@ -593,9 +545,7 @@ class ACGSConfig:
                 missing_configs.append(config_key)
 
         if missing_configs:
-            raise ValueError(
-                f"Missing required configuration: {', '.join(missing_configs)}"
-            )
+            raise ValueError(f"Missing required configuration: {', '.join(missing_configs)}")
 
         # Validate service URLs format
         for service_name, url in self._config["service_urls"].items():
@@ -614,9 +564,7 @@ class ACGSConfig:
         except (KeyError, TypeError):
             return default
 
-    def get_service_url(
-        self, service_name: str, internal: bool = False, api_path: str = ""
-    ) -> str:
+    def get_service_url(self, service_name: str, internal: bool = False, api_path: str = "") -> str:
         """
         Get service URL for cross-service communication.
 
@@ -663,11 +611,7 @@ class ACGSConfig:
         if test_mode is None:
             test_mode = self.is_test_mode()
 
-        return (
-            self._config["test_database_url"]
-            if test_mode
-            else self._config["database_url"]
-        )
+        return self._config["test_database_url"] if test_mode else self._config["database_url"]
 
     def get_ai_model(self, model_type: str = "primary") -> str:
         """
@@ -679,9 +623,7 @@ class ACGSConfig:
         Returns:
             Model identifier string
         """
-        return self._config["ai_models"].get(
-            model_type, self._config["ai_models"]["primary"]
-        )
+        return self._config["ai_models"].get(model_type, self._config["ai_models"]["primary"])
 
     def get_ai_api_key(self, provider: str) -> Optional[str]:
         """
@@ -809,14 +751,10 @@ class ACGSConfig:
             "database_configured": bool(self._config.get("database_url")),
             "services_configured": list(self._config["service_urls"].keys()),
             "ai_providers_configured": [
-                provider
-                for provider, key in self._config["ai_api_keys"].items()
-                if key is not None
+                provider for provider, key in self._config["ai_api_keys"].items() if key is not None
             ],
             "features_enabled": [
-                feature
-                for feature, enabled in self._config["model_features"].items()
-                if enabled
+                feature for feature, enabled in self._config["model_features"].items() if enabled
             ],
             "monitoring": {
                 "log_level": self._config["log_level"],

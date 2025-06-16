@@ -26,17 +26,17 @@ class ACGSRedisClient:
     """Centralized Redis client for ACGS-PGP microservices."""
 
     def __init__(self, service_name: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.service_name = service_name
         self.redis_client: Optional[Redis] = None
         self.connection_pool = None
 
     async def initialize(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize Redis connection pool."""
         try:
             self.connection_pool = redis.ConnectionPool.from_url(
@@ -55,15 +55,13 @@ class ACGSRedisClient:
             logger.info(f"Redis client initialized for service: {self.service_name}")
 
         except Exception as e:
-            logger.error(
-                f"Failed to initialize Redis client for {self.service_name}: {e}"
-            )
+            logger.error(f"Failed to initialize Redis client for {self.service_name}: {e}")
             raise
 
     async def close(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Close Redis connection."""
         if self.redis_client:
             await self.redis_client.close()
@@ -71,9 +69,9 @@ class ACGSRedisClient:
 
     @asynccontextmanager
     async def get_client(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Context manager for Redis client."""
         if not self.redis_client:
             await self.initialize()
@@ -135,16 +133,12 @@ class ACGSRedisClient:
             logger.error(f"Failed to increment key {key}: {e}")
             return None
 
-    async def set_hash(
-        self, key: str, mapping: Dict[str, Any], ttl: Optional[int] = None
-    ) -> bool:
+    async def set_hash(self, key: str, mapping: Dict[str, Any], ttl: Optional[int] = None) -> bool:
         """Set hash in Redis with optional TTL."""
         try:
             async with self.get_client() as client:
                 # Convert values to strings for Redis
-                str_mapping = {
-                    k: json.dumps(v, default=str) for k, v in mapping.items()
-                }
+                str_mapping = {k: json.dumps(v, default=str) for k, v in mapping.items()}
                 result = await client.hset(key, mapping=str_mapping)
                 if ttl:
                     await client.expire(key, ttl)
@@ -165,9 +159,7 @@ class ACGSRedisClient:
             logger.error(f"Failed to get hash {key}: {e}")
             return None
 
-    async def add_to_list(
-        self, key: str, value: Any, max_length: Optional[int] = None
-    ) -> bool:
+    async def add_to_list(self, key: str, value: Any, max_length: Optional[int] = None) -> bool:
         """Add value to Redis list with optional max length."""
         try:
             async with self.get_client() as client:

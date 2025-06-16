@@ -55,35 +55,19 @@ class FrameworkBreakdown:
 
     @property
     def datalog_percentage(self) -> float:
-        return (
-            (self.datalog_count / self.total_policies * 100)
-            if self.total_policies > 0
-            else 0.0
-        )
+        return (self.datalog_count / self.total_policies * 100) if self.total_policies > 0 else 0.0
 
     @property
     def rego_percentage(self) -> float:
-        return (
-            (self.rego_count / self.total_policies * 100)
-            if self.total_policies > 0
-            else 0.0
-        )
+        return (self.rego_count / self.total_policies * 100) if self.total_policies > 0 else 0.0
 
     @property
     def json_percentage(self) -> float:
-        return (
-            (self.json_count / self.total_policies * 100)
-            if self.total_policies > 0
-            else 0.0
-        )
+        return (self.json_count / self.total_policies * 100) if self.total_policies > 0 else 0.0
 
     @property
     def yaml_percentage(self) -> float:
-        return (
-            (self.yaml_count / self.total_policies * 100)
-            if self.total_policies > 0
-            else 0.0
-        )
+        return (self.yaml_count / self.total_policies * 100) if self.total_policies > 0 else 0.0
 
 
 @dataclass
@@ -164,9 +148,7 @@ class ManifestManager:
         if not dataset_path.exists():
             raise FileNotFoundError(f"Dataset path does not exist: {dataset_path}")
 
-        logger.info(
-            f"Generating manifest for dataset: {dataset_name} v{dataset_version}"
-        )
+        logger.info(f"Generating manifest for dataset: {dataset_name} v{dataset_version}")
 
         # Collect file information
         files_info = []
@@ -231,14 +213,10 @@ class ManifestManager:
             metadata=metadata,
         )
 
-        logger.info(
-            f"Generated manifest: {len(files_info)} files, {total_policies} policies"
-        )
+        logger.info(f"Generated manifest: {len(files_info)} files, {total_policies} policies")
         return manifest
 
-    def _should_exclude_file(
-        self, file_path: Path, exclude_patterns: List[str]
-    ) -> bool:
+    def _should_exclude_file(self, file_path: Path, exclude_patterns: List[str]) -> bool:
         """Check if file should be excluded based on patterns"""
         file_name = file_path.name
         for pattern in exclude_patterns:
@@ -292,9 +270,7 @@ class ManifestManager:
             # Count records
             if file_path.suffix == ".jsonl":
                 # JSONL file - count lines
-                record_count = len(
-                    [line for line in content.split("\n") if line.strip()]
-                )
+                record_count = len([line for line in content.split("\n") if line.strip()])
             elif file_path.suffix in [".json", ".yaml", ".yml"]:
                 # Single document files
                 record_count = 1
@@ -332,9 +308,7 @@ class ManifestManager:
             return "YAML"
 
         # Content-based detection
-        if "package " in content and (
-            "allow" in content_lower or "deny" in content_lower
-        ):
+        if "package " in content and ("allow" in content_lower or "deny" in content_lower):
             return "Rego"
         elif content.strip().startswith("{") or '"Statement"' in content:
             return "JSON"
@@ -345,9 +319,7 @@ class ManifestManager:
 
         return "Unknown"
 
-    def _generate_integrity_info(
-        self, files_info: List[PolicyFileInfo]
-    ) -> Dict[str, Any]:
+    def _generate_integrity_info(self, files_info: List[PolicyFileInfo]) -> Dict[str, Any]:
         """Generate integrity information for the dataset"""
         # Calculate overall dataset hash
         all_hashes = [f.sha256 for f in files_info]
@@ -365,9 +337,7 @@ class ManifestManager:
             "integrity_check_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    def validate_manifest(
-        self, manifest_path: str, dataset_path: str
-    ) -> Dict[str, Any]:
+    def validate_manifest(self, manifest_path: str, dataset_path: str) -> Dict[str, Any]:
         """
         Validate a manifest against the actual dataset.
 
@@ -425,9 +395,7 @@ class ManifestManager:
                             f"expected {expected_size}, got {actual_size}"
                         )
                 else:
-                    validation_result["errors"].append(
-                        f"File not found: {file_info['file_path']}"
-                    )
+                    validation_result["errors"].append(f"File not found: {file_info['file_path']}")
                     validation_result["is_valid"] = False
 
                 validation_result["file_checks"].append(file_check)

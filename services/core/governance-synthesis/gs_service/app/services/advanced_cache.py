@@ -68,9 +68,9 @@ class LRUCache(Generic[T]):
     """Thread-safe LRU cache with TTL support."""
 
     def __init__(self, max_size: int = 1000, default_ttl: int = 300):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.max_size = max_size
         self.default_ttl = default_ttl
         self.cache: OrderedDict[str, CacheEntry] = OrderedDict()
@@ -91,24 +91,22 @@ class LRUCache(Generic[T]):
         return datetime.now() > entry.expires_at
 
     def _evict_expired(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Remove expired entries."""
         now = datetime.now()
         expired_keys = [
-            key
-            for key, entry in self.cache.items()
-            if entry.expires_at and now > entry.expires_at
+            key for key, entry in self.cache.items() if entry.expires_at and now > entry.expires_at
         ]
         for key in expired_keys:
             del self.cache[key]
             self.stats.evictions += 1
 
     def _evict_lru(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Evict least recently used entries."""
         while len(self.cache) >= self.max_size:
             oldest_key = next(iter(self.cache))
@@ -191,9 +189,7 @@ class LRUCache(Generic[T]):
 
             # Update stats
             self.stats.entry_count = len(self.cache)
-            self.stats.memory_usage_bytes = sum(
-                entry.size_bytes for entry in self.cache.values()
-            )
+            self.stats.memory_usage_bytes = sum(entry.size_bytes for entry in self.cache.values())
 
             logger.debug("Cache put", key=cache_key, ttl=ttl, size_bytes=size_bytes)
             return True
@@ -214,9 +210,9 @@ class LRUCache(Generic[T]):
             return False
 
     def clear(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear all cache entries."""
         with self._lock:
             self.cache.clear()
@@ -225,23 +221,19 @@ class LRUCache(Generic[T]):
             logger.info("Cache cleared")
 
     def invalidate_by_tags(self, tags: List[str]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Invalidate cache entries by tags."""
         with self._lock:
             keys_to_delete = [
-                key
-                for key, entry in self.cache.items()
-                if any(tag in entry.tags for tag in tags)
+                key for key, entry in self.cache.items() if any(tag in entry.tags for tag in tags)
             ]
             for key in keys_to_delete:
                 del self.cache[key]
 
             self.stats.entry_count = len(self.cache)
-            self.stats.memory_usage_bytes = sum(
-                entry.size_bytes for entry in self.cache.values()
-            )
+            self.stats.memory_usage_bytes = sum(entry.size_bytes for entry in self.cache.values())
             logger.info(
                 "Cache invalidated by tags",
                 tags=tags,
@@ -249,9 +241,9 @@ class LRUCache(Generic[T]):
             )
 
     def _update_hit_rate(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update cache hit rate."""
         if self.stats.total_requests > 0:
             self.stats.hit_rate = self.stats.cache_hits / self.stats.total_requests
@@ -280,9 +272,9 @@ class RedisCache:
         key_prefix: str = "acgs:cache:",
         enable_pubsub: bool = True,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.redis_client = redis_client
         self.key_prefix = key_prefix
         self.stats = CacheStats(0, 0, 0, 0.0, 0, 0, 0, 0)
@@ -371,9 +363,9 @@ class RedisCache:
             return False
 
     async def clear_pattern(self, pattern: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear cache entries matching pattern."""
         try:
             pattern_key = f"{self.key_prefix}{pattern}"
@@ -387,22 +379,20 @@ class RedisCache:
                 )
         except RedisError as e:
             self.stats.errors += 1
-            logger.error(
-                "Redis cache clear pattern error", pattern=pattern, error=str(e)
-            )
+            logger.error("Redis cache clear pattern error", pattern=pattern, error=str(e))
 
     def _update_hit_rate(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update cache hit rate."""
         if self.stats.total_requests > 0:
             self.stats.hit_rate = self.stats.cache_hits / self.stats.total_requests
 
     async def start_invalidation_listener(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start listening for cache invalidation messages."""
         if not self.enable_pubsub:
             return
@@ -411,20 +401,16 @@ class RedisCache:
             self._pubsub = self.redis_client.pubsub()
             await self._pubsub.subscribe(self.invalidation_channel)
 
-            self._invalidation_task = asyncio.create_task(
-                self._handle_invalidation_messages()
-            )
-            logger.info(
-                "Cache invalidation listener started", channel=self.invalidation_channel
-            )
+            self._invalidation_task = asyncio.create_task(self._handle_invalidation_messages())
+            logger.info("Cache invalidation listener started", channel=self.invalidation_channel)
 
         except Exception as e:
             logger.error("Failed to start invalidation listener", error=str(e))
 
     async def stop_invalidation_listener(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop listening for cache invalidation messages."""
         if self._invalidation_task:
             self._invalidation_task.cancel()
@@ -440,9 +426,9 @@ class RedisCache:
         logger.info("Cache invalidation listener stopped")
 
     async def _handle_invalidation_messages(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Handle cache invalidation messages."""
         try:
             async for message in self._pubsub.listen():
@@ -451,18 +437,16 @@ class RedisCache:
                         invalidation_data = json.loads(message["data"])
                         await self._process_invalidation(invalidation_data)
                     except Exception as e:
-                        logger.error(
-                            "Failed to process invalidation message", error=str(e)
-                        )
+                        logger.error("Failed to process invalidation message", error=str(e))
         except asyncio.CancelledError:
             logger.info("Invalidation listener cancelled")
         except Exception as e:
             logger.error("Invalidation listener error", error=str(e))
 
     async def _process_invalidation(self, invalidation_data: Dict[str, Any]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Process cache invalidation."""
         invalidation_type = invalidation_data.get("type")
 
@@ -485,9 +469,9 @@ class RedisCache:
                 logger.debug("Cache tag invalidated", tag=tag)
 
     async def publish_invalidation(self, invalidation_type: str, target: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Publish cache invalidation message."""
         if not self.enable_pubsub:
             return
@@ -502,9 +486,7 @@ class RedisCache:
             )
 
             await self.redis_client.publish(self.invalidation_channel, message)
-            logger.debug(
-                "Cache invalidation published", type=invalidation_type, target=target
-            )
+            logger.debug("Cache invalidation published", type=invalidation_type, target=target)
 
         except Exception as e:
             logger.error("Failed to publish invalidation", error=str(e))
@@ -526,12 +508,10 @@ class RedisCache:
 class MultiTierCache:
     """Multi-tier cache with L1 (memory) and L2 (Redis) layers."""
 
-    def __init__(
-        self, l1_cache: LRUCache, l2_cache: RedisCache, enable_warming: bool = True
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    def __init__(self, l1_cache: LRUCache, l2_cache: RedisCache, enable_warming: bool = True):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.l1_cache = l1_cache
         self.l2_cache = l2_cache
         self.stats = CacheStats(0, 0, 0, 0.0, 0, 0, 0, 0)
@@ -598,9 +578,9 @@ class MultiTierCache:
         return l1_deleted or l2_deleted
 
     def invalidate_by_tags(self, tags: List[str]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Invalidate cache entries by tags (L1 only)."""
         self.l1_cache.invalidate_by_tags(tags)
 
@@ -618,18 +598,18 @@ class MultiTierCache:
         return l1_deleted or l2_deleted
 
     async def clear(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear all cache entries."""
         self.l1_cache.clear()
         await self.l2_cache.clear_pattern("*")
         logger.info("Multi-tier cache cleared")
 
     async def warm_cache(self, warming_data: List[Dict[str, Any]]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Warm cache with critical data."""
         if not self.enable_warming:
             return
@@ -652,9 +632,9 @@ class MultiTierCache:
         logger.info("Cache warming completed")
 
     async def warm_governance_rules(self, rules: List[Dict[str, Any]]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Warm cache with governance rules."""
         warming_data = []
 
@@ -671,9 +651,9 @@ class MultiTierCache:
         await self.warm_cache(warming_data)
 
     async def warm_user_sessions(self, sessions: List[Dict[str, Any]]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Warm cache with user sessions."""
         warming_data = []
 
@@ -690,9 +670,9 @@ class MultiTierCache:
         await self.warm_cache(warming_data)
 
     def _update_hit_rate(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update cache hit rate."""
         if self.stats.total_requests > 0:
             self.stats.hit_rate = self.stats.cache_hits / self.stats.total_requests
@@ -715,23 +695,21 @@ class MultiTierCache:
         }
 
 
-def cache_decorator(
-    cache: MultiTierCache, ttl: int = 300, tags: Optional[List[str]] = None
-):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+def cache_decorator(cache: MultiTierCache, ttl: int = 300, tags: Optional[List[str]] = None):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Decorator for caching function results."""
 
     def decorator(func: Callable):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             # Generate cache key from function name and arguments
             cache_key = {"function": func.__name__, "args": args, "kwargs": kwargs}
 

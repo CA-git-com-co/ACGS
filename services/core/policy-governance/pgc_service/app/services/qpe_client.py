@@ -6,24 +6,24 @@ Provides gRPC client interface to the Quantum Policy Evaluator service
 for quantum-inspired policy evaluation with superposition states.
 
 Formal Verification Comments:
-// requires: qpe_service_url is valid gRPC endpoint
-// ensures: entanglement_tag verification for all responses
-// ensures: latency_overhead <= 2ms for QPE operations
-// sha256: opa_schrodinger_quantum_superposition_pgc_client_v1.0
+# requires: qpe_service_url is valid gRPC endpoint
+# ensures: entanglement_tag verification for all responses
+# ensures: latency_overhead <= 2ms for QPE operations
+# sha256: opa_schrodinger_quantum_superposition_pgc_client_v1.0
 """
 
 import asyncio
 import logging
 import time
-from typing import Any, Dict, Optional
-
-import grpc
-from grpc import aio as grpc_aio
 
 # Import generated protobuf classes (would be generated from qpe.proto)
 # For now, we'll create mock classes to represent the structure
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, Optional
+
+import grpc
+from grpc import aio as grpc_aio
 
 logger = logging.getLogger(__name__)
 
@@ -388,8 +388,8 @@ class QPEClient:
         Returns:
             True if tag is valid
         """
-        import hmac
         import hashlib
+        import hmac
         
         expected = hmac.new(
             self.constitutional_hash.encode(),
@@ -441,7 +441,7 @@ class MockQPEStub:
         """Mock register implementation."""
         import hashlib
         import hmac
-        
+
         # Generate mock entanglement tag
         tag = hmac.new(
             b"cdd01ef066bc6cf2",
@@ -474,7 +474,7 @@ class MockQPEStub:
         """Mock measure implementation."""
         import hashlib
         import hmac
-        
+
         # Generate mock entanglement tag
         tag = hmac.new(
             b"cdd01ef066bc6cf2",

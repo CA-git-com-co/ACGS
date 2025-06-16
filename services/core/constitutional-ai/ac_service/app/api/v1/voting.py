@@ -45,30 +45,22 @@ class CreateVotingSessionRequest(BaseModel):
         default=ConsensusAlgorithm.SIMPLE_MAJORITY,
         description="Consensus algorithm to use",
     )
-    duration_hours: int = Field(
-        default=72, ge=1, le=168, description="Voting duration in hours"
-    )
+    duration_hours: int = Field(default=72, ge=1, le=168, description="Voting duration in hours")
     eligible_voters: Optional[List[int]] = Field(
         default=None, description="List of eligible voter IDs"
     )
     custom_threshold: Optional[float] = Field(
         default=None, ge=0.0, le=1.0, description="Custom consensus threshold"
     )
-    metadata: Optional[Dict] = Field(
-        default=None, description="Additional session metadata"
-    )
+    metadata: Optional[Dict] = Field(default=None, description="Additional session metadata")
 
 
 class CastVoteRequest(BaseModel):
     """Request model for casting a vote."""
 
     vote: VoteType = Field(..., description="Vote choice")
-    reasoning: Optional[str] = Field(
-        default=None, description="Optional vote reasoning"
-    )
-    signature: Optional[str] = Field(
-        default=None, description="Optional cryptographic signature"
-    )
+    reasoning: Optional[str] = Field(default=None, description="Optional vote reasoning")
+    signature: Optional[str] = Field(default=None, description="Optional cryptographic signature")
 
 
 class VotingSessionResponse(BaseModel):
@@ -127,15 +119,15 @@ class VotingWebSocketManager:
     """Manages WebSocket connections for real-time voting updates."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.active_connections: Dict[str, List[WebSocket]] = {}
 
     async def connect(self, websocket: WebSocket, session_id: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Connect a WebSocket to a voting session."""
         await websocket.accept()
         if session_id not in self.active_connections:
@@ -143,18 +135,18 @@ class VotingWebSocketManager:
         self.active_connections[session_id].append(websocket)
 
     def disconnect(self, websocket: WebSocket, session_id: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Disconnect a WebSocket from a voting session."""
         if session_id in self.active_connections:
             if websocket in self.active_connections[session_id]:
                 self.active_connections[session_id].remove(websocket)
 
     async def broadcast_to_session(self, session_id: str, message: dict):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Broadcast a message to all connections for a session."""
         if session_id in self.active_connections:
             disconnected = []
@@ -212,9 +204,7 @@ async def create_voting_session(
             threshold=session.threshold,
             eligible_voters_count=len(session.eligible_voters),
             current_votes_count=len(session.current_votes),
-            time_remaining_seconds=max(
-                0, (session.end_time - session.start_time).total_seconds()
-            ),
+            time_remaining_seconds=max(0, (session.end_time - session.start_time).total_seconds()),
             metadata=session.metadata,
         )
 
@@ -367,9 +357,7 @@ async def list_voting_sessions(
     status_filter: Optional[VotingStatus] = Query(
         default=None, description="Filter by voting status"
     ),
-    amendment_id: Optional[int] = Query(
-        default=None, description="Filter by amendment ID"
-    ),
+    amendment_id: Optional[int] = Query(default=None, description="Filter by amendment ID"),
     db: AsyncSession = Depends(get_db_session),
 ) -> List[VotingSessionResponse]:
     """

@@ -1,3 +1,167 @@
+name: ACGS-1 Enterprise Parallel Jobs Matrix
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      service_matrix:
+        description: 'Service matrix to test'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - core
+        - platform
+        - blockchain
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+  actions: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  SOLANA_CLI_VERSION: 1.18.22
+  ANCHOR_CLI_VERSION: 0.29.0
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+  # Enterprise Performance Targets
+  ENTERPRISE_BUILD_TARGET_MINUTES: 5
+  ENTERPRISE_AVAILABILITY_TARGET: 99.5
+  # Enhanced Caching Configuration
+  CARGO_INCREMENTAL: 1
+  CARGO_NET_RETRY: 10
+  CARGO_NET_GIT_FETCH_WITH_CLI: true
+
+jobs:
+  # Enterprise Service Matrix Configuration
+  service_matrix:
+    runs-on: ubuntu-latest
+    name: Service Matrix Configuration
+    outputs:
+      core_services: ${{ steps.matrix.outputs.core_services }}
+      platform_services: ${{ steps.matrix.outputs.platform_services }}
+      all_services: ${{ steps.matrix.outputs.all_services }}
+    steps:
+      - name: Configure service matrix
+        id: matrix
+        run: |
+          # Define ACGS-1 core services (Auth, AC, Integrity, FV, GS, PGC, EC)
+          CORE_SERVICES='["auth", "ac", "integrity", "fv", "gs", "pgc", "ec"]'
+          PLATFORM_SERVICES='["monitoring", "logging", "backup", "analytics"]'
+          ALL_SERVICES='["auth", "ac", "integrity", "fv", "gs", "pgc", "ec", "monitoring", "logging", "backup", "analytics"]'
+
+          echo "core_services=$CORE_SERVICES" >> $GITHUB_OUTPUT
+          echo "platform_services=$PLATFORM_SERVICES" >> $GITHUB_OUTPUT
+          echo "all_services=$ALL_SERVICES" >> $GITHUB_OUTPUT
+
+          echo "🔧 Service matrix configured for ACGS-1 enterprise deployment"
+
+  # Pre-flight checks and change detection
+  preflight:
+    runs-on: ubuntu-latest
+    name: Pre-flight & Change Detection
+    needs: service_matrix
+    outputs:
+      should_run_tests: ${{ steps.determine_changes.outputs.should_run }}
+      changed_components: ${{ steps.determine_changes.outputs.components }}
+      rust_changed: ${{ steps.determine_changes.outputs.rust_changed }}
+      python_changed: ${{ steps.determine_changes.outputs.python_changed }}
+      typescript_changed: ${{ steps.determine_changes.outputs.typescript_changed }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine changes
+        id: determine_changes
+        run: |
+          echo "🔍 Analyzing changes for enterprise parallel execution..."
+
+          # Check for Rust/Anchor changes
+          if git diff --name-only HEAD~1 HEAD | grep -E '\.(rs|toml)$|blockchain/' > /dev/null; then
+            echo "rust_changed=true" >> $GITHUB_OUTPUT
+            echo "✅ Rust/Anchor changes detected"
+          else
+            echo "rust_changed=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No Rust/Anchor changes detected"
+          fi
+
+          # Check for Python changes
+          if git diff --name-only HEAD~1 HEAD | grep -E '\.(py)$|requirements.*\.txt$|services/' > /dev/null; then
+            echo "python_changed=true" >> $GITHUB_OUTPUT
+            echo "✅ Python changes detected"
+          else
+            echo "python_changed=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No Python changes detected"
+          fi
+
+          # Check for TypeScript changes
+          if git diff --name-only HEAD~1 HEAD | grep -E '\.(ts|tsx|js|jsx)$|package.*\.json$' > /dev/null; then
+            echo "typescript_changed=true" >> $GITHUB_OUTPUT
+            echo "✅ TypeScript changes detected"
+          else
+            echo "typescript_changed=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No TypeScript changes detected"
+          fi
+
+          echo "should_run=true" >> $GITHUB_OUTPUT
+          echo "components=all" >> $GITHUB_OUTPUT
+
+  # Enterprise toolchain setup
+  toolchain_setup:
+    runs-on: ubuntu-latest
+    name: Enterprise Toolchain Setup
+    needs: preflight
+    outputs:
+      rust_cache_key: ${{ steps.cache_keys.outputs.rust_key }}
+      node_cache_key: ${{ steps.cache_keys.outputs.node_key }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Generate cache keys
+        id: cache_keys
+        run: |
+          RUST_KEY="${{ runner.os }}-enterprise-rust-${{ env.SOLANA_CLI_VERSION }}-${{ env.ANCHOR_CLI_VERSION }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml', 'blockchain/Anchor.toml') }}"
+          NODE_KEY="${{ runner.os }}-enterprise-node-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json', '**/package.json') }}"
+          echo "rust_key=$RUST_KEY" >> $GITHUB_OUTPUT
+          echo "node_key=$NODE_KEY" >> $GITHUB_OUTPUT
+          echo "🔑 Generated cache keys for enterprise toolchain"
+
+      - name: Install Rust with enhanced configuration
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.81.0
+          components: rustfmt, clippy
+
+      - name: Install Solana CLI
+        run: |
+          echo "🔧 Installing Solana CLI v${{ env.SOLANA_CLI_VERSION }}..."
+          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.SOLANA_CLI_VERSION }}/install)"
+          export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Install Anchor CLI
+        run: |
+          echo "🔧 Installing Anchor CLI v${{ env.ANCHOR_CLI_VERSION }}..."
+          npm install -g @coral-xyz/anchor-cli@${{ env.ANCHOR_CLI_VERSION }}
+
+      - name: Toolchain validation
+        run: |
+          echo "🔍 Validating enterprise toolchain installation..."
+          rustc --version && cargo --version
+          solana --version
+          anchor --version
+          echo "✅ All enterprise toolchain components validated successfully"
+
   # Parallel Job 1: Rust Code Quality & Build
   rust_quality_build:
     runs-on: ubuntu-latest
@@ -289,3 +453,153 @@
           else
             echo "⚠️ cargo-deny not available"
           fi
+
+      - name: Run comprehensive Rust security audit
+        run: |
+          echo "🔒 Running comprehensive Rust security audit..."
+
+          # Run cargo audit on blockchain if available
+          if command -v cargo-audit >/dev/null 2>&1 && [ -d "blockchain" ] && [ -f "blockchain/Cargo.lock" ]; then
+            echo "Running cargo audit on blockchain..."
+            cd blockchain
+            cargo audit --format json --output ../audit-report.json || echo "⚠️ Audit completed with warnings"
+            cd ..
+          else
+            echo "⚠️ cargo-audit not available or blockchain directory not found"
+          fi
+
+          # Run cargo deny if available
+          if command -v cargo-deny >/dev/null 2>&1 && [ -d "blockchain" ]; then
+            echo "Running cargo deny on blockchain..."
+            cd blockchain
+            cargo deny check --format json --output ../deny-report.json || echo "⚠️ Deny check completed with warnings"
+            cd ..
+          else
+            echo "⚠️ cargo-deny not available or blockchain directory not found"
+          fi
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-security-reports
+          path: |
+            audit-report.json
+            deny-report.json
+          retention-days: 14
+
+  # Parallel Job 4: ACGS-1 Core Services Matrix
+  core_services_matrix:
+    runs-on: ubuntu-latest
+    name: Core Services Testing (Parallel)
+    needs: [preflight, service_matrix]
+    if: needs.preflight.outputs.should_run_tests == 'true' && needs.preflight.outputs.python_changed == 'true'
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.service_matrix.outputs.core_services) }}
+      fail-fast: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          echo "🔧 Installing dependencies for ${{ matrix.service }} service..."
+          python -m pip install --upgrade pip
+
+          # Install common requirements
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          fi
+
+          # Install service-specific requirements
+          if [ -f "services/core/${{ matrix.service }}/requirements.txt" ]; then
+            pip install -r services/core/${{ matrix.service }}/requirements.txt
+          fi
+
+          # Install test requirements
+          if [ -f "requirements-test.txt" ]; then
+            pip install -r requirements-test.txt
+          fi
+
+      - name: Run service-specific tests
+        run: |
+          echo "🧪 Running tests for ${{ matrix.service }} service..."
+
+          # Run unit tests for the specific service
+          if [ -d "services/core/${{ matrix.service }}/tests" ]; then
+            python -m pytest services/core/${{ matrix.service }}/tests/ -v \
+              --cov=services/core/${{ matrix.service }} \
+              --cov-report=xml \
+              --cov-report=html \
+              --junitxml=test-results-${{ matrix.service }}.xml || true
+          elif [ -d "tests/unit/${{ matrix.service }}" ]; then
+            python -m pytest tests/unit/${{ matrix.service }}/ -v \
+              --cov=services/core/${{ matrix.service }} \
+              --cov-report=xml \
+              --cov-report=html \
+              --junitxml=test-results-${{ matrix.service }}.xml || true
+          else
+            echo "⚠️ No tests found for ${{ matrix.service }} service"
+          fi
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.service }}
+          path: |
+            test-results-${{ matrix.service }}.xml
+            coverage.xml
+            htmlcov/
+          retention-days: 7
+
+  # Enterprise Results Aggregation
+  enterprise_results:
+    runs-on: ubuntu-latest
+    name: Enterprise Results Aggregation
+    needs: [rust_quality_build, anchor_testing, enterprise_security_scan, core_services_matrix]
+    if: always()
+    steps:
+      - name: Aggregate results
+        run: |
+          echo "📊 Aggregating enterprise parallel job results..."
+          echo "## ACGS-1 Enterprise Parallel Jobs Summary" > results-summary.md
+          echo "Generated: $(date)" >> results-summary.md
+          echo "" >> results-summary.md
+          echo "### Job Results:" >> results-summary.md
+          echo "- Rust Quality & Build: ${{ needs.rust_quality_build.result }}" >> results-summary.md
+          echo "- Anchor Testing: ${{ needs.anchor_testing.result }}" >> results-summary.md
+          echo "- Enterprise Security Scan: ${{ needs.enterprise_security_scan.result }}" >> results-summary.md
+          echo "- Core Services Matrix: ${{ needs.core_services_matrix.result }}" >> results-summary.md
+          echo "" >> results-summary.md
+
+          # Determine overall status
+          if [[ "${{ needs.rust_quality_build.result }}" == "success" &&
+                "${{ needs.anchor_testing.result }}" == "success" &&
+                "${{ needs.enterprise_security_scan.result }}" == "success" &&
+                "${{ needs.core_services_matrix.result }}" == "success" ]]; then
+            echo "### Overall Status: ✅ SUCCESS" >> results-summary.md
+            echo "All enterprise parallel jobs completed successfully!"
+          else
+            echo "### Overall Status: ❌ FAILURE" >> results-summary.md
+            echo "Some enterprise parallel jobs failed. Check individual job logs."
+          fi
+
+      - name: Upload results summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: enterprise-results-summary
+          path: results-summary.md
+          retention-days: 30

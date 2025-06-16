@@ -330,8 +330,7 @@ class ConstitutionalDriftDetector:
 
                     # Calculate cosine distance
                     cosine_sim = np.dot(current_embedding, baseline_embedding) / (
-                        np.linalg.norm(current_embedding)
-                        * np.linalg.norm(baseline_embedding)
+                        np.linalg.norm(current_embedding) * np.linalg.norm(baseline_embedding)
                     )
                     cosine_distance = 1 - cosine_sim
 
@@ -441,9 +440,7 @@ class ConstitutionalDriftDetector:
                 baseline, current_principles
             )
 
-            structural_drift = self._calculate_structural_drift(
-                baseline, current_structure
-            )
+            structural_drift = self._calculate_structural_drift(baseline, current_structure)
 
             # Procedural drift (simplified - could be enhanced with actual procedure analysis)
             procedural_drift = min(
@@ -489,8 +486,7 @@ class ConstitutionalDriftDetector:
                 affected_principles=affected_principles,
                 drift_details={
                     "baseline_version": baseline.version,
-                    "principles_added": len(current_principles)
-                    - len(baseline.principles),
+                    "principles_added": len(current_principles) - len(baseline.principles),
                     "principles_modified": len(affected_principles),
                     "detection_time_ms": (time.time() - start_time) * 1000,
                 },
@@ -532,7 +528,9 @@ class ConstitutionalDriftDetector:
         """Get comprehensive drift detection performance metrics."""
         try:
             # Calculate recent accuracy if we have ground truth data
-            recent_accuracy = 0.85  # Mock accuracy - in production would be calculated from validation data
+            recent_accuracy = (
+                0.85  # Mock accuracy - in production would be calculated from validation data
+            )
 
             # Calculate alert frequency
             recent_alerts = [
@@ -545,9 +543,7 @@ class ConstitutionalDriftDetector:
                 "detection_statistics": {
                     "total_measurements": self.detection_stats["total_measurements"],
                     "total_alerts": self.detection_stats["total_alerts"],
-                    "avg_detection_time_ms": self.detection_stats[
-                        "avg_detection_time_ms"
-                    ],
+                    "avg_detection_time_ms": self.detection_stats["avg_detection_time_ms"],
                     "last_check": (
                         self.detection_stats["last_check_timestamp"].isoformat()
                         if self.detection_stats["last_check_timestamp"]

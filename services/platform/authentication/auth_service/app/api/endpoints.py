@@ -23,9 +23,9 @@ SECURE_COOKIE = os.getenv("APP_ENV", "development").lower() == "production"
 # This dependency will be moved to security.py or a similar place
 # For now, defined here to illustrate the change in get_current_user's signature
 # async def get_current_user_from_cookie_placeholder(request: Request):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+# requires: Valid input parameters
+# ensures: Correct function execution
+# sha256: func_hash
 #     # ... (placeholder code) ...
 #     return models.User(id=1, username="cookieuser", email="test@example.com", hashed_password = os.getenv("DATABASE_PASSWORD"), is_active=True, role="user")
 
@@ -48,9 +48,7 @@ async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     user = await crud.get_user_by_username(db, username=form_data.username)
-    if not user or not security.verify_password(
-        form_data.password, user.hashed_password
-    ):
+    if not user or not security.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -154,8 +152,8 @@ async def refresh_access_token(
     user = db_refresh_token.user
     new_access_token_str, _ = security.create_access_token(data={"sub": user.username})
 
-    new_refresh_token_str, new_refresh_jti, new_refresh_expires_at = (
-        security.create_refresh_token(data={"sub": user.username})
+    new_refresh_token_str, new_refresh_jti, new_refresh_expires_at = security.create_refresh_token(
+        data={"sub": user.username}
     )
     crud.create_user_refresh_token(
         db=db,
@@ -216,14 +214,10 @@ async def logout(
     if access_token_from_cookie:
         try:
             payload = security.decode_access_token(access_token_from_cookie)
-            if (
-                payload
-            ):  # Token was valid (not expired, not malformed, not revoked by blacklist)
+            if payload:  # Token was valid (not expired, not malformed, not revoked by blacklist)
                 jti = payload.get("jti")
                 if jti and payload.get("type") == "access":
-                    security.revoke_token(
-                        jti
-                    )  # Add access token JTI to in-memory blacklist
+                    security.revoke_token(jti)  # Add access token JTI to in-memory blacklist
         except Exception as e:  # Catch if decode fails for any reason
             print(f"Error decoding access token during logout: {e}")
 
@@ -238,27 +232,19 @@ async def logout(
         except Exception as e:
             print(f"Could not revoke refresh token during logout: {e}")
 
-    response.delete_cookie(
-        "access_token", path="/", samesite="lax", secure=SECURE_COOKIE
-    )
+    response.delete_cookie("access_token", path="/", samesite="lax", secure=SECURE_COOKIE)
     response.delete_cookie(
         "refresh_token",
         path="/auth/token/refresh",
         samesite="lax",
         secure=SECURE_COOKIE,
     )
-    response.delete_cookie(
-        "csrf_access_token", path="/", samesite="lax", secure=SECURE_COOKIE
-    )
+    response.delete_cookie("csrf_access_token", path="/", samesite="lax", secure=SECURE_COOKIE)
 
-    return {
-        "message": "Successfully logged out. Tokens have been revoked and cookies cleared."
-    }
+    return {"message": "Successfully logged out. Tokens have been revoked and cookies cleared."}
 
 
-@router.post(
-    "/users/", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED
-)
+@router.post("/users/", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")  # Apply rate limit
 async def create_user_endpoint(
     request: Request,  # Add Request for limiter

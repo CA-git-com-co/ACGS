@@ -90,10 +90,7 @@ async def initiate_stakeholder_engagement(
     """
     try:
         # Check permissions (admin or constitutional council member)
-        if not (
-            current_user.role
-            in ["admin", "constitutional_expert", "policy_administrator"]
-        ):
+        if not (current_user.role in ["admin", "constitutional_expert", "policy_administrator"]):
             raise HTTPException(
                 status_code=403,
                 detail="Insufficient permissions to initiate stakeholder engagement",
@@ -194,9 +191,7 @@ async def submit_stakeholder_feedback(
             status=feedback_record.status.value,
             submitted_at=feedback_record.submitted_at.isoformat(),
             reviewed_at=(
-                feedback_record.reviewed_at.isoformat()
-                if feedback_record.reviewed_at
-                else None
+                feedback_record.reviewed_at.isoformat() if feedback_record.reviewed_at else None
             ),
         )
 
@@ -239,17 +234,11 @@ async def get_stakeholder_notifications(
                 amendment_id=notification.amendment_id,
                 channel=notification.channel.value,
                 status=notification.status.value,
-                sent_at=(
-                    notification.sent_at.isoformat() if notification.sent_at else None
-                ),
+                sent_at=(notification.sent_at.isoformat() if notification.sent_at else None),
                 delivered_at=(
-                    notification.delivered_at.isoformat()
-                    if notification.delivered_at
-                    else None
+                    notification.delivered_at.isoformat() if notification.delivered_at else None
                 ),
-                read_at=(
-                    notification.read_at.isoformat() if notification.read_at else None
-                ),
+                read_at=(notification.read_at.isoformat() if notification.read_at else None),
                 content=notification.content,
             )
             notification_responses.append(notification_response)
@@ -270,10 +259,7 @@ async def get_amendment_feedback(
     """Get all feedback for an amendment (admin/council members only)."""
     try:
         # Check permissions
-        if not (
-            current_user.role
-            in ["admin", "constitutional_expert", "policy_administrator"]
-        ):
+        if not (current_user.role in ["admin", "constitutional_expert", "policy_administrator"]):
             raise HTTPException(
                 status_code=403, detail="Insufficient permissions to view all feedback"
             )
@@ -298,9 +284,7 @@ async def get_amendment_feedback(
                 feedback_type=feedback.feedback_type,
                 status=feedback.status.value,
                 submitted_at=feedback.submitted_at.isoformat(),
-                reviewed_at=(
-                    feedback.reviewed_at.isoformat() if feedback.reviewed_at else None
-                ),
+                reviewed_at=(feedback.reviewed_at.isoformat() if feedback.reviewed_at else None),
             )
             feedback_responses.append(feedback_response)
 
@@ -315,9 +299,9 @@ async def get_amendment_feedback(
 
 @router.websocket("/ws/{amendment_id}")
 async def websocket_engagement_updates(websocket: WebSocket, amendment_id: int):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     WebSocket endpoint for real-time stakeholder engagement updates.
 
@@ -335,9 +319,7 @@ async def websocket_engagement_updates(websocket: WebSocket, amendment_id: int):
 
         async for db in get_async_db():
             config = ConstitutionalCouncilConfig()
-            engagement_service = get_stakeholder_engagement_service(
-                db=db, config=config
-            )
+            engagement_service = get_stakeholder_engagement_service(db=db, config=config)
             break
 
         await engagement_service.add_websocket_connection(amendment_id, websocket)

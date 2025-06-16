@@ -29,9 +29,9 @@ from services.core.governance_synthesis.app.core.opa_integration import (
 
 @pytest.fixture
 def mock_opa_config():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Mock OPA configuration for testing."""
     config = MagicMock()
     config.mode = OPAMode.EMBEDDED
@@ -55,9 +55,9 @@ def mock_opa_config():
 
 @pytest.fixture
 def opa_client(mock_opa_config):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """OPA client with mocked configuration."""
     with patch(
         "src.backend.gs_service.app.core.opa_integration.get_opa_config",
@@ -69,17 +69,15 @@ def opa_client(mock_opa_config):
 
 @pytest.fixture
 def sample_policy_decision_request():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Sample policy decision request."""
     return PolicyDecisionRequest(
         input_data={
             "policy_content": "package test\ndefault allow := true",
             "policy_type": "governance_rule",
-            "constitutional_principles": [
-                {"description": "Ensure fairness", "type": "fairness"}
-            ],
+            "constitutional_principles": [{"description": "Ensure fairness", "type": "fairness"}],
             "context": {"target_system": "acgs", "governance_type": "operational"},
         },
         policy_path="acgs/constitutional/compliance_report",
@@ -92,9 +90,9 @@ class TestOPAClientInitialization:
 
     @pytest.mark.asyncio
     async def test_embedded_mode_initialization(self, mock_opa_config):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test OPA client initialization in embedded mode."""
         mock_opa_config.mode = OPAMode.EMBEDDED
 
@@ -106,9 +104,7 @@ class TestOPAClientInitialization:
                 "src.backend.gs_service.app.core.opa_integration.OPA_CLIENT_AVAILABLE",
                 True,
             ):
-                with patch(
-                    "src.backend.gs_service.app.core.opa_integration.OPA"
-                ) as mock_opa:
+                with patch("src.backend.gs_service.app.core.opa_integration.OPA") as mock_opa:
                     mock_opa.return_value = MagicMock()
 
                     client = OPAClient()
@@ -120,9 +116,9 @@ class TestOPAClientInitialization:
 
     @pytest.mark.asyncio
     async def test_server_mode_initialization(self, mock_opa_config):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test OPA client initialization in server mode."""
         mock_opa_config.mode = OPAMode.SERVER
 
@@ -137,9 +133,7 @@ class TestOPAClientInitialization:
                 # Mock health check response
                 mock_response = AsyncMock()
                 mock_response.status = 200
-                mock_session_instance.get.return_value.__aenter__.return_value = (
-                    mock_response
-                )
+                mock_session_instance.get.return_value.__aenter__.return_value = mock_response
 
                 client = OPAClient()
                 await client.initialize()
@@ -150,9 +144,9 @@ class TestOPAClientInitialization:
 
     @pytest.mark.asyncio
     async def test_hybrid_mode_initialization(self, mock_opa_config):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test OPA client initialization in hybrid mode."""
         mock_opa_config.mode = OPAMode.HYBRID
 
@@ -164,9 +158,7 @@ class TestOPAClientInitialization:
                 "src.backend.gs_service.app.core.opa_integration.OPA_CLIENT_AVAILABLE",
                 True,
             ):
-                with patch(
-                    "src.backend.gs_service.app.core.opa_integration.OPA"
-                ) as mock_opa:
+                with patch("src.backend.gs_service.app.core.opa_integration.OPA") as mock_opa:
                     with patch("aiohttp.ClientSession") as mock_session:
                         mock_opa.return_value = MagicMock()
                         mock_session_instance = AsyncMock()
@@ -188,9 +180,9 @@ class TestOPAClientInitialization:
 
     @pytest.mark.asyncio
     async def test_initialization_failure(self, mock_opa_config):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test OPA client initialization failure handling."""
         mock_opa_config.mode = OPAMode.EMBEDDED
 
@@ -214,12 +206,10 @@ class TestPolicyEvaluation:
     """Test cases for policy evaluation."""
 
     @pytest.mark.asyncio
-    async def test_evaluate_policy_embedded_mode(
-        self, opa_client, sample_policy_decision_request
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_evaluate_policy_embedded_mode(self, opa_client, sample_policy_decision_request):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test policy evaluation in embedded mode."""
         opa_client.config.mode = OPAMode.EMBEDDED
         opa_client.opa_client = MagicMock()
@@ -232,12 +222,10 @@ class TestPolicyEvaluation:
         assert response.decision_time_ms >= 0
 
     @pytest.mark.asyncio
-    async def test_evaluate_policy_server_mode(
-        self, opa_client, sample_policy_decision_request
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_evaluate_policy_server_mode(self, opa_client, sample_policy_decision_request):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test policy evaluation in server mode."""
         opa_client.config.mode = OPAMode.SERVER
         opa_client._initialized = True
@@ -265,12 +253,10 @@ class TestPolicyEvaluation:
         assert response.metrics is not None
 
     @pytest.mark.asyncio
-    async def test_evaluate_policy_server_error(
-        self, opa_client, sample_policy_decision_request
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_evaluate_policy_server_error(self, opa_client, sample_policy_decision_request):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test policy evaluation server error handling."""
         opa_client.config.mode = OPAMode.SERVER
         opa_client._initialized = True
@@ -288,12 +274,10 @@ class TestPolicyEvaluation:
             await opa_client.evaluate_policy(sample_policy_decision_request)
 
     @pytest.mark.asyncio
-    async def test_evaluate_policy_with_caching(
-        self, opa_client, sample_policy_decision_request
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_evaluate_policy_with_caching(self, opa_client, sample_policy_decision_request):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test policy evaluation with caching enabled."""
         opa_client.config.mode = OPAMode.EMBEDDED
         opa_client.config.performance.enable_decision_caching = True
@@ -315,9 +299,9 @@ class TestPolicyValidation:
 
     @pytest.mark.asyncio
     async def test_validate_policy_success(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test successful policy validation."""
         opa_client._initialized = True
 
@@ -339,9 +323,9 @@ class TestPolicyValidation:
 
     @pytest.mark.asyncio
     async def test_validate_policy_syntax_error(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test policy validation with syntax errors."""
         opa_client._initialized = True
 
@@ -356,9 +340,9 @@ class TestPolicyValidation:
 
     @pytest.mark.asyncio
     async def test_validate_empty_policy(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test validation of empty policy."""
         opa_client._initialized = True
 
@@ -373,9 +357,9 @@ class TestBatchEvaluation:
 
     @pytest.mark.asyncio
     async def test_batch_evaluate_parallel(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test batch evaluation with parallel execution."""
         opa_client.config.performance.enable_parallel_evaluation = True
         opa_client.config.performance.max_parallel_workers = 2
@@ -384,9 +368,7 @@ class TestBatchEvaluation:
 
         # Create batch request
         requests = [
-            PolicyDecisionRequest(
-                input_data={"test": f"data_{i}"}, policy_path="test/policy"
-            )
+            PolicyDecisionRequest(input_data={"test": f"data_{i}"}, policy_path="test/policy")
             for i in range(5)
         ]
 
@@ -402,9 +384,9 @@ class TestBatchEvaluation:
 
     @pytest.mark.asyncio
     async def test_batch_evaluate_sequential(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test batch evaluation with sequential execution."""
         opa_client.config.performance.enable_parallel_evaluation = False
         opa_client._initialized = True
@@ -412,9 +394,7 @@ class TestBatchEvaluation:
 
         # Create batch request
         requests = [
-            PolicyDecisionRequest(
-                input_data={"test": f"data_{i}"}, policy_path="test/policy"
-            )
+            PolicyDecisionRequest(input_data={"test": f"data_{i}"}, policy_path="test/policy")
             for i in range(3)
         ]
 
@@ -430,9 +410,9 @@ class TestBatchEvaluation:
 
     @pytest.mark.asyncio
     async def test_batch_evaluate_empty(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test batch evaluation with empty request list."""
         opa_client._initialized = True
 
@@ -448,9 +428,9 @@ class TestPerformanceMetrics:
 
     @pytest.mark.asyncio
     async def test_metrics_tracking(self, opa_client, sample_policy_decision_request):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance metrics tracking."""
         opa_client._initialized = True
         opa_client.opa_client = MagicMock()
@@ -466,21 +446,19 @@ class TestPerformanceMetrics:
         assert updated_metrics["max_latency_ms"] >= 0
 
     @pytest.mark.asyncio
-    async def test_latency_threshold_tracking(
-        self, opa_client, sample_policy_decision_request
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_latency_threshold_tracking(self, opa_client, sample_policy_decision_request):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test latency threshold tracking."""
         opa_client._initialized = True
         opa_client.opa_client = MagicMock()
 
         # Mock slow evaluation
         async def slow_evaluate(*args, **kwargs):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             await asyncio.sleep(0.06)  # 60ms delay
             return PolicyDecisionResponse(
                 result={"allowed": True},
@@ -488,9 +466,7 @@ class TestPerformanceMetrics:
                 decision_time_ms=60.0,
             )
 
-        with patch.object(
-            opa_client, "_evaluate_policy_internal", side_effect=slow_evaluate
-        ):
+        with patch.object(opa_client, "_evaluate_policy_internal", side_effect=slow_evaluate):
             response = await opa_client.evaluate_policy(sample_policy_decision_request)
 
             assert (
@@ -507,9 +483,9 @@ class TestHealthChecking:
 
     @pytest.mark.asyncio
     async def test_health_check_success(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test successful health check."""
         # Mock HTTP session
         mock_session = AsyncMock()
@@ -527,9 +503,9 @@ class TestHealthChecking:
 
     @pytest.mark.asyncio
     async def test_health_check_failure(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test failed health check."""
         # Mock HTTP session
         mock_session = AsyncMock()
@@ -546,9 +522,9 @@ class TestHealthChecking:
 
     @pytest.mark.asyncio
     async def test_health_check_exception(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test health check with connection exception."""
         # Mock HTTP session
         mock_session = AsyncMock()
@@ -567,9 +543,9 @@ class TestResourceCleanup:
 
     @pytest.mark.asyncio
     async def test_client_close(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test OPA client resource cleanup."""
         # Mock session and health check task
         mock_session = AsyncMock()
@@ -589,9 +565,9 @@ class TestGlobalOPAClient:
 
     @pytest.mark.asyncio
     async def test_get_opa_client_singleton(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that get_opa_client returns singleton instance."""
         with patch(
             "src.backend.gs_service.app.core.opa_integration.OPAClient"
@@ -608,9 +584,9 @@ class TestGlobalOPAClient:
 
     @pytest.mark.asyncio
     async def test_close_opa_client(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test global OPA client cleanup."""
         with patch(
             "src.backend.gs_service.app.core.opa_integration.OPAClient"
@@ -634,12 +610,10 @@ class TestOPAIntegrationPerformance:
     """Performance tests for OPA integration."""
 
     @pytest.mark.asyncio
-    async def test_policy_evaluation_latency(
-        self, opa_client, sample_policy_decision_request
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_policy_evaluation_latency(self, opa_client, sample_policy_decision_request):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that policy evaluation meets latency requirements."""
         opa_client._initialized = True
         opa_client.opa_client = MagicMock()
@@ -656,9 +630,9 @@ class TestOPAIntegrationPerformance:
 
     @pytest.mark.asyncio
     async def test_batch_evaluation_scaling(self, opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test batch evaluation performance scaling."""
         opa_client._initialized = True
         opa_client.opa_client = MagicMock()
@@ -666,9 +640,7 @@ class TestOPAIntegrationPerformance:
 
         # Create large batch
         requests = [
-            PolicyDecisionRequest(
-                input_data={"test": f"data_{i}"}, policy_path="test/policy"
-            )
+            PolicyDecisionRequest(input_data={"test": f"data_{i}"}, policy_path="test/policy")
             for i in range(50)
         ]
 
@@ -684,6 +656,4 @@ class TestOPAIntegrationPerformance:
         avg_latency_per_request = batch_latency_ms / len(requests)
 
         assert len(responses) == 50
-        assert (
-            avg_latency_per_request < 10
-        )  # Should be very fast with parallel processing
+        assert avg_latency_per_request < 10  # Should be very fast with parallel processing

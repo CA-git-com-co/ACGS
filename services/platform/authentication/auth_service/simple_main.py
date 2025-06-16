@@ -30,9 +30,9 @@ app.add_middleware(
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root(request: Request):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Root GET endpoint. Provides basic service information."""
     logger.info("Root endpoint was called.")
     return {
@@ -52,9 +52,9 @@ async def root(request: Request):
 
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Health check endpoint for service monitoring."""
     return {
         "status": "healthy",
@@ -77,9 +77,9 @@ async def health_check():
 
 @app.get("/auth/enterprise/status")
 async def enterprise_auth_status():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get enterprise authentication status and capabilities."""
     return {
         "enterprise_auth_enabled": True,
@@ -145,9 +145,9 @@ async def enterprise_auth_status():
 # MFA Endpoints
 @app.get("/auth/mfa/status")
 async def mfa_status():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get MFA status and capabilities."""
     return {
         "mfa_enabled": True,
@@ -167,9 +167,9 @@ async def mfa_status():
 
 @app.post("/auth/mfa/setup")
 async def setup_mfa():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Setup MFA for user (demo endpoint)."""
     return {
         "message": "MFA setup initiated",
@@ -183,9 +183,9 @@ async def setup_mfa():
 # OAuth Endpoints
 @app.get("/auth/oauth/providers")
 async def oauth_providers():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get available OAuth providers."""
     return {
         "providers": ["github", "google", "microsoft"],
@@ -206,9 +206,9 @@ async def oauth_providers():
 # API Key Management Endpoints
 @app.get("/auth/api-keys/")
 async def list_api_keys():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """List API keys for user (demo endpoint)."""
     return {
         "api_keys": [
@@ -237,9 +237,9 @@ async def list_api_keys():
 # Security Audit Endpoints
 @app.get("/auth/security/audit/summary")
 async def security_audit_summary():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get security audit summary."""
     return {
         "audit_summary": {
@@ -275,9 +275,9 @@ async def security_audit_summary():
 # Session Management Endpoints
 @app.get("/auth/sessions/status")
 async def session_status():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get session management status."""
     return {
         "session_management_enabled": True,
@@ -301,9 +301,9 @@ async def session_status():
 # Intrusion Detection Endpoints
 @app.get("/auth/security/intrusion/status")
 async def intrusion_detection_status():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get intrusion detection status."""
     return {
         "intrusion_detection_enabled": True,

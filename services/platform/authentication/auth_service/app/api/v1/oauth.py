@@ -43,9 +43,9 @@ class OAuthCallbackResponse(BaseModel):
 
 @router.get("/providers")
 async def get_oauth_providers():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Get list of available OAuth providers.
     """
@@ -90,9 +90,7 @@ async def get_authorization_url(
             severity="info",
         )
 
-        return OAuthAuthorizationResponse(
-            authorization_url=authorization_url, state=state
-        )
+        return OAuthAuthorizationResponse(authorization_url=authorization_url, state=state)
 
     except HTTPException:
         await security_audit.log_event(

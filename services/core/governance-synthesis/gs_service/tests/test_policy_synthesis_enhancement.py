@@ -25,17 +25,17 @@ class TestProactiveErrorPrediction:
 
     @pytest.fixture
     def qec_service(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create QEC service instance for testing."""
         return QECErrorCorrectionService()
 
     @pytest.fixture
     def sample_principles(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create sample principles for testing."""
         principles = []
         for i in range(3):
@@ -53,9 +53,9 @@ class TestProactiveErrorPrediction:
 
     @pytest.mark.asyncio
     async def test_predict_synthesis_errors_basic(self, qec_service, sample_principles):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test basic error prediction functionality."""
         context_data = {
             "high_stakes": True,
@@ -63,9 +63,7 @@ class TestProactiveErrorPrediction:
             "multi_stakeholder": True,
         }
 
-        result = await qec_service.predict_synthesis_errors(
-            sample_principles, context_data
-        )
+        result = await qec_service.predict_synthesis_errors(sample_principles, context_data)
 
         # Verify result structure
         assert "risk_assessment" in result
@@ -95,9 +93,9 @@ class TestProactiveErrorPrediction:
 
     @pytest.mark.asyncio
     async def test_extract_principle_features(self, qec_service, sample_principles):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test principle feature extraction."""
         features = await qec_service._extract_principle_features(sample_principles)
 
@@ -118,9 +116,9 @@ class TestProactiveErrorPrediction:
 
     @pytest.mark.asyncio
     async def test_risk_calculation_methods(self, qec_service):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test individual risk calculation methods."""
         # Sample feature data
         principle_features = [
@@ -149,9 +147,7 @@ class TestProactiveErrorPrediction:
         assert 0.0 <= ambiguity_risk <= 1.0
 
         # Test misalignment risk calculation
-        misalignment_risk = await qec_service._calculate_misalignment_risk(
-            principle_features
-        )
+        misalignment_risk = await qec_service._calculate_misalignment_risk(principle_features)
         assert 0.0 <= misalignment_risk <= 1.0
 
         # Test implementation risk calculation
@@ -162,9 +158,9 @@ class TestProactiveErrorPrediction:
         assert 0.0 <= implementation_risk <= 1.0
 
     def test_recommend_strategy(self, qec_service):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test strategy recommendation logic."""
         # Test low risk
         strategy = qec_service._recommend_strategy(0.2)
@@ -188,9 +184,9 @@ class TestPerformanceOptimizer:
 
     @pytest.fixture
     def performance_optimizer(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create performance optimizer instance for testing."""
         config = {
             "target_synthesis_response_time": 2.0,
@@ -203,9 +199,9 @@ class TestPerformanceOptimizer:
 
     @pytest.mark.asyncio
     async def test_track_synthesis_performance(self, performance_optimizer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test synthesis performance tracking."""
         await performance_optimizer.track_synthesis_performance(
             strategy_used="multi_model_consensus",
@@ -221,9 +217,7 @@ class TestPerformanceOptimizer:
         assert len(performance_optimizer.recent_synthesis_metrics) == 1
         assert "multi_model_consensus" in performance_optimizer.strategy_performance
 
-        strategy_perf = performance_optimizer.strategy_performance[
-            "multi_model_consensus"
-        ]
+        strategy_perf = performance_optimizer.strategy_performance["multi_model_consensus"]
         assert strategy_perf.total_uses == 1
         assert strategy_perf.success_count == 1
         assert strategy_perf.success_rate == 1.0
@@ -232,9 +226,9 @@ class TestPerformanceOptimizer:
 
     @pytest.mark.asyncio
     async def test_strategy_weight_adjustment(self, performance_optimizer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test dynamic strategy weight adjustment."""
         # Add multiple performance records
         strategies = [
@@ -267,9 +261,9 @@ class TestPerformanceOptimizer:
         assert weights["enhanced_validation"] >= weights["standard_synthesis"]
 
     def test_synthesis_performance_summary(self, performance_optimizer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test synthesis performance summary generation."""
         # Add some test data
         test_metrics = [
@@ -296,12 +290,8 @@ class TestPerformanceOptimizer:
         for metrics in test_metrics:
             performance_optimizer.recent_synthesis_metrics.append(metrics)
             performance_optimizer.strategy_performance[metrics.strategy_used] = Mock()
-            performance_optimizer.strategy_performance[
-                metrics.strategy_used
-            ].total_uses = 1
-            performance_optimizer.strategy_performance[
-                metrics.strategy_used
-            ].success_rate = 1.0
+            performance_optimizer.strategy_performance[metrics.strategy_used].total_uses = 1
+            performance_optimizer.strategy_performance[metrics.strategy_used].success_rate = 1.0
             performance_optimizer.strategy_performance[
                 metrics.strategy_used
             ].average_response_time = metrics.response_time_seconds
@@ -332,9 +322,9 @@ class TestIntegration:
 
     @pytest.mark.asyncio
     async def test_end_to_end_synthesis_enhancement(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test complete end-to-end synthesis enhancement workflow."""
         # This would test the full integration from error prediction through
         # strategy selection to performance tracking
@@ -347,9 +337,7 @@ class TestIntegration:
         for i in range(2):
             principle = Mock(spec=Principle)
             principle.id = i + 1
-            principle.content = (
-                f"Complex governance principle {i+1} with regulatory requirements."
-            )
+            principle.content = f"Complex governance principle {i+1} with regulatory requirements."
             principle.description = f"Detailed description for principle {i+1}"
             principle.priority_weight = 0.7
             principle.constraints = {"compliance": True}
@@ -364,9 +352,7 @@ class TestIntegration:
             "time_sensitive": False,
         }
 
-        prediction_result = await qec_service.predict_synthesis_errors(
-            principles, context_data
-        )
+        prediction_result = await qec_service.predict_synthesis_errors(principles, context_data)
 
         # Verify prediction result
         assert prediction_result["risk_assessment"]["overall_risk"] > 0.0
