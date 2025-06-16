@@ -1,0 +1,267 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Constitutional Compliance Workflow Dashboard",
+    "tags": ["acgs", "governance", "constitutional-compliance", "workflow", "validation"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Compliance Workflow Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_governance_workflow_status{workflow_type=\"constitutional_compliance\"}",
+            "legendFormat": "{{stage}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.5},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Blocked"}}, "type": "value"},
+              {"options": {"0.5": {"text": "Processing"}}, "type": "value"},
+              {"options": {"1": {"text": "Active"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Validation → Assessment Transition Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_governance_workflow_operations_total{workflow_type=\"constitutional_compliance\",stage=\"validation_to_assessment\"}[5m])",
+            "legendFormat": "{{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Transitions/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 3,
+        "title": "Assessment → Enforcement Transition Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_governance_workflow_operations_total{workflow_type=\"constitutional_compliance\",stage=\"assessment_to_enforcement\"}[5m])",
+            "legendFormat": "{{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Transitions/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Constitutional Compliance Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_constitutional_compliance_score{workflow_type=\"constitutional_compliance\"}",
+            "legendFormat": "{{policy_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.95},
+                {"color": "green", "value": 1.0}
+              ]
+            },
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "Compliance Validation Accuracy",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(acgs_constitutional_compliance_checks_total{workflow_type=\"constitutional_compliance\",result=\"success\"}[5m]) / rate(acgs_constitutional_compliance_checks_total{workflow_type=\"constitutional_compliance\"}[5m])",
+            "legendFormat": "Validation Accuracy"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.95},
+                {"color": "green", "value": 0.99}
+              ]
+            },
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Constitutional Hash Validations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_constitutional_hash_validations_total{workflow_type=\"constitutional_compliance\"}[5m])",
+            "legendFormat": "{{validation_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Validations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 7,
+        "title": "Compliance Check Duration",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(acgs_compliance_validation_latency_seconds_bucket{workflow_type=\"constitutional_compliance\"}[5m]))",
+            "legendFormat": "95th percentile - {{validation_type}}"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(acgs_compliance_validation_latency_seconds_bucket{workflow_type=\"constitutional_compliance\"}[5m]))",
+            "legendFormat": "50th percentile - {{validation_type}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 1.0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 8,
+        "title": "Active Compliance Validations",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_active_compliance_validations{workflow_type=\"constitutional_compliance\"}",
+            "legendFormat": "Active Validations"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 32}
+      },
+      {
+        "id": 9,
+        "title": "Compliance Assessments",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_compliance_assessments{workflow_type=\"constitutional_compliance\"}",
+            "legendFormat": "Assessments"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 32}
+      },
+      {
+        "id": 10,
+        "title": "Enforcement Actions",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_enforcement_actions{workflow_type=\"constitutional_compliance\"}",
+            "legendFormat": "Enforcement Actions"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 32}
+      },
+      {
+        "id": 11,
+        "title": "Compliance Violations Detected",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_compliance_violations_detected{workflow_type=\"constitutional_compliance\"}",
+            "legendFormat": "Violations"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 5},
+                {"color": "red", "value": 10}
+              ]
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 32}
+      }
+    ]
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Evolutionary Computation Service Dashboard",
+    "tags": ["acgs", "evolutionary-computation", "wina", "optimization", "oversight", "service"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"acgs-evolutionary-computation-service\"}",
+            "legendFormat": "Service Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Down"}}, "type": "value"},
+              {"options": {"1": {"text": "Up"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "WINA Optimization Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_wina_optimization_score{service=\"evolutionary-computation\"}",
+            "legendFormat": "{{optimization_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.7},
+                {"color": "green", "value": 0.9}
+              ]
+            },
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Evolutionary Algorithm Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(acgs_evolutionary_algorithm_duration_seconds_bucket{service=\"evolutionary-computation\"}[5m]))",
+            "legendFormat": "95th percentile - {{algorithm_type}}"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(acgs_evolutionary_algorithm_duration_seconds_bucket{service=\"evolutionary-computation\"}[5m]))",
+            "legendFormat": "50th percentile - {{algorithm_type}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 30.0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "WINA Oversight Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_wina_oversight_operations_total{service=\"evolutionary-computation\"}[5m])",
+            "legendFormat": "{{oversight_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Evolutionary Algorithm Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_evolutionary_algorithm_operations_total{service=\"evolutionary-computation\"}[5m])",
+            "legendFormat": "{{algorithm_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Optimization Convergence Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs_optimization_convergence_rate{service=\"evolutionary-computation\"}",
+            "legendFormat": "{{optimization_type}} convergence"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Convergence Rate",
+            "min": 0,
+            "max": 1
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "Population Diversity Metrics",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs_population_diversity_score{service=\"evolutionary-computation\"}",
+            "legendFormat": "{{population_type}} diversity"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Diversity Score",
+            "min": 0,
+            "max": 1
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Fitness Function Evaluations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_fitness_function_evaluations_total{service=\"evolutionary-computation\"}[5m])",
+            "legendFormat": "{{function_type}} evaluations"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Evaluations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 9,
+        "title": "Genetic Operator Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_genetic_operator_operations_total{service=\"evolutionary-computation\"}[5m])",
+            "legendFormat": "{{operator_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 10,
+        "title": "System Performance Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_system_performance_score{service=\"evolutionary-computation\"}",
+            "legendFormat": "Performance Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.8},
+                {"color": "green", "value": 0.95}
+              ]
+            },
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 4}
+      }
+    ]
+  }
+}

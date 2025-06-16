@@ -1,0 +1,261 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ACGS Executive Dashboard",
+    "tags": ["acgs", "executive", "business", "kpi", "governance"],
+    "timezone": "browser",
+    "refresh": "1m",
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Availability (SLA: 99.9%)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(up{job=~\"acgs-.*-service\"}) * 100",
+            "legendFormat": "Overall Availability"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 95},
+                {"color": "green", "value": 99.9}
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Constitutional Compliance Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(acgs_constitutional_compliance_score) * 100",
+            "legendFormat": "Compliance Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 95},
+                {"color": "green", "value": 99}
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Response Time Performance (Target <500ms)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(acgs_http_request_duration_seconds_bucket[5m])) * 1000",
+            "legendFormat": "95th Percentile"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 500},
+                {"color": "red", "value": 1000}
+              ]
+            },
+            "unit": "ms",
+            "min": 0
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Concurrent Governance Actions",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(acgs_active_governance_actions)",
+            "legendFormat": "Active Actions"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 800},
+                {"color": "red", "value": 1000}
+              ]
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 5,
+        "title": "Governance Workflow Success Rate (24h)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_governance_workflow_operations_total{result=\"success\"}[1h]) / rate(acgs_governance_workflow_operations_total[1h])",
+            "legendFormat": "{{workflow_type}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Success Rate",
+            "min": 0,
+            "max": 1
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Democratic Participation Analytics",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs_democratic_participation_rate",
+            "legendFormat": "{{participation_type}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Participation Rate",
+            "min": 0,
+            "max": 1
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 7,
+        "title": "Policy Creation Pipeline (24h)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "increase(acgs_governance_workflow_operations_total{workflow_type=\"policy_creation\"}[24h])",
+            "legendFormat": "{{stage}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Policies",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Constitutional Governance Effectiveness",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs_governance_effectiveness_score",
+            "legendFormat": "{{effectiveness_metric}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Effectiveness Score",
+            "min": 0,
+            "max": 1
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 9,
+        "title": "Service Health Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=~\"acgs-.*-service\"}",
+            "legendFormat": "{{job}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Down"}}, "type": "value"},
+              {"options": {"1": {"text": "Up"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 10,
+        "title": "Quantumagi Blockchain Integration",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_blockchain_integration_health",
+            "legendFormat": "Blockchain Health"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.8},
+                {"color": "green", "value": 0.95}
+              ]
+            },
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      }
+    ]
+  }
+}
