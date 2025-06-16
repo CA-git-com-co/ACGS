@@ -132,7 +132,7 @@ python-decouple==3.8
 python-dotenv==1.1.0
 python-jose[cryptography]==3.5.0
 python-json-logger==2.0.7
-python-multipart==0.0.20
+python-multipart>=0.0.18
 pyyaml==6.0.2
 redis==5.2.1
 requests>=2.32.4
@@ -155,3 +155,5 @@ websockets==15.0.1
 wrapt==1.17.2
 z3-solver==4.12.2.0
 redis[hiredis]>=5.0.0
+
+python-jose>=3.4.0

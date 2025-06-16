@@ -30,3 +30,7 @@ typing-extensions==4.14.0
 #   sqlalchemy
 cryptography==45.0.4
 # via -r requirements.txt
+
+python-jose>=3.4.0
+
+python-multipart>=0.0.18

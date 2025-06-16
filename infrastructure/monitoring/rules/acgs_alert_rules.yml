@@ -4,17 +4,39 @@
 groups:
   - name: acgs_service_health
     rules:
-      # Service Down Alerts
+      # Service Down Alerts - Updated for Health Exporter
       - alert: ACGSServiceDown
-        expr: up{job=~"acgs-.*-service"} == 0
+        expr: acgs_service_up == 0
         for: 30s
         labels:
           severity: critical
           component: service_health
         annotations:
-          summary: "ACGS service {{ $labels.job }} is down"
-          description: "Service {{ $labels.job }} has been down for more than 30 seconds"
+          summary: "ACGS service {{ $labels.service }} is down"
+          description: "Service {{ $labels.service }} has been down for more than 30 seconds"
           runbook_url: "https://docs.acgs.ai/runbooks/service-down"
+
+      # System Health Degradation
+      - alert: ACGSSystemHealthDegraded
+        expr: acgs_system_health_ratio < 0.875
+        for: 2m
+        labels:
+          severity: warning
+          component: system_health
+        annotations:
+          summary: "ACGS system health degraded"
+          description: "System health ratio is {{ $value | humanizePercentage }}, less than 87.5%"
+
+      # Critical System Health
+      - alert: ACGSSystemHealthCritical
+        expr: acgs_system_health_ratio < 0.75
+        for: 1m
+        labels:
+          severity: critical
+          component: system_health
+        annotations:
+          summary: "ACGS system health critical"
+          description: "System health ratio is {{ $value | humanizePercentage }}, less than 75%"
 
       # High Error Rate Alerts
       - alert: ACGSHighErrorRate
@@ -27,27 +49,38 @@ groups:
           summary: "High error rate detected for {{ $labels.service }}"
           description: "Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
 
-      # Response Time Alerts (Target: <500ms for 95% of requests)
+      # Response Time Alerts (Target: <500ms for health checks)
       - alert: ACGSHighResponseTime
-        expr: histogram_quantile(0.95, rate(acgs_request_duration_seconds_bucket[5m])) > 0.5
+        expr: acgs_service_response_time_seconds > 0.5
         for: 3m
         labels:
           severity: warning
           component: performance
         annotations:
           summary: "High response time for {{ $labels.service }}"
-          description: "95th percentile response time is {{ $value }}s for service {{ $labels.service }}"
+          description: "Health check response time is {{ $value }}s for service {{ $labels.service }}"
 
       # Critical Response Time Alert
       - alert: ACGSCriticalResponseTime
-        expr: histogram_quantile(0.95, rate(acgs_request_duration_seconds_bucket[5m])) > 2.0
+        expr: acgs_service_response_time_seconds > 2.0
         for: 1m
         labels:
           severity: critical
           component: performance
         annotations:
           summary: "Critical response time for {{ $labels.service }}"
-          description: "95th percentile response time is {{ $value }}s for service {{ $labels.service }}"
+          description: "Health check response time is {{ $value }}s for service {{ $labels.service }}"
+
+      # Service Response Time Degradation
+      - alert: ACGSServiceResponseTimeDegraded
+        expr: increase(acgs_service_response_time_seconds[5m]) > 1.0
+        for: 2m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "Service {{ $labels.service }} response time degrading"
+          description: "Response time increased by {{ $value }}s in the last 5 minutes"
 
   - name: acgs_load_balancer
     rules:
