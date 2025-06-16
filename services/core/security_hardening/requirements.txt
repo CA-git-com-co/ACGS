@@ -10,7 +10,7 @@ pydantic==2.5.0
 # Security and validation
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
+python-multipart==0.0.18
 
 # Redis for rate limiting
 redis==5.0.1

@@ -10,5 +10,5 @@ tenacity==8.2.3
 redis==4.5.4
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.18
+python-multipart==0.0.20
 structlog==23.1.0
