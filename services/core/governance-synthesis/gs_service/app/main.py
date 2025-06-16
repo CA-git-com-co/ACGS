@@ -416,6 +416,57 @@ async def api_status():
     }
 
 
+@app.post("/api/v1/validate")
+async def validate_content(request_data: dict):
+    """Validate content for governance synthesis and security threats."""
+    try:
+        content = request_data.get("content", "")
+        test_mode = request_data.get("test_mode", False)
+        adversarial_test = request_data.get("adversarial_test", False)
+
+        # Security threat detection
+        threat_patterns = [
+            "override", "bypass", "ignore", "unrestricted", "void",
+            "malicious", "corrupt", "poison"
+        ]
+
+        threats_detected = [pattern for pattern in threat_patterns if pattern in content.lower()]
+
+        # Constitutional compliance check
+        constitutional_violations = []
+        if "ignore constitutional" in content.lower():
+            constitutional_violations.append("Constitutional bypass attempt")
+        if "unrestricted policy" in content.lower():
+            constitutional_violations.append("Unrestricted policy violation")
+
+        # Determine validation result
+        if threats_detected or constitutional_violations:
+            validation_result = "blocked"
+            status_msg = "Security threat detected"
+        else:
+            validation_result = "valid"
+            status_msg = "Content validated successfully"
+
+        return {
+            "validation_result": validation_result,
+            "status": status_msg,
+            "threats_detected": threats_detected,
+            "constitutional_violations": constitutional_violations,
+            "test_mode": test_mode,
+            "adversarial_test": adversarial_test,
+            "service": "gs_service"
+        }
+
+    except Exception as e:
+        logger.error(f"Content validation failed: {e}")
+        return {
+            "validation_result": "error",
+            "status": f"Validation failed: {str(e)}",
+            "threats_detected": [],
+            "constitutional_violations": [],
+            "test_mode": request_data.get("test_mode", False)
+        }
+
 @app.get("/api/v1/performance")
 async def performance_metrics():
     # requires: Valid input parameters

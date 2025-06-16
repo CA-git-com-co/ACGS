@@ -5,6 +5,7 @@ Implements service-specific caching strategies for policy governance compliance 
 
 import hashlib
 import json
+import os
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -44,7 +45,7 @@ class PGCCacheManager:
             # Configure Redis for PGC service
             config = CacheConfig(
                 redis_url="redis://localhost:6379/2",  # Use DB 2 for PGC
-                redis_password="acgs_redis_production_2024_secure_cache_key",
+                redis_password=os.getenv("REDIS_PASSWORD", ""),
                 max_connections=15,
                 health_check_interval=30,
             )
