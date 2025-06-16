@@ -92,9 +92,9 @@ class ExperimentTracker:
     """Comprehensive experiment tracking service."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.active_experiments: Dict[str, Experiment] = {}
         self.data_path = Path(settings.RESEARCH_DATA_PATH)
         self.artifacts_path = Path(settings.EXPERIMENT_ARTIFACTS_PATH)
@@ -149,9 +149,7 @@ class ExperimentTracker:
         """Start a new experiment run."""
         try:
             # Get experiment
-            result = await db.execute(
-                select(Experiment).where(Experiment.id == experiment_id)
-            )
+            result = await db.execute(select(Experiment).where(Experiment.id == experiment_id))
             experiment = result.scalar_one_or_none()
 
             if not experiment:
@@ -232,9 +230,7 @@ class ExperimentTracker:
             artifact_id = str(uuid.uuid4())
 
             # Save artifact to filesystem
-            artifact_path = (
-                self.artifacts_path / run_id / f"{artifact_name}_{artifact_id}"
-            )
+            artifact_path = self.artifacts_path / run_id / f"{artifact_name}_{artifact_id}"
             artifact_path.parent.mkdir(parents=True, exist_ok=True)
 
             if artifact_type == "json":
@@ -289,9 +285,7 @@ class ExperimentTracker:
         """Complete an experiment run."""
         try:
             # Get experiment run
-            result = await db.execute(
-                select(ExperimentRun).where(ExperimentRun.id == run_id)
-            )
+            result = await db.execute(select(ExperimentRun).where(ExperimentRun.id == run_id))
             experiment_run = result.scalar_one_or_none()
 
             if not experiment_run:

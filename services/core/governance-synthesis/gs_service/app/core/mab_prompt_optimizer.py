@@ -92,23 +92,21 @@ class MABAlgorithmBase(ABC):
     """Abstract base class for Multi-Armed Bandit algorithms."""
 
     def __init__(self, config: MABConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
         self.arm_stats = {}  # arm_id -> statistics
 
     @abstractmethod
-    def select_arm(
-        self, context: Dict[str, Any] = None, available_arms: List[str] = None
-    ) -> str:
+    def select_arm(self, context: Dict[str, Any] = None, available_arms: List[str] = None) -> str:
         """Select the best arm (prompt template) given context."""
 
     @abstractmethod
     def update_reward(self, arm_id: str, reward: float, context: Dict[str, Any] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update arm statistics with new reward."""
 
 
@@ -116,16 +114,14 @@ class ThompsonSamplingMAB(MABAlgorithmBase):
     """Thompson Sampling algorithm for prompt optimization."""
 
     def __init__(self, config: MABConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(config)
         self.alpha = {}  # Success counts + alpha_prior
         self.beta = {}  # Failure counts + beta_prior
 
-    def select_arm(
-        self, context: Dict[str, Any] = None, available_arms: List[str] = None
-    ) -> str:
+    def select_arm(self, context: Dict[str, Any] = None, available_arms: List[str] = None) -> str:
         """Select arm using Thompson Sampling (Beta-Bernoulli)."""
         if not self.alpha:
             return None  # No arms available
@@ -155,9 +151,9 @@ class ThompsonSamplingMAB(MABAlgorithmBase):
         return best_arm
 
     def update_reward(self, arm_id: str, reward: float, context: Dict[str, Any] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update Beta distribution parameters."""
         if arm_id not in self.alpha:
             self.alpha[arm_id] = self.config.alpha_prior
@@ -171,34 +167,28 @@ class ThompsonSamplingMAB(MABAlgorithmBase):
         else:
             self.beta[arm_id] += 1
 
-        logger.debug(
-            f"Updated arm {arm_id}: α={self.alpha[arm_id]}, β={self.beta[arm_id]}"
-        )
+        logger.debug(f"Updated arm {arm_id}: α={self.alpha[arm_id]}, β={self.beta[arm_id]}")
 
 
 class UCBAlgorithm(MABAlgorithmBase):
     """Upper Confidence Bound algorithm for prompt optimization."""
 
     def __init__(self, config: MABConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(config)
         self.counts = {}  # Number of times each arm was selected
         self.rewards = {}  # Sum of rewards for each arm
         self.total_count = 0  # Total number of selections
 
-    def select_arm(
-        self, context: Dict[str, Any] = None, available_arms: List[str] = None
-    ) -> str:
+    def select_arm(self, context: Dict[str, Any] = None, available_arms: List[str] = None) -> str:
         """Select arm using UCB1 algorithm."""
         if not self.counts:
             return None
 
         # Use available arms if provided, otherwise use all arms
-        arms_to_consider = (
-            available_arms if available_arms else list(self.counts.keys())
-        )
+        arms_to_consider = available_arms if available_arms else list(self.counts.keys())
 
         if not arms_to_consider:
             return None
@@ -211,9 +201,7 @@ class UCBAlgorithm(MABAlgorithmBase):
                     ucb_values[arm_id] = float("inf")  # Unplayed arms get priority
                 else:
                     avg_reward = self.rewards[arm_id] / self.counts[arm_id]
-                    confidence_bonus = np.sqrt(
-                        (2 * np.log(self.total_count)) / self.counts[arm_id]
-                    )
+                    confidence_bonus = np.sqrt((2 * np.log(self.total_count)) / self.counts[arm_id])
                     ucb_values[arm_id] = avg_reward + confidence_bonus
 
         if not ucb_values:
@@ -227,9 +215,9 @@ class UCBAlgorithm(MABAlgorithmBase):
         return best_arm
 
     def update_reward(self, arm_id: str, reward: float, context: Dict[str, Any] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update UCB statistics."""
         if arm_id not in self.counts:
             self.counts[arm_id] = 0
@@ -249,9 +237,9 @@ class RewardFunction:
     """Composite reward function for evaluating prompt performance."""
 
     def __init__(self, config: MABConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
 
     async def calculate_reward(
@@ -269,26 +257,21 @@ class RewardFunction:
         )
 
         # 2. Policy quality metrics
-        components.policy_quality = await self._calculate_policy_quality(
-            llm_output, context
-        )
+        components.policy_quality = await self._calculate_policy_quality(llm_output, context)
 
         # 3. Constitutional compliance
-        components.constitutional_compliance = (
-            await self._calculate_constitutional_compliance(llm_output, context)
+        components.constitutional_compliance = await self._calculate_constitutional_compliance(
+            llm_output, context
         )
 
         # 4. Bias mitigation
-        components.bias_mitigation = await self._calculate_bias_mitigation(
-            llm_output, context
-        )
+        components.bias_mitigation = await self._calculate_bias_mitigation(llm_output, context)
 
         # Calculate composite score
         components.composite_score = (
             self.config.semantic_similarity_weight * components.semantic_similarity
             + self.config.policy_quality_weight * components.policy_quality
-            + self.config.constitutional_compliance_weight
-            * components.constitutional_compliance
+            + self.config.constitutional_compliance_weight * components.constitutional_compliance
             + self.config.bias_mitigation_weight * components.bias_mitigation
         )
 
@@ -324,9 +307,7 @@ class RewardFunction:
             response = output.raw_llm_response.lower()
 
             # Coverage: Does it address the main requirements?
-            if any(
-                keyword in response for keyword in ["allow", "deny", "rule", "policy"]
-            ):
+            if any(keyword in response for keyword in ["allow", "deny", "rule", "policy"]):
                 quality_score += 0.3
 
             # Specificity: Is it specific enough?
@@ -334,10 +315,7 @@ class RewardFunction:
                 quality_score += 0.3
 
             # Actionability: Can it be implemented?
-            if any(
-                keyword in response
-                for keyword in ["input", "user", "resource", "action"]
-            ):
+            if any(keyword in response for keyword in ["input", "user", "resource", "action"]):
                 quality_score += 0.4
 
         return min(quality_score, 1.0)
@@ -359,10 +337,7 @@ class RewardFunction:
         if output.raw_llm_response:
             response = output.raw_llm_response.lower()
             # Check for inclusive language
-            if any(
-                term in response
-                for term in ["fair", "equal", "inclusive", "regardless"]
-            ):
+            if any(term in response for term in ["fair", "equal", "inclusive", "regardless"]):
                 return 0.8
         return 0.6
 
@@ -375,9 +350,9 @@ class MABPromptOptimizer:
         config: MABConfig = None,
         reliability_framework: LLMReliabilityFramework = None,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config or MABConfig()
         self.reliability_framework = reliability_framework
         self.prompt_templates = {}  # template_id -> PromptTemplate
@@ -394,14 +369,12 @@ class MABPromptOptimizer:
         self.optimization_history = []
         self.total_optimizations = 0
 
-        logger.info(
-            f"Initialized MAB Prompt Optimizer with {self.config.algorithm.value}"
-        )
+        logger.info(f"Initialized MAB Prompt Optimizer with {self.config.algorithm.value}")
 
     def register_prompt_template(self, template: PromptTemplate):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Register a new prompt template for optimization."""
         self.prompt_templates[template.template_id] = template
 
@@ -413,13 +386,9 @@ class MABPromptOptimizer:
             self.mab_algorithm.counts[template.template_id] = 0
             self.mab_algorithm.rewards[template.template_id] = 0.0
 
-        logger.info(
-            f"Registered prompt template: {template.name} ({template.template_id})"
-        )
+        logger.info(f"Registered prompt template: {template.name} ({template.template_id})")
 
-    async def select_optimal_prompt(
-        self, context: Dict[str, Any]
-    ) -> Optional[PromptTemplate]:
+    async def select_optimal_prompt(self, context: Dict[str, Any]) -> Optional[PromptTemplate]:
         """Select the optimal prompt template for given context."""
         if not self.prompt_templates:
             logger.warning("No prompt templates registered")
@@ -444,9 +413,7 @@ class MABPromptOptimizer:
         self._update_available_arms(available_template_ids)
 
         # Select optimal arm from available templates
-        selected_template_id = self.mab_algorithm.select_arm(
-            context, available_template_ids
-        )
+        selected_template_id = self.mab_algorithm.select_arm(context, available_template_ids)
         if not selected_template_id:
             # Fallback to random selection
             selected_template_id = np.random.choice(available_template_ids)
@@ -462,9 +429,9 @@ class MABPromptOptimizer:
     async def update_performance(
         self, template_id: str, llm_output: LLMStructuredOutput, context: Dict[str, Any]
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update prompt template performance with new results."""
         if template_id not in self.prompt_templates:
             logger.warning(f"Template {template_id} not found for performance update")
@@ -485,9 +452,7 @@ class MABPromptOptimizer:
             template.success_count += 1
 
         # Update MAB algorithm
-        self.mab_algorithm.update_reward(
-            template_id, reward_components.composite_score, context
-        )
+        self.mab_algorithm.update_reward(template_id, reward_components.composite_score, context)
 
         # Record optimization history
         self.optimization_history.append(
@@ -514,9 +479,9 @@ class MABPromptOptimizer:
         )
 
     def _update_available_arms(self, available_template_ids: List[str]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update MAB algorithm with currently available arms."""
         if hasattr(self.mab_algorithm, "alpha"):  # Thompson Sampling
             # Ensure all available templates are in the algorithm
@@ -531,9 +496,9 @@ class MABPromptOptimizer:
                     self.mab_algorithm.rewards[template_id] = 0.0
 
     async def _update_confidence_intervals(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update confidence intervals for all templates."""
         for template in self.prompt_templates.values():
             if template.total_uses >= self.config.min_uses_for_confidence:

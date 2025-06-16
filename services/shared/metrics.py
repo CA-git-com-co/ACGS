@@ -31,9 +31,9 @@ class ACGSMetrics:
     """Centralized metrics collection for ACGS-PGP microservices."""
 
     def __init__(self, service_name: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.service_name = service_name
 
         # Request metrics
@@ -66,9 +66,7 @@ class ACGSMetrics:
         )
 
         # Service health metrics
-        self.service_info = Info(
-            "acgs_service_info", "Service information", ["service", "version"]
-        )
+        self.service_info = Info("acgs_service_info", "Service information", ["service", "version"])
 
         self.active_connections = Gauge(
             "acgs_active_connections", "Number of active connections", ["service"]
@@ -457,12 +455,10 @@ class ACGSMetrics:
         #     'version': '3.0.0'
         # })
 
-    def record_request(
-        self, method: str, endpoint: str, status_code: int, duration: float
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def record_request(self, method: str, endpoint: str, status_code: int, duration: float):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record HTTP request metrics."""
         self.request_count.labels(
             service=self.service_name,
@@ -476,29 +472,29 @@ class ACGSMetrics:
         ).observe(duration)
 
     def record_auth_attempt(self, auth_type: str, status: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record authentication attempt."""
         self.auth_attempts.labels(
             service=self.service_name, auth_type=auth_type, status=status
         ).inc()
 
     def record_db_query(self, operation: str, duration: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record database query metrics."""
-        self.db_query_duration.labels(
-            service=self.service_name, operation=operation
-        ).observe(duration)
+        self.db_query_duration.labels(service=self.service_name, operation=operation).observe(
+            duration
+        )
 
     def record_service_call(
         self, target_service: str, endpoint: str, status_code: int, duration: float
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record inter-service call metrics."""
         self.service_calls.labels(
             source_service=self.service_name,
@@ -514,27 +510,27 @@ class ACGSMetrics:
         ).observe(duration)
 
     def record_error(self, error_type: str, severity: str = "error"):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record error occurrence."""
         self.error_count.labels(
             service=self.service_name, error_type=error_type, severity=severity
         ).inc()
 
     def record_policy_operation(self, operation_type: str, status: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record policy operation."""
         self.policy_operations.labels(
             service=self.service_name, operation_type=operation_type, status=status
         ).inc()
 
     def record_verification_operation(self, verification_type: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record verification operation."""
         self.verification_operations.labels(
             service=self.service_name,
@@ -544,89 +540,87 @@ class ACGSMetrics:
 
     # Task 7: Parallel processing metrics methods
     def record_parallel_task(self, task_type: str, status: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record parallel task execution."""
         self.parallel_tasks_total.labels(
             service=self.service_name, task_type=task_type, status=status
         ).inc()
 
     def record_parallel_batch_duration(self, batch_type: str, duration: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record parallel batch execution duration."""
         self.parallel_batch_duration.labels(
             service=self.service_name, batch_type=batch_type
         ).observe(duration)
 
     def update_parallel_queue_size(self, queue_type: str, size: int):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update parallel task queue size."""
-        self.parallel_task_queue_size.labels(
-            service=self.service_name, queue_type=queue_type
-        ).set(size)
+        self.parallel_task_queue_size.labels(service=self.service_name, queue_type=queue_type).set(
+            size
+        )
 
     def update_parallel_workers(self, worker_type: str, count: int):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update active parallel workers count."""
-        self.parallel_workers_active.labels(
-            service=self.service_name, worker_type=worker_type
-        ).set(count)
+        self.parallel_workers_active.labels(service=self.service_name, worker_type=worker_type).set(
+            count
+        )
 
     def update_websocket_connections(self, connection_type: str, count: int):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update WebSocket connections count."""
         self.websocket_connections.labels(
             service=self.service_name, connection_type=connection_type
         ).set(count)
 
     def record_cache_operation(self, operation: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record cache operation."""
         self.cache_operations.labels(
             service=self.service_name, operation=operation, result=result
         ).inc()
 
     def update_active_connections(self, count: int):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update active connections gauge."""
         self.active_connections.labels(service=self.service_name).set(count)
 
     def update_db_connections(self, pool_status: str, count: int):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update database connections gauge."""
-        self.db_connections.labels(
-            service=self.service_name, pool_status=pool_status
-        ).set(count)
+        self.db_connections.labels(service=self.service_name, pool_status=pool_status).set(count)
 
     # Constitutional monitoring metric methods (Task 19.4)
     def update_constitutional_fidelity_score(self, component: str, score: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update constitutional fidelity score gauge."""
         self.constitutional_fidelity_score.labels(
             service=self.service_name, component=component
         ).set(score)
 
     def record_constitutional_violation(self, violation_type: str, severity: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record a constitutional violation."""
         self.constitutional_violations_total.labels(
             service=self.service_name, violation_type=violation_type, severity=severity
@@ -635,9 +629,9 @@ class ACGSMetrics:
     def record_qec_error_correction(
         self, error_type: str, strategy: str, success: bool, response_time: float
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record QEC error correction metrics."""
         self.qec_error_corrections_total.labels(
             service=self.service_name,
@@ -646,14 +640,14 @@ class ACGSMetrics:
             success=str(success).lower(),
         ).inc()
 
-        self.qec_response_time.labels(
-            service=self.service_name, error_type=error_type
-        ).observe(response_time)
+        self.qec_response_time.labels(service=self.service_name, error_type=error_type).observe(
+            response_time
+        )
 
     def record_violation_escalation(self, escalation_level: str, auto_resolved: bool):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record violation escalation."""
         self.violation_escalations_total.labels(
             service=self.service_name,
@@ -662,60 +656,54 @@ class ACGSMetrics:
         ).inc()
 
     def record_constitutional_council_activity(self, activity_type: str, status: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record Constitutional Council activity."""
         self.constitutional_council_activities.labels(
             service=self.service_name, activity_type=activity_type, status=status
         ).inc()
 
-    def update_llm_reliability_score(
-        self, model: str, operation_type: str, score: float
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def update_llm_reliability_score(self, model: str, operation_type: str, score: float):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update LLM reliability score."""
         self.llm_reliability_score.labels(
             service=self.service_name, model=model, operation_type=operation_type
         ).set(score)
 
     def update_monitoring_health_status(self, component: str, healthy: bool):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update monitoring system health status."""
-        self.monitoring_health_status.labels(
-            service=self.service_name, component=component
-        ).set(1.0 if healthy else 0.0)
+        self.monitoring_health_status.labels(service=self.service_name, component=component).set(
+            1.0 if healthy else 0.0
+        )
 
-    def record_llm_response_time(
-        self, model_name: str, request_type: str, duration: float
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def record_llm_response_time(self, model_name: str, request_type: str, duration: float):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record LLM response time."""
         self.llm_response_time.labels(
             service=self.service_name, model_name=model_name, request_type=request_type
         ).observe(duration)
 
     def record_llm_error(self, model_name: str, error_type: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record LLM error."""
         self.llm_error_rate.labels(
             service=self.service_name, model_name=model_name, error_type=error_type
         ).inc()
 
-    def set_llm_output_quality_score(
-        self, model_name: str, quality_metric: str, score: float
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def set_llm_output_quality_score(self, model_name: str, quality_metric: str, score: float):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set LLM output quality score."""
         self.llm_output_quality_score.labels(
             service=self.service_name,
@@ -724,27 +712,27 @@ class ACGSMetrics:
         ).set(score)
 
     def set_llm_bias_score(self, model_name: str, bias_type: str, score: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set LLM bias score."""
         self.llm_bias_score.labels(
             service=self.service_name, model_name=model_name, bias_type=bias_type
         ).set(score)
 
     def record_llm_fallback(self, fallback_reason: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record LLM fallback."""
         self.llm_fallback_count.labels(
             service=self.service_name, fallback_reason=fallback_reason
         ).inc()
 
     def record_llm_human_escalation(self, escalation_reason: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record LLM human escalation."""
         self.llm_human_escalation_count.labels(
             service=self.service_name, escalation_reason=escalation_reason
@@ -752,38 +740,36 @@ class ACGSMetrics:
 
     # Phase A3 Constitutional Governance Methods
     def record_constitutional_compliance_check(self, check_type: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record constitutional compliance check."""
         self.constitutional_compliance_checks.labels(
             service=self.service_name, check_type=check_type, result=result
         ).inc()
 
     def set_constitutional_compliance_score(self, policy_type: str, score: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set constitutional compliance score."""
         self.constitutional_compliance_score.labels(
             service=self.service_name, policy_type=policy_type
         ).set(score)
 
     def record_constitutional_hash_validation(self, validation_type: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record constitutional hash validation."""
         self.constitutional_hash_validations.labels(
             service=self.service_name, validation_type=validation_type, result=result
         ).inc()
 
-    def record_governance_workflow_operation(
-        self, workflow_type: str, stage: str, result: str
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def record_governance_workflow_operation(self, workflow_type: str, stage: str, result: str):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record governance workflow operation."""
         self.governance_workflow_operations.labels(
             service=self.service_name,
@@ -792,30 +778,28 @@ class ACGSMetrics:
             result=result,
         ).inc()
 
-    def record_governance_workflow_duration(
-        self, workflow_type: str, stage: str, duration: float
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def record_governance_workflow_duration(self, workflow_type: str, stage: str, duration: float):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record governance workflow duration."""
         self.governance_workflow_duration.labels(
             service=self.service_name, workflow_type=workflow_type, stage=stage
         ).observe(duration)
 
     def record_policy_creation_operation(self, policy_type: str, status: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record policy creation operation."""
         self.policy_creation_rate.labels(
             service=self.service_name, policy_type=policy_type, status=status
         ).inc()
 
     def record_voting_operation(self, vote_type: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record voting operation."""
         self.voting_operations.labels(
             service=self.service_name, vote_type=vote_type, result=result
@@ -823,27 +807,27 @@ class ACGSMetrics:
 
     # Authentication Service Methods
     def record_auth_session_duration(self, session_type: str, duration: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record authentication session duration."""
         self.auth_session_duration.labels(
             service=self.service_name, session_type=session_type
         ).observe(duration)
 
     def record_mfa_operation(self, mfa_type: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record MFA operation."""
         self.mfa_operations.labels(
             service=self.service_name, mfa_type=mfa_type, result=result
         ).inc()
 
     def record_api_key_operation(self, operation_type: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record API key operation."""
         self.api_key_operations.labels(
             service=self.service_name, operation_type=operation_type, result=result
@@ -853,20 +837,18 @@ class ACGSMetrics:
     def record_constitutional_ai_processing_time(
         self, ai_operation: str, complexity: str, duration: float
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record constitutional AI processing time."""
         self.constitutional_ai_processing_time.labels(
             service=self.service_name, ai_operation=ai_operation, complexity=complexity
         ).observe(duration)
 
-    def record_compliance_validation_latency(
-        self, validation_type: str, duration: float
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def record_compliance_validation_latency(self, validation_type: str, duration: float):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record compliance validation latency."""
         self.compliance_validation_latency.labels(
             service=self.service_name, validation_type=validation_type
@@ -874,9 +856,9 @@ class ACGSMetrics:
 
     # Formal Verification Service Methods
     def record_z3_solver_operation(self, operation_type: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record Z3 solver operation."""
         self.z3_solver_operations.labels(
             service=self.service_name, operation_type=operation_type, result=result
@@ -885,9 +867,9 @@ class ACGSMetrics:
     def record_formal_verification_duration(
         self, verification_type: str, complexity: str, duration: float
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record formal verification duration."""
         self.formal_verification_duration.labels(
             service=self.service_name,
@@ -897,9 +879,9 @@ class ACGSMetrics:
 
     # Governance Synthesis Service Methods
     def record_llm_token_usage(self, model_name: str, operation_type: str, tokens: int):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record LLM token usage."""
         self.llm_token_usage.labels(
             service=self.service_name,
@@ -907,12 +889,10 @@ class ACGSMetrics:
             operation_type=operation_type,
         ).inc(tokens)
 
-    def record_policy_synthesis_operation(
-        self, synthesis_type: str, risk_level: str, result: str
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def record_policy_synthesis_operation(self, synthesis_type: str, risk_level: str, result: str):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record policy synthesis operation."""
         self.policy_synthesis_operations.labels(
             service=self.service_name,
@@ -924,9 +904,9 @@ class ACGSMetrics:
     def record_multi_model_consensus_operation(
         self, consensus_type: str, model_count: str, result: str
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record multi-model consensus operation."""
         self.multi_model_consensus_operations.labels(
             service=self.service_name,
@@ -937,20 +917,18 @@ class ACGSMetrics:
 
     # Policy Governance Control Service Methods
     def record_pgc_validation_latency(self, validation_type: str, duration: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record PGC validation latency."""
         self.pgc_validation_latency.labels(
             service=self.service_name, validation_type=validation_type
         ).observe(duration)
 
-    def record_policy_enforcement_action(
-        self, action_type: str, policy_type: str, result: str
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def record_policy_enforcement_action(self, action_type: str, policy_type: str, result: str):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record policy enforcement action."""
         self.policy_enforcement_actions.labels(
             service=self.service_name,
@@ -961,9 +939,9 @@ class ACGSMetrics:
 
     # Evolutionary Computation Service Methods
     def set_wina_optimization_score(self, optimization_type: str, score: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set WINA optimization score."""
         self.wina_optimization_score.labels(
             service=self.service_name, optimization_type=optimization_type
@@ -972,9 +950,9 @@ class ACGSMetrics:
     def record_evolutionary_computation_iteration(
         self, algorithm_type: str, convergence_status: str
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record evolutionary computation iteration."""
         self.evolutionary_computation_iterations.labels(
             service=self.service_name,
@@ -983,12 +961,10 @@ class ACGSMetrics:
         ).inc()
 
     # Integrity Service Methods
-    def record_cryptographic_operation(
-        self, operation_type: str, algorithm: str, result: str
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def record_cryptographic_operation(self, operation_type: str, algorithm: str, result: str):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record cryptographic operation."""
         self.cryptographic_operations.labels(
             service=self.service_name,
@@ -998,9 +974,9 @@ class ACGSMetrics:
         ).inc()
 
     def record_audit_trail_operation(self, operation_type: str, integrity_status: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record audit trail operation."""
         self.audit_trail_operations.labels(
             service=self.service_name,
@@ -1010,20 +986,18 @@ class ACGSMetrics:
 
     # Infrastructure Integration Methods
     def set_redis_connection_pool_usage(self, pool_status: str, usage: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set Redis connection pool usage."""
         self.redis_connection_pool_usage.labels(
             service=self.service_name, pool_status=pool_status
         ).set(usage)
 
-    def record_postgresql_query_performance(
-        self, query_type: str, table: str, duration: float
-    ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    def record_postgresql_query_performance(self, query_type: str, table: str, duration: float):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record PostgreSQL query performance."""
         self.postgresql_query_performance.labels(
             service=self.service_name, query_type=query_type, table=table
@@ -1031,31 +1005,31 @@ class ACGSMetrics:
 
     # Quantumagi Blockchain Integration Methods
     def record_solana_transaction_operation(self, transaction_type: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record Solana transaction operation."""
         self.solana_transaction_operations.labels(
             service=self.service_name, transaction_type=transaction_type, result=result
         ).inc()
 
     def record_quantumagi_program_call(self, program_method: str, result: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record Quantumagi program call."""
         self.quantumagi_program_calls.labels(
             service=self.service_name, program_method=program_method, result=result
         ).inc()
 
     def set_blockchain_sync_status(self, network: str, synced: bool):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set blockchain synchronization status."""
-        self.blockchain_sync_status.labels(
-            service=self.service_name, network=network
-        ).set(1.0 if synced else 0.0)
+        self.blockchain_sync_status.labels(service=self.service_name, network=network).set(
+            1.0 if synced else 0.0
+        )
 
 
 def get_metrics(service_name: str) -> ACGSMetrics:
@@ -1073,15 +1047,15 @@ def get_metrics(service_name: str) -> ACGSMetrics:
                 # Return a dummy metrics object that doesn't register new metrics
                 class DummyMetrics:
                     def __init__(self, service_name):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                        # requires: Valid input parameters
+                        # ensures: Correct function execution
+                        # sha256: func_hash
                         self.service_name = service_name
 
                     def __getattr__(self, name):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                        # requires: Valid input parameters
+                        # ensures: Correct function execution
+                        # sha256: func_hash
                         # Return a no-op function for any metric method
                         return lambda *args, **kwargs: None
 
@@ -1098,9 +1072,9 @@ def metrics_middleware(service_name: str):
     """FastAPI middleware for automatic metrics collection."""
 
     async def middleware(request: Request, call_next):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         start_time = time.time()
         metrics = get_metrics(service_name)
 
@@ -1147,14 +1121,12 @@ def create_metrics_endpoint():
     """Create /metrics endpoint for Prometheus scraping."""
 
     async def metrics_endpoint():
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Prometheus metrics endpoint."""
         # Use the default registry which should have all metrics
-        return PlainTextResponse(
-            generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST
-        )
+        return PlainTextResponse(generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
 
     return metrics_endpoint
 
@@ -1166,14 +1138,14 @@ def database_metrics_decorator(operation: str):
     """Decorator for database operations to collect metrics."""
 
     def decorator(func):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         @wraps(func)
         async def wrapper(*args, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             start_time = time.time()
             service_name = getattr(wrapper, "_service_name", "unknown")
             metrics = get_metrics(service_name)
@@ -1201,14 +1173,14 @@ def service_call_decorator(target_service: str, endpoint: str):
     """Decorator for inter-service calls to collect metrics."""
 
     def decorator(func):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         @wraps(func)
         async def wrapper(*args, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             start_time = time.time()
             service_name = getattr(wrapper, "_service_name", "unknown")
             metrics = get_metrics(service_name)

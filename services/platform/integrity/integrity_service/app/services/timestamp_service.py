@@ -19,12 +19,10 @@ class RFC3161TimestampService:
     RFC 3161 Timestamp Authority (TSA) client implementation
     """
 
-    def __init__(
-        self, tsa_url: str = "http://timestamp.digicert.com", timeout: int = 30
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    def __init__(self, tsa_url: str = "http://timestamp.digicert.com", timeout: int = 30):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize timestamp service
 
@@ -36,9 +34,7 @@ class RFC3161TimestampService:
         self.timeout = timeout
         self.hash_algorithm = "SHA3-256"
 
-    def create_timestamp_request(
-        self, message_hash: bytes, nonce: Optional[int] = None
-    ) -> bytes:
+    def create_timestamp_request(self, message_hash: bytes, nonce: Optional[int] = None) -> bytes:
         """
         Create RFC 3161 timestamp request (TSRequest)
 
@@ -123,9 +119,7 @@ class RFC3161TimestampService:
             logger.error(f"Unexpected error in timestamp request: {e}")
             return None
 
-    def verify_timestamp_token(
-        self, timestamp_token: bytes, message_hash: bytes
-    ) -> bool:
+    def verify_timestamp_token(self, timestamp_token: bytes, message_hash: bytes) -> bool:
         """
         Verify RFC 3161 timestamp token
 
@@ -183,9 +177,9 @@ class MockTimestampService(RFC3161TimestampService):
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(tsa_url="mock://localhost")
 
     def send_timestamp_request(self, message_hash: bytes) -> Optional[Dict[str, Any]]:
@@ -215,9 +209,7 @@ class MockTimestampService(RFC3161TimestampService):
             logger.error(f"Mock timestamp error: {e}")
             return None
 
-    def verify_timestamp_token(
-        self, timestamp_token: bytes, message_hash: bytes
-    ) -> bool:
+    def verify_timestamp_token(self, timestamp_token: bytes, message_hash: bytes) -> bool:
         """
         Mock timestamp verification
         """
@@ -234,9 +226,9 @@ class TimestampManager:
     """
 
     def __init__(self, use_mock: bool = True):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize timestamp manager
 
@@ -272,9 +264,7 @@ class TimestampManager:
 
         return result
 
-    def timestamp_audit_log(
-        self, log_entry: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+    def timestamp_audit_log(self, log_entry: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         Create timestamp for audit log entry
 
@@ -328,9 +318,7 @@ class TimestampManager:
         message_hash = hashlib.sha3_256(original_data.encode("utf-8")).digest()
 
         # Verify timestamp
-        return self.timestamp_service.verify_timestamp_token(
-            timestamp_token, message_hash
-        )
+        return self.timestamp_service.verify_timestamp_token(timestamp_token, message_hash)
 
 
 # Global timestamp manager instance

@@ -29,9 +29,9 @@ class TestHITLSamplingConfig:
     """Test suite for HITL sampling configuration."""
 
     def test_default_config(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test default configuration values."""
         config = HITLSamplingConfig()
 
@@ -47,9 +47,9 @@ class TestHITLSamplingConfig:
         assert abs(total_weight - 1.0) < 0.01
 
     def test_custom_config(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test custom configuration values."""
         config = HITLSamplingConfig(
             uncertainty_threshold=0.8, confidence_threshold=0.7, learning_enabled=False
@@ -65,25 +65,25 @@ class TestUncertaintyAssessment:
 
     @pytest.fixture
     def mock_db(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create mock database session."""
         return AsyncMock(spec=AsyncSession)
 
     @pytest.fixture
     def hitl_sampler(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create HITL sampler instance."""
         return HumanInTheLoopSampler()
 
     @pytest.fixture
     def sample_decision_context(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create sample decision context."""
         return {
             "decision_id": "test_decision_001",
@@ -100,24 +100,20 @@ class TestUncertaintyAssessment:
     async def test_basic_uncertainty_assessment(
         self, hitl_sampler, mock_db, sample_decision_context
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test basic uncertainty assessment functionality."""
         # Mock principle retrieval
         with patch.object(hitl_sampler, "_get_principles") as mock_get_principles:
             mock_principles = [
-                Mock(
-                    id=1, description="Clear privacy principle with detailed guidelines"
-                ),
+                Mock(id=1, description="Clear privacy principle with detailed guidelines"),
                 Mock(id=2, description="Security principle"),
             ]
             mock_get_principles.return_value = mock_principles
 
             # Mock conflict detection
-            with patch.object(
-                hitl_sampler.conflict_detector, "detect_conflicts"
-            ) as mock_detect:
+            with patch.object(hitl_sampler.conflict_detector, "detect_conflicts") as mock_detect:
                 mock_detect.return_value = Mock(conflicts_detected=[])
 
                 assessment = await hitl_sampler.assess_uncertainty(
@@ -136,9 +132,9 @@ class TestUncertaintyAssessment:
 
     @pytest.mark.asyncio
     async def test_high_uncertainty_triggers_oversight(self, hitl_sampler, mock_db):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that high uncertainty triggers human oversight."""
         high_uncertainty_context = {
             "decision_id": "high_uncertainty_test",
@@ -161,17 +157,14 @@ class TestUncertaintyAssessment:
             )
 
             assert assessment.requires_human_oversight is True
-            assert (
-                assessment.overall_uncertainty
-                > hitl_sampler.config.uncertainty_threshold
-            )
+            assert assessment.overall_uncertainty > hitl_sampler.config.uncertainty_threshold
             assert SamplingTrigger.SAFETY_CRITICAL in assessment.triggers_activated
 
     @pytest.mark.asyncio
     async def test_low_uncertainty_no_oversight(self, hitl_sampler, mock_db):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that low uncertainty doesn't trigger oversight."""
         low_uncertainty_context = {
             "decision_id": "low_uncertainty_test",
@@ -196,9 +189,7 @@ class TestUncertaintyAssessment:
             ]
             mock_get_principles.return_value = mock_principles
 
-            with patch.object(
-                hitl_sampler.conflict_detector, "detect_conflicts"
-            ) as mock_detect:
+            with patch.object(hitl_sampler.conflict_detector, "detect_conflicts") as mock_detect:
                 mock_detect.return_value = Mock(conflicts_detected=[])
 
                 assessment = await hitl_sampler.assess_uncertainty(
@@ -209,35 +200,26 @@ class TestUncertaintyAssessment:
                 )
 
                 assert assessment.requires_human_oversight is False
-                assert (
-                    assessment.overall_uncertainty
-                    < hitl_sampler.config.uncertainty_threshold
-                )
+                assert assessment.overall_uncertainty < hitl_sampler.config.uncertainty_threshold
 
     @pytest.mark.asyncio
     async def test_dimensional_uncertainty_calculation(
         self, hitl_sampler, mock_db, sample_decision_context
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test dimensional uncertainty calculation."""
         with patch.object(hitl_sampler, "_get_principles") as mock_get_principles:
-            mock_get_principles.return_value = [
-                Mock(id=1, description="Test principle")
-            ]
+            mock_get_principles.return_value = [Mock(id=1, description="Test principle")]
 
-            with patch.object(
-                hitl_sampler.conflict_detector, "detect_conflicts"
-            ) as mock_detect:
+            with patch.object(hitl_sampler.conflict_detector, "detect_conflicts") as mock_detect:
                 mock_detect.return_value = Mock(conflicts_detected=[])
 
-                dimensional_uncertainties = (
-                    await hitl_sampler._calculate_dimensional_uncertainties(
-                        db=mock_db,
-                        decision_context=sample_decision_context,
-                        principle_ids=[1],
-                    )
+                dimensional_uncertainties = await hitl_sampler._calculate_dimensional_uncertainties(
+                    db=mock_db,
+                    decision_context=sample_decision_context,
+                    principle_ids=[1],
                 )
 
                 # Check all dimensions are present
@@ -260,26 +242,26 @@ class TestAdaptiveLearning:
 
     @pytest.fixture
     def hitl_sampler(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create HITL sampler with learning enabled."""
         config = HITLSamplingConfig(learning_enabled=True, min_feedback_samples=3)
         return HumanInTheLoopSampler(config)
 
     @pytest.fixture
     def mock_db(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create mock database session."""
         return AsyncMock(spec=AsyncSession)
 
     @pytest.mark.asyncio
     async def test_human_feedback_processing(self, hitl_sampler, mock_db):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test human feedback processing."""
         assessment_id = "test_assessment_001"
         human_decision = {
@@ -302,9 +284,9 @@ class TestAdaptiveLearning:
 
     @pytest.mark.asyncio
     async def test_adaptive_threshold_adjustment(self, hitl_sampler, mock_db):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test adaptive threshold adjustment based on feedback."""
         initial_uncertainty_threshold = hitl_sampler.config.uncertainty_threshold
         initial_confidence_threshold = hitl_sampler.config.confidence_threshold
@@ -322,15 +304,13 @@ class TestAdaptiveLearning:
             )
 
         # Check that thresholds were adjusted to be more conservative
-        assert (
-            hitl_sampler.config.uncertainty_threshold <= initial_uncertainty_threshold
-        )
+        assert hitl_sampler.config.uncertainty_threshold <= initial_uncertainty_threshold
         assert hitl_sampler.config.confidence_threshold >= initial_confidence_threshold
 
     def test_performance_metrics_calculation(self, hitl_sampler):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance metrics calculation."""
         # Add some mock learning history
         hitl_sampler.learning_history = [
@@ -374,25 +354,25 @@ class TestSamplingTriggers:
 
     @pytest.fixture
     def hitl_sampler(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create HITL sampler instance."""
         return HumanInTheLoopSampler()
 
     @pytest.fixture
     def mock_db(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create mock database session."""
         return AsyncMock(spec=AsyncSession)
 
     @pytest.mark.asyncio
     async def test_safety_critical_trigger(self, hitl_sampler, mock_db):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test safety critical trigger activation."""
         decision_context = {"safety_critical": True}
         dimensional_uncertainties = {dim: 0.5 for dim in UncertaintyDimension}
@@ -409,9 +389,9 @@ class TestSamplingTriggers:
 
     @pytest.mark.asyncio
     async def test_low_confidence_trigger(self, hitl_sampler, mock_db):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test low confidence trigger activation."""
         decision_context = {}
         dimensional_uncertainties = {dim: 0.5 for dim in UncertaintyDimension}
@@ -428,18 +408,14 @@ class TestSamplingTriggers:
 
     @pytest.mark.asyncio
     async def test_stakeholder_conflict_trigger(self, hitl_sampler, mock_db):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test stakeholder conflict trigger activation."""
         decision_context = {"stakeholder_conflicts": True}
         dimensional_uncertainties = {
             UncertaintyDimension.STAKEHOLDER: 0.8,  # High stakeholder uncertainty
-            **{
-                dim: 0.5
-                for dim in UncertaintyDimension
-                if dim != UncertaintyDimension.STAKEHOLDER
-            },
+            **{dim: 0.5 for dim in UncertaintyDimension if dim != UncertaintyDimension.STAKEHOLDER},
         }
 
         triggers = await hitl_sampler._identify_sampling_triggers(
@@ -454,18 +430,14 @@ class TestSamplingTriggers:
 
     @pytest.mark.asyncio
     async def test_novel_scenario_trigger(self, hitl_sampler, mock_db):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test novel scenario trigger activation."""
         decision_context = {"novel_scenario": True}
         dimensional_uncertainties = {
             UncertaintyDimension.PRECEDENT: 0.8,  # High precedent uncertainty
-            **{
-                dim: 0.5
-                for dim in UncertaintyDimension
-                if dim != UncertaintyDimension.PRECEDENT
-            },
+            **{dim: 0.5 for dim in UncertaintyDimension if dim != UncertaintyDimension.PRECEDENT},
         }
 
         triggers = await hitl_sampler._identify_sampling_triggers(
@@ -484,17 +456,17 @@ class TestOversightLevelRecommendation:
 
     @pytest.fixture
     def hitl_sampler(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create HITL sampler instance."""
         return HumanInTheLoopSampler()
 
     @pytest.mark.asyncio
     async def test_safety_critical_requires_constitutional_council(self, hitl_sampler):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that safety critical decisions require Constitutional Council."""
         triggers = [SamplingTrigger.SAFETY_CRITICAL]
 
@@ -506,9 +478,9 @@ class TestOversightLevelRecommendation:
 
     @pytest.mark.asyncio
     async def test_constitutional_ambiguity_requires_council(self, hitl_sampler):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that constitutional ambiguity requires Constitutional Council."""
         triggers = [SamplingTrigger.CONSTITUTIONAL_AMBIGUITY]
 
@@ -520,9 +492,9 @@ class TestOversightLevelRecommendation:
 
     @pytest.mark.asyncio
     async def test_low_confidence_requires_technical_review(self, hitl_sampler):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that low confidence requires technical review."""
         triggers = [SamplingTrigger.LOW_CONFIDENCE]
 

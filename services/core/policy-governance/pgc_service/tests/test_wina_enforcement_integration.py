@@ -78,16 +78,16 @@ except ImportError:
 
     class WINAEnforcementOptimizer:
         def __init__(self, enable_wina=True):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             self.enable_wina = enable_wina
             self.opa_client = None
 
         async def optimize_enforcement(self, context):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return WINAEnforcementResult(
                 decision="permit",
                 reason="Mock enforcement result",
@@ -111,9 +111,9 @@ except ImportError:
             )
 
         def get_performance_summary(self):
-        # requires: Valid input parameters
-        # ensures: Correct function execution
-        # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return {
                 "total_enforcements": 100,
                 "average_enforcement_time_ms": 18.5,
@@ -268,9 +268,7 @@ class TestWINAEnforcementIntegration:
             assert len(data["matching_rules"]) == 1
 
     @pytest.mark.asyncio
-    async def test_wina_enforcement_endpoint_fallback(
-        self, client, sample_policy_request
-    ):
+    async def test_wina_enforcement_endpoint_fallback(self, client, sample_policy_request):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -283,9 +281,7 @@ class TestWINAEnforcementIntegration:
             patch(
                 "src.backend.pgc_service.app.api.v1.enforcement.policy_manager"
             ) as mock_policy_manager,
-            patch(
-                "src.backend.pgc_service.app.api.v1.enforcement.datalog_engine"
-            ) as mock_datalog,
+            patch("src.backend.pgc_service.app.api.v1.enforcement.datalog_engine") as mock_datalog,
             patch(
                 "src.backend.pgc_service.app.core.auth.require_policy_evaluation_triggerer"
             ) as mock_auth,
@@ -294,9 +290,7 @@ class TestWINAEnforcementIntegration:
             # Setup mocks to trigger fallback
             mock_optimizer = AsyncMock()
             mock_optimizer.opa_client = None
-            mock_optimizer.optimize_enforcement.side_effect = Exception(
-                "WINA optimization failed"
-            )
+            mock_optimizer.optimize_enforcement.side_effect = Exception("WINA optimization failed")
             mock_get_optimizer.return_value = mock_optimizer
 
             mock_policy_manager.get_active_rules.return_value = []
@@ -428,9 +422,7 @@ class TestWINAEnforcementIntegration:
 
             # Setup mocks
             mock_optimizer = AsyncMock()
-            mock_optimizer.get_performance_summary.return_value = (
-                mock_performance_summary
-            )
+            mock_optimizer.get_performance_summary.return_value = mock_performance_summary
             mock_get_optimizer.return_value = mock_optimizer
             mock_auth.return_value = {"id": "test_user", "role": "evaluator"}
 
@@ -505,18 +497,14 @@ class TestWINAEnforcementIntegration:
             assert response.status_code in [200, 422, 500]  # Various possible outcomes
 
     @pytest.mark.asyncio
-    async def test_wina_enforcement_authentication_required(
-        self, client, sample_policy_request
-    ):
+    async def test_wina_enforcement_authentication_required(self, client, sample_policy_request):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Test that WINA enforcement endpoint requires authentication."""
 
         # Make request without authentication
-        response = client.post(
-            "/api/v1/pgc/enforcement/evaluate-wina", json=sample_policy_request
-        )
+        response = client.post("/api/v1/pgc/enforcement/evaluate-wina", json=sample_policy_request)
 
         # Should require authentication
         assert response.status_code in [

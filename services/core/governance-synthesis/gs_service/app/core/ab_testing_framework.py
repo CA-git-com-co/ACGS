@@ -103,9 +103,9 @@ class ABTestingFramework:
     """A/B Testing Framework for prompt optimization."""
 
     def __init__(self, config: ABTestConfig = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config or ABTestConfig()
         self.active_tests: Dict[str, ABTestResult] = {}
         self.completed_tests: Dict[str, ABTestResult] = {}
@@ -115,9 +115,7 @@ class ABTestingFramework:
     def create_ab_test(
         self,
         test_id: str,
-        template_variants: List[
-            Tuple[str, str, float]
-        ],  # (template_id, name, allocation)
+        template_variants: List[Tuple[str, str, float]],  # (template_id, name, allocation)
         test_config: ABTestConfig = None,
     ) -> ABTestResult:
         """Create a new A/B test."""
@@ -126,9 +124,7 @@ class ABTestingFramework:
         # Validate allocations sum to 1.0
         total_allocation = sum(allocation for _, _, allocation in template_variants)
         if abs(total_allocation - 1.0) > 0.01:
-            raise ValueError(
-                f"Allocation percentages must sum to 1.0, got {total_allocation}"
-            )
+            raise ValueError(f"Allocation percentages must sum to 1.0, got {total_allocation}")
 
         # Create test result
         test_result = ABTestResult(
@@ -149,9 +145,7 @@ class ABTestingFramework:
 
         self.active_tests[test_id] = test_result
 
-        logger.info(
-            f"Created A/B test '{test_id}' with {len(template_variants)} variants"
-        )
+        logger.info(f"Created A/B test '{test_id}' with {len(template_variants)} variants")
         return test_result
 
     def select_variant(self, test_id: str) -> Optional[str]:
@@ -183,9 +177,9 @@ class ABTestingFramework:
         success: bool,
         context: Dict[str, Any] = None,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record a result for the A/B test."""
         if test_id not in self.active_tests:
             logger.warning(f"Test {test_id} not found")
@@ -203,9 +197,7 @@ class ABTestingFramework:
                 break
 
         if not variant:
-            logger.warning(
-                f"Variant for template {template_id} not found in test {test_id}"
-            )
+            logger.warning(f"Variant for template {template_id} not found in test {test_id}")
             return
 
         # Update variant metrics
@@ -217,19 +209,14 @@ class ABTestingFramework:
 
         # Recalculate metrics
         variant.mean_reward = variant.total_reward / variant.sample_count
-        variant.std_reward = (
-            np.std(variant.rewards) if len(variant.rewards) > 1 else 0.0
-        )
+        variant.std_reward = np.std(variant.rewards) if len(variant.rewards) > 1 else 0.0
         variant.success_rate = variant.success_count / variant.sample_count
 
         # Calculate confidence interval
         if variant.sample_count >= 2:
             sem = variant.std_reward / np.sqrt(variant.sample_count)
             margin = (
-                stats.t.ppf(
-                    (1 + self.config.confidence_level) / 2, variant.sample_count - 1
-                )
-                * sem
+                stats.t.ppf((1 + self.config.confidence_level) / 2, variant.sample_count - 1) * sem
             )
             variant.confidence_interval = (
                 max(0.0, variant.mean_reward - margin),
@@ -240,9 +227,9 @@ class ABTestingFramework:
         await self._check_test_completion(test_id)
 
     async def _check_test_completion(self, test_id: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Check if A/B test should be completed."""
         test_result = self.active_tests[test_id]
 
@@ -268,8 +255,7 @@ class ABTestingFramework:
         should_stop = False
         if self.config.early_stopping_enabled:
             should_stop = (
-                analysis_result["significance"]
-                == StatisticalSignificance.HIGHLY_SIGNIFICANT
+                analysis_result["significance"] == StatisticalSignificance.HIGHLY_SIGNIFICANT
                 and analysis_result["effect_size"] >= self.config.effect_size_threshold
             )
 
@@ -337,9 +323,9 @@ class ABTestingFramework:
         }
 
     async def _complete_test(self, test_id: str, early_stopped: bool = False):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Complete an A/B test and determine the winner."""
         test_result = self.active_tests[test_id]
         test_result.status = ABTestStatus.COMPLETED
@@ -375,9 +361,7 @@ class ABTestingFramework:
                 )
 
         # Calculate total samples
-        test_result.total_samples = sum(
-            v.sample_count for v in test_result.variants.values()
-        )
+        test_result.total_samples = sum(v.sample_count for v in test_result.variants.values())
 
         # Move to completed tests
         self.completed_tests[test_id] = test_result
@@ -406,9 +390,9 @@ class ABTestingFramework:
         return self.completed_tests.copy()
 
     async def stop_test(self, test_id: str, reason: str = "Manual stop"):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Manually stop an active test."""
         if test_id in self.active_tests:
             test_result = self.active_tests[test_id]
@@ -442,9 +426,7 @@ class ABTestingFramework:
             "test_id": test_result.test_id,
             "status": test_result.status.value,
             "start_time": test_result.start_time.isoformat(),
-            "end_time": (
-                test_result.end_time.isoformat() if test_result.end_time else None
-            ),
+            "end_time": (test_result.end_time.isoformat() if test_result.end_time else None),
             "duration_hours": test_result.test_duration_hours,
             "total_samples": test_result.total_samples,
             "statistical_results": {

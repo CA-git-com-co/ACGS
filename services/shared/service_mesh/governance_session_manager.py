@@ -50,9 +50,7 @@ class GovernanceSession:
     state: SessionState = SessionState.ACTIVE
 
     # Service affinities
-    service_affinities: Dict[str, str] = field(
-        default_factory=dict
-    )  # service_type -> instance_id
+    service_affinities: Dict[str, str] = field(default_factory=dict)  # service_type -> instance_id
 
     # Workflow state
     current_step: str = "initial"
@@ -82,16 +80,16 @@ class GovernanceSession:
         return time.time() - self.last_activity
 
     def update_activity(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update last activity timestamp."""
         self.last_activity = time.time()
 
     def add_service_affinity(self, service_type: ServiceType, instance_id: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add service affinity for the session."""
         self.service_affinities[service_type.value] = instance_id
         self.update_activity()
@@ -101,9 +99,9 @@ class GovernanceSession:
         return self.service_affinities.get(service_type.value)
 
     def advance_step(self, step_name: str, step_data: Optional[Dict[str, Any]] = None):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Advance to the next workflow step."""
         # Record duration of previous step
         if self.current_step != "initial":
@@ -127,9 +125,9 @@ class GovernanceSession:
         self.update_activity()
 
     def complete_workflow(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Mark workflow as completed."""
         self.state = SessionState.COMPLETED
         self.total_duration = self.age_seconds
@@ -162,9 +160,9 @@ class GovernanceSessionManager:
         session_ttl: int = 3600,  # 1 hour default
         cleanup_interval: int = 300,  # 5 minutes
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize governance session manager.
 
@@ -185,9 +183,9 @@ class GovernanceSessionManager:
         self._running = False
 
     async def start(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start session manager."""
         if self._running:
             return
@@ -200,9 +198,9 @@ class GovernanceSessionManager:
         logger.info("Governance session manager started")
 
     async def stop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop session manager."""
         if not self._running:
             return
@@ -253,9 +251,7 @@ class GovernanceSessionManager:
         self._sessions[session_id] = session
         await self._persist_session(session)
 
-        logger.info(
-            f"Created governance session {session_id} for {workflow_type.value}"
-        )
+        logger.info(f"Created governance session {session_id} for {workflow_type.value}")
         return session
 
     async def get_session(self, session_id: str) -> Optional[GovernanceSession]:
@@ -289,9 +285,9 @@ class GovernanceSessionManager:
         return None
 
     async def update_session(self, session: GovernanceSession):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Update governance session.
 
@@ -305,9 +301,9 @@ class GovernanceSessionManager:
     async def set_service_affinity(
         self, session_id: str, service_type: ServiceType, instance_id: str
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Set service affinity for a session.
 
@@ -345,9 +341,9 @@ class GovernanceSessionManager:
         step_name: str,
         step_data: Optional[Dict[str, Any]] = None,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Advance workflow to next step.
 
@@ -362,9 +358,9 @@ class GovernanceSessionManager:
             await self.update_session(session)
 
     async def complete_session(self, session_id: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Complete governance session.
 
@@ -376,9 +372,7 @@ class GovernanceSessionManager:
             session.complete_workflow()
             await self.update_session(session)
 
-    async def get_active_sessions(
-        self, user_id: Optional[str] = None
-    ) -> List[GovernanceSession]:
+    async def get_active_sessions(self, user_id: Optional[str] = None) -> List[GovernanceSession]:
         """
         Get active governance sessions.
 
@@ -414,18 +408,16 @@ class GovernanceSessionManager:
             "session_ttl": self.session_ttl,
         }
 
-    def _generate_session_id(
-        self, workflow_type: GovernanceWorkflowType, user_id: str
-    ) -> str:
+    def _generate_session_id(self, workflow_type: GovernanceWorkflowType, user_id: str) -> str:
         """Generate unique session ID."""
         timestamp = str(time.time())
         data = f"{workflow_type.value}:{user_id}:{timestamp}"
         return hashlib.sha256(data.encode()).hexdigest()[:16]
 
     async def _persist_session(self, session: GovernanceSession):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Persist session to Redis."""
         if self.redis_client:
             key = f"governance_session:{session.session_id}"
@@ -442,9 +434,9 @@ class GovernanceSessionManager:
         return None
 
     async def _cleanup_loop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Cleanup expired sessions."""
         while self._running:
             try:
@@ -457,9 +449,9 @@ class GovernanceSessionManager:
                 await asyncio.sleep(5)
 
     async def _cleanup_expired_sessions(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Remove expired sessions."""
         current_time = time.time()
         expired_sessions = []

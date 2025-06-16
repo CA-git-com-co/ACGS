@@ -10,9 +10,9 @@ from ..core.config import settings
 
 
 def test_create_access_token():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     subject = "testuser@example.com"
     expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     token, jti = security.create_access_token(
@@ -23,9 +23,9 @@ def test_create_access_token():
 
 
 def test_verify_access_token_valid():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     subject = "testuser@example.com"
     expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     token, _ = security.create_access_token(
@@ -39,9 +39,9 @@ def test_verify_access_token_valid():
 
 
 def test_verify_access_token_expired():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     subject = "testuser@example.com"
     # Create a token that has already expired
     expired_delta = timedelta(minutes=-settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -58,9 +58,9 @@ def test_verify_access_token_expired():
 
 
 def test_verify_access_token_invalid_signature():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     subject = "testuser@example.com"
     expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     token, _ = security.create_access_token(
@@ -77,9 +77,9 @@ def test_verify_access_token_invalid_signature():
 
 
 def test_password_hashing_and_verification():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     password = "supersecretpassword"
     hashed_password = security.get_password_hash(password)
     assert isinstance(hashed_password, str)
@@ -90,9 +90,9 @@ def test_password_hashing_and_verification():
 
 
 def test_token_with_additional_scopes():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     subject = "scopeduser@example.com"
     roles = ["user", "admin", "auditor"]
     token, _ = security.create_access_token(
@@ -106,9 +106,9 @@ def test_token_with_additional_scopes():
 
 
 def test_token_with_non_ascii_subject():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     subject = "测试用户@example.com"
     token, _ = security.create_access_token(
         subject=subject, user_id=3, roles=["user"], expires_delta=timedelta(minutes=5)
@@ -121,9 +121,9 @@ def test_token_with_non_ascii_subject():
 
 
 def test_token_created_right_before_expiry():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     subject = "edgecase@example.com"
     with freeze_time("2024-01-01 00:00:00") as frozen:
         token, _ = security.create_access_token(

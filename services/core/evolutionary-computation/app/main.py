@@ -32,9 +32,9 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 
 def add_security_middleware(app: FastAPI):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Local implementation of security middleware"""
     app.add_middleware(
         CORSMiddleware,
@@ -47,9 +47,9 @@ def add_security_middleware(app: FastAPI):
 
 class MockSecurityConfig:
     def get(self, key, default=None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return default
 
 
@@ -58,9 +58,9 @@ security_config = MockSecurityConfig()
 
 class MockMetrics:
     def record_verification_operation(self, verification_type: str, result: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
 
@@ -69,15 +69,15 @@ def get_metrics(service_name: str) -> MockMetrics:
 
 
 def metrics_middleware(service_name: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Mock metrics middleware"""
 
     async def middleware(request, call_next):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         response = await call_next(request)
         return response
 
@@ -85,15 +85,15 @@ def metrics_middleware(service_name: str):
 
 
 def create_metrics_endpoint():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Mock metrics endpoint"""
 
     async def metrics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {"status": "ok", "service": "ec_service"}
 
     return metrics
@@ -101,16 +101,16 @@ def create_metrics_endpoint():
 
 class MockConfig:
     def get(self, key, default=None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return default
 
 
 def get_config():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return MockConfig()
 
 
@@ -127,9 +127,9 @@ except ImportError:
     wina_performance_router = APIRouter()
 
     def set_collector_getter(func):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
 
@@ -153,9 +153,9 @@ wina_coordinator: WINAECOversightCoordinator = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Application lifespan manager."""
     global wina_coordinator
 
@@ -204,9 +204,9 @@ async def lifespan(app: FastAPI):
 
 
 async def background_monitoring():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Background task for continuous monitoring and optimization."""
     while True:
         try:
@@ -261,19 +261,13 @@ except ImportError as e:
     app.middleware("http")(metrics_middleware("ec_service"))
 
 # Include API routers
-app.include_router(
-    oversight_router, prefix="/api/v1/oversight", tags=["WINA Oversight"]
-)
+app.include_router(oversight_router, prefix="/api/v1/oversight", tags=["WINA Oversight"])
 app.include_router(wina_oversight_router, prefix="/api/v1", tags=["WINA EC Oversight"])
 app.include_router(
     alphaevolve_router, prefix="/api/v1/alphaevolve", tags=["AlphaEvolve Integration"]
 )
-app.include_router(
-    reporting_router, prefix="/api/v1/reporting", tags=["Reporting & Analytics"]
-)
-app.include_router(
-    monitoring_router, prefix="/api/v1/monitoring", tags=["Performance Monitoring"]
-)
+app.include_router(reporting_router, prefix="/api/v1/reporting", tags=["Reporting & Analytics"])
+app.include_router(monitoring_router, prefix="/api/v1/monitoring", tags=["Performance Monitoring"])
 app.include_router(
     wina_performance_router,
     prefix="/api/v1/wina/performance",
@@ -289,9 +283,9 @@ app.include_router(
 # Add enhanced metrics endpoint
 @app.get("/metrics")
 async def enhanced_metrics_endpoint():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Enhanced Prometheus metrics endpoint for EC Service."""
     try:
         endpoint_func = create_enhanced_metrics_endpoint("ec_service")
@@ -303,9 +297,9 @@ async def enhanced_metrics_endpoint():
 
 @app.get("/health")
 async def health_check():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Health check endpoint with WINA coordinator status."""
     global wina_coordinator
 
@@ -313,9 +307,7 @@ async def health_check():
     if wina_coordinator:
         try:
             # Check coordinator health
-            coordinator_status = (
-                "healthy" if wina_coordinator.enable_wina else "disabled"
-            )
+            coordinator_status = "healthy" if wina_coordinator.enable_wina else "disabled"
         except Exception as e:
             coordinator_status = f"error: {str(e)}"
 
@@ -326,9 +318,7 @@ async def health_check():
         "version": config.get("api_version", "v1"),
         "wina_coordinator": coordinator_status,
         "features": {
-            "wina_optimization": (
-                wina_coordinator.enable_wina if wina_coordinator else False
-            ),
+            "wina_optimization": (wina_coordinator.enable_wina if wina_coordinator else False),
             "constitutional_oversight": True,
             "alphaevolve_integration": True,
             "performance_monitoring": True,
@@ -338,24 +328,16 @@ async def health_check():
         },
         "performance_monitoring": {
             "collector_available": (
-                hasattr(wina_coordinator, "performance_collector")
-                if wina_coordinator
-                else False
+                hasattr(wina_coordinator, "performance_collector") if wina_coordinator else False
             ),
             "monitoring_active": (
                 wina_coordinator.performance_collector.monitoring_active
-                if (
-                    wina_coordinator
-                    and hasattr(wina_coordinator, "performance_collector")
-                )
+                if (wina_coordinator and hasattr(wina_coordinator, "performance_collector"))
                 else False
             ),
             "monitoring_level": (
                 wina_coordinator.performance_collector.monitoring_level.value
-                if (
-                    wina_coordinator
-                    and hasattr(wina_coordinator, "performance_collector")
-                )
+                if (wina_coordinator and hasattr(wina_coordinator, "performance_collector"))
                 else "unknown"
             ),
         },
@@ -364,9 +346,9 @@ async def health_check():
 
 @app.get("/")
 async def root():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Root endpoint with service information."""
     return {
         "message": "ACGS-PGP Evolutionary Computation Service",
@@ -412,9 +394,9 @@ def get_wina_coordinator() -> WINAECOversightCoordinator:
 
 
 def get_wina_performance_collector():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get the WINA performance collector from the coordinator."""
     coordinator = get_wina_coordinator()
     return getattr(coordinator, "performance_collector", None)

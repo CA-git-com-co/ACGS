@@ -25,18 +25,16 @@ async def get_current_active_user(user: User = None) -> User:
     if not user:
         user = User(roles=["admin", "fv_admin"])
     if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
     return user
 
 
 # Mock role checker class
 class RoleChecker:
     def __init__(self, allowed_roles: List[str]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.allowed_roles = allowed_roles
 
     def __call__(self, user: User = None) -> User:

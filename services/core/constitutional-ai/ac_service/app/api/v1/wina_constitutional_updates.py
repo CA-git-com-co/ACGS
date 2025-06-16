@@ -85,9 +85,7 @@ async def analyze_principles_for_wina_optimization(
             principles = [_principle_to_dict(p) for p in db_principles]
 
         if not principles:
-            raise HTTPException(
-                status_code=404, detail="No principles found for analysis"
-            )
+            raise HTTPException(status_code=404, detail="No principles found for analysis")
 
         # Set default optimization context
         if not optimization_context:
@@ -108,9 +106,7 @@ async def analyze_principles_for_wina_optimization(
                 analysis_results[principle["principle_id"]] = analysis
 
             except Exception as e:
-                logger.error(
-                    f"Error analyzing principle {principle['principle_id']}: {e}"
-                )
+                logger.error(f"Error analyzing principle {principle['principle_id']}: {e}")
                 analysis_results[principle["principle_id"]] = {
                     "error": str(e),
                     "optimization_potential": 0.0,
@@ -300,9 +296,7 @@ async def submit_update_for_approval(
         raise
     except Exception as e:
         logger.error(f"Error submitting update for approval: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Approval submission failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Approval submission failed: {str(e)}")
 
 
 @router.get("/pending-updates", response_model=Dict[str, Any])
@@ -347,23 +341,15 @@ async def get_pending_updates(
             "pending_updates_count": len(pending_updates),
             "pending_updates": pending_updates,
             "summary": {
-                "high_risk": len(
-                    [u for u in pending_updates if u["risk_level"] == "high"]
-                ),
-                "medium_risk": len(
-                    [u for u in pending_updates if u["risk_level"] == "medium"]
-                ),
-                "low_risk": len(
-                    [u for u in pending_updates if u["risk_level"] == "low"]
-                ),
+                "high_risk": len([u for u in pending_updates if u["risk_level"] == "high"]),
+                "medium_risk": len([u for u in pending_updates if u["risk_level"] == "medium"]),
+                "low_risk": len([u for u in pending_updates if u["risk_level"] == "low"]),
             },
         }
 
     except Exception as e:
         logger.error(f"Error getting pending updates: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to retrieve pending updates: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve pending updates: {str(e)}")
 
 
 @router.get("/update-history", response_model=Dict[str, Any])
@@ -403,6 +389,4 @@ async def get_update_history(
 
     except Exception as e:
         logger.error(f"Error getting update history: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to retrieve update history: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve update history: {str(e)}")

@@ -11,25 +11,25 @@ from ..schemas import ACPrinciple  # Using the schema defined in fv_service
 
 # Local auth and config stubs
 def get_service_token():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return "mock_service_token"
 
 
 def get_auth_headers():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return {"Authorization": "Bearer mock_token"}
 
 
 # Local configuration
 class LocalConfig:
     def get_service_url(self, service):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         urls = {"ac": "http://localhost:8000", "integrity": "http://localhost:8002"}
         return urls.get(service, "http://localhost:8000")
 
@@ -43,9 +43,9 @@ AC_SERVICE_URL = config.get_service_url("ac")
 
 class ACServiceClient:
     def __init__(self, base_url: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.base_url = base_url
         timeout_config = httpx.Timeout(10.0, connect=5.0)
         self.client = httpx.AsyncClient(base_url=self.base_url, timeout=timeout_config)
@@ -60,9 +60,7 @@ class ACServiceClient:
         headers = get_auth_headers(auth_token)
 
         try:
-            response = await self.client.get(
-                f"/principles/{principle_id}", headers=headers
-            )
+            response = await self.client.get(f"/principles/{principle_id}", headers=headers)
             response.raise_for_status()
             data = response.json()
             return ACPrinciple(**data)
@@ -72,14 +70,10 @@ class ACServiceClient:
             )
             return None
         except httpx.RequestError as e:
-            print(
-                f"AC Client: Request error fetching principle {principle_id}: {str(e)}"
-            )
+            print(f"AC Client: Request error fetching principle {principle_id}: {str(e)}")
             return None
         except Exception as e:
-            print(
-                f"AC Client: Unexpected error fetching principle {principle_id}: {str(e)}"
-            )
+            print(f"AC Client: Unexpected error fetching principle {principle_id}: {str(e)}")
             return None
 
     async def list_principles_by_ids(
@@ -97,9 +91,9 @@ class ACServiceClient:
         return principles
 
     async def close(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         await self.client.aclose()
 
 
@@ -111,9 +105,9 @@ if __name__ == "__main__":
     pass
 
     async def test_ac_client_for_fv():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         print(f"Testing AC Client for FV Service against URL: {AC_SERVICE_URL}")
         # test_token = "admin_token" # Placeholder token for ac_service
         # fetched_principle = await ac_service_client.get_principle_by_id(1, auth_token=test_token)

@@ -1,6 +1,6 @@
-from datetime import datetime
-import time
 import logging
+import time
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status  # Added Request
 
@@ -10,6 +10,14 @@ from ...core.datalog_engine import datalog_engine  # Global Datalog engine insta
 from ...core.limiter import limiter  # Import the limiter
 from ...core.opa_client import get_opa_client
 from ...core.policy_manager import policy_manager  # Global policy manager instance
+from ...core.realtime_compliance_engine import (
+    ActionContext,
+    ActionType,
+    ComplianceLevel,
+    EnforcementAction,
+    RealTimeComplianceEngine,
+    get_compliance_engine,
+)
 from ...core.secure_execution import (  # Mock PET/TEE
     apply_pet_transformation,
     execute_in_mock_tee,
@@ -19,14 +27,6 @@ from ...core.wina_enforcement_optimizer import (
     get_wina_enforcement_optimizer,
 )
 from ...core.wina_policy_compiler import WINAPolicyCompiler
-from ...core.realtime_compliance_engine import (
-    RealTimeComplianceEngine,
-    ActionContext,
-    ActionType,
-    ComplianceLevel,
-    EnforcementAction,
-    get_compliance_engine,
-)
 
 router = APIRouter()
 
@@ -40,9 +40,7 @@ router = APIRouter()
 async def evaluate_policy_query(
     request: Request,  # Added Request for limiter (must be named 'request')
     policy_query_payload: schemas.PolicyQueryRequest,  # Renamed original 'request'
-    current_user: User = Depends(
-        require_policy_evaluation_triggerer
-    ),  # Protect this endpoint
+    current_user: User = Depends(require_policy_evaluation_triggerer),  # Protect this endpoint
 ):
     """
     Evaluates a policy query against the currently active Datalog policies.
@@ -55,9 +53,7 @@ async def evaluate_policy_query(
     # For now, let's ensure rules are loaded once before evaluation if not already.
     # The current_user is now available in request.scope['current_user'] for the limiter
     if not policy_manager._last_refresh_time:  # Check if initial load has happened
-        print(
-            "PGC Endpoint: Initial policy load triggered by first evaluation request."
-        )
+        print("PGC Endpoint: Initial policy load triggered by first evaluation request.")
         await policy_manager.get_active_rules(force_refresh=True)
 
     active_rules_content = policy_manager.get_active_rule_strings()
@@ -131,9 +127,7 @@ async def evaluate_policy_query(
     reason = "No specific policy grants permission for the given context."
     matching_rules_info = None  # Future: trace which rules fired
 
-    if (
-        query_results
-    ):  # If the query returns any results (e.g., [()] for a ground query)
+    if query_results:  # If the query returns any results (e.g., [()] for a ground query)
         decision = "permit"
         reason = f"Action '{action_type}' on resource '{resource_id}' by user '{user_id}' is permitted by policy."
         # In a real system with rule tracing, identify matching rules here.
@@ -188,9 +182,7 @@ async def evaluate_policy_query_with_wina(
             constitutional_requirements=policy_query_payload.context.get(
                 "constitutional_requirements", []
             ),
-            performance_constraints=policy_query_payload.context.get(
-                "performance_constraints", {}
-            ),
+            performance_constraints=policy_query_payload.context.get("performance_constraints", {}),
         )
 
         # Perform WINA-optimized enforcement
@@ -215,7 +207,9 @@ async def evaluate_policy_query_with_wina(
         # Add WINA-specific information to the reason
         enhanced_reason = wina_result.reason
         if wina_result.optimization_applied:
-            enhanced_reason += f" (WINA-optimized: {wina_result.enforcement_metrics.strategy_used.value})"
+            enhanced_reason += (
+                f" (WINA-optimized: {wina_result.enforcement_metrics.strategy_used.value})"
+            )
         if wina_result.constitutional_compliance:
             enhanced_reason += " [Constitutional compliance verified]"
 
@@ -256,9 +250,7 @@ async def evaluate_policy_query_with_wina(
         decision = "permit" if query_results else "deny"
         reason = f"Action '{action_type}' on resource '{resource_id}' by user '{user_id}' is {'permitted' if query_results else 'denied'} by policy (fallback enforcement)"
 
-        return schemas.PolicyQueryResponse(
-            decision=decision, reason=reason, matching_rules=None
-        )
+        return schemas.PolicyQueryResponse(decision=decision, reason=reason, matching_rules=None)
 
 
 @router.get("/wina-performance", status_code=status.HTTP_200_OK)
@@ -315,9 +307,15 @@ async def realtime_compliance_check(
     try:
         # Extract action details from request
         action_type_str = compliance_request.get("action_type", "user_action")
-        action_type = ActionType(action_type_str) if action_type_str in [e.value for e in ActionType] else ActionType.USER_ACTION
+        action_type = (
+            ActionType(action_type_str)
+            if action_type_str in [e.value for e in ActionType]
+            else ActionType.USER_ACTION
+        )
 
-        user_id = compliance_request.get("user_id", current_user.id if hasattr(current_user, 'id') else "unknown")
+        user_id = compliance_request.get(
+            "user_id", current_user.id if hasattr(current_user, "id") else "unknown"
+        )
         resource_id = compliance_request.get("resource_id", "unknown")
         action_data = compliance_request.get("action_data", {})
 
@@ -352,7 +350,6 @@ async def realtime_compliance_check(
             "enforcement_decision": compliance_result.enforcement_action.value,
             "compliant": compliance_result.compliant,
             "confidence_score": compliance_result.confidence_score,
-
             # Performance metrics
             "performance": {
                 "total_response_time_ms": total_time_ms,
@@ -362,7 +359,6 @@ async def realtime_compliance_check(
                 "rule_evaluations": compliance_result.rule_evaluations,
                 "cache_hits": compliance_result.cache_hits,
             },
-
             # Compliance details
             "compliance": {
                 "compliance_score": compliance_result.compliance_score,
@@ -371,7 +367,6 @@ async def realtime_compliance_check(
                 "warnings": compliance_result.warnings,
                 "recommendations": compliance_result.recommendations,
             },
-
             # Audit information
             "audit": {
                 "rules_applied": compliance_result.rules_applied,
@@ -379,7 +374,6 @@ async def realtime_compliance_check(
                 "audit_trail_entries": len(compliance_result.audit_trail),
                 "constitutional_hash": "cdd01ef066bc6cf2",
             },
-
             # Metadata
             "metadata": {
                 "action_type": action_type.value,
@@ -393,7 +387,9 @@ async def realtime_compliance_check(
         # Add performance warnings if targets not met
         if total_time_ms >= 200:
             response_data["warnings"] = response_data.get("warnings", [])
-            response_data["warnings"].append(f"Response time {total_time_ms:.2f}ms exceeded 200ms target")
+            response_data["warnings"].append(
+                f"Response time {total_time_ms:.2f}ms exceeded 200ms target"
+            )
 
         logger.info(
             f"Real-time compliance check completed for action {compliance_result.action_id} "
@@ -408,7 +404,7 @@ async def realtime_compliance_check(
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Real-time compliance check failed: {str(e)}"
+            detail=f"Real-time compliance check failed: {str(e)}",
         )
 
 
@@ -435,10 +431,16 @@ async def intercept_and_validate_action(
     try:
         # Extract action details
         action_type_str = action_request.get("action_type", "user_action")
-        action_type = ActionType(action_type_str) if action_type_str in [e.value for e in ActionType] else ActionType.USER_ACTION
+        action_type = (
+            ActionType(action_type_str)
+            if action_type_str in [e.value for e in ActionType]
+            else ActionType.USER_ACTION
+        )
 
         action_data = action_request.get("action_data", {})
-        user_id = action_request.get("user_id", current_user.id if hasattr(current_user, 'id') else "unknown")
+        user_id = action_request.get(
+            "user_id", current_user.id if hasattr(current_user, "id") else "unknown"
+        )
         resource_id = action_request.get("resource_id", "unknown")
 
         # Perform action interception and validation
@@ -446,7 +448,7 @@ async def intercept_and_validate_action(
             action_type=action_type,
             action_data=action_data,
             user_id=user_id,
-            resource_id=resource_id
+            resource_id=resource_id,
         )
 
         # Calculate response time
@@ -456,7 +458,7 @@ async def intercept_and_validate_action(
         action_allowed = compliance_result.enforcement_action in [
             EnforcementAction.ALLOW,
             EnforcementAction.MODIFY,
-            EnforcementAction.AUDIT_ONLY
+            EnforcementAction.AUDIT_ONLY,
         ]
 
         # Prepare interception response
@@ -495,7 +497,7 @@ async def intercept_and_validate_action(
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Action interception failed: {str(e)}"
+            detail=f"Action interception failed: {str(e)}",
         )
 
 
@@ -531,8 +533,9 @@ async def get_compliance_performance_metrics(
             "recent_activity": {
                 "total_recent_validations": len(recent_audits),
                 "recent_violations": len([a for a in recent_audits if a.get("violations", [])]),
-                "recent_average_latency": sum(a.get("validation_time_ms", 0) for a in recent_audits) / max(len(recent_audits), 1),
-            }
+                "recent_average_latency": sum(a.get("validation_time_ms", 0) for a in recent_audits)
+                / max(len(recent_audits), 1),
+            },
         }
 
         return {
@@ -550,7 +553,7 @@ async def get_compliance_performance_metrics(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve compliance metrics: {str(e)}"
+            detail=f"Failed to retrieve compliance metrics: {str(e)}",
         )
 
 

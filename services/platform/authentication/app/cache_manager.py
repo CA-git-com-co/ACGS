@@ -26,17 +26,17 @@ class AuthCacheManager:
     """Cache manager for authentication service operations."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.service_name = "auth_service"
         self.redis_client: Optional[AdvancedRedisClient] = None
         self._initialized = False
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize cache manager."""
         if self._initialized:
             return
@@ -99,9 +99,7 @@ class AuthCacheManager:
         cache_key = f"auth_token:{token_hash}"
         token_ttl = ttl or CACHE_TTL_POLICIES["auth_tokens"]
 
-        return await self.redis_client.set(
-            cache_key, token_data, ttl=token_ttl, prefix="tokens"
-        )
+        return await self.redis_client.set(cache_key, token_data, ttl=token_ttl, prefix="tokens")
 
     async def get_auth_token(self, token_hash: str) -> Optional[Dict[str, Any]]:
         """Get cached authentication token data."""
@@ -149,9 +147,7 @@ class AuthCacheManager:
         cache_key = f"user_permissions:{user_id}"
         return await self.redis_client.delete(cache_key, prefix="permissions")
 
-    async def cache_rate_limit(
-        self, identifier: str, count: int, window_seconds: int
-    ) -> bool:
+    async def cache_rate_limit(self, identifier: str, count: int, window_seconds: int) -> bool:
         """Cache rate limiting data."""
         if not self.redis_client:
             await self.initialize()
@@ -191,15 +187,13 @@ class AuthCacheManager:
             return current_count
 
         except Exception as e:
-            logger.error(
-                "Rate limit increment error", identifier=identifier, error=str(e)
-            )
+            logger.error("Rate limit increment error", identifier=identifier, error=str(e))
             return 0
 
     async def warm_cache(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Warm cache with frequently accessed data."""
         if not self.redis_client:
             await self.initialize()
@@ -261,18 +255,16 @@ async def get_auth_cache_manager() -> AuthCacheManager:
 
 # Cache decorators for auth service
 def cache_auth_result(ttl: Optional[int] = None, cache_type: str = "auth_tokens"):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Decorator for caching auth service results."""
     return cache_result(
         ttl=ttl, key_prefix="auth", cache_type=cache_type, service_name="auth_service"
     )
 
 
-def generate_request_cache_key(
-    request: Request, additional_params: Dict[str, Any] = None
-) -> str:
+def generate_request_cache_key(request: Request, additional_params: Dict[str, Any] = None) -> str:
     """Generate cache key from request parameters."""
     key_data = {
         "path": request.url.path,

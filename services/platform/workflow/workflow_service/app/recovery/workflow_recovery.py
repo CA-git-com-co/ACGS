@@ -45,9 +45,9 @@ class Checkpoint:
     metadata: Dict[str, Any] = None
 
     def __post_init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.metadata is None:
             self.metadata = {}
 
@@ -65,9 +65,9 @@ class RecoveryPlan:
     created_at: datetime = None
 
     def __post_init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.created_at is None:
             self.created_at = datetime.utcnow()
         if self.alternative_steps is None:
@@ -80,9 +80,9 @@ class WorkflowRecoveryManager:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.checkpoints: Dict[str, List[Checkpoint]] = {}
         self.recovery_plans: Dict[str, RecoveryPlan] = {}
         self.recovery_handlers: Dict[str, Callable] = {}
@@ -90,30 +90,22 @@ class WorkflowRecoveryManager:
         self._initialize_recovery_strategies()
 
     def _initialize_recovery_strategies(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize default recovery strategies"""
 
         # Register default recovery handlers
         self.recovery_handlers["network_timeout"] = self._handle_network_timeout
         self.recovery_handlers["service_unavailable"] = self._handle_service_unavailable
         self.recovery_handlers["validation_failure"] = self._handle_validation_failure
-        self.recovery_handlers["constitutional_violation"] = (
-            self._handle_constitutional_violation
-        )
-        self.recovery_handlers["cryptographic_failure"] = (
-            self._handle_cryptographic_failure
-        )
+        self.recovery_handlers["constitutional_violation"] = self._handle_constitutional_violation
+        self.recovery_handlers["cryptographic_failure"] = self._handle_cryptographic_failure
 
         # Register default rollback handlers
         self.rollback_handlers["policy_deployment"] = self._rollback_policy_deployment
-        self.rollback_handlers["constitutional_amendment"] = (
-            self._rollback_constitutional_amendment
-        )
-        self.rollback_handlers["cryptographic_signing"] = (
-            self._rollback_cryptographic_signing
-        )
+        self.rollback_handlers["constitutional_amendment"] = self._rollback_constitutional_amendment
+        self.rollback_handlers["cryptographic_signing"] = self._rollback_cryptographic_signing
 
     async def create_checkpoint(
         self,
@@ -157,9 +149,7 @@ class WorkflowRecoveryManager:
         recovery_action = await self._analyze_failure(error_type, error_message)
 
         # Find appropriate rollback checkpoint
-        rollback_checkpoint = await self._find_rollback_checkpoint(
-            workflow_id, failed_step_id
-        )
+        rollback_checkpoint = await self._find_rollback_checkpoint(workflow_id, failed_step_id)
 
         # Generate alternative steps if needed
         alternative_steps = await self._generate_alternative_steps(
@@ -216,9 +206,7 @@ class WorkflowRecoveryManager:
             logger.error(f"Recovery execution failed for plan {recovery_plan_id}: {e}")
             return False
 
-    async def _analyze_failure(
-        self, error_type: str, error_message: str
-    ) -> RecoveryAction:
+    async def _analyze_failure(self, error_type: str, error_message: str) -> RecoveryAction:
         """Analyze failure and determine appropriate recovery action"""
 
         # Network-related failures
@@ -234,10 +222,7 @@ class WorkflowRecoveryManager:
             return RecoveryAction.ALTERNATIVE_PATH
 
         # Constitutional violations
-        if (
-            "constitutional" in error_message.lower()
-            or "principle" in error_message.lower()
-        ):
+        if "constitutional" in error_message.lower() or "principle" in error_message.lower():
             return RecoveryAction.ROLLBACK
 
         # Cryptographic failures
@@ -393,9 +378,7 @@ class WorkflowRecoveryManager:
                 step.started_at = None
                 step.completed_at = None
 
-        logger.info(
-            f"Rolled back workflow {plan.workflow_id} to checkpoint {checkpoint.id}"
-        )
+        logger.info(f"Rolled back workflow {plan.workflow_id} to checkpoint {checkpoint.id}")
 
         # Resume workflow execution
         return await workflow_engine.resume_workflow(plan.workflow_id)
@@ -423,9 +406,7 @@ class WorkflowRecoveryManager:
 
         workflow.steps = new_steps
 
-        logger.info(
-            f"Replaced failed step with {len(plan.alternative_steps)} alternative steps"
-        )
+        logger.info(f"Replaced failed step with {len(plan.alternative_steps)} alternative steps")
 
         # Resume workflow execution
         return await workflow_engine.resume_workflow(plan.workflow_id)
@@ -471,21 +452,15 @@ class WorkflowRecoveryManager:
         return True
 
     # Recovery handlers
-    async def _handle_network_timeout(
-        self, step: WorkflowStep, error: str
-    ) -> RecoveryAction:
+    async def _handle_network_timeout(self, step: WorkflowStep, error: str) -> RecoveryAction:
         """Handle network timeout errors"""
         return RecoveryAction.RETRY
 
-    async def _handle_service_unavailable(
-        self, step: WorkflowStep, error: str
-    ) -> RecoveryAction:
+    async def _handle_service_unavailable(self, step: WorkflowStep, error: str) -> RecoveryAction:
         """Handle service unavailable errors"""
         return RecoveryAction.RETRY
 
-    async def _handle_validation_failure(
-        self, step: WorkflowStep, error: str
-    ) -> RecoveryAction:
+    async def _handle_validation_failure(self, step: WorkflowStep, error: str) -> RecoveryAction:
         """Handle validation failure errors"""
         return RecoveryAction.ALTERNATIVE_PATH
 
@@ -495,9 +470,7 @@ class WorkflowRecoveryManager:
         """Handle constitutional violation errors"""
         return RecoveryAction.ROLLBACK
 
-    async def _handle_cryptographic_failure(
-        self, step: WorkflowStep, error: str
-    ) -> RecoveryAction:
+    async def _handle_cryptographic_failure(self, step: WorkflowStep, error: str) -> RecoveryAction:
         """Handle cryptographic failure errors"""
         return RecoveryAction.ROLLBACK
 
@@ -505,9 +478,9 @@ class WorkflowRecoveryManager:
     async def _rollback_policy_deployment(
         self, step: WorkflowStep, checkpoint_data: Dict[str, Any]
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Rollback policy deployment"""
         logger.info(f"Rolling back policy deployment for step {step.id}")
         # Implementation would remove deployed policies
@@ -515,9 +488,9 @@ class WorkflowRecoveryManager:
     async def _rollback_constitutional_amendment(
         self, step: WorkflowStep, checkpoint_data: Dict[str, Any]
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Rollback constitutional amendment"""
         logger.info(f"Rolling back constitutional amendment for step {step.id}")
         # Implementation would revert constitutional changes
@@ -525,9 +498,9 @@ class WorkflowRecoveryManager:
     async def _rollback_cryptographic_signing(
         self, step: WorkflowStep, checkpoint_data: Dict[str, Any]
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Rollback cryptographic signing"""
         logger.info(f"Rolling back cryptographic signing for step {step.id}")
         # Implementation would revoke signatures
@@ -536,20 +509,14 @@ class WorkflowRecoveryManager:
         """Get recovery status for a workflow"""
 
         checkpoints = self.checkpoints.get(workflow_id, [])
-        recovery_plans = [
-            p for p in self.recovery_plans.values() if p.workflow_id == workflow_id
-        ]
+        recovery_plans = [p for p in self.recovery_plans.values() if p.workflow_id == workflow_id]
 
         return {
             "workflow_id": workflow_id,
             "checkpoints": len(checkpoints),
-            "latest_checkpoint": (
-                checkpoints[-1].timestamp.isoformat() if checkpoints else None
-            ),
+            "latest_checkpoint": (checkpoints[-1].timestamp.isoformat() if checkpoints else None),
             "recovery_plans": len(recovery_plans),
-            "active_recovery": any(
-                p.retry_count < p.max_retries for p in recovery_plans
-            ),
+            "active_recovery": any(p.retry_count < p.max_retries for p in recovery_plans),
         }
 
 

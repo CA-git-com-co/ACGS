@@ -75,9 +75,9 @@ class RapidCoEvolutionHandler:
     """Handles rapid co-evolution scenarios for Constitutional Council."""
 
     def __init__(self, config: ScalabilityConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
         self.active_amendments = {}
         self.voting_queues = {}
@@ -140,9 +140,9 @@ class RapidCoEvolutionHandler:
                     break
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize Redis client and metrics collection."""
         try:
             # self.redis_client = await get_redis_client("constitutional_council")
@@ -170,14 +170,10 @@ class RapidCoEvolutionHandler:
             }
 
         # Create amendment with rapid processing flags
-        amendment = await self._create_rapid_amendment(
-            db, amendment_data, urgency_level
-        )
+        amendment = await self._create_rapid_amendment(db, amendment_data, urgency_level)
 
         # Initialize rapid voting process
-        voting_result = await self._initialize_rapid_voting(
-            db, amendment, urgency_level
-        )
+        voting_result = await self._initialize_rapid_voting(db, amendment, urgency_level)
 
         # Monitor and optimize performance
         if self.config.performance_monitoring_enabled:
@@ -249,10 +245,7 @@ class RapidCoEvolutionHandler:
             )
             conflicting_amendments = result.fetchall()
             conflicts.extend(
-                [
-                    f"Amendment {a.id}: {a.proposed_changes[:50]}..."
-                    for a in conflicting_amendments
-                ]
+                [f"Amendment {a.id}: {a.proposed_changes[:50]}..." for a in conflicting_amendments]
             )
 
         return conflicts
@@ -262,24 +255,16 @@ class RapidCoEvolutionHandler:
     ) -> Dict[str, Any]:
         """Validate amendment content for completeness and safety."""
         # Use proposed_changes as title equivalent
-        if (
-            not amendment_data.proposed_changes
-            or len(amendment_data.proposed_changes.strip()) < 10
-        ):
+        if not amendment_data.proposed_changes or len(amendment_data.proposed_changes.strip()) < 10:
             return {"valid": False, "error": "Amendment proposed changes too short"}
 
         # Use justification as description equivalent
-        if (
-            not amendment_data.justification
-            or len(amendment_data.justification.strip()) < 20
-        ):
+        if not amendment_data.justification or len(amendment_data.justification.strip()) < 20:
             return {"valid": False, "error": "Amendment justification too short"}
 
         # Check for dangerous keywords (simplified)
         dangerous_keywords = ["delete all", "remove everything", "disable system"]
-        content = (
-            f"{amendment_data.proposed_changes} {amendment_data.justification}".lower()
-        )
+        content = f"{amendment_data.proposed_changes} {amendment_data.justification}".lower()
         for keyword in dangerous_keywords:
             if keyword in content:
                 return {
@@ -409,9 +394,7 @@ class RapidCoEvolutionHandler:
     async def _get_council_members(self, db: AsyncSession) -> List[User]:
         """Get active Constitutional Council members."""
         result = await db.execute(
-            select(User).where(
-                and_(User.role == "constitutional_council", User.is_active == True)
-            )
+            select(User).where(and_(User.role == "constitutional_council", User.is_active == True))
         )
         return result.scalars().all()
 
@@ -421,21 +404,19 @@ class RapidCoEvolutionHandler:
         amendment: ACAmendment,
         urgency_level: CoEvolutionMode,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Notify council members of new amendment (placeholder)."""
         # In practice, this would integrate with notification system
         logger.info(
             f"Notifying {len(members)} council members of {urgency_level.value} amendment {amendment.id}"
         )
 
-    async def _monitor_amendment_performance(
-        self, amendment_id: int, start_time: float
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def _monitor_amendment_performance(self, amendment_id: int, start_time: float):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Monitor amendment processing performance."""
         processing_time = time.time() - start_time
 
@@ -454,9 +435,9 @@ class RapidCoEvolutionHandler:
         )
 
     async def _cache_amendment(self, amendment: ACAmendment):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Cache amendment in Redis for rapid access."""
         if not self.redis_client:
             return
@@ -482,9 +463,7 @@ class RapidCoEvolutionHandler:
 
             # Add to active amendments set
             active_key = self.redis_client.generate_key("active_amendments")
-            await self.redis_client.add_to_list(
-                active_key, amendment.id, max_length=100
-            )
+            await self.redis_client.add_to_list(active_key, amendment.id, max_length=100)
 
         except Exception as e:
             logger.error(f"Failed to cache amendment {amendment.id}: {e}")
@@ -563,9 +542,9 @@ class AsyncVotingManager:
     """Manages asynchronous voting processes for scalability."""
 
     def __init__(self, config: ScalabilityConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
         self.vote_processors = {}
 
@@ -598,9 +577,7 @@ class AsyncVotingManager:
             }
         else:
             # Process synchronously
-            result = await self._process_vote_background(
-                db, amendment_id, vote_data, voter_id
-            )
+            result = await self._process_vote_background(db, amendment_id, vote_data, voter_id)
             return {
                 "success": result["success"],
                 "vote_recorded": True,
@@ -671,9 +648,9 @@ class AsyncVotingManager:
             return {"success": False, "error": str(e)}
 
     async def _check_voting_completion(self, db: AsyncSession, amendment_id: int):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Check if voting is complete and process results."""
         # Get vote counts
         vote_counts = await db.execute(
@@ -700,12 +677,10 @@ class AsyncVotingManager:
             elif against_votes / total_votes > 0.4:
                 await self._finalize_amendment(db, amendment_id, "rejected")
 
-    async def _finalize_amendment(
-        self, db: AsyncSession, amendment_id: int, status: str
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def _finalize_amendment(self, db: AsyncSession, amendment_id: int, status: str):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Finalize amendment with given status."""
         amendment = await db.get(ACAmendment, amendment_id)
         if amendment:
@@ -719,9 +694,9 @@ class ConstitutionalCouncilScalabilityFramework:
     """Main framework for Constitutional Council scalability."""
 
     def __init__(self, config: ScalabilityConfig = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config or ScalabilityConfig()
         self.rapid_handler = RapidCoEvolutionHandler(self.config)
         self.async_voting_manager = AsyncVotingManager(self.config)
@@ -761,9 +736,7 @@ class ConstitutionalCouncilScalabilityFramework:
                         amendment.finalized_at - amendment.created_at
                     ).total_seconds() / 3600
                     voting_times.append(voting_time)
-            avg_voting_time = (
-                sum(voting_times) / len(voting_times) if voting_times else 0.0
-            )
+            avg_voting_time = sum(voting_times) / len(voting_times) if voting_times else 0.0
 
         # Calculate consensus rate (approved / total completed)
         consensus_rate = (

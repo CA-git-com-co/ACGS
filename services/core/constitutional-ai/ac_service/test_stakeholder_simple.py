@@ -26,9 +26,9 @@ from app.services.stakeholder_engagement import (
 
 
 def test_enums():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test enum definitions."""
     print("Testing enum definitions...")
 
@@ -61,9 +61,9 @@ def test_enums():
 
 
 def test_notification_record():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test NotificationRecord dataclass."""
     print("Testing NotificationRecord...")
 
@@ -98,9 +98,9 @@ def test_notification_record():
 
 
 def test_feedback_record():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test FeedbackRecord dataclass."""
     print("Testing FeedbackRecord...")
 
@@ -127,9 +127,9 @@ def test_feedback_record():
 
 
 def test_stakeholder_engagement_input():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test StakeholderEngagementInput validation."""
     print("Testing StakeholderEngagementInput...")
 
@@ -167,9 +167,9 @@ def test_stakeholder_engagement_input():
 
 
 def test_stakeholder_engagement_status():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test StakeholderEngagementStatus model."""
     print("Testing StakeholderEngagementStatus...")
 
@@ -214,9 +214,9 @@ def test_stakeholder_engagement_status():
 
 
 def test_notification_content_structure():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Test notification content structure."""
     print("Testing notification content structure...")
 
@@ -256,9 +256,7 @@ def test_notification_content_structure():
         "metadata": {},
     }
 
-    assert (
-        content["subject"] == "New Constitutional Amendment Proposal - Review Required"
-    )
+    assert content["subject"] == "New Constitutional Amendment Proposal - Review Required"
     assert content["stakeholder"]["username"] == "expert1"
     assert content["amendment"]["title"] == "Test Constitutional Amendment"
     assert content["engagement"]["hours_remaining"] == 72
@@ -268,9 +266,9 @@ def test_notification_content_structure():
 
 
 def run_all_tests():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Run all tests."""
     print("=" * 60)
     print("STAKEHOLDER ENGAGEMENT SYSTEM - COMPONENT TESTS")

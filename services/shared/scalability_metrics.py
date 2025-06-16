@@ -179,9 +179,9 @@ class ScalabilityMetricsCollector:
         enable_prometheus: bool = True,
         enable_redis_cache: bool = True,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize scalability metrics collector.
 
@@ -196,15 +196,9 @@ class ScalabilityMetricsCollector:
 
         # Metrics storage
         self.latency_metrics: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
-        self.throughput_metrics: Dict[str, deque] = defaultdict(
-            lambda: deque(maxlen=1000)
-        )
-        self.resource_metrics: Dict[str, deque] = defaultdict(
-            lambda: deque(maxlen=1000)
-        )
-        self.concurrent_ops_metrics: Dict[str, deque] = defaultdict(
-            lambda: deque(maxlen=1000)
-        )
+        self.throughput_metrics: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
+        self.resource_metrics: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
+        self.concurrent_ops_metrics: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
 
         # Alerting system
         self.active_alerts: Dict[str, ScalabilityAlert] = {}
@@ -452,9 +446,7 @@ class ScalabilityMetricsCollector:
                     component=metrics.component_name
                 ).set(metrics.network_io_mb_per_second)
 
-            logger.debug(
-                f"Recorded resource utilization metrics for {metrics.component_name}"
-            )
+            logger.debug(f"Recorded resource utilization metrics for {metrics.component_name}")
 
         except Exception as e:
             logger.error(f"Failed to record resource utilization metrics: {e}")
@@ -476,9 +468,7 @@ class ScalabilityMetricsCollector:
                     component=metrics.component_name
                 ).set(metrics.operation_queue_size)
 
-            logger.debug(
-                f"Recorded concurrent operations metrics for {metrics.component_name}"
-            )
+            logger.debug(f"Recorded concurrent operations metrics for {metrics.component_name}")
 
         except Exception as e:
             logger.error(f"Failed to record concurrent operations metrics: {e}")
@@ -498,9 +488,7 @@ class ScalabilityMetricsCollector:
             disk_io_mb_per_sec = 0.0
             if hasattr(self, "_last_disk_io") and disk_io:
                 time_delta = time.time() - self._last_disk_io_time
-                bytes_delta = (
-                    disk_io.read_bytes + disk_io.write_bytes
-                ) - self._last_disk_io
+                bytes_delta = (disk_io.read_bytes + disk_io.write_bytes) - self._last_disk_io
                 if time_delta > 0:
                     disk_io_mb_per_sec = (bytes_delta / time_delta) / (1024 * 1024)
 
@@ -555,9 +543,7 @@ class ScalabilityMetricsCollector:
                     alert_counts[alert.severity] += 1
 
             for severity, count in alert_counts.items():
-                self.prometheus_metrics["active_alerts"].labels(severity=severity).set(
-                    count
-                )
+                self.prometheus_metrics["active_alerts"].labels(severity=severity).set(count)
 
         except Exception as e:
             logger.error(f"Failed to update Prometheus metrics: {e}")
@@ -653,10 +639,7 @@ class ScalabilityMetricsCollector:
                     )
 
                 # Memory checks
-                if (
-                    latest_metrics.memory_percent
-                    > self.thresholds.memory_critical_percent
-                ):
+                if latest_metrics.memory_percent > self.thresholds.memory_critical_percent:
                     await self._create_alert(
                         component_name,
                         ScalabilityMetricType.RESOURCE_UTILIZATION,
@@ -665,10 +648,7 @@ class ScalabilityMetricsCollector:
                         latest_metrics.memory_percent,
                         self.thresholds.memory_critical_percent,
                     )
-                elif (
-                    latest_metrics.memory_percent
-                    > self.thresholds.memory_warning_percent
-                ):
+                elif latest_metrics.memory_percent > self.thresholds.memory_warning_percent:
                     await self._create_alert(
                         component_name,
                         ScalabilityMetricType.RESOURCE_UTILIZATION,
@@ -784,14 +764,10 @@ class ScalabilityMetricsCollector:
                     "concurrent_operations": await self._summarize_concurrent_ops_metrics(),
                 },
                 "alerts": {
-                    "active_count": len(
-                        [a for a in self.active_alerts.values() if not a.resolved]
-                    ),
+                    "active_count": len([a for a in self.active_alerts.values() if not a.resolved]),
                     "total_count": len(self.alert_history),
                     "by_severity": self._count_alerts_by_severity(),
-                    "recent_alerts": [
-                        asdict(alert) for alert in list(self.alert_history)[-10:]
-                    ],
+                    "recent_alerts": [asdict(alert) for alert in list(self.alert_history)[-10:]],
                 },
                 "scalability_scores": await self._calculate_scalability_scores(),
             }
@@ -810,9 +786,7 @@ class ScalabilityMetricsCollector:
                 continue
 
             recent_metrics = list(metrics_queue)[-10:]  # Last 10 samples
-            avg_p95_latency = statistics.mean(
-                [m.p95_latency_ms for m in recent_metrics]
-            )
+            avg_p95_latency = statistics.mean([m.p95_latency_ms for m in recent_metrics])
             max_latency = max([m.max_latency_ms for m in recent_metrics])
 
             summary[component_name] = {
@@ -836,9 +810,7 @@ class ScalabilityMetricsCollector:
                 continue
 
             recent_metrics = list(metrics_queue)[-10:]  # Last 10 samples
-            avg_ops_per_sec = statistics.mean(
-                [m.operations_per_second for m in recent_metrics]
-            )
+            avg_ops_per_sec = statistics.mean([m.operations_per_second for m in recent_metrics])
             avg_capacity_util = statistics.mean(
                 [m.capacity_utilization_percent for m in recent_metrics]
             )
@@ -849,8 +821,7 @@ class ScalabilityMetricsCollector:
                 "sample_count": len(recent_metrics),
                 "status": (
                     "healthy"
-                    if avg_ops_per_sec
-                    >= self.thresholds.throughput_warning_ops_per_second
+                    if avg_ops_per_sec >= self.thresholds.throughput_warning_ops_per_second
                     else "degraded"
                 ),
             }
@@ -885,12 +856,8 @@ class ScalabilityMetricsCollector:
                 continue
 
             recent_metrics = list(metrics_queue)[-10:]  # Last 10 samples
-            avg_concurrent_ops = statistics.mean(
-                [m.active_operations for m in recent_metrics]
-            )
-            avg_queue_size = statistics.mean(
-                [m.operation_queue_size for m in recent_metrics]
-            )
+            avg_concurrent_ops = statistics.mean([m.active_operations for m in recent_metrics])
+            avg_queue_size = statistics.mean([m.operation_queue_size for m in recent_metrics])
 
             summary[component_name] = {
                 "avg_concurrent_operations": round(avg_concurrent_ops, 2),
@@ -905,9 +872,7 @@ class ScalabilityMetricsCollector:
 
         return summary
 
-    def _determine_resource_status(
-        self, cpu_percent: float, memory_percent: float
-    ) -> str:
+    def _determine_resource_status(self, cpu_percent: float, memory_percent: float) -> str:
         """Determine resource utilization status."""
         if (
             cpu_percent >= self.thresholds.cpu_critical_percent
@@ -941,16 +906,11 @@ class ScalabilityMetricsCollector:
             resource_score = 1.0
 
             # Calculate latency score
-            if (
-                component_name in self.latency_metrics
-                and self.latency_metrics[component_name]
-            ):
+            if component_name in self.latency_metrics and self.latency_metrics[component_name]:
                 latest_latency = self.latency_metrics[component_name][-1]
                 if latest_latency.p95_latency_ms <= self.thresholds.latency_warning_ms:
                     latency_score = 1.0
-                elif (
-                    latest_latency.p95_latency_ms <= self.thresholds.latency_critical_ms
-                ):
+                elif latest_latency.p95_latency_ms <= self.thresholds.latency_critical_ms:
                     latency_score = 0.7
                 else:
                     latency_score = 0.3
@@ -975,19 +935,14 @@ class ScalabilityMetricsCollector:
                     throughput_score = 0.3
 
             # Calculate resource score
-            if (
-                component_name in self.resource_metrics
-                and self.resource_metrics[component_name]
-            ):
+            if component_name in self.resource_metrics and self.resource_metrics[component_name]:
                 latest_resource = self.resource_metrics[component_name][-1]
                 cpu_score = 1.0 - (latest_resource.cpu_percent / 100.0)
                 memory_score = 1.0 - (latest_resource.memory_percent / 100.0)
                 resource_score = (cpu_score + memory_score) / 2.0
 
             # Overall score (weighted average)
-            overall_score = (
-                latency_score * 0.4 + throughput_score * 0.4 + resource_score * 0.2
-            )
+            overall_score = latency_score * 0.4 + throughput_score * 0.4 + resource_score * 0.2
             scores[component_name] = round(max(0.0, min(1.0, overall_score)), 3)
 
         return scores

@@ -34,9 +34,9 @@ class CorrelationIDMiddleware(BaseHTTPMiddleware):
     """
 
     def __init__(self, app: ASGIApp):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(app)
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
@@ -61,9 +61,9 @@ class PerformanceMonitoringMiddleware(BaseHTTPMiddleware):
     """
 
     def __init__(self, app: ASGIApp, service_name: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(app)
         self.service_name = service_name
 
@@ -99,9 +99,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
     """
 
     def __init__(self, app: ASGIApp, service_name: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(app)
         self.service_name = service_name
 
@@ -136,9 +136,7 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
 
         api_response = APIResponse(
             status=APIStatus.ERROR,
-            error=APIError(
-                code=error_code, message=exc.detail, correlation_id=correlation_id
-            ),
+            error=APIError(code=error_code, message=exc.detail, correlation_id=correlation_id),
             metadata=APIMetadata(
                 service_name=self.service_name,
                 correlation_id=correlation_id,
@@ -194,9 +192,9 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
     """
 
     def __init__(self, app: ASGIApp, service_name: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(app)
         self.service_name = service_name
 
@@ -240,9 +238,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """
 
     def __init__(self, app: ASGIApp):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(app)
         self.security_headers = {
             "X-Content-Type-Options": "nosniff",
@@ -296,9 +294,9 @@ def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
     """
 
     async def http_exception_handler(request: Request, exc: HTTPException):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Handle HTTP exceptions with standardized responses."""
         correlation_id = getattr(request.state, "correlation_id", str(uuid.uuid4()))
         response_time_ms = getattr(request.state, "response_time_ms", None)
@@ -317,9 +315,7 @@ def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
 
         api_response = APIResponse(
             status=APIStatus.ERROR,
-            error=APIError(
-                code=error_code, message=exc.detail, correlation_id=correlation_id
-            ),
+            error=APIError(code=error_code, message=exc.detail, correlation_id=correlation_id),
             metadata=APIMetadata(
                 service_name=service_name,
                 correlation_id=correlation_id,
@@ -332,9 +328,9 @@ def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
         )
 
     async def validation_exception_handler(request: Request, exc):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Handle validation exceptions."""
         correlation_id = getattr(request.state, "correlation_id", str(uuid.uuid4()))
 
@@ -346,14 +342,10 @@ def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
                 details={"validation_errors": exc.errors()},
                 correlation_id=correlation_id,
             ),
-            metadata=APIMetadata(
-                service_name=service_name, correlation_id=correlation_id
-            ),
+            metadata=APIMetadata(service_name=service_name, correlation_id=correlation_id),
         )
 
-        return JSONResponse(
-            status_code=422, content=serialize_api_response(api_response)
-        )
+        return JSONResponse(status_code=422, content=serialize_api_response(api_response))
 
     return {
         HTTPException: http_exception_handler,

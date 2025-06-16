@@ -52,9 +52,9 @@ class PolicySynthesisWorkflow:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.multi_model_manager = get_multi_model_manager()
         self.config = ModelSpecializationConfig()
         self.workflow_graph: Optional[CompiledStateGraph] = None
@@ -62,14 +62,12 @@ class PolicySynthesisWorkflow:
         if LANGGRAPH_AVAILABLE:
             self._build_workflow_graph()
         else:
-            logger.warning(
-                "LangGraph not available. Workflow will use fallback implementation."
-            )
+            logger.warning("LangGraph not available. Workflow will use fallback implementation.")
 
     def _build_workflow_graph(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Build the LangGraph StateGraph for policy synthesis."""
         if not LANGGRAPH_AVAILABLE:
             return
@@ -78,9 +76,7 @@ class PolicySynthesisWorkflow:
         workflow = StateGraph(WorkflowState)
 
         # Add nodes for each workflow step (using node_ prefix to avoid state field conflicts)
-        workflow.add_node(
-            "node_analyze_constitution", self._constitutional_analysis_node
-        )
+        workflow.add_node("node_analyze_constitution", self._constitutional_analysis_node)
         workflow.add_node("node_generate_policy", self._policy_generation_node)
         workflow.add_node("node_assess_fidelity", self._fidelity_assessment_node)
         workflow.add_node("node_resolve_conflicts", self._conflict_resolution_node)
@@ -126,9 +122,7 @@ class PolicySynthesisWorkflow:
         self.workflow_graph = workflow.compile()
         logger.info("Policy synthesis workflow graph compiled successfully")
 
-    async def synthesize_policy(
-        self, request: PolicySynthesisRequest
-    ) -> PolicySynthesisResponse:
+    async def synthesize_policy(self, request: PolicySynthesisRequest) -> PolicySynthesisResponse:
         """
         Execute the policy synthesis workflow.
 
@@ -169,9 +163,7 @@ class PolicySynthesisWorkflow:
                 synthesis_confidence=self._calculate_synthesis_confidence(final_state),
                 error_message=final_state.errors[-1] if final_state.errors else None,
                 fallback_used=not LANGGRAPH_AVAILABLE,
-                improvement_suggestions=self._generate_improvement_suggestions(
-                    final_state
-                ),
+                improvement_suggestions=self._generate_improvement_suggestions(final_state),
             )
 
             logger.info(
@@ -180,9 +172,7 @@ class PolicySynthesisWorkflow:
             return response
 
         except Exception as e:
-            logger.error(
-                f"Policy synthesis failed for request {request.request_id}: {e}"
-            )
+            logger.error(f"Policy synthesis failed for request {request.request_id}: {e}")
 
             return PolicySynthesisResponse(
                 request_id=request.request_id,
@@ -194,9 +184,7 @@ class PolicySynthesisWorkflow:
                 fallback_used=True,
             )
 
-    async def _constitutional_analysis_node(
-        self, state: WorkflowState
-    ) -> WorkflowState:
+    async def _constitutional_analysis_node(self, state: WorkflowState) -> WorkflowState:
         """Analyze constitutional principles and context."""
         state.add_step("constitutional_analysis")
 
@@ -216,9 +204,7 @@ class PolicySynthesisWorkflow:
                     "model_used": response["model_used"],
                     "response_time": response["response_time"],
                 }
-                logger.info(
-                    f"Constitutional analysis completed for workflow {state.workflow_id}"
-                )
+                logger.info(f"Constitutional analysis completed for workflow {state.workflow_id}")
             else:
                 state.add_error(
                     f"Constitutional analysis failed: {response.get('error', 'Unknown error')}"
@@ -226,9 +212,7 @@ class PolicySynthesisWorkflow:
 
         except Exception as e:
             state.add_error(f"Constitutional analysis error: {str(e)}")
-            logger.error(
-                f"Constitutional analysis failed for workflow {state.workflow_id}: {e}"
-            )
+            logger.error(f"Constitutional analysis failed for workflow {state.workflow_id}: {e}")
 
         return state
 
@@ -248,9 +232,7 @@ class PolicySynthesisWorkflow:
 
             if response["success"]:
                 state.policy_draft = response["content"]
-                logger.info(
-                    f"Policy generation completed for workflow {state.workflow_id}"
-                )
+                logger.info(f"Policy generation completed for workflow {state.workflow_id}")
             else:
                 state.add_error(
                     f"Policy generation failed: {response.get('error', 'Unknown error')}"
@@ -258,9 +240,7 @@ class PolicySynthesisWorkflow:
 
         except Exception as e:
             state.add_error(f"Policy generation error: {str(e)}")
-            logger.error(
-                f"Policy generation failed for workflow {state.workflow_id}: {e}"
-            )
+            logger.error(f"Policy generation failed for workflow {state.workflow_id}: {e}")
 
         return state
 
@@ -285,9 +265,7 @@ class PolicySynthesisWorkflow:
             if response["success"]:
                 state.fidelity_assessment = response["content"]
                 state.policy_draft.constitutional_fidelity = response["content"]
-                logger.info(
-                    f"Fidelity assessment completed for workflow {state.workflow_id}"
-                )
+                logger.info(f"Fidelity assessment completed for workflow {state.workflow_id}")
             else:
                 state.add_error(
                     f"Fidelity assessment failed: {response.get('error', 'Unknown error')}"
@@ -295,9 +273,7 @@ class PolicySynthesisWorkflow:
 
         except Exception as e:
             state.add_error(f"Fidelity assessment error: {str(e)}")
-            logger.error(
-                f"Fidelity assessment failed for workflow {state.workflow_id}: {e}"
-            )
+            logger.error(f"Fidelity assessment failed for workflow {state.workflow_id}: {e}")
 
         return state
 
@@ -323,9 +299,7 @@ class PolicySynthesisWorkflow:
 
             if response["success"]:
                 state.policy_draft = response["content"]
-                logger.info(
-                    f"Conflict resolution completed for workflow {state.workflow_id}"
-                )
+                logger.info(f"Conflict resolution completed for workflow {state.workflow_id}")
             else:
                 state.add_error(
                     f"Conflict resolution failed: {response.get('error', 'Unknown error')}"
@@ -333,9 +307,7 @@ class PolicySynthesisWorkflow:
 
         except Exception as e:
             state.add_error(f"Conflict resolution error: {str(e)}")
-            logger.error(
-                f"Conflict resolution failed for workflow {state.workflow_id}: {e}"
-            )
+            logger.error(f"Conflict resolution failed for workflow {state.workflow_id}: {e}")
 
         return state
 
@@ -345,24 +317,17 @@ class PolicySynthesisWorkflow:
 
         try:
             if not state.policy_draft or not state.fidelity_assessment:
-                state.add_error(
-                    "Missing policy draft or fidelity assessment for final validation"
-                )
+                state.add_error("Missing policy draft or fidelity assessment for final validation")
                 return state
 
             # Check if policy meets quality thresholds
             meets_fidelity = state.fidelity_assessment.meets_target_fidelity
             meets_target = (
-                state.fidelity_assessment.overall_score
-                >= state.request.target_fidelity_score
+                state.fidelity_assessment.overall_score >= state.request.target_fidelity_score
             )
             violation_count = len(state.fidelity_assessment.violations)
 
-            if (
-                meets_fidelity
-                and meets_target
-                and violation_count <= state.request.max_violations
-            ):
+            if meets_fidelity and meets_target and violation_count <= state.request.max_violations:
                 logger.info(f"Final validation passed for workflow {state.workflow_id}")
             else:
                 state.add_error(
@@ -372,9 +337,7 @@ class PolicySynthesisWorkflow:
 
         except Exception as e:
             state.add_error(f"Final validation error: {str(e)}")
-            logger.error(
-                f"Final validation failed for workflow {state.workflow_id}: {e}"
-            )
+            logger.error(f"Final validation failed for workflow {state.workflow_id}: {e}")
 
         return state
 
@@ -382,9 +345,7 @@ class PolicySynthesisWorkflow:
         """Handle errors and determine recovery strategy."""
         state.add_step("error_handling")
 
-        logger.warning(
-            f"Error handling activated for workflow {state.workflow_id}: {state.errors}"
-        )
+        logger.warning(f"Error handling activated for workflow {state.workflow_id}: {state.errors}")
 
         # For now, just log the errors. In the future, we could implement
         # more sophisticated error recovery strategies here.
@@ -403,8 +364,7 @@ class PolicySynthesisWorkflow:
         # Check if there are violations that need resolution
         if (
             len(state.fidelity_assessment.violations) > 0
-            and state.fidelity_assessment.overall_score
-            < state.request.target_fidelity_score
+            and state.fidelity_assessment.overall_score < state.request.target_fidelity_score
         ):
             return "resolve_conflicts"
 
@@ -433,9 +393,7 @@ class PolicySynthesisWorkflow:
         return "error"
 
     # Prompt building methods
-    def _build_constitutional_analysis_prompt(
-        self, request: PolicySynthesisRequest
-    ) -> str:
+    def _build_constitutional_analysis_prompt(self, request: PolicySynthesisRequest) -> str:
         """Build prompt for constitutional analysis."""
         return f"""
 Analyze the following constitutional principles and context for policy synthesis:

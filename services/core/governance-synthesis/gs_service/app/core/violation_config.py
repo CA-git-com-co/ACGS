@@ -62,9 +62,9 @@ class ThresholdConfig:
     source: ConfigSource = ConfigSource.DEFAULT
 
     def __post_init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.configuration is None:
             self.configuration = {}
 
@@ -104,9 +104,9 @@ class ViolationConfigManager:
     """
 
     def __init__(self, config_file_path: Optional[str] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize the violation configuration manager.
 
@@ -235,9 +235,7 @@ class ViolationConfigManager:
         """
         if db is None:
             async for db_session in get_async_db():
-                return await self.update_threshold_config(
-                    threshold_name, config, user, db_session
-                )
+                return await self.update_threshold_config(threshold_name, config, user, db_session)
 
         try:
             # Validate configuration
@@ -294,45 +292,31 @@ class ViolationConfigManager:
     def get_detection_config(self) -> ViolationDetectionConfig:
         """Get violation detection configuration."""
         return ViolationDetectionConfig(
-            scan_interval_seconds=int(
-                os.getenv("VIOLATION_SCAN_INTERVAL_SECONDS", "30")
-            ),
+            scan_interval_seconds=int(os.getenv("VIOLATION_SCAN_INTERVAL_SECONDS", "30")),
             batch_size=int(os.getenv("VIOLATION_BATCH_SIZE", "100")),
-            detection_timeout_seconds=int(
-                os.getenv("VIOLATION_DETECTION_TIMEOUT_SECONDS", "60")
-            ),
+            detection_timeout_seconds=int(os.getenv("VIOLATION_DETECTION_TIMEOUT_SECONDS", "60")),
             enable_real_time_scanning=os.getenv(
                 "ENABLE_REAL_TIME_VIOLATION_SCANNING", "true"
             ).lower()
             == "true",
-            enable_batch_analysis=os.getenv(
-                "ENABLE_BATCH_VIOLATION_ANALYSIS", "true"
-            ).lower()
+            enable_batch_analysis=os.getenv("ENABLE_BATCH_VIOLATION_ANALYSIS", "true").lower()
             == "true",
             enable_historical_analysis=os.getenv(
                 "ENABLE_HISTORICAL_VIOLATION_ANALYSIS", "true"
             ).lower()
             == "true",
             max_violations_per_scan=int(os.getenv("MAX_VIOLATIONS_PER_SCAN", "1000")),
-            cache_threshold_seconds=int(
-                os.getenv("VIOLATION_CACHE_THRESHOLD_SECONDS", "300")
-            ),
+            cache_threshold_seconds=int(os.getenv("VIOLATION_CACHE_THRESHOLD_SECONDS", "300")),
         )
 
     def get_escalation_config(self) -> EscalationConfig:
         """Get violation escalation configuration."""
         return EscalationConfig(
-            enable_automatic_escalation=os.getenv(
-                "ENABLE_AUTOMATIC_ESCALATION", "true"
-            ).lower()
+            enable_automatic_escalation=os.getenv("ENABLE_AUTOMATIC_ESCALATION", "true").lower()
             == "true",
-            enable_timeout_escalation=os.getenv(
-                "ENABLE_TIMEOUT_ESCALATION", "true"
-            ).lower()
+            enable_timeout_escalation=os.getenv("ENABLE_TIMEOUT_ESCALATION", "true").lower()
             == "true",
-            max_escalation_level=os.getenv(
-                "MAX_ESCALATION_LEVEL", "emergency_response"
-            ),
+            max_escalation_level=os.getenv("MAX_ESCALATION_LEVEL", "emergency_response"),
             default_response_time_minutes=int(
                 os.getenv("DEFAULT_ESCALATION_RESPONSE_TIME_MINUTES", "30")
             ),
@@ -345,9 +329,9 @@ class ViolationConfigManager:
         )
 
     def _load_initial_config(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Load initial configuration from all sources."""
         try:
             # Load default configurations
@@ -367,9 +351,7 @@ class ViolationConfigManager:
         except Exception as e:
             logger.error(f"Error loading initial configuration: {e}")
 
-    def _load_threshold_from_sources(
-        self, threshold_name: str
-    ) -> Optional[ThresholdConfig]:
+    def _load_threshold_from_sources(self, threshold_name: str) -> Optional[ThresholdConfig]:
         """Load threshold configuration from various sources."""
         # Try environment first
         env_config = self._load_environment_config(threshold_name)
@@ -395,15 +377,9 @@ class ViolationConfigManager:
             configs["fidelity_score"] = ThresholdConfig(
                 name="fidelity_score",
                 threshold_type=ThresholdType.FIDELITY_SCORE,
-                green_threshold=float(
-                    os.getenv("CONSTITUTIONAL_FIDELITY_GREEN_THRESHOLD", "0.85")
-                ),
-                amber_threshold=float(
-                    os.getenv("CONSTITUTIONAL_FIDELITY_AMBER_THRESHOLD", "0.70")
-                ),
-                red_threshold=float(
-                    os.getenv("CONSTITUTIONAL_FIDELITY_RED_THRESHOLD", "0.55")
-                ),
+                green_threshold=float(os.getenv("CONSTITUTIONAL_FIDELITY_GREEN_THRESHOLD", "0.85")),
+                amber_threshold=float(os.getenv("CONSTITUTIONAL_FIDELITY_AMBER_THRESHOLD", "0.70")),
+                red_threshold=float(os.getenv("CONSTITUTIONAL_FIDELITY_RED_THRESHOLD", "0.55")),
                 description="Constitutional fidelity score thresholds",
                 source=ConfigSource.ENVIRONMENT,
             )
@@ -413,12 +389,8 @@ class ViolationConfigManager:
             configs["violation_count"] = ThresholdConfig(
                 name="violation_count",
                 threshold_type=ThresholdType.VIOLATION_COUNT,
-                green_threshold=float(
-                    os.getenv("VIOLATION_COUNT_GREEN_THRESHOLD", "2")
-                ),
-                amber_threshold=float(
-                    os.getenv("VIOLATION_COUNT_AMBER_THRESHOLD", "5")
-                ),
+                green_threshold=float(os.getenv("VIOLATION_COUNT_GREEN_THRESHOLD", "2")),
+                amber_threshold=float(os.getenv("VIOLATION_COUNT_AMBER_THRESHOLD", "5")),
                 red_threshold=float(os.getenv("VIOLATION_COUNT_RED_THRESHOLD", "10")),
                 description="Violation count thresholds per hour",
                 source=ConfigSource.ENVIRONMENT,
@@ -426,9 +398,7 @@ class ViolationConfigManager:
 
         return configs
 
-    def _load_environment_config(
-        self, threshold_name: str
-    ) -> Optional[ThresholdConfig]:
+    def _load_environment_config(self, threshold_name: str) -> Optional[ThresholdConfig]:
         """Load specific threshold configuration from environment variables."""
         env_configs = self._load_environment_configs()
         return env_configs.get(threshold_name)
@@ -492,9 +462,7 @@ class ViolationConfigManager:
         """Validate threshold configuration."""
         try:
             # Check threshold ordering
-            if not (
-                config.red_threshold <= config.amber_threshold <= config.green_threshold
-            ):
+            if not (config.red_threshold <= config.amber_threshold <= config.green_threshold):
                 logger.error(f"Invalid threshold ordering for {config.name}")
                 return False
 
@@ -530,9 +498,9 @@ class ViolationConfigManager:
         return cache_age < self.cache_ttl_seconds
 
     def _invalidate_cache(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Invalidate the configuration cache."""
         self.cache_updated_at = None
         self.cached_thresholds.clear()

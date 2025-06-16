@@ -47,9 +47,9 @@ class RateLimitConfig:
         block_duration: int = 300,
         threat_multiplier: float = 0.5,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.requests_per_minute = requests_per_minute
         self.burst_size = burst_size
         self.window_size = window_size  # seconds
@@ -76,9 +76,9 @@ class RateLimiter:
         service_name: str = "acgs_service",
         default_config: Optional[RateLimitConfig] = None,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.redis_url = redis_url
         self.service_name = service_name
         self.default_config = default_config or RateLimitConfig()
@@ -88,17 +88,11 @@ class RateLimiter:
         self.endpoint_configs: Dict[str, RateLimitConfig] = {
             "/auth/login": RateLimitConfig(requests_per_minute=10, burst_size=3),
             "/auth/register": RateLimitConfig(requests_per_minute=5, burst_size=2),
-            "/auth/token/refresh": RateLimitConfig(
-                requests_per_minute=20, burst_size=5
-            ),
+            "/auth/token/refresh": RateLimitConfig(requests_per_minute=20, burst_size=5),
             "/api/v1/policies": RateLimitConfig(requests_per_minute=200, burst_size=50),
-            "/api/v1/principles": RateLimitConfig(
-                requests_per_minute=100, burst_size=25
-            ),
+            "/api/v1/principles": RateLimitConfig(requests_per_minute=100, burst_size=25),
             "/api/v1/synthesis": RateLimitConfig(requests_per_minute=30, burst_size=10),
-            "/api/v1/verification": RateLimitConfig(
-                requests_per_minute=50, burst_size=15
-            ),
+            "/api/v1/verification": RateLimitConfig(requests_per_minute=50, burst_size=15),
             "/health": RateLimitConfig(requests_per_minute=1000, burst_size=100),
         }
 
@@ -112,9 +106,9 @@ class RateLimiter:
         }
 
     async def initialize(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize Redis connection."""
         try:
             self.redis_client = redis.from_url(
@@ -131,9 +125,9 @@ class RateLimiter:
             self.redis_client = None
 
     async def close(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Close Redis connection."""
         if self.redis_client:
             await self.redis_client.close()
@@ -204,9 +198,7 @@ class RateLimiter:
 
         return False
 
-    def _get_rate_limit_config(
-        self, request: Request, endpoint_pattern: str
-    ) -> RateLimitConfig:
+    def _get_rate_limit_config(self, request: Request, endpoint_pattern: str) -> RateLimitConfig:
         """Get rate limit configuration for request."""
         # Get base configuration
         config = self.endpoint_configs.get(endpoint_pattern, self.default_config)
@@ -249,9 +241,9 @@ class RateLimiter:
         return False
 
     async def _block_client(self, client_id: str, duration: int):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Block client for specified duration."""
         if not self.redis_client:
             return
@@ -344,9 +336,9 @@ class RateLimiter:
         }
 
     async def _record_violation(self, client_id: str, violation_type: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record rate limit violation and check for blocking."""
         if not self.redis_client:
             return

@@ -32,27 +32,27 @@ from ...services.integrity_client import PolicyRule, integrity_service_client
 # Local implementations to avoid shared module dependencies
 class MockWebSocketStreamer:
     async def connect(self, websocket, client_id):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         await websocket.accept()
 
     async def disconnect(self, websocket):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
     async def send_alert(self, alert_type: str, details: dict):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
     async def get_connection_stats(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {"active_connections": 0}
 
 
@@ -63,21 +63,17 @@ router = APIRouter()
 
 # Local service authentication
 async def get_service_token():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Mock function to get service token."""
     return "mock_service_token"
 
 
-@router.post(
-    "/", response_model=schemas.VerificationResponse, status_code=status.HTTP_200_OK
-)
+@router.post("/", response_model=schemas.VerificationResponse, status_code=status.HTTP_200_OK)
 async def verify_policies(
     request_data: schemas.VerificationRequest,
-    current_user: User = Depends(
-        require_verification_triggerer
-    ),  # Protect this endpoint
+    current_user: User = Depends(require_verification_triggerer),  # Protect this endpoint
 ):
     """
     Orchestrates the formal verification of Datalog policy rules against AC principles.
@@ -92,10 +88,8 @@ async def verify_policies(
     policy_rules_to_verify: List[PolicyRule] = []
     rule_ids_to_fetch = [ref.id for ref in request_data.policy_rule_refs]
 
-    fetched_rules_from_integrity = (
-        await integrity_service_client.get_policy_rules_by_ids(
-            rule_ids=rule_ids_to_fetch, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
-        )
+    fetched_rules_from_integrity = await integrity_service_client.get_policy_rules_by_ids(
+        rule_ids=rule_ids_to_fetch, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
     )
     if len(fetched_rules_from_integrity) != len(rule_ids_to_fetch):
         # Handle case where some rules couldn't be fetched
@@ -195,9 +189,7 @@ async def verify_policies(
     if any(r.status == "error" for r in verification_results):
         overall_status = "error"  # Or more granular if mixed results
 
-    summary = (
-        f"Verification process completed. {len(verification_results)} rules processed."
-    )
+    summary = f"Verification process completed. {len(verification_results)} rules processed."
     if overall_status == "error":
         summary += " Errors occurred during verification."
 
@@ -310,9 +302,7 @@ async def conflict_detection(
     Phase 3: Conflict detection between policy rule sets.
     """
     if not request_data.rule_sets:
-        raise HTTPException(
-            status_code=400, detail="No rule sets provided for conflict detection."
-        )
+        raise HTTPException(status_code=400, detail="No rule sets provided for conflict detection.")
 
     # Fetch rules for each rule set
     # In this simplified implementation, we'll treat rule_sets as categories or tags
@@ -328,9 +318,7 @@ async def conflict_detection(
 
         # Simple filtering - in practice, you'd have proper rule set categorization
         filtered_rules = [
-            rule
-            for rule in all_rules
-            if rule_set_name.lower() in rule.rule_content.lower()
+            rule for rule in all_rules if rule_set_name.lower() in rule.rule_content.lower()
         ]
         all_rules_by_set[rule_set_name] = filtered_rules
 
@@ -342,9 +330,7 @@ async def conflict_detection(
     return response
 
 
-@router.get(
-    "/validation-status/{rule_id}", response_model=Dict, status_code=status.HTTP_200_OK
-)
+@router.get("/validation-status/{rule_id}", response_model=Dict, status_code=status.HTTP_200_OK)
 async def get_validation_status(
     rule_id: int, current_user: User = Depends(require_verification_triggerer)
 ):
@@ -358,9 +344,7 @@ async def get_validation_status(
         )
 
         if not rules:
-            raise HTTPException(
-                status_code=404, detail=f"Policy rule {rule_id} not found."
-            )
+            raise HTTPException(status_code=404, detail=f"Policy rule {rule_id} not found.")
 
         rule = rules[0]
 
@@ -386,9 +370,7 @@ async def get_validation_status(
         }
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error retrieving validation status: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error retrieving validation status: {str(e)}")
 
 
 # --- Task 7: Parallel Validation Pipeline Endpoints ---
@@ -419,9 +401,7 @@ async def parallel_verify_policies(
     - Comprehensive error handling with rollback capabilities
     """
     if not request_data.policy_rule_ids:
-        raise HTTPException(
-            status_code=400, detail="No policy rule IDs provided for verification."
-        )
+        raise HTTPException(status_code=400, detail="No policy rule IDs provided for verification.")
 
     try:
         # Task 7: Create constitutional validation context
@@ -447,9 +427,7 @@ async def parallel_verify_policies(
         return response
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Parallel verification failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Parallel verification failed: {str(e)}")
 
 
 @router.post("/constitutional-compliance", status_code=200)
@@ -468,9 +446,10 @@ async def verify_constitutional_compliance(
     - Formal verification with constitutional integrity
     """
     import time
+
     from ..core.constitutional_verification_engine import (
-        ConstitutionalVerificationEngine,
         ConstitutionalProperty,
+        ConstitutionalVerificationEngine,
         VerificationLevel,
         get_constitutional_verification_engine,
     )
@@ -482,8 +461,7 @@ async def verify_constitutional_compliance(
         policy_content = request_data.get("policy_content", "")
         if not policy_content:
             raise HTTPException(
-                status_code=400,
-                detail="Policy content is required for constitutional verification"
+                status_code=400, detail="Policy content is required for constitutional verification"
             )
 
         verification_level_str = request_data.get("verification_level", "standard")
@@ -541,7 +519,7 @@ async def verify_constitutional_compliance(
         verification_result = await verification_engine.verify_constitutional_compliance(
             policy_content=policy_content,
             constitutional_properties=constitutional_properties,
-            verification_level=verification_level
+            verification_level=verification_level,
         )
 
         # Calculate total response time
@@ -554,7 +532,10 @@ async def verify_constitutional_compliance(
                 "z3_theorem_prover": "integrated",
                 "formal_proof_generation": "enabled",
                 "checksum_validation": "protocol_v2.0_compliant",
-                "constitutional_hash_verified": verification_result.get("constitutional_compliance", {}).get("constitutional_hash") == "cdd01ef066bc6cf2",
+                "constitutional_hash_verified": verification_result.get(
+                    "constitutional_compliance", {}
+                ).get("constitutional_hash")
+                == "cdd01ef066bc6cf2",
             },
             "performance_analysis": {
                 "total_response_time_ms": total_time_ms,
@@ -579,11 +560,12 @@ async def verify_constitutional_compliance(
 
     except Exception as e:
         total_time_ms = (time.time() - verification_start) * 1000
-        logger.error(f"Constitutional compliance verification failed after {total_time_ms:.2f}ms: {e}")
+        logger.error(
+            f"Constitutional compliance verification failed after {total_time_ms:.2f}ms: {e}"
+        )
 
         raise HTTPException(
-            status_code=500,
-            detail=f"Constitutional compliance verification failed: {str(e)}"
+            status_code=500, detail=f"Constitutional compliance verification failed: {str(e)}"
         )
 
 
@@ -602,6 +584,7 @@ async def generate_formal_proof(
     - Proof integrity verification
     """
     import time
+
     from ..core.constitutional_verification_engine import (
         ProofType,
         get_constitutional_verification_engine,
@@ -615,7 +598,7 @@ async def generate_formal_proof(
         if not property_specification:
             raise HTTPException(
                 status_code=400,
-                detail="Property specification is required for formal proof generation"
+                detail="Property specification is required for formal proof generation",
             )
 
         policy_constraints = request_data.get("policy_constraints", [])
@@ -629,7 +612,7 @@ async def generate_formal_proof(
         formal_proof = await verification_engine.generate_formal_proof(
             property_specification=property_specification,
             policy_constraints=policy_constraints,
-            proof_type=proof_type
+            proof_type=proof_type,
         )
 
         # Calculate response time
@@ -641,7 +624,6 @@ async def generate_formal_proof(
             "property_id": formal_proof.property_id,
             "proof_type": formal_proof.proof_type.value,
             "verification_level": formal_proof.verification_level.value,
-
             # Proof content with ACGS-1 Protocol v2.0 format
             "formal_proof": {
                 "proof_steps": formal_proof.proof_steps,
@@ -649,7 +631,6 @@ async def generate_formal_proof(
                 "counter_example": formal_proof.counter_example,
                 "proof_checksum": formal_proof.proof_checksum,
             },
-
             # Verification results
             "verification_result": {
                 "verified": formal_proof.verified,
@@ -657,7 +638,6 @@ async def generate_formal_proof(
                 "constitutional_compliance": formal_proof.compliance_verified,
                 "constitutional_hash": formal_proof.constitutional_hash,
             },
-
             # Performance metrics
             "performance_metrics": {
                 "proof_generation_time_ms": proof_time_ms,
@@ -665,7 +645,6 @@ async def generate_formal_proof(
                 "proof_steps_count": len(formal_proof.proof_steps),
                 "z3_solver_performance": "optimal" if proof_time_ms < 1000 else "standard",
             },
-
             # Protocol compliance
             "protocol_compliance": {
                 "checksum_format": "sha256_16char",
@@ -673,7 +652,6 @@ async def generate_formal_proof(
                 "constitutional_reference": "cdd01ef066bc6cf2",
                 "formal_verification_engine": "z3_smt_solver",
             },
-
             "timestamp": formal_proof.timestamp.isoformat(),
         }
 
@@ -688,10 +666,7 @@ async def generate_formal_proof(
         proof_time_ms = (time.time() - proof_start) * 1000
         logger.error(f"Formal proof generation failed after {proof_time_ms:.2f}ms: {e}")
 
-        raise HTTPException(
-            status_code=500,
-            detail=f"Formal proof generation failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Formal proof generation failed: {str(e)}")
 
 
 @router.get("/verification-metrics", status_code=200)
@@ -721,7 +696,11 @@ async def get_verification_performance_metrics(
         enhanced_metrics = {
             "verification_engine_metrics": metrics,
             "performance_analysis": {
-                "verification_grade": "A" if metrics["success_rate"] >= 0.95 else "B" if metrics["success_rate"] >= 0.85 else "C",
+                "verification_grade": (
+                    "A"
+                    if metrics["success_rate"] >= 0.95
+                    else "B" if metrics["success_rate"] >= 0.85 else "C"
+                ),
                 "efficiency_score": min(100, metrics["cache_hit_rate"] * 100),
                 "formal_proof_capability": "advanced",
                 "z3_integration_status": "active",
@@ -745,8 +724,7 @@ async def get_verification_performance_metrics(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to retrieve verification metrics: {str(e)}"
+            status_code=500, detail=f"Failed to retrieve verification metrics: {str(e)}"
         )
 
 
@@ -773,9 +751,7 @@ async def get_parallel_validation_statistics(
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get statistics: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get statistics: {str(e)}")
 
 
 @router.post("/parallel/scale", status_code=status.HTTP_200_OK)
@@ -789,9 +765,7 @@ async def manual_scale_parallel_pipeline(
         scale_factor: Scaling factor (0.5 to 2.0)
     """
     if not 0.5 <= scale_factor <= 2.0:
-        raise HTTPException(
-            status_code=400, detail="Scale factor must be between 0.5 and 2.0"
-        )
+        raise HTTPException(status_code=400, detail="Scale factor must be between 0.5 and 2.0")
 
     try:
         if scale_factor > parallel_pipeline.current_scale_factor:
@@ -820,16 +794,14 @@ async def get_parallel_pipeline_stats(
         return stats
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get pipeline stats: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get pipeline stats: {str(e)}")
 
 
 @router.websocket("/ws/progress")
 async def websocket_progress_endpoint(websocket: WebSocket):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """
     Task 7: WebSocket endpoint for real-time validation progress updates.
     """
@@ -884,9 +856,7 @@ async def bias_detection_analysis(
         )
 
     if not request_data.bias_metrics:
-        raise HTTPException(
-            status_code=400, detail="No bias metrics specified for analysis."
-        )
+        raise HTTPException(status_code=400, detail="No bias metrics specified for analysis.")
 
     # Fetch Policy Rules from Integrity Service
     fetched_rules = await integrity_service_client.get_policy_rules_by_ids(
@@ -902,9 +872,7 @@ async def bias_detection_analysis(
         )
 
     # Perform bias detection analysis
-    response = await bias_detector.detect_bias(
-        request=request_data, policy_rules=fetched_rules
-    )
+    response = await bias_detector.detect_bias(request=request_data, policy_rules=fetched_rules)
 
     return response
 
@@ -999,9 +967,7 @@ async def get_available_bias_metrics(
     return bias_metrics
 
 
-@router.get(
-    "/fairness-properties", response_model=List[Dict], status_code=status.HTTP_200_OK
-)
+@router.get("/fairness-properties", response_model=List[Dict], status_code=status.HTTP_200_OK)
 async def get_available_fairness_properties(
     current_user: User = Depends(require_verification_triggerer),
 ):

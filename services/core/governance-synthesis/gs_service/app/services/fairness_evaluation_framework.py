@@ -64,9 +64,9 @@ class FairnessEvaluationFramework:
     """Framework for evaluating fairness in different domains."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.domain_configs = self._initialize_domain_configs()
 
     def _initialize_domain_configs(self) -> Dict[DomainType, DomainFairnessConfig]:
@@ -102,9 +102,7 @@ class FairnessEvaluationFramework:
                         False,
                         "Age category",
                     ),
-                    ProtectedAttribute(
-                        "disability", ["yes", "no"], True, "Disability status"
-                    ),
+                    ProtectedAttribute("disability", ["yes", "no"], True, "Disability status"),
                 ],
                 applicable_metrics=[
                     "demographic_parity",
@@ -128,9 +126,7 @@ class FairnessEvaluationFramework:
                         False,
                         "Racial/ethnic background",
                     ),
-                    ProtectedAttribute(
-                        "gender", ["male", "female"], True, "Gender identity"
-                    ),
+                    ProtectedAttribute("gender", ["male", "female"], True, "Gender identity"),
                     ProtectedAttribute(
                         "age_group",
                         ["young", "middle", "senior"],
@@ -160,9 +156,7 @@ class FairnessEvaluationFramework:
                         False,
                         "Racial/ethnic background",
                     ),
-                    ProtectedAttribute(
-                        "gender", ["male", "female"], True, "Gender identity"
-                    ),
+                    ProtectedAttribute("gender", ["male", "female"], True, "Gender identity"),
                     ProtectedAttribute(
                         "insurance_type",
                         ["private", "public", "uninsured"],
@@ -216,9 +210,7 @@ class FairnessEvaluationFramework:
             }
 
         # Validate protected attributes
-        validation_result = self._validate_protected_attributes(
-            config, protected_attributes
-        )
+        validation_result = self._validate_protected_attributes(config, protected_attributes)
         if not validation_result["valid"]:
             return {
                 "domain_type": domain_type.value,
@@ -239,13 +231,9 @@ class FairnessEvaluationFramework:
             "domain_type": domain_type.value,
             "fairness_applicable": True,
             "protected_attributes_analyzed": list(protected_attributes.keys()),
-            "fairness_metrics": [
-                self._metric_to_dict(metric) for metric in fairness_metrics
-            ],
+            "fairness_metrics": [self._metric_to_dict(metric) for metric in fairness_metrics],
             "overall_assessment": overall_assessment,
-            "recommendations": self._generate_fairness_recommendations(
-                config, fairness_metrics
-            ),
+            "recommendations": self._generate_fairness_recommendations(config, fairness_metrics),
             "context": context or {},
         }
 
@@ -273,9 +261,7 @@ class FairnessEvaluationFramework:
 
                 unexpected_values = provided_values - expected_values
                 if unexpected_values:
-                    logger.warning(
-                        f"Unexpected values for {attr.name}: {unexpected_values}"
-                    )
+                    logger.warning(f"Unexpected values for {attr.name}: {unexpected_values}")
 
         return {"valid": True}
 
@@ -352,9 +338,7 @@ class FairnessEvaluationFramework:
             group_indices = [i for i, val in enumerate(attr_values) if val == group]
             group_predictions = [predictions[i] for i in group_indices]
             selection_rate = (
-                sum(group_predictions) / len(group_predictions)
-                if group_predictions
-                else 0
+                sum(group_predictions) / len(group_predictions) if group_predictions else 0
             )
             selection_rates[group] = selection_rate
 
@@ -521,9 +505,7 @@ class FairnessEvaluationFramework:
 
         # Calculate maximum difference (excluding infinite values)
         finite_ratios = [r for r in fn_fp_ratio_by_group.values() if r != float("inf")]
-        max_diff = (
-            max(finite_ratios) - min(finite_ratios) if len(finite_ratios) > 1 else 0
-        )
+        max_diff = max(finite_ratios) - min(finite_ratios) if len(finite_ratios) > 1 else 0
 
         return FairnessMetric(
             name="treatment_equality",
@@ -597,9 +579,9 @@ class FairnessEvaluationFramework:
 
 # Example usage
 def run_fairness_evaluation_example():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Example of running fairness evaluation."""
     framework = FairnessEvaluationFramework()
 

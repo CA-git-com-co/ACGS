@@ -20,9 +20,9 @@ class CacheManager:
     """Centralized cache management service for ACGS."""
 
     def __init__(self, redis_url: str = "redis://localhost:6379/0"):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.redis_url = redis_url
         self.redis_client: Optional[redis.Redis] = None
         self.caches: Dict[str, MultiTierCache] = {}
@@ -30,9 +30,9 @@ class CacheManager:
         self._initialized = False
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize cache manager and Redis connection."""
         if self._initialized:
             return
@@ -65,62 +65,42 @@ class CacheManager:
             raise
 
     async def _initialize_caches(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize different cache instances for different use cases."""
 
         # Policy decision cache - high performance, short TTL
-        policy_l1 = LRUCache(
-            max_size=500, default_ttl=CACHE_TTL_POLICIES["policy_decisions"]
-        )
-        policy_l2 = RedisCache(
-            self.redis_client, key_prefix="acgs:policy:", enable_pubsub=True
-        )
+        policy_l1 = LRUCache(max_size=500, default_ttl=CACHE_TTL_POLICIES["policy_decisions"])
+        policy_l2 = RedisCache(self.redis_client, key_prefix="acgs:policy:", enable_pubsub=True)
         self.caches["policy_decisions"] = MultiTierCache(policy_l1, policy_l2)
 
         # Governance rules cache - medium performance, longer TTL
-        rules_l1 = LRUCache(
-            max_size=1000, default_ttl=CACHE_TTL_POLICIES["governance_rules"]
-        )
-        rules_l2 = RedisCache(
-            self.redis_client, key_prefix="acgs:rules:", enable_pubsub=True
-        )
+        rules_l1 = LRUCache(max_size=1000, default_ttl=CACHE_TTL_POLICIES["governance_rules"])
+        rules_l2 = RedisCache(self.redis_client, key_prefix="acgs:rules:", enable_pubsub=True)
         self.caches["governance_rules"] = MultiTierCache(rules_l1, rules_l2)
 
         # Static configuration cache - low frequency, very long TTL
-        config_l1 = LRUCache(
-            max_size=200, default_ttl=CACHE_TTL_POLICIES["static_configuration"]
-        )
-        config_l2 = RedisCache(
-            self.redis_client, key_prefix="acgs:config:", enable_pubsub=True
-        )
+        config_l1 = LRUCache(max_size=200, default_ttl=CACHE_TTL_POLICIES["static_configuration"])
+        config_l2 = RedisCache(self.redis_client, key_prefix="acgs:config:", enable_pubsub=True)
         self.caches["static_configuration"] = MultiTierCache(config_l1, config_l2)
 
         # User sessions cache - medium frequency, medium TTL
-        session_l1 = LRUCache(
-            max_size=2000, default_ttl=CACHE_TTL_POLICIES["user_sessions"]
-        )
-        session_l2 = RedisCache(
-            self.redis_client, key_prefix="acgs:sessions:", enable_pubsub=True
-        )
+        session_l1 = LRUCache(max_size=2000, default_ttl=CACHE_TTL_POLICIES["user_sessions"])
+        session_l2 = RedisCache(self.redis_client, key_prefix="acgs:sessions:", enable_pubsub=True)
         self.caches["user_sessions"] = MultiTierCache(session_l1, session_l2)
 
         # API responses cache - high frequency, short TTL
-        api_l1 = LRUCache(
-            max_size=1500, default_ttl=CACHE_TTL_POLICIES["api_responses"]
-        )
-        api_l2 = RedisCache(
-            self.redis_client, key_prefix="acgs:api:", enable_pubsub=True
-        )
+        api_l1 = LRUCache(max_size=1500, default_ttl=CACHE_TTL_POLICIES["api_responses"])
+        api_l2 = RedisCache(self.redis_client, key_prefix="acgs:api:", enable_pubsub=True)
         self.caches["api_responses"] = MultiTierCache(api_l1, api_l2)
 
         logger.info("Cache instances initialized", cache_types=list(self.caches.keys()))
 
     async def _start_cache_warming(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start cache warming tasks for critical data."""
 
         # Warm governance rules cache
@@ -134,9 +114,9 @@ class CacheManager:
         logger.info("Cache warming tasks started", tasks=len(self.warming_tasks))
 
     async def _warm_governance_rules(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Warm governance rules cache with critical rules."""
         try:
             # Sample governance rules for warming
@@ -173,9 +153,9 @@ class CacheManager:
             logger.error("Failed to warm governance rules cache", error=str(e))
 
     async def _warm_static_configuration(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Warm static configuration cache."""
         try:
             # Sample static configuration for warming
@@ -212,9 +192,7 @@ class CacheManager:
                     )
 
                 await cache.warm_cache(warming_data)
-                logger.info(
-                    "Static configuration cache warmed", items=len(config_items)
-                )
+                logger.info("Static configuration cache warmed", items=len(config_items))
 
         except Exception as e:
             logger.error("Failed to warm static configuration cache", error=str(e))
@@ -238,21 +216,19 @@ class CacheManager:
         return stats
 
     async def invalidate_cache_pattern(self, cache_type: str, pattern: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Invalidate cache entries matching pattern."""
         cache = await self.get_cache(cache_type)
         if cache:
             await cache.delete_by_pattern(pattern)
-            logger.info(
-                "Cache pattern invalidated", cache_type=cache_type, pattern=pattern
-            )
+            logger.info("Cache pattern invalidated", cache_type=cache_type, pattern=pattern)
 
     async def invalidate_cache_tag(self, cache_type: str, tag: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Invalidate cache entries with specific tag."""
         cache = await self.get_cache(cache_type)
         if cache:
@@ -260,18 +236,18 @@ class CacheManager:
             logger.info("Cache tag invalidated", cache_type=cache_type, tag=tag)
 
     async def clear_all_caches(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear all cache instances."""
         for cache_type, cache in self.caches.items():
             await cache.clear()
             logger.info("Cache cleared", cache_type=cache_type)
 
     async def shutdown(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Shutdown cache manager and cleanup resources."""
         # Cancel warming tasks
         for task in self.warming_tasks:
@@ -304,9 +280,9 @@ async def get_cache_manager() -> CacheManager:
 
 
 async def shutdown_cache_manager():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Shutdown global cache manager."""
     global _cache_manager
 

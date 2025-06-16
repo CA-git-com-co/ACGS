@@ -122,9 +122,9 @@ class ConstitutionalReportingService:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the Constitutional Reporting Service."""
         self.metrics = get_metrics("gs_service")
         self.report_templates = self._load_report_templates()
@@ -170,14 +170,10 @@ class ConstitutionalReportingService:
             report_id = f"{report_type.value}_{int(start_time.timestamp())}"
 
             # Collect compliance metrics
-            metrics = await self._collect_compliance_metrics(
-                period_start, period_end, db
-            )
+            metrics = await self._collect_compliance_metrics(period_start, period_end, db)
 
             # Perform trend analysis
-            trends = await self._perform_trend_analysis(
-                report_type, period_start, period_end, db
-            )
+            trends = await self._perform_trend_analysis(report_type, period_start, period_end, db)
 
             # Generate recommendations
             recommendations = await self._generate_recommendations(metrics, trends)
@@ -272,9 +268,7 @@ class ConstitutionalReportingService:
             logger.error(f"Error collecting compliance metrics: {e}")
             raise
 
-    def _calculate_reporting_period(
-        self, report_type: ReportType
-    ) -> tuple[datetime, datetime]:
+    def _calculate_reporting_period(self, report_type: ReportType) -> tuple[datetime, datetime]:
         """Calculate the reporting period based on report type."""
         now = datetime.now(timezone.utc)
 
@@ -284,9 +278,9 @@ class ConstitutionalReportingService:
         elif report_type == ReportType.WEEKLY:
             # Start of current week (Monday)
             days_since_monday = now.weekday()
-            period_end = now.replace(
-                hour=0, minute=0, second=0, microsecond=0
-            ) - timedelta(days=days_since_monday)
+            period_end = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(
+                days=days_since_monday
+            )
             period_start = period_end - timedelta(weeks=1)
         elif report_type == ReportType.MONTHLY:
             # Start of current month
@@ -308,9 +302,7 @@ class ConstitutionalReportingService:
         # Mock implementation - in production, load from files
         return {
             "html_summary": Template("<h1>Constitutional Compliance Report</h1>"),
-            "email_notification": Template(
-                "Alert: Constitutional compliance issue detected"
-            ),
+            "email_notification": Template("Alert: Constitutional compliance issue detected"),
         }
 
     def _load_notification_config(self) -> Dict[str, Any]:
@@ -351,9 +343,7 @@ class ConstitutionalReportingService:
             ]
 
             for metric_name, current, previous, direction, significance in trend_data:
-                change_percentage = (
-                    ((current - previous) / previous) * 100 if previous > 0 else 0
-                )
+                change_percentage = ((current - previous) / previous) * 100 if previous > 0 else 0
 
                 trends.append(
                     TrendAnalysis(
@@ -412,9 +402,7 @@ class ConstitutionalReportingService:
 
         return recommendations
 
-    async def _collect_active_alerts(
-        self, db: Optional[AsyncSession]
-    ) -> List[Dict[str, Any]]:
+    async def _collect_active_alerts(self, db: Optional[AsyncSession]) -> List[Dict[str, Any]]:
         """Collect currently active constitutional compliance alerts."""
         try:
             # Mock implementation - in production, query actual alerts
@@ -432,9 +420,7 @@ class ConstitutionalReportingService:
                     "type": "qec_performance",
                     "severity": "medium",
                     "message": "QEC response time exceeding 30 seconds",
-                    "timestamp": (
-                        datetime.now(timezone.utc) - timedelta(minutes=15)
-                    ).isoformat(),
+                    "timestamp": (datetime.now(timezone.utc) - timedelta(minutes=15)).isoformat(),
                     "status": "acknowledged",
                 },
             ]
@@ -471,12 +457,8 @@ class ConstitutionalReportingService:
                 health_status = "Poor"
 
             # Count improving vs declining trends
-            improving_trends = sum(
-                1 for t in trends if t.trend_direction == "improving"
-            )
-            declining_trends = sum(
-                1 for t in trends if t.trend_direction == "declining"
-            )
+            improving_trends = sum(1 for t in trends if t.trend_direction == "improving")
+            declining_trends = sum(1 for t in trends if t.trend_direction == "declining")
 
             # Count active critical alerts
             critical_alerts = sum(1 for a in alerts if a.get("severity") == "high")

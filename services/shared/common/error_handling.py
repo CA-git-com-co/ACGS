@@ -55,9 +55,9 @@ class ACGSException(Exception):
         user_message: Optional[str] = None,
         suggestions: Optional[List[str]] = None,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.message = message
         self.error_code = error_code
         self.details = details or {}
@@ -93,9 +93,9 @@ class ValidationError(ACGSException):
     """Exception for validation errors."""
 
     def __init__(self, message: str, field: str = None, value: Any = None, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         details = kwargs.get("details", {})
         if field:
             details["field"] = field
@@ -116,9 +116,9 @@ class AuthenticationError(ACGSException):
     """Exception for authentication errors."""
 
     def __init__(self, message: str = "Authentication failed", **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(
             message=message,
             error_code="AUTHENTICATION_ERROR",
@@ -133,9 +133,9 @@ class AuthorizationError(ACGSException):
     """Exception for authorization errors."""
 
     def __init__(self, message: str = "Access denied", **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         super().__init__(
             message=message,
             error_code="AUTHORIZATION_ERROR",
@@ -150,9 +150,9 @@ class NotFoundError(ACGSException):
     """Exception for resource not found errors."""
 
     def __init__(self, resource: str, identifier: str = None, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         message = f"{resource} not found"
         if identifier:
             message += f" with identifier: {identifier}"
@@ -177,9 +177,9 @@ class ConflictError(ACGSException):
     """Exception for resource conflict errors."""
 
     def __init__(self, message: str, resource: str = None, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         details = kwargs.get("details", {})
         if resource:
             details["resource"] = resource
@@ -199,9 +199,9 @@ class ServiceUnavailableError(ACGSException):
     """Exception for service unavailability errors."""
 
     def __init__(self, message: str, service_name: str = None, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         details = kwargs.get("details", {})
         if service_name:
             details["service"] = service_name
@@ -222,9 +222,9 @@ class DatabaseError(ACGSException):
     """Exception for database errors."""
 
     def __init__(self, message: str, operation: str = None, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         details = kwargs.get("details", {})
         if operation:
             details["operation"] = operation
@@ -244,9 +244,9 @@ class ConfigurationError(ACGSException):
     """Exception for configuration errors."""
 
     def __init__(self, message: str, config_key: str = None, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         details = kwargs.get("details", {})
         if config_key:
             details["config_key"] = config_key
@@ -284,9 +284,7 @@ def handle_service_error(
 
     # If already an ACGS exception, add context and return
     if isinstance(error, ACGSException):
-        error.details.update(
-            {"service": service_name, "operation": operation, **context}
-        )
+        error.details.update({"service": service_name, "operation": operation, **context})
         return error
 
     # Convert common exception types
@@ -385,9 +383,7 @@ def log_error(
         logger.error(f"Unhandled error: {str(error)}", extra=context, exc_info=True)
 
 
-def create_error_response(
-    error: Exception, include_traceback: bool = False
-) -> Dict[str, Any]:
+def create_error_response(error: Exception, include_traceback: bool = False) -> Dict[str, Any]:
     """
     Create standardized error response for API endpoints.
 
@@ -400,9 +396,7 @@ def create_error_response(
     """
     if isinstance(error, ACGSException):
         response = error.to_dict()
-        if not include_traceback and "traceback" in response["error"].get(
-            "details", {}
-        ):
+        if not include_traceback and "traceback" in response["error"].get("details", {}):
             del response["error"]["details"]["traceback"]
         return response
 

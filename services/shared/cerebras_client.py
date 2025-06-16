@@ -71,9 +71,9 @@ class CerebrasClient:
     """
 
     def __init__(self, config: CerebrasConfig):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize Cerebras client.
 
@@ -94,34 +94,30 @@ class CerebrasClient:
         self.total_response_time = 0.0
         self.error_count = 0
 
-        logger.info(
-            f"Initialized Cerebras client with base URL: {self.config.base_url}"
-        )
+        logger.info(f"Initialized Cerebras client with base URL: {self.config.base_url}")
 
     async def __aenter__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Async context manager entry."""
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Async context manager exit."""
         await self.close()
 
     async def close(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Close HTTP client."""
         await self.client.aclose()
 
-    @retry(
-        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
-    )
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def generate_constitutional_analysis(
         self,
         prompt: str,
@@ -201,9 +197,7 @@ class CerebrasClient:
                     },
                 )
             else:
-                error_msg = (
-                    f"Cerebras API error: {response.status_code} - {response.text}"
-                )
+                error_msg = f"Cerebras API error: {response.status_code} - {response.text}"
                 logger.error(error_msg)
                 self.error_count += 1
 
@@ -391,14 +385,10 @@ Please provide your analysis:
     def get_performance_metrics(self) -> Dict[str, Any]:
         """Get client performance metrics."""
         avg_response_time = (
-            self.total_response_time / self.request_count
-            if self.request_count > 0
-            else 0.0
+            self.total_response_time / self.request_count if self.request_count > 0 else 0.0
         )
 
-        error_rate = (
-            self.error_count / self.request_count if self.request_count > 0 else 0.0
-        )
+        error_rate = self.error_count / self.request_count if self.request_count > 0 else 0.0
 
         return {
             "total_requests": self.request_count,

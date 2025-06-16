@@ -36,9 +36,9 @@ except ImportError as e:
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
     def add_enhanced_security_middleware(app):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
 
@@ -78,25 +78,23 @@ try:
     # Add metrics endpoint
     @app.get("/metrics")
     async def metrics():
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Prometheus metrics endpoint for Formal Verification service."""
         endpoint_func = create_enhanced_metrics_endpoint("fv_service")
         return await endpoint_func()
 
-    logger.info(
-        "✅ Enhanced Prometheus metrics enabled for Formal Verification Service"
-    )
+    logger.info("✅ Enhanced Prometheus metrics enabled for Formal Verification Service")
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
 
     # Fallback metrics endpoint
     @app.get("/metrics")
     async def fallback_metrics():
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Fallback metrics endpoint."""
         return {"status": "metrics_not_available", "service": "fv_service"}
 
@@ -304,14 +302,10 @@ async def get_blockchain_audit_trail():
         },
         "compliance_tracking": {
             "constitutional_verifications": sum(
-                1
-                for entry in audit_trail
-                if "constitutional" in entry.get("operation", "")
+                1 for entry in audit_trail if "constitutional" in entry.get("operation", "")
             ),
             "signature_validations": sum(
-                1
-                for entry in audit_trail
-                if entry.get("operation") == "signature_validation"
+                1 for entry in audit_trail if entry.get("operation") == "signature_validation"
             ),
             "policy_verifications": sum(
                 1 for entry in audit_trail if "policy" in entry.get("operation", "")
@@ -328,9 +322,7 @@ async def add_blockchain_audit_entry(entry: BlockchainAuditEntry):
     """Add entry to blockchain audit trail."""
     try:
         # Create blockchain-style entry with hash chain
-        previous_hash = (
-            audit_trail[-1].get("block_hash", "genesis") if audit_trail else "genesis"
-        )
+        previous_hash = audit_trail[-1].get("block_hash", "genesis") if audit_trail else "genesis"
         entry_data = f"{entry.verification_id}{entry.policy_hash}{entry.verification_result}{entry.timestamp}{previous_hash}"
         block_hash = hashlib.sha256(entry_data.encode()).hexdigest()
 

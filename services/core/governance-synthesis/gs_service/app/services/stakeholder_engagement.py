@@ -68,9 +68,9 @@ class StakeholderNotificationService:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize the stakeholder notification service.
 
@@ -109,9 +109,7 @@ class StakeholderNotificationService:
         Returns:
             NotificationResult with sending details
         """
-        notification_id = (
-            f"notif_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{template_id}"
-        )
+        notification_id = f"notif_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{template_id}"
 
         try:
             # Get template
@@ -205,9 +203,7 @@ class StakeholderNotificationService:
         """Send direct email notification."""
         try:
             # For development/testing, just log the email
-            logger.info(
-                f"EMAIL NOTIFICATION: To: {recipient_email}, Subject: {subject}"
-            )
+            logger.info(f"EMAIL NOTIFICATION: To: {recipient_email}, Subject: {subject}")
             logger.debug(f"Email content: {content}")
 
             # In production, this would use actual SMTP configuration
@@ -236,15 +232,11 @@ class StakeholderNotificationService:
             logger.error(f"Error sending WebSocket notifications: {e}")
             return 0
 
-    async def _send_sms_notifications(
-        self, recipients: List[str], subject: str, body: str
-    ) -> int:
+    async def _send_sms_notifications(self, recipients: List[str], subject: str, body: str) -> int:
         """Send SMS notifications."""
         try:
             # For now, just log SMS notifications
-            logger.info(
-                f"SMS NOTIFICATION: Recipients: {len(recipients)}, Subject: {subject}"
-            )
+            logger.info(f"SMS NOTIFICATION: Recipients: {len(recipients)}, Subject: {subject}")
             return len(recipients)
         except Exception as e:
             logger.error(f"Error sending SMS notifications: {e}")

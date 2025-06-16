@@ -36,9 +36,9 @@ class TestCacheEntry:
     """Test CacheEntry functionality."""
 
     def test_cache_entry_creation(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test cache entry creation and properties."""
         entry = CacheEntry(
             value={"result": "allow"},
@@ -57,9 +57,9 @@ class TestCacheEntry:
         assert not entry.is_expired
 
     def test_cache_entry_expiration(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test cache entry expiration logic."""
         # Create entry that's already expired
         past_time = time.time() - 400  # 400 seconds ago
@@ -75,9 +75,9 @@ class TestCacheEntry:
         assert entry.is_expired
 
     def test_cache_entry_update_access(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test access tracking updates."""
         entry = CacheEntry(
             value={"result": "allow"},
@@ -100,18 +100,18 @@ class TestCacheStats:
     """Test CacheStats functionality."""
 
     def test_cache_stats_hit_rate_calculation(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test hit rate calculation."""
         stats = CacheStats(total_requests=100, cache_hits=80, cache_misses=20)
 
         assert stats.hit_rate == 80.0
 
     def test_cache_stats_zero_requests(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test hit rate with zero requests."""
         stats = CacheStats()
         assert stats.hit_rate == 0.0
@@ -122,19 +122,17 @@ class TestPolicyCacheOptimizer:
 
     @pytest.fixture
     def cache_optimizer(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create cache optimizer for testing."""
-        return PolicyCacheOptimizer(
-            max_size=100, default_ttl=300, enable_adaptive_ttl=True
-        )
+        return PolicyCacheOptimizer(max_size=100, default_ttl=300, enable_adaptive_ttl=True)
 
     @pytest.fixture
     def sample_policy_context(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Sample policy evaluation context."""
         return {
             "user_id": "user123",
@@ -144,9 +142,9 @@ class TestPolicyCacheOptimizer:
         }
 
     def test_cache_key_generation(self, cache_optimizer, sample_policy_context):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test deterministic cache key generation."""
         policy_id = "POL-001"
 
@@ -158,9 +156,9 @@ class TestPolicyCacheOptimizer:
         assert isinstance(key1, str)
 
     def test_adaptive_ttl_calculation(self, cache_optimizer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test adaptive TTL based on policy volatility."""
         policy_id = "POL-001"
         base_ttl = 300
@@ -179,9 +177,9 @@ class TestPolicyCacheOptimizer:
         assert ttl_low <= 3600  # Maximum TTL
 
     def test_policy_volatility_updates(self, cache_optimizer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test policy volatility tracking."""
         policy_id = "POL-001"
 
@@ -200,9 +198,9 @@ class TestPolicyCacheOptimizer:
 
     @pytest.mark.asyncio
     async def test_cache_miss_scenario(self, cache_optimizer, sample_policy_context):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test cache miss scenario."""
         policy_id = "POL-001"
 
@@ -218,17 +216,15 @@ class TestPolicyCacheOptimizer:
 
     @pytest.mark.asyncio
     async def test_cache_hit_scenario(self, cache_optimizer, sample_policy_context):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test cache hit scenario."""
         policy_id = "POL-001"
         policy_decision = {"result": "allow", "confidence": 0.95}
 
         # Store value in cache
-        success = await cache_optimizer.set(
-            policy_id, sample_policy_context, policy_decision
-        )
+        success = await cache_optimizer.set(policy_id, sample_policy_context, policy_decision)
         assert success
 
         # Retrieve value from cache (should be a hit)
@@ -241,9 +237,9 @@ class TestPolicyCacheOptimizer:
 
     @pytest.mark.asyncio
     async def test_cache_eviction(self, cache_optimizer, sample_policy_context):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test LRU cache eviction."""
         # Fill cache to capacity
         for i in range(cache_optimizer.max_size + 10):
@@ -260,12 +256,10 @@ class TestPolicyCacheOptimizer:
         assert cache_optimizer.stats.evictions > 0
 
     @pytest.mark.asyncio
-    async def test_cache_invalidation_specific(
-        self, cache_optimizer, sample_policy_context
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_cache_invalidation_specific(self, cache_optimizer, sample_policy_context):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test specific cache entry invalidation."""
         policy_id = "POL-001"
         policy_decision = {"result": "allow"}
@@ -284,9 +278,9 @@ class TestPolicyCacheOptimizer:
 
     @pytest.mark.asyncio
     async def test_cache_invalidation_all_policy(self, cache_optimizer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test invalidation of all entries for a policy."""
         policy_id = "POL-001"
 
@@ -315,16 +309,14 @@ class TestPolicyCacheOptimizer:
 
     @pytest.mark.asyncio
     async def test_expired_entry_cleanup(self, cache_optimizer, sample_policy_context):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test cleanup of expired cache entries."""
         policy_id = "POL-001"
 
         # Store entry with very short TTL
-        await cache_optimizer.set(
-            policy_id, sample_policy_context, {"result": "allow"}, ttl=1
-        )
+        await cache_optimizer.set(policy_id, sample_policy_context, {"result": "allow"}, ttl=1)
 
         # Wait for expiration
         await asyncio.sleep(1.1)
@@ -337,9 +329,9 @@ class TestPolicyCacheOptimizer:
         assert result is None
 
     def test_performance_stats(self, cache_optimizer):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance statistics collection."""
         stats = cache_optimizer.get_performance_stats()
 
@@ -379,9 +371,9 @@ class TestCacheOptimizerIntegration:
 
     @pytest.mark.asyncio
     async def test_global_cache_optimizer_singleton(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test global cache optimizer singleton pattern."""
         optimizer1 = await get_cache_optimizer()
         optimizer2 = await get_cache_optimizer()
@@ -392,9 +384,9 @@ class TestCacheOptimizerIntegration:
     @pytest.mark.asyncio
     @patch("cache_optimizer.get_redis_client")
     async def test_redis_integration_mock(self, mock_redis_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test Redis integration with mocked client."""
         # Setup mock Redis client
         mock_client = AsyncMock()

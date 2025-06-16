@@ -23,9 +23,9 @@ API_V1_AUTH_PREFIX = f"{settings.API_V1_STR}/auth"
 
 # Helper to generate unique user data for each test run
 def get_unique_user_data(prefix: str = "testuser"):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     unique_id = uuid.uuid4().hex[:8]
     return {
         "username": f"{prefix}_{unique_id}",
@@ -37,9 +37,9 @@ def get_unique_user_data(prefix: str = "testuser"):
 
 # --- Test User Registration ---
 async def test_register_user_success(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("reg_success")
     response = await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
     assert response.status_code == status.HTTP_201_CREATED
@@ -51,9 +51,9 @@ async def test_register_user_success(client: AsyncClient):
 
 
 async def test_register_user_duplicate_username(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("dup_uname")
     # First registration
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
@@ -67,9 +67,9 @@ async def test_register_user_duplicate_username(client: AsyncClient):
 
 
 async def test_register_user_duplicate_email(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("dup_email")
     # First registration
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
@@ -89,9 +89,9 @@ async def test_register_user_duplicate_email(client: AsyncClient):
 
 # --- Test User Login ---
 async def test_login_success(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("login_succ")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
 
@@ -140,9 +140,9 @@ async def test_login_success(client: AsyncClient):
 
 
 async def test_login_incorrect_password(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("login_fail_pass")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
 
@@ -153,9 +153,9 @@ async def test_login_incorrect_password(client: AsyncClient):
 
 
 async def test_login_non_existent_user(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     login_payload = {"username": "nonexistentuser", "password": "password"}
     response = await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -163,9 +163,9 @@ async def test_login_non_existent_user(client: AsyncClient):
 
 
 async def test_login_inactive_user(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("login_inactive")
     # Register user (by default is_active=True)
     reg_response = await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
@@ -194,9 +194,9 @@ async def test_login_inactive_user(client: AsyncClient):
 
 # --- Test Accessing Protected Endpoint (/me) ---
 async def test_read_me_success(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("me_succ")
     reg_response = await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
     user_id = reg_response.json()["id"]
@@ -216,9 +216,9 @@ async def test_read_me_success(client: AsyncClient):
 
 
 async def test_read_me_no_auth(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     me_response = await client.get(f"{API_V1_AUTH_PREFIX}/me")
     assert me_response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "Could not validate credentials" in me_response.json()["detail"]
@@ -226,9 +226,9 @@ async def test_read_me_no_auth(client: AsyncClient):
 
 # --- Test Token Refresh ---
 async def test_refresh_token_success(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("refresh_succ")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
 
@@ -236,20 +236,14 @@ async def test_refresh_token_success(client: AsyncClient):
         "username": user_data["username"],
         "password": user_data["password"],
     }
-    login_response = await client.post(
-        f"{API_V1_AUTH_PREFIX}/token", data=login_payload
-    )
+    login_response = await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
     initial_access_cookie_value = client.cookies.get("access_token_cookie")
     initial_refresh_cookie_value = client.cookies.get("refresh_token_cookie")
-    csrf_token = client.cookies.get(
-        "csrf_access_token"
-    )  # As per CsrfSettings cookie_key
+    csrf_token = client.cookies.get("csrf_access_token")  # As per CsrfSettings cookie_key
     assert csrf_token is not None
 
     headers = {"X-CSRF-TOKEN": csrf_token}  # As per CsrfSettings header_name
-    refresh_response = await client.post(
-        f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers
-    )
+    refresh_response = await client.post(f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers)
 
     assert refresh_response.status_code == status.HTTP_200_OK
     refresh_data = refresh_response.json()
@@ -260,15 +254,13 @@ async def test_refresh_token_success(client: AsyncClient):
     new_refresh_cookie_value = client.cookies.get("refresh_token_cookie")
     assert new_access_cookie_value != initial_access_cookie_value
     assert new_refresh_cookie_value != initial_refresh_cookie_value
-    assert (
-        "csrf_access_token" in refresh_response.cookies
-    )  # New CSRF cookie should be set
+    assert "csrf_access_token" in refresh_response.cookies  # New CSRF cookie should be set
 
 
 async def test_refresh_token_no_csrf_header(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("refresh_no_csrf")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
     login_payload = {
@@ -281,18 +273,16 @@ async def test_refresh_token_no_csrf_header(client: AsyncClient):
 
     # Attempt refresh without X-CSRF-TOKEN header
     refresh_response = await client.post(f"{API_V1_AUTH_PREFIX}/token/refresh")
-    assert (
-        refresh_response.status_code == status.HTTP_403_FORBIDDEN
-    )  # CSRF validation failure
+    assert refresh_response.status_code == status.HTTP_403_FORBIDDEN  # CSRF validation failure
     assert (
         "Missing CSRF Token" in refresh_response.json()["detail"]
     )  # Or similar message from fastapi-csrf-protect
 
 
 async def test_refresh_token_no_refresh_cookie(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("refresh_no_cookie")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
     login_payload = {
@@ -310,18 +300,16 @@ async def test_refresh_token_no_refresh_cookie(client: AsyncClient):
     )
 
     headers = {"X-CSRF-TOKEN": csrf_token}
-    refresh_response = await client.post(
-        f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers
-    )
+    refresh_response = await client.post(f"{API_V1_AUTH_PREFIX}/token/refresh", headers=headers)
     assert refresh_response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "Refresh token missing" in refresh_response.json()["detail"]
 
 
 # --- Test Logout ---
 async def test_logout_success(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("logout_succ")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
     login_payload = {
@@ -340,9 +328,7 @@ async def test_logout_success(client: AsyncClient):
     # Check cookies are cleared (httpx client updates its cookie jar based on Set-Cookie headers)
     assert client.cookies.get("access_token_cookie") is None
     assert (
-        client.cookies.get(
-            "refresh_token_cookie", path=f"{API_V1_AUTH_PREFIX}/token/refresh"
-        )
+        client.cookies.get("refresh_token_cookie", path=f"{API_V1_AUTH_PREFIX}/token/refresh")
         is None
     )
     assert client.cookies.get("csrf_access_token") is None
@@ -365,9 +351,9 @@ async def test_logout_success(client: AsyncClient):
 
 
 async def test_logout_no_csrf_header(client: AsyncClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_data = get_unique_user_data("logout_no_csrf")
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
     login_payload = {
@@ -376,9 +362,7 @@ async def test_logout_no_csrf_header(client: AsyncClient):
     }
     await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
 
-    logout_response = await client.post(
-        f"{API_V1_AUTH_PREFIX}/logout"
-    )  # No CSRF header
+    logout_response = await client.post(f"{API_V1_AUTH_PREFIX}/logout")  # No CSRF header
     assert logout_response.status_code == status.HTTP_403_FORBIDDEN
     assert "Missing CSRF Token" in logout_response.json()["detail"]
 

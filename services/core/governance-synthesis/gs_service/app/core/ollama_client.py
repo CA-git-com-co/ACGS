@@ -51,9 +51,9 @@ class OllamaLLMClient:
     """
 
     def __init__(self, config: Optional[OllamaConfig] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize Ollama client.
 
@@ -64,9 +64,7 @@ class OllamaLLMClient:
         self.session: Optional[aiohttp.ClientSession] = None
         self._available_models: Optional[List[str]] = None
 
-        logger.info(
-            f"Initialized OllamaLLMClient with base URL: {self.config.base_url}"
-        )
+        logger.info(f"Initialized OllamaLLMClient with base URL: {self.config.base_url}")
 
     @classmethod
     def _load_config_from_env(cls) -> OllamaConfig:
@@ -85,24 +83,24 @@ class OllamaLLMClient:
         )
 
     async def __aenter__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Async context manager entry."""
         await self._ensure_session()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Async context manager exit."""
         await self.close()
 
     async def _ensure_session(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Ensure aiohttp session is available."""
         if self.session is None or self.session.closed:
             timeout = aiohttp.ClientTimeout(total=self.config.timeout_seconds)
@@ -114,9 +112,9 @@ class OllamaLLMClient:
             self.session = aiohttp.ClientSession(timeout=timeout, headers=headers)
 
     async def close(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Close the aiohttp session."""
         if self.session and not self.session.closed:
             await self.session.close()
@@ -134,9 +132,7 @@ class OllamaLLMClient:
             async with self.session.get(f"{self.config.base_url}/api/tags") as response:
                 if response.status == 200:
                     data = await response.json()
-                    self._available_models = [
-                        model["name"] for model in data.get("models", [])
-                    ]
+                    self._available_models = [model["name"] for model in data.get("models", [])]
                     logger.info(
                         f"Ollama server healthy. Available models: {len(self._available_models)}"
                     )
@@ -161,9 +157,7 @@ class OllamaLLMClient:
 
         return self._available_models or []
 
-    @retry(
-        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
-    )
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def generate_text(
         self,
         prompt: str,
@@ -208,9 +202,7 @@ class OllamaLLMClient:
             "options": {"temperature": temp, "num_predict": max_tok, **kwargs},
         }
 
-        logger.debug(
-            f"Sending request to Ollama: model={model_name}, prompt_length={len(prompt)}"
-        )
+        logger.debug(f"Sending request to Ollama: model={model_name}, prompt_length={len(prompt)}")
 
         try:
             async with self.session.post(
@@ -229,9 +221,7 @@ class OllamaLLMClient:
 
         except asyncio.TimeoutError:
             logger.error(f"Ollama generation timed out for model {model_name}")
-            raise Exception(
-                f"Ollama generation timed out after {self.config.timeout_seconds}s"
-            )
+            raise Exception(f"Ollama generation timed out after {self.config.timeout_seconds}s")
         except aiohttp.ClientError as e:
             logger.error(f"Ollama client error for model {model_name}: {e}")
             raise Exception(f"Ollama client error: {e}")
@@ -239,9 +229,7 @@ class OllamaLLMClient:
             logger.error(f"Ollama generation failed for model {model_name}: {e}")
             raise
 
-    @retry(
-        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
-    )
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def get_structured_interpretation(
         self,
         query: LLMInterpretationInput,
@@ -367,17 +355,15 @@ async def get_ollama_client() -> OllamaLLMClient:
 
         # Verify server availability
         if not await _ollama_client.health_check():
-            logger.warning(
-                "Ollama server not available. Client created but may not function."
-            )
+            logger.warning("Ollama server not available. Client created but may not function.")
 
     return _ollama_client
 
 
 async def close_ollama_client():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Close the global Ollama client."""
     global _ollama_client
     if _ollama_client:

@@ -7,13 +7,14 @@ integration points, and performance parameters.
 """
 
 import os
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 import yaml
 
 
 class ServiceConfig:
     """Service configuration for PGC Service with ACGS-1 enhancements."""
-    
+
     # Default configuration values
     DEFAULT_CONFIG = {
         "service": {
@@ -43,7 +44,7 @@ class ServiceConfig:
             },
             "ac_service": {
                 "url": "http://ac_service:8001",
-                "timeout_ms": 5000, 
+                "timeout_ms": 5000,
                 "circuit_breaker_enabled": True,
                 "retry_attempts": 3,
                 "retry_delay_ms": 500,
@@ -59,7 +60,7 @@ class ServiceConfig:
         },
         "performance": {
             "p99_latency_target_ms": 500,  # p99 latency below 500ms
-            "p95_latency_target_ms": 25,    # p95 latency below 25ms
+            "p95_latency_target_ms": 25,  # p95 latency below 25ms
             "enable_optimizations": True,
             "cache_enabled": True,
             "max_concurrent_requests": 200,
@@ -71,32 +72,32 @@ class ServiceConfig:
             "enable_rate_limiting": True,
             "rate_limit_requests": 100,
             "rate_limit_window_seconds": 60,
-        }
+        },
     }
 
     def __init__(self, config_path: Optional[str] = None):
         """Initialize service configuration.
-        
+
         Args:
             config_path: Path to YAML configuration file (optional)
         """
         self.config = self.DEFAULT_CONFIG.copy()
-        
+
         # Load from environment variable if specified
         env_config_path = os.environ.get("PGC_CONFIG_PATH")
         if env_config_path:
             config_path = env_config_path
-        
+
         # Load from YAML file if provided
         if config_path and os.path.exists(config_path):
             self._load_from_yaml(config_path)
-        
+
         # Override with environment variables
         self._load_from_env()
 
     def _load_from_yaml(self, config_path: str) -> None:
         """Load configuration from YAML file.
-        
+
         Args:
             config_path: Path to YAML configuration file
         """
@@ -111,7 +112,7 @@ class ServiceConfig:
 
     def _load_from_env(self) -> None:
         """Load configuration from environment variables.
-        
+
         Environment variables override file-based configuration.
         Format: PGC_{SECTION}_{KEY}=value
         Example: PGC_SERVICE_PORT=8005
@@ -135,7 +136,7 @@ class ServiceConfig:
 
     def _deep_merge(self, target: Dict[str, Any], source: Dict[str, Any]) -> None:
         """Deep merge source dictionary into target dictionary.
-        
+
         Args:
             target: Target dictionary to merge into
             source: Source dictionary to merge from
@@ -148,12 +149,12 @@ class ServiceConfig:
 
     def get(self, section: str, key: str, default: Any = None) -> Any:
         """Get configuration value.
-        
+
         Args:
             section: Configuration section
             key: Configuration key
             default: Default value if key not found
-            
+
         Returns:
             Configuration value or default
         """
@@ -163,10 +164,10 @@ class ServiceConfig:
 
     def get_section(self, section: str) -> Dict[str, Any]:
         """Get configuration section.
-        
+
         Args:
             section: Configuration section
-            
+
         Returns:
             Section dictionary or empty dict if not found
         """
@@ -179,15 +180,12 @@ _service_config = None
 
 def get_service_config() -> ServiceConfig:
     """Get singleton service configuration instance.
-    
+
     Returns:
         ServiceConfig instance
     """
     global _service_config
     if _service_config is None:
-        config_path = os.environ.get(
-            "PGC_CONFIG_PATH", 
-            "/app/config/service_config.yaml"
-        )
+        config_path = os.environ.get("PGC_CONFIG_PATH", "/app/config/service_config.yaml")
         _service_config = ServiceConfig(config_path)
     return _service_config

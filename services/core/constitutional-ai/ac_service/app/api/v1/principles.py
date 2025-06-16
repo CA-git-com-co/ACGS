@@ -1,7 +1,7 @@
-from typing import List, Optional
-import logging
 import json
+import logging
 from datetime import datetime, timezone
+from typing import List, Optional
 
 from app import crud, models, schemas  # Import from app directory
 from app.core.auth import (  # Import from app directory
@@ -10,9 +10,9 @@ from app.core.auth import (  # Import from app directory
     require_admin_role,
 )
 from app.core.cryptographic_signing import (
-    get_constitutional_signing_service,
-    ConstitutionalSigningService,
     ConstitutionalSignature,
+    ConstitutionalSigningService,
+    get_constitutional_signing_service,
 )
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession  # Changed
@@ -47,9 +47,7 @@ async def create_principle_endpoint(
 
     try:
         # Create principle in database first
-        created_principle = await crud.create_principle(
-            db=db, principle=principle, user_id=user_id
-        )
+        created_principle = await crud.create_principle(db=db, principle=principle, user_id=user_id)
 
         # Prepare content for cryptographic signing
         principle_content = {
@@ -59,13 +57,14 @@ async def create_principle_endpoint(
             "category": created_principle.category,
             "priority": float(created_principle.priority) if created_principle.priority else 0.0,
             "version": created_principle.version,
-            "created_at": created_principle.created_at.isoformat() if created_principle.created_at else None,
+            "created_at": (
+                created_principle.created_at.isoformat() if created_principle.created_at else None
+            ),
         }
 
         # Generate cryptographic signature
         signature = await signing_service.sign_principle(
-            principle_data=principle_content,
-            signer_id=signer_id
+            principle_data=principle_content, signer_id=signer_id
         )
 
         # Store signature in principle metadata
@@ -75,25 +74,25 @@ async def create_principle_endpoint(
         constitutional_metadata["integrity_verified"] = True
 
         # Update principle with signature metadata
-        principle_update = schemas.PrincipleUpdate(
-            constitutional_metadata=constitutional_metadata
-        )
+        principle_update = schemas.PrincipleUpdate(constitutional_metadata=constitutional_metadata)
 
         updated_principle = await crud.update_principle(
             db=db, principle_id=created_principle.id, principle_update=principle_update
         )
 
-        logger.info(f"Created and signed principle '{principle.name}' with ID {created_principle.id}")
+        logger.info(
+            f"Created and signed principle '{principle.name}' with ID {created_principle.id}"
+        )
         return updated_principle
 
     except Exception as e:
         logger.error(f"Failed to create and sign principle: {e}")
         # If signing fails, we should still return the principle but mark it as unsigned
-        if 'created_principle' in locals():
+        if "created_principle" in locals():
             return created_principle
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to create principle with cryptographic signing: {str(e)}"
+            detail=f"Failed to create principle with cryptographic signing: {str(e)}",
         )
 
 
@@ -101,9 +100,7 @@ async def create_principle_endpoint(
 async def list_principles_endpoint(  # Changed to async def
     skip: int = 0,
     limit: int = 100,
-    db: AsyncSession = Depends(
-        get_async_db
-    ),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(get_async_db),  # Changed to AsyncSession and get_async_db
 ):
     principles = await crud.get_principles(db, skip=skip, limit=limit)  # Added await
     total_count = await crud.count_principles(db)  # Added await
@@ -113,13 +110,9 @@ async def list_principles_endpoint(  # Changed to async def
 @router.get("/{principle_id}", response_model=schemas.Principle)
 async def get_principle_endpoint(  # Changed to async def
     principle_id: int,
-    db: AsyncSession = Depends(
-        get_async_db
-    ),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(get_async_db),  # Changed to AsyncSession and get_async_db
 ):
-    db_principle = await crud.get_principle(
-        db, principle_id=principle_id
-    )  # Added await
+    db_principle = await crud.get_principle(db, principle_id=principle_id)  # Added await
     if db_principle is None:
         raise HTTPException(status_code=404, detail="Principle not found")
     return db_principle
@@ -129,14 +122,10 @@ async def get_principle_endpoint(  # Changed to async def
 async def update_principle_endpoint(  # Changed to async def
     principle_id: int,
     principle_update: schemas.PrincipleUpdate,
-    db: AsyncSession = Depends(
-        get_async_db
-    ),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(get_async_db),  # Changed to AsyncSession and get_async_db
     current_user: User = Depends(require_admin_role),
 ):
-    db_principle = await crud.get_principle(
-        db, principle_id=principle_id
-    )  # Added await
+    db_principle = await crud.get_principle(db, principle_id=principle_id)  # Added await
     if db_principle is None:
         raise HTTPException(status_code=404, detail="Principle not found")
 
@@ -144,10 +133,7 @@ async def update_principle_endpoint(  # Changed to async def
         existing_principle_with_new_name = await crud.get_principle_by_name(
             db, name=principle_update.name
         )  # Added await
-        if (
-            existing_principle_with_new_name
-            and existing_principle_with_new_name.id != principle_id
-        ):
+        if existing_principle_with_new_name and existing_principle_with_new_name.id != principle_id:
             raise HTTPException(
                 status_code=400,
                 detail=f"Principle name '{principle_update.name}' already in use by another principle.",
@@ -157,9 +143,7 @@ async def update_principle_endpoint(  # Changed to async def
         db=db, principle_id=principle_id, principle_update=principle_update
     )  # Added await
     if updated_principle is None:
-        raise HTTPException(
-            status_code=404, detail="Principle not found after update attempt"
-        )
+        raise HTTPException(status_code=404, detail="Principle not found after update attempt")
     return updated_principle
 
 
@@ -172,9 +156,7 @@ async def delete_principle_endpoint(
     """Delete a constitutional principle."""
     db_principle = await crud.delete_principle(db, principle_id=principle_id)
     if db_principle is None:
-        raise HTTPException(
-            status_code=404, detail="Principle not found or already deleted"
-        )
+        raise HTTPException(status_code=404, detail="Principle not found or already deleted")
     return db_principle
 
 
@@ -201,7 +183,7 @@ async def verify_principle_signature_endpoint(
                 "signed": False,
                 "verified": False,
                 "message": "Principle has no cryptographic signature",
-                "verification_timestamp": None
+                "verification_timestamp": None,
             }
 
         # Reconstruct the original content that was signed
@@ -220,8 +202,7 @@ async def verify_principle_signature_endpoint(
 
         # Verify the signature
         is_valid = await signing_service.verify_signature(
-            content=principle_content,
-            signature=signature
+            content=principle_content, signature=signature
         )
 
         verification_result = {
@@ -234,7 +215,9 @@ async def verify_principle_signature_endpoint(
             "signature_timestamp": signature.timestamp.isoformat(),
             "verification_timestamp": datetime.now(timezone.utc).isoformat(),
             "content_hash": signature.content_hash,
-            "message": "Signature verified successfully" if is_valid else "Signature verification failed"
+            "message": (
+                "Signature verified successfully" if is_valid else "Signature verification failed"
+            ),
         }
 
         logger.info(f"Verified signature for principle {principle_id}: {is_valid}")
@@ -242,10 +225,7 @@ async def verify_principle_signature_endpoint(
 
     except Exception as e:
         logger.error(f"Failed to verify principle signature: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Signature verification error: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Signature verification error: {str(e)}")
 
 
 # Enhanced Phase 1 Constitutional Principle Endpoints
@@ -262,9 +242,7 @@ async def get_principles_by_category_endpoint(
     principles = await crud.get_principles_by_category(
         db, category=category, skip=skip, limit=limit
     )
-    total_count = await crud.count_principles(
-        db
-    )  # Could be optimized to count only by category
+    total_count = await crud.count_principles(db)  # Could be optimized to count only by category
     return {"principles": principles, "total": total_count}
 
 
@@ -314,9 +292,7 @@ async def search_principles_by_keywords_endpoint(
 ):
     """Search principles by keywords."""
     if not keywords:
-        raise HTTPException(
-            status_code=400, detail="At least one keyword must be provided"
-        )
+        raise HTTPException(status_code=400, detail="At least one keyword must be provided")
 
     principles = await crud.search_principles_by_keywords(
         db, keywords=keywords, skip=skip, limit=limit
@@ -369,12 +345,8 @@ async def validate_constitutional_endpoint(
         await redis_client.initialize()
 
         # Setup multi-tier cache
-        l1_cache = LRUCache(
-            max_size=1000, default_ttl=CACHE_TTL_POLICIES["policy_decisions"]
-        )
-        l2_cache = RedisCache(
-            redis_client.redis_client, key_prefix="acgs:ac:constitutional:"
-        )
+        l1_cache = LRUCache(max_size=1000, default_ttl=CACHE_TTL_POLICIES["policy_decisions"])
+        l2_cache = RedisCache(redis_client.redis_client, key_prefix="acgs:ac:constitutional:")
         cache = MultiTierCache(l1_cache, l2_cache)
 
         # Generate cache key from request
@@ -414,9 +386,7 @@ async def validate_constitutional_endpoint(
             "violations": [],
             "recommendations": [],
             "applicable_principles": (
-                [p.name for p in principles]
-                if hasattr(principles[0], "name")
-                else principles
+                [p.name for p in principles] if hasattr(principles[0], "name") else principles
             ),
             "validation_timestamp": time.time(),
         }
@@ -438,9 +408,7 @@ async def validate_constitutional_endpoint(
             validation_result["compliance_score"] -= 0.25
 
         # Ensure compliance score is non-negative
-        validation_result["compliance_score"] = max(
-            0.0, validation_result["compliance_score"]
-        )
+        validation_result["compliance_score"] = max(0.0, validation_result["compliance_score"])
 
         # Cache the result with appropriate TTL
         await cache.put(
@@ -461,6 +429,4 @@ async def validate_constitutional_endpoint(
 
     except Exception as e:
         logger.error(f"Constitutional validation failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Constitutional validation error: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Constitutional validation error: {str(e)}")

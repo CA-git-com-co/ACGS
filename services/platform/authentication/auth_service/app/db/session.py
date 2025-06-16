@@ -27,9 +27,9 @@ AsyncSessionFactory = sessionmaker(
 
 
 async def init_db():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Initializes the database. If using SQLite, creates all tables."""
     if db_url_to_use and "sqlite" in str(db_url_to_use):
         async with async_engine.begin() as conn:

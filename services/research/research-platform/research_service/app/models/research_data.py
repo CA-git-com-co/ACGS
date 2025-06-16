@@ -34,9 +34,7 @@ class ResearchDataset(Base):
 
     # Dataset metadata
     domain = Column(String(100), index=True)
-    data_type = Column(
-        String(50), nullable=False
-    )  # experimental, observational, synthetic
+    data_type = Column(String(50), nullable=False)  # experimental, observational, synthetic
     size_bytes = Column(Integer)
     record_count = Column(Integer)
 
@@ -67,14 +65,12 @@ class ResearchDataset(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    data_points = relationship(
-        "DataPoint", back_populates="dataset", cascade="all, delete-orphan"
-    )
+    data_points = relationship("DataPoint", back_populates="dataset", cascade="all, delete-orphan")
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<ResearchDataset(id='{self.id}', name='{self.name}', version='{self.version}')>"
 
 
@@ -84,9 +80,7 @@ class DataPoint(Base):
     __tablename__ = "data_points"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    dataset_id = Column(
-        String, ForeignKey("research_datasets.id"), nullable=False, index=True
-    )
+    dataset_id = Column(String, ForeignKey("research_datasets.id"), nullable=False, index=True)
 
     # Data content
     data = Column(JSON, nullable=False)
@@ -107,9 +101,9 @@ class DataPoint(Base):
     dataset = relationship("ResearchDataset", back_populates="data_points")
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<DataPoint(id='{self.id}', dataset_id='{self.dataset_id}')>"
 
 
@@ -160,9 +154,9 @@ class AnalysisResult(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<AnalysisResult(id='{self.id}', name='{self.name}', analysis_type='{self.analysis_type}')>"
 
 
@@ -203,9 +197,9 @@ class Benchmark(Base):
     )
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<Benchmark(id='{self.id}', name='{self.name}', category='{self.category}')>"
 
 
@@ -215,9 +209,7 @@ class BenchmarkResult(Base):
     __tablename__ = "benchmark_results"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    benchmark_id = Column(
-        String, ForeignKey("benchmarks.id"), nullable=False, index=True
-    )
+    benchmark_id = Column(String, ForeignKey("benchmarks.id"), nullable=False, index=True)
 
     # Execution metadata
     system_under_test = Column(String(255), nullable=False)
@@ -252,9 +244,9 @@ class BenchmarkResult(Base):
     benchmark = relationship("Benchmark", back_populates="results")
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<BenchmarkResult(id='{self.id}', benchmark_id='{self.benchmark_id}', status='{self.status}')>"
 
 
@@ -292,7 +284,7 @@ class ReproducibilityRecord(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return f"<ReproducibilityRecord(id='{self.id}', reproducible={self.reproducible}, score={self.reproducibility_score})>"

@@ -31,9 +31,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-shared_path = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "shared"
-)
+shared_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "shared")
 sys.path.append(shared_path)
 from api_models import HealthCheckResponse, ServiceInfo, create_success_response
 from middleware import add_production_middleware, create_exception_handlers
@@ -48,21 +46,21 @@ try:
 except ImportError:
     # Fallback for missing shared modules
     def get_metrics(service_name):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return None
 
     def metrics_middleware(service_name):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return lambda request, call_next: call_next(request)
 
     def create_metrics_endpoint():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return lambda: {"metrics": "not_available"}
 
 
@@ -72,9 +70,9 @@ try:
 except ImportError:
     # Fallback for missing security modules
     def add_security_middleware(app):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
     security_config = {}
@@ -114,9 +112,9 @@ app = FastAPI(
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 # Add CORS middleware with SECURE production settings
-allowed_origins = os.getenv(
-    "ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080"
-).split(",")
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080").split(
+    ","
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,  # SECURITY FIX: No longer allow all origins
@@ -138,9 +136,9 @@ try:
     # Add metrics endpoint
     @app.get("/metrics")
     async def metrics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Prometheus metrics endpoint for authentication service."""
         endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
         return await endpoint_func()
@@ -152,9 +150,9 @@ except ImportError as e:
     # Fallback metrics endpoint
     @app.get("/metrics")
     async def fallback_metrics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Fallback metrics endpoint."""
         return {"status": "metrics_not_available", "service": SERVICE_NAME}
 
@@ -180,9 +178,9 @@ service_start_time = time.time()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Application lifespan management with service initialization."""
     logger.info(f"🚀 Starting ACGS-1 {SERVICE_PHASE} Authentication Service")
 
@@ -207,9 +205,9 @@ add_security_middleware(app)
 
 # @app.middleware("http")
 # async def enterprise_security_middleware(request: Request, call_next):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+# requires: Valid input parameters
+# ensures: Correct function execution
+# sha256: func_hash
 #     """Enterprise security middleware with intrusion detection"""
 #     try:
 #         # Get database session for security logging
@@ -259,20 +257,12 @@ except ImportError as e:
 if ROUTERS_AVAILABLE:
     try:
         # Include the authentication router
-        app.include_router(
-            auth_router, prefix="/auth", tags=["Authentication & Authorization"]
-        )
+        app.include_router(auth_router, prefix="/auth", tags=["Authentication & Authorization"])
 
         # Include enterprise authentication routers
-        app.include_router(
-            mfa_router, prefix="/auth/mfa", tags=["Multi-Factor Authentication"]
-        )
-        app.include_router(
-            oauth_router, prefix="/auth/oauth", tags=["OAuth 2.0 & OpenID Connect"]
-        )
-        app.include_router(
-            api_keys_router, prefix="/auth/api-keys", tags=["API Key Management"]
-        )
+        app.include_router(mfa_router, prefix="/auth/mfa", tags=["Multi-Factor Authentication"])
+        app.include_router(oauth_router, prefix="/auth/oauth", tags=["OAuth 2.0 & OpenID Connect"])
+        app.include_router(api_keys_router, prefix="/auth/api-keys", tags=["API Key Management"])
         logger.info("✅ All API routers included successfully")
     except Exception as e:
         logger.warning(f"⚠️ Failed to include some routers: {e}")
@@ -283,23 +273,23 @@ if not ROUTERS_AVAILABLE:
 
     @app.get("/auth/mfa/status")
     async def mfa_status_fallback():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {"error": "MFA service not available", "enterprise_features": False}
 
     @app.get("/auth/oauth/providers")
     async def oauth_providers_fallback():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {"error": "OAuth service not available", "enterprise_features": False}
 
     @app.get("/auth/api-keys/")
     async def api_keys_fallback():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         return {"error": "API key service not available", "enterprise_features": False}
 
 
@@ -316,9 +306,9 @@ if not ROUTERS_AVAILABLE:
 
 @app.get("/", response_model=ServiceInfo)
 async def root(request: Request):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Root endpoint with comprehensive service information."""
     correlation_id = getattr(request.state, "correlation_id", None)
     response_time_ms = getattr(request.state, "response_time_ms", None)
@@ -353,9 +343,9 @@ async def root(request: Request):
 
 @app.get("/health", response_model=HealthCheckResponse)
 async def health_check(request: Request):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Enhanced health check endpoint with comprehensive service status."""
     correlation_id = getattr(request.state, "correlation_id", None)
     uptime_seconds = time.time() - service_start_time
@@ -390,26 +380,24 @@ async def health_check(request: Request):
 # Add startup event
 @app.on_event("startup")
 async def startup_event():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Service startup initialization."""
     logger.info(f"🚀 {SERVICE_NAME} v{SERVICE_VERSION} starting up")
     logger.info(f"📊 Phase: {SERVICE_PHASE}")
     logger.info(f"🔌 Port: {SERVICE_PORT}")
     logger.info(f"📚 API Documentation: http://localhost:{SERVICE_PORT}/docs")
     logger.info(f"🔍 Health Check: http://localhost:{SERVICE_PORT}/health")
-    logger.info(
-        f"🔐 Enterprise Features: {'Enabled' if ROUTERS_AVAILABLE else 'Minimal Mode'}"
-    )
+    logger.info(f"🔐 Enterprise Features: {'Enabled' if ROUTERS_AVAILABLE else 'Minimal Mode'}")
 
 
 # Add shutdown event
 @app.on_event("shutdown")
 async def shutdown_event():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Service shutdown cleanup."""
     logger.info(f"🔄 {SERVICE_NAME} shutting down gracefully")
 

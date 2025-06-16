@@ -6,20 +6,22 @@ High-performance service discovery with circuit breakers, connection pooling, an
 import asyncio
 import logging
 import time
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, Optional, List, Set
-from dataclasses import dataclass, field
-from enum import Enum
-import httpx
 from contextlib import asynccontextmanager
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional, Set
+
 import aioredis
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+import httpx
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
 
 
 class ServiceStatus(Enum):
     """Enhanced service status enumeration."""
+
     HEALTHY = "healthy"
     UNHEALTHY = "unhealthy"
     DEGRADED = "degraded"
@@ -31,6 +33,7 @@ class ServiceStatus(Enum):
 
 class CircuitBreakerState(Enum):
     """Circuit breaker states."""
+
     CLOSED = "closed"
     OPEN = "open"
     HALF_OPEN = "half_open"
@@ -39,15 +42,16 @@ class CircuitBreakerState(Enum):
 @dataclass
 class CircuitBreaker:
     """Circuit breaker for service health checks."""
+
     failure_threshold: int = 5
     recovery_timeout: int = 60
     half_open_max_calls: int = 3
-    
+
     failure_count: int = 0
     last_failure_time: float = 0
     state: CircuitBreakerState = CircuitBreakerState.CLOSED
     half_open_calls: int = 0
-    
+
     def can_execute(self) -> bool:
         """Check if operation can be executed."""
         if self.state == CircuitBreakerState.CLOSED:
@@ -60,25 +64,25 @@ class CircuitBreaker:
             return False
         else:  # HALF_OPEN
             return self.half_open_calls < self.half_open_max_calls
-    
+
     def record_success(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record successful operation."""
         if self.state == CircuitBreakerState.HALF_OPEN:
             self.state = CircuitBreakerState.CLOSED
         self.failure_count = 0
         self.half_open_calls = 0
-    
+
     def record_failure(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record failed operation."""
         self.failure_count += 1
         self.last_failure_time = time.time()
-        
+
         if self.state == CircuitBreakerState.HALF_OPEN:
             self.state = CircuitBreakerState.OPEN
         elif self.failure_count >= self.failure_threshold:
@@ -88,6 +92,7 @@ class CircuitBreaker:
 @dataclass
 class ServiceInfo:
     """Enhanced service information with performance metrics."""
+
     name: str
     host: str
     port: int
@@ -95,130 +100,187 @@ class ServiceInfo:
     version: str = "1.0.0"
     tags: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     # Runtime information
     status: ServiceStatus = ServiceStatus.UNKNOWN
     last_health_check: Optional[datetime] = None
     health_check_failures: int = 0
     registered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    
+
     # Performance metrics
     avg_response_time: float = 0.0
     last_response_time: float = 0.0
     success_rate: float = 1.0
     total_requests: int = 0
     successful_requests: int = 0
-    
+
     # Circuit breaker
     circuit_breaker: CircuitBreaker = field(default_factory=CircuitBreaker)
-    
+
     @property
     def base_url(self) -> str:
         """Get the base URL for the service."""
         return f"http://{self.host}:{self.port}"
-    
+
     @property
     def health_url(self) -> str:
         """Get the health check URL for the service."""
         return f"{self.base_url}{self.health_endpoint}"
-    
+
     def update_metrics(self, response_time: float, success: bool):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update performance metrics."""
         self.total_requests += 1
         self.last_response_time = response_time
-        
+
         if success:
             self.successful_requests += 1
-        
+
         # Update average response time (exponential moving average)
         alpha = 0.1  # Smoothing factor
         self.avg_response_time = (alpha * response_time) + ((1 - alpha) * self.avg_response_time)
-        
+
         # Update success rate
-        self.success_rate = self.successful_requests / self.total_requests if self.total_requests > 0 else 1.0
+        self.success_rate = (
+            self.successful_requests / self.total_requests if self.total_requests > 0 else 1.0
+        )
 
 
 class EnhancedServiceRegistry:
     """High-performance service registry with advanced reliability patterns."""
-    
+
     def __init__(
         self,
         health_check_interval: int = 30,
         max_failures: int = 3,
         connection_pool_size: int = 100,
-        redis_url: Optional[str] = None
+        redis_url: Optional[str] = None,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.services: Dict[str, ServiceInfo] = {}
         self.health_check_interval = health_check_interval
         self.max_failures = max_failures
         self.redis_url = redis_url
-        
+
         # HTTP client with connection pooling
         self.http_client = httpx.AsyncClient(
             timeout=httpx.Timeout(10.0, connect=5.0),
             limits=httpx.Limits(max_connections=connection_pool_size, max_keepalive_connections=20),
-            http2=True
+            http2=True,
         )
-        
+
         # Redis client for caching
         self.redis_client: Optional[aioredis.Redis] = None
-        
+
         # Background tasks
         self._health_check_task: Optional[asyncio.Task] = None
         self._metrics_task: Optional[asyncio.Task] = None
         self._running = False
-        
+
         # Performance tracking
         self.health_check_metrics = {
             "total_checks": 0,
             "successful_checks": 0,
             "failed_checks": 0,
-            "avg_check_time": 0.0
+            "avg_check_time": 0.0,
         }
-        
+
         # Initialize with known ACGS services
         self._initialize_acgs_services()
-    
+
     def _initialize_acgs_services(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize registry with known ACGS services."""
         acgs_services = [
-            {"name": "auth_service", "host": "localhost", "port": 8000, "tags": ["core", "authentication"]},
-            {"name": "ac_service", "host": "localhost", "port": 8001, "tags": ["core", "constitutional"]},
-            {"name": "integrity_service", "host": "localhost", "port": 8002, "tags": ["core", "security"]},
-            {"name": "fv_service", "host": "localhost", "port": 8003, "tags": ["core", "verification"]},
-            {"name": "gs_service", "host": "localhost", "port": 8004, "tags": ["core", "governance"]},
+            {
+                "name": "auth_service",
+                "host": "localhost",
+                "port": 8000,
+                "tags": ["core", "authentication"],
+            },
+            {
+                "name": "ac_service",
+                "host": "localhost",
+                "port": 8001,
+                "tags": ["core", "constitutional"],
+            },
+            {
+                "name": "integrity_service",
+                "host": "localhost",
+                "port": 8002,
+                "tags": ["core", "security"],
+            },
+            {
+                "name": "fv_service",
+                "host": "localhost",
+                "port": 8003,
+                "tags": ["core", "verification"],
+            },
+            {
+                "name": "gs_service",
+                "host": "localhost",
+                "port": 8004,
+                "tags": ["core", "governance"],
+            },
             {"name": "pgc_service", "host": "localhost", "port": 8005, "tags": ["core", "policy"]},
-            {"name": "ec_service", "host": "localhost", "port": 8006, "tags": ["core", "executive"]},
-            {"name": "workflow_service", "host": "localhost", "port": 9007, "tags": ["platform", "orchestration"]},
-            {"name": "blockchain_bridge", "host": "localhost", "port": 9008, "tags": ["integration", "blockchain"]},
-            {"name": "performance_optimizer", "host": "localhost", "port": 9009, "tags": ["platform", "optimization"]},
-            {"name": "external_apis_service", "host": "localhost", "port": 9010, "tags": ["integration", "external"]},
-            {"name": "federated_evaluation", "host": "localhost", "port": 8007, "tags": ["research", "evaluation"]},
+            {
+                "name": "ec_service",
+                "host": "localhost",
+                "port": 8006,
+                "tags": ["core", "executive"],
+            },
+            {
+                "name": "workflow_service",
+                "host": "localhost",
+                "port": 9007,
+                "tags": ["platform", "orchestration"],
+            },
+            {
+                "name": "blockchain_bridge",
+                "host": "localhost",
+                "port": 9008,
+                "tags": ["integration", "blockchain"],
+            },
+            {
+                "name": "performance_optimizer",
+                "host": "localhost",
+                "port": 9009,
+                "tags": ["platform", "optimization"],
+            },
+            {
+                "name": "external_apis_service",
+                "host": "localhost",
+                "port": 9010,
+                "tags": ["integration", "external"],
+            },
+            {
+                "name": "federated_evaluation",
+                "host": "localhost",
+                "port": 8007,
+                "tags": ["research", "evaluation"],
+            },
         ]
-        
+
         for service_config in acgs_services:
             service_info = ServiceInfo(**service_config)
             self.services[service_info.name] = service_info
-    
+
     async def start(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start the enhanced service registry."""
         if self._running:
             return
-        
+
         self._running = True
-        
+
         # Initialize Redis if configured
         if self.redis_url:
             try:
@@ -226,57 +288,57 @@ class EnhancedServiceRegistry:
                 logger.info("Redis cache initialized for service registry")
             except Exception as e:
                 logger.warning(f"Failed to initialize Redis cache: {e}")
-        
+
         # Start background tasks
         self._health_check_task = asyncio.create_task(self._enhanced_health_check_loop())
         self._metrics_task = asyncio.create_task(self._metrics_collection_loop())
-        
+
         logger.info("Enhanced service registry started")
-    
+
     async def stop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop the service registry."""
         self._running = False
-        
+
         # Cancel background tasks
         if self._health_check_task:
             self._health_check_task.cancel()
         if self._metrics_task:
             self._metrics_task.cancel()
-        
+
         # Close HTTP client
         await self.http_client.aclose()
-        
+
         # Close Redis client
         if self.redis_client:
             await self.redis_client.close()
-        
+
         logger.info("Enhanced service registry stopped")
-    
+
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=1, max=10),
-        retry=retry_if_exception_type((httpx.TimeoutException, httpx.ConnectError))
+        retry=retry_if_exception_type((httpx.TimeoutException, httpx.ConnectError)),
     )
     async def check_service_health(self, service: ServiceInfo) -> bool:
         """Enhanced health check with circuit breaker and metrics."""
         if not service.circuit_breaker.can_execute():
             service.status = ServiceStatus.CIRCUIT_OPEN
             return False
-        
+
         start_time = time.time()
-        
+
         try:
             response = await self.http_client.get(service.health_url)
             response_time = time.time() - start_time
-            
+
             is_healthy = response.status_code == 200
-            
+
             # Update metrics
             service.update_metrics(response_time, is_healthy)
-            
+
             if is_healthy:
                 service.status = ServiceStatus.HEALTHY
                 service.health_check_failures = 0
@@ -288,33 +350,35 @@ class EnhancedServiceRegistry:
                     service.status = ServiceStatus.UNHEALTHY
                 else:
                     service.status = ServiceStatus.DEGRADED
-            
+
             service.last_health_check = datetime.now(timezone.utc)
-            
+
             # Cache result in Redis
             if self.redis_client:
                 await self._cache_service_health(service.name, is_healthy, response_time)
-            
+
             return is_healthy
-            
+
         except Exception as e:
             response_time = time.time() - start_time
             logger.debug(f"Health check failed for {service.name}: {e}")
-            
+
             service.update_metrics(response_time, False)
             service.health_check_failures += 1
             service.last_health_check = datetime.now(timezone.utc)
             service.circuit_breaker.record_failure()
-            
+
             if service.health_check_failures >= self.max_failures:
                 service.status = ServiceStatus.UNHEALTHY
-            
+
             return False
 
-    async def _cache_service_health(self, service_name: str, is_healthy: bool, response_time: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+    async def _cache_service_health(
+        self, service_name: str, is_healthy: bool, response_time: float
+    ):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Cache service health status in Redis."""
         if not self.redis_client:
             return
@@ -323,12 +387,10 @@ class EnhancedServiceRegistry:
             cache_data = {
                 "healthy": is_healthy,
                 "response_time": response_time,
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
             await self.redis_client.setex(
-                f"service_health:{service_name}",
-                300,  # 5 minutes TTL
-                str(cache_data)
+                f"service_health:{service_name}", 300, str(cache_data)  # 5 minutes TTL
             )
         except Exception as e:
             logger.debug(f"Failed to cache health status for {service_name}: {e}")
@@ -341,9 +403,9 @@ class EnhancedServiceRegistry:
         semaphore = asyncio.Semaphore(10)  # Limit concurrent checks
 
         async def limited_health_check(service):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             async with semaphore:
                 return await self.check_service_health(service)
 
@@ -386,9 +448,9 @@ class EnhancedServiceRegistry:
         return health_status
 
     async def _enhanced_health_check_loop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Enhanced background health checking loop."""
         while self._running:
             try:
@@ -401,9 +463,9 @@ class EnhancedServiceRegistry:
                 await asyncio.sleep(5)  # Short delay before retry
 
     async def _metrics_collection_loop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Background metrics collection and aggregation."""
         while self._running:
             try:
@@ -416,9 +478,9 @@ class EnhancedServiceRegistry:
                 await asyncio.sleep(10)
 
     async def _collect_and_aggregate_metrics(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Collect and aggregate service metrics."""
         if not self.redis_client:
             return
@@ -426,8 +488,12 @@ class EnhancedServiceRegistry:
         try:
             # Aggregate service metrics
             total_services = len(self.services)
-            healthy_services = len([s for s in self.services.values() if s.status == ServiceStatus.HEALTHY])
-            degraded_services = len([s for s in self.services.values() if s.status == ServiceStatus.DEGRADED])
+            healthy_services = len(
+                [s for s in self.services.values() if s.status == ServiceStatus.HEALTHY]
+            )
+            degraded_services = len(
+                [s for s in self.services.values() if s.status == ServiceStatus.DEGRADED]
+            )
 
             metrics_data = {
                 "timestamp": time.time(),
@@ -435,22 +501,24 @@ class EnhancedServiceRegistry:
                 "healthy_services": healthy_services,
                 "degraded_services": degraded_services,
                 "unhealthy_services": total_services - healthy_services - degraded_services,
-                "avg_response_time": sum(s.avg_response_time for s in self.services.values()) / total_services,
-                "overall_success_rate": sum(s.success_rate for s in self.services.values()) / total_services,
-                "health_check_metrics": self.health_check_metrics
+                "avg_response_time": sum(s.avg_response_time for s in self.services.values())
+                / total_services,
+                "overall_success_rate": sum(s.success_rate for s in self.services.values())
+                / total_services,
+                "health_check_metrics": self.health_check_metrics,
             }
 
             # Store aggregated metrics
             await self.redis_client.setex(
-                "service_registry_metrics",
-                3600,  # 1 hour TTL
-                str(metrics_data)
+                "service_registry_metrics", 3600, str(metrics_data)  # 1 hour TTL
             )
 
         except Exception as e:
             logger.error(f"Failed to collect metrics: {e}")
 
-    def get_healthy_services_with_load_balancing(self, tag: Optional[str] = None) -> List[ServiceInfo]:
+    def get_healthy_services_with_load_balancing(
+        self, tag: Optional[str] = None
+    ) -> List[ServiceInfo]:
         """Get healthy services with load balancing based on performance metrics."""
         services = self.services.values()
 
@@ -459,8 +527,7 @@ class EnhancedServiceRegistry:
 
         # Filter healthy and degraded services
         available_services = [
-            s for s in services
-            if s.status in [ServiceStatus.HEALTHY, ServiceStatus.DEGRADED]
+            s for s in services if s.status in [ServiceStatus.HEALTHY, ServiceStatus.DEGRADED]
         ]
 
         # Sort by performance metrics (response time and success rate)
@@ -481,7 +548,10 @@ class EnhancedServiceRegistry:
         if primary_service:
             fallback_services = self.get_healthy_services_with_load_balancing()
             for service in fallback_services:
-                if any(tag in primary_service.tags for tag in service.tags) and service.name != service_name:
+                if (
+                    any(tag in primary_service.tags for tag in service.tags)
+                    and service.name != service_name
+                ):
                     logger.warning(f"Using fallback service {service.name} for {service_name}")
                     return service
 
@@ -497,15 +567,14 @@ class EnhancedServiceRegistry:
 
     def get_services_by_tag(self, tag: str) -> List[ServiceInfo]:
         """Get all services with a specific tag."""
-        return [
-            service for service in self.services.values()
-            if tag in service.tags
-        ]
+        return [service for service in self.services.values() if tag in service.tags]
 
     async def get_registry_performance_report(self) -> Dict[str, Any]:
         """Get comprehensive performance report."""
         total_services = len(self.services)
-        healthy_count = len([s for s in self.services.values() if s.status == ServiceStatus.HEALTHY])
+        healthy_count = len(
+            [s for s in self.services.values() if s.status == ServiceStatus.HEALTHY]
+        )
 
         service_performance = {}
         for name, service in self.services.items():
@@ -515,16 +584,20 @@ class EnhancedServiceRegistry:
                 "success_rate": service.success_rate,
                 "total_requests": service.total_requests,
                 "circuit_breaker_state": service.circuit_breaker.state.value,
-                "last_health_check": service.last_health_check.isoformat() if service.last_health_check else None
+                "last_health_check": (
+                    service.last_health_check.isoformat() if service.last_health_check else None
+                ),
             }
 
         return {
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "overall_health_percentage": (healthy_count / total_services * 100) if total_services > 0 else 0,
+            "overall_health_percentage": (
+                (healthy_count / total_services * 100) if total_services > 0 else 0
+            ),
             "total_services": total_services,
             "healthy_services": healthy_count,
             "registry_metrics": self.health_check_metrics,
-            "service_performance": service_performance
+            "service_performance": service_performance,
         }
 
 

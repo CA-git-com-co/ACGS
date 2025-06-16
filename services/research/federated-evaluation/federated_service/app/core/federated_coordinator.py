@@ -25,9 +25,9 @@ class FederatedCoordinator:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.is_initialized = False
         self.coordinator_metrics = {
             "total_coordinated_evaluations": 0,
@@ -39,9 +39,9 @@ class FederatedCoordinator:
         logger.info("Initialized Federated Coordinator")
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the federated coordinator."""
         try:
             if self.is_initialized:
@@ -96,9 +96,7 @@ class FederatedCoordinator:
                 "federated_evaluator": (
                     "initialized" if federated_evaluator else "not_initialized"
                 ),
-                "secure_aggregator": (
-                    "initialized" if secure_aggregator else "not_initialized"
-                ),
+                "secure_aggregator": ("initialized" if secure_aggregator else "not_initialized"),
                 "privacy_manager": (
                     "initialized" if differential_privacy_manager else "not_initialized"
                 ),
@@ -107,9 +105,9 @@ class FederatedCoordinator:
         }
 
     async def shutdown(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Shutdown the federated coordinator."""
         try:
             logger.info("Shutting down Federated Coordinator...")

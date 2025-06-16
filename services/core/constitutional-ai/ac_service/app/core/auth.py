@@ -22,9 +22,9 @@ get_current_active_user_placeholder = get_current_active_user
 # Example of how to protect an endpoint:
 # @router.post("/", dependencies=[Depends(require_admin_role)])
 # async def create_item(...):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+# requires: Valid input parameters
+# ensures: Correct function execution
+# sha256: func_hash
 #    ...
 
 # If you need the user object in your path operation function:

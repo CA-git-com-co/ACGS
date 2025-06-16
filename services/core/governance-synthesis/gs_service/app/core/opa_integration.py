@@ -45,23 +45,23 @@ except ImportError:
 
     # Create fallback decorator
     def performance_monitor_decorator(operation_type: str, operation_name: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Fallback decorator when performance monitoring is not available."""
 
         def decorator(func):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return func
 
         return decorator
 
     def get_performance_monitor():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Fallback function when performance monitoring is not available."""
         return None
 
@@ -130,9 +130,9 @@ class PolicyDecisionCache:
         ttl_seconds: int = 300,
         redis_client: Optional[Any] = None,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.ttl_seconds = ttl_seconds
 
         if PERFORMANCE_MONITORING_AVAILABLE and redis_client:
@@ -159,14 +159,10 @@ class PolicyDecisionCache:
         return (
             key_data
             if self.use_advanced_cache
-            else hashlib.sha256(
-                json.dumps(key_data, sort_keys=True).encode()
-            ).hexdigest()
+            else hashlib.sha256(json.dumps(key_data, sort_keys=True).encode()).hexdigest()
         )
 
-    async def get(
-        self, request: PolicyDecisionRequest
-    ) -> Optional[PolicyDecisionResponse]:
+    async def get(self, request: PolicyDecisionRequest) -> Optional[PolicyDecisionResponse]:
         """Get cached decision if available and not expired."""
         key = self._generate_key(request)
 
@@ -183,25 +179,19 @@ class PolicyDecisionCache:
                     del self.cache[key]
             return None
 
-    async def put(
-        self, request: PolicyDecisionRequest, response: PolicyDecisionResponse
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def put(self, request: PolicyDecisionRequest, response: PolicyDecisionResponse):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Cache policy decision response."""
         key = self._generate_key(request)
 
         if self.use_advanced_cache:
-            await self.cache.put(
-                key, response, self.ttl_seconds, tags=["policy_decision"]
-            )
+            await self.cache.put(key, response, self.ttl_seconds, tags=["policy_decision"])
         else:
             # Fallback to simple cache logic
             if len(self.cache) >= self.max_size:
-                oldest_key = min(
-                    self.cache.keys(), key=lambda k: self.cache[k]["created_at"]
-                )
+                oldest_key = min(self.cache.keys(), key=lambda k: self.cache[k]["created_at"])
                 del self.cache[oldest_key]
 
             self.cache[key] = {
@@ -212,9 +202,9 @@ class PolicyDecisionCache:
             logger.debug(f"Cached policy decision: {key}")
 
     async def clear(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clear all cached decisions."""
         if self.use_advanced_cache:
             await self.cache.clear()
@@ -246,9 +236,9 @@ class OPAClient:
     """
 
     def __init__(self, redis_client: Optional[Any] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = get_opa_config()
         self.redis_client = redis_client
         self.cache = PolicyDecisionCache(
@@ -278,9 +268,9 @@ class OPAClient:
         }
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize OPA client based on configuration mode."""
         if self._initialized:
             return
@@ -304,9 +294,9 @@ class OPAClient:
             raise OPAIntegrationError(f"OPA client initialization failed: {e}")
 
     async def _initialize_embedded_client(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize embedded OPA client."""
         if not OPA_CLIENT_AVAILABLE:
             raise OPAIntegrationError("OPA Python client not available")
@@ -319,9 +309,9 @@ class OPAClient:
             raise
 
     async def _initialize_server_client(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize HTTP client for OPA server."""
         timeout = aiohttp.ClientTimeout(
             total=self.config.server.timeout_seconds,
@@ -359,9 +349,9 @@ class OPAClient:
             return False
 
     async def _health_check_loop(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Periodic health check for OPA server."""
         while True:
             try:
@@ -373,9 +363,7 @@ class OPAClient:
                 logger.error(f"Health check loop error: {e}")
 
     @performance_monitor_decorator("opa_policy_evaluation", "policy_decision")
-    async def evaluate_policy(
-        self, request: PolicyDecisionRequest
-    ) -> PolicyDecisionResponse:
+    async def evaluate_policy(self, request: PolicyDecisionRequest) -> PolicyDecisionResponse:
         """
         Evaluate policy with advanced performance optimization and caching.
 
@@ -398,9 +386,7 @@ class OPAClient:
             cached_response = await self.cache.get(request)
             if cached_response:
                 self.metrics["cache_hits"] += 1
-                logger.debug(
-                    "Policy decision cache hit", policy_path=request.policy_path
-                )
+                logger.debug("Policy decision cache hit", policy_path=request.policy_path)
                 return cached_response
             self.metrics["cache_misses"] += 1
 
@@ -432,9 +418,7 @@ class OPAClient:
 
         except Exception as e:
             self.metrics["error_count"] += 1
-            logger.error(
-                f"Policy evaluation failed for {request.policy_path}: {str(e)}"
-            )
+            logger.error(f"Policy evaluation failed for {request.policy_path}: {str(e)}")
             raise OPAIntegrationError(f"Policy evaluation failed: {e}")
 
     async def _evaluate_policy_internal(
@@ -448,24 +432,15 @@ class OPAClient:
             # Try server mode first if available
             if self.config.mode in [OPAMode.SERVER, OPAMode.HYBRID] and self.session:
                 try:
-                    return await self._evaluate_via_server(
-                        request, decision_id, start_time
-                    )
+                    return await self._evaluate_via_server(request, decision_id, start_time)
                 except Exception as e:
                     if self.config.mode == OPAMode.SERVER:
                         raise
-                    logger.warning(
-                        f"Server evaluation failed, falling back to embedded: {e}"
-                    )
+                    logger.warning(f"Server evaluation failed, falling back to embedded: {e}")
 
             # Fall back to embedded mode
-            if (
-                self.config.mode in [OPAMode.EMBEDDED, OPAMode.HYBRID]
-                and self.opa_client
-            ):
-                return await self._evaluate_via_embedded(
-                    request, decision_id, start_time
-                )
+            if self.config.mode in [OPAMode.EMBEDDED, OPAMode.HYBRID] and self.opa_client:
+                return await self._evaluate_via_embedded(request, decision_id, start_time)
 
             raise OPAIntegrationError("No available OPA evaluation method")
 
@@ -537,18 +512,16 @@ class OPAClient:
         )
 
     def _update_metrics(self, latency_ms: float):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update performance metrics."""
         self.metrics["total_decisions"] += 1
 
         # Update average latency
         total = self.metrics["total_decisions"]
         current_avg = self.metrics["average_latency_ms"]
-        self.metrics["average_latency_ms"] = (
-            (current_avg * (total - 1)) + latency_ms
-        ) / total
+        self.metrics["average_latency_ms"] = ((current_avg * (total - 1)) + latency_ms) / total
 
         # Update max latency
         if latency_ms > self.metrics["max_latency_ms"]:
@@ -609,9 +582,7 @@ class OPAClient:
                 semantic_errors=semantic_errors,
             )
 
-    async def batch_evaluate(
-        self, batch: BatchPolicyDecision
-    ) -> List[PolicyDecisionResponse]:
+    async def batch_evaluate(self, batch: BatchPolicyDecision) -> List[PolicyDecisionResponse]:
         """
         Evaluate multiple policies in batch for improved performance.
 
@@ -624,17 +595,14 @@ class OPAClient:
         if not batch.decisions:
             return []
 
-        if (
-            batch.parallel_execution
-            and self.config.performance.enable_parallel_evaluation
-        ):
+        if batch.parallel_execution and self.config.performance.enable_parallel_evaluation:
             # Parallel execution
             semaphore = asyncio.Semaphore(self.config.performance.max_parallel_workers)
 
             async def evaluate_with_semaphore(request):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 async with semaphore:
                     return await self.evaluate_policy(request)
 
@@ -653,9 +621,9 @@ class OPAClient:
         return self.metrics.copy()
 
     async def close(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Clean up resources."""
         if self._health_check_task and not self._health_check_task.done():
             self._health_check_task.cancel()
@@ -693,9 +661,9 @@ async def get_opa_client() -> OPAClient:
 
 
 async def close_opa_client():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Close the global OPA client instance."""
     global _opa_client
     if _opa_client:

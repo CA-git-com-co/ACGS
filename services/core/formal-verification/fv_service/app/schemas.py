@@ -56,8 +56,12 @@ class SMTSolverInput(BaseModel):
 
 
 class SMTSolverOutput(BaseModel):
-    is_satisfiable: bool  # True if rules + NOT(obligation) is satisfiable (meaning obligation NOT entailed)
-    is_unsatisfiable: bool  # True if rules + NOT(obligation) is unsatisfiable (meaning obligation IS entailed)
+    is_satisfiable: (
+        bool  # True if rules + NOT(obligation) is satisfiable (meaning obligation NOT entailed)
+    )
+    is_unsatisfiable: (
+        bool  # True if rules + NOT(obligation) is unsatisfiable (meaning obligation IS entailed)
+    )
     # In a real SMT solver, satisfiability refers to whether a model exists for the given assertions.
     # For verifying if Rules => Obligation, we check if Rules AND (NOT Obligation) is UNSATISFIABLE.
     # If UNSAT, then Obligation is entailed by Rules.
@@ -110,7 +114,9 @@ class FairnessProperty(BaseModel):
     """Fairness property definition."""
 
     property_id: str
-    property_type: str  # "demographic_parity", "equalized_odds", "calibration", "individual_fairness"
+    property_type: (
+        str  # "demographic_parity", "equalized_odds", "calibration", "individual_fairness"
+    )
     property_name: str
     description: str
     protected_attributes: List[str]
@@ -387,9 +393,7 @@ class DomainContextBase(BaseModel):
     domain_name: str = Field(
         ..., max_length=100, description="Domain name (e.g., healthcare, finance)"
     )
-    domain_description: Optional[str] = Field(
-        None, description="Description of the domain"
-    )
+    domain_description: Optional[str] = Field(None, description="Description of the domain")
     regulatory_frameworks: Optional[List[str]] = Field(
         None, description="Applicable regulatory frameworks"
     )
@@ -402,12 +406,8 @@ class DomainContextBase(BaseModel):
     domain_constraints: Optional[Dict[str, Any]] = Field(
         None, description="Technical and operational constraints"
     )
-    risk_factors: Optional[List[str]] = Field(
-        None, description="Domain-specific risk factors"
-    )
-    stakeholder_groups: Optional[List[str]] = Field(
-        None, description="Relevant stakeholder groups"
-    )
+    risk_factors: Optional[List[str]] = Field(None, description="Domain-specific risk factors")
+    stakeholder_groups: Optional[List[str]] = Field(None, description="Relevant stakeholder groups")
 
 
 class DomainContextCreate(DomainContextBase):
@@ -443,25 +443,19 @@ class DomainContext(DomainContextBase):
 class CrossDomainTestScenarioBase(BaseModel):
     """Base schema for cross-domain test scenario."""
 
-    scenario_name: str = Field(
-        ..., max_length=255, description="Name of the test scenario"
-    )
+    scenario_name: str = Field(..., max_length=255, description="Name of the test scenario")
     scenario_description: Optional[str] = Field(
         None, description="Description of the test scenario"
     )
     primary_domain_id: int = Field(..., description="Primary domain ID for testing")
-    secondary_domains: Optional[List[int]] = Field(
-        None, description="Secondary domain IDs"
-    )
+    secondary_domains: Optional[List[int]] = Field(None, description="Secondary domain IDs")
     test_type: str = Field(
         ..., description="Type of test (consistency, adaptation, conflict_detection)"
     )
     test_parameters: Optional[Dict[str, Any]] = Field(
         None, description="Configurable test parameters"
     )
-    expected_outcomes: Optional[Dict[str, Any]] = Field(
-        None, description="Expected test results"
-    )
+    expected_outcomes: Optional[Dict[str, Any]] = Field(None, description="Expected test results")
     principle_ids: List[int] = Field(..., description="List of principle IDs to test")
     principle_adaptations: Optional[Dict[str, Any]] = Field(
         None, description="Domain-specific adaptations"
@@ -514,21 +508,15 @@ class CrossDomainTestResultBase(BaseModel):
         ..., ge=0.0, le=1.0, description="Consistency score (0.0 to 1.0)"
     )
     adaptation_required: bool = Field(..., description="Whether adaptation is required")
-    adaptation_suggestions: Optional[List[str]] = Field(
-        None, description="Suggested adaptations"
-    )
+    adaptation_suggestions: Optional[List[str]] = Field(None, description="Suggested adaptations")
     validation_details: Optional[Dict[str, Any]] = Field(
         None, description="Detailed validation results"
     )
-    conflict_detected: bool = Field(
-        False, description="Whether conflicts were detected"
-    )
+    conflict_detected: bool = Field(False, description="Whether conflicts were detected")
     conflict_details: Optional[Dict[str, Any]] = Field(
         None, description="Details of conflicts found"
     )
-    execution_time_ms: Optional[int] = Field(
-        None, description="Execution time in milliseconds"
-    )
+    execution_time_ms: Optional[int] = Field(None, description="Execution time in milliseconds")
     memory_usage_mb: Optional[float] = Field(None, description="Memory usage in MB")
 
 
@@ -547,13 +535,9 @@ class CrossDomainTestRequest(BaseModel):
     """Schema for requesting cross-domain testing."""
 
     scenario_ids: List[int] = Field(..., description="List of scenario IDs to execute")
-    target_accuracy: float = Field(
-        0.9, ge=0.0, le=1.0, description="Target accuracy threshold"
-    )
+    target_accuracy: float = Field(0.9, ge=0.0, le=1.0, description="Target accuracy threshold")
     enable_parallel: bool = Field(True, description="Enable parallel execution")
-    max_execution_time_seconds: int = Field(
-        300, description="Maximum execution time per scenario"
-    )
+    max_execution_time_seconds: int = Field(300, description="Maximum execution time per scenario")
 
 
 class CrossDomainTestResponse(BaseModel):
@@ -561,16 +545,8 @@ class CrossDomainTestResponse(BaseModel):
 
     test_run_id: str = Field(..., description="Unique test run identifier")
     scenarios_executed: int = Field(..., description="Number of scenarios executed")
-    overall_accuracy: float = Field(
-        ..., description="Overall accuracy across all tests"
-    )
+    overall_accuracy: float = Field(..., description="Overall accuracy across all tests")
     overall_consistency: float = Field(..., description="Overall consistency score")
-    results: List[CrossDomainTestResult] = Field(
-        ..., description="Detailed test results"
-    )
-    execution_summary: Dict[str, Any] = Field(
-        ..., description="Execution summary and metrics"
-    )
-    recommendations: List[str] = Field(
-        ..., description="Recommendations based on results"
-    )
+    results: List[CrossDomainTestResult] = Field(..., description="Detailed test results")
+    execution_summary: Dict[str, Any] = Field(..., description="Execution summary and metrics")
+    recommendations: List[str] = Field(..., description="Recommendations based on results")

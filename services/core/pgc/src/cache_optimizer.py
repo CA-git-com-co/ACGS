@@ -45,9 +45,7 @@ logger = logging.getLogger(__name__)
 # Prometheus metrics for cache performance
 if PROMETHEUS_AVAILABLE:
     CACHE_HIT_RATE = Gauge("pgc_cache_hit_rate", "PGC cache hit rate percentage")
-    CACHE_LATENCY = Histogram(
-        "pgc_cache_latency_seconds", "PGC cache operation latency"
-    )
+    CACHE_LATENCY = Histogram("pgc_cache_latency_seconds", "PGC cache operation latency")
     CACHE_SIZE = Gauge("pgc_cache_size", "Current PGC cache size")
     CACHE_EVICTIONS = Counter("pgc_cache_evictions_total", "Total cache evictions")
 
@@ -74,9 +72,9 @@ class CacheEntry:
         return self.age > self.ttl
 
     def update_access(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update access metadata."""
         self.last_accessed = time.time()
         self.access_count += 1
@@ -119,9 +117,9 @@ class PolicyCacheOptimizer:
         redis_config: Optional[CacheConfig] = None,
         enable_adaptive_ttl: bool = True,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.max_size = max_size
         self.default_ttl = default_ttl
         self.enable_adaptive_ttl = enable_adaptive_ttl
@@ -146,9 +144,9 @@ class PolicyCacheOptimizer:
         )
 
     async def initialize_redis(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize Redis connection for distributed caching."""
         if not REDIS_AVAILABLE or not self.redis_config:
             logger.warning("Redis not available or not configured")
@@ -183,9 +181,9 @@ class PolicyCacheOptimizer:
         return max(60, min(3600, adaptive_ttl))
 
     def _update_policy_volatility(self, policy_id: str, cache_miss: bool):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update policy volatility based on cache behavior."""
         current_volatility = self._policy_volatility.get(policy_id, 0.0)
 
@@ -233,9 +231,7 @@ class PolicyCacheOptimizer:
                         latency = (time.time() - start_time) * 1000
                         self._update_latency_stats(latency)
 
-                        logger.debug(
-                            f"Cache hit for policy {policy_id}, latency: {latency:.2f}ms"
-                        )
+                        logger.debug(f"Cache hit for policy {policy_id}, latency: {latency:.2f}ms")
                         return entry.value
                     else:
                         # Expired entry - remove it
@@ -247,23 +243,17 @@ class PolicyCacheOptimizer:
 
                 if self.redis_client:
                     try:
-                        redis_value = await self.redis_client.get(
-                            cache_key, prefix="pgc_policy"
-                        )
+                        redis_value = await self.redis_client.get(cache_key, prefix="pgc_policy")
                         if redis_value is not None:
                             # Redis hit - store in local cache
-                            ttl = self._calculate_adaptive_ttl(
-                                policy_id, self.default_ttl
-                            )
+                            ttl = self._calculate_adaptive_ttl(policy_id, self.default_ttl)
                             entry = CacheEntry(
                                 value=redis_value,
                                 created_at=time.time(),
                                 last_accessed=time.time(),
                                 access_count=1,
                                 ttl=ttl,
-                                policy_volatility=self._policy_volatility.get(
-                                    policy_id, 0.0
-                                ),
+                                policy_volatility=self._policy_volatility.get(policy_id, 0.0),
                             )
 
                             self._cache[cache_key] = entry
@@ -287,9 +277,7 @@ class PolicyCacheOptimizer:
                 if PROMETHEUS_AVAILABLE:
                     CACHE_HIT_RATE.set(self.stats.hit_rate)
 
-                logger.debug(
-                    f"Cache miss for policy {policy_id}, latency: {latency:.2f}ms"
-                )
+                logger.debug(f"Cache miss for policy {policy_id}, latency: {latency:.2f}ms")
                 return None
 
         except Exception as e:
@@ -321,9 +309,7 @@ class PolicyCacheOptimizer:
         try:
             with self._lock:
                 # Calculate adaptive TTL
-                effective_ttl = ttl or self._calculate_adaptive_ttl(
-                    policy_id, self.default_ttl
-                )
+                effective_ttl = ttl or self._calculate_adaptive_ttl(policy_id, self.default_ttl)
 
                 # Create cache entry
                 entry = CacheEntry(
@@ -369,9 +355,9 @@ class PolicyCacheOptimizer:
             return False
 
     def _evict_if_needed(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Evict least recently used entries if cache is at capacity."""
         while len(self._cache) > self.max_size:
             # Remove oldest entry (LRU)
@@ -386,9 +372,9 @@ class PolicyCacheOptimizer:
             )
 
     def _update_latency_stats(self, latency_ms: float):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update latency statistics with exponential moving average."""
         self._latency_samples.append(latency_ms)
 
@@ -409,12 +395,10 @@ class PolicyCacheOptimizer:
         if PROMETHEUS_AVAILABLE:
             CACHE_LATENCY.observe(latency_ms / 1000.0)  # Convert to seconds
 
-    async def invalidate(
-        self, policy_id: str, context: Optional[Dict[str, Any]] = None
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def invalidate(self, policy_id: str, context: Optional[Dict[str, Any]] = None):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Invalidate cached entries for a policy.
 
@@ -454,9 +438,7 @@ class PolicyCacheOptimizer:
 
                 # Reset policy volatility on manual invalidation
                 if policy_id in self._policy_volatility:
-                    self._policy_volatility[policy_id] = (
-                        0.5  # Reset to medium volatility
-                    )
+                    self._policy_volatility[policy_id] = 0.5  # Reset to medium volatility
 
         except Exception as e:
             logger.error(f"Cache invalidation failed: {e}")
@@ -511,9 +493,9 @@ class PolicyCacheOptimizer:
             }
 
     async def cleanup_expired_entries(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Remove expired entries from cache."""
         try:
             with self._lock:

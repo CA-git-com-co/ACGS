@@ -39,12 +39,8 @@ def upgrade() -> None:
     )
 
     # Create indexes for QEC-related queries
-    op.create_index(
-        "idx_conflict_priority_score", "ac_conflict_resolutions", ["priority_score"]
-    )
-    op.create_index(
-        "idx_conflict_qec_enhanced", "ac_conflict_resolutions", ["qec_enhanced"]
-    )
+    op.create_index("idx_conflict_priority_score", "ac_conflict_resolutions", ["priority_score"])
+    op.create_index("idx_conflict_qec_enhanced", "ac_conflict_resolutions", ["qec_enhanced"])
     op.create_index(
         "idx_conflict_qec_timestamp",
         "ac_conflict_resolutions",
@@ -72,17 +68,13 @@ def upgrade() -> None:
     )
 
     # Create indexes for analysis logs
-    op.create_index(
-        "idx_analysis_logs_conflict_id", "qec_conflict_analysis_logs", ["conflict_id"]
-    )
+    op.create_index("idx_analysis_logs_conflict_id", "qec_conflict_analysis_logs", ["conflict_id"])
     op.create_index(
         "idx_analysis_logs_timestamp",
         "qec_conflict_analysis_logs",
         ["analysis_timestamp"],
     )
-    op.create_index(
-        "idx_analysis_logs_priority", "qec_conflict_analysis_logs", ["priority_score"]
-    )
+    op.create_index("idx_analysis_logs_priority", "qec_conflict_analysis_logs", ["priority_score"])
 
     # Create table for QEC patch generation logs
     op.create_table(
@@ -104,20 +96,14 @@ def upgrade() -> None:
     )
 
     # Create indexes for patch generation logs
-    op.create_index(
-        "idx_patch_logs_conflict_id", "qec_patch_generation_logs", ["conflict_id"]
-    )
+    op.create_index("idx_patch_logs_conflict_id", "qec_patch_generation_logs", ["conflict_id"])
     op.create_index(
         "idx_patch_logs_timestamp",
         "qec_patch_generation_logs",
         ["generation_timestamp"],
     )
-    op.create_index(
-        "idx_patch_logs_success", "qec_patch_generation_logs", ["patch_success"]
-    )
-    op.create_index(
-        "idx_patch_logs_confidence", "qec_patch_generation_logs", ["confidence_score"]
-    )
+    op.create_index("idx_patch_logs_success", "qec_patch_generation_logs", ["patch_success"])
+    op.create_index("idx_patch_logs_confidence", "qec_patch_generation_logs", ["confidence_score"])
 
     # Create table for constitutional fidelity monitoring
     op.create_table(
@@ -138,17 +124,13 @@ def upgrade() -> None:
     )
 
     # Create indexes for fidelity history
-    op.create_index(
-        "idx_fidelity_timestamp", "constitutional_fidelity_history", ["timestamp"]
-    )
+    op.create_index("idx_fidelity_timestamp", "constitutional_fidelity_history", ["timestamp"])
     op.create_index(
         "idx_fidelity_composite_score",
         "constitutional_fidelity_history",
         ["composite_score"],
     )
-    op.create_index(
-        "idx_fidelity_level", "constitutional_fidelity_history", ["fidelity_level"]
-    )
+    op.create_index("idx_fidelity_level", "constitutional_fidelity_history", ["fidelity_level"])
 
     # Create table for fidelity alerts
     op.create_table(
@@ -168,15 +150,9 @@ def upgrade() -> None:
     )
 
     # Create indexes for fidelity alerts
-    op.create_index(
-        "idx_alerts_level", "constitutional_fidelity_alerts", ["alert_level"]
-    )
-    op.create_index(
-        "idx_alerts_timestamp", "constitutional_fidelity_alerts", ["timestamp"]
-    )
-    op.create_index(
-        "idx_alerts_resolved", "constitutional_fidelity_alerts", ["resolved"]
-    )
+    op.create_index("idx_alerts_level", "constitutional_fidelity_alerts", ["alert_level"])
+    op.create_index("idx_alerts_timestamp", "constitutional_fidelity_alerts", ["timestamp"])
+    op.create_index("idx_alerts_resolved", "constitutional_fidelity_alerts", ["resolved"])
 
     # Add GIN indexes for JSONB columns for better query performance
     op.create_index(
@@ -221,13 +197,9 @@ def downgrade() -> None:
     op.drop_table("qec_conflict_analysis_logs")
 
     # Drop indexes
-    op.drop_index(
-        "idx_fidelity_metadata_gin", table_name="constitutional_fidelity_history"
-    )
+    op.drop_index("idx_fidelity_metadata_gin", table_name="constitutional_fidelity_history")
     op.drop_index("idx_patch_metadata_gin", table_name="qec_patch_generation_logs")
-    op.drop_index(
-        "idx_analysis_predictions_gin", table_name="qec_conflict_analysis_logs"
-    )
+    op.drop_index("idx_analysis_predictions_gin", table_name="qec_conflict_analysis_logs")
     op.drop_index("idx_analysis_distances_gin", table_name="qec_conflict_analysis_logs")
     op.drop_index("idx_conflict_qec_analysis_gin", table_name="ac_conflict_resolutions")
 
