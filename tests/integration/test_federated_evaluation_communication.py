@@ -16,9 +16,13 @@ try:
         FederatedEvaluator,
         EvaluationTask,
     )
+    from services.research.federated_evaluation.coordinator.main import app as coordinator_app
+    from services.research.federated_evaluation.agent.main import serve_agent
     FEDERATED_AVAILABLE = True
 except ImportError:
     # Mock for testing when federated evaluation is not available
+    from fastapi import FastAPI
+
     class FederatedEvaluator:
         def __init__(self):
             pass
@@ -26,6 +30,17 @@ except ImportError:
     class EvaluationTask:
         def __init__(self):
             pass
+
+    # Mock coordinator app
+    coordinator_app = FastAPI()
+
+    @coordinator_app.post("/tests")
+    async def mock_dispatch_test(test_data: dict):
+        return {"status": "test dispatched", "task_id": "mock-task-123"}
+
+    def serve_agent():
+        """Mock agent server function"""
+        pass
 
     FEDERATED_AVAILABLE = False
 

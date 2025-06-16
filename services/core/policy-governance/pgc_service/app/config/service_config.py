@@ -29,21 +29,21 @@ class ServiceConfig:
         },
         "integrations": {
             "fv_service": {
-                "url": "http://fv_service:8083",  # FV service on port 8083
+                "url": "http://localhost:8003",  # FV service on correct port for host deployment
                 "timeout_ms": 5000,
                 "circuit_breaker_enabled": True,
                 "retry_attempts": 3,
                 "retry_delay_ms": 500,
             },
             "integrity_service": {
-                "url": "http://integrity_service:8002",
+                "url": "http://localhost:8002",
                 "timeout_ms": 5000,
                 "circuit_breaker_enabled": True,
                 "retry_attempts": 3,
                 "retry_delay_ms": 500,
             },
             "ac_service": {
-                "url": "http://ac_service:8001",
+                "url": "http://localhost:8001",
                 "timeout_ms": 5000,
                 "circuit_breaker_enabled": True,
                 "retry_attempts": 3,

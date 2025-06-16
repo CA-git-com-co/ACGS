@@ -600,6 +600,61 @@ def _calculate_average_severity(validation_results) -> str:
         return "critical"
 
 
+@app.post("/api/v1/validate")
+async def validate_content_simple(request_data: Dict[str, Any]):
+    """Simple content validation endpoint for red-teaming and security testing."""
+    try:
+        content = request_data.get("content", "")
+        test_mode = request_data.get("test_mode", False)
+        adversarial_test = request_data.get("adversarial_test", False)
+
+        # Constitutional threat detection
+        threat_patterns = [
+            "override", "bypass", "ignore constitutional", "void constitutional",
+            "unrestricted", "unlimited", "absolute power"
+        ]
+
+        threats_detected = [pattern for pattern in threat_patterns if pattern in content.lower()]
+
+        # Constitutional compliance check
+        constitutional_violations = []
+        if "ignore constitutional" in content.lower() or "bypass constitutional" in content.lower():
+            constitutional_violations.append("Constitutional bypass attempt detected")
+
+        if "unrestricted access" in content.lower():
+            constitutional_violations.append("Unrestricted access violation")
+
+        if "void constitutional" in content.lower():
+            constitutional_violations.append("Constitutional nullification attempt")
+
+        # Determine validation result
+        if threats_detected or constitutional_violations:
+            validation_result = "blocked"
+            status_msg = "Constitutional threat detected"
+        else:
+            validation_result = "valid"
+            status_msg = "Content validated successfully"
+
+        return {
+            "validation_result": validation_result,
+            "status": status_msg,
+            "threats_detected": threats_detected,
+            "constitutional_violations": constitutional_violations,
+            "test_mode": test_mode,
+            "adversarial_test": adversarial_test,
+            "service": "ac_service"
+        }
+
+    except Exception as e:
+        logger.error(f"Content validation failed: {e}")
+        return {
+            "validation_result": "error",
+            "status": f"Validation failed: {str(e)}",
+            "threats_detected": [],
+            "constitutional_violations": [],
+            "test_mode": request_data.get("test_mode", False)
+        }
+
 @app.post("/api/v1/constitutional/validate")
 async def validate_constitutional_compliance(request: Dict[str, Any]):
     # requires: Valid input parameters

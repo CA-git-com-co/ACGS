@@ -2,6 +2,7 @@
 Cache Manager for gs_service - ACGS-1 Phase A3 Advanced Caching
 """
 
+import os
 from typing import Any, Dict, Optional
 
 import structlog
@@ -34,7 +35,7 @@ class Gs_serviceCacheManager:
         try:
             config = CacheConfig(
                 redis_url="redis://localhost:6379/0",
-                redis_password="acgs_redis_production_2024_secure_cache_key",
+                redis_password=os.getenv("REDIS_PASSWORD", ""),
                 max_connections=10,
             )
 
