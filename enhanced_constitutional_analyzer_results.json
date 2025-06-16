@@ -1,0 +1,398 @@
+{
+  "timestamp": 1750056736.1467447,
+  "implementation_duration_seconds": 0.015944480895996094,
+  "constitutional_hash_validation": {
+    "hash_validation": "error",
+    "error": "All connection attempts failed",
+    "constitutional_hash": "cdd01ef066bc6cf2"
+  },
+  "multi_model_analysis_results": {
+    "multi_model_analysis": [
+      {
+        "policy_name": "Democratic Governance Policy",
+        "analysis_status": "success",
+        "constitutional_compliance": false,
+        "compliance_score": 0.6973,
+        "validation_results": [
+          {
+            "rule_id": "CONST-001",
+            "rule_name": "Democratic Participation",
+            "algorithm": "multi_dimensional_analysis",
+            "compliant": true,
+            "confidence": 0.75,
+            "weight": 0.2,
+            "detailed_analysis": {
+              "indicators_found": 3,
+              "total_indicators": 8,
+              "democratic_score": 0.375
+            },
+            "recommendations": [],
+            "severity": "low",
+            "formal_verification_eligible": true
+          },
+          {
+            "rule_id": "CONST-002",
+            "rule_name": "Transparency Requirement",
+            "algorithm": "transparency_scoring",
+            "compliant": false,
+            "confidence": 0.73,
+            "weight": 0.2,
+            "detailed_analysis": {
+              "indicators_found": 2,
+              "transparency_score": 0.25,
+              "audit_mechanisms": false,
+              "public_access": true
+            },
+            "recommendations": [
+              "Add transparency requirements",
+              "Include audit mechanisms",
+              "Specify public disclosure procedures"
+            ],
+            "severity": "medium",
+            "formal_verification_eligible": true
+          },
+          {
+            "rule_id": "CONST-003",
+            "rule_name": "Constitutional Compliance",
+            "algorithm": "constitutional_fidelity_analysis",
+            "compliant": false,
+            "confidence": 0.735,
+            "weight": 0.25,
+            "detailed_analysis": {
+              "indicators_found": 1,
+              "constitutional_score": 0.125,
+              "legal_framework": false,
+              "review_process": false
+            },
+            "recommendations": [
+              "Add constitutional compliance verification",
+              "Include legal framework references",
+              "Specify constitutional review process"
+            ],
+            "severity": "high",
+            "formal_verification_eligible": true
+          },
+          {
+            "rule_id": "CONST-004",
+            "rule_name": "Accountability Framework",
+            "algorithm": "accountability_assessment",
+            "compliant": false,
+            "confidence": 0.6,
+            "weight": 0.2,
+            "detailed_analysis": {
+              "indicators_found": 0,
+              "accountability_score": 0.0,
+              "oversight_mechanisms": false,
+              "enforcement_provisions": false
+            },
+            "recommendations": [
+              "Add accountability mechanisms",
+              "Include oversight procedures",
+              "Specify enforcement measures"
+            ],
+            "severity": "high",
+            "formal_verification_eligible": false
+          },
+          {
+            "rule_id": "CONST-005",
+            "rule_name": "Rights Protection",
+            "algorithm": "rights_preservation_analysis",
+            "compliant": false,
+            "confidence": 0.65,
+            "weight": 0.15,
+            "detailed_analysis": {
+              "indicators_found": 0,
+              "rights_score": 0.0,
+              "privacy_protection": false,
+              "due_process": false
+            },
+            "recommendations": [
+              "Add rights protection provisions",
+              "Include privacy safeguards",
+              "Specify due process procedures"
+            ],
+            "severity": "critical",
+            "formal_verification_eligible": true
+          }
+        ],
+        "processing_time_ms": 0.51,
+        "expected_compliance": "high",
+        "analysis_accurate": false
+      },
+      {
+        "policy_name": "Transparency Requirements",
+        "analysis_status": "success",
+        "constitutional_compliance": false,
+        "compliance_score": 0.6685,
+        "validation_results": [
+          {
+            "rule_id": "CONST-001",
+            "rule_name": "Democratic Participation",
+            "algorithm": "multi_dimensional_analysis",
+            "compliant": false,
+            "confidence": 0.65,
+            "weight": 0.2,
+            "detailed_analysis": {
+              "indicators_found": 1,
+              "total_indicators": 8,
+              "democratic_score": 0.125
+            },
+            "recommendations": [
+              "Add explicit democratic participation mechanisms",
+              "Include stakeholder consultation processes",
+              "Specify voting or consensus procedures"
+            ],
+            "severity": "high",
+            "formal_verification_eligible": true
+          },
+          {
+            "rule_id": "CONST-002",
+            "rule_name": "Transparency Requirement",
+            "algorithm": "transparency_scoring",
+            "compliant": false,
+            "confidence": 0.73,
+            "weight": 0.2,
+            "detailed_analysis": {
+              "indicators_found": 2,
+              "transparency_score": 0.25,
+              "audit_mechanisms": true,
+              "public_access": true
+            },
+            "recommendations": [
+              "Add transparency requirements",
+              "Include audit mechanisms",
+              "Specify public disclosure procedures"
+            ],
+            "severity": "medium",
+            "formal_verification_eligible": true
+          },
+          {
+            "rule_id": "CONST-003",
+            "rule_name": "Constitutional Compliance",
+            "algorithm": "constitutional_fidelity_analysis",
+            "compliant": false,
+            "confidence": 0.7,
+            "weight": 0.25,
+            "detailed_analysis": {
+              "indicators_found": 0,
+              "constitutional_score": 0.0,
+              "legal_framework": false,
+              "review_process": false
+            },
+            "recommendations": [
+              "Add constitutional compliance verification",
+              "Include legal framework references",
+              "Specify constitutional review process"
+            ],
+            "severity": "critical",
+            "formal_verification_eligible": true
+          },
+          {
+            "rule_id": "CONST-004",
+            "rule_name": "Accountability Framework",
+            "algorithm": "accountability_assessment",
+            "compliant": false,
+            "confidence": 0.6,
+            "weight": 0.2,
+            "detailed_analysis": {
+              "indicators_found": 0,
+              "accountability_score": 0.0,
+              "oversight_mechanisms": false,
+              "enforcement_provisions": false
+            },
+            "recommendations": [
+              "Add accountability mechanisms",
+              "Include oversight procedures",
+              "Specify enforcement measures"
+            ],
+            "severity": "high",
+            "formal_verification_eligible": false
+          },
+          {
+            "rule_id": "CONST-005",
+            "rule_name": "Rights Protection",
+            "algorithm": "rights_preservation_analysis",
+            "compliant": false,
+            "confidence": 0.65,
+            "weight": 0.15,
+            "detailed_analysis": {
+              "indicators_found": 0,
+              "rights_score": 0.0,
+              "privacy_protection": false,
+              "due_process": false
+            },
+            "recommendations": [
+              "Add rights protection provisions",
+              "Include privacy safeguards",
+              "Specify due process procedures"
+            ],
+            "severity": "critical",
+            "formal_verification_eligible": true
+          }
+        ],
+        "processing_time_ms": 0.03,
+        "expected_compliance": "high",
+        "analysis_accurate": false
+      },
+      {
+        "policy_name": "Problematic Policy",
+        "analysis_status": "success",
+        "constitutional_compliance": false,
+        "compliance_score": 0.6693,
+        "validation_results": [
+          {
+            "rule_id": "CONST-001",
+            "rule_name": "Democratic Participation",
+            "algorithm": "multi_dimensional_analysis",
+            "compliant": false,
+            "confidence": 0.65,
+            "weight": 0.2,
+            "detailed_analysis": {
+              "indicators_found": 1,
+              "total_indicators": 8,
+              "democratic_score": 0.125
+            },
+            "recommendations": [
+              "Add explicit democratic participation mechanisms",
+              "Include stakeholder consultation processes",
+              "Specify voting or consensus procedures"
+            ],
+            "severity": "high",
+            "formal_verification_eligible": true
+          },
+          {
+            "rule_id": "CONST-002",
+            "rule_name": "Transparency Requirement",
+            "algorithm": "transparency_scoring",
+            "compliant": false,
+            "confidence": 0.65,
+            "weight": 0.2,
+            "detailed_analysis": {
+              "indicators_found": 0,
+              "transparency_score": 0.0,
+              "audit_mechanisms": false,
+              "public_access": false
+            },
+            "recommendations": [
+              "Add transparency requirements",
+              "Include audit mechanisms",
+              "Specify public disclosure procedures"
+            ],
+            "severity": "high",
+            "formal_verification_eligible": true
+          },
+          {
+            "rule_id": "CONST-003",
+            "rule_name": "Constitutional Compliance",
+            "algorithm": "constitutional_fidelity_analysis",
+            "compliant": false,
+            "confidence": 0.735,
+            "weight": 0.25,
+            "detailed_analysis": {
+              "indicators_found": 1,
+              "constitutional_score": 0.125,
+              "legal_framework": false,
+              "review_process": false
+            },
+            "recommendations": [
+              "Add constitutional compliance verification",
+              "Include legal framework references",
+              "Specify constitutional review process"
+            ],
+            "severity": "high",
+            "formal_verification_eligible": true
+          },
+          {
+            "rule_id": "CONST-004",
+            "rule_name": "Accountability Framework",
+            "algorithm": "accountability_assessment",
+            "compliant": false,
+            "confidence": 0.64,
+            "weight": 0.2,
+            "detailed_analysis": {
+              "indicators_found": 1,
+              "accountability_score": 0.125,
+              "oversight_mechanisms": true,
+              "enforcement_provisions": false
+            },
+            "recommendations": [
+              "Add accountability mechanisms",
+              "Include oversight procedures",
+              "Specify enforcement measures"
+            ],
+            "severity": "high",
+            "formal_verification_eligible": false
+          },
+          {
+            "rule_id": "CONST-005",
+            "rule_name": "Rights Protection",
+            "algorithm": "rights_preservation_analysis",
+            "compliant": false,
+            "confidence": 0.65,
+            "weight": 0.15,
+            "detailed_analysis": {
+              "indicators_found": 0,
+              "rights_score": 0.0,
+              "privacy_protection": false,
+              "due_process": false
+            },
+            "recommendations": [
+              "Add rights protection provisions",
+              "Include privacy safeguards",
+              "Specify due process procedures"
+            ],
+            "severity": "critical",
+            "formal_verification_eligible": true
+          }
+        ],
+        "processing_time_ms": 0.02,
+        "expected_compliance": "low",
+        "analysis_accurate": true
+      }
+    ],
+    "accuracy_metrics": {
+      "total_analyses": 3,
+      "accurate_analyses": 1,
+      "accuracy_rate": 33.33333333333333,
+      "target_accuracy": 95.0,
+      "accuracy_target_met": false
+    },
+    "performance_metrics": {
+      "average_response_time_ms": 0.18666666666666668,
+      "target_response_time_ms": 500,
+      "performance_target_met": true
+    }
+  },
+  "real_time_enforcement_integration": {
+    "real_time_enforcement": "error",
+    "error": "All connection attempts failed",
+    "integration_successful": false
+  },
+  "qwen3_embeddings_integration": {
+    "qwen3_embeddings": "integrated",
+    "semantic_analysis_available": true,
+    "constitutional_fidelity_score": 0.4346,
+    "analysis_features": [
+      "constitutional_fidelity_score",
+      "risk_assessment",
+      "compliance_trends",
+      "stakeholder_impact"
+    ],
+    "embeddings_integration_successful": true
+  },
+  "implementation_score": 28.33333333333333,
+  "recommendations": [
+    "\u26a0\ufe0f Implementation needs significant improvements",
+    "\ud83d\udd27 Fix constitutional hash validation integration",
+    "\ud83d\udd27 Improve multi-model analysis accuracy (current: 33.3%)",
+    "\ud83d\udd27 Fix real-time enforcement integration with PGC service"
+  ],
+  "success_criteria_met": {
+    "constitutional_hash_validated": false,
+    "multi_model_accuracy": false,
+    "performance_targets": true,
+    "real_time_enforcement": false,
+    "embeddings_integration": true,
+    "overall_implementation_success": false
+  }
+}

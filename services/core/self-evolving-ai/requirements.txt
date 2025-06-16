@@ -1,0 +1,145 @@
+# ACGS-1 Self-Evolving AI Architecture Foundation Service Dependencies
+
+# Core Framework
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# HTTP Client
+aiohttp>=3.9.0
+httpx>=0.25.0
+
+# Database
+asyncpg>=0.29.0
+sqlalchemy[asyncio]>=2.0.23
+alembic>=1.13.0
+
+# Redis & Caching
+redis>=5.0.1
+aioredis>=2.0.1
+
+# Background Processing
+celery>=5.3.4
+kombu>=5.3.4
+
+# Security
+cryptography>=41.0.7
+passlib[bcrypt]>=1.7.4
+python-jose[cryptography]>=3.3.0
+python-multipart>=0.0.6
+
+# OpenTelemetry (Observability)
+opentelemetry-api>=1.21.0
+opentelemetry-sdk>=1.21.0
+opentelemetry-exporter-otlp>=1.21.0
+opentelemetry-instrumentation-fastapi>=0.42b0
+opentelemetry-instrumentation-httpx>=0.42b0
+opentelemetry-instrumentation-redis>=0.42b0
+opentelemetry-instrumentation-sqlalchemy>=0.42b0
+
+# Monitoring & Metrics
+prometheus-client>=0.19.0
+psutil>=5.9.6
+
+# Configuration & Environment
+python-dotenv>=1.0.0
+
+# Logging
+structlog>=23.2.0
+
+# Data Validation & Serialization
+marshmallow>=3.20.1
+jsonschema>=4.20.0
+
+# Async Utilities
+asyncio-mqtt>=0.16.1
+aiofiles>=23.2.1
+
+# Development & Testing
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+httpx>=0.25.0  # For testing
+factory-boy>=3.3.0
+
+# Code Quality
+black>=23.11.0
+isort>=5.12.0
+flake8>=6.1.0
+mypy>=1.7.1
+bandit>=1.7.5
+
+# Documentation
+mkdocs>=1.5.3
+mkdocs-material>=9.4.8
+
+# Optional Dependencies (for enhanced features)
+# Uncomment as needed
+
+# Vault Integration (for secrets management)
+# hvac>=2.0.0
+
+# gVisor/Firecracker Sandboxing
+# gvisor-python>=0.1.0  # Hypothetical package
+# firecracker-python>=0.1.0  # Hypothetical package
+
+# Advanced ML/AI Libraries (if needed for evolution algorithms)
+# numpy>=1.24.0
+# scipy>=1.11.0
+# scikit-learn>=1.3.0
+
+# Graph Processing (for policy dependency analysis)
+# networkx>=3.2.1
+
+# Time Series Analysis (for performance monitoring)
+# pandas>=2.1.3
+
+# Additional Security Libraries
+# pyotp>=2.9.0  # For TOTP/HOTP
+# pynacl>=1.5.0  # For additional cryptography
+
+# Message Queue Alternatives
+# pika>=1.3.2  # For RabbitMQ
+# kafka-python>=2.0.2  # For Apache Kafka
+
+# Database Alternatives
+# motor>=3.3.2  # For MongoDB
+# neo4j>=5.14.1  # For Neo4j graph database
+
+# Distributed Computing
+# dask>=2023.11.0
+# ray>=2.8.0
+
+# Configuration Management
+# dynaconf>=3.2.4
+# hydra-core>=1.3.2
+
+# API Documentation
+# sphinx>=7.2.6
+# sphinx-rtd-theme>=1.3.0
+
+# Performance Profiling
+# py-spy>=0.3.14
+# memory-profiler>=0.61.0
+
+# Container & Orchestration
+# kubernetes>=28.1.0
+# docker>=6.1.3
+
+# Cloud Providers (if needed)
+# boto3>=1.34.0  # AWS
+# google-cloud-core>=2.4.1  # GCP
+# azure-identity>=1.15.0  # Azure
+
+# Blockchain Integration (for Quantumagi compatibility)
+# solana>=0.30.2
+# anchorpy>=0.18.0
+# solders>=0.18.1
+
+# Additional Utilities
+# click>=8.1.7  # For CLI tools
+# rich>=13.7.0  # For rich console output
+# typer>=0.9.0  # For CLI applications
+# schedule>=1.2.0  # For job scheduling

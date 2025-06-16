@@ -1,0 +1,14 @@
+# Enhanced Formal Verification Framework Requirements
+# Core dependencies for Z3 solver integration and adversarial testing
+
+# FastAPI and web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+httpx==0.25.2
+pydantic==2.5.0
+
+# Z3 SMT Solver
+z3-solver==4.12.2.0
+
+# Utilities
+python-dotenv==1.0.0

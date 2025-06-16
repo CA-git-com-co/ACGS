@@ -90,7 +90,7 @@ langchain-community>=0.3.19
 langchain-google-genai>=2.0.0
 redis>=5.0.0
 # Authentication dependencies
-python-jose[cryptography]==3.3.0
+python-jose[cryptography]==3.5.0
 PyJWT>=2.8.0
 passlib[bcrypt]==1.7.4
 # Additional shared dependencies

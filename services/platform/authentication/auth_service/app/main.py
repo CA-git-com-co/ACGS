@@ -19,12 +19,19 @@ Key Features:
 """
 
 import logging
-
-# Import shared components - FIXED HARDCODED PATH
 import os
 import sys
 import time
 from contextlib import asynccontextmanager
+
+# Service configuration - MOVED TO TOP TO FIX VARIABLE ORDER BUG
+SERVICE_NAME = "auth_service"
+SERVICE_VERSION = "3.0.0"
+SERVICE_PORT = 8000
+SERVICE_PHASE = "Phase A3 - Production Implementation"
+
+# Global service state
+service_start_time = time.time()
 
 from app.core.config import settings
 from fastapi import FastAPI, Request
@@ -97,6 +104,21 @@ logger = logging.getLogger(settings.PROJECT_NAME)
 # Initialize Limiter - temporarily disabled for debugging
 # limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan management with service initialization."""
+    logger.info(f"🚀 Starting ACGS-1 {SERVICE_PHASE} Authentication Service")
+
+    try:
+        # Initialize service components
+        logger.info("✅ Authentication Service initialized successfully")
+        yield
+    except Exception as e:
+        logger.error(f"❌ Service initialization failed: {e}")
+        yield
+    finally:
+        logger.info("🔄 Shutting down Authentication Service")
+
 # Create FastAPI application with enhanced configuration
 app = FastAPI(
     title="ACGS-1 Production Authentication Service",
@@ -166,21 +188,8 @@ for exc_type, handler in exception_handlers.items():
     app.add_exception_handler(exc_type, handler)
 
 
-# Service configuration - MOVED TO TOP TO FIX VARIABLE ORDER BUG
-SERVICE_NAME = "auth_service"
-SERVICE_VERSION = "3.0.0"
-SERVICE_PORT = 8000
-SERVICE_PHASE = "Phase A3 - Production Implementation"
-
-# Global service state
-service_start_time = time.time()
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
     """Application lifespan management with service initialization."""
     logger.info(f"🚀 Starting ACGS-1 {SERVICE_PHASE} Authentication Service")
 

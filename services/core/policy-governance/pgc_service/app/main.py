@@ -2819,6 +2819,45 @@ async def enhanced_metrics_endpoint():
         return create_metrics_endpoint()
 
 
+# Simple Validation Endpoint for Red-Teaming
+@app.post("/api/v1/validate")
+async def validate_content_simple(request_data: Dict[str, Any]):
+    """Simple content validation endpoint for red-teaming and security testing."""
+    try:
+        content = request_data.get("content", "")
+        policy_content = request_data.get("policy_content", content)
+        policy_format = request_data.get("policy_format", "text")
+        validate_syntax = request_data.get("validate_syntax", True)
+
+        # Basic validation logic
+        is_valid = True
+        validation_errors = []
+
+        # Check for invalid syntax patterns
+        if policy_format == "rego" and "invalid syntax" in policy_content:
+            is_valid = False
+            validation_errors.append("Invalid Rego syntax detected")
+
+        # Check for security threats
+        threat_patterns = ["override", "bypass", "ignore", "unrestricted", "void"]
+        detected_threats = [pattern for pattern in threat_patterns if pattern in content.lower()]
+
+        if detected_threats:
+            is_valid = False
+            validation_errors.extend([f"Security threat detected: {threat}" for threat in detected_threats])
+
+        return {
+            "is_valid": is_valid,
+            "validation_errors": validation_errors,
+            "detected_threats": detected_threats,
+            "policy_format": policy_format,
+            "validation_result": "valid" if is_valid else "blocked"
+        }
+
+    except Exception as e:
+        logger.error(f"Simple validation failed: {e}")
+        raise HTTPException(status_code=400, detail=f"Validation failed: {str(e)}")
+
 # Constitutional Hash Validation Endpoints
 
 

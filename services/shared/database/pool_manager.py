@@ -15,7 +15,18 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import QueuePool
 
-from ..common.error_handling import DatabaseError
+try:
+    from ..common.error_handling import DatabaseError
+except ImportError:
+    # Fallback for when running tests from project root
+    try:
+        from services.shared.common.error_handling import DatabaseError
+    except ImportError:
+        # Define a minimal DatabaseError if module is not available
+        class DatabaseError(Exception):
+            def __init__(self, message: str, operation: str = None):
+                super().__init__(message)
+                self.operation = operation
 
 # Import DatabaseInterface with try/except to avoid circular imports
 try:
