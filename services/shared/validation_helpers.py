@@ -370,13 +370,13 @@ def handle_validation_errors(service_name: str):
     """
 
     def decorator(func):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         async def wrapper(*args, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             try:
                 return await func(*args, **kwargs)
             except (ValidationError, RequestValidationError) as e:

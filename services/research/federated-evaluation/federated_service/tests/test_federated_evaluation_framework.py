@@ -23,44 +23,44 @@ except ImportError:
     # Mock imports for testing when modules are not available
     class FederatedEvaluator:
         def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             pass
 
         async def submit_evaluation(self, request):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return "mock_task_id"
 
     class EvaluationTask:
         def __init__(self, **kwargs):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             for k, v in kwargs.items():
                 setattr(self, k, v)
 
     class FederatedNode:
         def __init__(self, **kwargs):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             for k, v in kwargs.items():
                 setattr(self, k, v)
 
     class FederatedEvaluationRequest:
         def __init__(self, **kwargs):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             for k, v in kwargs.items():
                 setattr(self, k, v)
 
@@ -74,9 +74,9 @@ class TestFederatedEvaluationFramework:
 
     @pytest.fixture
     async def federated_evaluator(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create a federated evaluator instance for testing."""
         evaluator = FederatedEvaluator()
 
@@ -93,9 +93,9 @@ class TestFederatedEvaluationFramework:
 
     @pytest.fixture
     def sample_evaluation_request(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create a sample evaluation request."""
         return FederatedEvaluationRequest(
             policy_content='package acgs.test\n\nallow {\n    input.action == "read"\n}',
@@ -111,9 +111,9 @@ class TestFederatedEvaluationFramework:
 
     @pytest.fixture
     def mock_nodes(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create mock federated nodes for testing."""
         nodes = {}
         for i in range(5):
@@ -121,9 +121,7 @@ class TestFederatedEvaluationFramework:
             nodes[node_id] = FederatedNode(
                 node_id=node_id,
                 platform_type=(
-                    PlatformType.CLOUD_OPENAI
-                    if i % 2 == 0
-                    else PlatformType.CLOUD_ANTHROPIC
+                    PlatformType.CLOUD_OPENAI if i % 2 == 0 else PlatformType.CLOUD_ANTHROPIC
                 ),
                 endpoint_url=f"https://api.test{i}.com",
                 status="active",
@@ -138,9 +136,9 @@ class TestFederatedEvaluationFramework:
     async def test_multi_node_evaluation_submission(
         self, federated_evaluator, sample_evaluation_request, mock_nodes
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test submission of evaluation with multiple nodes."""
         # Setup mock nodes
         federated_evaluator.nodes = mock_nodes
@@ -148,14 +146,10 @@ class TestFederatedEvaluationFramework:
         # Mock database operations
         with (
             patch.object(federated_evaluator, "_store_evaluation_in_db") as mock_store,
-            patch.object(
-                federated_evaluator, "_execute_federated_evaluation"
-            ) as mock_execute,
+            patch.object(federated_evaluator, "_execute_federated_evaluation") as mock_execute,
         ):
 
-            task_id = await federated_evaluator.submit_evaluation(
-                sample_evaluation_request
-            )
+            task_id = await federated_evaluator.submit_evaluation(sample_evaluation_request)
 
             # Verify task was created
             assert task_id in federated_evaluator.active_evaluations
@@ -168,9 +162,9 @@ class TestFederatedEvaluationFramework:
             mock_execute.assert_called_once()
 
     async def test_node_selection_algorithm(self, federated_evaluator, mock_nodes):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test optimal node selection algorithm."""
         federated_evaluator.nodes = mock_nodes
         federated_evaluator.node_load_balancer = {
@@ -201,9 +195,9 @@ class TestFederatedEvaluationFramework:
             assert node.status == "active"
 
     async def test_byzantine_fault_detection(self, federated_evaluator, mock_nodes):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test Byzantine fault detection algorithms."""
         federated_evaluator.nodes = mock_nodes
         federated_evaluator.quarantined_nodes = {}
@@ -220,19 +214,15 @@ class TestFederatedEvaluationFramework:
         suspicious_node.average_response_time_ms = 15000  # Very slow
 
         with patch.object(federated_evaluator, "_quarantine_node") as mock_quarantine:
-            await federated_evaluator._check_node_performance_anomalies(
-                suspicious_node_id
-            )
+            await federated_evaluator._check_node_performance_anomalies(suspicious_node_id)
 
             # Verify quarantine was called for suspicious behavior
-            mock_quarantine.assert_called_once_with(
-                suspicious_node_id, "performance_anomalies"
-            )
+            mock_quarantine.assert_called_once_with(suspicious_node_id, "performance_anomalies")
 
     async def test_node_health_monitoring(self, federated_evaluator, mock_nodes):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test node health monitoring and scoring."""
         federated_evaluator.nodes = mock_nodes
         federated_evaluator.node_load_balancer = {"weights": {}}
@@ -245,9 +235,9 @@ class TestFederatedEvaluationFramework:
             assert node_id in federated_evaluator.node_load_balancer["weights"]
 
     async def test_load_balancing_weights(self, federated_evaluator, mock_nodes):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test load balancing weight updates."""
         federated_evaluator.nodes = mock_nodes
         federated_evaluator.node_load_balancer = {"weights": {}}
@@ -264,9 +254,9 @@ class TestFederatedEvaluationFramework:
     async def test_evaluation_redistribution(
         self, federated_evaluator, mock_nodes, sample_evaluation_request
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test redistribution of evaluations when a node fails."""
         federated_evaluator.nodes = mock_nodes
 
@@ -286,9 +276,7 @@ class TestFederatedEvaluationFramework:
 
         with (
             patch.object(federated_evaluator, "_select_optimal_nodes") as mock_select,
-            patch.object(
-                federated_evaluator, "_execute_federated_evaluation"
-            ) as mock_execute,
+            patch.object(federated_evaluator, "_execute_federated_evaluation") as mock_execute,
         ):
 
             mock_select.return_value = ["test_node_1", "test_node_2"]
@@ -302,14 +290,12 @@ class TestFederatedEvaluationFramework:
     async def test_constitutional_compliance_integration(
         self, federated_evaluator, sample_evaluation_request
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test integration with Constitutional Council for compliance validation."""
         # Mock constitutional validation
-        with patch(
-            "app.core.federated_evaluator.constitutional_validator"
-        ) as mock_validator:
+        with patch("app.core.federated_evaluator.constitutional_validator") as mock_validator:
             mock_validator.validate_policy_compliance.return_value = {
                 "compliance_score": 0.95,
                 "violations": [],
@@ -325,12 +311,10 @@ class TestFederatedEvaluationFramework:
             assert compliance_result["compliance_score"] >= 0.9
             assert len(compliance_result["violations"]) == 0
 
-    async def test_mab_integration(
-        self, federated_evaluator, sample_evaluation_request
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_mab_integration(self, federated_evaluator, sample_evaluation_request):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test Multi-Armed Bandit integration for prompt optimization."""
         # Mock MAB client
         with patch.object(federated_evaluator, "mab_client") as mock_mab:
@@ -340,17 +324,15 @@ class TestFederatedEvaluationFramework:
                 "expected_performance": 0.92,
             }
 
-            mab_context = await federated_evaluator._get_mab_context(
-                sample_evaluation_request
-            )
+            mab_context = await federated_evaluator._get_mab_context(sample_evaluation_request)
 
             assert "template_id" in mab_context
             assert "confidence" in mab_context
 
     async def test_privacy_preservation(self, federated_evaluator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test privacy preservation mechanisms."""
         # Mock privacy manager
         with patch.object(federated_evaluator, "privacy_manager") as mock_privacy:
@@ -368,9 +350,9 @@ class TestFederatedEvaluationFramework:
             assert privacy_result["epsilon_consumed"] <= 1.0
 
     async def test_secure_aggregation(self, federated_evaluator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test secure aggregation of federated results."""
         # Mock secure aggregator
         with patch.object(federated_evaluator, "secure_aggregator") as mock_aggregator:
@@ -399,9 +381,9 @@ class TestFederatedEvaluationFramework:
     async def test_performance_targets(
         self, federated_evaluator, sample_evaluation_request, mock_nodes
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that performance targets are met."""
         federated_evaluator.nodes = mock_nodes
 
@@ -413,25 +395,21 @@ class TestFederatedEvaluationFramework:
             patch.object(federated_evaluator, "_execute_federated_evaluation"),
         ):
 
-            task_id = await federated_evaluator.submit_evaluation(
-                sample_evaluation_request
-            )
+            task_id = await federated_evaluator.submit_evaluation(sample_evaluation_request)
 
         end_time = datetime.now()
         response_time_ms = (end_time - start_time).total_seconds() * 1000
 
         # Verify response time target
-        assert (
-            response_time_ms < 200
-        ), f"Response time {response_time_ms}ms exceeds 200ms target"
+        assert response_time_ms < 200, f"Response time {response_time_ms}ms exceeds 200ms target"
 
         # Verify task was created successfully
         assert task_id in federated_evaluator.active_evaluations
 
     async def test_concurrent_evaluations(self, federated_evaluator, mock_nodes):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test support for 50+ concurrent evaluations."""
         federated_evaluator.nodes = mock_nodes
 
@@ -453,8 +431,7 @@ class TestFederatedEvaluationFramework:
 
             # Submit evaluations concurrently
             tasks = [
-                federated_evaluator.submit_evaluation(request)
-                for request in evaluation_requests
+                federated_evaluator.submit_evaluation(request) for request in evaluation_requests
             ]
 
             task_ids = await asyncio.gather(*tasks)
@@ -473,25 +450,25 @@ class TestFederatedEvaluationAPI:
     """Test suite for federated evaluation API endpoints."""
 
     async def test_submit_evaluation_endpoint(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test the submit evaluation API endpoint."""
         # This would require FastAPI test client setup
         # Placeholder for API endpoint testing
 
     async def test_node_health_endpoint(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test the node health status API endpoint."""
         # This would require FastAPI test client setup
         # Placeholder for API endpoint testing
 
     async def test_quarantine_node_endpoint(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test the quarantine node API endpoint."""
         # This would require FastAPI test client setup
         # Placeholder for API endpoint testing

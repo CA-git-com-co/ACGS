@@ -48,15 +48,11 @@ if PROMETHEUS_AVAILABLE:
     VALIDATION_ACCURACY = Gauge(
         "ac_multimodel_validation_accuracy", "Multi-model validation accuracy"
     )
-    CONSENSUS_RATE = Gauge(
-        "ac_multimodel_consensus_rate", "Model consensus achievement rate"
-    )
+    CONSENSUS_RATE = Gauge("ac_multimodel_consensus_rate", "Model consensus achievement rate")
     VALIDATION_LATENCY = Histogram(
         "ac_multimodel_validation_latency_seconds", "Multi-model validation latency"
     )
-    MODEL_DISAGREEMENT = Counter(
-        "ac_multimodel_disagreement_total", "Model disagreement events"
-    )
+    MODEL_DISAGREEMENT = Counter("ac_multimodel_disagreement_total", "Model disagreement events")
 
 
 class ValidationResult(Enum):
@@ -104,9 +100,7 @@ class ModelConfig:
     weight: float  # Contribution weight (0.0-1.0)
     timeout_seconds: int
     enabled: bool
-    constitutional_specialization: bool = (
-        False  # Specialized for constitutional analysis
-    )
+    constitutional_specialization: bool = False  # Specialized for constitutional analysis
 
 
 class MultiModelValidator:
@@ -243,9 +237,7 @@ class MultiModelValidator:
             )
 
             # Calculate consensus
-            consensus_result = self._calculate_consensus(
-                model_responses, constitutional_hash_valid
-            )
+            consensus_result = self._calculate_consensus(model_responses, constitutional_hash_valid)
 
             # Update performance metrics
             total_latency = (time.time() - start_time) * 1000
@@ -322,18 +314,14 @@ class MultiModelValidator:
             valid_responses = []
             for i, response in enumerate(responses):
                 if isinstance(response, Exception):
-                    logger.warning(
-                        f"Model {enabled_models[i].model_id} failed: {response}"
-                    )
+                    logger.warning(f"Model {enabled_models[i].model_id} failed: {response}")
                 else:
                     valid_responses.append(response)
 
             return valid_responses
 
         except asyncio.TimeoutError:
-            logger.warning(
-                f"Multi-model validation timed out after {self.max_validation_time}s"
-            )
+            logger.warning(f"Multi-model validation timed out after {self.max_validation_time}s")
             return []
 
     async def _validate_with_model(
@@ -362,9 +350,7 @@ class MultiModelValidator:
                 )
 
                 # Parse model response
-                result, confidence, reasoning, alignment = self._parse_model_response(
-                    response
-                )
+                result, confidence, reasoning, alignment = self._parse_model_response(response)
             else:
                 # Mock response for testing
                 result, confidence, reasoning, alignment = self._mock_model_response(
@@ -430,9 +416,7 @@ Format your response as JSON:
 
         return base_prompt.strip()
 
-    def _parse_model_response(
-        self, response: str
-    ) -> Tuple[ValidationResult, float, str, float]:
+    def _parse_model_response(self, response: str) -> Tuple[ValidationResult, float, str, float]:
         """Parse model response into structured format."""
         try:
             # Try to parse as JSON
@@ -471,10 +455,7 @@ Format your response as JSON:
         # Simple heuristic for mock validation
         policy_lower = policy_content.lower()
 
-        if any(
-            word in policy_lower
-            for word in ["unsafe", "unauthorized", "exploit", "bypass"]
-        ):
+        if any(word in policy_lower for word in ["unsafe", "unauthorized", "exploit", "bypass"]):
             result = ValidationResult.NON_COMPLIANT
             confidence = 0.85 + (model_config.weight * 0.1)
             reasoning = f"Policy contains potentially problematic terms (validated by {model_config.model_name})"
@@ -532,9 +513,7 @@ Format your response as JSON:
                 continue
 
             # Find model config for weighting
-            model_config = next(
-                (m for m in self.models if m.model_id == response.model_id), None
-            )
+            model_config = next((m for m in self.models if m.model_id == response.model_id), None)
             weight = model_config.weight if model_config else 0.1
 
             result_votes[response.result].append((response, weight))
@@ -590,25 +569,21 @@ Format your response as JSON:
 
         # Track accuracy (simplified - in production, would compare against ground truth)
         if consensus_result.consensus_confidence > 0.8:
-            self.validation_stats["accuracy_samples"].append(
-                consensus_result.consensus_confidence
-            )
+            self.validation_stats["accuracy_samples"].append(consensus_result.consensus_confidence)
 
         # Track latency
-        self.validation_stats["latency_samples"].append(
-            consensus_result.total_latency_ms
-        )
+        self.validation_stats["latency_samples"].append(consensus_result.total_latency_ms)
 
         # Keep only recent samples for memory efficiency
         max_samples = 1000
         if len(self.validation_stats["accuracy_samples"]) > max_samples:
-            self.validation_stats["accuracy_samples"] = self.validation_stats[
-                "accuracy_samples"
-            ][-max_samples:]
+            self.validation_stats["accuracy_samples"] = self.validation_stats["accuracy_samples"][
+                -max_samples:
+            ]
         if len(self.validation_stats["latency_samples"]) > max_samples:
-            self.validation_stats["latency_samples"] = self.validation_stats[
-                "latency_samples"
-            ][-max_samples:]
+            self.validation_stats["latency_samples"] = self.validation_stats["latency_samples"][
+                -max_samples:
+            ]
 
         # Update model-specific performance
         for response in consensus_result.model_responses:
@@ -629,12 +604,10 @@ Format your response as JSON:
                 # Update running averages
                 alpha = 0.1  # Exponential moving average factor
                 model_stats["avg_confidence"] = (
-                    alpha * response.confidence
-                    + (1 - alpha) * model_stats["avg_confidence"]
+                    alpha * response.confidence + (1 - alpha) * model_stats["avg_confidence"]
                 )
                 model_stats["avg_latency"] = (
-                    alpha * response.latency_ms
-                    + (1 - alpha) * model_stats["avg_latency"]
+                    alpha * response.latency_ms + (1 - alpha) * model_stats["avg_latency"]
                 )
 
         # Update Prometheus metrics
@@ -696,9 +669,7 @@ Format your response as JSON:
         avg_latency = 0.0
 
         if stats["total_validations"] > 0:
-            consensus_rate = (
-                stats["consensus_achieved"] / stats["total_validations"]
-            ) * 100.0
+            consensus_rate = (stats["consensus_achieved"] / stats["total_validations"]) * 100.0
 
         if stats["accuracy_samples"]:
             avg_accuracy = statistics.mean(stats["accuracy_samples"])

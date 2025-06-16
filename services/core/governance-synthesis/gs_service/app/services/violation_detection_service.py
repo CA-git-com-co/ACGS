@@ -99,9 +99,9 @@ class ViolationDetectionService:
     """
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize the violation detection service.
 
@@ -174,9 +174,7 @@ class ViolationDetectionService:
 
             # 2. Policy-based violation detection
             if policy:
-                policy_violations = await self._detect_policy_violations(
-                    policy, context_data
-                )
+                policy_violations = await self._detect_policy_violations(policy, context_data)
                 violations.extend(policy_violations)
 
             # 3. Fidelity score threshold violations
@@ -196,9 +194,7 @@ class ViolationDetectionService:
             # Process detected violations
             if violations:
                 # Select the most severe violation
-                most_severe = max(
-                    violations, key=lambda v: self._get_severity_weight(v.severity)
-                )
+                most_severe = max(violations, key=lambda v: self._get_severity_weight(v.severity))
 
                 result.violation_detected = True
                 result.violation_type = most_severe.violation_type
@@ -209,8 +205,8 @@ class ViolationDetectionService:
 
                 # Calculate distance score if principle available
                 if principle:
-                    result.distance_score = (
-                        await self.distance_calculator.calculate_distance(principle)
+                    result.distance_score = await self.distance_calculator.calculate_distance(
+                        principle
                     )
 
             # Add detection metadata
@@ -266,9 +262,7 @@ class ViolationDetectionService:
             )
             principles = principles_result.scalars().all()
 
-            policies_result = await db.execute(
-                select(Policy).where(Policy.status == "active")
-            )
+            policies_result = await db.execute(select(Policy).where(Policy.status == "active"))
             policies = policies_result.scalars().all()
 
             # Perform violation detection
@@ -296,9 +290,7 @@ class ViolationDetectionService:
 
             # Calculate results
             total_analyzed = len(principles) + len(policies)
-            violations_detected = sum(
-                1 for r in detection_results if r.violation_detected
-            )
+            violations_detected = sum(1 for r in detection_results if r.violation_detected)
             analysis_time = time.time() - start_time
 
             # Update scan time
@@ -359,9 +351,7 @@ class ViolationDetectionService:
                 )
 
             # Check principle distance score
-            distance_score = await self.distance_calculator.calculate_distance(
-                principle
-            )
+            distance_score = await self.distance_calculator.calculate_distance(principle)
             if distance_score < 0.6:  # Low distance score indicates potential issues
                 violations.append(
                     ViolationDetectionResult(
@@ -426,9 +416,7 @@ class ViolationDetectionService:
                             "Resolve policy conflicts",
                             "Review policy dependencies",
                         ],
-                        detection_metadata={
-                            "conflict_indicators": policy.conflict_indicators
-                        },
+                        detection_metadata={"conflict_indicators": policy.conflict_indicators},
                     )
                 )
 
@@ -536,23 +524,20 @@ class ViolationDetectionService:
         return violations
 
     async def _load_thresholds(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Load violation thresholds from database."""
         try:
             # Check if cache needs refresh (refresh every 5 minutes)
             if (
                 self.cache_updated_at is None
-                or (datetime.now(timezone.utc) - self.cache_updated_at).total_seconds()
-                > 300
+                or (datetime.now(timezone.utc) - self.cache_updated_at).total_seconds() > 300
             ):
 
                 async for db in get_async_db():
                     result = await db.execute(
-                        select(ViolationThreshold).where(
-                            ViolationThreshold.enabled == True
-                        )
+                        select(ViolationThreshold).where(ViolationThreshold.enabled == True)
                     )
                     thresholds = result.scalars().all()
 
@@ -582,9 +567,7 @@ class ViolationDetectionService:
         """Get list of detection methods used."""
         methods = []
         if principle:
-            methods.extend(
-                ["principle_analysis", "distance_calculation", "error_prediction"]
-            )
+            methods.extend(["principle_analysis", "distance_calculation", "error_prediction"])
         if policy:
             methods.extend(["policy_analysis", "quality_assessment"])
         if fidelity_score is not None:

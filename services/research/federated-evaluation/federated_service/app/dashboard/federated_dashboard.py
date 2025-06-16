@@ -23,9 +23,9 @@ logger = logging.getLogger(__name__)
 
 
 def create_dash_app():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Create and configure the Dash dashboard application."""
     if not DASH_AVAILABLE:
         logger.warning("Dash not available. Dashboard will not be functional.")
@@ -54,9 +54,9 @@ def create_dash_app():
 
 
 def create_dashboard_layout():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Create the dashboard layout."""
     if not DASH_AVAILABLE:
         return html.Div("Dashboard not available")
@@ -86,9 +86,7 @@ def create_dashboard_layout():
                                 [
                                     dbc.CardBody(
                                         [
-                                            html.H4(
-                                                "Active Nodes", className="card-title"
-                                            ),
+                                            html.H4("Active Nodes", className="card-title"),
                                             html.H2(
                                                 id="active-nodes-count",
                                                 children="0",
@@ -111,9 +109,7 @@ def create_dashboard_layout():
                                 [
                                     dbc.CardBody(
                                         [
-                                            html.H4(
-                                                "Privacy Budget", className="card-title"
-                                            ),
+                                            html.H4("Privacy Budget", className="card-title"),
                                             html.H2(
                                                 id="privacy-budget-remaining",
                                                 children="0%",
@@ -136,9 +132,7 @@ def create_dashboard_layout():
                                 [
                                     dbc.CardBody(
                                         [
-                                            html.H4(
-                                                "Success Rate", className="card-title"
-                                            ),
+                                            html.H4("Success Rate", className="card-title"),
                                             html.H2(
                                                 id="success-rate",
                                                 children="0%",
@@ -192,9 +186,7 @@ def create_dashboard_layout():
                             dbc.Card(
                                 [
                                     dbc.CardHeader("Evaluation Performance Over Time"),
-                                    dbc.CardBody(
-                                        [dcc.Graph(id="performance-timeline")]
-                                    ),
+                                    dbc.CardBody([dcc.Graph(id="performance-timeline")]),
                                 ]
                             )
                         ],
@@ -222,9 +214,7 @@ def create_dashboard_layout():
                             dbc.Card(
                                 [
                                     dbc.CardHeader("Privacy Budget Usage"),
-                                    dbc.CardBody(
-                                        [dcc.Graph(id="privacy-budget-chart")]
-                                    ),
+                                    dbc.CardBody([dcc.Graph(id="privacy-budget-chart")]),
                                 ]
                             )
                         ],
@@ -256,9 +246,9 @@ def create_dashboard_layout():
 
 
 def register_callbacks(app):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Register dashboard callbacks."""
     if not DASH_AVAILABLE:
         return
@@ -277,9 +267,9 @@ def register_callbacks(app):
         [Input("interval-component", "n_intervals")],
     )
     def update_dashboard(n):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update all dashboard components."""
         try:
             # Mock data - would fetch from actual federated evaluator
@@ -315,9 +305,9 @@ def register_callbacks(app):
 
 
 def get_mock_metrics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get mock metrics for dashboard demonstration."""
     import random
 
@@ -352,9 +342,9 @@ def get_mock_metrics():
 
 
 def create_performance_timeline(metrics):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Create performance timeline chart."""
     if not DASH_AVAILABLE:
         return {}
@@ -400,9 +390,9 @@ def create_performance_timeline(metrics):
 
 
 def create_platform_comparison(metrics):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Create cross-platform comparison chart."""
     if not DASH_AVAILABLE:
         return {}
@@ -433,9 +423,9 @@ def create_platform_comparison(metrics):
 
 
 def create_privacy_budget_chart(metrics):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Create privacy budget usage chart."""
     if not DASH_AVAILABLE:
         return {}
@@ -475,9 +465,9 @@ def create_privacy_budget_chart(metrics):
 
 
 def create_node_status_chart(metrics):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Create node status distribution chart."""
     if not DASH_AVAILABLE:
         return {}

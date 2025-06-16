@@ -23,9 +23,7 @@ class AutomationRuleRequest(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
-    trigger_type: str = Field(
-        ..., pattern="^(scheduled|event_driven|threshold_based|manual)$"
-    )
+    trigger_type: str = Field(..., pattern="^(scheduled|event_driven|threshold_based|manual)$")
     conditions: Dict[str, Any] = Field(default_factory=dict)
     actions: List[Dict[str, Any]] = Field(default_factory=list)
     enabled: bool = Field(default=True)
@@ -131,9 +129,7 @@ async def list_automation_rules(
 
 
 @router.post("/pipelines", response_model=PipelineResponse)
-async def create_pipeline(
-    request: PipelineRequest, db: AsyncSession = Depends(get_db_session)
-):
+async def create_pipeline(request: PipelineRequest, db: AsyncSession = Depends(get_db_session)):
     """Create a new research pipeline."""
     try:
         # Placeholder implementation
@@ -220,9 +216,7 @@ async def create_constitutional_compliance_pipeline(
 ):
     """Create automated constitutional compliance testing pipeline."""
     try:
-        pipeline_id = (
-            await automation_service.create_constitutional_compliance_pipeline()
-        )
+        pipeline_id = await automation_service.create_constitutional_compliance_pipeline()
 
         return {
             "pipeline_id": pipeline_id,

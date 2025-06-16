@@ -116,9 +116,9 @@ class EventMetadata:
     tags: Dict[str, str] = None
 
     def __post_init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.tags is None:
             self.tags = {}
 
@@ -136,9 +136,9 @@ class EventData:
     encoding: str = "utf-8"
 
     def __post_init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.payload is None:
             self.payload = {}
 

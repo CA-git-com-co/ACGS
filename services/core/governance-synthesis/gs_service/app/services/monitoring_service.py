@@ -61,16 +61,16 @@ class PrometheusMetrics:
     """Prometheus metrics collection for ACGS."""
 
     def __init__(self, registry: Optional[CollectorRegistry] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.registry = registry or CollectorRegistry()
         self._initialize_metrics()
 
     def _initialize_metrics(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize Prometheus metrics."""
 
         # Policy decision metrics
@@ -173,18 +173,18 @@ class AlertManager:
     """Alert management for ACGS monitoring."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.thresholds: List[AlertThreshold] = []
         self.active_alerts: Dict[str, Dict[str, Any]] = {}
         self.alert_history: List[Dict[str, Any]] = []
         self._initialize_default_thresholds()
 
     def _initialize_default_thresholds(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize default alert thresholds."""
         self.thresholds = [
             AlertThreshold(
@@ -240,20 +240,11 @@ class AlertManager:
 
             alert_triggered = False
 
-            if (
-                threshold.comparison == "gt"
-                and metric_value > threshold.threshold_value
-            ):
+            if threshold.comparison == "gt" and metric_value > threshold.threshold_value:
                 alert_triggered = True
-            elif (
-                threshold.comparison == "lt"
-                and metric_value < threshold.threshold_value
-            ):
+            elif threshold.comparison == "lt" and metric_value < threshold.threshold_value:
                 alert_triggered = True
-            elif (
-                threshold.comparison == "eq"
-                and metric_value == threshold.threshold_value
-            ):
+            elif threshold.comparison == "eq" and metric_value == threshold.threshold_value:
                 alert_triggered = True
 
             if alert_triggered:
@@ -278,9 +269,9 @@ class MonitoringService:
     """Comprehensive monitoring service for ACGS."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.metrics = PrometheusMetrics()
         self.alert_manager = AlertManager()
         self.performance_history: List[PerformanceMetrics] = []
@@ -288,23 +279,21 @@ class MonitoringService:
         self._running = False
 
     async def start_monitoring(self, interval_seconds: int = 30):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start continuous monitoring."""
         if self._running:
             return
 
         self._running = True
-        self._monitoring_task = asyncio.create_task(
-            self._monitoring_loop(interval_seconds)
-        )
+        self._monitoring_task = asyncio.create_task(self._monitoring_loop(interval_seconds))
         logger.info("Monitoring service started", interval=interval_seconds)
 
     async def stop_monitoring(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop continuous monitoring."""
         self._running = False
 
@@ -318,9 +307,9 @@ class MonitoringService:
         logger.info("Monitoring service stopped")
 
     async def _monitoring_loop(self, interval_seconds: int):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Main monitoring loop."""
         while self._running:
             try:
@@ -376,9 +365,7 @@ class MonitoringService:
         error_rate = 0.0
         try:
             monitor = get_performance_monitor()
-            profile = monitor.profiler.get_latency_profile(
-                "opa_policy_evaluation:policy_decision"
-            )
+            profile = monitor.profiler.get_latency_profile("opa_policy_evaluation:policy_decision")
             if profile:
                 policy_latency_ms = profile.avg_latency_ms
             concurrent_requests = monitor.active_requests
@@ -410,9 +397,9 @@ class MonitoringService:
         )
 
     def _update_prometheus_metrics(self, metrics: PerformanceMetrics):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update Prometheus metrics with current values."""
 
         # Update system metrics
@@ -421,14 +408,12 @@ class MonitoringService:
         self.metrics.concurrent_requests.set(metrics.concurrent_requests)
 
         # Update cache metrics (placeholder)
-        self.metrics.cache_hit_rate.labels(cache_type="multi_tier").set(
-            metrics.cache_hit_rate
-        )
+        self.metrics.cache_hit_rate.labels(cache_type="multi_tier").set(metrics.cache_hit_rate)
 
     async def _handle_alerts(self, alerts: List[Dict[str, Any]]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Handle triggered alerts."""
         for alert in alerts:
             logger.warning(
@@ -466,17 +451,13 @@ class MonitoringService:
             "current_metrics": (
                 asdict(self.performance_history[-1]) if self.performance_history else {}
             ),
-            "average_latency_ms": sum(
-                m.policy_decision_latency_ms for m in recent_metrics
-            )
+            "average_latency_ms": sum(m.policy_decision_latency_ms for m in recent_metrics)
             / len(recent_metrics),
             "average_cache_hit_rate": sum(m.cache_hit_rate for m in recent_metrics)
             / len(recent_metrics),
             "average_memory_usage_mb": sum(m.memory_usage_mb for m in recent_metrics)
             / len(recent_metrics),
-            "average_cpu_usage_percent": sum(
-                m.cpu_usage_percent for m in recent_metrics
-            )
+            "average_cpu_usage_percent": sum(m.cpu_usage_percent for m in recent_metrics)
             / len(recent_metrics),
             "active_alerts": list(self.alert_manager.active_alerts.values()),
             "metrics_count": len(self.performance_history),
@@ -499,9 +480,9 @@ async def get_monitoring_service() -> MonitoringService:
 
 
 async def shutdown_monitoring_service():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Shutdown global monitoring service."""
     global _monitoring_service
 

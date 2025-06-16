@@ -7,9 +7,9 @@ from fastapi.testclient import TestClient
 
 @pytest.mark.asyncio
 async def test_read_root(client: TestClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash  # Inject the client fixture
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash  # Inject the client fixture
     # The client fixture uses http://testserver as the default base_url
     response = client.get("/")
     # Assuming your root endpoint in auth_service.main returns a health check.

@@ -75,18 +75,18 @@ class ServiceRegistry:
     """
 
     def __init__(self, environment: Environment = Environment.DEVELOPMENT):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.environment = environment
         self._services: Dict[ServiceType, ServiceConfig] = {}
         self._load_default_configurations()
         self._load_environment_overrides()
 
     def _load_default_configurations(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Load default service configurations."""
         default_configs = {
             ServiceType.AUTH: ServiceConfig(
@@ -154,9 +154,9 @@ class ServiceRegistry:
         self._services.update(default_configs)
 
     def _load_environment_overrides(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Load environment-specific configuration overrides."""
         env_prefix = f"ACGS_{self.environment.value.upper()}_"
 
@@ -179,18 +179,14 @@ class ServiceRegistry:
                         self._services[service_type].port = port
                         # Update base_url if using localhost
                         if "localhost" in self._services[service_type].base_url:
-                            self._services[service_type].base_url = (
-                                f"http://localhost:{port}"
-                            )
+                            self._services[service_type].base_url = f"http://localhost:{port}"
                 except ValueError:
-                    logger.warning(
-                        f"Invalid port value for {port_key}: {os.environ[port_key]}"
-                    )
+                    logger.warning(f"Invalid port value for {port_key}: {os.environ[port_key]}")
 
     def register_service(self, service_type: ServiceType, config: ServiceConfig):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Register a service configuration.
 

@@ -5,9 +5,9 @@ Implements enterprise-grade constitutional hash validation middleware that valid
 all incoming requests against the constitutional framework, ensuring 100% constitutional
 compliance for all policy operations.
 
-// requires: constitutional_hash = "cdd01ef066bc6cf2", FastAPI app instance
-// ensures: 100% constitutional compliance AND middleware_latency_ms <= 2.0
-// sha256: constitutional_validation_middleware_enterprise_v1.0_acgs1
+# requires: constitutional_hash = "cdd01ef066bc6cf2", FastAPI app instance
+# ensures: 100% constitutional compliance AND middleware_latency_ms <= 2.0
+# sha256: constitutional_validation_middleware_enterprise_v1.0_acgs1
 
 Enterprise Features:
 - Automatic constitutional hash validation for all requests
@@ -23,7 +23,7 @@ import logging
 import time
 from typing import Any, Dict, Optional
 
-from fastapi import Request, Response, HTTPException
+from fastapi import HTTPException, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
 logger = logging.getLogger(__name__)
@@ -32,11 +32,11 @@ logger = logging.getLogger(__name__)
 class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
     """
     Constitutional hash validation middleware for enterprise ACGS-1 compliance.
-    
+
     Validates all incoming requests against the constitutional framework,
     ensuring policy operations maintain constitutional compliance.
     """
-    
+
     def __init__(
         self,
         app,
@@ -47,7 +47,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
     ):
         """
         Initialize constitutional validation middleware.
-        
+
         Args:
             app: FastAPI application instance
             constitutional_hash: Reference constitutional hash
@@ -66,7 +66,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             "/openapi.json",
             "/favicon.ico",
         ]
-        
+
         # Performance and compliance metrics
         self.validation_count = 0
         self.validation_failures = 0
@@ -74,7 +74,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
         self.circuit_breaker_failures = 0
         self.circuit_breaker_threshold = 5
         self.circuit_breaker_reset_time = None
-        
+
         logger.info(
             f"Constitutional validation middleware initialized with hash: {constitutional_hash[:8]}..."
         )
@@ -82,92 +82,87 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next) -> Response:
         """
         Process request with constitutional validation.
-        
+
         Args:
             request: Incoming HTTP request
             call_next: Next middleware/handler in chain
-            
+
         Returns:
             HTTP response with constitutional validation headers
         """
         start_time = time.time()
-        
+
         try:
             # Check if path should bypass validation
             if self._should_bypass_validation(request.url.path):
                 response = await call_next(request)
                 self._add_constitutional_headers(response, bypassed=True)
                 return response
-            
+
             # Check circuit breaker
             if self._is_circuit_breaker_open():
                 if self.enable_strict_validation:
                     raise HTTPException(
                         status_code=503,
-                        detail="Constitutional validation service temporarily unavailable"
+                        detail="Constitutional validation service temporarily unavailable",
                     )
                 else:
                     # Graceful degradation - continue without validation
                     response = await call_next(request)
                     self._add_constitutional_headers(response, degraded=True)
                     return response
-            
+
             # Perform constitutional validation
             validation_result = await self._validate_request_constitutional_compliance(request)
-            
+
             # Handle validation failure
             if not validation_result["valid"] and self.enable_strict_validation:
                 self.validation_failures += 1
                 raise HTTPException(
                     status_code=403,
-                    detail=f"Constitutional compliance violation: {validation_result['reason']}"
+                    detail=f"Constitutional compliance violation: {validation_result['reason']}",
                 )
-            
+
             # Process request
             response = await call_next(request)
-            
+
             # Add constitutional validation headers
             self._add_constitutional_headers(response, validation_result=validation_result)
-            
+
             # Update metrics
             self._update_metrics(start_time, validation_result["valid"])
-            
+
             return response
-            
+
         except HTTPException:
             # Re-raise HTTP exceptions
             raise
         except Exception as e:
             logger.error(f"Constitutional validation middleware error: {e}")
             self.circuit_breaker_failures += 1
-            
+
             if self.enable_strict_validation:
-                raise HTTPException(
-                    status_code=500,
-                    detail="Constitutional validation failed"
-                )
+                raise HTTPException(status_code=500, detail="Constitutional validation failed")
             else:
                 # Graceful degradation
                 response = await call_next(request)
                 self._add_constitutional_headers(response, error=str(e))
                 return response
 
-    async def _validate_request_constitutional_compliance(
-        self, request: Request
-    ) -> Dict[str, Any]:
+    async def _validate_request_constitutional_compliance(self, request: Request) -> Dict[str, Any]:
         """
         Validate request constitutional compliance.
-        
+
         Args:
             request: HTTP request to validate
-            
+
         Returns:
             Validation result with compliance details
         """
         try:
             # Extract constitutional hash from request headers
             request_hash = request.headers.get("X-Constitutional-Hash")
-            
+
             # Basic constitutional hash validation
             if request_hash and request_hash != self.constitutional_hash:
                 return {
@@ -175,30 +170,30 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
                     "reason": f"Constitutional hash mismatch: expected {self.constitutional_hash}, got {request_hash}",
                     "compliance_score": 0.0,
                 }
-            
+
             # Validate request path against constitutional requirements
             path_validation = self._validate_path_constitutional_requirements(request.url.path)
             if not path_validation["valid"]:
                 return path_validation
-            
+
             # Validate request method against constitutional requirements
             method_validation = self._validate_method_constitutional_requirements(request.method)
             if not method_validation["valid"]:
                 return method_validation
-            
+
             # Enhanced validation for policy operations
             if self._is_policy_operation(request.url.path):
                 policy_validation = await self._validate_policy_operation_compliance(request)
                 if not policy_validation["valid"]:
                     return policy_validation
-            
+
             return {
                 "valid": True,
                 "reason": "Constitutional compliance validated",
                 "compliance_score": 1.0,
                 "constitutional_hash": self.constitutional_hash,
             }
-            
+
         except Exception as e:
             logger.error(f"Constitutional compliance validation failed: {e}")
             return {
@@ -216,7 +211,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             "/api/v1/enforcement",
             "/api/v1/alphaevolve",
         ]
-        
+
         if any(const_path in path for const_path in constitutional_paths):
             # Constitutional operations are always valid if they reach this point
             return {
@@ -224,7 +219,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
                 "reason": "Constitutional operation path validated",
                 "compliance_score": 1.0,
             }
-        
+
         return {
             "valid": True,
             "reason": "Standard operation path validated",
@@ -235,14 +230,14 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
         """Validate request method against constitutional requirements."""
         # All HTTP methods are constitutionally valid for policy operations
         allowed_methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
-        
+
         if method not in allowed_methods:
             return {
                 "valid": False,
                 "reason": f"HTTP method {method} not constitutionally allowed",
                 "compliance_score": 0.0,
             }
-        
+
         return {
             "valid": True,
             "reason": f"HTTP method {method} constitutionally validated",
@@ -255,26 +250,26 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             # Check for required constitutional headers
             required_headers = ["X-Constitutional-Hash"]
             missing_headers = [h for h in required_headers if h not in request.headers]
-            
+
             if missing_headers and self.enable_strict_validation:
                 return {
                     "valid": False,
                     "reason": f"Missing required constitutional headers: {missing_headers}",
                     "compliance_score": 0.5,
                 }
-            
+
             # Validate request body for policy operations (if present)
             if request.method in ["POST", "PUT", "PATCH"]:
                 # Would validate request body against constitutional requirements
                 # For now, assume valid if we reach this point
                 pass
-            
+
             return {
                 "valid": True,
                 "reason": "Policy operation constitutional compliance validated",
                 "compliance_score": 1.0,
             }
-            
+
         except Exception as e:
             logger.error(f"Policy operation validation failed: {e}")
             return {
@@ -321,7 +316,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
         """Add constitutional validation headers to response."""
         response.headers["X-Constitutional-Hash"] = self.constitutional_hash
         response.headers["X-Constitutional-Framework-Version"] = "v2.0.0"
-        
+
         if bypassed:
             response.headers["X-Constitutional-Validation"] = "bypassed"
         elif degraded:
@@ -331,20 +326,22 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             response.headers["X-Constitutional-Error"] = error
         elif validation_result:
             response.headers["X-Constitutional-Validation"] = "validated"
-            response.headers["X-Constitutional-Compliance-Score"] = str(validation_result.get("compliance_score", 0.0))
+            response.headers["X-Constitutional-Compliance-Score"] = str(
+                validation_result.get("compliance_score", 0.0)
+            )
         else:
             response.headers["X-Constitutional-Validation"] = "unknown"
 
     def _update_metrics(self, start_time: float, validation_success: bool) -> None:
         """Update middleware performance metrics."""
         latency_ms = (time.time() - start_time) * 1000
-        
+
         self.validation_count += 1
         self.total_latency_ms += latency_ms
-        
+
         if not validation_success:
             self.validation_failures += 1
-        
+
         # Log performance warning if exceeding target
         if latency_ms > self.performance_target_ms:
             logger.warning(
@@ -356,7 +353,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
         avg_latency = (
             self.total_latency_ms / self.validation_count if self.validation_count > 0 else 0.0
         )
-        
+
         return {
             "constitutional_hash": self.constitutional_hash,
             "validation_count": self.validation_count,

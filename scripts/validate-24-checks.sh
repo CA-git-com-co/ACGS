@@ -30,15 +30,15 @@ run_check() {
 }
 
 # Code Formatting & Linting (6 checks)
-run_check "Rust formatting check" "cargo fmt --all -- --check"
-run_check "Rust clippy linting" "cargo clippy --all-targets --all-features -- -D warnings"
+run_check "Rust formatting check" "cd blockchain && cargo fmt --all -- --check"
+run_check "Rust clippy linting" "cd blockchain && cargo clippy --all-targets --all-features -- -D warnings"
 run_check "Python code formatting" "python3 -m black --check services/ || true"
 run_check "Python import sorting" "python3 -m isort --check-only services/ || true"
 run_check "TypeScript formatting" "npx prettier --check '**/*.ts' || true"
 run_check "YAML/JSON validation" "find . -name '*.yml' -o -name '*.yaml' -o -name '*.json' | head -5 | xargs -I {} sh -c 'python3 -c \"import yaml,json; yaml.safe_load(open(\"{}\"))\" || python3 -c \"import json; json.load(open(\"{}\"))\"' || true"
 
 # Security Scanning (6 checks)
-run_check "Rust dependency audit" "cargo audit --deny warnings"
+run_check "Rust dependency audit" "cd blockchain && cargo audit --deny warnings"
 run_check "Python security scan" "python3 -m bandit -r services/ -f json || true"
 run_check "Python dependency check" "python3 -m safety check || true"
 run_check "Secret detection scan" "grep -r 'password\|secret\|key' --include='*.py' --include='*.ts' services/ | grep -v 'test\|example' | wc -l | awk '{exit (\$1 > 5)}' || true"
@@ -46,7 +46,7 @@ run_check "Container security scan" "docker images | grep acgs | wc -l | awk '{e
 run_check "SSL certificate validation" "openssl x509 -in ssl/certs/acgs-services.crt -text -noout | grep 'Validity' || true"
 
 # Testing & Quality (6 checks)
-run_check "Rust unit tests" "cargo test --all-features"
+run_check "Rust unit tests" "cd blockchain && cargo test --all-features"
 run_check "Python unit tests" "python3 -m pytest services/ -v || true"
 run_check "Service health checks" "curl -f http://localhost:8001/health && curl -f http://localhost:8013/health && curl -f http://localhost:8006/health"
 run_check "API endpoint validation" "curl -f http://localhost:8001/api/v1/status && curl -f http://localhost:8013/api/v1/status"

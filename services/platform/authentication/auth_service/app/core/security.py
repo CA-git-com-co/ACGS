@@ -18,9 +18,9 @@ try:
 except ImportError:
     # Fallback imports
     def get_async_db():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         pass
 
     class User:
@@ -76,9 +76,7 @@ def create_access_token(
         "type": "access",
         "jti": jti,
     }
-    encoded_jwt = jwt.encode(
-        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
-    )
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt, jti
 
 
@@ -96,16 +94,14 @@ def create_refresh_token(
         "type": "refresh",
         "jti": jti,
     }
-    encoded_jwt = jwt.encode(
-        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
-    )
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt, jti, expire_datetime
 
 
 def revoke_access_jti(jti: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     revoked_access_jti_blacklist.add(jti)
 
 
@@ -117,9 +113,7 @@ def is_access_jti_revoked(jti: str) -> bool:
 credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
-    headers={
-        "WWW-Authenticate": "Bearer"
-    },  # Even with cookies, this header is conventional
+    headers={"WWW-Authenticate": "Bearer"},  # Even with cookies, this header is conventional
 )
 token_expired_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -130,9 +124,7 @@ token_expired_exception = HTTPException(
 
 def verify_token_and_get_payload(token_str: str) -> TokenPayload:
     try:
-        payload = jwt.decode(
-            token_str, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
-        )
+        payload = jwt.decode(token_str, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
 
         # Validate expiration (jose's decode already does this, but an explicit check is fine)
         exp_timestamp = payload.get("exp")
@@ -167,9 +159,7 @@ async def get_current_user_from_cookie(
         access_token_cookie
     )  # Raises HTTPException on failure
 
-    user = await crud_user.get_user(
-        db, user_id=token_payload.user_id
-    )  # Fetch by user_id
+    user = await crud_user.get_user(db, user_id=token_payload.user_id)  # Fetch by user_id
     if user is None:
         raise credentials_exception  # User not found for user_id in token
     return user
@@ -179,28 +169,22 @@ async def get_current_active_user(
     current_user: User = Depends(get_current_user_from_cookie),
 ) -> User:
     if not current_user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
     return current_user
 
 
 # --- Role-based Authorization ---
 def authorize_roles(required_roles: List[str]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     async def role_checker(
         current_user: User = Depends(get_current_active_user),
     ) -> User:
-        user_role = getattr(
-            current_user, "role", None
-        )  # Assuming 'role' attribute exists
+        user_role = getattr(current_user, "role", None)  # Assuming 'role' attribute exists
         if user_role is None or user_role not in required_roles:
             # Add "admin" role check for superuser access if needed
-            if "admin" in required_roles and getattr(
-                current_user, "is_superuser", False
-            ):
+            if "admin" in required_roles and getattr(current_user, "is_superuser", False):
                 return current_user
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -232,9 +216,7 @@ def get_user_id_from_request_optional(request: Request) -> Optional[str]:
 
 
 # OAuth2PasswordBearer for form data in /token endpoint, not for Bearer token auth itself
-oauth2_password_bearer_scheme = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/auth/token"
-)
+oauth2_password_bearer_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/token")
 
 
 # --- Enterprise API Key Authentication ---
@@ -277,9 +259,7 @@ async def get_current_user_from_api_key(
 
     # Check expiration
     if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(timezone.utc):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="API key has expired"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API key has expired")
 
     # Check IP whitelist if configured
     if api_key_obj.allowed_ips:
@@ -305,9 +285,9 @@ async def get_current_user_from_api_key(
 
 # --- Enhanced Role-based Authorization with Fine-grained Permissions ---
 def authorize_permissions(required_permissions: List[str]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Enhanced authorization with fine-grained permissions"""
 
     async def permission_checker(

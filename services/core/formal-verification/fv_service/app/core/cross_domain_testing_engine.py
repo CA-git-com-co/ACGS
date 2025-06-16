@@ -51,9 +51,9 @@ class DomainSpecificValidator:
     """Base class for domain-specific validation logic."""
 
     def __init__(self, config: DomainValidationConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
         self.domain_type = config.domain_type
 
@@ -66,9 +66,7 @@ class DomainSpecificValidator:
         Returns:
             Tuple of (is_consistent, consistency_score, validation_details)
         """
-        raise NotImplementedError(
-            "Subclasses must implement validate_principle_consistency"
-        )
+        raise NotImplementedError("Subclasses must implement validate_principle_consistency")
 
     async def suggest_adaptations(
         self, principle: Dict[str, Any], validation_result: Dict[str, Any]
@@ -137,9 +135,9 @@ class HealthcareDomainValidator(DomainSpecificValidator):
             "audit_trail",
             "minimum_necessary",
         ]
-        privacy_score = sum(
-            1 for keyword in privacy_keywords if keyword in content
-        ) / len(privacy_keywords)
+        privacy_score = sum(1 for keyword in privacy_keywords if keyword in content) / len(
+            privacy_keywords
+        )
 
         return privacy_score >= 0.75
 
@@ -151,9 +149,9 @@ class HealthcareDomainValidator(DomainSpecificValidator):
 
         # Positive safety indicators
         safety_keywords = ["safety", "harm_prevention", "risk_mitigation", "monitoring"]
-        safety_score = sum(
-            1 for keyword in safety_keywords if keyword in content
-        ) / len(safety_keywords)
+        safety_score = sum(1 for keyword in safety_keywords if keyword in content) / len(
+            safety_keywords
+        )
 
         # Negative safety indicators
         risk_keywords = ["experimental", "unvalidated", "bypass_safety"]
@@ -175,9 +173,9 @@ class HealthcareDomainValidator(DomainSpecificValidator):
             "justice",
             "informed_consent",
         ]
-        ethics_score = sum(
-            1 for keyword in ethics_keywords if keyword in content
-        ) / len(ethics_keywords)
+        ethics_score = sum(1 for keyword in ethics_keywords if keyword in content) / len(
+            ethics_keywords
+        )
 
         return max(0.5, ethics_score)  # Minimum baseline ethics score
 
@@ -191,16 +189,12 @@ class HealthcareDomainValidator(DomainSpecificValidator):
             suggestions.append("Add explicit HIPAA compliance requirements")
             suggestions.append("Include data encryption and access control measures")
 
-        safety_score = validation_result.get("patient_safety_impact", {}).get(
-            "safety_score", 1.0
-        )
+        safety_score = validation_result.get("patient_safety_impact", {}).get("safety_score", 1.0)
         if safety_score < 0.8:
             suggestions.append("Strengthen patient safety protections")
             suggestions.append("Add risk assessment and mitigation procedures")
 
-        ethics_score = validation_result.get("ethical_considerations", {}).get(
-            "ethics_score", 1.0
-        )
+        ethics_score = validation_result.get("ethical_considerations", {}).get("ethics_score", 1.0)
         if ethics_score < 0.8:
             suggestions.append(
                 "Align with medical ethics principles (autonomy, beneficence, non-maleficence, justice)"
@@ -279,9 +273,7 @@ class FinanceDomainValidator(DomainSpecificValidator):
         validation_details["risk_assessment"]["risk_score"] = risk_score
         consistency_score *= 1.0 - risk_score * 0.5  # Higher risk reduces consistency
 
-        is_consistent = consistency_score >= self.config.compliance_thresholds.get(
-            "finance", 0.85
-        )
+        is_consistent = consistency_score >= self.config.compliance_thresholds.get("finance", 0.85)
 
         return is_consistent, consistency_score, validation_details
 
@@ -293,9 +285,7 @@ class FinanceDomainValidator(DomainSpecificValidator):
 
         # Financial regulation keywords
         reg_keywords = ["sox", "basel", "mifid", "gdpr", "kyc", "aml", "fiduciary"]
-        reg_score = sum(1 for keyword in reg_keywords if keyword in content) / len(
-            reg_keywords
-        )
+        reg_score = sum(1 for keyword in reg_keywords if keyword in content) / len(reg_keywords)
 
         return max(0.6, reg_score)  # Minimum baseline compliance
 
@@ -319,12 +309,8 @@ class FinanceDomainValidator(DomainSpecificValidator):
 
         reg_score = validation_result.get("regulatory_compliance", {}).get("score", 1.0)
         if reg_score < 0.8:
-            suggestions.append(
-                "Add explicit financial regulatory compliance requirements"
-            )
-            suggestions.append(
-                "Include SOX, Basel III, or MiFID II compliance measures"
-            )
+            suggestions.append("Add explicit financial regulatory compliance requirements")
+            suggestions.append("Include SOX, Basel III, or MiFID II compliance measures")
 
         risk_score = validation_result.get("risk_assessment", {}).get("risk_score", 0.0)
         if risk_score > 0.5:
@@ -344,9 +330,9 @@ class CrossDomainTestingEngine:
     """Main engine for cross-domain principle testing."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.validators = {
             DomainType.HEALTHCARE: HealthcareDomainValidator,
             DomainType.FINANCE: FinanceDomainValidator,
@@ -365,9 +351,7 @@ class CrossDomainTestingEngine:
         test_run_id = str(uuid.uuid4())
         start_time = time.time()
 
-        logger.info(
-            f"Starting cross-domain test run {test_run_id} with {len(scenarios)} scenarios"
-        )
+        logger.info(f"Starting cross-domain test run {test_run_id} with {len(scenarios)} scenarios")
 
         all_results = []
         execution_summary = {
@@ -388,9 +372,7 @@ class CrossDomainTestingEngine:
         else:
             scenario_results = []
             for scenario in scenarios:
-                result = await self._execute_scenario(
-                    scenario, domains, principles, test_run_id
-                )
+                result = await self._execute_scenario(scenario, domains, principles, test_run_id)
                 scenario_results.append(result)
 
         # Process results
@@ -402,9 +384,7 @@ class CrossDomainTestingEngine:
 
         # Calculate overall metrics
         overall_accuracy = (
-            sum(r.consistency_score for r in all_results) / len(all_results)
-            if all_results
-            else 0.0
+            sum(r.consistency_score for r in all_results) / len(all_results) if all_results else 0.0
         )
         overall_consistency = (
             sum(1 for r in all_results if r.is_consistent) / len(all_results)
@@ -424,9 +404,7 @@ class CrossDomainTestingEngine:
         )
 
         # Generate recommendations
-        recommendations = await self._generate_recommendations(
-            all_results, execution_summary
-        )
+        recommendations = await self._generate_recommendations(all_results, execution_summary)
 
         return CrossDomainTestResponse(
             test_run_id=test_run_id,
@@ -448,9 +426,7 @@ class CrossDomainTestingEngine:
         """Execute a single test scenario across domains."""
 
         results = []
-        scenario_principles = [
-            p for p in principles if p["id"] in scenario.principle_ids
-        ]
+        scenario_principles = [p for p in principles if p["id"] in scenario.principle_ids]
 
         for domain in domains:
             for principle in scenario_principles:
@@ -512,15 +488,11 @@ class CrossDomainTestingEngine:
             )
 
             # Check for conflicts (simplified for single principle)
-            conflict_result = await validator.detect_conflicts(
-                [principle], {"domain": domain}
-            )
+            conflict_result = await validator.detect_conflicts([principle], {"domain": domain})
             conflict_detected = any(conflict_result.values())
             conflict_details = conflict_result
 
-        execution_time = int(
-            (time.time() - start_time) * 1000
-        )  # Convert to milliseconds
+        execution_time = int((time.time() - start_time) * 1000)  # Convert to milliseconds
 
         return CrossDomainTestResult(
             id=0,  # Will be set by database
@@ -580,9 +552,9 @@ class CrossDomainTestingEngine:
             )
 
         # Performance recommendations
-        avg_execution_time = sum(
-            r.execution_time_ms for r in results if r.execution_time_ms
-        ) / len(results)
+        avg_execution_time = sum(r.execution_time_ms for r in results if r.execution_time_ms) / len(
+            results
+        )
         if avg_execution_time > 1000:  # More than 1 second
             recommendations.append(
                 f"Average execution time is high ({avg_execution_time:.0f}ms). Consider optimization."

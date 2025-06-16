@@ -31,24 +31,24 @@ from validation_models import SignatureRequest
 # Local auth stubs (replace with actual auth in production)
 class User:
     def __init__(self, user_id: str = "system", roles: List[str] = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.user_id = user_id
         self.roles = roles or ["user"]
 
 
 def require_internal_service():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return User("internal_service", ["internal", "service"])
 
 
 def require_auditor():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return User("auditor", ["auditor", "read"])
 
 
@@ -66,18 +66,18 @@ except ImportError:
 
     class MockIntegrityVerifier:
         async def sign_policy_rule(self, db, rule_id):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return {
                 "signature": "mock_signature",
                 "timestamp": datetime.now(timezone.utc),
             }
 
         async def verify_policy_rule(self, db, rule_id):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             return {"verified": True, "signature_valid": True}
 
     integrity_verifier = MockIntegrityVerifier()
@@ -122,9 +122,7 @@ async def sign_policy_rule(
             if signature_request.algorithm:
                 sign_params["algorithm"] = signature_request.algorithm
 
-        result = await integrity_verifier.sign_policy_rule(
-            db=db, rule_id=rule_id, **sign_params
-        )
+        result = await integrity_verifier.sign_policy_rule(db=db, rule_id=rule_id, **sign_params)
 
         response_data = {
             "rule_id": rule_id,
@@ -179,9 +177,7 @@ async def sign_audit_log(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to sign audit log: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to sign audit log: {str(e)}")
 
 
 @router.get("/policy-rules/{rule_id}/verify", response_model=IntegrityReport)
@@ -199,9 +195,7 @@ async def verify_policy_rule_integrity(
         return IntegrityReport(
             entity_type="policy_rule",
             entity_id=rule_id,
-            content_hash=verification_results["verification_details"].get(
-                "computed_hash", ""
-            ),
+            content_hash=verification_results["verification_details"].get("computed_hash", ""),
             signature_verified=verification_results["signature_verified"],
             timestamp_verified=verification_results["timestamp_verified"],
             merkle_verified=True,  # Not implemented yet for policy rules
@@ -214,9 +208,7 @@ async def verify_policy_rule_integrity(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to verify policy rule: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to verify policy rule: {str(e)}")
 
 
 @router.get("/audit-logs/{log_id}/verify", response_model=IntegrityReport)
@@ -234,9 +226,7 @@ async def verify_audit_log_integrity(
         return IntegrityReport(
             entity_type="audit_log",
             entity_id=log_id,
-            content_hash=verification_results["verification_details"].get(
-                "computed_hash", ""
-            ),
+            content_hash=verification_results["verification_details"].get("computed_hash", ""),
             signature_verified=verification_results["signature_verified"],
             timestamp_verified=verification_results["timestamp_verified"],
             merkle_verified=True,  # Not implemented yet for individual logs
@@ -249,9 +239,7 @@ async def verify_audit_log_integrity(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to verify audit log: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to verify audit log: {str(e)}")
 
 
 @router.post("/audit-logs/batch-verify")
@@ -266,18 +254,14 @@ async def batch_verify_audit_logs(
 
         for log_id in log_ids:
             try:
-                verification_result = (
-                    await integrity_verifier.verify_audit_log_integrity(
-                        db=db, log_id=log_id
-                    )
+                verification_result = await integrity_verifier.verify_audit_log_integrity(
+                    db=db, log_id=log_id
                 )
                 results.append(
                     {
                         "log_id": log_id,
                         "status": (
-                            "verified"
-                            if verification_result["overall_integrity"]
-                            else "failed"
+                            "verified" if verification_result["overall_integrity"] else "failed"
                         ),
                         "details": verification_result,
                     }
@@ -297,18 +281,14 @@ async def batch_verify_audit_logs(
                 "verified_logs": verified_logs,
                 "failed_logs": failed_logs,
                 "error_logs": error_logs,
-                "verification_rate": (
-                    verified_logs / total_logs if total_logs > 0 else 0
-                ),
+                "verification_rate": (verified_logs / total_logs if total_logs > 0 else 0),
             },
             "results": results,
             "verified_at": datetime.now(timezone.utc),
         }
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to batch verify audit logs: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to batch verify audit logs: {str(e)}")
 
 
 @router.get("/chain-integrity/audit-logs")
@@ -382,9 +362,7 @@ async def verify_audit_log_chain_integrity(
         }
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to verify chain integrity: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to verify chain integrity: {str(e)}")
 
 
 @router.get("/system-integrity-report")
@@ -417,17 +395,13 @@ async def generate_system_integrity_report(
             policy_integrity_results = []
             for rule in policy_rules:
                 try:
-                    verification_result = (
-                        await integrity_verifier.verify_policy_rule_integrity(
-                            db=db, rule_id=rule.id
-                        )
+                    verification_result = await integrity_verifier.verify_policy_rule_integrity(
+                        db=db, rule_id=rule.id
                     )
                     policy_integrity_results.append(
                         {
                             "rule_id": rule.id,
-                            "integrity_status": verification_result[
-                                "overall_integrity"
-                            ],
+                            "integrity_status": verification_result["overall_integrity"],
                         }
                     )
                 except Exception as e:
@@ -445,9 +419,7 @@ async def generate_system_integrity_report(
             report["policy_rules"] = {
                 "total_checked": len(policy_integrity_results),
                 "integrity_rate": policy_integrity_rate,
-                "failed_rules": [
-                    r for r in policy_integrity_results if not r["integrity_status"]
-                ],
+                "failed_rules": [r for r in policy_integrity_results if not r["integrity_status"]],
             }
 
         # Audit logs integrity check
@@ -462,17 +434,13 @@ async def generate_system_integrity_report(
             audit_integrity_results = []
             for log in audit_logs:
                 try:
-                    verification_result = (
-                        await integrity_verifier.verify_audit_log_integrity(
-                            db=db, log_id=log.id
-                        )
+                    verification_result = await integrity_verifier.verify_audit_log_integrity(
+                        db=db, log_id=log.id
                     )
                     audit_integrity_results.append(
                         {
                             "log_id": log.id,
-                            "integrity_status": verification_result[
-                                "overall_integrity"
-                            ],
+                            "integrity_status": verification_result["overall_integrity"],
                         }
                     )
                 except Exception as e:
@@ -490,9 +458,7 @@ async def generate_system_integrity_report(
             report["audit_logs"] = {
                 "total_checked": len(audit_integrity_results),
                 "integrity_rate": audit_integrity_rate,
-                "failed_logs": [
-                    r for r in audit_integrity_results if not r["integrity_status"]
-                ],
+                "failed_logs": [r for r in audit_integrity_results if not r["integrity_status"]],
             }
 
         # Calculate overall system integrity

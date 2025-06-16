@@ -156,17 +156,13 @@ class LLMReliabilityConfig:
     # Core reliability settings
     target_reliability: ReliabilityLevel = ReliabilityLevel.SAFETY_CRITICAL
     ensemble_size: int = 5  # Number of models in ensemble (1 primary + 4 validators)
-    consensus_threshold: float = (
-        0.8  # Agreement threshold for intermediate consensus steps
-    )
+    consensus_threshold: float = 0.8  # Agreement threshold for intermediate consensus steps
     bias_detection_enabled: bool = True
     semantic_validation_enabled: bool = True
     fallback_strategy: str = "conservative"  # "conservative", "majority", "expert"
     rule_based_fallback_enabled: bool = True  # New: Enable rule-based fallback
     max_retries: int = 3
-    llm_failure_threshold: int = (
-        5  # New: Threshold for consecutive LLM failures before degradation
-    )
+    llm_failure_threshold: int = 5  # New: Threshold for consecutive LLM failures before degradation
     timeout_seconds: int = 30
 
     # Automatic Recovery Configuration
@@ -185,15 +181,11 @@ class LLMReliabilityConfig:
     recovery_cooldown_seconds: int = 300  # 5 minutes between recovery attempts
     recovery_timeout_seconds: int = 180  # 3 minutes max per recovery
     enable_predictive_recovery: bool = True
-    recovery_effectiveness_threshold: float = (
-        0.6  # Minimum effectiveness to consider successful
-    )
+    recovery_effectiveness_threshold: float = 0.6  # Minimum effectiveness to consider successful
     default_fallback_response: str = (
         "An automated policy could not be generated due to system constraints. Please try again later or consult support."  # New: Default response for critical failures
     )
-    enable_model_degradation: bool = (
-        True  # New: Enable/disable dynamic model degradation
-    )
+    enable_model_degradation: bool = True  # New: Enable/disable dynamic model degradation
     # Updated to match protocol's UltraReliableConsensus.confidence_threshold
     confidence_threshold: float = 0.999
 
@@ -207,9 +199,7 @@ class LLMReliabilityConfig:
     formal_verification_enabled: bool = False  # Placeholder for now
 
     # Model configuration
-    primary_model: str = (
-        "gpt-4-turbo"  # Protocol: Constitutional prompting and primary synthesis
-    )
+    primary_model: str = "gpt-4-turbo"  # Protocol: Constitutional prompting and primary synthesis
     secondary_models: List[str] = field(
         default_factory=lambda: [
             "claude-3.5-sonnet",  # Protocol: Adversarial validation and edge case detection
@@ -284,9 +274,7 @@ class ReliabilityMetrics:
     failure_modes: Dict[CriticalFailureMode, int] = field(default_factory=dict)
 
     # Timestamp and metadata
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     request_id: Optional[str] = None
     model_versions: Dict[str, str] = field(default_factory=dict)
     model_failures_total: Dict[str, int] = field(
@@ -322,9 +310,7 @@ class UltraReliableResult:
     synthesis_details: Optional[Dict[str, Any]] = None
     validation_details: Optional[Dict[str, Any]] = None
     formal_verification_status: Optional[Dict[str, Any]] = None
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     status: Optional[str] = None  # Added status field
     performance_metrics_details: Optional[Dict[str, Any]] = (
         None  # New field for detailed performance metrics
@@ -351,18 +337,18 @@ class PrometheusMetricsCollector:
     """Collects and exports Prometheus metrics for reliability monitoring."""
 
     def __init__(self, enabled: bool = True):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.enabled = enabled and PROMETHEUS_AVAILABLE
         if self.enabled:
             self.registry = CollectorRegistry()
             self._setup_metrics()
 
     def _setup_metrics(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Setup Prometheus metrics."""
         if not self.enabled:
             return
@@ -377,9 +363,7 @@ class PrometheusMetricsCollector:
             "LLM response time in seconds",
             registry=self.registry,
         )
-        self.success_rate = Gauge(
-            "llm_success_rate", "LLM success rate", registry=self.registry
-        )
+        self.success_rate = Gauge("llm_success_rate", "LLM success rate", registry=self.registry)
         self.bias_detection_rate = Gauge(
             "llm_bias_detection_rate",
             "Rate of bias detection in LLM outputs",
@@ -424,9 +408,9 @@ class PrometheusMetricsCollector:
         )
 
     def record_metrics(self, metrics: ReliabilityMetrics):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record metrics to Prometheus."""
         if not self.enabled:
             return
@@ -439,45 +423,45 @@ class PrometheusMetricsCollector:
         self.cache_hit_rate.set(metrics.cache_hit_rate)
 
     def increment_fallbacks(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Increment the total number of times fallback mechanisms were used."""
         if self.enabled:
             self.fallbacks_total.inc()
             logger.debug("Prometheus: Fallback incremented.")
 
     def increment_escalations(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Increment the total number of times human review escalations occurred."""
         if self.enabled:
             self.escalations_total.inc()
             logger.debug("Prometheus: Escalation incremented.")
 
     def increment_failures(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Increment the total number of LLM processing failures."""
         if self.enabled:
             self.failures_total.inc()
             logger.debug("Prometheus: Failure incremented.")
 
     def increment_model_failures(self, model_name: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Increment the total number of LLM processing failures for a specific model."""
         if self.enabled:
             self.model_failures_total.labels(model_name=model_name).inc()
             logger.debug(f"Prometheus: Model {model_name} failure incremented.")
 
     def increment_recoveries(self, strategy: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Increment the total number of automatic recovery actions for a specific strategy."""
         if self.enabled:
             self.recoveries_total.labels(strategy=strategy).inc()
@@ -488,9 +472,9 @@ class CacheManager:
     """Manages Redis caching for LLM responses."""
 
     def __init__(self, config: LLMReliabilityConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
         self.redis_client = None
         if config.cache_enabled and ENHANCED_DEPENDENCIES_AVAILABLE:
@@ -539,12 +523,10 @@ class CacheManager:
 
         return None
 
-    async def cache_response(
-        self, input_data: LLMInterpretationInput, output: LLMStructuredOutput
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def cache_response(self, input_data: LLMInterpretationInput, output: LLMStructuredOutput):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Cache response for future use."""
         if not self.redis_client:
             return
@@ -574,16 +556,16 @@ class AutomaticRecoveryOrchestrator:
         config: LLMReliabilityConfig,
         metrics_collector: PrometheusMetricsCollector,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
         self.metrics_collector = metrics_collector
         self.active_recoveries: Dict[str, RecoveryExecution] = {}
         self.recovery_history: deque = deque(maxlen=1000)
         self.last_recovery_attempt: Dict[str, datetime] = {}
-        self.recovery_effectiveness_history: Dict[RecoveryStrategy, deque] = (
-            defaultdict(lambda: deque(maxlen=100))
+        self.recovery_effectiveness_history: Dict[RecoveryStrategy, deque] = defaultdict(
+            lambda: deque(maxlen=100)
         )
         self.baseline_metrics: Dict[str, float] = {}
         self.trend_analyzer = TrendAnalyzer()
@@ -614,9 +596,7 @@ class AutomaticRecoveryOrchestrator:
             return []
 
         # Filter out recoveries that are in cooldown
-        filtered_recoveries = self._filter_cooldown_recoveries(
-            triggered_recoveries, request_id
-        )
+        filtered_recoveries = self._filter_cooldown_recoveries(triggered_recoveries, request_id)
 
         # Prioritize and limit concurrent recoveries
         prioritized_recoveries = self._prioritize_recoveries(filtered_recoveries)
@@ -696,9 +676,7 @@ class AutomaticRecoveryOrchestrator:
 
         # Check response time degradation
         avg_response_time = current_metrics.get("avg_response_time", 0.0)
-        baseline_response_time = self.baseline_metrics.get(
-            "avg_response_time", avg_response_time
-        )
+        baseline_response_time = self.baseline_metrics.get("avg_response_time", avg_response_time)
         degradation_threshold = self.config.recovery_trigger_thresholds.get(
             RecoveryTrigger.RESPONSE_TIME_DEGRADATION, 2.0
         )
@@ -753,9 +731,7 @@ class AutomaticRecoveryOrchestrator:
         )
 
         if bias_detection_rate > bias_threshold:
-            logger.warning(
-                f"Request {request_id}: Bias detection spike: {bias_detection_rate:.3f}"
-            )
+            logger.warning(f"Request {request_id}: Bias detection spike: {bias_detection_rate:.3f}")
             triggered_actions.append(
                 RecoveryAction(
                     strategy=RecoveryStrategy.FALLBACK_ACTIVATION,
@@ -884,9 +860,7 @@ class AutomaticRecoveryOrchestrator:
         self, action: RecoveryAction, current_metrics: Dict[str, float], request_id: str
     ) -> Optional[RecoveryExecution]:
         """Execute a specific recovery action."""
-        execution_id = (
-            f"{action.strategy.value}_{action.target_component}_{int(time.time())}"
-        )
+        execution_id = f"{action.strategy.value}_{action.target_component}_{int(time.time())}"
 
         execution = RecoveryExecution(
             action=action,
@@ -961,14 +935,10 @@ class AutomaticRecoveryOrchestrator:
                 )
                 return False
         except Exception as e:
-            logger.error(
-                f"Request {request_id}: Error executing strategy {action.strategy}: {e}"
-            )
+            logger.error(f"Request {request_id}: Error executing strategy {action.strategy}: {e}")
             return False
 
-    async def _execute_model_rerouting(
-        self, action: RecoveryAction, request_id: str
-    ) -> bool:
+    async def _execute_model_rerouting(self, action: RecoveryAction, request_id: str) -> bool:
         """Execute model rerouting recovery strategy."""
         logger.info(
             f"Request {request_id}: Executing model rerouting for {action.target_component}"
@@ -983,9 +953,7 @@ class AutomaticRecoveryOrchestrator:
 
         return True
 
-    async def _execute_circuit_breaker(
-        self, action: RecoveryAction, request_id: str
-    ) -> bool:
+    async def _execute_circuit_breaker(self, action: RecoveryAction, request_id: str) -> bool:
         """Execute circuit breaker recovery strategy."""
         logger.info(
             f"Request {request_id}: Activating circuit breaker for {action.target_component}"
@@ -1004,9 +972,7 @@ class AutomaticRecoveryOrchestrator:
         self, action: RecoveryAction, request_id: str
     ) -> bool:
         """Execute traffic redistribution recovery strategy."""
-        logger.info(
-            f"Request {request_id}: Redistributing traffic for {action.target_component}"
-        )
+        logger.info(f"Request {request_id}: Redistributing traffic for {action.target_component}")
 
         # This would redistribute load across healthy components
         # For now, we'll simulate the action
@@ -1021,9 +987,7 @@ class AutomaticRecoveryOrchestrator:
         self, action: RecoveryAction, request_id: str
     ) -> bool:
         """Execute configuration adjustment recovery strategy."""
-        logger.info(
-            f"Request {request_id}: Adjusting configuration for {action.target_component}"
-        )
+        logger.info(f"Request {request_id}: Adjusting configuration for {action.target_component}")
 
         # This would adjust system parameters like timeouts, thresholds, etc.
         # For now, we'll simulate the action
@@ -1034,13 +998,9 @@ class AutomaticRecoveryOrchestrator:
 
         return True
 
-    async def _execute_fallback_activation(
-        self, action: RecoveryAction, request_id: str
-    ) -> bool:
+    async def _execute_fallback_activation(self, action: RecoveryAction, request_id: str) -> bool:
         """Execute fallback activation recovery strategy."""
-        logger.info(
-            f"Request {request_id}: Activating fallback for {action.target_component}"
-        )
+        logger.info(f"Request {request_id}: Activating fallback for {action.target_component}")
 
         # This would activate fallback mechanisms
         # For now, we'll simulate the action
@@ -1051,9 +1011,7 @@ class AutomaticRecoveryOrchestrator:
 
         return True
 
-    async def _execute_emergency_safeguards(
-        self, action: RecoveryAction, request_id: str
-    ) -> bool:
+    async def _execute_emergency_safeguards(self, action: RecoveryAction, request_id: str) -> bool:
         """Execute emergency safeguards recovery strategy."""
         logger.info(
             f"Request {request_id}: Activating emergency safeguards for {action.target_component}"
@@ -1068,9 +1026,7 @@ class AutomaticRecoveryOrchestrator:
 
         return True
 
-    async def _execute_model_retraining(
-        self, action: RecoveryAction, request_id: str
-    ) -> bool:
+    async def _execute_model_retraining(self, action: RecoveryAction, request_id: str) -> bool:
         """Execute model retraining recovery strategy."""
         logger.info(
             f"Request {request_id}: Initiating model retraining for {action.target_component}"
@@ -1101,9 +1057,7 @@ class AutomaticRecoveryOrchestrator:
         reliability_before = execution.metrics_before.get("overall_reliability", 0.0)
         reliability_after = metrics_after.get("overall_reliability", 0.0)
         if reliability_before > 0:
-            reliability_improvement = (
-                reliability_after - reliability_before
-            ) / reliability_before
+            reliability_improvement = (reliability_after - reliability_before) / reliability_before
             improvements.append(max(0.0, reliability_improvement))
 
         # Check response time improvement (lower is better)
@@ -1119,25 +1073,19 @@ class AutomaticRecoveryOrchestrator:
         consensus_before = execution.metrics_before.get("consensus_rate", 0.0)
         consensus_after = metrics_after.get("consensus_rate", 0.0)
         if consensus_before > 0:
-            consensus_improvement = (
-                consensus_after - consensus_before
-            ) / consensus_before
+            consensus_improvement = (consensus_after - consensus_before) / consensus_before
             improvements.append(max(0.0, consensus_improvement))
 
         # Calculate overall effectiveness
         if improvements:
             effectiveness = min(1.0, statistics.mean(improvements))
         else:
-            effectiveness = (
-                0.5 if execution.status == RecoveryStatus.SUCCESSFUL else 0.0
-            )
+            effectiveness = 0.5 if execution.status == RecoveryStatus.SUCCESSFUL else 0.0
 
         execution.effectiveness_score = effectiveness
 
         # Update effectiveness history
-        self.recovery_effectiveness_history[execution.action.strategy].append(
-            effectiveness
-        )
+        self.recovery_effectiveness_history[execution.action.strategy].append(effectiveness)
 
         logger.info(
             f"Recovery effectiveness for {execution.action.strategy.value}: {effectiveness:.3f}"
@@ -1182,9 +1130,7 @@ class AutomaticRecoveryOrchestrator:
             recovery_times = []
             for execution in recent_recoveries:
                 if execution.completed_at and execution.started_at:
-                    recovery_time = (
-                        execution.completed_at - execution.started_at
-                    ).total_seconds()
+                    recovery_time = (execution.completed_at - execution.started_at).total_seconds()
                     recovery_times.append(recovery_time)
             if recovery_times:
                 avg_recovery_time = statistics.mean(recovery_times)
@@ -1192,9 +1138,7 @@ class AutomaticRecoveryOrchestrator:
         return {
             "total_recoveries": total_recoveries,
             "success_rate": (
-                successful_recoveries / total_recoveries
-                if total_recoveries > 0
-                else 0.0
+                successful_recoveries / total_recoveries if total_recoveries > 0 else 0.0
             ),
             "avg_recovery_time_seconds": avg_recovery_time,
             "active_recoveries": len(self.active_recoveries),
@@ -1207,28 +1151,23 @@ class TrendAnalyzer:
     """Analyzes trends in metrics to predict potential failures."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.metric_history: Dict[str, deque] = defaultdict(lambda: deque(maxlen=50))
 
     def add_metrics(self, metrics: Dict[str, float]):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add new metrics to history for trend analysis."""
         timestamp = time.time()
         for metric_name, value in metrics.items():
             self.metric_history[metric_name].append((timestamp, value))
 
-    def predict_failure_probability(
-        self, metric_name: str, lookahead_seconds: int = 300
-    ) -> float:
+    def predict_failure_probability(self, metric_name: str, lookahead_seconds: int = 300) -> float:
         """Predict probability of failure for a specific metric."""
-        if (
-            metric_name not in self.metric_history
-            or len(self.metric_history[metric_name]) < 10
-        ):
+        if metric_name not in self.metric_history or len(self.metric_history[metric_name]) < 10:
             return 0.0
 
         history = list(self.metric_history[metric_name])
@@ -1254,11 +1193,7 @@ class TrendAnalyzer:
                 if predicted_value < 0.95:
                     return min(1.0, (0.95 - predicted_value) * 10)
             elif metric_name == "avg_response_time":
-                baseline = (
-                    np.mean(values[: len(values) // 2])
-                    if len(values) > 6
-                    else values[0]
-                )
+                baseline = np.mean(values[: len(values) // 2]) if len(values) > 6 else values[0]
                 if predicted_value > baseline * 2:
                     return min(1.0, (predicted_value / baseline - 2) * 0.5)
 
@@ -1277,33 +1212,27 @@ class EnhancedMultiModelValidator:
         config: LLMReliabilityConfig,
         metrics_collector: PrometheusMetricsCollector,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash  # Add metrics_collector param
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash  # Add metrics_collector param
         self.config = config
         self.models = {}
         self.cache_manager = CacheManager(config)
         self.metrics_collector = metrics_collector  # Store it
         self.performance_history = []
-        self.model_failure_counts: Dict[str, int] = (
-            {}
-        )  # Track consecutive failures per model
+        self.model_failure_counts: Dict[str, int] = {}  # Track consecutive failures per model
         self.active_models: List[str] = []  # List of currently active models
-        self.model_health_status: Dict[str, Dict[str, Any]] = (
-            {}
-        )  # Track model health metrics
+        self.model_health_status: Dict[str, Dict[str, Any]] = {}  # Track model health metrics
         self.degraded_models: Dict[str, Dict[str, Any]] = (
             {}
         )  # Track degraded models for potential recovery
-        self.last_health_check: Dict[str, float] = (
-            {}
-        )  # Track last health check timestamp per model
+        self.last_health_check: Dict[str, float] = {}  # Track last health check timestamp per model
         self.ultra_result_cache: Dict[str, UltraReliableResult] = {}
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize multiple LLM models for ensemble validation based on config."""
         if not ENHANCED_DEPENDENCIES_AVAILABLE:
             logger.warning(
@@ -1338,9 +1267,7 @@ class EnhancedMultiModelValidator:
                     model_type = "anthropic"
                     logger.info(f"Initialized Anthropic model: {model_name}")
                 elif "cohere-command" in model_name and self.config.cohere_api_key:
-                    client = Cohere(
-                        cohere_api_key=self.config.cohere_api_key, model=model_name
-                    )
+                    client = Cohere(cohere_api_key=self.config.cohere_api_key, model=model_name)
                     model_type = "cohere"
                     logger.info(f"Initialized Cohere model: {model_name}")
                 elif "gemini" in model_name and self.config.gemini_api_key:
@@ -1353,9 +1280,7 @@ class EnhancedMultiModelValidator:
                         api_key=self.config.gemini_api_key,
                     )
                     model_type = "gemini"
-                    logger.info(
-                        f"Initialized Gemini model (via get_llm_client): {model_name}"
-                    )
+                    logger.info(f"Initialized Gemini model (via get_llm_client): {model_name}")
                 elif "local-finetuned-model" in model_name:
                     # Placeholder for local model loading logic
                     # This might involve loading from a path or a specific local API
@@ -1373,9 +1298,7 @@ class EnhancedMultiModelValidator:
                     # Attempt generic fallback if specific client fails or isn't defined
                     client = get_llm_client(model_name=model_name)  # Generic client
                     model_type = "fallback_generic"
-                    logger.info(
-                        f"Initialized Fallback model (via get_llm_client): {model_name}"
-                    )
+                    logger.info(f"Initialized Fallback model (via get_llm_client): {model_name}")
 
                 if client:
                     self.models[model_name] = {
@@ -1384,9 +1307,7 @@ class EnhancedMultiModelValidator:
                         "type": model_type,
                     }
                     self.active_models.append(model_name)  # Add to active models
-                    self.model_failure_counts[model_name] = (
-                        0  # Initialize failure count
-                    )
+                    self.model_failure_counts[model_name] = 0  # Initialize failure count
             except Exception as e:
                 logger.error(f"Failed to initialize model {model_name}: {e}")
 
@@ -1409,9 +1330,7 @@ class EnhancedMultiModelValidator:
                     f"CRITICAL: Failed to initialize even a single default fallback model: {e_fallback}"
                 )
 
-        logger.info(
-            f"Successfully initialized {len(self.models)} models for ensemble validation."
-        )
+        logger.info(f"Successfully initialized {len(self.models)} models for ensemble validation.")
 
     async def achieve_ultra_reliable_consensus(
         self,
@@ -1423,9 +1342,7 @@ class EnhancedMultiModelValidator:
         aligning with the research protocol's UltraReliableConsensus class.
         """
         start_time = time.time()
-        request_id = hashlib.sha256(
-            f"{principle.id}_{start_time}".encode()
-        ).hexdigest()[:8]
+        request_id = hashlib.sha256(f"{principle.id}_{start_time}".encode()).hexdigest()[:8]
 
         principle_text = principle.text
         synthesis_context = context
@@ -1440,9 +1357,7 @@ class EnhancedMultiModelValidator:
         if cache_key in self.ultra_result_cache:
             metrics = self._create_cached_metrics(start_time, request_id)
             self.performance_history.append(metrics)
-            logger.debug(
-                f"Request {request_id}: Returning cached ultra reliable result"
-            )
+            logger.debug(f"Request {request_id}: Returning cached ultra reliable result")
             return self.ultra_result_cache[cache_key]
 
         # Stage 1: Multi-model synthesis (Parallel synthesis by multiple models)
@@ -1452,9 +1367,7 @@ class EnhancedMultiModelValidator:
         )
 
         if not synthesis_results:
-            logger.error(
-                f"Request {request_id}: All models failed during initial synthesis stage."
-            )
+            logger.error(f"Request {request_id}: All models failed during initial synthesis stage.")
             # Create a basic ReliabilityMetrics for logging if needed
             # metrics = self._calculate_enhanced_metrics([], synthesis_errors, [], time.time() - start_time, LLMStructuredOutput(interpretations=[], raw_llm_response=""), request_id)
             # self.performance_history.append(metrics) # Log failure
@@ -1487,14 +1400,12 @@ class EnhancedMultiModelValidator:
         # Stage 5: Consensus decision
         # This is the core logic to determine the final policy and confidence.
         # It will use validation_matrix, semantic_scores, formal_verification_results.
-        final_policy, final_confidence, consensus_details = (
-            await self._weighted_consensus_decision(
-                synthesis_results,
-                validation_matrix,
-                semantic_scores,
-                formal_verification_results,
-                request_id,
-            )
+        final_policy, final_confidence, consensus_details = await self._weighted_consensus_decision(
+            synthesis_results,
+            validation_matrix,
+            semantic_scores,
+            formal_verification_results,
+            request_id,
         )
 
         metrics = self._calculate_overall_reliability_metrics(
@@ -1560,9 +1471,7 @@ class EnhancedMultiModelValidator:
         response_times_map = {}  # model_name: time
 
         if not self.models:
-            logger.error(
-                f"Request {request_id}: No models available for parallel synthesis."
-            )
+            logger.error(f"Request {request_id}: No models available for parallel synthesis.")
             return [], ["No models configured"], {"synthesis_attempts": 0}
 
         tasks_with_model_names = []
@@ -1572,9 +1481,9 @@ class EnhancedMultiModelValidator:
 
             # Create a coroutine that, when awaited, returns (model_name, result_of_call)
             async def task_wrapper(m_name, m_info, i_data, r_id):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 try:
                     res = await self._call_individual_model_for_synthesis(
                         m_name, m_info, i_data, r_id
@@ -1593,8 +1502,7 @@ class EnhancedMultiModelValidator:
                     )  # Increment Prometheus counter
                     if (
                         self.config.enable_model_degradation
-                        and self.model_failure_counts[m_name]
-                        >= self.config.llm_failure_threshold
+                        and self.model_failure_counts[m_name] >= self.config.llm_failure_threshold
                     ):
                         await self._degrade_model(m_name, request_id)
                     return (
@@ -1647,9 +1555,7 @@ class EnhancedMultiModelValidator:
                         f"Request {request_id}: Model {model_name} synthesized in {response_time:.3f}s"
                     )
                 else:
-                    error_message = (
-                        f"Model {model_name}: Invalid synthesis output format received."
-                    )
+                    error_message = f"Model {model_name}: Invalid synthesis output format received."
                     errors.append(error_message)
                     logger.warning(
                         f"Request {request_id}: {error_message} Output: {response_output}"
@@ -1669,9 +1575,7 @@ class EnhancedMultiModelValidator:
         # Calculate aggregated response times for individual model calls within this stage
         individual_response_times = list(response_times_map.values())
         if individual_response_times:
-            metrics_details["avg_individual_response_time"] = np.mean(
-                individual_response_times
-            )
+            metrics_details["avg_individual_response_time"] = np.mean(individual_response_times)
             metrics_details["p95_individual_response_time"] = np.percentile(
                 individual_response_times, 95
             )
@@ -1688,9 +1592,7 @@ class EnhancedMultiModelValidator:
             time.time() - start_time
         )  # This start_time is for _parallel_synthesis
         metrics_details["synthesis_throughput_rps"] = (
-            len(responses_data) / total_synthesis_time
-            if total_synthesis_time > 0
-            else 0.0
+            len(responses_data) / total_synthesis_time if total_synthesis_time > 0 else 0.0
         )
 
         logger.info(
@@ -1704,9 +1606,7 @@ class EnhancedMultiModelValidator:
         model_info: Dict,
         input_data: LLMInterpretationInput,
         request_id: str,
-    ) -> Tuple[
-        LLMStructuredOutput, float
-    ]:  # Ensure it always returns this tuple or raises
+    ) -> Tuple[LLMStructuredOutput, float]:  # Ensure it always returns this tuple or raises
         """Helper to call a single model and record its time, returns (response, time) or raises exception."""
         model_start_time = time.time()
         logger.debug(
@@ -1718,9 +1618,7 @@ class EnhancedMultiModelValidator:
             client = model_info.get("client")
 
             if not client:
-                logger.error(
-                    f"Request {request_id}: No client found for model {model_name}."
-                )
+                logger.error(f"Request {request_id}: No client found for model {model_name}.")
                 raise ValueError(f"Client not initialized for model {model_name}")
 
             # Construct a specific prompt for synthesis if needed, or use a generic one.
@@ -1730,15 +1628,9 @@ class EnhancedMultiModelValidator:
 
             if model_type in ["openai", "anthropic", "cohere"]:  # LangChain models
                 if not hasattr(self, "_call_langchain_model"):  # Defensive check
-                    logger.error(
-                        f"Request {request_id}: _call_langchain_model method missing."
-                    )
-                    raise NotImplementedError(
-                        "_call_langchain_model is not implemented."
-                    )
-                response_output = await self._call_langchain_model(
-                    client, input_data, model_name
-                )
+                    logger.error(f"Request {request_id}: _call_langchain_model method missing.")
+                    raise NotImplementedError("_call_langchain_model is not implemented.")
+                response_output = await self._call_langchain_model(client, input_data, model_name)
             elif model_type in [
                 "fallback_generic",
                 "default_fallback_emergency",
@@ -1760,9 +1652,7 @@ class EnhancedMultiModelValidator:
                 )
                 raise ValueError(f"Unknown model type '{model_type}' for {model_name}")
 
-            if not response_output or not isinstance(
-                response_output, LLMStructuredOutput
-            ):
+            if not response_output or not isinstance(response_output, LLMStructuredOutput):
                 logger.error(
                     f"Request {request_id}: Model {model_name} returned invalid output type: {type(response_output)}. Expected LLMStructuredOutput."
                 )
@@ -1877,8 +1767,7 @@ class EnhancedMultiModelValidator:
                 context={
                     "role": "validation",
                     "original_principle_preview": principle_text[:100] + "...",
-                    "policy_under_review_preview": synthesized_policy_text[:100]
-                    + "...",
+                    "policy_under_review_preview": synthesized_policy_text[:100] + "...",
                 },
             )
 
@@ -1977,9 +1866,7 @@ class EnhancedMultiModelValidator:
         Uses EnhancedSemanticFaithfulnessValidator.
         Returns a dictionary of semantic scores for each synthesis.
         """
-        logger.info(
-            f"Request {request_id}: Starting Stage 3 - Semantic Consistency Validation."
-        )
+        logger.info(f"Request {request_id}: Starting Stage 3 - Semantic Consistency Validation.")
         semantic_scores = {}  # {synthesizer_model_name: faithfulness_score_details}
 
         if not hasattr(self, "faithfulness_validator") or not isinstance(
@@ -2017,17 +1904,15 @@ class EnhancedMultiModelValidator:
 
             # Create a partial or lambda to pass model_name along with the task result
             async def task_with_model_name(p_text, pol_text, m_name):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 res = await self.faithfulness_validator.validate_faithfulness_comprehensive(
                     p_text, pol_text
                 )
                 return m_name, res
 
-            validation_tasks.append(
-                task_with_model_name(principle_text, policy_text, model_name)
-            )
+            validation_tasks.append(task_with_model_name(principle_text, policy_text, model_name))
 
         if not validation_tasks:
             logger.info(
@@ -2035,9 +1920,7 @@ class EnhancedMultiModelValidator:
             )
             return semantic_scores
 
-        faithfulness_run_results = await asyncio.gather(
-            *validation_tasks, return_exceptions=True
-        )
+        faithfulness_run_results = await asyncio.gather(*validation_tasks, return_exceptions=True)
 
         for result_item in faithfulness_run_results:
             if isinstance(result_item, Exception):
@@ -2081,9 +1964,7 @@ class EnhancedMultiModelValidator:
         """
         logger.info(f"Request {request_id}: Starting Stage 4 - Formal Verification.")
         if not self.config.formal_verification_enabled or not self.formal_verifier:
-            logger.info(
-                f"Request {request_id}: Formal verification is disabled by config."
-            )
+            logger.info(f"Request {request_id}: Formal verification is disabled by config.")
             return {
                 res["model_name"]: {
                     "verified": False,
@@ -2132,9 +2013,7 @@ class EnhancedMultiModelValidator:
         Stage 5: Make a consensus decision based on all gathered evidence.
         Calculates final policy and confidence.
         """
-        logger.info(
-            f"Request {request_id}: Starting Stage 5 - Weighted Consensus Decision."
-        )
+        logger.info(f"Request {request_id}: Starting Stage 5 - Weighted Consensus Decision.")
 
         candidate_policies = []
         if not synthesis_results:
@@ -2146,9 +2025,7 @@ class EnhancedMultiModelValidator:
         for synth_item in synthesis_results:
             model_name = synth_item["model_name"]
             policy_output = synth_item["synthesis_output"]
-            base_weight = synth_item.get(
-                "weight", self.config.model_weights.get(model_name, 0.1)
-            )
+            base_weight = synth_item.get("weight", self.config.model_weights.get(model_name, 0.1))
 
             semantic_consistency_score = semantic_scores.get(model_name, {}).get(
                 "overall_score", 0.0
@@ -2160,9 +2037,7 @@ class EnhancedMultiModelValidator:
                 for val_data in cross_val_data_for_model.values()
                 if isinstance(val_data, dict)  # Ensure val_data is a dict
             ]
-            avg_cross_val_score = (
-                np.mean(cross_val_scores_list) if cross_val_scores_list else 0.0
-            )
+            avg_cross_val_score = np.mean(cross_val_scores_list) if cross_val_scores_list else 0.0
 
             formally_verified = formal_verification_results.get(model_name, {}).get(
                 "verified", False
@@ -2188,10 +2063,8 @@ class EnhancedMultiModelValidator:
                     "final_score": combined_score,
                     "details": {
                         "base_model_weight_contribution": base_weight * w_base_model,
-                        "semantic_score_contribution": semantic_consistency_score
-                        * w_semantic,
-                        "avg_cross_val_score_contribution": avg_cross_val_score
-                        * w_cross_val,
+                        "semantic_score_contribution": semantic_consistency_score * w_semantic,
+                        "avg_cross_val_score_contribution": avg_cross_val_score * w_cross_val,
                         "formal_verification_bonus": formal_verification_bonus,
                         "raw_semantic_score": semantic_consistency_score,
                         "raw_avg_cross_val_score": avg_cross_val_score,
@@ -2280,9 +2153,7 @@ class EnhancedMultiModelValidator:
             ],
             "validation_matrix_summary": {
                 synth_model: {
-                    validator: (
-                        details.get("score") if isinstance(details, dict) else "N/A"
-                    )
+                    validator: (details.get("score") if isinstance(details, dict) else "N/A")
                     for validator, details in val_data.items()
                 }
                 for synth_model, val_data in validation_matrix.items()
@@ -2327,9 +2198,7 @@ class EnhancedMultiModelValidator:
             logger.error(f"LangChain model call failed: {e}")
             raise
 
-    def _create_cached_metrics(
-        self, start_time: float, request_id: str
-    ) -> ReliabilityMetrics:
+    def _create_cached_metrics(self, start_time: float, request_id: str) -> ReliabilityMetrics:
         """Create metrics for cached response."""
         return ReliabilityMetrics(
             success_rate=1.0,
@@ -2377,9 +2246,7 @@ class EnhancedMultiModelValidator:
         )
 
         semantic_avg = (
-            float(
-                np.mean([v.get("overall_score", 0) for v in semantic_scores.values()])
-            )
+            float(np.mean([v.get("overall_score", 0) for v in semantic_scores.values()]))
             if semantic_scores
             else 0.0
         )
@@ -2388,14 +2255,10 @@ class EnhancedMultiModelValidator:
             for item in vals.values():
                 if isinstance(item, dict) and "score" in item:
                     agreement_scores.append(item["score"])
-        model_agreement = (
-            float(np.mean(agreement_scores)) if agreement_scores else final_confidence
-        )
+        model_agreement = float(np.mean(agreement_scores)) if agreement_scores else final_confidence
 
         error_rate = len(errors) / total_attempts if total_attempts else 0.0
-        ci_low, ci_high = calculate_wilson_interval(
-            len(synthesis_results), total_attempts
-        )
+        ci_low, ci_high = calculate_wilson_interval(len(synthesis_results), total_attempts)
 
         return ReliabilityMetrics(
             success_rate=1.0 if success else 0.0,
@@ -2410,15 +2273,11 @@ class EnhancedMultiModelValidator:
             model_agreement_score=model_agreement,
             p95_response_time=p95_time,
             p99_response_time=p99_time,
-            throughput_requests_per_second=metrics_details.get(
-                "synthesis_throughput_rps", 0.0
-            ),
+            throughput_requests_per_second=metrics_details.get("synthesis_throughput_rps", 0.0),
             request_id=request_id,
         )
 
-    async def _analyze_enhanced_consensus(
-        self, responses: List[Dict]
-    ) -> LLMStructuredOutput:
+    async def _analyze_enhanced_consensus(self, responses: List[Dict]) -> LLMStructuredOutput:
         """Analyze consensus with enhanced algorithms."""
         if len(responses) == 1:
             return responses[0]["response"]
@@ -2494,9 +2353,7 @@ class EnhancedMultiModelValidator:
         self, input_data: LLMInterpretationInput, errors: List[str], request_id: str
     ) -> Tuple[LLMStructuredOutput, ReliabilityMetrics]:
         """Handle case where all models fail."""
-        logger.error(
-            f"All models failed for principle {input_data.principle_id}: {errors}"
-        )
+        logger.error(f"All models failed for principle {input_data.principle_id}: {errors}")
 
         fallback_response = LLMStructuredOutput(
             interpretations=[],
@@ -2522,9 +2379,9 @@ class EnhancedBiasDetectionFramework:
     """Enhanced bias detection using HuggingFace Fairness Indicators and counterfactual testing."""
 
     def __init__(self, config: LLMReliabilityConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
         self.bias_patterns = self._load_bias_patterns()
         self.fairness_pipeline = None
@@ -2625,9 +2482,7 @@ class EnhancedBiasDetectionFramework:
             },
         ]
 
-    async def detect_bias_comprehensive(
-        self, output: LLMStructuredOutput
-    ) -> Dict[str, Any]:
+    async def detect_bias_comprehensive(self, output: LLMStructuredOutput) -> Dict[str, Any]:
         """Comprehensive bias detection using multiple methods."""
         results = {
             "pattern_based": await self._detect_pattern_bias(output),
@@ -2707,9 +2562,7 @@ class EnhancedBiasDetectionFramework:
             # Convert toxicity score to bias score
             if isinstance(result, list) and len(result) > 0:
                 toxicity_score = (
-                    result[0].get("score", 0.0)
-                    if result[0].get("label") == "TOXIC"
-                    else 0.0
+                    result[0].get("score", 0.0) if result[0].get("label") == "TOXIC" else 0.0
                 )
                 bias_score = min(toxicity_score * 1.2, 1.0)  # Scale toxicity to bias
             else:
@@ -2731,9 +2584,7 @@ class EnhancedBiasDetectionFramework:
                 "available": False,
             }
 
-    async def _detect_counterfactual_bias(
-        self, output: LLMStructuredOutput
-    ) -> Dict[str, Any]:
+    async def _detect_counterfactual_bias(self, output: LLMStructuredOutput) -> Dict[str, Any]:
         """Counterfactual bias testing by substituting demographic terms."""
         if not self.config.counterfactual_testing_enabled:
             return {"bias_score": 0.0, "method": "counterfactual", "enabled": False}
@@ -2797,9 +2648,7 @@ class EnhancedBiasDetectionFramework:
         jaccard_similarity = intersection / union if union > 0 else 0.0
         return 1.0 - jaccard_similarity
 
-    async def mitigate_bias_proactive(
-        self, output: LLMStructuredOutput
-    ) -> LLMStructuredOutput:
+    async def mitigate_bias_proactive(self, output: LLMStructuredOutput) -> LLMStructuredOutput:
         """Proactive bias mitigation with multiple strategies."""
         bias_analysis = await self.detect_bias_comprehensive(output)
 
@@ -2923,9 +2772,9 @@ class EnhancedSemanticFaithfulnessValidator:
     """Enhanced semantic faithfulness validation using NLI models and SentenceTransformers."""
 
     def __init__(self, config: LLMReliabilityConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
         self.sentence_transformer = None
         self.nli_pipeline = None
@@ -2945,24 +2794,18 @@ class EnhancedSemanticFaithfulnessValidator:
                 )
                 logger.info("Initialized NLI pipeline")
             except Exception as e:
-                logger.warning(
-                    f"Failed to initialize enhanced semantic validation: {e}"
-                )
+                logger.warning(f"Failed to initialize enhanced semantic validation: {e}")
 
     async def validate_faithfulness_comprehensive(
         self, principle_text: str, policy_output: str
     ) -> Dict[str, Any]:
         """Comprehensive semantic faithfulness validation."""
         results = {
-            "word_overlap": await self._calculate_word_overlap(
-                principle_text, policy_output
-            ),
+            "word_overlap": await self._calculate_word_overlap(principle_text, policy_output),
             "semantic_similarity": await self._calculate_semantic_similarity(
                 principle_text, policy_output
             ),
-            "nli_entailment": await self._check_nli_entailment(
-                principle_text, policy_output
-            ),
+            "nli_entailment": await self._check_nli_entailment(principle_text, policy_output),
             "constitutional_compliance": await self._check_constitutional_compliance(
                 principle_text, policy_output
             ),
@@ -2985,9 +2828,7 @@ class EnhancedSemanticFaithfulnessValidator:
         )
 
         # Determine if validation passed
-        results["validation_passed"] = (
-            results["overall_score"] >= self.config.semantic_threshold
-        )
+        results["validation_passed"] = results["overall_score"] >= self.config.semantic_threshold
 
         # Generate recommendations
         if results["overall_score"] < 0.5:
@@ -2995,9 +2836,7 @@ class EnhancedSemanticFaithfulnessValidator:
                 "Significant semantic drift detected - review policy generation"
             )
         elif results["overall_score"] < 0.7:
-            results["recommendations"].append(
-                "Moderate semantic drift - consider refinement"
-            )
+            results["recommendations"].append("Moderate semantic drift - consider refinement")
         else:
             results["recommendations"].append("Good semantic faithfulness maintained")
 
@@ -3035,9 +2874,7 @@ class EnhancedSemanticFaithfulnessValidator:
         """Calculate semantic similarity using SentenceTransformers."""
         if not self.sentence_transformer:
             # Fallback to simple similarity
-            return await self._calculate_simple_similarity(
-                principle_text, policy_output
-            )
+            return await self._calculate_simple_similarity(principle_text, policy_output)
 
         try:
             # Encode texts to embeddings
@@ -3057,9 +2894,7 @@ class EnhancedSemanticFaithfulnessValidator:
             }
         except Exception as e:
             logger.warning(f"SentenceTransformer similarity calculation failed: {e}")
-            return await self._calculate_simple_similarity(
-                principle_text, policy_output
-            )
+            return await self._calculate_simple_similarity(principle_text, policy_output)
 
     async def _calculate_simple_similarity(
         self, principle_text: str, policy_output: str
@@ -3102,9 +2937,7 @@ class EnhancedSemanticFaithfulnessValidator:
 
             # For now, use a simple heuristic since we don't have a proper NLI model
             # In practice, would use models like RoBERTa-large-MNLI
-            overlap_result = await self._calculate_word_overlap(
-                principle_text, policy_output
-            )
+            overlap_result = await self._calculate_word_overlap(principle_text, policy_output)
 
             # Simple heuristic: high overlap suggests entailment
             if overlap_result["score"] > 0.7:
@@ -3190,9 +3023,7 @@ class EnhancedSemanticFaithfulnessValidator:
             }
         else:
             # Use original simple validation
-            word_overlap_result = await self._calculate_word_overlap(
-                principle_text, policy_output
-            )
+            word_overlap_result = await self._calculate_word_overlap(principle_text, policy_output)
             return {
                 "faithfulness_score": word_overlap_result["score"],
                 "word_overlap": word_overlap_result["overlap"],
@@ -3205,9 +3036,9 @@ class SemanticFaithfulnessValidator:
     """Validates semantic faithfulness of principle-to-policy translation."""
 
     def __init__(self, config: LLMReliabilityConfig):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config
 
     async def validate_faithfulness(
@@ -3222,9 +3053,7 @@ class SemanticFaithfulnessValidator:
         overlap = len(principle_words & policy_words)
         total_principle_words = len(principle_words)
 
-        faithfulness_score = (
-            overlap / total_principle_words if total_principle_words > 0 else 0.0
-        )
+        faithfulness_score = overlap / total_principle_words if total_principle_words > 0 else 0.0
 
         return {
             "faithfulness_score": faithfulness_score,
@@ -3238,15 +3067,13 @@ class EnhancedLLMReliabilityFramework:
     """Enhanced main framework coordinating all reliability components for >99.9% reliability."""
 
     def __init__(self, config: LLMReliabilityConfig = None):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.config = config or LLMReliabilityConfig()
 
         # Initialize monitoring and metrics first
-        self.metrics_collector = PrometheusMetricsCollector(
-            self.config.prometheus_metrics_enabled
-        )
+        self.metrics_collector = PrometheusMetricsCollector(self.config.prometheus_metrics_enabled)
         self.performance_metrics = []
         self.reliability_history = []
 
@@ -3265,21 +3092,17 @@ class EnhancedLLMReliabilityFramework:
             MockFormalVerifier() if self.config.formal_verification_enabled else None
         )
 
-        logger.info(
-            "Enhanced LLM Reliability Framework initialized with automatic recovery"
-        )
+        logger.info("Enhanced LLM Reliability Framework initialized with automatic recovery")
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize all framework components."""
         # Initialize multi_model_validator first, as it needs metrics_collector
         await self.multi_model_validator.initialize()
         # After multi_model_validator initializes its models, populate active_models and failure_counts
-        self.multi_model_validator.active_models = list(
-            self.multi_model_validator.models.keys()
-        )
+        self.multi_model_validator.active_models = list(self.multi_model_validator.models.keys())
         self.multi_model_validator.model_failure_counts = {
             model_name: 0 for model_name in self.multi_model_validator.active_models
         }
@@ -3333,13 +3156,11 @@ class EnhancedLLMReliabilityFramework:
                 )
                 # Attempt rule-based fallback immediately if no policy is synthesized
                 if self.config.rule_based_fallback_enabled:
-                    fallback_policy, fallback_message = (
-                        await self._apply_rule_based_fallback(
-                            input_data,
-                            ultra_reliable_result.error_message
-                            or "No policy synthesized by consensus.",
-                            None,  # No current best policy to pass
-                        )
+                    fallback_policy, fallback_message = await self._apply_rule_based_fallback(
+                        input_data,
+                        ultra_reliable_result.error_message
+                        or "No policy synthesized by consensus.",
+                        None,  # No current best policy to pass
                     )
                     if fallback_policy:
                         output = fallback_policy
@@ -3368,9 +3189,7 @@ class EnhancedLLMReliabilityFramework:
                                 request_id=process_request_id,
                             ),
                         )
-                        ultra_reliable_result.status = (
-                            "EMERGENCY_SAFEGUARDS_NO_CONSENSUS"
-                        )
+                        ultra_reliable_result.status = "EMERGENCY_SAFEGUARDS_NO_CONSENSUS"
                         self.metrics_collector.increment_fallbacks()
                 else:
                     # If rule-based fallback is disabled, directly apply emergency safeguards
@@ -3411,13 +3230,10 @@ class EnhancedLLMReliabilityFramework:
                 ),  # Use individual avg
                 error_rate=(
                     1.0
-                    if ultra_reliable_result.error_message
-                    and not ultra_reliable_result.policy
+                    if ultra_reliable_result.error_message and not ultra_reliable_result.policy
                     else 0.0
                 ),
-                fallback_usage_rate=(
-                    1.0 if ultra_reliable_result.requires_human_review else 0.0
-                ),
+                fallback_usage_rate=(1.0 if ultra_reliable_result.requires_human_review else 0.0),
                 confidence_score=ultra_reliable_result.confidence,
                 request_id=process_request_id,
                 model_agreement_score=(
@@ -3431,16 +3247,12 @@ class EnhancedLLMReliabilityFramework:
                 # Placeholder for hallucination_rate and factual_accuracy_score
                 # These would ideally come from a dedicated quality assessment module
                 hallucination_rate=(
-                    ultra_reliable_result.validation_details.get(
-                        "hallucination_score", 0.0
-                    )
+                    ultra_reliable_result.validation_details.get("hallucination_score", 0.0)
                     if ultra_reliable_result.validation_details
                     else 0.0
                 ),
                 factual_accuracy_score=(
-                    ultra_reliable_result.validation_details.get(
-                        "factual_accuracy_score", 0.0
-                    )
+                    ultra_reliable_result.validation_details.get("factual_accuracy_score", 0.0)
                     if ultra_reliable_result.validation_details
                     else 0.0
                 ),
@@ -3461,9 +3273,7 @@ class EnhancedLLMReliabilityFramework:
                     f"Request {process_request_id}: Human review required. Path: {ultra_reliable_result.validation_path}. Message: {ultra_reliable_result.error_message}"
                 )
                 self.metrics_collector.increment_escalations()  # Increment escalation counter
-            elif (
-                not ultra_reliable_result.policy and ultra_reliable_result.error_message
-            ):
+            elif not ultra_reliable_result.policy and ultra_reliable_result.error_message:
                 logger.error(
                     f"Request {process_request_id}: Policy synthesis failed. Path: {ultra_reliable_result.validation_path}. Error: {ultra_reliable_result.error_message}"
                 )
@@ -3497,17 +3307,15 @@ class EnhancedLLMReliabilityFramework:
                     )
 
             # Enhanced semantic faithfulness validation
-            if self.config.semantic_validation_enabled and hasattr(
-                input_data, "principle_text"
-            ):
+            if self.config.semantic_validation_enabled and hasattr(input_data, "principle_text"):
                 if self.config.nli_validation_enabled:
-                    faithfulness = await self.faithfulness_validator.validate_faithfulness_comprehensive(
-                        input_data.principle_text, output.raw_llm_response
+                    faithfulness = (
+                        await self.faithfulness_validator.validate_faithfulness_comprehensive(
+                            input_data.principle_text, output.raw_llm_response
+                        )
                     )
                     metrics.semantic_faithfulness_score = faithfulness["overall_score"]
-                    metrics.nli_validation_score = faithfulness["nli_entailment"][
-                        "score"
-                    ]
+                    metrics.nli_validation_score = faithfulness["nli_entailment"]["score"]
                     metrics.constitutional_compliance_score = faithfulness[
                         "constitutional_compliance"
                     ]["score"]
@@ -3519,14 +3327,10 @@ class EnhancedLLMReliabilityFramework:
                         "factual_accuracy_score", metrics.factual_accuracy_score
                     )
                 else:
-                    faithfulness = (
-                        await self.faithfulness_validator.validate_faithfulness(
-                            input_data.principle_text, output.raw_llm_response
-                        )
+                    faithfulness = await self.faithfulness_validator.validate_faithfulness(
+                        input_data.principle_text, output.raw_llm_response
                     )
-                    metrics.semantic_faithfulness_score = faithfulness[
-                        "faithfulness_score"
-                    ]
+                    metrics.semantic_faithfulness_score = faithfulness["faithfulness_score"]
                     # Fallback for hallucination and factual accuracy if NLI is not enabled
                     metrics.hallucination_rate = 0.0  # Default or placeholder
                     metrics.factual_accuracy_score = 0.0  # Default or placeholder
@@ -3558,12 +3362,10 @@ class EnhancedLLMReliabilityFramework:
                         logger.info(
                             f"Request {process_request_id}: Attempting rule-based fallback."
                         )
-                        fallback_policy, fallback_message = (
-                            await self._apply_rule_based_fallback(
-                                input_data,
-                                ultra_reliable_result.error_message,
-                                output,  # Pass the current best policy (output from consensus)
-                            )
+                        fallback_policy, fallback_message = await self._apply_rule_based_fallback(
+                            input_data,
+                            ultra_reliable_result.error_message,
+                            output,  # Pass the current best policy (output from consensus)
                         )
                         if fallback_policy:
                             output = fallback_policy
@@ -3572,9 +3374,7 @@ class EnhancedLLMReliabilityFramework:
                                 f"Request {process_request_id}: Rule-based fallback applied: {fallback_message}"
                             )
                             fallback_applied = True
-                            metrics.fallback_usage_rate = (
-                                1.0  # Indicate fallback was used
-                            )
+                            metrics.fallback_usage_rate = 1.0  # Indicate fallback was used
                             self.metrics_collector.increment_fallbacks()  # Increment fallback counter
                         else:
                             logger.info(
@@ -3587,9 +3387,7 @@ class EnhancedLLMReliabilityFramework:
                         )
                         output = await self._apply_emergency_safeguards(output, metrics)
                         ultra_reliable_result.status = "ESCALATED_WITH_SAFEGUARDS"
-                        metrics.fallback_usage_rate = (
-                            1.0  # Indicate safeguards were used
-                        )
+                        metrics.fallback_usage_rate = 1.0  # Indicate safeguards were used
                         self.metrics_collector.increment_fallbacks()  # Increment fallback counter for emergency safeguards
                 elif (
                     overall_reliability < 0.8
@@ -3598,9 +3396,7 @@ class EnhancedLLMReliabilityFramework:
                         f"Request {process_request_id}: Applying emergency safeguards due to very low reliability ({overall_reliability:.3f})."
                     )
                     output = await self._apply_emergency_safeguards(output, metrics)
-                    ultra_reliable_result.status = (
-                        "EMERGENCY_SAFEGUARDS_LOW_RELIABILITY"
-                    )
+                    ultra_reliable_result.status = "EMERGENCY_SAFEGUARDS_LOW_RELIABILITY"
                     self.metrics_collector.increment_fallbacks()  # Increment fallback counter for emergency safeguards
 
             # Store performance metrics
@@ -3637,8 +3433,7 @@ class EnhancedLLMReliabilityFramework:
                                     model_name, 0
                                 )
                                 / max(1, len(self.performance_metrics)),
-                                "active": model_name
-                                in self.multi_model_validator.active_models,
+                                "active": model_name in self.multi_model_validator.active_models,
                                 "health_status": self.multi_model_validator.model_health_status.get(
                                     model_name, {}
                                 ),
@@ -3652,10 +3447,8 @@ class EnhancedLLMReliabilityFramework:
                     }
 
                     # Execute recovery monitoring and actions
-                    recovery_executions = (
-                        await self.recovery_orchestrator.monitor_and_recover(
-                            current_metrics, component_status, process_request_id
-                        )
+                    recovery_executions = await self.recovery_orchestrator.monitor_and_recover(
+                        current_metrics, component_status, process_request_id
                     )
 
                     # Log recovery actions if any were executed
@@ -3669,9 +3462,7 @@ class EnhancedLLMReliabilityFramework:
                             )
 
                         # Measure recovery effectiveness after a brief delay
-                        await asyncio.sleep(
-                            1.0
-                        )  # Allow recovery actions to take effect
+                        await asyncio.sleep(1.0)  # Allow recovery actions to take effect
 
                         # Re-calculate metrics to measure recovery effectiveness
                         post_recovery_metrics = {
@@ -3686,8 +3477,10 @@ class EnhancedLLMReliabilityFramework:
 
                         # Measure effectiveness for each recovery execution
                         for execution in recovery_executions:
-                            effectiveness = await self.recovery_orchestrator.measure_recovery_effectiveness(
-                                execution, post_recovery_metrics
+                            effectiveness = (
+                                await self.recovery_orchestrator.measure_recovery_effectiveness(
+                                    execution, post_recovery_metrics
+                                )
                             )
                             logger.info(
                                 f"Recovery effectiveness for {execution.action.strategy.value}: {effectiveness:.3f}"
@@ -3781,9 +3574,7 @@ class EnhancedLLMReliabilityFramework:
             try:
                 # Attempt to re-parse or re-format the raw response
                 # This is a simple example; a real implementation might use a more robust JSON repair LLM call
-                repaired_json_str = (
-                    f"```json\n{current_best_policy.raw_llm_response}\n```"
-                )
+                repaired_json_str = f"```json\n{current_best_policy.raw_llm_response}\n```"
                 logger.info("Rule-based fallback: Attempted to repair malformed JSON.")
                 return (
                     LLMStructuredOutput(
@@ -3796,10 +3587,7 @@ class EnhancedLLMReliabilityFramework:
                 logger.error(f"Failed to repair JSON in fallback: {e}")
 
         # Example rule 2: If the error is about "safety violation", return a generic safe response
-        if (
-            "safety violation" in error_message.lower()
-            or "unsafe content" in error_message.lower()
-        ):
+        if "safety violation" in error_message.lower() or "unsafe content" in error_message.lower():
             safe_response = "The requested policy could not be generated due to potential safety concerns. Please refine your request or consult an expert."
             logger.info(
                 "Rule-based fallback: Returned generic safe response due to safety violation."
@@ -3819,9 +3607,7 @@ class EnhancedLLMReliabilityFramework:
                 "Rule-based fallback: Returned conservative default policy due to lack of consensus."
             )
             return (
-                LLMStructuredOutput(
-                    interpretations=[], raw_llm_response=default_policy_text
-                ),
+                LLMStructuredOutput(interpretations=[], raw_llm_response=default_policy_text),
                 "Rule-based fallback: Conservative default policy applied.",
             )
 
@@ -3852,9 +3638,7 @@ class EnhancedLLMReliabilityFramework:
                 logger.warning(f"Re-routing to healthy model failed: {reroute_message}")
                 return None, reroute_message
 
-        logger.info(
-            "No specific rule-based fallback applied and no active models for re-routing."
-        )
+        logger.info("No specific rule-based fallback applied and no active models for re-routing.")
         return (
             None,
             "No specific rule-based fallback applied and no active models for re-routing.",
@@ -3927,10 +3711,7 @@ class EnhancedLLMReliabilityFramework:
             )
             # Increment failure count for the re-routed model
             self.multi_model_validator.model_failure_counts[target_model_name] = (
-                self.multi_model_validator.model_failure_counts.get(
-                    target_model_name, 0
-                )
-                + 1
+                self.multi_model_validator.model_failure_counts.get(target_model_name, 0) + 1
             )
             self.metrics_collector.increment_model_failures(target_model_name)
             if (
@@ -3944,9 +3725,9 @@ class EnhancedLLMReliabilityFramework:
             return None, f"Failed to re-route to {target_model_name}: {e}"
 
     async def _degrade_model(self, model_name: str, request_id: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Degrade (disable) a model that has consistently failed."""
         if model_name in self.multi_model_validator.active_models:
             self.multi_model_validator.active_models.remove(model_name)
@@ -4021,15 +3802,10 @@ class EnhancedLLMReliabilityFramework:
         summary = {
             "overall_reliability": self.get_overall_reliability(),
             "reliability_trend": self.get_reliability_trend(),
-            "target_achievement": self.get_overall_reliability()
-            >= self.config.reliability_target,
+            "target_achievement": self.get_overall_reliability() >= self.config.reliability_target,
             "metrics": {
-                "avg_success_rate": float(
-                    np.mean([m.success_rate for m in recent_metrics])
-                ),
-                "avg_consensus_rate": float(
-                    np.mean([m.consensus_rate for m in recent_metrics])
-                ),
+                "avg_success_rate": float(np.mean([m.success_rate for m in recent_metrics])),
+                "avg_consensus_rate": float(np.mean([m.consensus_rate for m in recent_metrics])),
                 "avg_bias_detection_rate": float(
                     np.mean([m.bias_detection_rate for m in recent_metrics])
                 ),
@@ -4039,12 +3815,8 @@ class EnhancedLLMReliabilityFramework:
                 "avg_response_time": float(
                     np.mean([m.average_response_time for m in recent_metrics])
                 ),
-                "avg_error_rate": float(
-                    np.mean([m.error_rate for m in recent_metrics])
-                ),
-                "cache_hit_rate": float(
-                    np.mean([m.cache_hit_rate for m in recent_metrics])
-                ),
+                "avg_error_rate": float(np.mean([m.error_rate for m in recent_metrics])),
+                "cache_hit_rate": float(np.mean([m.cache_hit_rate for m in recent_metrics])),
             },
             "total_requests": len(self.performance_metrics),
             "config": {
@@ -4108,9 +3880,7 @@ class EnhancedLLMReliabilityFramework:
             action, current_metrics, request_id
         )
 
-        logger.info(
-            f"Manual recovery triggered: {strategy.value} for {target_component}"
-        )
+        logger.info(f"Manual recovery triggered: {strategy.value} for {target_component}")
         return execution
 
 
@@ -4130,9 +3900,7 @@ class ConstitutionalPrinciple:
     text: str
     version: Optional[str] = None
     source: Optional[str] = None
-    metadata: Dict[str, Any] = field(
-        default_factory=dict
-    )  # E.g., keywords, related principles
+    metadata: Dict[str, Any] = field(default_factory=dict)  # E.g., keywords, related principles
 
 
 @dataclass
@@ -4152,7 +3920,5 @@ class SynthesisContext:
     related_policies: Optional[List[str]] = field(
         default_factory=list
     )  # IDs or texts of related policies
-    custom_instructions: Optional[str] = (
-        None  # Specific instructions for this synthesis task
-    )
+    custom_instructions: Optional[str] = None  # Specific instructions for this synthesis task
     metadata: Dict[str, Any] = field(default_factory=dict)

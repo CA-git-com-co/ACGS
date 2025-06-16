@@ -30,9 +30,9 @@ from services.core.governance_synthesis.app.services.policy_validator import (
 
 @pytest.fixture
 def performance_test_config():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Configuration for performance tests."""
     return {
         "target_latency_ms": 50,
@@ -45,16 +45,16 @@ def performance_test_config():
 
 @pytest.fixture
 def mock_fast_opa_client():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Mock OPA client optimized for fast responses."""
     client = AsyncMock()
 
     async def fast_validate_policy(policy_content, policy_path):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         await asyncio.sleep(0.001)  # 1ms simulated processing
         return MagicMock(
             is_valid=True,
@@ -67,9 +67,9 @@ def mock_fast_opa_client():
         )
 
     async def fast_evaluate_policy(request):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         await asyncio.sleep(0.002)  # 2ms simulated processing
         return PolicyDecisionResponse(
             result={"allowed": True, "compliance_score": 0.9},
@@ -84,9 +84,9 @@ def mock_fast_opa_client():
 
 @pytest.fixture
 def performance_policy_validator(mock_fast_opa_client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Policy validator configured for performance testing."""
     validator = PolicyValidationEngine()
     validator.opa_client = mock_fast_opa_client
@@ -96,9 +96,9 @@ def performance_policy_validator(mock_fast_opa_client):
 
 @pytest.fixture
 def sample_performance_requests():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Generate sample policy validation requests for performance testing."""
     requests = []
     for i in range(100):
@@ -146,9 +146,9 @@ class TestSingleRequestLatency:
         sample_performance_requests,
         performance_test_config,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that single requests meet the <50ms latency target."""
         latencies = []
 
@@ -201,9 +201,9 @@ class TestSingleRequestLatency:
     async def test_validation_level_performance_impact(
         self, performance_policy_validator, sample_performance_requests
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance impact of different validation levels."""
         request = sample_performance_requests[0]
         validation_levels = [
@@ -249,9 +249,9 @@ class TestBatchProcessingPerformance:
         sample_performance_requests,
         performance_test_config,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test that batch processing scales efficiently."""
         batch_results = {}
 
@@ -262,9 +262,7 @@ class TestBatchProcessingPerformance:
             # Test multiple batches
             for _ in range(5):
                 start_time = time.time()
-                responses = await performance_policy_validator.batch_validate(
-                    batch_requests
-                )
+                responses = await performance_policy_validator.batch_validate(batch_requests)
                 end_time = time.time()
 
                 batch_latency_ms = (end_time - start_time) * 1000
@@ -277,9 +275,7 @@ class TestBatchProcessingPerformance:
             avg_per_request_latency = statistics.mean(latencies)
             batch_results[batch_size] = avg_per_request_latency
 
-            print(
-                f"Batch size {batch_size}: {avg_per_request_latency:.2f}ms per request"
-            )
+            print(f"Batch size {batch_size}: {avg_per_request_latency:.2f}ms per request")
 
             # Per-request latency should remain low even in batches
             assert (
@@ -299,9 +295,9 @@ class TestBatchProcessingPerformance:
         sample_performance_requests,
         performance_test_config,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test concurrent batch processing performance."""
         batch_size = 10
 
@@ -334,8 +330,7 @@ class TestBatchProcessingPerformance:
 
             # Concurrent processing should maintain reasonable performance
             assert (
-                avg_latency_per_request
-                < performance_test_config["target_latency_ms"] * 2
+                avg_latency_per_request < performance_test_config["target_latency_ms"] * 2
             ), f"Concurrent processing latency {avg_latency_per_request:.2f}ms too high"
 
 
@@ -344,12 +339,10 @@ class TestOPAIntegrationPerformance:
 
     @pytest.mark.performance
     @pytest.mark.asyncio
-    async def test_opa_client_decision_latency(
-        self, mock_fast_opa_client, performance_test_config
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_opa_client_decision_latency(self, mock_fast_opa_client, performance_test_config):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test OPA client policy decision latency."""
         latencies = []
 
@@ -385,12 +378,10 @@ class TestOPAIntegrationPerformance:
 
     @pytest.mark.performance
     @pytest.mark.asyncio
-    async def test_policy_validation_latency(
-        self, mock_fast_opa_client, performance_test_config
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def test_policy_validation_latency(self, mock_fast_opa_client, performance_test_config):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test policy validation latency."""
         latencies = []
 
@@ -402,9 +393,7 @@ class TestOPAIntegrationPerformance:
             """
 
             start_time = time.time()
-            result = await mock_fast_opa_client.validate_policy(
-                policy_content, f"test_policy_{i}"
-            )
+            result = await mock_fast_opa_client.validate_policy(policy_content, f"test_policy_{i}")
             end_time = time.time()
 
             latency_ms = (end_time - start_time) * 1000
@@ -426,9 +415,9 @@ class TestMemoryAndResourceUsage:
     async def test_memory_usage_under_load(
         self, performance_policy_validator, sample_performance_requests
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test memory usage during high-load validation."""
         import os
 
@@ -450,16 +439,14 @@ class TestMemoryAndResourceUsage:
         )
 
         # Memory increase should be reasonable
-        assert (
-            memory_increase < 100
-        ), f"Memory increase {memory_increase:.1f}MB too high"
+        assert memory_increase < 100, f"Memory increase {memory_increase:.1f}MB too high"
 
     @pytest.mark.performance
     @pytest.mark.asyncio
     async def test_cache_performance_impact(self, performance_test_config):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance impact of caching."""
         from services.core.governance_synthesis.app.core.opa_integration import (
             PolicyDecisionCache,
@@ -468,9 +455,7 @@ class TestMemoryAndResourceUsage:
         cache = PolicyDecisionCache(max_size=1000, ttl_seconds=300)
 
         # Test cache hit performance
-        request = PolicyDecisionRequest(
-            input_data={"test": "data"}, policy_path="test/policy"
-        )
+        request = PolicyDecisionRequest(input_data={"test": "data"}, policy_path="test/policy")
 
         # Mock response
         response = PolicyDecisionResponse(
@@ -510,17 +495,17 @@ class TestThroughputMeasurement:
         sample_performance_requests,
         performance_test_config,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Measure maximum system throughput."""
         test_duration_seconds = 10
         completed_requests = 0
 
         async def validation_worker():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+            # requires: Valid input parameters
+            # ensures: Correct function execution
+            # sha256: func_hash
             nonlocal completed_requests
             request_idx = 0
             while True:
@@ -550,18 +535,16 @@ class TestThroughputMeasurement:
         print(f"Total requests completed: {completed_requests}")
 
         # Should achieve reasonable throughput
-        assert (
-            throughput_per_second > 100
-        ), f"Throughput {throughput_per_second:.1f} req/s too low"
+        assert throughput_per_second > 100, f"Throughput {throughput_per_second:.1f} req/s too low"
 
     @pytest.mark.performance
     @pytest.mark.asyncio
     async def test_sustained_load_performance(
         self, performance_policy_validator, sample_performance_requests
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance under sustained load."""
         sustained_duration_seconds = 30
         batch_size = 20

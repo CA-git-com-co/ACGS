@@ -74,9 +74,9 @@ class WorkflowContext:
     event_timestamp: Optional[datetime] = None
 
     def __post_init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self.metadata is None:
             self.metadata = {}
         if self.event_timestamp is None:
@@ -110,21 +110,19 @@ class AmendmentStateMachine:
     """Enhanced state machine for amendment workflow management with transaction support."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
-        self.transitions: Dict[
-            AmendmentState, Dict[AmendmentEvent, StateTransition]
-        ] = {}
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
+        self.transitions: Dict[AmendmentState, Dict[AmendmentEvent, StateTransition]] = {}
         self.event_handlers: Dict[AmendmentEvent, List[Callable]] = {}
         self.redis_client = None
         self.metrics = get_metrics("ac_service")
         self._setup_transitions()
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the state machine with Redis client."""
         try:
             # self.redis_client = await get_redis_client("amendment_state_machine")
@@ -134,9 +132,9 @@ class AmendmentStateMachine:
             # Continue without Redis if it fails
 
     def _setup_transitions(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Setup valid state transitions."""
         transitions = [
             # Initial submission
@@ -241,13 +239,9 @@ class AmendmentStateMachine:
         async with db.begin():
             try:
                 # Validate transition
-                validation_result = await self._validate_transition(
-                    current_state, event, context
-                )
+                validation_result = await self._validate_transition(current_state, event, context)
                 if not validation_result["valid"]:
-                    await self._record_failed_transition(
-                        context, validation_result["error"]
-                    )
+                    await self._record_failed_transition(context, validation_result["error"])
                     return validation_result
 
                 transition = self.transitions[current_state][event]
@@ -265,9 +259,7 @@ class AmendmentStateMachine:
                     db, context.amendment_id, transition.to_state, context
                 )
                 if not update_result["success"]:
-                    await self._record_failed_transition(
-                        context, update_result["error"]
-                    )
+                    await self._record_failed_transition(context, update_result["error"])
                     return update_result
 
                 # Execute transition action within transaction
@@ -309,24 +301,20 @@ class AmendmentStateMachine:
 
             except SQLAlchemyError as e:
                 logger.error(f"Database error in state transition: {e}")
-                await self._record_failed_transition(
-                    context, f"Database error: {str(e)}"
-                )
+                await self._record_failed_transition(context, f"Database error: {str(e)}")
                 self.metrics.record_policy_operation("state_transition", "db_error")
                 return {"success": False, "error": f"Database error: {str(e)}"}
 
             except Exception as e:
                 logger.error(f"Unexpected error in state transition: {e}")
-                await self._record_failed_transition(
-                    context, f"Unexpected error: {str(e)}"
-                )
+                await self._record_failed_transition(context, f"Unexpected error: {str(e)}")
                 self.metrics.record_policy_operation("state_transition", "error")
                 return {"success": False, "error": f"State machine error: {str(e)}"}
 
     def register_event_handler(self, event: AmendmentEvent, handler: Callable):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Register an event handler."""
         if event not in self.event_handlers:
             self.event_handlers[event] = []
@@ -371,9 +359,7 @@ class AmendmentStateMachine:
             # Get current amendment with version for optimistic locking
             from ..models import ACAmendment
 
-            result = await db.execute(
-                select(ACAmendment).where(ACAmendment.id == amendment_id)
-            )
+            result = await db.execute(select(ACAmendment).where(ACAmendment.id == amendment_id))
             amendment = result.scalar_one_or_none()
 
             if not amendment:
@@ -410,9 +396,9 @@ class AmendmentStateMachine:
             return {"success": False, "error": str(e)}
 
     async def _publish_workflow_event(self, event: WorkflowEvent):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Publish workflow event to Redis for event-driven processing."""
         if not self.redis_client:
             logger.warning("Redis client not available, skipping event publishing")
@@ -443,9 +429,9 @@ class AmendmentStateMachine:
         context: WorkflowContext,
         transition: StateTransition,
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Execute registered event handlers."""
         if event in self.event_handlers:
             for handler in self.event_handlers[event]:
@@ -455,12 +441,10 @@ class AmendmentStateMachine:
                     logger.error(f"Event handler failed for {event.value}: {e}")
                     # Continue with other handlers even if one fails
 
-    async def _record_successful_transition(
-        self, context: WorkflowContext, result: Dict[str, Any]
-    ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    async def _record_successful_transition(self, context: WorkflowContext, result: Dict[str, Any]):
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record successful state transition."""
         if self.redis_client:
             try:
@@ -468,20 +452,16 @@ class AmendmentStateMachine:
                 await self.redis_client.increment(metrics_key)
 
                 # Record transition details
-                transition_key = (
-                    f"acgs:transitions:{context.amendment_id}:{context.transaction_id}"
-                )
-                await self.redis_client.set_json(
-                    transition_key, result, ttl=86400
-                )  # 24 hours
+                transition_key = f"acgs:transitions:{context.amendment_id}:{context.transaction_id}"
+                await self.redis_client.set_json(transition_key, result, ttl=86400)  # 24 hours
 
             except Exception as e:
                 logger.error(f"Failed to record successful transition: {e}")
 
     async def _record_failed_transition(self, context: WorkflowContext, error: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record failed state transition."""
         if self.redis_client:
             try:
@@ -489,9 +469,7 @@ class AmendmentStateMachine:
                 await self.redis_client.increment(metrics_key)
 
                 # Record failure details
-                failure_key = (
-                    f"acgs:failures:{context.amendment_id}:{context.transaction_id}"
-                )
+                failure_key = f"acgs:failures:{context.amendment_id}:{context.transaction_id}"
                 failure_data = {
                     "amendment_id": context.amendment_id,
                     "user_id": context.user_id,
@@ -499,17 +477,13 @@ class AmendmentStateMachine:
                     "timestamp": datetime.utcnow().isoformat(),
                     "transaction_id": context.transaction_id,
                 }
-                await self.redis_client.set_json(
-                    failure_key, failure_data, ttl=86400
-                )  # 24 hours
+                await self.redis_client.set_json(failure_key, failure_data, ttl=86400)  # 24 hours
 
             except Exception as e:
                 logger.error(f"Failed to record failed transition: {e}")
 
     # Condition checkers
-    async def _check_review_approval(
-        self, db: AsyncSession, context: WorkflowContext
-    ) -> bool:
+    async def _check_review_approval(self, db: AsyncSession, context: WorkflowContext) -> bool:
         """Check if amendment passed review."""
         # Simplified - would check actual review criteria
         return True
@@ -521,16 +495,12 @@ class AmendmentStateMachine:
         # Would check consultation period and feedback
         return True
 
-    async def _check_voting_approval(
-        self, db: AsyncSession, context: WorkflowContext
-    ) -> bool:
+    async def _check_voting_approval(self, db: AsyncSession, context: WorkflowContext) -> bool:
         """Check if amendment was approved by voting."""
         # Would check actual vote counts and thresholds
         return True
 
-    async def _check_voting_rejection(
-        self, db: AsyncSession, context: WorkflowContext
-    ) -> bool:
+    async def _check_voting_rejection(self, db: AsyncSession, context: WorkflowContext) -> bool:
         """Check if amendment was rejected by voting."""
         # Would check actual vote counts
         return True

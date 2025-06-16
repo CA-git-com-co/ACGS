@@ -25,16 +25,16 @@ class User:
 
 
 def require_integrity_admin():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return User()
 
 
 def require_internal_service():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     return User()
 
 
@@ -60,9 +60,7 @@ class AnonymizationConfigRequest(BaseModel):
     """Request model for anonymization configuration."""
 
     method: AnonymizationMethod
-    k_value: Optional[int] = Field(
-        None, description="K value for k-anonymity (default: 5)"
-    )
+    k_value: Optional[int] = Field(None, description="K value for k-anonymity (default: 5)")
     epsilon: Optional[float] = Field(
         None, description="Epsilon for differential privacy (default: 1.0)"
     )
@@ -81,16 +79,10 @@ class ResearchExportRequest(BaseModel):
     """Request model for creating research data export."""
 
     export_name: str = Field(..., max_length=255, description="Name for the export")
-    export_description: Optional[str] = Field(
-        None, description="Description of the export"
-    )
+    export_description: Optional[str] = Field(None, description="Description of the export")
     domain_ids: List[int] = Field(..., description="Domain IDs to include in export")
-    principle_ids: List[int] = Field(
-        ..., description="Principle IDs to include in export"
-    )
-    date_range_start: datetime = Field(
-        ..., description="Start date for data collection"
-    )
+    principle_ids: List[int] = Field(..., description="Principle IDs to include in export")
+    date_range_start: datetime = Field(..., description="Start date for data collection")
     date_range_end: datetime = Field(..., description="End date for data collection")
     anonymization_config: AnonymizationConfigRequest = Field(
         ..., description="Anonymization configuration"
@@ -157,20 +149,14 @@ async def create_research_export(
 
         # Validate date range
         if export_request.date_range_start >= export_request.date_range_end:
-            raise HTTPException(
-                status_code=400, detail="Start date must be before end date"
-            )
+            raise HTTPException(status_code=400, detail="Start date must be before end date")
 
         # Validate domain and principle IDs (basic validation)
         if not export_request.domain_ids:
-            raise HTTPException(
-                status_code=400, detail="At least one domain ID is required"
-            )
+            raise HTTPException(status_code=400, detail="At least one domain ID is required")
 
         if not export_request.principle_ids:
-            raise HTTPException(
-                status_code=400, detail="At least one principle ID is required"
-            )
+            raise HTTPException(status_code=400, detail="At least one principle ID is required")
 
         # Check if export name already exists
         existing_export = await db.execute(
@@ -191,8 +177,7 @@ async def create_research_export(
             epsilon=export_request.anonymization_config.epsilon or 1.0,
             delta=export_request.anonymization_config.delta or 1e-5,
             generalization_levels=export_request.anonymization_config.generalization_levels,
-            suppression_threshold=export_request.anonymization_config.suppression_threshold
-            or 0.1,
+            suppression_threshold=export_request.anonymization_config.suppression_threshold or 0.1,
         )
 
         # Create research export
@@ -239,9 +224,7 @@ async def create_research_export(
         raise
     except Exception as e:
         logger.error(f"Failed to create research export: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to create research export: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to create research export: {str(e)}")
 
 
 @router.get("/exports", response_model=List[ResearchExportResponse])
@@ -262,15 +245,9 @@ async def list_research_exports(
             query = query.where(ResearchDataExport.export_format == export_format)
 
         if anonymization_method:
-            query = query.where(
-                ResearchDataExport.anonymization_method == anonymization_method
-            )
+            query = query.where(ResearchDataExport.anonymization_method == anonymization_method)
 
-        query = (
-            query.offset(skip)
-            .limit(limit)
-            .order_by(ResearchDataExport.created_at.desc())
-        )
+        query = query.offset(skip).limit(limit).order_by(ResearchDataExport.created_at.desc())
 
         result = await db.execute(query)
         exports = result.scalars().all()
@@ -304,9 +281,7 @@ async def list_research_exports(
 
     except Exception as e:
         logger.error(f"Failed to list research exports: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to list research exports: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to list research exports: {str(e)}")
 
 
 @router.get("/exports/{export_id}", response_model=ResearchExportResponse)
@@ -324,9 +299,7 @@ async def get_research_export(
         export = result.scalar_one_or_none()
 
         if not export:
-            raise HTTPException(
-                status_code=404, detail=f"Research export {export_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Research export {export_id} not found")
 
         response = ResearchExportResponse(
             id=export.id,
@@ -344,9 +317,7 @@ async def get_research_export(
             created_at=export.created_at,
             export_format=export.export_format,
             file_size_bytes=export.file_size_bytes,
-            record_count=export.export_data.get("statistical_summary", {}).get(
-                "total_records", 0
-            ),
+            record_count=export.export_data.get("statistical_summary", {}).get("total_records", 0),
         )
 
         return response
@@ -355,9 +326,7 @@ async def get_research_export(
         raise
     except Exception as e:
         logger.error(f"Failed to get research export {export_id}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get research export: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get research export: {str(e)}")
 
 
 @router.get("/exports/{export_id}/data")
@@ -376,9 +345,7 @@ async def download_research_export_data(
         export = result.scalar_one_or_none()
 
         if not export:
-            raise HTTPException(
-                status_code=404, detail=f"Research export {export_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Research export {export_id} not found")
 
         # Prepare download data
         download_data = {
@@ -404,9 +371,7 @@ async def download_research_export_data(
         raise
     except Exception as e:
         logger.error(f"Failed to download research export {export_id}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to download research export: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to download research export: {str(e)}")
 
 
 @router.get("/exports/{export_id}/summary", response_model=StatisticalSummaryResponse)
@@ -424,9 +389,7 @@ async def get_export_statistical_summary(
         export = result.scalar_one_or_none()
 
         if not export:
-            raise HTTPException(
-                status_code=404, detail=f"Research export {export_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Research export {export_id} not found")
 
         summary = export.statistical_summary or {}
 
@@ -444,12 +407,8 @@ async def get_export_statistical_summary(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            f"Failed to get statistical summary for export {export_id}: {str(e)}"
-        )
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get statistical summary: {str(e)}"
-        )
+        logger.error(f"Failed to get statistical summary for export {export_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get statistical summary: {str(e)}")
 
 
 @router.post("/exports/{export_id}/verify")
@@ -467,9 +426,7 @@ async def verify_export_integrity(
         export = result.scalar_one_or_none()
 
         if not export:
-            raise HTTPException(
-                status_code=404, detail=f"Research export {export_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Research export {export_id} not found")
 
         # Verify data hash
         import hashlib
@@ -505,9 +462,7 @@ async def verify_export_integrity(
         raise
     except Exception as e:
         logger.error(f"Failed to verify export integrity for {export_id}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to verify export integrity: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to verify export integrity: {str(e)}")
 
 
 @router.delete("/exports/{export_id}")
@@ -525,9 +480,7 @@ async def delete_research_export(
         export = result.scalar_one_or_none()
 
         if not export:
-            raise HTTPException(
-                status_code=404, detail=f"Research export {export_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Research export {export_id} not found")
 
         await db.delete(export)
         await db.commit()
@@ -541,16 +494,14 @@ async def delete_research_export(
     except Exception as e:
         await db.rollback()
         logger.error(f"Failed to delete research export {export_id}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to delete research export: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to delete research export: {str(e)}")
 
 
 @router.get("/health")
 async def health_check():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Health check endpoint for research data pipeline."""
     return {
         "status": "healthy",

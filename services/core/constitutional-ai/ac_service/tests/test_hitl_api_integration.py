@@ -22,25 +22,25 @@ class TestHITLSamplingAPI:
 
     @pytest.fixture
     def client(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create test client."""
         return TestClient(app)
 
     @pytest.fixture
     def mock_user(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create mock user."""
         return Mock(id=1, username="test_user", roles=["admin", "policy_manager"])
 
     @pytest.fixture
     def sample_hitl_request(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create sample HITL sampling request."""
         return {
             "decision_id": "test_decision_001",
@@ -60,9 +60,9 @@ class TestHITLSamplingAPI:
         }
 
     def test_assess_uncertainty_endpoint(self, client, sample_hitl_request, mock_user):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test uncertainty assessment endpoint."""
         with patch("app.api.hitl_sampling.get_current_user") as mock_get_user:
             mock_get_user.return_value = mock_user
@@ -71,9 +71,7 @@ class TestHITLSamplingAPI:
                 mock_db = AsyncMock(spec=AsyncSession)
                 mock_get_db.return_value = mock_db
 
-                with patch(
-                    "app.api.hitl_sampling.hitl_sampler.assess_uncertainty"
-                ) as mock_assess:
+                with patch("app.api.hitl_sampling.hitl_sampler.assess_uncertainty") as mock_assess:
                     # Mock assessment result
                     from datetime import datetime
 
@@ -107,9 +105,7 @@ class TestHITLSamplingAPI:
                     )
                     mock_assess.return_value = mock_assessment
 
-                    response = client.post(
-                        "/api/v1/hitl-sampling/assess", json=sample_hitl_request
-                    )
+                    response = client.post("/api/v1/hitl-sampling/assess", json=sample_hitl_request)
 
                     assert response.status_code == 200
                     data = response.json()
@@ -118,9 +114,7 @@ class TestHITLSamplingAPI:
                     assert data["overall_uncertainty"] == 0.78
                     assert data["confidence_score"] == 0.72
                     assert data["requires_human_oversight"] is True
-                    assert (
-                        data["recommended_oversight_level"] == "constitutional_council"
-                    )
+                    assert data["recommended_oversight_level"] == "constitutional_council"
                     assert "high_uncertainty" in data["triggers_activated"]
                     assert "stakeholder_conflict" in data["triggers_activated"]
                     assert "safety_critical" in data["triggers_activated"]
@@ -134,9 +128,9 @@ class TestHITLSamplingAPI:
                     assert dim_uncertainties["complexity"] == 0.75
 
     def test_trigger_oversight_endpoint(self, client, sample_hitl_request, mock_user):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test human oversight triggering endpoint."""
         with patch("app.api.hitl_sampling.get_current_user") as mock_get_user:
             mock_get_user.return_value = mock_user
@@ -145,9 +139,7 @@ class TestHITLSamplingAPI:
                 mock_db = AsyncMock(spec=AsyncSession)
                 mock_get_db.return_value = mock_db
 
-                with patch(
-                    "app.api.hitl_sampling.hitl_sampler.assess_uncertainty"
-                ) as mock_assess:
+                with patch("app.api.hitl_sampling.hitl_sampler.assess_uncertainty") as mock_assess:
                     with patch(
                         "app.api.hitl_sampling.hitl_sampler.trigger_human_oversight"
                     ) as mock_trigger:
@@ -195,9 +187,9 @@ class TestHITLSamplingAPI:
                         assert data["confidence_score"] == 0.60
 
     def test_submit_feedback_endpoint(self, client, mock_user):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test human feedback submission endpoint."""
         feedback_request = {
             "assessment_id": "test_assessment_001",
@@ -223,9 +215,7 @@ class TestHITLSamplingAPI:
                 ) as mock_process:
                     mock_process.return_value = True
 
-                    response = client.post(
-                        "/api/v1/hitl-sampling/feedback", json=feedback_request
-                    )
+                    response = client.post("/api/v1/hitl-sampling/feedback", json=feedback_request)
 
                     assert response.status_code == 200
                     data = response.json()
@@ -235,9 +225,9 @@ class TestHITLSamplingAPI:
                     assert data["feedback_processed"] is True
 
     def test_get_metrics_endpoint(self, client, mock_user):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance metrics endpoint."""
         with patch("app.api.hitl_sampling.require_roles") as mock_require_roles:
             mock_require_roles.return_value = lambda: mock_user
@@ -275,9 +265,9 @@ class TestHITLSamplingAPI:
                 assert data["learning_enabled"] is True
 
     def test_get_config_endpoint(self, client, mock_user):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test configuration retrieval endpoint."""
         with patch("app.api.hitl_sampling.require_roles") as mock_require_roles:
             mock_require_roles.return_value = lambda: mock_user
@@ -294,9 +284,9 @@ class TestHITLSamplingAPI:
             assert "adaptation_rate" in data
 
     def test_update_config_endpoint(self, client, mock_user):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test configuration update endpoint."""
         config_updates = {
             "uncertainty_threshold": 0.8,
@@ -321,9 +311,9 @@ class TestHITLSamplingAPI:
             assert data["current_config"]["learning_enabled"] is False
 
     def test_invalid_config_update(self, client, mock_user):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test invalid configuration update."""
         invalid_config = {
             "uncertainty_threshold": 1.5,  # Invalid: > 1.0
@@ -338,9 +328,9 @@ class TestHITLSamplingAPI:
             assert response.status_code == 400
 
     def test_unauthorized_access(self, client):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test unauthorized access to protected endpoints."""
         with patch("app.api.hitl_sampling.get_current_user") as mock_get_user:
             mock_get_user.side_effect = Exception("Unauthorized")
@@ -349,9 +339,9 @@ class TestHITLSamplingAPI:
             assert response.status_code == 500  # Should be handled by exception handler
 
     def test_assessment_error_handling(self, client, sample_hitl_request, mock_user):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test error handling in assessment endpoint."""
         with patch("app.api.hitl_sampling.get_current_user") as mock_get_user:
             mock_get_user.return_value = mock_user
@@ -360,14 +350,10 @@ class TestHITLSamplingAPI:
                 mock_db = AsyncMock(spec=AsyncSession)
                 mock_get_db.return_value = mock_db
 
-                with patch(
-                    "app.api.hitl_sampling.hitl_sampler.assess_uncertainty"
-                ) as mock_assess:
+                with patch("app.api.hitl_sampling.hitl_sampler.assess_uncertainty") as mock_assess:
                     mock_assess.side_effect = Exception("Assessment failed")
 
-                    response = client.post(
-                        "/api/v1/hitl-sampling/assess", json=sample_hitl_request
-                    )
+                    response = client.post("/api/v1/hitl-sampling/assess", json=sample_hitl_request)
 
                     assert response.status_code == 500
                     assert "Assessment failed" in response.json()["detail"]
@@ -378,17 +364,17 @@ class TestHITLIntegrationWorkflow:
 
     @pytest.fixture
     def client(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create test client."""
         return TestClient(app)
 
     @pytest.fixture
     def mock_admin_user(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create mock admin user."""
         return Mock(
             id=1,
@@ -397,9 +383,9 @@ class TestHITLIntegrationWorkflow:
         )
 
     def test_complete_hitl_workflow(self, client, mock_admin_user):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test complete HITL workflow from assessment to feedback."""
         # Step 1: Assess uncertainty
         assessment_request = {
@@ -416,9 +402,7 @@ class TestHITLIntegrationWorkflow:
                 mock_db = AsyncMock(spec=AsyncSession)
                 mock_get_db.return_value = mock_db
 
-                with patch(
-                    "app.api.hitl_sampling.hitl_sampler.assess_uncertainty"
-                ) as mock_assess:
+                with patch("app.api.hitl_sampling.hitl_sampler.assess_uncertainty") as mock_assess:
                     # Mock high uncertainty assessment
                     from datetime import datetime
 
@@ -442,9 +426,7 @@ class TestHITLIntegrationWorkflow:
                     mock_assess.return_value = mock_assessment
 
                     # Step 1: Assessment
-                    response = client.post(
-                        "/api/v1/hitl-sampling/assess", json=assessment_request
-                    )
+                    response = client.post("/api/v1/hitl-sampling/assess", json=assessment_request)
                     assert response.status_code == 200
                     assessment_data = response.json()
                     assert assessment_data["requires_human_oversight"] is True
@@ -466,9 +448,7 @@ class TestHITLIntegrationWorkflow:
                         assert oversight_data["oversight_triggered"] is True
 
                         # Step 3: Submit feedback
-                        with patch(
-                            "app.api.hitl_sampling.require_roles"
-                        ) as mock_require_roles:
+                        with patch("app.api.hitl_sampling.require_roles") as mock_require_roles:
                             mock_require_roles.return_value = lambda: mock_admin_user
 
                             with patch(
@@ -512,9 +492,7 @@ class TestHITLIntegrationWorkflow:
                                         "threshold_adjustments_count": 0,
                                     }
 
-                                    response = client.get(
-                                        "/api/v1/hitl-sampling/metrics"
-                                    )
+                                    response = client.get("/api/v1/hitl-sampling/metrics")
                                     assert response.status_code == 200
                                     metrics_data = response.json()
                                     assert metrics_data["total_assessments"] == 1

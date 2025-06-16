@@ -99,9 +99,9 @@ try:
     # Add metrics endpoint
     @app.get("/metrics")
     async def metrics():
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Prometheus metrics endpoint for Integrity service."""
         endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
         return await endpoint_func()
@@ -113,9 +113,9 @@ except ImportError as e:
     # Fallback metrics endpoint
     @app.get("/metrics")
     async def fallback_metrics():
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Fallback metrics endpoint."""
         return {"status": "metrics_not_available", "service": SERVICE_NAME}
 
@@ -338,7 +338,5 @@ if __name__ == "__main__":
         "lifespan": "on",
     }
 
-    logger.info(
-        f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service on port {config['port']}"
-    )
+    logger.info(f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service on port {config['port']}")
     uvicorn.run(app, **config)

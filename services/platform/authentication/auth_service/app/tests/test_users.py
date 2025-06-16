@@ -17,9 +17,9 @@ def random_user_payload() -> dict:
 
 @pytest.mark.asyncio
 async def test_create_user(client: TestClient, random_user_payload: dict):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     url = f"{settings.API_V1_STR}/users/"
     response = client.post(url, json=random_user_payload)
     assert response.status_code == 200  # Or 201 if API created
@@ -30,12 +30,10 @@ async def test_create_user(client: TestClient, random_user_payload: dict):
 
 
 @pytest.mark.asyncio
-async def test_create_user_existing_email(
-    client: TestClient, random_user_payload: dict
-):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+async def test_create_user_existing_email(client: TestClient, random_user_payload: dict):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     url = f"{settings.API_V1_STR}/users/"
     client.post(url, json=random_user_payload)  # Create user first
     response = client.post(url, json=random_user_payload)  # Try again
@@ -45,9 +43,9 @@ async def test_create_user_existing_email(
 
 @pytest.mark.asyncio
 async def test_login_for_access_token(client: TestClient, random_user_payload: dict):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_creation_url = f"{settings.API_V1_STR}/users/"
     client.post(user_creation_url, json=random_user_payload)  # Create user
 
@@ -65,9 +63,9 @@ async def test_login_for_access_token(client: TestClient, random_user_payload: d
 
 @pytest.mark.asyncio
 async def test_login_wrong_password(client: TestClient, random_user_payload: dict):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     user_creation_url = f"{settings.API_V1_STR}/users/"
     client.post(user_creation_url, json=random_user_payload)  # Create user
 
@@ -82,9 +80,9 @@ async def test_login_wrong_password(client: TestClient, random_user_payload: dic
 
 @pytest.mark.asyncio
 async def test_login_nonexistent_user(client: TestClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     login_data = {"username": "nonexistent@example.com", "password": "testpassword123"}
     login_url = f"{settings.API_V1_STR}/login/access-token"
     response = client.post(login_url, data=login_data)
@@ -101,19 +99,16 @@ API_V1_AUTH_PREFIX = f"{settings.API_V1_STR}/auth"
 
 
 @pytest.mark.asyncio
-async def test_read_current_user_success(
-    async_client: TestClient, random_user_payload: dict
-):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+async def test_read_current_user_success(async_client: TestClient, random_user_payload: dict):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     # Step 1: Register the user (using the /auth/register endpoint)
     # Assuming random_user_payload provides 'email' and 'password',
     # but /auth/register expects 'username', 'email', 'password', 'full_name'
     # We'll adapt random_user_payload or create a new one.
     user_data_for_registration = {
-        "username": random_user_payload["email"].split("@")[0]
-        + "_usr",  # Create a unique username
+        "username": random_user_payload["email"].split("@")[0] + "_usr",  # Create a unique username
         "email": random_user_payload["email"],
         "password": random_user_payload["password"],
         "full_name": "Test User Me",
@@ -151,9 +146,9 @@ async def test_read_current_user_success(
 
 @pytest.mark.asyncio
 async def test_read_current_user_unauthenticated(async_client: TestClient):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     me_url = f"{API_V1_AUTH_PREFIX}/me"
     response = await async_client.get(me_url)
     assert response.status_code == 401
@@ -179,9 +174,9 @@ async def test_read_current_user_unauthenticated(async_client: TestClient):
 # unauthenticated access.
 # For example:
 # async def test_update_current_user_full_name(async_client: TestClient, registered_user_cookies):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+# requires: Valid input parameters
+# ensures: Correct function execution
+# sha256: func_hash
 #     update_payload = {"full_name": "Updated Test User"}
 #     # Assume registered_user_cookies has set up the client with auth cookies
 #     # and returns the initial user data.

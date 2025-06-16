@@ -17,9 +17,9 @@ FV_SERVICE_URL = os.getenv(
 
 class FVServiceClient:
     def __init__(self, base_url: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.base_url = base_url
         timeout_config = httpx.Timeout(
             30.0, connect=5.0
@@ -68,9 +68,9 @@ class FVServiceClient:
             return None
 
     async def close(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         await self.client.aclose()
 
 
@@ -82,9 +82,9 @@ if __name__ == "__main__":
     pass
 
     async def test_fv_client():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         print(f"Testing FV Client against URL: {FV_SERVICE_URL}")
         # This test requires fv_service, integrity_service, and ac_service to be running
         # and integrity_service to have some rules (e.g., IDs 1, 2).
@@ -110,12 +110,8 @@ if __name__ == "__main__":
         print(
             "\nNote: Actual verification depends on running fv_service and its dependencies (ac_service, integrity_service)."
         )
-        print(
-            "If services are not running or data is missing, 'None' or errors are expected."
-        )
+        print("If services are not running or data is missing, 'None' or errors are expected.")
 
     # To run this test, ensure fv_service and its dependencies are running.
     # asyncio.run(test_fv_client())
-    print(
-        "FV Service client defined. Run test_fv_client() with relevant services running to test."
-    )
+    print("FV Service client defined. Run test_fv_client() with relevant services running to test.")

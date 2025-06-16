@@ -65,9 +65,7 @@ async def list_meta_rules_endpoint(
     current_user: User = Depends(get_current_active_user_placeholder),
 ):
     """List AC meta-rules with optional filtering by rule type"""
-    meta_rules = await get_ac_meta_rules(
-        db, rule_type=rule_type, skip=skip, limit=limit
-    )
+    meta_rules = await get_ac_meta_rules(db, rule_type=rule_type, skip=skip, limit=limit)
     return meta_rules
 
 
@@ -176,9 +174,7 @@ async def vote_on_amendment_endpoint(
     current_user: User = Depends(require_constitutional_council_role),
 ):
     """Vote on an AC amendment (requires Constitutional Council membership)"""
-    vote_create = schemas.ACAmendmentVoteCreate(
-        amendment_id=amendment_id, **vote_data.model_dump()
-    )
+    vote_create = schemas.ACAmendmentVoteCreate(amendment_id=amendment_id, **vote_data.model_dump())
     try:
         created_vote = await create_ac_amendment_vote(
             db=db, vote=vote_create, voter_id=current_user.id
@@ -188,9 +184,7 @@ async def vote_on_amendment_endpoint(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get(
-    "/amendments/{amendment_id}/votes", response_model=List[schemas.ACAmendmentVote]
-)
+@router.get("/amendments/{amendment_id}/votes", response_model=List[schemas.ACAmendmentVote])
 async def get_amendment_votes_endpoint(
     amendment_id: int,
     db: AsyncSession = Depends(get_async_db),
@@ -235,9 +229,7 @@ async def get_amendment_comments_endpoint(
     current_user: Optional[User] = Depends(get_current_active_user_placeholder),
 ):
     """Get comments for a specific amendment"""
-    comments = await get_ac_amendment_comments(
-        db, amendment_id=amendment_id, is_public=is_public
-    )
+    comments = await get_ac_amendment_comments(db, amendment_id=amendment_id, is_public=is_public)
     return comments
 
 
@@ -275,9 +267,7 @@ async def list_conflict_resolutions_endpoint(
     return conflicts
 
 
-@router.get(
-    "/conflict-resolutions/{conflict_id}", response_model=schemas.ACConflictResolution
-)
+@router.get("/conflict-resolutions/{conflict_id}", response_model=schemas.ACConflictResolution)
 async def get_conflict_resolution_endpoint(
     conflict_id: int,
     db: AsyncSession = Depends(get_async_db),
@@ -290,9 +280,7 @@ async def get_conflict_resolution_endpoint(
     return conflict
 
 
-@router.put(
-    "/conflict-resolutions/{conflict_id}", response_model=schemas.ACConflictResolution
-)
+@router.put("/conflict-resolutions/{conflict_id}", response_model=schemas.ACConflictResolution)
 async def update_conflict_resolution_endpoint(
     conflict_id: int,
     conflict_update: schemas.ACConflictResolutionUpdate,
@@ -376,9 +364,7 @@ async def transition_amendment_state_endpoint(
             event = AmendmentEvent(event_name)
             current_state = AmendmentState(amendment.workflow_state)
         except ValueError as e:
-            raise HTTPException(
-                status_code=400, detail=f"Invalid event or state: {str(e)}"
-            )
+            raise HTTPException(status_code=400, detail=f"Invalid event or state: {str(e)}")
 
         context = WorkflowContext(
             amendment_id=amendment_id,
@@ -387,9 +373,7 @@ async def transition_amendment_state_endpoint(
         )
 
         # Trigger transition
-        result = await amendment_state_machine.trigger_event(
-            db, current_state, event, context
-        )
+        result = await amendment_state_machine.trigger_event(db, current_state, event, context)
 
         if not result.get("success", False):
             raise HTTPException(
@@ -407,9 +391,7 @@ async def transition_amendment_state_endpoint(
 
 
 # Enhanced Amendment Processing Pipeline endpoints
-@router.post(
-    "/amendments/{amendment_id}/process-finalization", response_model=Dict[str, Any]
-)
+@router.post("/amendments/{amendment_id}/process-finalization", response_model=Dict[str, Any])
 async def process_amendment_finalization_endpoint(
     amendment_id: int,
     db: AsyncSession = Depends(get_async_db),
@@ -474,9 +456,7 @@ async def process_amendments_parallel_endpoint(
     """Process multiple amendments in parallel (requires Constitutional Council membership)"""
     try:
         if not amendment_ids:
-            raise HTTPException(
-                status_code=400, detail="Amendment IDs list cannot be empty"
-            )
+            raise HTTPException(status_code=400, detail="Amendment IDs list cannot be empty")
 
         if len(amendment_ids) > 10:
             raise HTTPException(
@@ -509,9 +489,7 @@ async def process_amendments_parallel_endpoint(
         )
 
 
-@router.post(
-    "/amendments/{amendment_id}/automated-transition", response_model=Dict[str, Any]
-)
+@router.post("/amendments/{amendment_id}/automated-transition", response_model=Dict[str, Any])
 async def automated_status_transition_endpoint(
     amendment_id: int,
     target_status: str,
@@ -571,9 +549,7 @@ async def automated_status_transition_endpoint(
         )
 
 
-@router.get(
-    "/amendments/{amendment_id}/processing-status", response_model=Dict[str, Any]
-)
+@router.get("/amendments/{amendment_id}/processing-status", response_model=Dict[str, Any])
 async def get_amendment_processing_status_endpoint(
     amendment_id: int,
     db: AsyncSession = Depends(get_async_db),
@@ -616,16 +592,12 @@ async def get_amendment_processing_status_endpoint(
             "engagement_metrics": {
                 "total_comments": len(comments),
                 "public_comments": len([c for c in comments if c.is_public]),
-                "stakeholder_feedback_count": len(
-                    [c for c in comments if not c.is_public]
-                ),
+                "stakeholder_feedback_count": len([c for c in comments if not c.is_public]),
             },
             "processing_pipeline": {
-                "can_proceed_to_voting": approval_rate > 0.5
-                and participation_rate > 0.3,
+                "can_proceed_to_voting": approval_rate > 0.5 and participation_rate > 0.3,
                 "requires_refinement": approval_rate < 0.6,
-                "ready_for_finalization": amendment.status == "voting"
-                and approval_rate > 0.6,
+                "ready_for_finalization": amendment.status == "voting" and approval_rate > 0.6,
                 "estimated_completion": "2024-01-15T00:00:00Z",  # Would be calculated based on current progress
             },
         }

@@ -55,17 +55,13 @@ class ConstitutionalViolation(BaseModel):
     description: str
     affected_principle_ids: List[int] = Field(default_factory=list)
     suggested_fix: Optional[str] = None
-    confidence: float = Field(
-        ..., ge=0.0, le=1.0, description="Detection confidence (0-1)"
-    )
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Detection confidence (0-1)")
 
 
 class ConstitutionalFidelityScore(BaseModel):
     """Constitutional fidelity scoring for policy validation."""
 
-    overall_score: float = Field(
-        ..., ge=0.0, le=1.0, description="Overall fidelity score (0-1)"
-    )
+    overall_score: float = Field(..., ge=0.0, le=1.0, description="Overall fidelity score (0-1)")
     principle_coverage_score: float = Field(..., ge=0.0, le=1.0)
     logical_consistency_score: float = Field(..., ge=0.0, le=1.0)
     fairness_score: float = Field(..., ge=0.0, le=1.0)
@@ -81,9 +77,9 @@ class ConstitutionalFidelityScore(BaseModel):
 
     @validator("compliance_level", always=True)
     def determine_compliance_level(cls, v, values):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Automatically determine compliance level based on overall score."""
         score = values.get("overall_score", 0.0)
         if score >= 0.95:
@@ -112,15 +108,13 @@ class RegoPolicy(BaseModel):
 
     # Constitutional compliance
     constitutional_fidelity: Optional[ConstitutionalFidelityScore] = None
-    source_principles: List[int] = Field(
-        default_factory=list, description="Source principle IDs"
-    )
+    source_principles: List[int] = Field(default_factory=list, description="Source principle IDs")
 
     @validator("package_name")
     def validate_package_name(cls, v):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Validate Rego package name format."""
         if not re.match(r"^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$", v):
             raise ValueError("Invalid Rego package name format")
@@ -128,9 +122,9 @@ class RegoPolicy(BaseModel):
 
     @validator("rules")
     def validate_rules(cls, v):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Basic validation of Rego rules."""
         if not v:
             raise ValueError("At least one rule is required")
@@ -139,12 +133,8 @@ class RegoPolicy(BaseModel):
             if not rule.strip():
                 raise ValueError("Empty rules are not allowed")
             # Basic Rego syntax check
-            if not any(
-                keyword in rule for keyword in ["allow", "deny", "default", ":="]
-            ):
-                raise ValueError(
-                    f"Rule appears to be invalid Rego syntax: {rule[:50]}..."
-                )
+            if not any(keyword in rule for keyword in ["allow", "deny", "default", ":="]):
+                raise ValueError(f"Rule appears to be invalid Rego syntax: {rule[:50]}...")
 
         return v
 
@@ -238,9 +228,7 @@ class ModelSpecializationConfig(BaseModel):
     )
     policy_synthesis_model: str = Field(default="grok-3-mini")
     conflict_resolution_model: str = Field(default="gemini-2.0-flash")
-    bias_mitigation_model: str = Field(
-        default="meta-llama/llama-4-maverick-17b-128e-instruct"
-    )
+    bias_mitigation_model: str = Field(default="meta-llama/llama-4-maverick-17b-128e-instruct")
     fidelity_monitoring_model: str = Field(default="gemini-2.0-flash")
 
     # Model-specific parameters
@@ -308,17 +296,17 @@ class WorkflowState(BaseModel):
     max_retries: int = Field(default=3)
 
     def add_step(self, step_name: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add a step to the workflow history."""
         self.step_history.append(f"{step_name}:{datetime.utcnow().isoformat()}")
         self.current_step = step_name
 
     def add_error(self, error_message: str):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add an error to the workflow."""
         self.errors.append(f"{datetime.utcnow().isoformat()}: {error_message}")
 

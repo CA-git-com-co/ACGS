@@ -62,9 +62,9 @@ class InMemoryEventStore(EventStore):
     """In-memory event store for testing and development."""
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize in-memory event store."""
         self.events: Dict[str, "Event"] = {}
         self.events_by_type: Dict[EventType, List[str]] = {}
@@ -134,9 +134,7 @@ class InMemoryEventStore(EventStore):
 
             # Filter by timestamp
             if since:
-                events = [
-                    event for event in events if event.metadata.created_at >= since
-                ]
+                events = [event for event in events if event.metadata.created_at >= since]
 
             # Sort by creation time (newest first)
             events.sort(key=lambda e: e.metadata.created_at, reverse=True)
@@ -151,9 +149,7 @@ class InMemoryEventStore(EventStore):
             events = [self.events[event_id] for event_id in pending_ids]
 
             # Sort by priority and creation time
-            events.sort(
-                key=lambda e: (e.metadata.priority.value, e.metadata.created_at)
-            )
+            events.sort(key=lambda e: (e.metadata.priority.value, e.metadata.created_at))
 
             return events[:limit]
 
@@ -238,8 +234,7 @@ class InMemoryEventStore(EventStore):
                 for event_type, event_ids in self.events_by_type.items()
             },
             "events_by_status": {
-                status.value: len(event_ids)
-                for status, event_ids in self.events_by_status.items()
+                status.value: len(event_ids) for status, event_ids in self.events_by_status.items()
             },
         }
 
@@ -248,9 +243,9 @@ class DatabaseEventStore(EventStore):
     """Database-backed event store for production use."""
 
     def __init__(self, database_url: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize database event store.
 

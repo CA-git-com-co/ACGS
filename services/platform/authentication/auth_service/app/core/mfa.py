@@ -16,9 +16,9 @@ class MFAService:
     """Enterprise Multi-Factor Authentication Service"""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.issuer_name = "ACGS-1 Constitutional Governance"
         self.backup_codes_count = 10
 
@@ -54,9 +54,7 @@ class MFAService:
         codes = []
         for _ in range(self.backup_codes_count):
             # Generate 8-character alphanumeric codes
-            code = "".join(
-                secrets.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") for _ in range(8)
-            )
+            code = "".join(secrets.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") for _ in range(8))
             codes.append(code)
         return codes
 
@@ -126,9 +124,7 @@ class MFAService:
 
         return True
 
-    async def disable_mfa(
-        self, db: AsyncSession, user_id: int, verification_code: str
-    ) -> bool:
+    async def disable_mfa(self, db: AsyncSession, user_id: int, verification_code: str) -> bool:
         """Disable MFA after verification."""
         user = await crud_user.get_user(db, user_id=user_id)
         if not user:
@@ -139,9 +135,7 @@ class MFAService:
 
         # Verify with TOTP or backup code
         totp_valid = self.verify_totp_code(user.mfa_secret, verification_code)
-        backup_valid, _ = self.verify_backup_code(
-            user.backup_codes or [], verification_code
-        )
+        backup_valid, _ = self.verify_backup_code(user.backup_codes or [], verification_code)
 
         if not (totp_valid or backup_valid):
             raise HTTPException(status_code=400, detail="Invalid verification code")
@@ -165,9 +159,7 @@ class MFAService:
             return {"method": "totp", "valid": True}
 
         # Try backup code
-        backup_valid, backup_index = self.verify_backup_code(
-            user.backup_codes or [], code
-        )
+        backup_valid, backup_index = self.verify_backup_code(user.backup_codes or [], code)
         if backup_valid:
             # Remove used backup code
             backup_codes = user.backup_codes.copy()

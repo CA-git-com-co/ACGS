@@ -48,9 +48,9 @@ class ConflictResolutionOrchestrator:
     """
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize the orchestrator with all subsystems."""
         # Initialize subsystems
         self.detector = IntelligentConflictDetector()
@@ -102,10 +102,8 @@ class ConflictResolutionOrchestrator:
             for detection_result in detected_conflicts:
                 try:
                     # Create conflict resolution entry
-                    conflict_entry = (
-                        await self.detector.create_conflict_resolution_entry(
-                            db, detection_result, user_id
-                        )
+                    conflict_entry = await self.detector.create_conflict_resolution_entry(
+                        db, detection_result, user_id
                     )
 
                     # Log detection event
@@ -121,9 +119,7 @@ class ConflictResolutionOrchestrator:
 
             # Automatically attempt resolution for high-confidence conflicts
             for conflict_entry, detection_result in created_conflicts:
-                if (
-                    detection_result.confidence_score >= 0.8
-                ):  # High confidence threshold
+                if detection_result.confidence_score >= 0.8:  # High confidence threshold
                     # Schedule automatic resolution
                     asyncio.create_task(
                         self.resolve_conflict_automatically(
@@ -182,9 +178,7 @@ class ConflictResolutionOrchestrator:
                 )
 
                 # Log resolution attempt
-                await self.auditor.log_resolution_attempt(
-                    db, conflict, resolution_result, user_id
-                )
+                await self.auditor.log_resolution_attempt(db, conflict, resolution_result, user_id)
 
                 # Check if resolution was successful
                 if resolution_result.success and resolution_result.validation_passed:
@@ -216,9 +210,7 @@ class ConflictResolutionOrchestrator:
 
             if escalation_request:
                 # Trigger escalation
-                escalation_response = await self.trigger_escalation(
-                    db, escalation_request, user_id
-                )
+                escalation_response = await self.trigger_escalation(db, escalation_request, user_id)
 
                 # Update conflict status to escalated
                 await self._update_conflict_status(
@@ -239,10 +231,8 @@ class ConflictResolutionOrchestrator:
 
             # Create emergency escalation
             if conflict:
-                emergency_escalation = (
-                    await self.escalator._create_emergency_escalation(
-                        db, conflict, f"Resolution error: {str(e)}"
-                    )
+                emergency_escalation = await self.escalator._create_emergency_escalation(
+                    db, conflict, f"Resolution error: {str(e)}"
                 )
                 await self.trigger_escalation(db, emergency_escalation, user_id)
 
@@ -266,16 +256,12 @@ class ConflictResolutionOrchestrator:
             EscalationResponse with escalation results
         """
         try:
-            logger.info(
-                f"Triggering escalation for conflict {escalation_request.conflict_id}"
-            )
+            logger.info(f"Triggering escalation for conflict {escalation_request.conflict_id}")
 
             # Get conflict
             from ..crud import get_ac_conflict_resolution
 
-            conflict = await get_ac_conflict_resolution(
-                db, escalation_request.conflict_id
-            )
+            conflict = await get_ac_conflict_resolution(db, escalation_request.conflict_id)
 
             if not conflict:
                 raise ValueError(f"Conflict {escalation_request.conflict_id} not found")
@@ -319,9 +305,7 @@ class ConflictResolutionOrchestrator:
             )
 
             # Track escalation in system
-            self.escalator.active_escalations[escalation_request.conflict_id] = (
-                escalation_request
-            )
+            self.escalator.active_escalations[escalation_request.conflict_id] = escalation_request
 
             logger.info(
                 f"Escalation triggered successfully for conflict {escalation_request.conflict_id}"
@@ -330,9 +314,7 @@ class ConflictResolutionOrchestrator:
             return escalation_response
 
         except Exception as e:
-            logger.error(
-                f"Escalation failed for conflict {escalation_request.conflict_id}: {e}"
-            )
+            logger.error(f"Escalation failed for conflict {escalation_request.conflict_id}: {e}")
 
             # Return failure response
             return EscalationResponse(
@@ -375,9 +357,7 @@ class ConflictResolutionOrchestrator:
                 raise ValueError(f"Conflict {conflict_id} not found")
 
             # Log human intervention
-            await self.auditor.log_human_intervention(
-                db, conflict, intervention_data, user_id
-            )
+            await self.auditor.log_human_intervention(db, conflict, intervention_data, user_id)
 
             # Update conflict based on human decision
             decision = intervention_data.get("decision")
@@ -424,9 +404,7 @@ class ConflictResolutionOrchestrator:
             if conflict_id in self.escalator.active_escalations:
                 del self.escalator.active_escalations[conflict_id]
 
-            logger.info(
-                f"Human intervention processed successfully for conflict {conflict_id}"
-            )
+            logger.info(f"Human intervention processed successfully for conflict {conflict_id}")
 
             return True
 
@@ -459,8 +437,7 @@ class ConflictResolutionOrchestrator:
 
             # Calculate target achievement
             auto_resolution_achievement = (
-                current_metrics.auto_resolution_rate
-                / (self.auto_resolution_target * 100)
+                current_metrics.auto_resolution_rate / (self.auto_resolution_target * 100)
             ) * 100
 
             escalation_time_achievement = (
@@ -482,31 +459,20 @@ class ConflictResolutionOrchestrator:
                     "total_attempts": resolver_stats["total_attempts"],
                     "successful_resolutions": resolver_stats["successful_resolutions"],
                     "auto_resolution_rate": resolver_stats["auto_resolution_rate"],
-                    "average_processing_time": resolver_stats[
-                        "average_processing_time"
-                    ],
+                    "average_processing_time": resolver_stats["average_processing_time"],
                 },
                 "escalation_metrics": {
                     "total_escalations": escalation_stats["total_escalations"],
-                    "successful_escalations": escalation_stats[
-                        "successful_escalations"
-                    ],
-                    "escalation_success_rate": escalation_stats[
-                        "escalation_success_rate"
-                    ],
-                    "average_escalation_time": escalation_stats[
-                        "average_escalation_time"
-                    ],
+                    "successful_escalations": escalation_stats["successful_escalations"],
+                    "escalation_success_rate": escalation_stats["escalation_success_rate"],
+                    "average_escalation_time": escalation_stats["average_escalation_time"],
                 },
                 "targets": {
                     "auto_resolution_target": self.auto_resolution_target * 100,
-                    "escalation_timeout_minutes": self.escalation_timeout.total_seconds()
-                    / 60,
+                    "escalation_timeout_minutes": self.escalation_timeout.total_seconds() / 60,
                     "detection_accuracy_target": 80.0,
                 },
-                "recommendations": self._generate_performance_recommendations(
-                    current_metrics
-                ),
+                "recommendations": self._generate_performance_recommendations(current_metrics),
             }
 
             return report

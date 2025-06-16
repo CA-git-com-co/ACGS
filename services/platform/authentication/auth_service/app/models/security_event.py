@@ -26,9 +26,7 @@ class SecurityEvent(Base):
     # Event details
     event_type = Column(String(100), nullable=False, index=True)
     event_category = Column(String(50), nullable=False, index=True)
-    severity = Column(
-        String(20), nullable=False, index=True
-    )  # info, warning, error, critical
+    severity = Column(String(20), nullable=False, index=True)  # info, warning, error, critical
     description = Column(Text, nullable=False)
 
     # Request context
@@ -67,9 +65,7 @@ class ApiKey(Base):
     # Key details
     name = Column(String(100), nullable=False)
     key_hash = Column(String(255), nullable=False, unique=True, index=True)
-    prefix = Column(
-        String(20), nullable=False, index=True
-    )  # First few chars for identification
+    prefix = Column(String(20), nullable=False, index=True)  # First few chars for identification
 
     # Permissions and limits
     scopes = Column(JSON, nullable=False, default=list)  # List of allowed scopes

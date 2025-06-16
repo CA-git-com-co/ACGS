@@ -31,16 +31,12 @@ class OversightRequestModel(BaseModel):
     target_system: str = Field(..., description="Target EC system identifier")
     context: ECOversightContext = Field(..., description="Oversight context")
     requirements: List[str] = Field(..., description="Oversight requirements")
-    optimization_objective: Optional[str] = Field(
-        None, description="Optimization objective"
-    )
+    optimization_objective: Optional[str] = Field(None, description="Optimization objective")
     constitutional_constraints: List[str] = Field(
         default_factory=list, description="Constitutional constraints"
     )
     priority_level: str = Field(default="medium", description="Priority level")
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata"
-    )
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
 
 class OversightResponseModel(BaseModel):
@@ -50,28 +46,20 @@ class OversightResponseModel(BaseModel):
     decision: str = Field(..., description="Oversight decision")
     rationale: str = Field(..., description="Decision rationale")
     confidence_score: float = Field(..., description="Confidence score")
-    constitutional_compliance: bool = Field(
-        ..., description="Constitutional compliance status"
-    )
+    constitutional_compliance: bool = Field(..., description="Constitutional compliance status")
     wina_optimization_applied: bool = Field(
         ..., description="Whether WINA optimization was applied"
     )
-    governance_recommendations: List[str] = Field(
-        ..., description="Governance recommendations"
-    )
+    governance_recommendations: List[str] = Field(..., description="Governance recommendations")
     performance_metrics: Dict[str, Any] = Field(..., description="Performance metrics")
-    processing_time_ms: float = Field(
-        ..., description="Processing time in milliseconds"
-    )
+    processing_time_ms: float = Field(..., description="Processing time in milliseconds")
     timestamp: str = Field(..., description="Operation timestamp")
 
 
 class BatchOversightRequestModel(BaseModel):
     """Request model for batch EC oversight operations."""
 
-    requests: List[OversightRequestModel] = Field(
-        ..., description="List of oversight requests"
-    )
+    requests: List[OversightRequestModel] = Field(..., description="List of oversight requests")
     batch_context: Optional[str] = Field(None, description="Batch processing context")
     optimization_hints: Optional[Dict[str, Any]] = Field(
         None, description="WINA optimization hints"
@@ -82,9 +70,7 @@ class BatchOversightResponseModel(BaseModel):
     """Response model for batch EC oversight operations."""
 
     batch_id: str = Field(..., description="Unique batch operation ID")
-    results: List[OversightResponseModel] = Field(
-        ..., description="Individual oversight results"
-    )
+    results: List[OversightResponseModel] = Field(..., description="Individual oversight results")
     batch_summary: Dict[str, Any] = Field(..., description="Batch processing summary")
     total_processing_time_ms: float = Field(..., description="Total processing time")
     success_rate: float = Field(..., description="Success rate")
@@ -168,9 +154,7 @@ async def coordinate_oversight(
 
     except Exception as e:
         logger.error(f"Oversight coordination failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Oversight coordination failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Oversight coordination failed: {str(e)}")
 
 
 @router.post("/batch-coordinate", response_model=BatchOversightResponseModel)
@@ -189,9 +173,7 @@ async def batch_coordinate_oversight(
     batch_id = str(uuid.uuid4())
 
     try:
-        logger.info(
-            f"Starting batch oversight coordination for {len(request.requests)} requests"
-        )
+        logger.info(f"Starting batch oversight coordination for {len(request.requests)} requests")
 
         results = []
         successful_operations = 0
@@ -236,25 +218,19 @@ async def batch_coordinate_oversight(
                 successful_operations += 1
 
             except Exception as e:
-                logger.error(
-                    f"Individual oversight failed for {req.target_system}: {e}"
-                )
+                logger.error(f"Individual oversight failed for {req.target_system}: {e}")
                 # Continue with other requests
 
         # Calculate batch metrics
         total_processing_time = (datetime.utcnow() - start_time).total_seconds() * 1000
-        success_rate = (
-            successful_operations / len(request.requests) if request.requests else 0.0
-        )
+        success_rate = successful_operations / len(request.requests) if request.requests else 0.0
 
         batch_summary = {
             "total_requests": len(request.requests),
             "successful_operations": successful_operations,
             "failed_operations": len(request.requests) - successful_operations,
             "average_confidence_score": (
-                sum(r.confidence_score for r in results) / len(results)
-                if results
-                else 0.0
+                sum(r.confidence_score for r in results) / len(results) if results else 0.0
             ),
             "constitutional_compliance_rate": (
                 sum(1 for r in results if r.constitutional_compliance) / len(results)
@@ -291,9 +267,9 @@ async def batch_coordinate_oversight(
 async def _report_oversight_activity(
     oversight_id: str, target_system: str, result: WINAOversightResult
 ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Background task to report oversight activity to AC service."""
     try:
         await ac_service_client.report_oversight_activity(
@@ -318,9 +294,9 @@ async def _report_oversight_activity(
 
 @router.get("/strategies")
 async def get_oversight_strategies():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get available EC oversight strategies."""
     return {
         "strategies": [
@@ -335,9 +311,9 @@ async def get_oversight_strategies():
 
 @router.get("/contexts")
 async def get_oversight_contexts():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Get available EC oversight contexts."""
     return {
         "contexts": [
@@ -367,6 +343,4 @@ async def oversight_health_check(
 
     except Exception as e:
         logger.error(f"Oversight health check failed: {e}")
-        raise HTTPException(
-            status_code=503, detail=f"Oversight system unhealthy: {str(e)}"
-        )
+        raise HTTPException(status_code=503, detail=f"Oversight system unhealthy: {str(e)}")

@@ -57,11 +57,7 @@ class CrossServiceConfidenceMetrics:
         ]
 
         valid_confidences = [c for c in confidences if c is not None]
-        return (
-            sum(valid_confidences) / len(valid_confidences)
-            if valid_confidences
-            else 0.5
-        )
+        return sum(valid_confidences) / len(valid_confidences) if valid_confidences else 0.5
 
 
 class HITLCrossServiceIntegrator:
@@ -73,9 +69,9 @@ class HITLCrossServiceIntegrator:
     """
 
     def __init__(self, hitl_sampler: HumanInTheLoopSampler):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize cross-service integrator."""
         self.hitl_sampler = hitl_sampler
 
@@ -83,9 +79,7 @@ class HITLCrossServiceIntegrator:
         self.gs_service_url = config.get("gs_service_url", "http://localhost:8004")
         self.fv_service_url = config.get("fv_service_url", "http://localhost:8003")
         self.pgc_service_url = config.get("pgc_service_url", "http://localhost:8005")
-        self.integrity_service_url = config.get(
-            "integrity_service_url", "http://localhost:8002"
-        )
+        self.integrity_service_url = config.get("integrity_service_url", "http://localhost:8002")
 
         # HTTP client for cross-service communication
         self.http_client = httpx.AsyncClient(timeout=30.0)
@@ -148,18 +142,14 @@ class HITLCrossServiceIntegrator:
             enhanced_context.update(
                 {
                     "cross_service_confidence": confidence_metrics.get_average_confidence(),
-                    "gs_available": self.integration_metrics["service_availability"][
-                        "gs_service"
-                    ],
-                    "fv_available": self.integration_metrics["service_availability"][
-                        "fv_service"
-                    ],
+                    "gs_available": self.integration_metrics["service_availability"]["gs_service"],
+                    "fv_available": self.integration_metrics["service_availability"]["fv_service"],
                     "pgc_available": self.integration_metrics["service_availability"][
                         "pgc_service"
                     ],
-                    "integrity_available": self.integration_metrics[
-                        "service_availability"
-                    ]["integrity_service"],
+                    "integrity_available": self.integration_metrics["service_availability"][
+                        "integrity_service"
+                    ],
                     "multi_service_decision": len(include_services) > 1,
                 }
             )
@@ -219,9 +209,7 @@ class HITLCrossServiceIntegrator:
             tasks.append(self._get_pgc_confidence(decision_context, principle_ids))
 
         if "integrity_service" in include_services:
-            tasks.append(
-                self._get_integrity_confidence(decision_context, principle_ids)
-            )
+            tasks.append(self._get_integrity_confidence(decision_context, principle_ids))
 
         # Execute all tasks concurrently
         results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -357,9 +345,7 @@ class HITLCrossServiceIntegrator:
 
         except Exception as e:
             logger.warning(f"Integrity Service confidence assessment failed: {e}")
-            self.integration_metrics["service_availability"][
-                "integrity_service"
-            ] = False
+            self.integration_metrics["service_availability"]["integrity_service"] = False
             return {"verification_confidence": 0.5, "cryptographic_confidence": 0.5}
 
     def _update_confidence_metrics(
@@ -368,27 +354,19 @@ class HITLCrossServiceIntegrator:
         service: str,
         result: Dict[str, float],
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update confidence metrics with service results."""
         if service == "gs_service":
             confidence_metrics.gs_llm_confidence = result.get("llm_confidence")
-            confidence_metrics.gs_synthesis_confidence = result.get(
-                "synthesis_confidence"
-            )
+            confidence_metrics.gs_synthesis_confidence = result.get("synthesis_confidence")
         elif service == "fv_service":
             confidence_metrics.fv_bias_confidence = result.get("bias_confidence")
-            confidence_metrics.fv_fairness_confidence = result.get(
-                "fairness_confidence"
-            )
+            confidence_metrics.fv_fairness_confidence = result.get("fairness_confidence")
         elif service == "pgc_service":
-            confidence_metrics.pgc_enforcement_confidence = result.get(
-                "enforcement_confidence"
-            )
-            confidence_metrics.pgc_compilation_confidence = result.get(
-                "compilation_confidence"
-            )
+            confidence_metrics.pgc_enforcement_confidence = result.get("enforcement_confidence")
+            confidence_metrics.pgc_compilation_confidence = result.get("compilation_confidence")
         elif service == "integrity_service":
             confidence_metrics.integrity_verification_confidence = result.get(
                 "verification_confidence"
@@ -398,17 +376,15 @@ class HITLCrossServiceIntegrator:
             )
 
     def _update_avg_integration_time(self, processing_time_ms: float):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update average integration time metric."""
         current_avg = self.integration_metrics["avg_integration_time_ms"]
         total_assessments = self.integration_metrics["total_cross_service_assessments"]
 
         # Calculate new average
-        new_avg = (
-            (current_avg * (total_assessments - 1)) + processing_time_ms
-        ) / total_assessments
+        new_avg = ((current_avg * (total_assessments - 1)) + processing_time_ms) / total_assessments
         self.integration_metrics["avg_integration_time_ms"] = new_avg
 
     async def coordinate_cross_service_oversight(
@@ -435,10 +411,7 @@ class HITLCrossServiceIntegrator:
             # Determine which services need oversight coordination
             services_to_notify = []
 
-            if (
-                confidence_metrics.gs_llm_confidence
-                and confidence_metrics.gs_llm_confidence < 0.7
-            ):
+            if confidence_metrics.gs_llm_confidence and confidence_metrics.gs_llm_confidence < 0.7:
                 services_to_notify.append("gs_service")
 
             if (
@@ -522,18 +495,16 @@ class HITLCrossServiceIntegrator:
             ),
             "service_availability_rate": sum(
                 1
-                for available in self.integration_metrics[
-                    "service_availability"
-                ].values()
+                for available in self.integration_metrics["service_availability"].values()
                 if available
             )
             / len(self.integration_metrics["service_availability"]),
         }
 
     async def close(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Close HTTP client and cleanup resources."""
         await self.http_client.aclose()
         logger.info("HITL Cross-Service Integrator closed")

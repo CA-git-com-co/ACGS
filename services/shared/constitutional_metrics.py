@@ -15,9 +15,9 @@ class ConstitutionalMetrics:
     """Specialized metrics for constitutional AI governance operations."""
 
     def __init__(self, service_name: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.service_name = service_name
 
         # Constitutional principle metrics - use try/except to handle duplicates
@@ -35,16 +35,13 @@ class ConstitutionalMetrics:
                 for collector in REGISTRY._collector_to_names:
                     if (
                         hasattr(collector, "_name")
-                        and collector._name
-                        == "acgs_constitutional_principle_operations_total"
+                        and collector._name == "acgs_constitutional_principle_operations_total"
                     ):
                         self.constitutional_principle_operations = collector
                         break
                 else:
                     # Create a no-op counter if we can't find the existing one
-                    self.constitutional_principle_operations = (
-                        self._create_noop_counter()
-                    )
+                    self.constitutional_principle_operations = self._create_noop_counter()
             else:
                 raise
 
@@ -198,64 +195,64 @@ class ConstitutionalMetrics:
         )
 
     def _create_noop_counter(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create a no-op counter for when metrics are already registered."""
 
         class NoOpCounter:
             def labels(self, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 return self
 
             def inc(self, amount=1):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 pass
 
         return NoOpCounter()
 
     def _create_noop_gauge(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create a no-op gauge for when metrics are already registered."""
 
         class NoOpGauge:
             def labels(self, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 return self
 
             def set(self, value):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 pass
 
         return NoOpGauge()
 
     def _create_noop_histogram(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create a no-op histogram for when metrics are already registered."""
 
         class NoOpHistogram:
             def labels(self, **kwargs):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 return self
 
             def observe(self, value):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                # requires: Valid input parameters
+                # ensures: Correct function execution
+                # sha256: func_hash
                 pass
 
         return NoOpHistogram()
@@ -263,9 +260,9 @@ class ConstitutionalMetrics:
     def record_constitutional_principle_operation(
         self, operation_type: str, principle_category: str, status: str
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record constitutional principle operation."""
         try:
             self.constitutional_principle_operations.labels(
@@ -280,9 +277,9 @@ class ConstitutionalMetrics:
     def update_constitutional_compliance_score(
         self, principle_id: str, policy_type: str, score: float
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update constitutional compliance score."""
         self.constitutional_compliance_score.labels(
             service=self.service_name,
@@ -297,9 +294,9 @@ class ConstitutionalMetrics:
         status: str,
         duration: float,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record policy synthesis operation."""
         self.policy_synthesis_operations.labels(
             service=self.service_name,
@@ -317,9 +314,9 @@ class ConstitutionalMetrics:
     def update_llm_constitutional_reliability(
         self, model_name: str, constitutional_domain: str, score: float
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update LLM constitutional reliability score."""
         self.llm_constitutional_reliability.labels(
             service=self.service_name,
@@ -328,9 +325,9 @@ class ConstitutionalMetrics:
         ).set(score)
 
     def update_constitutional_fidelity_score(self, measurement_type: str, score: float):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Update constitutional fidelity score."""
         self.constitutional_fidelity_score.labels(
             service=self.service_name, measurement_type=measurement_type
@@ -339,9 +336,9 @@ class ConstitutionalMetrics:
     def record_formal_verification_operation(
         self, verification_type: str, solver_type: str, result: str, duration: float
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record formal verification operation."""
         self.formal_verification_operations.labels(
             service=self.service_name,
@@ -359,9 +356,9 @@ class ConstitutionalMetrics:
     def record_human_escalation(
         self, escalation_reason: str, escalation_type: str, resolution_status: str
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Record human escalation operation."""
         self.human_escalation_operations.labels(
             service=self.service_name,
@@ -379,32 +376,28 @@ def get_constitutional_metrics(service_name: str) -> ConstitutionalMetrics:
     """Get or create constitutional metrics instance for a service."""
     if service_name not in constitutional_metrics_registry:
         try:
-            constitutional_metrics_registry[service_name] = ConstitutionalMetrics(
-                service_name
-            )
+            constitutional_metrics_registry[service_name] = ConstitutionalMetrics(service_name)
         except ValueError as e:
             if "Duplicated timeseries" in str(e):
-                logger.warning(
-                    f"Metrics collision for {service_name}, using existing registry"
-                )
+                logger.warning(f"Metrics collision for {service_name}, using existing registry")
 
                 # Create a dummy metrics object that doesn't register new metrics
                 class DummyConstitutionalMetrics:
                     def __init__(self, service_name):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                        # requires: Valid input parameters
+                        # ensures: Correct function execution
+                        # sha256: func_hash
                         self.service_name = service_name
 
                     def __getattr__(self, name):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+                        # requires: Valid input parameters
+                        # ensures: Correct function execution
+                        # sha256: func_hash
                         # Return a no-op function for any metric method
                         return lambda *args, **kwargs: None
 
-                constitutional_metrics_registry[service_name] = (
-                    DummyConstitutionalMetrics(service_name)
+                constitutional_metrics_registry[service_name] = DummyConstitutionalMetrics(
+                    service_name
                 )
             else:
                 raise
@@ -425,9 +418,7 @@ def reset_constitutional_metrics():
 
         collectors_to_remove = []
         for collector in REGISTRY._collector_to_names:
-            if hasattr(collector, "_name") and "acgs_constitutional" in str(
-                collector._name
-            ):
+            if hasattr(collector, "_name") and "acgs_constitutional" in str(collector._name):
                 collectors_to_remove.append(collector)
 
         for collector in collectors_to_remove:

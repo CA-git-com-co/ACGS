@@ -17,17 +17,17 @@ logger = structlog.get_logger(__name__)
 
 class Ac_serviceCacheManager:
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.service_name = "ac_service"
         self.redis_client: Optional[AdvancedRedisClient] = None
         self._initialized = False
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         if self._initialized:
             return
 

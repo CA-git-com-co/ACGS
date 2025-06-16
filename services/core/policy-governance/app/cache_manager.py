@@ -25,17 +25,17 @@ class PGCCacheManager:
     """Cache manager for Policy Governance Compliance service operations."""
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.service_name = "pgc_service"
         self.redis_client: Optional[AdvancedRedisClient] = None
         self._initialized = False
 
     async def initialize(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize cache manager."""
         if self._initialized:
             return
@@ -101,9 +101,7 @@ class PGCCacheManager:
         cache_key = f"policy_rules:{policy_id}"
         rules_ttl = ttl or CACHE_TTL_POLICIES["governance_rules"]
 
-        return await self.redis_client.set(
-            cache_key, rules_data, ttl=rules_ttl, prefix="rules"
-        )
+        return await self.redis_client.set(cache_key, rules_data, ttl=rules_ttl, prefix="rules")
 
     async def get_policy_rules(self, policy_id: str) -> Optional[Dict[str, Any]]:
         """Get cached policy rules."""
@@ -177,9 +175,7 @@ class PGCCacheManager:
             "policy_name": policy_name,
         }
 
-        return await self.redis_client.set(
-            cache_key, policy_data, ttl=opa_ttl, prefix="opa"
-        )
+        return await self.redis_client.set(cache_key, policy_data, ttl=opa_ttl, prefix="opa")
 
     async def get_opa_policy(self, policy_name: str) -> Optional[Dict[str, Any]]:
         """Get cached OPA policy content."""
@@ -215,9 +211,9 @@ class PGCCacheManager:
         return total_deleted
 
     async def warm_cache(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Warm cache with frequently accessed data."""
         if not self.redis_client:
             await self.initialize()
@@ -296,25 +292,21 @@ async def get_pgc_cache_manager() -> PGCCacheManager:
 
 # Cache decorators for PGC service
 def cache_pgc_result(ttl: Optional[int] = None, cache_type: str = "compliance_checks"):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Decorator for caching PGC service results."""
     return cache_result(
         ttl=ttl, key_prefix="pgc", cache_type=cache_type, service_name="pgc_service"
     )
 
 
-def generate_compliance_cache_key(
-    policy_id: str, validation_params: Dict[str, Any]
-) -> str:
+def generate_compliance_cache_key(policy_id: str, validation_params: Dict[str, Any]) -> str:
     """Generate cache key for compliance checks."""
     key_data = {
         "policy_id": policy_id,
         "validation_params": validation_params,
-        "timestamp": datetime.utcnow().strftime(
-            "%Y-%m-%d-%H"
-        ),  # Hour-level granularity
+        "timestamp": datetime.utcnow().strftime("%Y-%m-%d-%H"),  # Hour-level granularity
     }
 
     key_str = json.dumps(key_data, sort_keys=True)

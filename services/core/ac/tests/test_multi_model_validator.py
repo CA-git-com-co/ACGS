@@ -37,9 +37,9 @@ class TestValidationResult:
     """Test ValidationResult enum."""
 
     def test_validation_result_values(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test validation result enum values."""
         assert ValidationResult.COMPLIANT.value == "compliant"
         assert ValidationResult.NON_COMPLIANT.value == "non_compliant"
@@ -50,9 +50,9 @@ class TestModelResponse:
     """Test ModelResponse dataclass."""
 
     def test_model_response_creation(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test model response creation."""
         response = ModelResponse(
             model_id="test_model",
@@ -74,9 +74,9 @@ class TestModelConfig:
     """Test ModelConfig dataclass."""
 
     def test_model_config_creation(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test model configuration creation."""
         config = ModelConfig(
             model_id="qwen3_32b",
@@ -98,9 +98,9 @@ class TestMultiModelValidator:
 
     @pytest.fixture
     def validator(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Create validator for testing."""
         return MultiModelValidator(
             consensus_threshold=0.6,
@@ -111,9 +111,9 @@ class TestMultiModelValidator:
 
     @pytest.fixture
     def sample_policy_content(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Sample policy content for testing."""
         return """
         Policy POL-001: Constitutional Governance Framework
@@ -130,9 +130,9 @@ class TestMultiModelValidator:
 
     @pytest.fixture
     def sample_policy_context(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Sample policy context for testing."""
         return {
             "policy_id": "POL-001",
@@ -143,9 +143,9 @@ class TestMultiModelValidator:
         }
 
     def test_validator_initialization(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test validator initialization."""
         assert validator.consensus_threshold == 0.6
         assert validator.constitutional_hash == "cdd01ef066bc6cf2"
@@ -159,9 +159,9 @@ class TestMultiModelValidator:
         assert "fallback_model" in model_ids
 
     def test_model_weight_distribution(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test model weight distribution."""
         total_weight = sum(m.weight for m in validator.models if m.enabled)
         assert abs(total_weight - 1.0) < 0.01  # Should sum to approximately 1.0
@@ -172,9 +172,9 @@ class TestMultiModelValidator:
 
     @pytest.mark.asyncio
     async def test_constitutional_hash_validation(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test constitutional hash validation."""
         result = await validator._validate_constitutional_hash()
         assert isinstance(result, bool)
@@ -183,9 +183,9 @@ class TestMultiModelValidator:
     def test_validation_prompt_construction(
         self, validator, sample_policy_content, sample_policy_context
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test validation prompt construction."""
         model_config = validator.models[0]
         prompt = validator._construct_validation_prompt(
@@ -199,15 +199,13 @@ class TestMultiModelValidator:
         assert "json" in prompt.lower()
 
     def test_model_response_parsing_valid_json(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test parsing valid JSON model response."""
         json_response = '{"result": "COMPLIANT", "confidence": 0.95, "reasoning": "Policy aligns well", "constitutional_alignment": 0.9}'
 
-        result, confidence, reasoning, alignment = validator._parse_model_response(
-            json_response
-        )
+        result, confidence, reasoning, alignment = validator._parse_model_response(json_response)
 
         assert result == ValidationResult.COMPLIANT
         assert confidence == 0.95
@@ -215,15 +213,13 @@ class TestMultiModelValidator:
         assert alignment == 0.9
 
     def test_model_response_parsing_invalid_json(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test parsing invalid JSON with fallback."""
         text_response = "This policy is COMPLIANT with constitutional principles."
 
-        result, confidence, reasoning, alignment = validator._parse_model_response(
-            text_response
-        )
+        result, confidence, reasoning, alignment = validator._parse_model_response(text_response)
 
         assert result == ValidationResult.COMPLIANT
         assert 0.0 <= confidence <= 1.0
@@ -231,12 +227,14 @@ class TestMultiModelValidator:
         assert 0.0 <= alignment <= 1.0
 
     def test_mock_model_response_compliant(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test mock model response for compliant policy."""
         model_config = validator.models[0]
-        policy_content = "This is a constitutional governance policy that ensures authorized actions."
+        policy_content = (
+            "This is a constitutional governance policy that ensures authorized actions."
+        )
 
         result, confidence, reasoning, alignment = validator._mock_model_response(
             model_config, policy_content
@@ -248,14 +246,12 @@ class TestMultiModelValidator:
         assert alignment > 0.8
 
     def test_mock_model_response_non_compliant(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test mock model response for non-compliant policy."""
         model_config = validator.models[0]
-        policy_content = (
-            "This policy allows unsafe and unauthorized bypass of security measures."
-        )
+        policy_content = "This policy allows unsafe and unauthorized bypass of security measures."
 
         result, confidence, reasoning, alignment = validator._mock_model_response(
             model_config, policy_content
@@ -267,9 +263,9 @@ class TestMultiModelValidator:
         assert alignment < 0.5
 
     def test_consensus_calculation_unanimous(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test consensus calculation with unanimous agreement."""
         model_responses = [
             ModelResponse(
@@ -307,9 +303,9 @@ class TestMultiModelValidator:
         assert len(consensus.model_responses) == 3
 
     def test_consensus_calculation_split_decision(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test consensus calculation with split decision."""
         model_responses = [
             ModelResponse(
@@ -346,9 +342,9 @@ class TestMultiModelValidator:
         assert len(consensus.model_responses) == 3
 
     def test_consensus_calculation_no_responses(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test consensus calculation with no model responses."""
         consensus = validator._calculate_consensus([], False)
 
@@ -362,9 +358,9 @@ class TestMultiModelValidator:
     async def test_validate_with_model_mock(
         self, validator, sample_policy_content, sample_policy_context
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test validation with individual model (mock)."""
         model_config = validator.models[0]
 
@@ -387,9 +383,9 @@ class TestMultiModelValidator:
     async def test_full_validation_process(
         self, validator, sample_policy_content, sample_policy_context
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test complete validation process."""
         result = await validator.validate_constitutional_compliance(
             sample_policy_content, sample_policy_context, "comprehensive"
@@ -410,13 +406,11 @@ class TestMultiModelValidator:
     async def test_fallback_validation(
         self, validator, sample_policy_content, sample_policy_context
     ):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test fallback validation mechanism."""
-        result = await validator._fallback_validation(
-            sample_policy_content, sample_policy_context
-        )
+        result = await validator._fallback_validation(sample_policy_content, sample_policy_context)
 
         assert isinstance(result, ConsensusResult)
         assert len(result.model_responses) == 1  # Single model response
@@ -424,9 +418,9 @@ class TestMultiModelValidator:
         assert result.total_latency_ms >= 0
 
     def test_performance_stats_update(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance statistics update."""
         # Create mock consensus result
         model_responses = [
@@ -455,17 +449,15 @@ class TestMultiModelValidator:
         initial_validations = validator.validation_stats["total_validations"]
         validator._update_performance_stats(consensus_result)
 
-        assert (
-            validator.validation_stats["total_validations"] == initial_validations + 1
-        )
+        assert validator.validation_stats["total_validations"] == initial_validations + 1
         assert validator.validation_stats["consensus_achieved"] > 0
         assert len(validator.validation_stats["accuracy_samples"]) > 0
         assert len(validator.validation_stats["latency_samples"]) > 0
 
     def test_performance_metrics_retrieval(self, validator):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test performance metrics retrieval."""
         metrics = validator.get_performance_metrics()
 
@@ -495,9 +487,9 @@ class TestMultiModelValidatorIntegration:
 
     @pytest.mark.asyncio
     async def test_global_validator_singleton(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test global validator singleton pattern."""
         validator1 = await get_multi_model_validator()
         validator2 = await get_multi_model_validator()
@@ -507,9 +499,9 @@ class TestMultiModelValidatorIntegration:
 
     @pytest.mark.asyncio
     async def test_custom_configuration(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test validator with custom configuration."""
         validator = await get_multi_model_validator(
             consensus_threshold=0.8, constitutional_hash="custom_hash_123"
@@ -521,9 +513,9 @@ class TestMultiModelValidatorIntegration:
     @pytest.mark.asyncio
     @patch("multi_model_validator.ModelClient")
     async def test_model_client_integration(self, mock_model_client_class):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Test integration with model client."""
         # Setup mock model client
         mock_client = AsyncMock()
@@ -537,9 +529,7 @@ class TestMultiModelValidatorIntegration:
         policy_content = "Test policy content"
         policy_context = {"test": "context"}
 
-        result = await validator.validate_constitutional_compliance(
-            policy_content, policy_context
-        )
+        result = await validator.validate_constitutional_compliance(policy_content, policy_context)
 
         assert isinstance(result, ConsensusResult)
         # Verify model client was called
@@ -547,6 +537,4 @@ class TestMultiModelValidatorIntegration:
 
 
 if __name__ == "__main__":
-    pytest.main(
-        [__file__, "-v", "--cov=multi_model_validator", "--cov-report=term-missing"]
-    )
+    pytest.main([__file__, "-v", "--cov=multi_model_validator", "--cov-report=term-missing"])

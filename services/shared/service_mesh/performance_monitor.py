@@ -99,9 +99,9 @@ class PerformanceMonitor:
     """
 
     def __init__(self, monitoring_interval: float = 30.0):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Initialize performance monitor.
 
@@ -169,9 +169,9 @@ class PerformanceMonitor:
         }
 
     async def start_monitoring(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Start performance monitoring."""
         if self._running:
             return
@@ -182,9 +182,9 @@ class PerformanceMonitor:
         logger.info("Performance monitoring started")
 
     async def stop_monitoring(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Stop performance monitoring."""
         if not self._running:
             return
@@ -201,9 +201,9 @@ class PerformanceMonitor:
         logger.info("Performance monitoring stopped")
 
     async def _monitoring_loop(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Main monitoring loop."""
         while self._running:
             try:
@@ -216,18 +216,18 @@ class PerformanceMonitor:
                 await asyncio.sleep(5)
 
     async def _collect_and_analyze_metrics(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Collect metrics and analyze for alerts."""
         # This would be called by the service discovery system
         # For now, we'll create a placeholder
         logger.debug("Collecting performance metrics...")
 
     def record_metrics(self, metrics: PerformanceMetrics):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """
         Record performance metrics.
 
@@ -250,9 +250,9 @@ class PerformanceMonitor:
         self._analyze_metrics_for_alerts(metrics)
 
     def _analyze_metrics_for_alerts(self, metrics: PerformanceMetrics):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Analyze metrics and trigger alerts if needed."""
         # Check response time
         if metrics.response_time_ms > 0:
@@ -314,9 +314,9 @@ class PerformanceMonitor:
         instance_id: Optional[str],
         metric_name: Optional[str] = None,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Check if metric value exceeds thresholds."""
         threshold = self.thresholds.get(metric_type)
         if not threshold:
@@ -370,9 +370,9 @@ class PerformanceMonitor:
         instance_id: Optional[str],
         metric_name: Optional[str] = None,
     ):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Trigger performance alert."""
         alert_id = f"{service_type}:{instance_id or 'all'}:{metric_type.value}:{int(time.time())}"
 
@@ -381,9 +381,7 @@ class PerformanceMonitor:
         if existing_alert_key in self.active_alerts:
             # Update existing alert if severity increased
             existing_alert = self.active_alerts[existing_alert_key]
-            if self._severity_level(severity) > self._severity_level(
-                existing_alert.severity
-            ):
+            if self._severity_level(severity) > self._severity_level(existing_alert.severity):
                 existing_alert.severity = severity
                 existing_alert.current_value = current_value
                 existing_alert.timestamp = time.time()
@@ -428,9 +426,9 @@ class PerformanceMonitor:
         return levels.get(severity, 0)
 
     def resolve_alert(self, alert_id: str):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Resolve an active alert."""
         for key, alert in self.active_alerts.items():
             if alert.alert_id == alert_id:
@@ -441,9 +439,9 @@ class PerformanceMonitor:
                 break
 
     def register_alert_callback(self, callback: Callable[[PerformanceAlert], None]):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Register callback for alert notifications."""
         self.alert_callbacks.append(callback)
 
@@ -457,9 +455,7 @@ class PerformanceMonitor:
         cutoff_time = time.time() - 300  # Last 5 minutes
 
         for metrics_list in self.metrics_history.values():
-            recent_metrics.extend(
-                [m for m in metrics_list if m.timestamp > cutoff_time]
-            )
+            recent_metrics.extend([m for m in metrics_list if m.timestamp > cutoff_time])
 
         if not recent_metrics:
             return {"status": "no_recent_data"}
@@ -468,9 +464,7 @@ class PerformanceMonitor:
         avg_response_time = statistics.mean(
             [m.response_time_ms for m in recent_metrics if m.response_time_ms > 0]
         )
-        avg_availability = statistics.mean(
-            [m.availability_percent for m in recent_metrics]
-        )
+        avg_availability = statistics.mean([m.availability_percent for m in recent_metrics])
         avg_error_rate = statistics.mean([m.error_rate_percent for m in recent_metrics])
         total_connections = sum([m.concurrent_connections for m in recent_metrics])
 
@@ -515,11 +509,7 @@ class PerformanceMonitor:
             "active_alerts": len(self.active_alerts),
             "severity_breakdown": severity_counts,
             "recent_alerts": len(
-                [
-                    a
-                    for a in self.alert_history
-                    if time.time() - a.timestamp < 3600  # Last hour
-                ]
+                [a for a in self.alert_history if time.time() - a.timestamp < 3600]  # Last hour
             ),
             "total_alerts_today": len(
                 [
@@ -544,9 +534,9 @@ class AlertingSystem:
     """
 
     def __init__(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Initialize alerting system."""
         self.notification_channels: List[Callable[[PerformanceAlert], None]] = []
         self.escalation_rules: Dict[AlertSeverity, Dict[str, Any]] = {}
@@ -556,9 +546,9 @@ class AlertingSystem:
         self._setup_default_escalation()
 
     def _setup_default_escalation(self):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Setup default alert escalation rules."""
         self.escalation_rules = {
             AlertSeverity.WARNING: {
@@ -579,20 +569,18 @@ class AlertingSystem:
         }
 
     def add_notification_channel(self, channel: Callable[[PerformanceAlert], None]):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Add notification channel."""
         self.notification_channels.append(channel)
 
     def handle_alert(self, alert: PerformanceAlert):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Handle incoming alert."""
-        alert_key = (
-            f"{alert.service_type}:{alert.instance_id}:{alert.metric_type.value}"
-        )
+        alert_key = f"{alert.service_type}:{alert.instance_id}:{alert.metric_type.value}"
 
         # Check if alert is suppressed
         if self._is_alert_suppressed(alert_key):
@@ -610,9 +598,9 @@ class AlertingSystem:
         return time.time() < suppress_until
 
     def _set_alert_suppression(self, alert_key: str, severity: AlertSeverity):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Set alert suppression period."""
         suppression_periods = {
             AlertSeverity.WARNING: 300,  # 5 minutes
@@ -624,9 +612,9 @@ class AlertingSystem:
         self.alert_suppression[alert_key] = time.time() + period
 
     def _send_notifications(self, alert: PerformanceAlert):
-    # requires: Valid input parameters
-    # ensures: Correct function execution
-    # sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         """Send alert notifications to all channels."""
         for channel in self.notification_channels:
             try:
@@ -653,9 +641,7 @@ def console_alert_handler(alert: PerformanceAlert):
     if alert.instance_id:
         print(f"Instance: {alert.instance_id}")
     print(f"Message: {alert.message}")
-    print(
-        f"Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(alert.timestamp))}"
-    )
+    print(f"Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(alert.timestamp))}")
     print("-" * 50)
 
 

@@ -30,16 +30,10 @@ router = APIRouter()
 class ConstitutionalPrincipleAPI(BaseModel):
     """Constitutional principle for API requests."""
 
-    description: str = Field(
-        ..., description="Description of the constitutional principle"
-    )
-    type: str = Field(
-        ..., description="Type of principle (e.g., fairness, transparency)"
-    )
+    description: str = Field(..., description="Description of the constitutional principle")
+    type: str = Field(..., description="Type of principle (e.g., fairness, transparency)")
     category: Optional[str] = Field(None, description="Category of the principle")
-    weight: Optional[float] = Field(
-        1.0, description="Weight/importance of the principle"
-    )
+    weight: Optional[float] = Field(1.0, description="Weight/importance of the principle")
 
 
 class EnhancedSynthesisRequestAPI(BaseModel):
@@ -50,45 +44,31 @@ class EnhancedSynthesisRequestAPI(BaseModel):
         ..., description="Constitutional principles to consider"
     )
     constraints: Optional[List[str]] = Field(None, description="Additional constraints")
-    context_data: Optional[Dict[str, Any]] = Field(
-        None, description="Context data for synthesis"
-    )
+    context_data: Optional[Dict[str, Any]] = Field(None, description="Context data for synthesis")
     target_format: str = Field("rego", description="Target format for the policy")
-    policy_type: str = Field(
-        "governance_rule", description="Type of policy to synthesize"
-    )
+    policy_type: str = Field("governance_rule", description="Type of policy to synthesize")
 
     # Validation options
     validation_level: str = Field(
         "standard", description="Validation level (basic, standard, comprehensive)"
     )
     enable_opa_validation: bool = Field(True, description="Enable OPA-based validation")
-    enable_conflict_detection: bool = Field(
-        True, description="Enable conflict detection"
-    )
-    enable_compliance_checking: bool = Field(
-        True, description="Enable compliance checking"
-    )
+    enable_conflict_detection: bool = Field(True, description="Enable conflict detection")
+    enable_compliance_checking: bool = Field(True, description="Enable compliance checking")
     enable_constitutional_validation: bool = Field(
         True, description="Enable constitutional validation"
     )
 
     # Performance options
-    enable_parallel_validation: bool = Field(
-        True, description="Enable parallel validation"
-    )
+    enable_parallel_validation: bool = Field(True, description="Enable parallel validation")
     max_validation_latency_ms: int = Field(
         50, description="Maximum validation latency in milliseconds"
     )
 
     # Integration options
     enable_wina_optimization: bool = Field(True, description="Enable WINA optimization")
-    enable_alphaevolve_synthesis: bool = Field(
-        True, description="Enable AlphaEvolve synthesis"
-    )
-    enable_langgraph_workflow: bool = Field(
-        True, description="Enable LangGraph workflow"
-    )
+    enable_alphaevolve_synthesis: bool = Field(True, description="Enable AlphaEvolve synthesis")
+    enable_langgraph_workflow: bool = Field(True, description="Enable LangGraph workflow")
 
 
 class ValidationResultAPI(BaseModel):
@@ -222,9 +202,7 @@ async def synthesize_policy(
             validation_latency_ms=synthesis_response.validation_latency_ms,
             total_latency_ms=synthesis_response.total_latency_ms,
             wina_metadata=(
-                synthesis_response.wina_result.__dict__
-                if synthesis_response.wina_result
-                else None
+                synthesis_response.wina_result.__dict__ if synthesis_response.wina_result else None
             ),
             alphaevolve_metadata=synthesis_response.alphaevolve_metadata,
             langgraph_metadata=synthesis_response.langgraph_metadata,
@@ -435,9 +413,10 @@ async def multi_model_consensus_synthesis(
     """
     import time
     import uuid
+
     from ..core.phase_a3_multi_model_consensus import (
-        PhaseA3MultiModelConsensusEngine,
         ConsensusStrategy,
+        PhaseA3MultiModelConsensusEngine,
     )
 
     synthesis_id = str(uuid.uuid4())[:8]
@@ -449,7 +428,7 @@ async def multi_model_consensus_synthesis(
         # Initialize consensus engine with Phase 2 configuration
         consensus_config = {
             "consensus_threshold": 0.95,  # High accuracy target
-            "timeout_seconds": 2.0,      # <2s response time target
+            "timeout_seconds": 2.0,  # <2s response time target
             "enable_red_teaming": True,
             "enable_constitutional_fidelity": True,
         }
@@ -472,16 +451,18 @@ async def multi_model_consensus_synthesis(
             for i, constraint in enumerate(request.constraints, 1):
                 prompt_parts.append(f"{i}. {constraint}")
 
-        prompt_parts.extend([
-            "",
-            "REQUIREMENTS:",
-            "- Ensure full constitutional compliance",
-            "- Provide actionable policy recommendations",
-            "- Consider democratic governance principles",
-            "- Include implementation guidance",
-            "",
-            "Provide a comprehensive policy synthesis addressing the goal while maintaining constitutional integrity."
-        ])
+        prompt_parts.extend(
+            [
+                "",
+                "REQUIREMENTS:",
+                "- Ensure full constitutional compliance",
+                "- Provide actionable policy recommendations",
+                "- Consider democratic governance principles",
+                "- Include implementation guidance",
+                "",
+                "Provide a comprehensive policy synthesis addressing the goal while maintaining constitutional integrity.",
+            ]
+        )
 
         synthesis_prompt = "\n".join(prompt_parts)
 
@@ -522,8 +503,8 @@ async def multi_model_consensus_synthesis(
 
         # Calculate accuracy based on consensus metrics
         accuracy_achieved = (
-            consensus_result.overall_confidence * 0.6 +
-            consensus_result.constitutional_compliance * 0.4
+            consensus_result.overall_confidence * 0.6
+            + consensus_result.constitutional_compliance * 0.4
         )
 
         # Prepare comprehensive response
@@ -551,7 +532,8 @@ async def multi_model_consensus_synthesis(
                 "red_teaming_passed": consensus_result.adversarial_validation_passed,
                 "constitutional_fidelity_score": (
                     consensus_result.constitutional_fidelity_score.overall_score
-                    if consensus_result.constitutional_fidelity_score else None
+                    if consensus_result.constitutional_fidelity_score
+                    else None
                 ),
                 "requires_human_review": consensus_result.requires_human_review,
                 "iterative_alignment_applied": consensus_result.iterative_alignment_applied,
@@ -580,11 +562,13 @@ async def multi_model_consensus_synthesis(
 
     except Exception as e:
         synthesis_time = (time.time() - start_time) * 1000
-        logger.error(f"Phase 2 consensus synthesis {synthesis_id} failed after {synthesis_time:.2f}ms: {e}")
+        logger.error(
+            f"Phase 2 consensus synthesis {synthesis_id} failed after {synthesis_time:.2f}ms: {e}"
+        )
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Multi-model consensus synthesis failed: {str(e)}"
+            detail=f"Multi-model consensus synthesis failed: {str(e)}",
         )
 
 

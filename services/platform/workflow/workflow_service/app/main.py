@@ -5,8 +5,8 @@ Main FastAPI application for workflow orchestration, monitoring, and management
 
 import asyncio
 import logging
-import sys
 import os
+import sys
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 
@@ -15,11 +15,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
 # Add shared modules to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 
 # Import shared modules
 from services.shared.auth import get_current_active_user, require_admin
-from services.shared.metrics import get_metrics, create_metrics_endpoint, metrics_middleware
+from services.shared.metrics import create_metrics_endpoint, get_metrics, metrics_middleware
 from services.shared.security_middleware import add_security_middleware
 from services.shared.service_registry import service_registry
 
@@ -41,9 +41,9 @@ metrics = get_metrics("workflow_service")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Application lifespan management"""
 
     # Startup
@@ -57,7 +57,7 @@ async def lifespan(app: FastAPI):
         health_endpoint="/health",
         version="1.0.0",
         tags=["platform", "orchestration"],
-        metadata={"description": "Workflow orchestration service"}
+        metadata={"description": "Workflow orchestration service"},
     )
 
     # Start service registry
@@ -118,9 +118,9 @@ app.get("/metrics")(metrics_endpoint)
 # Custom middleware for request logging and metrics
 @app.middleware("http")
 async def request_logging_middleware(request: Request, call_next):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Log requests and collect metrics"""
 
     start_time = datetime.utcnow()
@@ -171,9 +171,9 @@ app.include_router(workflow_router, prefix="/api/v1", tags=["Workflow Management
 # Root endpoint
 @app.get("/")
 async def root():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Root endpoint with service information"""
 
     return {
@@ -196,9 +196,9 @@ async def root():
 # Health check endpoint
 @app.get("/health")
 async def health_check():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Comprehensive health check"""
 
     health_status = {
@@ -215,9 +215,7 @@ async def health_check():
         "metrics": {
             "active_workflows": len(workflow_engine.running_workflows),
             "total_workflows": len(workflow_engine.workflows),
-            "active_alerts": len(
-                [a for a in workflow_monitor.alerts.values() if not a.resolved]
-            ),
+            "active_alerts": len([a for a in workflow_monitor.alerts.values() if not a.resolved]),
             "monitoring_tasks": len(workflow_monitor.monitoring_tasks),
         },
     }
@@ -228,17 +226,15 @@ async def health_check():
 # Metrics endpoint for Prometheus
 @app.get("/metrics")
 async def metrics():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Prometheus metrics endpoint"""
 
     metrics_data = []
 
     # Workflow metrics
-    metrics_data.append(
-        f"acgs_active_workflows {len(workflow_engine.running_workflows)}"
-    )
+    metrics_data.append(f"acgs_active_workflows {len(workflow_engine.running_workflows)}")
     metrics_data.append(f"acgs_total_workflows {len(workflow_engine.workflows)}")
 
     # Alert metrics
@@ -256,17 +252,15 @@ async def metrics():
 
 
 async def initialize_monitoring():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Initialize monitoring and alerting"""
 
     logger.info("Initializing monitoring system")
 
     # Register service health monitoring
-    asyncio.create_task(
-        workflow_monitor.monitor_service_health("workflow_service", "/health")
-    )
+    asyncio.create_task(workflow_monitor.monitor_service_health("workflow_service", "/health"))
 
     # Set performance baselines
     automated_validator.set_performance_baseline(
@@ -279,9 +273,9 @@ async def initialize_monitoring():
 
 
 async def background_monitoring():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Background monitoring tasks"""
 
     logger.info("Starting background monitoring")
@@ -309,9 +303,9 @@ async def background_monitoring():
 
 
 async def monitor_system_resources():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Monitor system resource usage"""
 
     try:
@@ -350,9 +344,9 @@ async def monitor_system_resources():
 
 
 async def check_stale_workflows():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Check for stale or stuck workflows"""
 
     current_time = datetime.utcnow()
@@ -363,9 +357,7 @@ async def check_stale_workflows():
             if workflow.started_at:
                 runtime = current_time - workflow.started_at
                 if runtime.total_seconds() > 3600:  # 1 hour
-                    logger.warning(
-                        f"Workflow {workflow_id} has been running for {runtime}"
-                    )
+                    logger.warning(f"Workflow {workflow_id} has been running for {runtime}")
 
                     # Create alert for long-running workflow
                     workflow_monitor._create_alert(
@@ -378,9 +370,9 @@ async def check_stale_workflows():
 
 
 async def cleanup_old_data():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Cleanup old monitoring data and logs"""
 
     current_time = datetime.utcnow()
@@ -405,9 +397,9 @@ async def cleanup_old_data():
 
 
 async def cleanup_resources():
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
     """Cleanup resources on shutdown"""
 
     logger.info("Cleaning up resources")
@@ -418,9 +410,7 @@ async def cleanup_resources():
 
     # Wait for tasks to complete
     if workflow_monitor.monitoring_tasks:
-        await asyncio.gather(
-            *workflow_monitor.monitoring_tasks.values(), return_exceptions=True
-        )
+        await asyncio.gather(*workflow_monitor.monitoring_tasks.values(), return_exceptions=True)
 
     logger.info("Resource cleanup completed")
 
@@ -428,6 +418,4 @@ async def cleanup_resources():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(
-        "app.main:app", host="0.0.0.0", port=8006, reload=True, log_level="info"
-    )
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8006, reload=True, log_level="info")

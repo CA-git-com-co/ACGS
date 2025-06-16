@@ -81,9 +81,9 @@ class SecurityAuditLogger:
     SEVERITY_LEVELS = ["info", "warning", "error", "critical"]
 
     def __init__(self):
-    // requires: Valid input parameters
-    // ensures: Correct function execution
-    // sha256: func_hash
+        # requires: Valid input parameters
+        # ensures: Correct function execution
+        # sha256: func_hash
         self.request_id_header = "X-Request-ID"
 
     def generate_request_id(self) -> str:
@@ -138,10 +138,7 @@ class SecurityAuditLogger:
             ip_address = self.get_client_ip(request)
             user_agent = request.headers.get("user-agent")
             endpoint = f"{request.method} {request.url.path}"
-            request_id = (
-                request.headers.get(self.request_id_header)
-                or self.generate_request_id()
-            )
+            request_id = request.headers.get(self.request_id_header) or self.generate_request_id()
 
         # Create security event
         event = SecurityEvent(
@@ -280,9 +277,7 @@ class SecurityAuditLogger:
             end_date = datetime.now(timezone.utc)
 
         # Get all events in date range
-        events = await self.get_events(
-            db, start_date=start_date, end_date=end_date, limit=10000
-        )
+        events = await self.get_events(db, start_date=start_date, end_date=end_date, limit=10000)
 
         # Calculate statistics
         total_events = len(events)
@@ -292,9 +287,7 @@ class SecurityAuditLogger:
         # Group by category
         category_counts = {}
         for event in events:
-            category_counts[event.event_category] = (
-                category_counts.get(event.event_category, 0) + 1
-            )
+            category_counts[event.event_category] = category_counts.get(event.event_category, 0) + 1
 
         # Group by severity
         severity_counts = {}
@@ -304,9 +297,7 @@ class SecurityAuditLogger:
         # Group by event type
         event_type_counts = {}
         for event in events:
-            event_type_counts[event.event_type] = (
-                event_type_counts.get(event.event_type, 0) + 1
-            )
+            event_type_counts[event.event_type] = event_type_counts.get(event.event_type, 0) + 1
 
         # Get top IP addresses
         ip_counts = {}
@@ -325,9 +316,7 @@ class SecurityAuditLogger:
                 "total_events": total_events,
                 "successful_events": successful_events,
                 "failed_events": failed_events,
-                "success_rate": (
-                    successful_events / total_events if total_events > 0 else 0
-                ),
+                "success_rate": (successful_events / total_events if total_events > 0 else 0),
             },
             "by_category": category_counts,
             "by_severity": severity_counts,
