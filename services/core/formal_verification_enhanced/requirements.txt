@@ -12,3 +12,7 @@ z3-solver==4.12.2.0
 
 # Utilities
 python-dotenv==1.0.0
+
+python-jose>=3.4.0
+
+python-multipart>=0.0.18

@@ -16,6 +16,7 @@ rule_files:
   - "rules/acgs_alert_rules.yml"
   - "rules/governance_workflow_rules.yml"
   - "rules/performance_rules.yml"
+  - "rules/sla_monitoring_rules.yml"
 
 # Alertmanager configuration
 alerting:
@@ -288,22 +289,15 @@ scrape_configs:
         target_label: 'component'
         replacement: 'governance_workflow'
 
-  # Health Check Endpoints for All Services
-  - job_name: 'acgs-health-checks'
+  # ACGS Health Check Exporter - Custom health monitoring for all 8 services
+  - job_name: 'acgs-health-exporter'
     static_configs:
-      - targets:
-        - 'localhost:8000'  # Auth
-        - 'localhost:8001'  # AC
-        - 'localhost:8002'  # Integrity
-        - 'localhost:8003'  # FV
-        - 'localhost:8004'  # GS
-        - 'localhost:8005'  # PGC
-        - 'localhost:8006'  # EC
-    metrics_path: '/health'
+      - targets: ['localhost:9115']
+    metrics_path: '/metrics'
     scrape_interval: 10s
     scrape_timeout: 5s
     metric_relabel_configs:
       - source_labels: [__name__]
-        regex: 'acgs_health_.*'
+        regex: 'acgs_.*'
         target_label: 'component'
         replacement: 'health_monitoring'

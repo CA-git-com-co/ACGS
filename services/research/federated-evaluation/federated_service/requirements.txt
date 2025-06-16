@@ -55,7 +55,7 @@ pytest-cov==4.1.0
 python-dateutil==2.8.2
 python-dotenv==1.0.0
 python-jose[cryptography]==3.3.0
-python-multipart==0.0.20
+python-multipart>=0.0.18
 pytz==2023.3
 redis==5.0.1
 scikit-learn==1.5.1
@@ -64,3 +64,5 @@ sqlalchemy[asyncio]==2.0.23
 statsmodels==0.14.0
 structlog==23.2.0
 uvicorn[standard]==0.24.0
+
+python-jose>=3.4.0
