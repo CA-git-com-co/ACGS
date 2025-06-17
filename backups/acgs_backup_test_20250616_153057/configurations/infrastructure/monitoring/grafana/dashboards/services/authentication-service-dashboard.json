@@ -1,0 +1,194 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Authentication Service Dashboard",
+    "tags": ["acgs", "authentication", "security", "service"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"acgs-auth-service\"}",
+            "legendFormat": "Service Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Down"}}, "type": "value"},
+              {"options": {"1": {"text": "Up"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Authentication Attempts (Rate)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_auth_attempts_total{service=\"auth\"}[5m])",
+            "legendFormat": "{{auth_type}} - {{status}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Attempts/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Response Time (95th Percentile)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(acgs_http_request_duration_seconds_bucket{service=\"auth\"}[5m]))",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(acgs_http_request_duration_seconds_bucket{service=\"auth\"}[5m]))",
+            "legendFormat": "50th percentile"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 0.5
+          }
+        ],
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Active Sessions",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_active_connections{service=\"auth\"}",
+            "legendFormat": "Active Sessions"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 4}
+      },
+      {
+        "id": 5,
+        "title": "MFA Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_mfa_operations_total{service=\"auth\"}[5m])",
+            "legendFormat": "{{operation_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "API Key Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_api_key_operations_total{service=\"auth\"}[5m])",
+            "legendFormat": "{{operation_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 7,
+        "title": "Security Events",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_security_events_total{service=\"auth\"}[5m])",
+            "legendFormat": "{{event_type}} - {{severity}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Events/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Database Connection Pool",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs_database_connections{service=\"auth\"}",
+            "legendFormat": "{{pool_status}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Connections",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 9,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_errors_total{service=\"auth\"}[5m])",
+            "legendFormat": "{{error_type}} - {{severity}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Errors/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      }
+    ]
+  }
+}

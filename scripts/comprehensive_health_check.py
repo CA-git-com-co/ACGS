@@ -33,7 +33,7 @@ class ACGSHealthChecker:
             "gs_service": {"url": "http://localhost:8004", "critical": True},
             "pgc_service": {"url": "http://localhost:8005", "critical": True},
             "ec_service": {"url": "http://localhost:8006", "critical": False},
-            "research_service": {"url": "http://localhost:8007", "critical": False},
+            "research_service": {"url": "http://localhost:8008", "critical": False},
         }
 
         self.infrastructure = {

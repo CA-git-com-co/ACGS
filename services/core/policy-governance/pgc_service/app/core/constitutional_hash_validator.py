@@ -28,7 +28,7 @@ from datetime import timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Union
 
-from prometheus_client import Counter, Gauge, Histogram
+from prometheus_client import Counter, Gauge, Histogram, CollectorRegistry, REGISTRY
 
 logger = logging.getLogger(__name__)
 
@@ -109,19 +109,22 @@ class ConstitutionalHashValidator:
         self.redis_client = redis_client
         self.performance_target_ms = performance_target_ms
 
-        # Performance metrics
+        # Performance metrics with PGC service prefix and instance ID to avoid collisions
+        instance_id = str(id(self))[-6:]  # Use last 6 digits of instance ID
+
         self.validation_counter = Counter(
-            "constitutional_validations_total",
-            "Total constitutional hash validations",
+            f"pgc_constitutional_validations_total_{instance_id}",
+            "Total constitutional hash validations in PGC service",
             ["status", "level", "operation_type"],
         )
         self.validation_latency = Histogram(
-            "constitutional_validation_duration_seconds",
-            "Constitutional validation latency",
+            f"pgc_constitutional_validation_duration_seconds_{instance_id}",
+            "Constitutional validation latency in PGC service",
             ["level", "operation_type"],
         )
         self.compliance_score_gauge = Gauge(
-            "constitutional_compliance_score", "Current constitutional compliance score"
+            f"pgc_constitutional_compliance_score_{instance_id}",
+            "Current constitutional compliance score in PGC service"
         )
 
         # Internal state
