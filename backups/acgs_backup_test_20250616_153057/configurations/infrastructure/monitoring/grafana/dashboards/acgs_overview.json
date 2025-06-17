@@ -1,0 +1,94 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ACGS-1 System Overview",
+    "tags": [
+      "acgs",
+      "overview"
+    ],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=~\"acgs-.*\"}",
+            "legendFormat": "{{job}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Response Times",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~\"acgs-.*\"}[5m]))",
+            "legendFormat": "95th percentile - {{job}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 2.0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{job=~\"acgs-.*\"}[5m])",
+            "legendFormat": "{{job}} - {{method}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "10s"
+  }
+}

@@ -51,6 +51,22 @@ except ImportError:
         HIGH = "high"
         CRITICAL = "critical"
 
+# Import enhanced authentication
+try:
+    from .enhanced_auth import (
+        enhanced_auth_service,
+        ServiceAuthManager,
+        ConstitutionalPermission,
+        ServicePermission,
+        PermissionChecker,
+        UserRole,
+    )
+    from .service_auth_config import ServiceAuthConfig, ACGSService
+    ENHANCED_AUTH_AVAILABLE = True
+except ImportError:
+    ENHANCED_AUTH_AVAILABLE = False
+    logging.warning("Enhanced authentication not available, using basic security")
+
 
 logger = logging.getLogger(__name__)
 
@@ -452,13 +468,19 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             else:
                 rate_limit_info = {}
 
-            # 4. Content type validation for body-containing methods
+            # 4. Authentication validation (if enhanced auth is available)
+            if ENHANCED_AUTH_AVAILABLE:
+                auth_check = await self._validate_authentication(request)
+                if auth_check:
+                    return auth_check
+
+            # 5. Content type validation for body-containing methods
             if request.method in ["POST", "PUT", "PATCH"]:
                 content_type_check = self._validate_content_type(request)
                 if content_type_check:
                     return content_type_check
 
-            # 5. Process request
+            # 6. Process request
             response = await call_next(request)
 
             # 6. Add security headers
@@ -632,6 +654,125 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         # Log to structured logger
         logger.warning(f"Security event: {event_type}", extra=event)
+
+    async def _validate_authentication(self, request: Request) -> Optional[Response]:
+        """Validate authentication for protected endpoints."""
+        # Skip authentication for health checks and public endpoints
+        if request.url.path in ["/health", "/metrics", "/docs", "/openapi.json"]:
+            return None
+
+        # Skip authentication for OPTIONS requests (CORS preflight)
+        if request.method == "OPTIONS":
+            return None
+
+        # Check for Authorization header
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            # Allow unauthenticated access to some endpoints based on service configuration
+            if self._is_public_endpoint(request.url.path):
+                return None
+
+            correlation_id = getattr(request.state, "correlation_id", "unknown")
+            await self._log_security_event(request, "missing_authorization", {
+                "endpoint": request.url.path,
+                "method": request.method
+            })
+            return self._create_security_error_response(
+                "Authorization header required",
+                correlation_id,
+                status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            # Extract token from Bearer header
+            if not auth_header.startswith("Bearer "):
+                correlation_id = getattr(request.state, "correlation_id", "unknown")
+                return self._create_security_error_response(
+                    "Invalid authorization header format",
+                    correlation_id,
+                    status.HTTP_401_UNAUTHORIZED,
+                )
+
+            token = auth_header[7:]  # Remove "Bearer " prefix
+
+            # Validate token based on type (user token vs service token)
+            if self._is_service_token(token):
+                # Validate service-to-service token
+                service_payload = ServiceAuthManager.verify_service_token(token)
+                request.state.auth_type = "service"
+                request.state.service_name = service_payload.get("service_name")
+                request.state.service_permissions = service_payload.get("permissions", [])
+            else:
+                # Validate user token
+                token_data = await enhanced_auth_service.verify_token(token)
+                request.state.auth_type = "user"
+                request.state.user_id = token_data.user_id
+                request.state.username = token_data.username
+                request.state.user_role = token_data.role
+
+                # Get user permissions
+                user_data = enhanced_auth_service.users_db.get(token_data.username)
+                if user_data:
+                    user = user_data["user"]
+                    request.state.user_permissions = PermissionChecker.get_user_permissions(user)
+                else:
+                    request.state.user_permissions = []
+
+            return None  # Authentication successful
+
+        except Exception as e:
+            correlation_id = getattr(request.state, "correlation_id", "unknown")
+            await self._log_security_event(request, "authentication_failed", {
+                "error": str(e),
+                "endpoint": request.url.path,
+                "method": request.method
+            })
+            return self._create_security_error_response(
+                "Authentication failed",
+                correlation_id,
+                status.HTTP_401_UNAUTHORIZED,
+            )
+
+    def _is_service_token(self, token: str) -> bool:
+        """Check if token is a service-to-service token."""
+        try:
+            # Decode without verification to check token type
+            import jwt
+            payload = jwt.decode(token, options={"verify_signature": False})
+            return payload.get("type") == "service_token"
+        except:
+            return False
+
+    def _is_public_endpoint(self, path: str) -> bool:
+        """Check if endpoint allows public access."""
+        public_endpoints = [
+            "/",
+            "/health",
+            "/metrics",
+            "/docs",
+            "/openapi.json",
+            "/api/v1/auth/login",
+            "/api/v1/auth/register",
+            "/api/v1/constitution/public",
+        ]
+
+        # Check exact matches
+        if path in public_endpoints:
+            return True
+
+        # Check pattern matches
+        public_patterns = [
+            r"^/api/v1/constitution/principles$",  # Public constitution access
+            r"^/api/v1/policies/public",  # Public policy access
+            r"^/static/",  # Static files
+        ]
+
+        import re
+        for pattern in public_patterns:
+            if re.match(pattern, path):
+                return True
+
+        return False
 
     def _get_client_ip(self, request: Request) -> str:
         """Extract client IP address from request."""
