@@ -11,7 +11,7 @@ from typing import Any
 
 import asyncpg
 
-from ..advanced_redis_client import AdvancedRedisClient
+from services.shared.advanced_redis_client import AdvancedRedisClient
 from .common_types import ServiceInstance, ServiceType
 
 logger = logging.getLogger(__name__)

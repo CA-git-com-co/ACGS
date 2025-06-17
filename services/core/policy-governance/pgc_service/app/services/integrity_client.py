@@ -6,7 +6,7 @@ from ..schemas import IntegrityPolicyRule  # Using the schema defined in pgc_ser
 
 # Load environment variables
 INTEGRITY_SERVICE_URL = os.getenv(
-    "INTEGRITY_SERVICE_URL", "http://integrity_service:8000/api/v1"
+    "INTEGRITY_SERVICE_URL", "http://localhost:8002/api/v1"
 )
 
 

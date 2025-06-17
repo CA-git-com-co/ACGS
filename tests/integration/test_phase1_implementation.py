@@ -23,7 +23,7 @@ async def test_enhanced_principle_management():
 
     try:
         # Import the enhanced schemas and models
-        from services.core.constitutional-ai.ac_service.app import schemas
+        from services.core.constitutional_ai.ac_service.app import schemas
 
         # Test enhanced principle schema
         print("✓ Testing enhanced principle schema...")
@@ -80,10 +80,10 @@ async def test_constitutional_prompting():
 
     try:
         # Import constitutional prompting components
-        from services.core.governance-synthesis.gs_service.app.core.constitutional_prompting import (
+        from services.core.governance_synthesis.gs_service.app.core.constitutional_prompting import (
             constitutional_prompt_builder,
         )
-        from services.core.governance-synthesis.gs_service.app.schemas import ConstitutionalSynthesisInput
+        from services.core.governance_synthesis.gs_service.app.schemas import ConstitutionalSynthesisInput
 
         print("✓ Testing constitutional prompt builder...")
 
@@ -155,7 +155,7 @@ async def test_contextual_analysis():
 
     try:
         # Import contextual analysis components
-        from services.core.governance-synthesis.gs_service.app.core.contextual_analyzer import (
+        from services.core.governance_synthesis.gs_service.app.core.contextual_analyzer import (
             EnvironmentalFactor,
             contextual_analyzer,
         )
@@ -247,10 +247,10 @@ async def test_integration():
 
     try:
         # Import integration components
-        from services.core.governance-synthesis.gs_service.app.core.llm_integration import (
+        from services.core.governance_synthesis.gs_service.app.core.llm_integration import (
             query_llm_for_constitutional_synthesis,
         )
-        from services.core.governance-synthesis.gs_service.app.schemas import ConstitutionalSynthesisInput
+        from services.core.governance_synthesis.gs_service.app.schemas import ConstitutionalSynthesisInput
 
         print("✓ Testing integrated constitutional synthesis...")
 

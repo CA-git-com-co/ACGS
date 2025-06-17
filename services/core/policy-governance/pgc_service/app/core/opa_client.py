@@ -194,8 +194,49 @@ class OPAClient:
             )
 
         except Exception as e:
-            logger.error(f"Policy evaluation failed: {e}")
-            raise
+            logger.warning(f"OPA evaluation failed, using fallback: {e}")
+            # Fallback to basic policy evaluation
+            return await self._fallback_policy_evaluation(request, start_time)
+
+    async def _fallback_policy_evaluation(
+        self, request: PolicyEvaluationRequest, start_time: float
+    ) -> PolicyEvaluationResponse:
+        """
+        Fallback policy evaluation when OPA is unavailable.
+
+        Implements basic constitutional compliance checking based on
+        the ACGS constitutional framework.
+        """
+        response_time = (time.time() - start_time) * 1000
+
+        # Basic constitutional compliance check
+        input_data = request.input_data
+
+        # Default to allow for basic operations, deny for sensitive operations
+        allow = True
+        explanation = ["Fallback policy evaluation - OPA unavailable"]
+
+        # Check for sensitive operations that should be denied by default
+        if input_data.get("action", {}).get("type") in ["delete", "admin", "modify_constitution"]:
+            allow = False
+            explanation.append("Sensitive operation denied in fallback mode")
+
+        # Check for constitutional compliance requirements
+        if "constitutional_compliance" in input_data:
+            # Basic constitutional hash validation
+            expected_hash = "cdd01ef066bc6cf2"
+            provided_hash = input_data.get("constitutional_hash", "")
+            if provided_hash and provided_hash != expected_hash:
+                allow = False
+                explanation.append("Constitutional hash mismatch")
+
+        return PolicyEvaluationResponse(
+            result={"allow": allow, "fallback_mode": True},
+            decision_id=f"fallback_{int(time.time())}",
+            metrics={"timer_rego_query_eval_ns": int(response_time * 1000000)},
+            explanation=explanation,
+            provenance={"fallback": True, "opa_unavailable": True},
+        )
 
     async def upload_policy_bundle(
         self, bundle: PolicyBundle, incremental: bool = True

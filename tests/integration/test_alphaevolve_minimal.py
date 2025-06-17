@@ -17,7 +17,7 @@ def test_lipschitz_config_enhancements():
     print("Testing Lipschitz configuration enhancements...")
 
     try:
-        from services.core.governance-synthesis.gs_service.app.services.lipschitz_estimator import (
+        from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
             LipschitzEstimationConfig,
         )
 
@@ -48,7 +48,7 @@ def test_reliability_enums():
     print("Testing LLM reliability enums...")
 
     try:
-        from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
+        from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
             ReliabilityLevel,
         )
 
@@ -71,7 +71,7 @@ def test_scalability_enums():
     print("Testing Constitutional Council scalability enums...")
 
     try:
-        from services.core.constitutional-ai.ac_service.app.core.constitutional_council_scalability import (
+        from services.core.constitutional_ai.ac_service.app.core.constitutional_council_scalability import (
             CoEvolutionMode,
             VotingStrategy,
         )
@@ -101,7 +101,7 @@ def test_adversarial_enums():
     print("Testing adversarial robustness enums...")
 
     try:
-        from services.core.formal-verification.fv_service.app.core.adversarial_robustness_tester import (
+        from services.core.formal_verification.fv_service.app.core.adversarial_robustness_tester import (
             AdversarialTestType,
             VulnerabilityLevel,
         )
@@ -162,7 +162,7 @@ def test_configuration_classes():
 
     try:
         # Test Lipschitz config
-        from services.core.governance-synthesis.gs_service.app.services.lipschitz_estimator import (
+        from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
             LipschitzEstimationConfig,
         )
 
@@ -171,7 +171,7 @@ def test_configuration_classes():
         assert hasattr(lipschitz_config, "bounded_evolution_enabled")
 
         # Test reliability config
-        from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
+        from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
             LLMReliabilityConfig,
         )
 
@@ -180,7 +180,7 @@ def test_configuration_classes():
         assert hasattr(reliability_config, "ensemble_size")
 
         # Test scalability config
-        from services.core.constitutional-ai.ac_service.app.core.constitutional_council_scalability import (
+        from services.core.constitutional_ai.ac_service.app.core.constitutional_council_scalability import (
             ScalabilityConfig,
         )
 
@@ -189,7 +189,7 @@ def test_configuration_classes():
         assert hasattr(scalability_config, "async_voting_enabled")
 
         # Test adversarial config
-        from services.core.formal-verification.fv_service.app.core.adversarial_robustness_tester import (
+        from services.core.formal_verification.fv_service.app.core.adversarial_robustness_tester import (
             AdversarialTestConfig,
         )
 
@@ -220,7 +220,7 @@ def test_dataclass_structures():
 
     try:
         # Test Lipschitz result structure
-        from services.core.governance-synthesis.gs_service.app.services.lipschitz_estimator import (
+        from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
             LipschitzEstimationResult,
         )
 

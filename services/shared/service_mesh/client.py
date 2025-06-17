@@ -14,17 +14,17 @@ from typing import Any
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from ..common.error_handling import (
+from services.shared.common.error_handling import (
     ACGSException,
     AuthenticationError,
     ServiceUnavailableError,
     handle_service_error,
     log_error,
 )
-from ..common.formatting import format_response
-from ..common.validation import validate_response
-from .circuit_breaker import CircuitBreaker
-from .registry import ServiceRegistry, ServiceType, get_service_registry
+from services.shared.common.formatting import format_response
+from services.shared.common.validation import validate_response
+from services.shared.service_mesh.circuit_breaker import CircuitBreaker
+from services.shared.service_mesh.registry import ServiceRegistry, ServiceType, get_service_registry
 
 logger = logging.getLogger(__name__)
 
