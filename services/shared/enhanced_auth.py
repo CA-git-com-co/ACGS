@@ -7,6 +7,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import os
 import secrets
 import time
 from dataclasses import dataclass, field
@@ -23,11 +24,21 @@ from passlib.hash import bcrypt
 
 logger = logging.getLogger(__name__)
 
-# Configuration
-SECRET_KEY = "acgs_secret_key_change_in_production"  # Should be from environment
+# Production-grade Configuration
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "acgs-production-secret-key-2024-constitutional-governance-jwt-signing-v2"
+)
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
-REFRESH_TOKEN_EXPIRE_DAYS = 7
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))  # Reduced for security
+REFRESH_TOKEN_EXPIRE_DAYS = int(os.environ.get("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
+
+# Service-to-service authentication
+SERVICE_SECRET_KEY = os.environ.get(
+    "SERVICE_SECRET_KEY",
+    "acgs-service-to-service-secret-key-2024-constitutional-governance-internal-auth"
+)
+SERVICE_TOKEN_EXPIRE_MINUTES = int(os.environ.get("SERVICE_TOKEN_EXPIRE_MINUTES", "60"))
 
 # Password hashing with optimized rounds
 pwd_context = CryptContext(
@@ -41,13 +52,85 @@ security = HTTPBearer()
 
 
 class UserRole(Enum):
-    """User roles in the ACGS system."""
+    """Enhanced user roles in the ACGS constitutional governance system."""
 
-    ADMIN = "admin"
-    COUNCIL_MEMBER = "council_member"
+    # Administrative roles
+    SYSTEM_ADMIN = "system_admin"
+    CONSTITUTIONAL_ADMIN = "constitutional_admin"
+
+    # Governance roles
+    CONSTITUTIONAL_COUNCIL = "constitutional_council"
     POLICY_ANALYST = "policy_analyst"
-    PUBLIC_GUEST = "public_guest"
+    GOVERNANCE_REVIEWER = "governance_reviewer"
+
+    # Service roles
     SERVICE_ACCOUNT = "service_account"
+    INTERNAL_SERVICE = "internal_service"
+
+    # Public access
+    PUBLIC_GUEST = "public_guest"
+    AUTHENTICATED_USER = "authenticated_user"
+
+
+class ConstitutionalPermission(Enum):
+    """Constitutional governance permissions."""
+
+    # Constitutional management
+    CONSTITUTIONAL_READ = "constitutional:read"
+    CONSTITUTIONAL_WRITE = "constitutional:write"
+    CONSTITUTIONAL_ADMIN = "constitutional:admin"
+
+    # Policy management
+    POLICY_CREATE = "policy:create"
+    POLICY_REVIEW = "policy:review"
+    POLICY_APPROVE = "policy:approve"
+    POLICY_ENFORCE = "policy:enforce"
+
+    # Governance workflows
+    GOVERNANCE_INITIATE = "governance:initiate"
+    GOVERNANCE_PARTICIPATE = "governance:participate"
+    GOVERNANCE_OVERSEE = "governance:oversee"
+
+    # System administration
+    SYSTEM_ADMIN = "system:admin"
+    SERVICE_MANAGE = "service:manage"
+    AUDIT_ACCESS = "audit:access"
+
+    # WINA oversight
+    WINA_OVERSIGHT = "wina:oversight"
+    WINA_INTERVENTION = "wina:intervention"
+
+
+class ServicePermission(Enum):
+    """Service-specific permissions."""
+
+    # Authentication service
+    AUTH_MANAGE_USERS = "auth:manage_users"
+    AUTH_MANAGE_ROLES = "auth:manage_roles"
+
+    # Constitutional AI service
+    AC_VALIDATE_PRINCIPLES = "ac:validate_principles"
+    AC_MANAGE_CONSTITUTION = "ac:manage_constitution"
+
+    # Policy Governance service
+    PGC_ENFORCE_POLICIES = "pgc:enforce_policies"
+    PGC_VALIDATE_COMPLIANCE = "pgc:validate_compliance"
+
+    # Governance Synthesis service
+    GS_SYNTHESIZE_POLICIES = "gs:synthesize_policies"
+    GS_MANAGE_WORKFLOWS = "gs:manage_workflows"
+
+    # Formal Verification service
+    FV_VERIFY_POLICIES = "fv:verify_policies"
+    FV_MATHEMATICAL_PROOF = "fv:mathematical_proof"
+
+    # Integrity service
+    INTEGRITY_CRYPTOGRAPHIC = "integrity:cryptographic"
+    INTEGRITY_AUDIT_TRAIL = "integrity:audit_trail"
+
+    # Evolutionary Computation service
+    EC_WINA_OVERSIGHT = "ec:wina_oversight"
+    EC_SYSTEM_EVOLUTION = "ec:system_evolution"
 
 
 class SessionStatus(Enum):
@@ -230,14 +313,14 @@ class EnhancedAuthService:
                 "id": "admin_001",
                 "username": "admin",
                 "email": "admin@acgs.local",
-                "role": UserRole.ADMIN,
+                "role": UserRole.SYSTEM_ADMIN,
                 "password": "admin_password",
             },
             {
                 "id": "council_001",
                 "username": "council_member",
                 "email": "council@acgs.local",
-                "role": UserRole.COUNCIL_MEMBER,
+                "role": UserRole.CONSTITUTIONAL_COUNCIL,
                 "password": "council_password",
             },
             {
@@ -571,6 +654,209 @@ class EnhancedAuthService:
         }
 
 
+# Role-based permission mapping
+ROLE_PERMISSIONS = {
+    UserRole.SYSTEM_ADMIN: [
+        ConstitutionalPermission.CONSTITUTIONAL_ADMIN,
+        ConstitutionalPermission.POLICY_APPROVE,
+        ConstitutionalPermission.GOVERNANCE_OVERSEE,
+        ConstitutionalPermission.SYSTEM_ADMIN,
+        ConstitutionalPermission.SERVICE_MANAGE,
+        ConstitutionalPermission.AUDIT_ACCESS,
+        ConstitutionalPermission.WINA_OVERSIGHT,
+        ConstitutionalPermission.WINA_INTERVENTION,
+        # All service permissions
+        ServicePermission.AUTH_MANAGE_USERS,
+        ServicePermission.AUTH_MANAGE_ROLES,
+        ServicePermission.AC_MANAGE_CONSTITUTION,
+        ServicePermission.PGC_ENFORCE_POLICIES,
+        ServicePermission.GS_MANAGE_WORKFLOWS,
+        ServicePermission.FV_MATHEMATICAL_PROOF,
+        ServicePermission.INTEGRITY_CRYPTOGRAPHIC,
+        ServicePermission.EC_SYSTEM_EVOLUTION,
+    ],
+    UserRole.CONSTITUTIONAL_ADMIN: [
+        ConstitutionalPermission.CONSTITUTIONAL_READ,
+        ConstitutionalPermission.CONSTITUTIONAL_WRITE,
+        ConstitutionalPermission.CONSTITUTIONAL_ADMIN,
+        ConstitutionalPermission.POLICY_APPROVE,
+        ConstitutionalPermission.GOVERNANCE_OVERSEE,
+        ServicePermission.AC_VALIDATE_PRINCIPLES,
+        ServicePermission.AC_MANAGE_CONSTITUTION,
+        ServicePermission.PGC_VALIDATE_COMPLIANCE,
+        ServicePermission.INTEGRITY_AUDIT_TRAIL,
+    ],
+    UserRole.CONSTITUTIONAL_COUNCIL: [
+        ConstitutionalPermission.CONSTITUTIONAL_READ,
+        ConstitutionalPermission.CONSTITUTIONAL_WRITE,
+        ConstitutionalPermission.POLICY_REVIEW,
+        ConstitutionalPermission.POLICY_APPROVE,
+        ConstitutionalPermission.GOVERNANCE_PARTICIPATE,
+        ServicePermission.AC_VALIDATE_PRINCIPLES,
+        ServicePermission.PGC_VALIDATE_COMPLIANCE,
+        ServicePermission.GS_SYNTHESIZE_POLICIES,
+    ],
+    UserRole.POLICY_ANALYST: [
+        ConstitutionalPermission.CONSTITUTIONAL_READ,
+        ConstitutionalPermission.POLICY_CREATE,
+        ConstitutionalPermission.POLICY_REVIEW,
+        ConstitutionalPermission.GOVERNANCE_PARTICIPATE,
+        ServicePermission.AC_VALIDATE_PRINCIPLES,
+        ServicePermission.PGC_VALIDATE_COMPLIANCE,
+        ServicePermission.GS_SYNTHESIZE_POLICIES,
+        ServicePermission.FV_VERIFY_POLICIES,
+    ],
+    UserRole.GOVERNANCE_REVIEWER: [
+        ConstitutionalPermission.CONSTITUTIONAL_READ,
+        ConstitutionalPermission.POLICY_REVIEW,
+        ConstitutionalPermission.GOVERNANCE_PARTICIPATE,
+        ServicePermission.AC_VALIDATE_PRINCIPLES,
+        ServicePermission.PGC_VALIDATE_COMPLIANCE,
+    ],
+    UserRole.SERVICE_ACCOUNT: [
+        ConstitutionalPermission.GOVERNANCE_PARTICIPATE,
+        ServicePermission.PGC_VALIDATE_COMPLIANCE,
+        ServicePermission.INTEGRITY_AUDIT_TRAIL,
+    ],
+    UserRole.INTERNAL_SERVICE: [
+        # Internal services have broad access for system operations
+        ConstitutionalPermission.GOVERNANCE_PARTICIPATE,
+        ServicePermission.PGC_VALIDATE_COMPLIANCE,
+        ServicePermission.AC_VALIDATE_PRINCIPLES,
+        ServicePermission.GS_SYNTHESIZE_POLICIES,
+        ServicePermission.FV_VERIFY_POLICIES,
+        ServicePermission.INTEGRITY_AUDIT_TRAIL,
+        ServicePermission.EC_WINA_OVERSIGHT,
+    ],
+    UserRole.AUTHENTICATED_USER: [
+        ConstitutionalPermission.CONSTITUTIONAL_READ,
+        ConstitutionalPermission.GOVERNANCE_PARTICIPATE,
+    ],
+    UserRole.PUBLIC_GUEST: [
+        ConstitutionalPermission.CONSTITUTIONAL_READ,
+    ],
+}
+
+
+class PermissionChecker:
+    """Enhanced permission checking for constitutional governance."""
+
+    @staticmethod
+    def has_permission(user: User, permission: ConstitutionalPermission | ServicePermission) -> bool:
+        """Check if user has a specific permission."""
+        user_permissions = ROLE_PERMISSIONS.get(user.role, [])
+        return permission in user_permissions
+
+    @staticmethod
+    def has_any_permission(user: User, permissions: List[ConstitutionalPermission | ServicePermission]) -> bool:
+        """Check if user has any of the specified permissions."""
+        user_permissions = ROLE_PERMISSIONS.get(user.role, [])
+        return any(permission in user_permissions for permission in permissions)
+
+    @staticmethod
+    def has_all_permissions(user: User, permissions: List[ConstitutionalPermission | ServicePermission]) -> bool:
+        """Check if user has all of the specified permissions."""
+        user_permissions = ROLE_PERMISSIONS.get(user.role, [])
+        return all(permission in user_permissions for permission in permissions)
+
+    @staticmethod
+    def get_user_permissions(user: User) -> List[ConstitutionalPermission | ServicePermission]:
+        """Get all permissions for a user."""
+        return ROLE_PERMISSIONS.get(user.role, [])
+
+
+def require_permission(permission: ConstitutionalPermission | ServicePermission):
+    """Decorator to require specific permission for endpoint access."""
+    async def permission_checker(current_user: User = Depends(get_current_user)) -> User:
+        if not PermissionChecker.has_permission(current_user, permission):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Insufficient permissions. Required: {permission.value}",
+            )
+        return current_user
+    return permission_checker
+
+
+def require_any_permission(permissions: List[ConstitutionalPermission | ServicePermission]):
+    """Decorator to require any of the specified permissions."""
+    async def permission_checker(current_user: User = Depends(get_current_user)) -> User:
+        if not PermissionChecker.has_any_permission(current_user, permissions):
+            permission_names = [p.value for p in permissions]
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Insufficient permissions. Required any of: {', '.join(permission_names)}",
+            )
+        return current_user
+    return permission_checker
+
+
+def require_role(role: UserRole):
+    """Decorator to require specific role for endpoint access."""
+    async def role_checker(current_user: User = Depends(get_current_user)) -> User:
+        if current_user.role != role:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Insufficient role. Required: {role.value}, Current: {current_user.role.value}",
+            )
+        return current_user
+    return role_checker
+
+
+# Service-to-service authentication
+class ServiceAuthManager:
+    """Manages service-to-service authentication."""
+
+    @staticmethod
+    def create_service_token(service_name: str, permissions: List[str] = None) -> str:
+        """Create a service-to-service authentication token."""
+        if permissions is None:
+            permissions = ["internal_service"]
+
+        expire = datetime.now(timezone.utc) + timedelta(minutes=SERVICE_TOKEN_EXPIRE_MINUTES)
+        jti = secrets.token_urlsafe(16)
+
+        payload = {
+            "service_name": service_name,
+            "permissions": permissions,
+            "exp": expire,
+            "iat": datetime.now(timezone.utc),
+            "jti": jti,
+            "type": "service_token",
+        }
+
+        return jwt.encode(payload, SERVICE_SECRET_KEY, algorithm=ALGORITHM)
+
+    @staticmethod
+    def verify_service_token(token: str) -> Dict[str, Any]:
+        """Verify a service-to-service token."""
+        try:
+            payload = jwt.decode(token, SERVICE_SECRET_KEY, algorithms=[ALGORITHM])
+
+            if payload.get("type") != "service_token":
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid service token type"
+                )
+
+            return payload
+
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Service token has expired"
+            )
+        except jwt.JWTError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid service token"
+            )
+
+
+async def get_service_auth(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
+    """Dependency for service-to-service authentication."""
+    return ServiceAuthManager.verify_service_token(credentials.credentials)
+
+
 # Global enhanced auth service instance
 enhanced_auth_service = EnhancedAuthService()
 
@@ -610,11 +896,20 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 __all__ = [
     "User",
     "UserRole",
+    "ConstitutionalPermission",
+    "ServicePermission",
     "TokenData",
     "UserSession",
     "EnhancedAuthService",
     "enhanced_auth_service",
     "get_current_user",
+    "get_service_auth",
+    "PermissionChecker",
+    "ServiceAuthManager",
+    "require_permission",
+    "require_any_permission",
+    "require_role",
     "AuthenticationError",
     "AuthorizationError",
+    "ROLE_PERMISSIONS",
 ]

@@ -1,0 +1,250 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Policy Governance Control (PGC) Service Dashboard",
+    "tags": ["acgs", "pgc", "policy-governance", "compliance", "enforcement", "service"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"acgs-pgc-service\"}",
+            "legendFormat": "Service Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Down"}}, "type": "value"},
+              {"options": {"1": {"text": "Up"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "PGC Validation Latency (Target <50ms)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(acgs_pgc_validation_latency_seconds_bucket{service=\"pgc\"}[5m]))",
+            "legendFormat": "95th percentile - {{validation_type}}"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(acgs_pgc_validation_latency_seconds_bucket{service=\"pgc\"}[5m]))",
+            "legendFormat": "50th percentile - {{validation_type}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 0.05
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 0.05,
+            "colorMode": "critical",
+            "op": "gt"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Constitutional Compliance Score",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_constitutional_compliance_score{service=\"pgc\"}",
+            "legendFormat": "{{policy_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.95},
+                {"color": "green", "value": 1.0}
+              ]
+            },
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Policy Enforcement Actions",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_policy_enforcement_actions_total{service=\"pgc\"}[5m])",
+            "legendFormat": "{{action_type}} - {{policy_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Actions/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Compliance Validation Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_compliance_validation_operations_total{service=\"pgc\"}[5m])",
+            "legendFormat": "{{validation_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Validations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Policy Violation Detection",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_policy_violation_detections_total{service=\"pgc\"}[5m])",
+            "legendFormat": "{{violation_type}} - {{severity}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Violations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "Governance Action Approvals",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_governance_action_approvals_total{service=\"pgc\"}[5m])",
+            "legendFormat": "{{action_type}} - {{approval_status}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Approvals/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Real-time Compliance Monitoring",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_realtime_compliance_score{service=\"pgc\"}",
+            "legendFormat": "Real-time Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.9},
+                {"color": "green", "value": 0.99}
+              ]
+            },
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 4}
+      },
+      {
+        "id": 9,
+        "title": "Blockchain Integration Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_blockchain_integration_operations_total{service=\"pgc\"}[5m])",
+            "legendFormat": "{{operation_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 10,
+        "title": "Response Time Distribution",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(acgs_http_request_duration_seconds_bucket{service=\"pgc\"}[5m]))",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(acgs_http_request_duration_seconds_bucket{service=\"pgc\"}[5m]))",
+            "legendFormat": "50th percentile"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 0.5
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 0.5,
+            "colorMode": "critical",
+            "op": "gt"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      }
+    ]
+  }
+}
