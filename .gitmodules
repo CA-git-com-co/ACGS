@@ -13,3 +13,6 @@
 [submodule "mcp-servers/mcp-server-browserbase"]
 	path = mcp-servers/mcp-server-browserbase
 	url = https://github.com/browserbase/mcp-server-browserbase.git
+[submodule "blockchain/quantumagi-deployment"]
+	path = blockchain/quantumagi-deployment
+	url = https://github.com/dislovemartin/quantumagi_core.git
