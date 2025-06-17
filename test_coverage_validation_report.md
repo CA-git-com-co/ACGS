@@ -30,7 +30,7 @@ Successfully analyzed and validated test coverage across ACGS-1 Constitutional G
 #### 2. Python Services Coverage
 
 ##### AC Service (Constitutional AI)
-- **Test File:** `services/core/ac/tests/test_multi_model_validator.py`
+- **Test File:** `services/core/constitutional-ai/tests/test_multi_model_validator.py`
 - **Coverage:** 81% (263 statements, 49 missed)
 - **Test Results:** 20 passed, 2 failed
 - **Status:** ✅ GOOD - Above 80% target
@@ -58,7 +58,7 @@ Successfully analyzed and validated test coverage across ACGS-1 Constitutional G
 - Cache invalidation strategies
 
 ##### GS Service (Governance Synthesis)
-- **Test File:** `services/core/gs/tests/test_principle_tracer.py`
+- **Test File:** `services/core/governance-synthesis/tests/test_principle_tracer.py`
 - **Coverage:** 83% (317 statements, 53 missed)
 - **Test Results:** 19 passed, 0 failed
 - **Status:** ✅ EXCELLENT - Above target with 100% pass rate

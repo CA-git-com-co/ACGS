@@ -132,7 +132,7 @@ func CollapseWaveFunction(policy *QuantumPolicy, reason CollapseReason) State {
 
 ### **6. PGC Service Integration** ✅
 
-**Location**: `services/core/policy-governance/pgc_service/app/`
+**Location**: `services/core/policy-governance/policy-governance_service/app/`
 
 #### **QPE Client**
 - **File**: `app/services/qpe_client.py`

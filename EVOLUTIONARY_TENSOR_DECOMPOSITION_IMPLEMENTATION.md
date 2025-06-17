@@ -26,7 +26,7 @@ Successfully implemented evolutionary tensor decomposition algorithm integration
 
 ### **Phase 1: Multi-Model Validation Enhancement** ✅
 
-**Location**: `services/core/governance-synthesis/gs_service/app/validators/`
+**Location**: `services/core/governance-synthesis/governance-synthesis_service/app/validators/`
 
 #### **GeminiProValidator**
 - **Purpose**: High-quality constitutional compliance validation
@@ -58,7 +58,7 @@ Successfully implemented evolutionary tensor decomposition algorithm integration
 
 ### **Phase 2: Performance Optimization Configuration** ✅
 
-**Location**: `services/core/policy-governance/pgc_service/config/performance_optimization.yaml`
+**Location**: `services/core/policy-governance/policy-governance_service/config/performance_optimization.yaml`
 
 #### **Key Performance Targets**
 - **Latency**: <25ms for 95% of PGC validation requests
@@ -96,7 +96,7 @@ Successfully implemented evolutionary tensor decomposition algorithm integration
 
 ### **Phase 4: Groq LLM Integration** ✅
 
-**Location**: `services/core/governance-synthesis/gs_service/app/services/groq_tensor_service.py`
+**Location**: `services/core/governance-synthesis/governance-synthesis_service/app/services/groq_tensor_service.py`
 
 #### **GroqTensorService Features**
 - **Model**: "llama-3.1-70b-versatile" for tensor decomposition generation
@@ -203,7 +203,7 @@ Successfully implemented evolutionary tensor decomposition algorithm integration
 
 4. **Run Integration Tests**:
    ```bash
-   cd services/core/governance-synthesis/gs_service
+   cd services/core/governance-synthesis/governance-synthesis_service
    python -m pytest tests/ -v --cov=app --cov-report=html
    ```
 

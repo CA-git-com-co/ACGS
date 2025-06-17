@@ -187,7 +187,7 @@ python3 end_to_end_governance_workflow_test.py
 **Manual Service Management**:
 ```bash
 # Individual service startup
-cd services/core/policy-governance/pgc_service
+cd services/core/policy-governance/policy-governance_service
 uvicorn app.main:app --host 0.0.0.0 --port 8005
 
 # Service health verification

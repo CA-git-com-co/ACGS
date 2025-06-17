@@ -73,7 +73,7 @@ Build Cache     765       0         35.36GB   35.36GB
 
 #### PGC Service Requirements
 ```bash
-# Created: services/core/policy-governance/pgc_service/requirements.txt
+# Created: services/core/policy-governance/policy-governance_service/requirements.txt
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
@@ -109,7 +109,7 @@ passlib[bcrypt]==1.7.4
 
 **Before**: 
 ```
-ERROR: COPY services/core/policy-governance/pgc_service/requirements.txt
+ERROR: COPY services/core/policy-governance/policy-governance_service/requirements.txt
 File not found: requirements.txt
 
 ERROR: COPY alembic.ini /app/alembic.ini

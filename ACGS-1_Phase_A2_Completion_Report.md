@@ -88,12 +88,12 @@ ACGS-1 Phase A2 has been successfully completed with significant security improv
    - **Fix**: Replaced `hashlib.md5()` with `hashlib.sha256()`
    - **Impact**: Secure task identification
 
-3. **`services/core/governance-synthesis/gs_service/app/services/lipschitz_estimator.py`**
+3. **`services/core/governance-synthesis/governance-synthesis_service/app/services/lipschitz_estimator.py`**
    - **Issue**: MD5 hash usage in embedding generation
    - **Fix**: Replaced `hashlib.md5()` with `hashlib.sha256()`
    - **Impact**: Secure ML embedding computation
 
-4. **`services/core/constitutional-ai/ac_service/app/main.py`**
+4. **`services/core/constitutional-ai/constitutional-ai_service/app/main.py`**
    - **Issue**: MD5 hash usage in request ID generation
    - **Fix**: Replaced `hashlib.md5()` with `hashlib.sha256()`
    - **Impact**: Secure request tracking
