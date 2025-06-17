@@ -12,7 +12,7 @@ from dataclasses import asdict, dataclass, field
 from enum import Enum
 from typing import Any
 
-from ..advanced_redis_client import AdvancedRedisClient
+from services.shared.advanced_redis_client import AdvancedRedisClient
 from .common_types import ServiceType
 
 logger = logging.getLogger(__name__)

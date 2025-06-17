@@ -49,7 +49,7 @@ async def test_enhanced_bias_detection():
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
     try:
-        from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
+        from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
             EnhancedBiasDetectionFramework,
             LLMReliabilityConfig,
         )
@@ -122,7 +122,7 @@ async def test_enhanced_semantic_validation():
     print("-" * 50)
 
     try:
-        from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
+        from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
             EnhancedSemanticFaithfulnessValidator,
             LLMReliabilityConfig,
         )
@@ -190,7 +190,7 @@ async def test_reliability_metrics():
     print("-" * 50)
 
     try:
-        from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
+        from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
             ReliabilityMetrics,
         )
 
@@ -252,7 +252,7 @@ async def test_prometheus_metrics():
     print("-" * 50)
 
     try:
-        from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
+        from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
             PrometheusMetricsCollector,
             ReliabilityMetrics,
         )

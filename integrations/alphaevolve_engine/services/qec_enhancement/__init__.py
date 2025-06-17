@@ -21,6 +21,19 @@ class FailureType(Enum):
     COMPLIANCE_ERROR = "compliance_error"
     TIMEOUT_ERROR = "timeout_error"
     RESOURCE_ERROR = "resource_error"
+    SEMANTIC_CONFLICT = "semantic_conflict"
+    AMBIGUOUS_PRINCIPLE = "ambiguous_principle"
+    SYNTAX_ERROR = "syntax_error"
+
+
+class RecoveryStrategy(Enum):
+    """Mock RecoveryStrategy enum for recovery approaches."""
+
+    SIMPLIFIED_SYNTAX_PROMPT = "simplified_syntax_prompt"
+    ENHANCED_CONTEXT = "enhanced_context"
+    MULTI_MODEL_CONSENSUS = "multi_model_consensus"
+    HUMAN_REVIEW_REQUIRED = "human_review_required"
+    EXPLICIT_DISAMBIGUATION = "explicit_disambiguation"
 
 
 @dataclass
@@ -166,5 +179,6 @@ __all__ = [
     "RecoveryStrategyDispatcher",
     "ValidationDSLParser",
     "FailureType",
+    "RecoveryStrategy",
     "SynthesisAttemptLog",
 ]

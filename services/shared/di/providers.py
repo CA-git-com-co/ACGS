@@ -9,7 +9,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, TypeVar
 
-from ..common.error_handling import ACGSException
+from services.shared.common.error_handling import ACGSException
 from .interfaces import CacheInterface, DatabaseInterface
 
 logger = logging.getLogger(__name__)

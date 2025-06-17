@@ -24,10 +24,10 @@ from typing import Any
 import httpx
 
 from .common_types import ServiceType
-from .discovery import ServiceDiscovery
+from services.shared.service_mesh.discovery import ServiceDiscovery
 from .failover_circuit_breaker import FailoverConfig, FailoverManager, FailoverStrategy
 from .performance_monitor import PerformanceMonitor, get_performance_monitor
-from .registry import get_service_registry
+from services.shared.service_mesh.registry import get_service_registry
 
 logger = logging.getLogger(__name__)
 

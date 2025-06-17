@@ -20,7 +20,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from .discovery import ServiceDiscovery
+from services.shared.service_mesh.discovery import ServiceDiscovery
 from .enhanced_service_stabilizer import (
     EnhancedServiceStabilizer,
     StabilizationConfig,
@@ -29,7 +29,7 @@ from .enhanced_service_stabilizer import (
 from .failover_circuit_breaker import FailoverManager
 from .load_balancer import LoadBalancer, LoadBalancingStrategy
 from .performance_monitor import get_performance_monitor
-from .registry import ServiceType, get_service_registry
+from services.shared.service_mesh.registry import ServiceType, get_service_registry
 
 logger = logging.getLogger(__name__)
 

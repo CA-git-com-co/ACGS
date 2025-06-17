@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 def test_lipschitz_config_enhancements():
     """Test Lipschitz estimation configuration enhancements."""
-    from services.core.governance-synthesis.gs_service.app.services.lipschitz_estimator import (
+    from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
         LipschitzEstimationConfig,
     )
 
@@ -39,7 +39,7 @@ def test_lipschitz_config_enhancements():
 
 def test_llm_reliability_config():
     """Test LLM reliability framework configuration."""
-    from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
+    from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
         LLMReliabilityConfig,
         ReliabilityLevel,
     )
@@ -65,7 +65,7 @@ def test_llm_reliability_config():
 
 def test_constitutional_council_scalability_config():
     """Test Constitutional Council scalability configuration."""
-    from services.core.constitutional-ai.ac_service.app.core.constitutional_council_scalability import (
+    from services.core.constitutional_ai.ac_service.app.core.constitutional_council_scalability import (
         CoEvolutionMode,
         ScalabilityConfig,
     )
@@ -96,7 +96,7 @@ def test_constitutional_council_scalability_config():
 
 def test_adversarial_robustness_config():
     """Test adversarial robustness testing configuration."""
-    from services.core.formal-verification.fv_service.app.core.adversarial_robustness_tester import (
+    from services.core.formal_verification.fv_service.app.core.adversarial_robustness_tester import (
         AdversarialTestConfig,
         AdversarialTestType,
         VulnerabilityLevel,
@@ -168,7 +168,7 @@ def test_proactive_fairness_config():
 @pytest.mark.asyncio
 async def test_lipschitz_estimator_initialization():
     """Test Lipschitz estimator initialization with enhanced config."""
-    from services.core.governance-synthesis.gs_service.app.services.lipschitz_estimator import (
+    from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
         LipschitzEstimationConfig,
         LipschitzEstimator,
     )
@@ -195,7 +195,7 @@ async def test_lipschitz_estimator_initialization():
 @pytest.mark.asyncio
 async def test_bias_detection_patterns():
     """Test bias detection pattern loading."""
-    from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
+    from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
         BiasDetectionFramework,
         LLMReliabilityConfig,
     )
@@ -251,16 +251,16 @@ def test_integration_framework_compatibility():
 
     # Test imports
     try:
-        from services.core.constitutional-ai.ac_service.app.core.constitutional_council_scalability import (
+        from services.core.constitutional_ai.ac_service.app.core.constitutional_council_scalability import (
             ConstitutionalCouncilScalabilityFramework,
         )
-        from services.core.formal-verification.fv_service.app.core.adversarial_robustness_tester import (
+        from services.core.formal_verification.fv_service.app.core.adversarial_robustness_tester import (
             AdversarialRobustnessTester,
         )
-        from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
+        from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
             LLMReliabilityFramework,
         )
-        from services.core.governance-synthesis.gs_service.app.services.lipschitz_estimator import (
+        from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
             LipschitzEstimator,
         )
         from services.platform.pgc.pgc_service.app.core.proactive_fairness_generator import (

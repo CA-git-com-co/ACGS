@@ -1740,7 +1740,7 @@ async def health_check():
         try:
             import httpx
 
-            opa_url = os.getenv("OPA_SERVER_URL", "http://opa:8181")
+            opa_url = os.getenv("OPA_SERVER_URL", "http://localhost:8181")
             async with httpx.AsyncClient(timeout=5.0) as client:
                 opa_response = await client.get(f"{opa_url}/health")
                 health_status["dependencies"]["opa"] = {
@@ -1762,7 +1762,7 @@ async def health_check():
         # Check Integrity Service connectivity
         try:
             integrity_url = os.getenv(
-                "INTEGRITY_SERVICE_URL", "http://integrity_service:8002"
+                "INTEGRITY_SERVICE_URL", "http://localhost:8002"
             )
             async with httpx.AsyncClient(timeout=5.0) as client:
                 integrity_response = await client.get(f"{integrity_url}/health")
@@ -1846,7 +1846,7 @@ async def readiness_check():
     # Basic readiness check that verifies critical dependencies
     try:
         # Check if OPA is reachable
-        opa_url = os.getenv("OPA_SERVER_URL", "http://opa:8181")
+        opa_url = os.getenv("OPA_SERVER_URL", "http://localhost:8181")
         try:
             async with httpx.AsyncClient(timeout=2.0) as client:
                 await client.get(f"{opa_url}/health")

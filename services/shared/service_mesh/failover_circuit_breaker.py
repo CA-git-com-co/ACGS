@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from .circuit_breaker import CircuitBreaker, CircuitBreakerState
+from services.shared.service_mesh.circuit_breaker import CircuitBreaker, CircuitBreakerState
 from .common_types import ServiceInstance, ServiceType
 
 logger = logging.getLogger(__name__)

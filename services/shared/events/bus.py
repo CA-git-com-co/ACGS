@@ -15,8 +15,8 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
-from ..common.error_handling import ACGSException, handle_service_error
-from ..di.interfaces import EventBusInterface
+from services.shared.common.error_handling import ACGSException, handle_service_error
+from services.shared.di.interfaces import EventBusInterface
 from .store import EventStore, InMemoryEventStore
 from .types import EventData, EventMetadata, EventPriority, EventStatus, EventType
 

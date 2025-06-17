@@ -31,7 +31,7 @@ sys.path.insert(0, project_root)
 
 # Mock the AC service client and WINA services to avoid import issues
 
-sys.modules["services.core.governance-synthesis.gs_service.app.services.ac_client"] = (
+sys.modules["services.core.governance_synthesis.gs_service.app.services.ac_client"] = (
     MagicMock()
 )
 sys.modules["services.shared.wina.constitutional_integration"] = MagicMock()

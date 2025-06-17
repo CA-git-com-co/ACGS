@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-06-17T11:03:33.734986+00:00",
+  "overall_coverage_percentage": 81.74108603351566,
+  "components_analyzed": 7,
+  "targets_met": 6,
+  "total_targets": 7,
+  "target_achievement_rate": 85.71428571428571,
+  "component_results": {
+    "auth": {
+      "coverage_percentage": 80.0,
+      "total_lines": 500,
+      "covered_lines": 400,
+      "target_met": true,
+      "execution_time_seconds": 1.5485684871673584
+    },
+    "ac": {
+      "coverage_percentage": 82.92682926829268,
+      "total_lines": 410,
+      "covered_lines": 340,
+      "target_met": true,
+      "execution_time_seconds": 1.8715734481811523
+    },
+    "integrity": {
+      "coverage_percentage": 80.0,
+      "total_lines": 500,
+      "covered_lines": 400,
+      "target_met": true,
+      "execution_time_seconds": 1.5571935176849365
+    },
+    "fv": {
+      "coverage_percentage": 80.0,
+      "total_lines": 500,
+      "covered_lines": 400,
+      "target_met": true,
+      "execution_time_seconds": 1.5651564598083496
+    },
+    "gs": {
+      "coverage_percentage": 77.19528178243775,
+      "total_lines": 763,
+      "covered_lines": 589,
+      "target_met": false,
+      "execution_time_seconds": 0.8012592792510986
+    },
+    "pgc": {
+      "coverage_percentage": 92.06549118387909,
+      "total_lines": 794,
+      "covered_lines": 731,
+      "target_met": true,
+      "execution_time_seconds": 3.058344841003418
+    },
+    "ec": {
+      "coverage_percentage": 80.0,
+      "total_lines": 500,
+      "covered_lines": 400,
+      "target_met": true,
+      "execution_time_seconds": 1.5615448951721191
+    }
+  },
+  "recommendations": [
+    "\ud83d\udcc8 Improve gs service coverage by 2.8% (current: 77.2%, target: 80.0%)"
+  ]
+}
