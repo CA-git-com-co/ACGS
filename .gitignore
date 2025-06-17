@@ -310,3 +310,7 @@ qpe_service
 # Alembic migration artifacts
 alembic.ini
 **/alembic.ini
+# Migrations backup
+migrations/backups
+**/migrations/backups
+backups

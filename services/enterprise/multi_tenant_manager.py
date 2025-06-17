@@ -333,6 +333,108 @@ class TenantIsolationManager:
             
             return tenants
 
+    async def update_tenant(self, tenant_id: str, update_data: Dict[str, Any]) -> Optional[TenantConfig]:
+        """Update tenant configuration"""
+        tenant = await self.get_tenant(tenant_id)
+        if not tenant:
+            return None
+
+        # Build update query dynamically
+        update_fields = []
+        update_values = []
+        param_count = 1
+
+        for field, value in update_data.items():
+            if field in ['name', 'max_users', 'max_policies', 'max_governance_actions_per_hour',
+                        'storage_quota_gb', 'features', 'status']:
+                update_fields.append(f"{field} = ${param_count}")
+                if field == 'features':
+                    update_values.append(json.dumps(value))
+                else:
+                    update_values.append(value)
+                param_count += 1
+
+        if not update_fields:
+            return tenant
+
+        update_values.append(tenant_id)  # For WHERE clause
+
+        async with self.db_pool.acquire() as conn:
+            await conn.execute(f"""
+                UPDATE tenants
+                SET {', '.join(update_fields)}
+                WHERE tenant_id = ${param_count}
+            """, *update_values)
+
+        # Update cache
+        await self.redis_client.delete(f"tenant:{tenant_id}")
+
+        # Return updated tenant
+        return await self.get_tenant(tenant_id)
+
+    async def delete_tenant(self, tenant_id: str) -> bool:
+        """Soft delete tenant (set status to 'deleted')"""
+        tenant = await self.get_tenant(tenant_id)
+        if not tenant:
+            return False
+
+        async with self.db_pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE tenants
+                SET status = 'deleted'
+                WHERE tenant_id = $1
+            """, tenant_id)
+
+        # Remove from cache
+        await self.redis_client.delete(f"tenant:{tenant_id}")
+
+        logger.info(f"Deleted tenant {tenant_id}")
+        return True
+
+    async def get_tenant_metrics(self, tenant_id: str) -> Optional[TenantMetrics]:
+        """Get tenant usage metrics"""
+        tenant = await self.get_tenant(tenant_id)
+        if not tenant:
+            return None
+
+        # Get metrics from database
+        async with self.db_pool.acquire() as conn:
+            row = await conn.fetchrow("""
+                SELECT
+                    COUNT(DISTINCT user_id) as active_users,
+                    COUNT(DISTINCT policy_id) as total_policies,
+                    COALESCE(SUM(CASE WHEN created_at > NOW() - INTERVAL '1 hour' THEN 1 ELSE 0 END), 0) as governance_actions_last_hour,
+                    COALESCE(SUM(storage_used_mb), 0) / 1024.0 as storage_used_gb
+                FROM tenant_usage
+                WHERE tenant_id = $1
+            """, tenant_id)
+
+        if not row:
+            # Return default metrics if no data
+            return TenantMetrics(
+                tenant_id=tenant_id,
+                active_users=0,
+                total_policies=0,
+                governance_actions_last_hour=0,
+                storage_used_gb=0.0,
+                response_time_avg_ms=50.0,
+                uptime_percentage=99.9,
+                constitutional_compliance_score=100.0,
+                last_updated=datetime.now()
+            )
+
+        return TenantMetrics(
+            tenant_id=tenant_id,
+            active_users=row['active_users'] or 0,
+            total_policies=row['total_policies'] or 0,
+            governance_actions_last_hour=row['governance_actions_last_hour'] or 0,
+            storage_used_gb=float(row['storage_used_gb'] or 0.0),
+            response_time_avg_ms=50.0,  # Mock data
+            uptime_percentage=99.9,     # Mock data
+            constitutional_compliance_score=100.0,  # Mock data
+            last_updated=datetime.now()
+        )
+
 
 class TenantMiddleware:
     """FastAPI middleware for tenant isolation"""

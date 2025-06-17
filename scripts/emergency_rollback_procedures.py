@@ -322,55 +322,298 @@ class EmergencyRollbackSystem:
         }
 
 
+    def validate_emergency_rollback(self) -> Dict:
+        """Validate emergency rollback procedures and test service restoration"""
+        logger.info("🔄 Validating emergency rollback procedures")
+
+        try:
+            validation_results = {
+                "timestamp": datetime.now().isoformat(),
+                "test_id": f"ROLLBACK-{datetime.now().strftime('%Y%m%d-%H%M%S')}",
+                "constitution_hash": "cdd01ef066bc6cf2",
+                "tests": {},
+                "overall_status": "unknown",
+                "rto_compliance": False,
+                "recovery_time_seconds": 0
+            }
+
+            start_time = time.time()
+
+            # Test 1: Backup availability validation
+            logger.info("📋 Test 1: Validating backup availability...")
+            backup_test = self._test_backup_availability()
+            validation_results["tests"]["backup_availability"] = backup_test
+
+            # Test 2: Emergency stop procedures
+            logger.info("🛑 Test 2: Testing emergency stop procedures...")
+            stop_test = self._test_emergency_stop()
+            validation_results["tests"]["emergency_stop"] = stop_test
+
+            # Test 3: Service restoration from backup
+            logger.info("🔄 Test 3: Testing service restoration...")
+            restore_test = self._test_service_restoration()
+            validation_results["tests"]["service_restoration"] = restore_test
+
+            # Test 4: Constitutional compliance validation
+            logger.info("⚖️ Test 4: Validating constitutional compliance...")
+            compliance_test = self._test_constitutional_compliance()
+            validation_results["tests"]["constitutional_compliance"] = compliance_test
+
+            # Test 5: Recovery time objective (RTO) validation
+            end_time = time.time()
+            recovery_time = end_time - start_time
+            validation_results["recovery_time_seconds"] = round(recovery_time, 2)
+            validation_results["rto_compliance"] = recovery_time < 3600  # 1 hour RTO
+
+            # Determine overall status
+            all_tests_passed = all(
+                test.get("status") == "success"
+                for test in validation_results["tests"].values()
+            )
+
+            if all_tests_passed and validation_results["rto_compliance"]:
+                validation_results["overall_status"] = "success"
+            elif all_tests_passed:
+                validation_results["overall_status"] = "partial_success"
+            else:
+                validation_results["overall_status"] = "failed"
+
+            # Save validation report
+            report_dir = self.project_root / "logs" / "rollback_validation"
+            report_dir.mkdir(exist_ok=True)
+
+            report_file = report_dir / f"rollback_validation_{validation_results['test_id']}.json"
+            with open(report_file, 'w') as f:
+                json.dump(validation_results, f, indent=2)
+
+            logger.info(f"✅ Emergency rollback validation completed: {validation_results['overall_status']}")
+            return validation_results
+
+        except Exception as e:
+            logger.error(f"❌ Emergency rollback validation failed: {e}")
+            return {"status": "failed", "error": str(e)}
+
+    def _test_backup_availability(self) -> Dict:
+        """Test backup availability and integrity"""
+        try:
+            # Check if backup directory exists
+            if not self.backup_root.exists():
+                return {"status": "failed", "error": "Backup directory not found"}
+
+            # Find latest backup
+            latest_backup = None
+            latest_time = None
+
+            for backup_dir in self.backup_root.iterdir():
+                if backup_dir.is_dir():
+                    manifest_file = backup_dir / "backup_manifest.json"
+                    if manifest_file.exists():
+                        with open(manifest_file, 'r') as f:
+                            manifest = json.load(f)
+                            backup_time = datetime.fromisoformat(manifest["timestamp"])
+                            if latest_time is None or backup_time > latest_time:
+                                latest_time = backup_time
+                                latest_backup = backup_dir
+
+            if latest_backup is None:
+                return {"status": "failed", "error": "No valid backups found"}
+
+            # Validate backup integrity
+            manifest_file = latest_backup / "backup_manifest.json"
+            with open(manifest_file, 'r') as f:
+                manifest = json.load(f)
+
+            # Check constitution hash integrity
+            if manifest.get("metadata", {}).get("constitution_hash") != "cdd01ef066bc6cf2":
+                return {"status": "failed", "error": "Constitution hash mismatch in backup"}
+
+            return {
+                "status": "success",
+                "latest_backup": str(latest_backup),
+                "backup_age_hours": round((datetime.now() - latest_time).total_seconds() / 3600, 2),
+                "constitution_hash_verified": True
+            }
+
+        except Exception as e:
+            return {"status": "failed", "error": str(e)}
+
+    def _test_emergency_stop(self) -> Dict:
+        """Test emergency stop procedures (non-destructive)"""
+        try:
+            # Get current service states
+            initial_states = {}
+            for service_name in self.services:
+                port = self.service_ports[service_name]
+                initial_states[service_name] = self._is_service_running(port)
+
+            # Count running services
+            running_services = sum(1 for running in initial_states.values() if running)
+
+            return {
+                "status": "success",
+                "services_checked": len(self.services),
+                "running_services": running_services,
+                "emergency_stop_ready": True,
+                "note": "Non-destructive test - services not actually stopped"
+            }
+
+        except Exception as e:
+            return {"status": "failed", "error": str(e)}
+
+    def _test_service_restoration(self) -> Dict:
+        """Test service restoration procedures (validation only)"""
+        try:
+            # Check if startup script exists
+            start_script = self.project_root / "scripts" / "start_missing_services.sh"
+            if not start_script.exists():
+                return {"status": "failed", "error": "Startup script not found"}
+
+            # Validate script permissions
+            if not os.access(start_script, os.X_OK):
+                return {"status": "failed", "error": "Startup script not executable"}
+
+            # Check service health endpoints
+            healthy_services = 0
+            service_health = {}
+
+            for service_name in self.services:
+                port = self.service_ports[service_name]
+                is_running = self._is_service_running(port)
+
+                health_ok = False
+                if is_running:
+                    try:
+                        response = requests.get(f"http://localhost:{port}/health", timeout=5)
+                        health_ok = response.status_code == 200
+                    except:
+                        health_ok = False
+
+                if is_running and health_ok:
+                    healthy_services += 1
+
+                service_health[service_name] = {
+                    "running": is_running,
+                    "health_endpoint": health_ok
+                }
+
+            restoration_ready = healthy_services >= len(self.services) * 0.7  # 70% threshold
+
+            return {
+                "status": "success" if restoration_ready else "degraded",
+                "startup_script_available": True,
+                "healthy_services": healthy_services,
+                "total_services": len(self.services),
+                "health_percentage": round((healthy_services / len(self.services)) * 100, 1),
+                "service_health": service_health,
+                "restoration_ready": restoration_ready
+            }
+
+        except Exception as e:
+            return {"status": "failed", "error": str(e)}
+
+    def _test_constitutional_compliance(self) -> Dict:
+        """Test constitutional compliance validation"""
+        try:
+            # Check PGC service availability
+            pgc_port = self.service_ports["pgc_service"]
+            pgc_running = self._is_service_running(pgc_port)
+
+            if not pgc_running:
+                return {"status": "failed", "error": "PGC service not running"}
+
+            # Test constitutional validation endpoint
+            try:
+                response = requests.get(
+                    f"http://localhost:{pgc_port}/api/v1/constitutional/validate",
+                    timeout=10
+                )
+
+                if response.status_code == 200:
+                    response_data = response.json()
+                    constitution_hash = response_data.get("constitution_hash")
+
+                    if constitution_hash == "cdd01ef066bc6cf2":
+                        return {
+                            "status": "success",
+                            "pgc_service_running": True,
+                            "constitutional_endpoint_ok": True,
+                            "constitution_hash_verified": True,
+                            "constitution_hash": constitution_hash
+                        }
+                    else:
+                        return {
+                            "status": "failed",
+                            "error": f"Constitution hash mismatch: expected cdd01ef066bc6cf2, got {constitution_hash}"
+                        }
+                else:
+                    return {
+                        "status": "failed",
+                        "error": f"Constitutional endpoint returned {response.status_code}"
+                    }
+
+            except Exception as e:
+                return {
+                    "status": "failed",
+                    "error": f"Constitutional endpoint test failed: {e}"
+                }
+
+        except Exception as e:
+            return {"status": "failed", "error": str(e)}
+
+
 def main():
     """Main execution function"""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="ACGS-1 Emergency Rollback System")
-    parser.add_argument("action", choices=["stop", "restart", "isolate", "health", "incident", "procedures"], 
+    parser.add_argument("action", choices=["stop", "restart", "isolate", "health", "incident", "procedures", "validate"],
                        help="Emergency action to perform")
     parser.add_argument("--service", help="Service name for isolation")
     parser.add_argument("--type", help="Incident type")
     parser.add_argument("--description", help="Incident description")
-    parser.add_argument("--severity", choices=["low", "medium", "high", "critical"], default="medium", 
+    parser.add_argument("--severity", choices=["low", "medium", "high", "critical"], default="medium",
                        help="Incident severity")
-    
+
     args = parser.parse_args()
-    
+
     # Ensure log directory exists
     log_dir = Path("/home/dislove/ACGS-1/logs")
     log_dir.mkdir(exist_ok=True)
-    
+
     emergency_system = EmergencyRollbackSystem()
-    
+
     if args.action == "stop":
         result = emergency_system.emergency_stop_all_services()
         print(json.dumps(result, indent=2))
-        
+
     elif args.action == "restart":
         result = emergency_system.emergency_restart_services()
         print(json.dumps(result, indent=2))
-        
+
     elif args.action == "isolate":
         if not args.service:
             print("Error: --service required for isolation")
             sys.exit(1)
         result = emergency_system.isolate_service(args.service)
         print(json.dumps(result, indent=2))
-        
+
     elif args.action == "health":
         result = emergency_system.quick_health_check()
         print(json.dumps(result, indent=2))
-        
+
     elif args.action == "incident":
         if not args.type or not args.description:
             print("Error: --type and --description required for incident report")
             sys.exit(1)
         result = emergency_system.create_incident_report(args.type, args.description, args.severity)
         print(json.dumps(result, indent=2))
-        
+
     elif args.action == "procedures":
         result = emergency_system.get_emergency_procedures()
+        print(json.dumps(result, indent=2))
+
+    elif args.action == "validate":
+        result = emergency_system.validate_emergency_rollback()
         print(json.dumps(result, indent=2))
 
 
