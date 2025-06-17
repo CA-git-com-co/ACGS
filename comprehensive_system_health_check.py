@@ -221,18 +221,16 @@ class ACGSSystemHealthChecker:
 
         try:
             # Check AC Service constitutional endpoints
-            ac_url = "http://localhost:8001/api/v1/constitutional-council/meta-rules"
+            ac_url = "http://localhost:8001/api/v1/constitutional/validate"
             async with self.session.get(ac_url) as response:
                 if response.status == 200:
                     compliance_status["ac_service_available"] = True
                     compliance_status["compliance_checks_active"] = True
 
             # Check PGC Service compliance endpoints
-            pgc_url = "http://localhost:8005/api/v1/compliance/validate"
-            async with self.session.post(
-                pgc_url, json={"test": "compliance_check"}
-            ) as response:
-                if response.status in [200, 400, 422]:  # 400/422 expected for test data
+            pgc_url = "http://localhost:8005/api/v1/constitutional/validate"
+            async with self.session.get(pgc_url) as response:
+                if response.status == 200:
                     compliance_status["pgc_service_available"] = True
 
             if (

@@ -1,0 +1,187 @@
+# HELP acgs_service_response_time_seconds Service response time in seconds
+# TYPE acgs_service_response_time_seconds gauge
+acgs_service_response_time_seconds{endpoint="health",service="auth_service"} 0.003116607666015625
+acgs_service_response_time_seconds{endpoint="health",service="ac_service"} 0.001463174819946289
+acgs_service_response_time_seconds{endpoint="health",service="integrity_service"} 0.002801179885864258
+acgs_service_response_time_seconds{endpoint="health",service="fv_service"} 0.0009500980377197266
+acgs_service_response_time_seconds{endpoint="health",service="gs_service"} 0.001321554183959961
+acgs_service_response_time_seconds{endpoint="health",service="pgc_service"} 0.09599447250366211
+acgs_service_response_time_seconds{endpoint="constitutional_validate",service="pgc_service"} 0.0013508796691894531
+acgs_service_response_time_seconds{endpoint="health",service="ec_service"} 0.0011637210845947266
+# HELP acgs_service_response_time_histogram Service response time histogram
+# TYPE acgs_service_response_time_histogram histogram
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.005",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.01",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.025",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.05",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.075",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.1",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.25",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.5",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.75",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="1.0",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="2.5",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="5.0",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="7.5",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="10.0",service="auth_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="+Inf",service="auth_service"} 1.0
+acgs_service_response_time_histogram_count{endpoint="health",service="auth_service"} 1.0
+acgs_service_response_time_histogram_sum{endpoint="health",service="auth_service"} 0.003116607666015625
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.005",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.01",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.025",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.05",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.075",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.1",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.25",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.5",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.75",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="1.0",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="2.5",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="5.0",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="7.5",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="10.0",service="ac_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="+Inf",service="ac_service"} 1.0
+acgs_service_response_time_histogram_count{endpoint="health",service="ac_service"} 1.0
+acgs_service_response_time_histogram_sum{endpoint="health",service="ac_service"} 0.001463174819946289
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.005",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.01",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.025",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.05",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.075",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.1",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.25",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.5",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.75",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="1.0",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="2.5",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="5.0",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="7.5",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="10.0",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="+Inf",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_count{endpoint="health",service="integrity_service"} 1.0
+acgs_service_response_time_histogram_sum{endpoint="health",service="integrity_service"} 0.002801179885864258
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.005",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.01",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.025",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.05",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.075",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.1",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.25",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.5",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.75",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="1.0",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="2.5",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="5.0",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="7.5",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="10.0",service="fv_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="+Inf",service="fv_service"} 1.0
+acgs_service_response_time_histogram_count{endpoint="health",service="fv_service"} 1.0
+acgs_service_response_time_histogram_sum{endpoint="health",service="fv_service"} 0.0009500980377197266
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.005",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.01",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.025",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.05",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.075",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.1",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.25",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.5",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.75",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="1.0",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="2.5",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="5.0",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="7.5",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="10.0",service="gs_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="+Inf",service="gs_service"} 1.0
+acgs_service_response_time_histogram_count{endpoint="health",service="gs_service"} 1.0
+acgs_service_response_time_histogram_sum{endpoint="health",service="gs_service"} 0.001321554183959961
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.005",service="pgc_service"} 0.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.01",service="pgc_service"} 0.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.025",service="pgc_service"} 0.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.05",service="pgc_service"} 0.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.075",service="pgc_service"} 0.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.1",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.25",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.5",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.75",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="1.0",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="2.5",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="5.0",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="7.5",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="10.0",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="+Inf",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_count{endpoint="health",service="pgc_service"} 1.0
+acgs_service_response_time_histogram_sum{endpoint="health",service="pgc_service"} 0.09599447250366211
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.005",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.01",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.025",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.05",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.075",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.1",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.25",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.5",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="0.75",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="1.0",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="2.5",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="5.0",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="7.5",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="10.0",service="ec_service"} 1.0
+acgs_service_response_time_histogram_bucket{endpoint="health",le="+Inf",service="ec_service"} 1.0
+acgs_service_response_time_histogram_count{endpoint="health",service="ec_service"} 1.0
+acgs_service_response_time_histogram_sum{endpoint="health",service="ec_service"} 0.0011637210845947266
+# HELP acgs_service_response_time_histogram_created Service response time histogram
+# TYPE acgs_service_response_time_histogram_created gauge
+acgs_service_response_time_histogram_created{endpoint="health",service="auth_service"} 1.750096789619776e+09
+acgs_service_response_time_histogram_created{endpoint="health",service="ac_service"} 1.7500967896213746e+09
+acgs_service_response_time_histogram_created{endpoint="health",service="integrity_service"} 1.7500967896251323e+09
+acgs_service_response_time_histogram_created{endpoint="health",service="fv_service"} 1.7500967896261547e+09
+acgs_service_response_time_histogram_created{endpoint="health",service="gs_service"} 1.75009678962755e+09
+acgs_service_response_time_histogram_created{endpoint="health",service="pgc_service"} 1.7500967897236357e+09
+acgs_service_response_time_histogram_created{endpoint="health",service="ec_service"} 1.7500967897263837e+09
+# HELP acgs_service_requests_total Total service requests
+# TYPE acgs_service_requests_total counter
+acgs_service_requests_total{endpoint="health",service="auth_service",status="200"} 1.0
+acgs_service_requests_total{endpoint="health",service="ac_service",status="200"} 1.0
+acgs_service_requests_total{endpoint="health",service="integrity_service",status="200"} 1.0
+acgs_service_requests_total{endpoint="health",service="fv_service",status="200"} 1.0
+acgs_service_requests_total{endpoint="health",service="gs_service",status="200"} 1.0
+acgs_service_requests_total{endpoint="health",service="pgc_service",status="200"} 1.0
+acgs_service_requests_total{endpoint="health",service="ec_service",status="200"} 1.0
+# HELP acgs_service_requests_created Total service requests
+# TYPE acgs_service_requests_created gauge
+acgs_service_requests_created{endpoint="health",service="auth_service",status="200"} 1.750096789619817e+09
+acgs_service_requests_created{endpoint="health",service="ac_service",status="200"} 1.75009678962141e+09
+acgs_service_requests_created{endpoint="health",service="integrity_service",status="200"} 1.7500967896251562e+09
+acgs_service_requests_created{endpoint="health",service="fv_service",status="200"} 1.7500967896261773e+09
+acgs_service_requests_created{endpoint="health",service="gs_service",status="200"} 1.7500967896275823e+09
+acgs_service_requests_created{endpoint="health",service="pgc_service",status="200"} 1.7500967897236674e+09
+acgs_service_requests_created{endpoint="health",service="ec_service",status="200"} 1.7500967897264051e+09
+# HELP acgs_service_errors_total Total service errors
+# TYPE acgs_service_errors_total counter
+acgs_service_errors_total{error_type="health_check_failed",service="research_service"} 1.0
+# HELP acgs_service_errors_created Total service errors
+# TYPE acgs_service_errors_created gauge
+acgs_service_errors_created{error_type="health_check_failed",service="research_service"} 1.75009678973012e+09
+# HELP acgs_service_availability Service availability (0-1)
+# TYPE acgs_service_availability gauge
+acgs_service_availability{service="auth_service"} 1.0
+acgs_service_availability{service="ac_service"} 1.0
+acgs_service_availability{service="integrity_service"} 1.0
+acgs_service_availability{service="fv_service"} 1.0
+acgs_service_availability{service="gs_service"} 1.0
+acgs_service_availability{service="pgc_service"} 1.0
+acgs_service_availability{service="ec_service"} 1.0
+acgs_service_availability{service="research_service"} 0.0
+# HELP acgs_constitutional_compliance_score Constitutional compliance score (0-1)
+# TYPE acgs_constitutional_compliance_score gauge
+acgs_constitutional_compliance_score{service="ac_service"} 1.0
+acgs_constitutional_compliance_score{service="pgc_service"} 1.0
+# HELP acgs_governance_operations_total Total governance operations
+# TYPE acgs_governance_operations_total counter
+acgs_governance_operations_total{operation_type="constitutional_validation",status="success"} 1.0
+# HELP acgs_governance_operations_created Total governance operations
+# TYPE acgs_governance_operations_created gauge
+acgs_governance_operations_created{operation_type="constitutional_validation",status="success"} 1.7500967897251778e+09
+# HELP acgs_system_health_score Overall system health score (0-1)
+# TYPE acgs_system_health_score gauge
+acgs_system_health_score 0.875

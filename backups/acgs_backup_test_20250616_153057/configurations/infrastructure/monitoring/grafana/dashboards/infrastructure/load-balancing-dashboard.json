@@ -1,0 +1,329 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Load Balancing & Circuit Breaker Dashboard",
+    "tags": ["acgs", "infrastructure", "load-balancing", "haproxy", "circuit-breaker"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "HAProxy Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"haproxy-exporter\"}",
+            "legendFormat": "HAProxy Exporter"
+          },
+          {
+            "expr": "up{job=\"haproxy-stats\"}",
+            "legendFormat": "HAProxy Stats"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Down"}}, "type": "value"},
+              {"options": {"1": {"text": "Up"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Request Distribution Across Services",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(haproxy_backend_http_requests_total{job=\"haproxy-exporter\"}[5m])",
+            "legendFormat": "{{proxy}} - HTTP Requests"
+          },
+          {
+            "expr": "rate(acgs_load_balancer_requests_total[5m])",
+            "legendFormat": "{{backend_service}} - Legacy"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Requests/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Circuit Breaker Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_circuit_breaker_status",
+            "legendFormat": "{{service}} - {{state}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 0.5},
+                {"color": "red", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Closed"}}, "type": "value"},
+              {"options": {"0.5": {"text": "Half-Open"}}, "type": "value"},
+              {"options": {"1": {"text": "Open"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Backend Server Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "haproxy_server_status{job=\"haproxy-exporter\"}",
+            "legendFormat": "{{proxy}}/{{server}}"
+          },
+          {
+            "expr": "acgs_backend_server_health",
+            "legendFormat": "{{service}}:{{port}} - Legacy"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Unhealthy"}}, "type": "value"},
+              {"options": {"1": {"text": "Healthy"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 4}
+      },
+      {
+        "id": 5,
+        "title": "Load Balancer Response Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(acgs_load_balancer_response_time_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile - {{backend_service}}"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(acgs_load_balancer_response_time_seconds_bucket[5m]))",
+            "legendFormat": "50th percentile - {{backend_service}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 1.0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Session Affinity Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_session_affinity_operations_total[5m])",
+            "legendFormat": "{{operation_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 7,
+        "title": "Circuit Breaker Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_circuit_breaker_operations_total[5m])",
+            "legendFormat": "{{service}} - {{operation}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Failover Events",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_failover_events_total[5m])",
+            "legendFormat": "{{service}} - {{failover_type}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Events/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 9,
+        "title": "Service Discovery Operations",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_service_discovery_operations_total[5m])",
+            "legendFormat": "{{operation_type}} - {{result}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 10,
+        "title": "Connection Pool Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs_connection_pool_usage",
+            "legendFormat": "{{service}} - {{pool_type}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Connections",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 11,
+        "title": "HAProxy Server Response Times",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "haproxy_server_response_time_average_seconds{job=\"haproxy-exporter\"}",
+            "legendFormat": "{{proxy}}/{{server}} - Avg Response Time"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "max": 1.0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32}
+      },
+      {
+        "id": 12,
+        "title": "HAProxy Backend Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "haproxy_backend_status{job=\"haproxy-exporter\"}",
+            "legendFormat": "{{proxy}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Down"}}, "type": "value"},
+              {"options": {"1": {"text": "Up"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32}
+      },
+      {
+        "id": 13,
+        "title": "HAProxy Request Rate by Backend",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(haproxy_backend_http_requests_total{job=\"haproxy-exporter\"}[5m])",
+            "legendFormat": "{{proxy}} - Requests/sec"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Requests/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 40}
+      },
+      {
+        "id": 14,
+        "title": "HAProxy Error Rates",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(haproxy_server_http_responses_total{job=\"haproxy-exporter\",code=~\"4..|5..\"}[5m])",
+            "legendFormat": "{{proxy}}/{{server}} - {{code}} Errors"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Errors/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 40}
+      }
+    ]
+  }
+}

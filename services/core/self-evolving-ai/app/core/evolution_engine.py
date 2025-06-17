@@ -434,8 +434,9 @@ class EvolutionEngine:
             # Check service integrations
             for service_name, client in self.service_clients.items():
                 try:
-                    # Simple connectivity check
-                    async with client.get(f"{client.base_url}/health", timeout=5) as response:
+                    # Simple connectivity check - use the stored base URL
+                    base_url = getattr(client, '_base_url', f'http://localhost:800{list(self.service_clients.keys()).index(service_name)}')
+                    async with client.get(f"{base_url}/health", timeout=5) as response:
                         if response.status == 200:
                             health_status["checks"][f"{service_name}_integration"] = {
                                 "healthy": True,
@@ -507,10 +508,10 @@ class EvolutionEngine:
         
         for service_name, url in service_urls.items():
             timeout = aiohttp.ClientTimeout(total=self.settings.SERVICE_TIMEOUT)
-            self.service_clients[service_name] = aiohttp.ClientSession(
-                base_url=url,
-                timeout=timeout,
-            )
+            # Store the base URL separately since aiohttp ClientSession doesn't store it as an attribute
+            self.service_clients[service_name] = aiohttp.ClientSession(timeout=timeout)
+            # Store the base URL for later use
+            self.service_clients[service_name]._base_url = url
         
         logger.info("Service clients initialized for ACGS-1 integration")
     
