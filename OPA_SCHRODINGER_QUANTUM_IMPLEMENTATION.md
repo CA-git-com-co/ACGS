@@ -204,7 +204,7 @@ func CollapseWaveFunction(policy *QuantumPolicy, reason CollapseReason) State {
 
 ### **Service Configuration** ✅
 
-**Location**: `infrastructure/docker/docker-compose.yml`
+**Location**: `infrastructure/docker/infrastructure/docker/docker-compose.yml`
 
 #### **QPE Service**
 ```yaml
@@ -305,7 +305,7 @@ pgc_service:
 2. **Service Deployment**:
    ```bash
    cd /home/dislove/ACGS-1
-   docker-compose up -d qpe_service pgc_service
+   docker-compose -f infrastructure/docker/docker-compose.yml up -d qpe_service pgc_service
    ```
 
 3. **Health Verification**:

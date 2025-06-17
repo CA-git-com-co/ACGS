@@ -163,7 +163,7 @@ docker run -p 8007:8007 acgs-self-evolving-ai
 ### Kubernetes
 ```bash
 # Deploy to Kubernetes
-kubectl apply -f k8s/deployment.yaml
+kubectl apply -f infrastructure/kubernetes/deployment.yaml
 ```
 
 ## Monitoring

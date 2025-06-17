@@ -8,7 +8,7 @@ as part of the WINA (Weight Informed Neuron Activation) optimization.
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, Tuple
+from typing import Any
 
 import numpy as np
 import torch
@@ -36,7 +36,7 @@ class SVDTransformationResult:
         numerical_stability: Numerical stability metrics
     """
 
-    original_shape: Tuple[int, ...]
+    original_shape: tuple[int, ...]
     transformed_tensor: torch.Tensor
     u_matrix: torch.Tensor
     s_values: torch.Tensor
@@ -44,7 +44,7 @@ class SVDTransformationResult:
     rank_reduction: float
     compression_ratio: float
     transformation_time: float
-    numerical_stability: Dict[str, float]
+    numerical_stability: dict[str, float]
 
 
 class SVDTransformation:
@@ -67,7 +67,7 @@ class SVDTransformation:
             config: WINA configuration
         """
         self.config = config
-        self._transformation_cache: Dict[str, SVDTransformationResult] = {}
+        self._transformation_cache: dict[str, SVDTransformationResult] = {}
 
         logger.info(
             f"Initialized SVD transformation with rank reduction: {config.svd_rank_reduction}"
@@ -91,7 +91,9 @@ class SVDTransformation:
             SVDTransformationResult containing transformation details
         """
         # Check cache first
-        cache_key = f"{layer_name}_{weight_matrix.shape}_{self.config.svd_rank_reduction}"
+        cache_key = (
+            f"{layer_name}_{weight_matrix.shape}_{self.config.svd_rank_reduction}"
+        )
         if not force_recompute and cache_key in self._transformation_cache:
             logger.debug(f"Using cached SVD transformation for {layer_name}")
             return self._transformation_cache[cache_key]
@@ -134,7 +136,9 @@ class SVDTransformation:
                     weight_matrix, transformed_matrix, U_reduced, S_reduced, Vt_reduced
                 )
             except Exception as e:
-                logger.warning(f"Numerical stability assessment failed for {layer_name}: {e}")
+                logger.warning(
+                    f"Numerical stability assessment failed for {layer_name}: {e}"
+                )
                 numerical_stability = {"assessment_failed": 1.0, "error": str(e)}
 
             result = SVDTransformationResult(
@@ -170,7 +174,7 @@ class SVDTransformation:
         original_matrix: torch.Tensor,
         transformed_matrix: torch.Tensor,
         tolerance: float = 1e-6,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Verify computational invariance between original and transformed matrices.
 
@@ -200,7 +204,9 @@ class SVDTransformation:
                 }
 
             # Calculate various distance metrics
-            frobenius_norm_diff = torch.norm(original_matrix - transformed_matrix, p="fro").item()
+            frobenius_norm_diff = torch.norm(
+                original_matrix - transformed_matrix, p="fro"
+            ).item()
             original_frobenius_norm = torch.norm(original_matrix, p="fro").item()
             relative_error = frobenius_norm_diff / (original_frobenius_norm + 1e-8)
 
@@ -210,7 +216,9 @@ class SVDTransformation:
             spectral_norm_diff = abs(spectral_norm_orig - spectral_norm_trans)
 
             # Calculate element-wise max difference
-            max_element_diff = torch.max(torch.abs(original_matrix - transformed_matrix)).item()
+            max_element_diff = torch.max(
+                torch.abs(original_matrix - transformed_matrix)
+            ).item()
 
             # Check if invariance is maintained within tolerance
             invariance_maintained = relative_error < tolerance
@@ -246,7 +254,9 @@ class SVDTransformation:
             raise WINATransformationError("Input must be a torch.Tensor")
 
         if matrix.dim() != 2:
-            raise WINATransformationError(f"Input must be 2D matrix, got {matrix.dim()}D")
+            raise WINATransformationError(
+                f"Input must be 2D matrix, got {matrix.dim()}D"
+            )
 
         if matrix.shape[0] == 0 or matrix.shape[1] == 0:
             raise WINATransformationError("Input matrix cannot have zero dimensions")
@@ -263,7 +273,9 @@ class SVDTransformation:
         if rank == 0:
             raise WINATransformationError("Input matrix has zero rank")
 
-        logger.debug(f"Input matrix validation passed: shape={matrix.shape}, rank={rank}")
+        logger.debug(
+            f"Input matrix validation passed: shape={matrix.shape}, rank={rank}"
+        )
 
     def _assess_numerical_stability(
         self,
@@ -272,7 +284,7 @@ class SVDTransformation:
         U: torch.Tensor,
         S: torch.Tensor,
         Vt: torch.Tensor,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Assess numerical stability of SVD transformation.
 
@@ -296,11 +308,15 @@ class SVDTransformation:
 
             # Singular value distribution
             s_values = S.detach().cpu().numpy()
-            singular_value_ratio = s_values[0] / s_values[-1] if len(s_values) > 1 else 1.0
+            singular_value_ratio = (
+                s_values[0] / s_values[-1] if len(s_values) > 1 else 1.0
+            )
 
             # Reconstruction error
             reconstruction_error = torch.norm(original - transformed).item()
-            relative_reconstruction_error = reconstruction_error / torch.norm(original).item()
+            relative_reconstruction_error = (
+                reconstruction_error / torch.norm(original).item()
+            )
 
             stability_metrics = {
                 "condition_number": condition_number,
@@ -319,7 +335,7 @@ class SVDTransformation:
             logger.warning(f"Numerical stability assessment failed: {e}")
             return {"assessment_failed": 1.0, "error": str(e)}
 
-    def get_transformation_statistics(self) -> Dict[str, Any]:
+    def get_transformation_statistics(self) -> dict[str, Any]:
         """
         Get statistics about performed transformations.
 
@@ -333,8 +349,12 @@ class SVDTransformation:
 
         stats = {
             "total_transformations": len(results),
-            "average_compression_ratio": np.mean([r.compression_ratio for r in results]),
-            "average_transformation_time": np.mean([r.transformation_time for r in results]),
+            "average_compression_ratio": np.mean(
+                [r.compression_ratio for r in results]
+            ),
+            "average_transformation_time": np.mean(
+                [r.transformation_time for r in results]
+            ),
             "total_transformation_time": sum([r.transformation_time for r in results]),
             "rank_reductions": [r.rank_reduction for r in results],
             "numerical_stability_summary": {
@@ -342,7 +362,10 @@ class SVDTransformation:
                     [r.numerical_stability.get("condition_number", 0) for r in results]
                 ),
                 "average_reconstruction_error": np.mean(
-                    [r.numerical_stability.get("relative_reconstruction_error", 0) for r in results]
+                    [
+                        r.numerical_stability.get("relative_reconstruction_error", 0)
+                        for r in results
+                    ]
                 ),
             },
         }
@@ -380,8 +403,8 @@ class OrthogonalityProtocol:
         logger.info("Initialized orthogonality protocol for WINA")
 
     def apply_protocol(
-        self, weight_matrices: Dict[str, torch.Tensor]
-    ) -> Dict[str, SVDTransformationResult]:
+        self, weight_matrices: dict[str, torch.Tensor]
+    ) -> dict[str, SVDTransformationResult]:
         """
         Apply orthogonality protocol to multiple weight matrices.
 
@@ -397,12 +420,16 @@ class OrthogonalityProtocol:
 
         for layer_name, weight_matrix in weight_matrices.items():
             try:
-                result = self.svd_transformer.transform_weight_matrix(weight_matrix, layer_name)
+                result = self.svd_transformer.transform_weight_matrix(
+                    weight_matrix, layer_name
+                )
                 results[layer_name] = result
 
                 # Verify computational invariance
-                invariance_metrics = self.svd_transformer.verify_computational_invariance(
-                    weight_matrix, result.transformed_tensor
+                invariance_metrics = (
+                    self.svd_transformer.verify_computational_invariance(
+                        weight_matrix, result.transformed_tensor
+                    )
                 )
 
                 if not invariance_metrics["invariance_maintained"]:
@@ -413,14 +440,16 @@ class OrthogonalityProtocol:
 
             except Exception as e:
                 logger.error(f"Orthogonality protocol failed for {layer_name}: {e}")
-                raise WINATransformationError(f"Protocol application failed for {layer_name}: {e}")
+                raise WINATransformationError(
+                    f"Protocol application failed for {layer_name}: {e}"
+                )
 
         logger.info("Orthogonality protocol application completed successfully")
         return results
 
     def validate_protocol_compliance(
-        self, transformation_results: Dict[str, SVDTransformationResult]
-    ) -> Dict[str, bool]:
+        self, transformation_results: dict[str, SVDTransformationResult]
+    ) -> dict[str, bool]:
         """
         Validate that transformation results comply with orthogonality protocol.
 
@@ -439,12 +468,15 @@ class OrthogonalityProtocol:
 
                 # Define compliance criteria
                 criteria = {
-                    "condition_number": stability.get("condition_number", float("inf")) < 1e12,
+                    "condition_number": stability.get("condition_number", float("inf"))
+                    < 1e12,
                     "orthogonality_error": (
                         stability.get("u_orthogonality_error", 1.0) < 1e-6
                         and stability.get("vt_orthogonality_error", 1.0) < 1e-6
                     ),
-                    "reconstruction_error": stability.get("relative_reconstruction_error", 1.0)
+                    "reconstruction_error": stability.get(
+                        "relative_reconstruction_error", 1.0
+                    )
                     < 1e-3,
                     "compression_achieved": result.compression_ratio < 1.0,
                 }

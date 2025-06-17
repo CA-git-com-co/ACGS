@@ -8,9 +8,10 @@ import time
 
 # Enhanced Security Middleware
 try:
-    from services.shared.security_headers_middleware import SecurityHeadersMiddleware
-    from services.shared.rate_limiting_middleware import RateLimitingMiddleware
     from services.shared.input_validation_middleware import InputValidationMiddleware
+    from services.shared.rate_limiting_middleware import RateLimitingMiddleware
+    from services.shared.security_headers_middleware import SecurityHeadersMiddleware
+
     SECURITY_MIDDLEWARE_AVAILABLE = True
 except ImportError:
     SECURITY_MIDDLEWARE_AVAILABLE = False
@@ -37,7 +38,6 @@ else:
     print("⚠️ Security middleware not available")
 
 
-
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
@@ -46,6 +46,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/health")
 async def health_check():
@@ -66,7 +67,10 @@ async def health_check():
             "ac_service": {"status": "connected", "url": "http://localhost:8001"},
             "gs_service": {"status": "connected", "url": "http://localhost:8004"},
             "fv_service": {"status": "connected", "url": "http://localhost:8003"},
-            "integrity_service": {"status": "connected", "url": "http://localhost:8002"},
+            "integrity_service": {
+                "status": "connected",
+                "url": "http://localhost:8002",
+            },
             "pgc_service": {"status": "connected", "url": "http://localhost:8005"},
         },
         "performance": {
@@ -74,8 +78,9 @@ async def health_check():
             "availability_target": ">99.5%",
             "experiment_capacity": "100 concurrent experiments",
         },
-        "message": "Research infrastructure operational"
+        "message": "Research infrastructure operational",
     }
+
 
 @app.get("/api/v1/status")
 async def get_status():
@@ -92,6 +97,7 @@ async def get_status():
         "uptime_seconds": 3600,
     }
 
+
 @app.get("/api/v1/experiments")
 async def list_experiments():
     """List research experiments."""
@@ -100,8 +106,9 @@ async def list_experiments():
         "total": 0,
         "active": 0,
         "completed": 0,
-        "message": "No experiments currently running"
+        "message": "No experiments currently running",
     }
+
 
 @app.get("/api/v1/data")
 async def list_datasets():
@@ -110,8 +117,9 @@ async def list_datasets():
         "datasets": [],
         "total": 0,
         "size_bytes": 0,
-        "message": "No datasets currently stored"
+        "message": "No datasets currently stored",
     }
+
 
 @app.get("/api/v1/analysis")
 async def list_analyses():
@@ -121,8 +129,9 @@ async def list_analyses():
         "total": 0,
         "running": 0,
         "completed": 0,
-        "message": "No analysis jobs currently running"
+        "message": "No analysis jobs currently running",
     }
+
 
 @app.get("/api/v1/automation")
 async def list_automation():
@@ -135,7 +144,7 @@ async def list_automation():
                 "status": "active",
                 "schedule": "daily",
                 "last_run": "2025-06-16T20:00:00Z",
-                "next_run": "2025-06-17T20:00:00Z"
+                "next_run": "2025-06-17T20:00:00Z",
             },
             {
                 "id": "llm-reliability",
@@ -143,13 +152,14 @@ async def list_automation():
                 "status": "active",
                 "schedule": "weekly",
                 "last_run": "2025-06-16T06:00:00Z",
-                "next_run": "2025-06-23T06:00:00Z"
-            }
+                "next_run": "2025-06-23T06:00:00Z",
+            },
         ],
         "total": 2,
         "active": 2,
-        "message": "Automation pipelines operational"
+        "message": "Automation pipelines operational",
     }
+
 
 @app.get("/api/v1/reproducibility")
 async def list_reproducibility():
@@ -159,11 +169,13 @@ async def list_reproducibility():
         "total": 0,
         "passed": 0,
         "failed": 0,
-        "message": "No reproducibility checks currently running"
+        "message": "No reproducibility checks currently running",
     }
+
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
         "simple_research_service:app",
         host="0.0.0.0",

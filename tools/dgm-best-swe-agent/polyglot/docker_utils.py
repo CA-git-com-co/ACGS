@@ -79,8 +79,10 @@ def remove_image(client, image_id, logger=None):
         raise_error = True
     elif logger == "quiet":
         # if logger is "quiet", don't print anything
-        log_info = lambda x: None
-        log_error = lambda x: None
+        def log_info(x):
+            return None
+        def log_error(x):
+            return None
         raise_error = True
     else:
         # if logger is a logger object, use it
@@ -123,8 +125,10 @@ def cleanup_container(client, container, logger):
         raise_error = True
     elif logger == "quiet":
         # if logger is "quiet", don't print anything
-        log_info = lambda x: None
-        log_error = lambda x: None
+        def log_info(x):
+            return None
+        def log_error(x):
+            return None
         raise_error = True
     else:
         # if logger is a logger object, use it

@@ -10,7 +10,7 @@ from utils.git_utils import diff_versus_commit
 
 def modify_cmake_file(cmake_file_path, new_exercise_value):
     # Step 1: Read the CMake file
-    with open(cmake_file_path, "r") as f:
+    with open(cmake_file_path) as f:
         lines = f.readlines()
 
     # Step 2: Find and modify the target line

@@ -10,7 +10,7 @@ Classes:
 """
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class Amendment:
@@ -32,10 +32,10 @@ class Amendment:
         self,
         amendment_id: str,
         target_rule_id: str,
-        proposed_change: Dict[str, Any],
+        proposed_change: dict[str, Any],
         justification: str,
-        proposer_id: Optional[str] = None,
-        timestamp: Optional[datetime] = None,
+        proposer_id: str | None = None,
+        timestamp: datetime | None = None,
     ):
         """
         Initializes an Amendment instance.
@@ -71,7 +71,7 @@ class Amendment:
         self.status = "rejected"
         # Potentially, log reasons or notify proposer
 
-    def get_details(self) -> Dict[str, Any]:
+    def get_details(self) -> dict[str, Any]:
         """
         Returns a dictionary with the details of the amendment.
         """

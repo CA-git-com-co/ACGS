@@ -14,7 +14,6 @@ Functions:
 """
 
 import hashlib
-from typing import Optional
 
 # For digital signatures - requires 'cryptography' library
 # Ensure 'cryptography' is in requirements.txt
@@ -106,8 +105,8 @@ class CryptoService:
 
     def __init__(
         self,
-        private_key_pem: Optional[bytes] = None,
-        public_key_pem: Optional[bytes] = None,
+        private_key_pem: bytes | None = None,
+        public_key_pem: bytes | None = None,
     ):
         """
         Initializes the CryptoService.
@@ -222,7 +221,7 @@ class CryptoService:
             raise
 
     def verify_signature(
-        self, message: str, signature: bytes, public_key_pem: Optional[bytes] = None
+        self, message: str, signature: bytes, public_key_pem: bytes | None = None
     ) -> bool:
         """
         Verifies a signature against a message using the public key.

@@ -122,7 +122,7 @@ class FinalCleanup:
 
         compose_file = self.project_root / "infrastructure/docker/docker-compose.yml"
         if compose_file.exists():
-            with open(compose_file, "r") as f:
+            with open(compose_file) as f:
                 content = f.read()
 
             # Remove any remaining references to src/alphaevolve_gs_engine

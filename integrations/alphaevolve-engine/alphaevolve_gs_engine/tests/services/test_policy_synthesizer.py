@@ -231,7 +231,6 @@ class TestLLMPolicyGenerator(unittest.TestCase):
                 raise Exception("LLM API simulated error")
 
 
-from typing import Dict
 
 
 class FailingLLM(LLMService):  # Minimal LLMService that always fails
@@ -247,11 +246,11 @@ class FailingLLM(LLMService):  # Minimal LLMService that always fails
     def generate_structured_output(
         self,
         prompt: str,
-        output_format: Dict,
+        output_format: dict,
         max_tokens: int = 1,
         temperature: float = 0,
         model: str = None,
-    ) -> Dict:
+    ) -> dict:
         raise Exception("LLM API simulated error for structured")
 
         failing_synthesizer = LLMPolicyGenerator(llm_service=FailingLLM())

@@ -11,7 +11,6 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +25,7 @@ class QuantumagiDeployer:
         self.config = self._load_config()
         self.project_root = Path(__file__).parent.parent
 
-    def _load_config(self) -> Dict:
+    def _load_config(self) -> dict:
         """Load deployment configuration"""
         default_config = {
             "solana_cluster": "devnet",
@@ -48,7 +47,7 @@ class QuantumagiDeployer:
 
         try:
             if os.path.exists(self.config_path):
-                with open(self.config_path, "r") as f:
+                with open(self.config_path) as f:
                     user_config = json.load(f)
                     default_config.update(user_config)
         except Exception as e:
@@ -134,7 +133,7 @@ class QuantumagiDeployer:
 
         # Fallback: read from keypair file
         try:
-            with open(self.config["program_keypair_path"], "r") as f:
+            with open(self.config["program_keypair_path"]) as f:
                 json.load(f)
                 # Convert keypair to program ID (simplified)
                 return "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"  # Placeholder
@@ -169,17 +168,17 @@ class QuantumagiDeployer:
         # For demo, return a sample constitution
         return """
         Quantumagi Constitutional Framework v1.0
-        
+
         Article I: Fundamental Principles
         1. No unauthorized state mutations (PC-001)
         2. Governance approval required for critical operations
         3. Transparency in all policy decisions
-        
+
         Article II: AI Governance
         1. AI systems must operate within constitutional bounds
         2. Prompt governance compiler enforces real-time compliance
         3. Multi-model validation ensures policy reliability
-        
+
         Article III: Democratic Governance
         1. Policy proposals require community voting
         2. Constitutional amendments require supermajority
@@ -200,7 +199,7 @@ class QuantumagiDeployer:
         path = os.path.expanduser(keypair_path)
 
         try:
-            with open(path, "r") as f:
+            with open(path) as f:
                 keypair_data = json.load(f)
                 return Keypair.from_bytes(bytes(keypair_data))
         except Exception as e:
@@ -271,7 +270,7 @@ class QuantumagiDeployer:
             except Exception as e:
                 logger.warning(f"Failed to deploy policy {policy_spec['id']}: {e}")
 
-    async def _deploy_single_policy(self, policy_spec: Dict):
+    async def _deploy_single_policy(self, policy_spec: dict):
         """Deploy a single policy"""
         from client.solana_client import QuantumagiSolanaClient
         from gs_engine.governance_synthesis import PolicyCategory
@@ -295,7 +294,7 @@ class QuantumagiDeployer:
             payer_keypair=deployer_keypair,
         )
 
-        signature = await client.propose_policy_from_principle(
+        await client.propose_policy_from_principle(
             policy_spec["id"], policy_spec["content"], category
         )
 
@@ -350,7 +349,7 @@ class QuantumagiDeployer:
     async def _print_deployment_summary(self):
         """Print deployment summary"""
         summary = f"""
-        
+
 🎉 Quantumagi Deployment Summary
 ================================
 

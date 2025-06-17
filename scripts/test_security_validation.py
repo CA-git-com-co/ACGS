@@ -11,7 +11,7 @@ import json
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -21,7 +21,7 @@ class SecurityTestResult:
     service: str
     test_name: str
     status: str
-    details: Dict[str, Any]
+    details: dict[str, Any]
     response_time_ms: float
 
 
@@ -36,7 +36,7 @@ class SecurityValidator:
             "pgc_service": "http://localhost:8005",
             "ec_service": "http://localhost:8006",
         }
-        self.results: List[SecurityTestResult] = []
+        self.results: list[SecurityTestResult] = []
 
     async def test_security_headers(
         self, service_name: str, base_url: str
@@ -92,7 +92,7 @@ class SecurityValidator:
             async with aiohttp.ClientSession() as session:
                 # Send multiple rapid requests to test rate limiting
                 responses = []
-                for i in range(10):
+                for _i in range(10):
                     try:
                         async with session.get(f"{base_url}/health") as response:
                             responses.append(response.status)
@@ -180,7 +180,7 @@ class SecurityValidator:
             service_name, "Service Health", status, details, response_time
         )
 
-    async def run_comprehensive_validation(self) -> Dict[str, Any]:
+    async def run_comprehensive_validation(self) -> dict[str, Any]:
         """Run comprehensive security validation across all services."""
         print("🔒 ACGS-PGP Security Validation Suite")
         print("=" * 60)
@@ -218,7 +218,7 @@ class SecurityValidator:
 
         return self.generate_report()
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive security assessment report."""
         total_tests = len(self.results)
         passed_tests = len([r for r in self.results if r.status == "PASS"])
@@ -298,7 +298,7 @@ async def main():
     with open("security_validation_report.json", "w") as f:
         json.dump(report, f, indent=2)
 
-    print(f"\n📄 Detailed report saved to: security_validation_report.json")
+    print("\n📄 Detailed report saved to: security_validation_report.json")
 
     return report
 

@@ -27,7 +27,7 @@ Check that the following directories exist and are properly organized:
 - [ ] `applications/shared/hooks/` - Shared React hooks
 - [ ] `applications/shared/types/` - Shared TypeScript types
 - [ ] `applications/governance-dashboard/src/` - Enhanced structure
-- [ ] `applications/legacy-frontend/src/` - Enhanced structure
+- [ ] `applications/legacy-applications/governance-dashboard/src/` - Enhanced structure
 
 ### ✅ Verify File Moves
 Confirm these files were moved correctly (not copied):
@@ -63,11 +63,11 @@ Verify all microservice integration files are intact:
 - [ ] `governance-dashboard/src/services/PublicConsultationService.js`
 
 #### Legacy Frontend Services
-- [ ] `legacy-frontend/src/services/ACService.js`
-- [ ] `legacy-frontend/src/services/GSService.js`
-- [ ] `legacy-frontend/src/services/AuthService.js`
-- [ ] `legacy-frontend/src/services/IntegrityService.js`
-- [ ] `legacy-frontend/src/services/PublicConsultationService.js`
+- [ ] `legacy-applications/governance-dashboard/src/services/ACService.js`
+- [ ] `legacy-applications/governance-dashboard/src/services/GSService.js`
+- [ ] `legacy-applications/governance-dashboard/src/services/AuthService.js`
+- [ ] `legacy-applications/governance-dashboard/src/services/IntegrityService.js`
+- [ ] `legacy-applications/governance-dashboard/src/services/PublicConsultationService.js`
 
 ### ✅ API Integration Patterns
 Check that service files still contain proper patterns:
@@ -88,7 +88,7 @@ Verify all configuration files remain at proper locations:
 - [ ] `applications/tailwind.config.ts` - Tailwind CSS configuration
 - [ ] `applications/postcss.config.js` - PostCSS configuration
 - [ ] `governance-dashboard/package.json` - App-specific config
-- [ ] `legacy-frontend/package.json` - App-specific config
+- [ ] `legacy-applications/governance-dashboard/package.json` - App-specific config
 
 ### ✅ Test Build Process (Optional)
 If you want to test builds:

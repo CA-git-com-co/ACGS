@@ -14,7 +14,7 @@ import logging
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +27,9 @@ class ValidationScenario:
     given: str  # Context/precondition
     when: str  # Action/input
     then: str  # Expected outcome
-    tags: List[str]  # Categories for filtering
+    tags: list[str]  # Categories for filtering
     priority: str = "medium"  # low, medium, high, critical
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class ValidationDSLParser:
@@ -40,7 +40,7 @@ class ValidationDSLParser:
     test specifications, enabling automated validation and reducing interpretation errors.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         """
         Initialize the validation DSL parser.
 
@@ -56,8 +56,8 @@ class ValidationDSLParser:
         logger.info("Validation DSL Parser initialized")
 
     def parse_structured_criteria(
-        self, criteria: List[Dict[str, Any]]
-    ) -> Tuple[List[ValidationScenario], List[str]]:
+        self, criteria: list[dict[str, Any]]
+    ) -> tuple[list[ValidationScenario], list[str]]:
         """
         Parse structured validation criteria into test scenarios.
 
@@ -83,8 +83,8 @@ class ValidationDSLParser:
         return scenarios, errors
 
     def generate_test_outputs(
-        self, scenarios: List[ValidationScenario]
-    ) -> Dict[str, Any]:
+        self, scenarios: list[ValidationScenario]
+    ) -> dict[str, Any]:
         """
         Generate multiple test output formats from validation scenarios.
 
@@ -107,7 +107,7 @@ class ValidationDSLParser:
 
         return outputs
 
-    def lint_criteria(self, criteria: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def lint_criteria(self, criteria: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Lint validation criteria for quality and completeness.
 
@@ -120,8 +120,8 @@ class ValidationDSLParser:
         return self.linter.lint_criteria(criteria)
 
     def _parse_single_criterion(
-        self, criterion: Dict[str, Any], index: int
-    ) -> Optional[ValidationScenario]:
+        self, criterion: dict[str, Any], index: int
+    ) -> ValidationScenario | None:
         """
         Parse a single validation criterion into a scenario.
 
@@ -166,8 +166,8 @@ class ValidationDSLParser:
         )
 
     def _generate_natural_language_tests(
-        self, scenarios: List[ValidationScenario]
-    ) -> List[str]:
+        self, scenarios: list[ValidationScenario]
+    ) -> list[str]:
         """Generate natural language test descriptions."""
         tests = []
 
@@ -182,7 +182,7 @@ class ValidationDSLParser:
 
         return tests
 
-    def _generate_rego_tests(self, scenarios: List[ValidationScenario]) -> List[str]:
+    def _generate_rego_tests(self, scenarios: list[ValidationScenario]) -> list[str]:
         """Generate Rego test assertions."""
         rego_tests = []
 
@@ -195,7 +195,7 @@ test_{scenario.id.replace('-', '_')} {{
     # Given: {scenario.given}
     # When: {scenario.when}
     # Then: {scenario.then}
-    
+
     # TODO: Implement specific Rego logic for this scenario
     # This is a template that needs to be customized
     true  # Placeholder
@@ -205,7 +205,7 @@ test_{scenario.id.replace('-', '_')} {{
 
         return rego_tests
 
-    def _generate_smt_tests(self, scenarios: List[ValidationScenario]) -> List[str]:
+    def _generate_smt_tests(self, scenarios: list[ValidationScenario]) -> list[str]:
         """Generate SMT-LIB constraint templates."""
         smt_tests = []
 
@@ -238,7 +238,7 @@ test_{scenario.id.replace('-', '_')} {{
 
         return text
 
-    def _load_scenario_patterns(self) -> Dict[str, List[str]]:
+    def _load_scenario_patterns(self) -> dict[str, list[str]]:
         """Load patterns for scenario extraction."""
         return {
             "given_patterns": [
@@ -258,7 +258,7 @@ test_{scenario.id.replace('-', '_')} {{
             ],
         }
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration for the parser."""
         return {
             "max_scenarios_per_principle": 10,
@@ -279,7 +279,7 @@ class ValidationLinter:
         """Initialize the validation linter."""
         self.rules = self._load_linting_rules()
 
-    def lint_criteria(self, criteria: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def lint_criteria(self, criteria: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Lint validation criteria for quality and completeness.
 
@@ -314,8 +314,8 @@ class ValidationLinter:
         }
 
     def _lint_single_criterion(
-        self, criterion: Dict[str, Any], index: int
-    ) -> Dict[str, List[str]]:
+        self, criterion: dict[str, Any], index: int
+    ) -> dict[str, list[str]]:
         """Lint a single validation criterion."""
         issues = {"errors": [], "warnings": [], "recommendations": []}
 
@@ -353,7 +353,7 @@ class ValidationLinter:
 
         return issues
 
-    def _load_linting_rules(self) -> List[Dict[str, Any]]:
+    def _load_linting_rules(self) -> list[dict[str, Any]]:
         """Load linting rules for validation criteria."""
         return [
             {"name": "required_fields", "severity": "error"},

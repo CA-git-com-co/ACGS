@@ -12,24 +12,20 @@ from ...crud_gs import (
     create_direct_policy,
     create_policy_from_template_logic,
     create_policy_template,
-)
-from ...crud_gs import delete_policy as delete_policy_crud
-from ...crud_gs import (
     delete_policy_template,
     get_policies,
     get_policy,
     get_policy_template,
     get_policy_templates,
+    update_policy_template,
 )
+from ...crud_gs import delete_policy as delete_policy_crud
 from ...crud_gs import (
     update_policy as update_policy_crud,  # Goes up 3 levels from v1 to app for crud_gs
 )
-from ...crud_gs import (
-    update_policy_template,
-)
 
 # from services.shared.models import User # For auth dependency if needed
-# from src.backend.app.core.auth import require_gs_admin # Placeholder for auth
+# from services.core.backend.app.core.auth import require_gs_admin # Placeholder for auth
 
 router = APIRouter()
 
@@ -57,7 +53,9 @@ async def api_create_policy_template(
 
 
 @router.get("/templates/{template_id}", response_model=gs_schemas.GSTemplateResponse)
-async def api_read_policy_template(template_id: int, db: AsyncSession = Depends(get_async_db)):
+async def api_read_policy_template(
+    template_id: int, db: AsyncSession = Depends(get_async_db)
+):
     db_template = await get_policy_template(db, template_id)
     if db_template is None:
         raise HTTPException(
@@ -168,7 +166,9 @@ async def api_create_policy(
 async def api_read_policy(policy_id: int, db: AsyncSession = Depends(get_async_db)):
     db_policy = await get_policy(db, policy_id)
     if db_policy is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Policy not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Policy not found"
+        )
     return db_policy
 
 
@@ -193,7 +193,10 @@ async def api_update_policy(
     if "template_id" in update_data and update_data["template_id"] is not None:
         # Check if the existing policy has a different template_id or if it was None
         existing_policy = await get_policy(db, policy_id)
-        if existing_policy and existing_policy.template_id != update_data["template_id"]:
+        if (
+            existing_policy
+            and existing_policy.template_id != update_data["template_id"]
+        ):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Cannot change template_id of an existing policy.",
@@ -202,7 +205,9 @@ async def api_update_policy(
         # However, if the policy was created directly and now being linked, it's a design choice.
         # For now, assume template_id is immutable post-creation if it was set.
 
-    updated_policy = await update_policy_crud(db, policy_id=policy_id, update_data=update_data)
+    updated_policy = await update_policy_crud(
+        db, policy_id=policy_id, update_data=update_data
+    )
     if not updated_policy:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -219,5 +224,7 @@ async def api_delete_policy(
 ):
     success = await delete_policy_crud(db, policy_id=policy_id)
     if not success:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Policy not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Policy not found"
+        )
     return None

@@ -17,7 +17,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -76,14 +76,14 @@ class StakeholderGroup(Enum):
 class PublicProposal:
     """Public amendment proposal structure."""
 
-    id: Optional[int] = None
+    id: int | None = None
     title: str = ""
     description: str = ""
     proposed_changes: str = ""
     justification: str = ""
-    submitter_name: Optional[str] = None
-    submitter_email: Optional[str] = None
-    submitter_organization: Optional[str] = None
+    submitter_name: str | None = None
+    submitter_email: str | None = None
+    submitter_organization: str | None = None
     stakeholder_group: StakeholderGroup = StakeholderGroup.CITIZEN
     status: ConsultationStatus = ConsultationStatus.DRAFT
     created_at: datetime = field(default_factory=datetime.utcnow)
@@ -96,18 +96,18 @@ class PublicProposal:
 class PublicFeedback:
     """Public feedback structure."""
 
-    id: Optional[int] = None
-    proposal_id: Optional[int] = None
-    amendment_id: Optional[int] = None
+    id: int | None = None
+    proposal_id: int | None = None
+    amendment_id: int | None = None
     feedback_type: FeedbackType = FeedbackType.NEUTRAL
     content: str = ""
-    submitter_name: Optional[str] = None
-    submitter_email: Optional[str] = None
+    submitter_name: str | None = None
+    submitter_email: str | None = None
     stakeholder_group: StakeholderGroup = StakeholderGroup.CITIZEN
-    sentiment_score: Optional[float] = None
+    sentiment_score: float | None = None
     is_verified: bool = False
     created_at: datetime = field(default_factory=datetime.utcnow)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -118,8 +118,8 @@ class ConsultationMetrics:
     active_consultations: int = 0
     total_participants: int = 0
     feedback_count: int = 0
-    sentiment_distribution: Dict[str, int] = field(default_factory=dict)
-    stakeholder_participation: Dict[str, int] = field(default_factory=dict)
+    sentiment_distribution: dict[str, int] = field(default_factory=dict)
+    stakeholder_participation: dict[str, int] = field(default_factory=dict)
     engagement_rate: float = 0.0
     completion_rate: float = 0.0
 
@@ -132,7 +132,7 @@ class PublicConsultationService:
     feedback collection, sentiment analysis, and integration with governance workflows.
     """
 
-    def __init__(self, hitl_sampler: Optional[HumanInTheLoopSampler] = None):
+    def __init__(self, hitl_sampler: HumanInTheLoopSampler | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -184,7 +184,10 @@ class PublicConsultationService:
             if not proposal.description or len(proposal.description.strip()) < 50:
                 raise ValueError("Proposal description must be at least 50 characters")
 
-            if not proposal.proposed_changes or len(proposal.proposed_changes.strip()) < 20:
+            if (
+                not proposal.proposed_changes
+                or len(proposal.proposed_changes.strip()) < 20
+            ):
                 raise ValueError("Proposed changes must be at least 20 characters")
 
             # Set initial status
@@ -209,7 +212,9 @@ class PublicConsultationService:
             if self.hitl_sampler:
                 await self._assess_proposal_for_oversight(db, proposal)
 
-            logger.info(f"Public proposal submitted: {proposal.title} (ID: {proposal.id})")
+            logger.info(
+                f"Public proposal submitted: {proposal.title} (ID: {proposal.id})"
+            )
 
             return proposal
 
@@ -243,14 +248,18 @@ class PublicConsultationService:
 
             # Perform sentiment analysis
             if self.config["auto_sentiment_analysis"]:
-                feedback.sentiment_score = await self._analyze_sentiment(feedback.content)
+                feedback.sentiment_score = await self._analyze_sentiment(
+                    feedback.content
+                )
                 feedback.feedback_type = self._classify_feedback_type(
                     feedback.content, feedback.sentiment_score
                 )
 
             # Verify submitter if required
             if verify_submitter and feedback.submitter_email:
-                feedback.is_verified = await self._verify_submitter_email(feedback.submitter_email)
+                feedback.is_verified = await self._verify_submitter_email(
+                    feedback.submitter_email
+                )
 
             # Store feedback (simplified - would use actual database model)
             feedback.id = self.consultation_stats["total_feedback_collected"] + 1
@@ -262,7 +271,11 @@ class PublicConsultationService:
                 self.consultation_stats["unique_participants"] += 1
 
             # Integrate with HITL sampling for feedback analysis
-            if self.hitl_sampler and feedback.sentiment_score and feedback.sentiment_score < 0.3:
+            if (
+                self.hitl_sampler
+                and feedback.sentiment_score
+                and feedback.sentiment_score < 0.3
+            ):
                 await self._escalate_negative_feedback(db, feedback)
 
             logger.info(
@@ -277,7 +290,7 @@ class PublicConsultationService:
             raise
 
     async def get_consultation_metrics(
-        self, db: AsyncSession, time_period_days: Optional[int] = 30
+        self, db: AsyncSession, time_period_days: int | None = 30
     ) -> ConsultationMetrics:
         """
         Get comprehensive consultation metrics.
@@ -292,7 +305,7 @@ class PublicConsultationService:
         try:
             # Calculate time window
             if time_period_days:
-                start_date = datetime.utcnow() - timedelta(days=time_period_days)
+                datetime.utcnow() - timedelta(days=time_period_days)
             else:
                 pass
 
@@ -323,7 +336,7 @@ class PublicConsultationService:
 
     async def advance_proposal_to_council(
         self, db: AsyncSession, proposal_id: int, council_user_id: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Advance a public proposal to Constitutional Council consideration.
 
@@ -355,23 +368,14 @@ class PublicConsultationService:
                 }
 
             # Create Constitutional Council amendment from proposal
-            amendment_data = {
-                "principle_id": 1,  # Would be determined from proposal
-                "amendment_type": "modify",
-                "proposed_changes": proposal.proposed_changes,
-                "justification": f"Public proposal: {proposal.justification}",
-                "proposed_content": proposal.description,
-                "urgency_level": "normal",
-                "consultation_period_days": 30,
-                "public_comment_enabled": True,
-                "stakeholder_groups": ["citizens", "experts", "affected_parties"],
-            }
 
             # Update proposal status
             proposal.status = ConsultationStatus.IMPLEMENTED
             self.consultation_stats["proposals_advanced"] += 1
 
-            logger.info(f"Public proposal {proposal_id} advanced to Constitutional Council")
+            logger.info(
+                f"Public proposal {proposal_id} advanced to Constitutional Council"
+            )
 
             return {
                 "success": True,
@@ -386,13 +390,13 @@ class PublicConsultationService:
             return {"success": False, "error": str(e)}
 
     # Helper methods
-    async def _review_proposal_content(self, proposal: PublicProposal) -> Dict[str, Any]:
+    async def _review_proposal_content(
+        self, proposal: PublicProposal
+    ) -> dict[str, Any]:
         """Review proposal content for appropriateness and completeness."""
         # Simplified content review
         inappropriate_keywords = ["spam", "offensive", "irrelevant"]
-        content_to_check = (
-            f"{proposal.title} {proposal.description} {proposal.proposed_changes}".lower()
-        )
+        content_to_check = f"{proposal.title} {proposal.description} {proposal.proposed_changes}".lower()
 
         has_inappropriate_content = any(
             keyword in content_to_check for keyword in inappropriate_keywords
@@ -439,7 +443,7 @@ class PublicConsultationService:
         return max(0.0, min(1.0, sentiment_score))
 
     def _classify_feedback_type(
-        self, content: str, sentiment_score: Optional[float]
+        self, content: str, sentiment_score: float | None
     ) -> FeedbackType:
         """Classify feedback type based on content and sentiment."""
         if sentiment_score is None:
@@ -465,7 +469,9 @@ class PublicConsultationService:
         # Simplified email verification
         return "@" in email and "." in email.split("@")[1]
 
-    async def _assess_proposal_for_oversight(self, db: AsyncSession, proposal: PublicProposal):
+    async def _assess_proposal_for_oversight(
+        self, db: AsyncSession, proposal: PublicProposal
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -494,7 +500,9 @@ class PublicConsultationService:
                 f"{assessment.recommended_oversight_level.value}"
             )
 
-    async def _escalate_negative_feedback(self, db: AsyncSession, feedback: PublicFeedback):
+    async def _escalate_negative_feedback(
+        self, db: AsyncSession, feedback: PublicFeedback
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -521,7 +529,7 @@ class PublicConsultationService:
 
     async def _check_advancement_criteria(
         self, db: AsyncSession, proposal: PublicProposal
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Check if proposal meets criteria for advancement to Constitutional Council."""
         # Simplified advancement criteria
         if proposal.public_support_count < self.config["min_support_threshold"]:

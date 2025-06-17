@@ -57,7 +57,7 @@ nano config/env/.env
 cd config/docker
 
 # Start all services
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # Verify deployment
 docker-compose ps
@@ -78,7 +78,7 @@ docker-compose exec auth_service python scripts/seed_test_data.py
 ### **Production Deployment**
 ```bash
 # Use production Docker Compose configuration
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+docker-compose -f infrastructure/docker/docker-compose.yml -f docker-compose.prod.yml up -d
 
 # Deploy monitoring stack
 ./scripts/deploy_monitoring.sh
@@ -114,20 +114,20 @@ sudo apt-get install helm
 kubectl create namespace acgs-pgp
 
 # Apply ConfigMaps and Secrets
-kubectl apply -f k8s/configmaps/
-kubectl apply -f k8s/secrets/
+kubectl apply -f infrastructure/kubernetes/configmaps/
+kubectl apply -f infrastructure/kubernetes/secrets/
 
 # Deploy PostgreSQL with persistent storage
-kubectl apply -f k8s/postgres/
+kubectl apply -f infrastructure/kubernetes/postgres/
 
 # Deploy Redis cluster
-kubectl apply -f k8s/redis/
+kubectl apply -f infrastructure/kubernetes/redis/
 
 # Deploy core services
-kubectl apply -f k8s/services/
+kubectl apply -f infrastructure/kubernetes/services/
 
 # Deploy ingress controller
-kubectl apply -f k8s/ingress/
+kubectl apply -f infrastructure/kubernetes/ingress/
 
 # Verify deployment
 kubectl get pods -n acgs-pgp
@@ -393,7 +393,7 @@ docker-compose exec -T postgres_db psql -U acgs_user acgs_pgp_db < backup_202401
 ### **Configuration Backup**
 ```bash
 # Backup configuration files
-tar -czf config_backup_$(date +%Y%m%d_%H%M%S).tar.gz config/ monitoring/ k8s/
+tar -czf config_backup_$(date +%Y%m%d_%H%M%S).tar.gz config/ monitoring/ infrastructure/kubernetes/
 
 # Backup Docker volumes
 docker run --rm -v acgs_postgres_data:/data -v $(pwd):/backup alpine tar czf /backup/postgres_data_backup.tar.gz /data

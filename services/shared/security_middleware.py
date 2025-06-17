@@ -19,8 +19,8 @@ import os
 import re
 import secrets
 import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 from urllib.parse import unquote
 
 from fastapi import Request, Response, status
@@ -51,17 +51,19 @@ except ImportError:
         HIGH = "high"
         CRITICAL = "critical"
 
+
 # Import enhanced authentication
 try:
     from .enhanced_auth import (
-        enhanced_auth_service,
-        ServiceAuthManager,
         ConstitutionalPermission,
-        ServicePermission,
         PermissionChecker,
+        ServiceAuthManager,
+        ServicePermission,
         UserRole,
+        enhanced_auth_service,
     )
-    from .service_auth_config import ServiceAuthConfig, ACGSService
+    from .service_auth_config import ACGSService, ServiceAuthConfig
+
     ENHANCED_AUTH_AVAILABLE = True
 except ImportError:
     ENHANCED_AUTH_AVAILABLE = False
@@ -117,7 +119,9 @@ def add_security_middleware(
 
     # Add comprehensive security middleware if components are available
     if SHARED_COMPONENTS_AVAILABLE:
-        app.add_middleware(SecurityMiddleware, service_name=service_name, redis_url=redis_url)
+        app.add_middleware(
+            SecurityMiddleware, service_name=service_name, redis_url=redis_url
+        )
     else:
         # Add basic security headers middleware
         @app.middleware("http")
@@ -131,12 +135,16 @@ def add_security_middleware(
             response.headers["X-Content-Type-Options"] = "nosniff"
             response.headers["X-Frame-Options"] = "DENY"
             response.headers["X-XSS-Protection"] = "1; mode=block"
-            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
             response.headers["Content-Security-Policy"] = (
                 "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
             )
             response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-            response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+            response.headers["Permissions-Policy"] = (
+                "geolocation=(), microphone=(), camera=()"
+            )
 
             return response
 
@@ -263,7 +271,7 @@ class ThreatDetector:
                 re.compile(pattern, re.IGNORECASE) for pattern in patterns
             ]
 
-    def analyze_request(self, request: Request) -> Dict[str, Any]:
+    def analyze_request(self, request: Request) -> dict[str, Any]:
         """
         Analyze request for security threats.
 
@@ -282,7 +290,9 @@ class ThreatDetector:
         threats.extend(header_threats)
 
         # Analyze user agent
-        user_agent_threats = self._analyze_user_agent(request.headers.get("user-agent", ""))
+        user_agent_threats = self._analyze_user_agent(
+            request.headers.get("user-agent", "")
+        )
         threats.extend(user_agent_threats)
 
         # Determine overall threat level
@@ -297,10 +307,10 @@ class ThreatDetector:
             "threat_level": threat_level,
             "threats": threats,
             "threat_count": len(threats),
-            "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
+            "analysis_timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def _analyze_url(self, url: str) -> List[Dict[str, Any]]:
+    def _analyze_url(self, url: str) -> list[dict[str, Any]]:
         """Analyze URL for threats."""
         threats = []
         decoded_url = unquote(url)
@@ -336,7 +346,7 @@ class ThreatDetector:
 
         return threats
 
-    def _analyze_headers(self, headers) -> List[Dict[str, Any]]:
+    def _analyze_headers(self, headers) -> list[dict[str, Any]]:
         """Analyze request headers for threats."""
         threats = []
 
@@ -354,7 +364,7 @@ class ThreatDetector:
 
         return threats
 
-    def _analyze_user_agent(self, user_agent: str) -> List[Dict[str, Any]]:
+    def _analyze_user_agent(self, user_agent: str) -> list[dict[str, Any]]:
         """Analyze user agent for threats."""
         threats = []
 
@@ -403,7 +413,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         app,
         service_name: str,
         redis_url: str = "redis://localhost:6379",
-        config: Optional[SecurityConfig] = None,
+        config: SecurityConfig | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -450,7 +460,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
             # Block critical threats immediately
             if threat_analysis["threat_level"] == SecurityThreatLevel.CRITICAL:
-                await self._log_security_event(request, "critical_threat_blocked", threat_analysis)
+                await self._log_security_event(
+                    request, "critical_threat_blocked", threat_analysis
+                )
                 return self._create_security_error_response(
                     "Request blocked due to security policy",
                     correlation_id,
@@ -459,12 +471,16 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
             # 3. Rate limiting (if available)
             if self.rate_limiter:
-                rate_limit_allowed, rate_limit_info = await self.rate_limiter.check_rate_limit(
-                    request
+                rate_limit_allowed, rate_limit_info = (
+                    await self.rate_limiter.check_rate_limit(request)
                 )
                 if not rate_limit_allowed:
-                    await self._log_security_event(request, "rate_limit_exceeded", rate_limit_info)
-                    return self._create_rate_limit_error_response(rate_limit_info, correlation_id)
+                    await self._log_security_event(
+                        request, "rate_limit_exceeded", rate_limit_info
+                    )
+                    return self._create_rate_limit_error_response(
+                        rate_limit_info, correlation_id
+                    )
             else:
                 rate_limit_info = {}
 
@@ -495,7 +511,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 SecurityThreatLevel.HIGH,
                 SecurityThreatLevel.MEDIUM,
             ]:
-                await self._log_security_event(request, "threat_detected", threat_analysis)
+                await self._log_security_event(
+                    request, "threat_detected", threat_analysis
+                )
 
             return response
 
@@ -510,7 +528,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    async def _validate_request_size(self, request: Request) -> Optional[Response]:
+    async def _validate_request_size(self, request: Request) -> Response | None:
         """Validate request size limits."""
         # Check content length header
         content_length = request.headers.get("content-length")
@@ -529,7 +547,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         return None
 
-    def _validate_content_type(self, request: Request) -> Optional[Response]:
+    def _validate_content_type(self, request: Request) -> Response | None:
         """Validate content type for requests with body."""
         content_type = request.headers.get("content-type", "").split(";")[0].strip()
 
@@ -551,7 +569,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         for header, value in self.config.security_headers.items():
             response.headers[header] = value
 
-    def _add_rate_limit_headers(self, response: Response, rate_limit_info: Dict[str, Any]):
+    def _add_rate_limit_headers(
+        self, response: Response, rate_limit_info: dict[str, Any]
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -559,9 +579,13 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         if "limit" in rate_limit_info:
             response.headers["X-RateLimit-Limit"] = str(rate_limit_info["limit"])
         if "remaining" in rate_limit_info:
-            response.headers["X-RateLimit-Remaining"] = str(rate_limit_info["remaining"])
+            response.headers["X-RateLimit-Remaining"] = str(
+                rate_limit_info["remaining"]
+            )
         if "reset_time" in rate_limit_info:
-            response.headers["X-RateLimit-Reset"] = str(int(rate_limit_info["reset_time"]))
+            response.headers["X-RateLimit-Reset"] = str(
+                int(rate_limit_info["reset_time"])
+            )
 
     def _create_security_error_response(
         self, message: str, correlation_id: str, status_code: int
@@ -585,7 +609,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 "error": message,
                 "service": self.service_name,
                 "correlation_id": correlation_id,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
         return JSONResponse(
@@ -595,7 +619,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         )
 
     def _create_rate_limit_error_response(
-        self, rate_limit_info: Dict[str, Any], correlation_id: str
+        self, rate_limit_info: dict[str, Any], correlation_id: str
     ) -> JSONResponse:
         """Create rate limit error response."""
         retry_after = rate_limit_info.get("reset_time", time.time() + 60) - time.time()
@@ -616,7 +640,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 "service": self.service_name,
                 "correlation_id": correlation_id,
                 "details": rate_limit_info,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
         headers = {
@@ -635,13 +659,15 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             headers=headers,
         )
 
-    async def _log_security_event(self, request: Request, event_type: str, details: Dict[str, Any]):
+    async def _log_security_event(
+        self, request: Request, event_type: str, details: dict[str, Any]
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Log security events for audit and monitoring."""
         event = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "service": self.service_name,
             "event_type": event_type,
             "client_ip": self._get_client_ip(request),
@@ -655,7 +681,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         # Log to structured logger
         logger.warning(f"Security event: {event_type}", extra=event)
 
-    async def _validate_authentication(self, request: Request) -> Optional[Response]:
+    async def _validate_authentication(self, request: Request) -> Response | None:
         """Validate authentication for protected endpoints."""
         # Skip authentication for health checks and public endpoints
         if request.url.path in ["/health", "/metrics", "/docs", "/openapi.json"]:
@@ -673,10 +699,11 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 return None
 
             correlation_id = getattr(request.state, "correlation_id", "unknown")
-            await self._log_security_event(request, "missing_authorization", {
-                "endpoint": request.url.path,
-                "method": request.method
-            })
+            await self._log_security_event(
+                request,
+                "missing_authorization",
+                {"endpoint": request.url.path, "method": request.method},
+            )
             return self._create_security_error_response(
                 "Authorization header required",
                 correlation_id,
@@ -701,7 +728,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 service_payload = ServiceAuthManager.verify_service_token(token)
                 request.state.auth_type = "service"
                 request.state.service_name = service_payload.get("service_name")
-                request.state.service_permissions = service_payload.get("permissions", [])
+                request.state.service_permissions = service_payload.get(
+                    "permissions", []
+                )
             else:
                 # Validate user token
                 token_data = await enhanced_auth_service.verify_token(token)
@@ -714,7 +743,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 user_data = enhanced_auth_service.users_db.get(token_data.username)
                 if user_data:
                     user = user_data["user"]
-                    request.state.user_permissions = PermissionChecker.get_user_permissions(user)
+                    request.state.user_permissions = (
+                        PermissionChecker.get_user_permissions(user)
+                    )
                 else:
                     request.state.user_permissions = []
 
@@ -722,11 +753,15 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         except Exception as e:
             correlation_id = getattr(request.state, "correlation_id", "unknown")
-            await self._log_security_event(request, "authentication_failed", {
-                "error": str(e),
-                "endpoint": request.url.path,
-                "method": request.method
-            })
+            await self._log_security_event(
+                request,
+                "authentication_failed",
+                {
+                    "error": str(e),
+                    "endpoint": request.url.path,
+                    "method": request.method,
+                },
+            )
             return self._create_security_error_response(
                 "Authentication failed",
                 correlation_id,
@@ -738,6 +773,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         try:
             # Decode without verification to check token type
             import jwt
+
             payload = jwt.decode(token, options={"verify_signature": False})
             return payload.get("type") == "service_token"
         except:
@@ -768,6 +804,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         ]
 
         import re
+
         for pattern in public_patterns:
             if re.match(pattern, path):
                 return True

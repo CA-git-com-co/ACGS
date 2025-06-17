@@ -1,12 +1,12 @@
-import json
 import logging
-from datetime import datetime, timezone
-from typing import List, Optional
+from datetime import UTC, datetime
 
-from app import crud, models, schemas  # Import from app directory
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession  # Changed
+
+from app import crud, schemas  # Import from app directory
 from app.core.auth import (  # Import from app directory
     User,
-    get_current_active_user_placeholder,
     require_admin_role,
 )
 from app.core.cryptographic_signing import (
@@ -14,9 +14,6 @@ from app.core.cryptographic_signing import (
     ConstitutionalSigningService,
     get_constitutional_signing_service,
 )
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession  # Changed
-
 from services.shared.database import (  # Corrected import for async db session
     get_async_db,
 )
@@ -30,8 +27,10 @@ router = APIRouter()
 async def create_principle_endpoint(
     principle: schemas.PrincipleCreate,
     db: AsyncSession = Depends(get_async_db),
-    current_user: Optional[User] = Depends(require_admin_role),
-    signing_service: ConstitutionalSigningService = Depends(get_constitutional_signing_service),
+    current_user: User | None = Depends(require_admin_role),
+    signing_service: ConstitutionalSigningService = Depends(
+        get_constitutional_signing_service
+    ),
 ):
     """Create a new constitutional principle with cryptographic signing."""
     user_id = current_user.id if current_user else None
@@ -47,7 +46,9 @@ async def create_principle_endpoint(
 
     try:
         # Create principle in database first
-        created_principle = await crud.create_principle(db=db, principle=principle, user_id=user_id)
+        created_principle = await crud.create_principle(
+            db=db, principle=principle, user_id=user_id
+        )
 
         # Prepare content for cryptographic signing
         principle_content = {
@@ -55,10 +56,14 @@ async def create_principle_endpoint(
             "name": created_principle.name,
             "content": created_principle.content,
             "category": created_principle.category,
-            "priority": float(created_principle.priority) if created_principle.priority else 0.0,
+            "priority": (
+                float(created_principle.priority) if created_principle.priority else 0.0
+            ),
             "version": created_principle.version,
             "created_at": (
-                created_principle.created_at.isoformat() if created_principle.created_at else None
+                created_principle.created_at.isoformat()
+                if created_principle.created_at
+                else None
             ),
         }
 
@@ -74,7 +79,9 @@ async def create_principle_endpoint(
         constitutional_metadata["integrity_verified"] = True
 
         # Update principle with signature metadata
-        principle_update = schemas.PrincipleUpdate(constitutional_metadata=constitutional_metadata)
+        principle_update = schemas.PrincipleUpdate(
+            constitutional_metadata=constitutional_metadata
+        )
 
         updated_principle = await crud.update_principle(
             db=db, principle_id=created_principle.id, principle_update=principle_update
@@ -100,7 +107,9 @@ async def create_principle_endpoint(
 async def list_principles_endpoint(  # Changed to async def
     skip: int = 0,
     limit: int = 100,
-    db: AsyncSession = Depends(get_async_db),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(
+        get_async_db
+    ),  # Changed to AsyncSession and get_async_db
 ):
     principles = await crud.get_principles(db, skip=skip, limit=limit)  # Added await
     total_count = await crud.count_principles(db)  # Added await
@@ -110,9 +119,13 @@ async def list_principles_endpoint(  # Changed to async def
 @router.get("/{principle_id}", response_model=schemas.Principle)
 async def get_principle_endpoint(  # Changed to async def
     principle_id: int,
-    db: AsyncSession = Depends(get_async_db),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(
+        get_async_db
+    ),  # Changed to AsyncSession and get_async_db
 ):
-    db_principle = await crud.get_principle(db, principle_id=principle_id)  # Added await
+    db_principle = await crud.get_principle(
+        db, principle_id=principle_id
+    )  # Added await
     if db_principle is None:
         raise HTTPException(status_code=404, detail="Principle not found")
     return db_principle
@@ -122,10 +135,14 @@ async def get_principle_endpoint(  # Changed to async def
 async def update_principle_endpoint(  # Changed to async def
     principle_id: int,
     principle_update: schemas.PrincipleUpdate,
-    db: AsyncSession = Depends(get_async_db),  # Changed to AsyncSession and get_async_db
+    db: AsyncSession = Depends(
+        get_async_db
+    ),  # Changed to AsyncSession and get_async_db
     current_user: User = Depends(require_admin_role),
 ):
-    db_principle = await crud.get_principle(db, principle_id=principle_id)  # Added await
+    db_principle = await crud.get_principle(
+        db, principle_id=principle_id
+    )  # Added await
     if db_principle is None:
         raise HTTPException(status_code=404, detail="Principle not found")
 
@@ -133,7 +150,10 @@ async def update_principle_endpoint(  # Changed to async def
         existing_principle_with_new_name = await crud.get_principle_by_name(
             db, name=principle_update.name
         )  # Added await
-        if existing_principle_with_new_name and existing_principle_with_new_name.id != principle_id:
+        if (
+            existing_principle_with_new_name
+            and existing_principle_with_new_name.id != principle_id
+        ):
             raise HTTPException(
                 status_code=400,
                 detail=f"Principle name '{principle_update.name}' already in use by another principle.",
@@ -143,7 +163,9 @@ async def update_principle_endpoint(  # Changed to async def
         db=db, principle_id=principle_id, principle_update=principle_update
     )  # Added await
     if updated_principle is None:
-        raise HTTPException(status_code=404, detail="Principle not found after update attempt")
+        raise HTTPException(
+            status_code=404, detail="Principle not found after update attempt"
+        )
     return updated_principle
 
 
@@ -156,7 +178,9 @@ async def delete_principle_endpoint(
     """Delete a constitutional principle."""
     db_principle = await crud.delete_principle(db, principle_id=principle_id)
     if db_principle is None:
-        raise HTTPException(status_code=404, detail="Principle not found or already deleted")
+        raise HTTPException(
+            status_code=404, detail="Principle not found or already deleted"
+        )
     return db_principle
 
 
@@ -164,7 +188,9 @@ async def delete_principle_endpoint(
 async def verify_principle_signature_endpoint(
     principle_id: int,
     db: AsyncSession = Depends(get_async_db),
-    signing_service: ConstitutionalSigningService = Depends(get_constitutional_signing_service),
+    signing_service: ConstitutionalSigningService = Depends(
+        get_constitutional_signing_service
+    ),
 ):
     """Verify the cryptographic signature of a constitutional principle."""
     try:
@@ -194,7 +220,9 @@ async def verify_principle_signature_endpoint(
             "category": db_principle.category,
             "priority": float(db_principle.priority) if db_principle.priority else 0.0,
             "version": db_principle.version,
-            "created_at": db_principle.created_at.isoformat() if db_principle.created_at else None,
+            "created_at": (
+                db_principle.created_at.isoformat() if db_principle.created_at else None
+            ),
         }
 
         # Create signature object from stored data
@@ -213,10 +241,12 @@ async def verify_principle_signature_endpoint(
             "signature_type": signature.signature_type,
             "signer_id": signature.signer_id,
             "signature_timestamp": signature.timestamp.isoformat(),
-            "verification_timestamp": datetime.now(timezone.utc).isoformat(),
+            "verification_timestamp": datetime.now(UTC).isoformat(),
             "content_hash": signature.content_hash,
             "message": (
-                "Signature verified successfully" if is_valid else "Signature verification failed"
+                "Signature verified successfully"
+                if is_valid
+                else "Signature verification failed"
             ),
         }
 
@@ -225,7 +255,9 @@ async def verify_principle_signature_endpoint(
 
     except Exception as e:
         logger.error(f"Failed to verify principle signature: {e}")
-        raise HTTPException(status_code=500, detail=f"Signature verification error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Signature verification error: {str(e)}"
+        )
 
 
 # Enhanced Phase 1 Constitutional Principle Endpoints
@@ -242,7 +274,9 @@ async def get_principles_by_category_endpoint(
     principles = await crud.get_principles_by_category(
         db, category=category, skip=skip, limit=limit
     )
-    total_count = await crud.count_principles(db)  # Could be optimized to count only by category
+    total_count = await crud.count_principles(
+        db
+    )  # Could be optimized to count only by category
     return {"principles": principles, "total": total_count}
 
 
@@ -285,14 +319,16 @@ async def get_principles_by_priority_range_endpoint(
 
 @router.post("/search/keywords", response_model=schemas.PrincipleList)
 async def search_principles_by_keywords_endpoint(
-    keywords: List[str],
+    keywords: list[str],
     skip: int = 0,
     limit: int = 100,
     db: AsyncSession = Depends(get_async_db),
 ):
     """Search principles by keywords."""
     if not keywords:
-        raise HTTPException(status_code=400, detail="At least one keyword must be provided")
+        raise HTTPException(
+            status_code=400, detail="At least one keyword must be provided"
+        )
 
     principles = await crud.search_principles_by_keywords(
         db, keywords=keywords, skip=skip, limit=limit
@@ -304,7 +340,7 @@ async def search_principles_by_keywords_endpoint(
 @router.get("/active/context/{context}", response_model=schemas.PrincipleList)
 async def get_active_principles_for_context_endpoint(
     context: str,
-    category: Optional[str] = None,
+    category: str | None = None,
     db: AsyncSession = Depends(get_async_db),
 ):
     """Get active principles applicable to a specific context, optionally filtered by category."""
@@ -337,7 +373,6 @@ async def validate_constitutional_endpoint(
             MultiTierCache,
             RedisCache,
         )
-
         from services.shared.redis_client import ACGSRedisClient
 
         # Initialize Redis client for caching
@@ -345,8 +380,12 @@ async def validate_constitutional_endpoint(
         await redis_client.initialize()
 
         # Setup multi-tier cache
-        l1_cache = LRUCache(max_size=1000, default_ttl=CACHE_TTL_POLICIES["policy_decisions"])
-        l2_cache = RedisCache(redis_client.redis_client, key_prefix="acgs:ac:constitutional:")
+        l1_cache = LRUCache(
+            max_size=1000, default_ttl=CACHE_TTL_POLICIES["policy_decisions"]
+        )
+        l2_cache = RedisCache(
+            redis_client.redis_client, key_prefix="acgs:ac:constitutional:"
+        )
         cache = MultiTierCache(l1_cache, l2_cache)
 
         # Generate cache key from request
@@ -386,7 +425,9 @@ async def validate_constitutional_endpoint(
             "violations": [],
             "recommendations": [],
             "applicable_principles": (
-                [p.name for p in principles] if hasattr(principles[0], "name") else principles
+                [p.name for p in principles]
+                if hasattr(principles[0], "name")
+                else principles
             ),
             "validation_timestamp": time.time(),
         }
@@ -408,7 +449,9 @@ async def validate_constitutional_endpoint(
             validation_result["compliance_score"] -= 0.25
 
         # Ensure compliance score is non-negative
-        validation_result["compliance_score"] = max(0.0, validation_result["compliance_score"])
+        validation_result["compliance_score"] = max(
+            0.0, validation_result["compliance_score"]
+        )
 
         # Cache the result with appropriate TTL
         await cache.put(
@@ -429,4 +472,6 @@ async def validate_constitutional_endpoint(
 
     except Exception as e:
         logger.error(f"Constitutional validation failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Constitutional validation error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Constitutional validation error: {str(e)}"
+        )

@@ -6,7 +6,7 @@ performance monitoring, and optimization management targeting sub-25ms latency.
 """
 
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -32,7 +32,9 @@ class PolicyDecisionRequest(BaseModel):
     user_id: str = Field(..., description="User identifier")
     resource: str = Field(..., description="Resource being accessed")
     action: str = Field(..., description="Action being performed")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Additional context")
+    context: dict[str, Any] = Field(
+        default_factory=dict, description="Additional context"
+    )
     optimization_level: OptimizationLevel = Field(
         default=OptimizationLevel.ENHANCED, description="Target optimization level"
     )
@@ -55,8 +57,8 @@ class OptimizationResponse(BaseModel):
     latency_ms: float
     cache_hit: bool
     optimization_level: str
-    breakdown: Dict[str, float]
-    recommendations: List[str]
+    breakdown: dict[str, float]
+    recommendations: list[str]
     target_met: bool
     timestamp: str
 
@@ -77,11 +79,11 @@ class PerformanceMetricsResponse(BaseModel):
 class OptimizationReportResponse(BaseModel):
     """Response model for optimization report."""
 
-    performance_metrics: Dict[str, float]
-    target_achievement: Dict[str, bool]
-    optimization_trends: Dict[str, Dict[str, float]]
-    fragment_cache_stats: Dict[str, Any]
-    recommendations: List[str]
+    performance_metrics: dict[str, float]
+    target_achievement: dict[str, bool]
+    optimization_trends: dict[str, dict[str, float]]
+    fragment_cache_stats: dict[str, Any]
+    recommendations: list[str]
     latency_target: float
     total_optimizations: int
     timestamp: str
@@ -250,7 +252,9 @@ async def run_performance_benchmark(
     try:
         optimizer = get_ultra_low_latency_optimizer()
 
-        benchmark_results = await optimizer.benchmark_performance(num_requests=request.num_requests)
+        benchmark_results = await optimizer.benchmark_performance(
+            num_requests=request.num_requests
+        )
 
         return {
             "message": f"Benchmark completed with {request.num_requests} requests",

@@ -238,7 +238,7 @@ class GroqLLMIntegrationTest:
                     # Test prompt for policy generation
                     prompt = """Generate a constitutional AI governance rule for the following principle:
                     "All automated decisions affecting users must be explainable and auditable."
-                    
+
                     Provide a structured rule with conditions and actions."""
 
                     response = groq_service.generate_text(
@@ -266,7 +266,7 @@ class GroqLLMIntegrationTest:
                             "model_performance",
                             test_name,
                             False,
-                            f"Poor response quality or empty response",
+                            "Poor response quality or empty response",
                         )
 
                 except Exception as e:
@@ -318,7 +318,7 @@ class GroqLLMIntegrationTest:
                     if test["status"] == "FAIL":
                         print(f"    - {test['name']}: {test['details']}")
 
-        print(f"\nOVERALL RESULTS:")
+        print("\nOVERALL RESULTS:")
         print(f"  Total Passed: {total_passed}")
         print(f"  Total Failed: {total_failed}")
         print(
@@ -328,7 +328,7 @@ class GroqLLMIntegrationTest:
         )
 
         # Recommendations
-        print(f"\nRECOMMENDATIONS:")
+        print("\nRECOMMENDATIONS:")
         if total_failed == 0:
             print("  ✅ All Groq LLM integrations are working correctly!")
             print("  ✅ Ready for ACGS-PGP testing with Groq models")

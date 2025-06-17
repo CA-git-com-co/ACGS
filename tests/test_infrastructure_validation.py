@@ -3,10 +3,10 @@ Test Infrastructure Validation
 Tests to verify that the testing infrastructure is working correctly.
 """
 
-import pytest
 import sys
-import os
 from pathlib import Path
+
+import pytest
 
 
 def test_python_version():
@@ -36,19 +36,21 @@ def test_project_structure():
 def test_environment_setup():
     """Test that the environment is set up correctly."""
     # Check that we're in a virtual environment
-    assert hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix), \
-        "Not running in virtual environment"
-    
+    assert hasattr(sys, "real_prefix") or (
+        hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
+    ), "Not running in virtual environment"
+
     print("✅ Virtual environment detected")
 
 
 def test_basic_imports():
     """Test that basic imports work."""
     try:
-        import json
         import asyncio
-        import pathlib
         import datetime
+        import json
+        import pathlib
+
         print("✅ Basic imports working")
     except ImportError as e:
         pytest.fail(f"Basic import failed: {e}")
@@ -58,6 +60,7 @@ def test_coverage_tools():
     """Test that coverage tools are available."""
     try:
         import coverage
+
         print(f"✅ Coverage.py version: {coverage.__version__}")
     except ImportError:
         pytest.fail("Coverage.py not available")
@@ -66,9 +69,10 @@ def test_coverage_tools():
 @pytest.mark.asyncio
 async def test_async_support():
     """Test that async/await support is working."""
+
     async def dummy_async_function():
         return "async_working"
-    
+
     result = await dummy_async_function()
     assert result == "async_working"
     print("✅ Async/await support working")
@@ -83,12 +87,12 @@ def test_test_markers():
 
 class TestClassExample:
     """Example test class to verify class-based testing."""
-    
+
     def test_class_method(self):
         """Test that class-based tests work."""
         assert True
         print("✅ Class-based tests working")
-    
+
     def test_setup_teardown(self):
         """Test setup and teardown functionality."""
         # This would normally have setup/teardown
@@ -98,18 +102,22 @@ class TestClassExample:
 
 def test_parametrized_tests():
     """Test parametrized test functionality."""
-    @pytest.mark.parametrize("input,expected", [
-        (1, 2),
-        (2, 3),
-        (3, 4),
-    ])
+
+    @pytest.mark.parametrize(
+        "input,expected",
+        [
+            (1, 2),
+            (2, 3),
+            (3, 4),
+        ],
+    )
     def inner_test(input, expected):
         assert input + 1 == expected
-    
+
     # Run the parametrized test manually
     for input_val, expected_val in [(1, 2), (2, 3), (3, 4)]:
         inner_test(input_val, expected_val)
-    
+
     print("✅ Parametrized tests working")
 
 

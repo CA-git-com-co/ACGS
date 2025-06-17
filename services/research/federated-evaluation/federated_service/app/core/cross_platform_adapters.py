@@ -10,9 +10,9 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 
@@ -89,15 +89,15 @@ class EvaluationRequest:
 
     request_id: str
     policy_content: str
-    evaluation_criteria: Dict[str, Any]
+    evaluation_criteria: dict[str, Any]
     mode: EvaluationMode = EvaluationMode.CONSTITUTIONAL
-    context: Dict[str, Any] = field(default_factory=dict)
-    privacy_requirements: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
+    privacy_requirements: dict[str, Any] = field(default_factory=dict)
     timeout_seconds: float = 60.0
 
     # MAB integration
-    mab_context: Dict[str, Any] = field(default_factory=dict)
-    prompt_template_id: Optional[str] = None
+    mab_context: dict[str, Any] = field(default_factory=dict)
+    prompt_template_id: str | None = None
 
 
 @dataclass
@@ -120,14 +120,14 @@ class EvaluationResponse:
     cost_estimate: float = 0.0
 
     # Platform-specific results
-    platform_specific_metrics: Dict[str, Any] = field(default_factory=dict)
+    platform_specific_metrics: dict[str, Any] = field(default_factory=dict)
 
     # Error handling
-    error_message: Optional[str] = None
-    error_code: Optional[str] = None
+    error_message: str | None = None
+    error_code: str | None = None
 
     # Metadata
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     adapter_version: str = "1.0.0"
 
 
@@ -149,7 +149,7 @@ class BasePlatformAdapter(ABC):
             "total_tokens_used": 0,
             "total_cost": 0.0,
         }
-        self._client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.AsyncClient | None = None
 
     async def initialize(self) -> None:
         """Initialize the platform adapter."""
@@ -161,7 +161,9 @@ class BasePlatformAdapter(ABC):
 
         except Exception as e:
             self.status = AdapterStatus.ERROR
-            logger.error(f"Failed to initialize {self.platform_type.value} adapter: {e}")
+            logger.error(
+                f"Failed to initialize {self.platform_type.value} adapter: {e}"
+            )
             raise
 
     async def shutdown(self) -> None:
@@ -174,7 +176,9 @@ class BasePlatformAdapter(ABC):
             logger.info(f"Shutdown {self.platform_type.value} adapter")
 
         except Exception as e:
-            logger.error(f"Error during {self.platform_type.value} adapter shutdown: {e}")
+            logger.error(
+                f"Error during {self.platform_type.value} adapter shutdown: {e}"
+            )
 
     @abstractmethod
     async def _platform_specific_init(self) -> None:
@@ -188,7 +192,7 @@ class BasePlatformAdapter(ABC):
     async def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         """Evaluate policy using platform-specific implementation."""
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check for the platform."""
         try:
             start_time = time.time()
@@ -315,7 +319,9 @@ class OpenAIPlatformAdapter(BasePlatformAdapter):
                 ),
                 "temperature": 0.1,  # Low temperature for consistent evaluation
                 "response_format": (
-                    {"type": "json_object"} if self.capabilities.supports_json_mode else None
+                    {"type": "json_object"}
+                    if self.capabilities.supports_json_mode
+                    else None
                 ),
             }
 
@@ -385,7 +391,7 @@ Please provide a JSON response with the following structure:
 """
 
     def _parse_openai_response(
-        self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float
+        self, request: EvaluationRequest, result: dict[str, Any], execution_time: float
     ) -> EvaluationResponse:
         """Parse OpenAI API response into standardized format."""
         try:
@@ -410,8 +416,12 @@ Please provide a JSON response with the following structure:
                 request_id=request.request_id,
                 platform_type=self.platform_type,
                 success=True,
-                policy_compliance_score=parsed_content.get("policy_compliance_score", 0.5),
-                constitutional_alignment=parsed_content.get("constitutional_alignment", 0.5),
+                policy_compliance_score=parsed_content.get(
+                    "policy_compliance_score", 0.5
+                ),
+                constitutional_alignment=parsed_content.get(
+                    "constitutional_alignment", 0.5
+                ),
                 safety_score=parsed_content.get("safety_score", 0.5),
                 fairness_score=parsed_content.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,
@@ -467,7 +477,6 @@ class AnthropicPlatformAdapter(BasePlatformAdapter):
     async def _platform_specific_init(self) -> None:
         """Initialize Anthropic-specific components."""
         # Test API key validity with a simple request
-        headers = {"x-api-key": self.api_key, "anthropic-version": "2023-06-01"}
         # Note: Anthropic doesn't have a models endpoint, so we'll validate during first request
         logger.info("Anthropic adapter initialized (API key validation deferred)")
 
@@ -568,7 +577,7 @@ Recommendations:
 """
 
     def _parse_anthropic_response(
-        self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float
+        self, request: EvaluationRequest, result: dict[str, Any], execution_time: float
     ) -> EvaluationResponse:
         """Parse Anthropic API response into standardized format."""
         try:
@@ -588,8 +597,11 @@ Recommendations:
                 safety_score=scores.get("safety_score", 0.5),
                 fairness_score=scores.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,
-                tokens_used=usage.get("input_tokens", 0) + usage.get("output_tokens", 0),
-                cost_estimate=(usage.get("input_tokens", 0) + usage.get("output_tokens", 0))
+                tokens_used=usage.get("input_tokens", 0)
+                + usage.get("output_tokens", 0),
+                cost_estimate=(
+                    usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
+                )
                 * self.capabilities.cost_per_1k_tokens
                 / 1000,
                 platform_specific_metrics={
@@ -616,7 +628,7 @@ Recommendations:
                 error_code="PARSE_ERROR",
             )
 
-    def _extract_scores_from_text(self, text: str) -> Dict[str, float]:
+    def _extract_scores_from_text(self, text: str) -> dict[str, float]:
         """Extract numerical scores from Claude's text response."""
         import re
 
@@ -640,7 +652,7 @@ Recommendations:
 
         return scores
 
-    def _extract_analysis_sections(self, text: str) -> Dict[str, Any]:
+    def _extract_analysis_sections(self, text: str) -> dict[str, Any]:
         """Extract analysis and recommendations from Claude's response."""
         sections = {"analysis": "", "recommendations": []}
 
@@ -663,7 +675,9 @@ Recommendations:
             recommendations = re.findall(
                 r"[-•]\s*(.*?)(?=\n[-•]|\n\n|$)", recommendations_text, re.DOTALL
             )
-            sections["recommendations"] = [rec.strip() for rec in recommendations if rec.strip()]
+            sections["recommendations"] = [
+                rec.strip() for rec in recommendations if rec.strip()
+            ]
 
         return sections
 
@@ -795,7 +809,7 @@ Recommendations:
 """
 
     def _parse_cohere_response(
-        self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float
+        self, request: EvaluationRequest, result: dict[str, Any], execution_time: float
     ) -> EvaluationResponse:
         """Parse Cohere API response into standardized format."""
         try:
@@ -819,13 +833,17 @@ Recommendations:
                 fairness_score=scores.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,
                 tokens_used=int(estimated_tokens),
-                cost_estimate=estimated_tokens * self.capabilities.cost_per_1k_tokens / 1000,
+                cost_estimate=estimated_tokens
+                * self.capabilities.cost_per_1k_tokens
+                / 1000,
                 platform_specific_metrics={
                     "model": "command",
                     "analysis": analysis_sections.get("analysis", content),
                     "recommendations": analysis_sections.get("recommendations", []),
                     "likelihood": result["generations"][0].get("likelihood", 0.0),
-                    "finish_reason": result["generations"][0].get("finish_reason", "unknown"),
+                    "finish_reason": result["generations"][0].get(
+                        "finish_reason", "unknown"
+                    ),
                 },
             )
 
@@ -839,7 +857,7 @@ Recommendations:
                 error_code="PARSE_ERROR",
             )
 
-    def _extract_scores_from_text(self, text: str) -> Dict[str, float]:
+    def _extract_scores_from_text(self, text: str) -> dict[str, float]:
         """Extract numerical scores from Cohere's text response."""
         import re
 
@@ -863,7 +881,7 @@ Recommendations:
 
         return scores
 
-    def _extract_analysis_sections(self, text: str) -> Dict[str, Any]:
+    def _extract_analysis_sections(self, text: str) -> dict[str, Any]:
         """Extract analysis and recommendations from Cohere's response."""
         sections = {"analysis": "", "recommendations": []}
 
@@ -886,7 +904,9 @@ Recommendations:
             recommendations = re.findall(
                 r"\d+\.\s*(.*?)(?=\n\d+\.|\n\n|$)", recommendations_text, re.DOTALL
             )
-            sections["recommendations"] = [rec.strip() for rec in recommendations if rec.strip()]
+            sections["recommendations"] = [
+                rec.strip() for rec in recommendations if rec.strip()
+            ]
 
         return sections
 
@@ -951,7 +971,9 @@ class GroqPlatformAdapter(BasePlatformAdapter):
                 ),
                 "temperature": 0.1,
                 "response_format": (
-                    {"type": "json_object"} if self.capabilities.supports_json_mode else None
+                    {"type": "json_object"}
+                    if self.capabilities.supports_json_mode
+                    else None
                 ),
             }
 
@@ -1017,7 +1039,7 @@ Please provide a JSON response with the following structure:
 """
 
     def _parse_groq_response(
-        self, request: EvaluationRequest, result: Dict[str, Any], execution_time: float
+        self, request: EvaluationRequest, result: dict[str, Any], execution_time: float
     ) -> EvaluationResponse:
         """Parse Groq API response into standardized format."""
         try:
@@ -1042,8 +1064,12 @@ Please provide a JSON response with the following structure:
                 request_id=request.request_id,
                 platform_type=self.platform_type,
                 success=True,
-                policy_compliance_score=parsed_content.get("policy_compliance_score", 0.5),
-                constitutional_alignment=parsed_content.get("constitutional_alignment", 0.5),
+                policy_compliance_score=parsed_content.get(
+                    "policy_compliance_score", 0.5
+                ),
+                constitutional_alignment=parsed_content.get(
+                    "constitutional_alignment", 0.5
+                ),
                 safety_score=parsed_content.get("safety_score", 0.5),
                 fairness_score=parsed_content.get("fairness_score", 0.5),
                 execution_time_ms=execution_time,

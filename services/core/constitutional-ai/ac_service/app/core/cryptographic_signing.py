@@ -13,10 +13,10 @@ sha256: c8f2e1a9b7d6f4e3c2a1b8e7f6c5a4b3d2e1f8c7b6a5d4e3f2c1b8a7d6e5f4c3
 import hashlib
 import json
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import UTC, datetime
+from typing import Any
 
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives.serialization import (
     Encoding,
@@ -35,10 +35,12 @@ class ConstitutionalSignature(BaseModel):
     signature: str = Field(..., description="Base64-encoded Ed25519 signature")
     public_key: str = Field(..., description="Base64-encoded Ed25519 public key")
     algorithm: str = Field(default="Ed25519", description="Signature algorithm")
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     content_hash: str = Field(..., description="SHA-256 hash of signed content")
-    signer_id: Optional[str] = Field(None, description="ID of the signing entity")
-    signature_type: str = Field(..., description="Type of signature (principle, amendment, etc.)")
+    signer_id: str | None = Field(None, description="ID of the signing entity")
+    signature_type: str = Field(
+        ..., description="Type of signature (principle, amendment, etc.)"
+    )
 
     class Config:
         json_encoders = {datetime: lambda v: v.isoformat()}
@@ -53,10 +55,10 @@ class ConstitutionalCryptoSigner:
         # sha256: func_hash
         """Initialize the constitutional crypto signer."""
         self.algorithm = "Ed25519"
-        self._private_key: Optional[ed25519.Ed25519PrivateKey] = None
-        self._public_key: Optional[ed25519.Ed25519PublicKey] = None
+        self._private_key: ed25519.Ed25519PrivateKey | None = None
+        self._public_key: ed25519.Ed25519PublicKey | None = None
 
-    def generate_keypair(self) -> Tuple[str, str]:
+    def generate_keypair(self) -> tuple[str, str]:
         """
         Generate a new Ed25519 keypair for constitutional signing.
 
@@ -101,14 +103,16 @@ class ConstitutionalCryptoSigner:
     def load_public_key(self, public_key_pem: str) -> ed25519.Ed25519PublicKey:
         """Load public key from PEM format."""
         try:
-            public_key = serialization.load_pem_public_key(public_key_pem.encode("utf-8"))
+            public_key = serialization.load_pem_public_key(
+                public_key_pem.encode("utf-8")
+            )
             logger.info("Loaded public key for constitutional verification")
             return public_key
         except Exception as e:
             logger.error(f"Failed to load public key: {e}")
             raise
 
-    def _calculate_content_hash(self, content: Dict[str, Any]) -> str:
+    def _calculate_content_hash(self, content: dict[str, Any]) -> str:
         """Calculate SHA-256 hash of constitutional content."""
         try:
             # Create canonical JSON representation
@@ -123,7 +127,7 @@ class ConstitutionalCryptoSigner:
             raise
 
     def sign_constitutional_content(
-        self, content: Dict[str, Any], signer_id: str, signature_type: str
+        self, content: dict[str, Any], signer_id: str, signature_type: str
     ) -> ConstitutionalSignature:
         """
         Sign constitutional content with Ed25519 signature.
@@ -144,7 +148,7 @@ class ConstitutionalCryptoSigner:
             content_hash = self._calculate_content_hash(content)
 
             # Create signing payload with timestamp
-            timestamp = datetime.now(timezone.utc)
+            timestamp = datetime.now(UTC)
             signing_payload = {
                 "content_hash": content_hash,
                 "signer_id": signer_id,
@@ -153,7 +157,9 @@ class ConstitutionalCryptoSigner:
             }
 
             # Create canonical JSON for signing
-            canonical_payload = json.dumps(signing_payload, sort_keys=True, separators=(",", ":"))
+            canonical_payload = json.dumps(
+                signing_payload, sort_keys=True, separators=(",", ":")
+            )
 
             # Sign the payload
             signature_bytes = self._private_key.sign(canonical_payload.encode("utf-8"))
@@ -185,7 +191,7 @@ class ConstitutionalCryptoSigner:
             raise
 
     def verify_constitutional_signature(
-        self, content: Dict[str, Any], signature: ConstitutionalSignature
+        self, content: dict[str, Any], signature: ConstitutionalSignature
     ) -> bool:
         """
         Verify constitutional signature.
@@ -215,7 +221,9 @@ class ConstitutionalCryptoSigner:
                 "timestamp": signature.timestamp.isoformat(),
             }
 
-            canonical_payload = json.dumps(signing_payload, sort_keys=True, separators=(",", ":"))
+            canonical_payload = json.dumps(
+                signing_payload, sort_keys=True, separators=(",", ":")
+            )
 
             # Decode signature from base64
             import base64
@@ -233,8 +241,8 @@ class ConstitutionalCryptoSigner:
             return False
 
     def create_constitutional_integrity_proof(
-        self, content: Dict[str, Any], signatures: List[ConstitutionalSignature]
-    ) -> Dict[str, Any]:
+        self, content: dict[str, Any], signatures: list[ConstitutionalSignature]
+    ) -> dict[str, Any]:
         """
         Create comprehensive integrity proof for constitutional content.
 
@@ -256,7 +264,9 @@ class ConstitutionalCryptoSigner:
                     {
                         "signature": sig.dict(),
                         "verified": is_valid,
-                        "verification_timestamp": datetime.now(timezone.utc).isoformat(),
+                        "verification_timestamp": datetime.now(
+                            UTC
+                        ).isoformat(),
                     }
                 )
 
@@ -267,13 +277,16 @@ class ConstitutionalCryptoSigner:
                 "signature_algorithm": "Ed25519",
                 "signatures": verified_signatures,
                 "total_signatures": len(signatures),
-                "verified_signatures": sum(1 for sig in verified_signatures if sig["verified"]),
+                "verified_signatures": sum(
+                    1 for sig in verified_signatures if sig["verified"]
+                ),
                 "integrity_score": (
-                    sum(1 for sig in verified_signatures if sig["verified"]) / len(signatures)
+                    sum(1 for sig in verified_signatures if sig["verified"])
+                    / len(signatures)
                     if signatures
                     else 0
                 ),
-                "proof_timestamp": datetime.now(timezone.utc).isoformat(),
+                "proof_timestamp": datetime.now(UTC).isoformat(),
                 "constitutional_compliance": {
                     "tamper_proof": all(sig["verified"] for sig in verified_signatures),
                     "non_repudiation": len(verified_signatures) > 0,
@@ -281,7 +294,9 @@ class ConstitutionalCryptoSigner:
                 },
             }
 
-            logger.info(f"Created constitutional integrity proof with {len(signatures)} signatures")
+            logger.info(
+                f"Created constitutional integrity proof with {len(signatures)} signatures"
+            )
             return integrity_proof
 
         except Exception as e:
@@ -300,7 +315,7 @@ class ConstitutionalSigningService:
         self.signer = ConstitutionalCryptoSigner()
         self._initialized = False
 
-    async def initialize(self, private_key_pem: Optional[str] = None) -> None:
+    async def initialize(self, private_key_pem: str | None = None) -> None:
         """Initialize the signing service with optional private key."""
         try:
             if private_key_pem:
@@ -309,7 +324,9 @@ class ConstitutionalSigningService:
                 # Generate new keypair for development/testing
                 private_pem, public_pem = self.signer.generate_keypair()
                 self.signer.load_private_key(private_pem)
-                logger.warning("Generated new keypair - ensure proper key management in production")
+                logger.warning(
+                    "Generated new keypair - ensure proper key management in production"
+                )
 
             self._initialized = True
             logger.info("Constitutional signing service initialized")
@@ -319,7 +336,7 @@ class ConstitutionalSigningService:
             raise
 
     async def sign_principle(
-        self, principle_data: Dict[str, Any], signer_id: str
+        self, principle_data: dict[str, Any], signer_id: str
     ) -> ConstitutionalSignature:
         """Sign a constitutional principle."""
         if not self._initialized:
@@ -330,7 +347,7 @@ class ConstitutionalSigningService:
         )
 
     async def sign_amendment(
-        self, amendment_data: Dict[str, Any], signer_id: str
+        self, amendment_data: dict[str, Any], signer_id: str
     ) -> ConstitutionalSignature:
         """Sign a constitutional amendment."""
         if not self._initialized:
@@ -341,14 +358,14 @@ class ConstitutionalSigningService:
         )
 
     async def verify_signature(
-        self, content: Dict[str, Any], signature: ConstitutionalSignature
+        self, content: dict[str, Any], signature: ConstitutionalSignature
     ) -> bool:
         """Verify a constitutional signature."""
         return self.signer.verify_constitutional_signature(content, signature)
 
     async def create_integrity_proof(
-        self, content: Dict[str, Any], signatures: List[ConstitutionalSignature]
-    ) -> Dict[str, Any]:
+        self, content: dict[str, Any], signatures: list[ConstitutionalSignature]
+    ) -> dict[str, Any]:
         """Create integrity proof for constitutional content."""
         return self.signer.create_constitutional_integrity_proof(content, signatures)
 

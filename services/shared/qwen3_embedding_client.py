@@ -23,11 +23,10 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 # Third-party imports
 import numpy as np
-from pydantic import BaseModel, Field
 
 # ACGS-1 imports
 try:
@@ -37,7 +36,7 @@ try:
 except ImportError:
     # Fallback for testing
     from constitutional_metrics import get_constitutional_metrics
-    from langgraph_config import ModelRole, get_langgraph_config
+    from langgraph_config import get_langgraph_config
     from redis_cache import get_cache
 
 logger = logging.getLogger(__name__)
@@ -60,8 +59,8 @@ class EmbeddingRequest:
 
     text: str
     task_type: EmbeddingTaskType = EmbeddingTaskType.CONSTITUTIONAL_ANALYSIS
-    context: Optional[Dict[str, Any]] = None
-    cache_key: Optional[str] = None
+    context: dict[str, Any] | None = None
+    cache_key: str | None = None
     priority: str = "normal"  # normal, high, critical
 
 
@@ -69,12 +68,12 @@ class EmbeddingRequest:
 class EmbeddingResponse:
     """Response from embedding generation."""
 
-    embedding: List[float]
+    embedding: list[float]
     success: bool
     processing_time_ms: float
     cache_hit: bool = False
-    error_message: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    error_message: str | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class Qwen3EmbeddingClient:
@@ -85,7 +84,7 @@ class Qwen3EmbeddingClient:
     and governance workflows with caching, error handling, and performance optimization.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -115,7 +114,9 @@ class Qwen3EmbeddingClient:
         # Semaphore for concurrent request limiting
         self.request_semaphore = asyncio.Semaphore(self.max_concurrent_requests)
 
-        logger.info(f"Qwen3EmbeddingClient initialized with dimension={self.embedding_dimension}")
+        logger.info(
+            f"Qwen3EmbeddingClient initialized with dimension={self.embedding_dimension}"
+        )
 
     async def initialize(self) -> bool:
         """Initialize the embedding client and model."""
@@ -135,7 +136,9 @@ class Qwen3EmbeddingClient:
                 self.initialized = True
 
                 init_time = (time.time() - start_time) * 1000
-                logger.info(f"Qwen3EmbeddingClient initialized successfully in {init_time:.2f}ms")
+                logger.info(
+                    f"Qwen3EmbeddingClient initialized successfully in {init_time:.2f}ms"
+                )
 
                 # Record initialization metrics
                 self.metrics.record_constitutional_principle_operation(
@@ -259,7 +262,7 @@ class Qwen3EmbeddingClient:
                     error_message=str(e),
                 )
 
-    async def _generate_real_embedding(self, request: EmbeddingRequest) -> List[float]:
+    async def _generate_real_embedding(self, request: EmbeddingRequest) -> list[float]:
         """Generate real embedding using Qwen3 model via OpenRouter API."""
         try:
             # Use OpenRouter API for Qwen3 embeddings
@@ -300,20 +303,24 @@ class Qwen3EmbeddingClient:
                     if len(embedding) != self.embedding_dimension:
                         # Pad or truncate to match expected dimension
                         if len(embedding) < self.embedding_dimension:
-                            embedding.extend([0.0] * (self.embedding_dimension - len(embedding)))
+                            embedding.extend(
+                                [0.0] * (self.embedding_dimension - len(embedding))
+                            )
                         else:
                             embedding = embedding[: self.embedding_dimension]
 
                     return embedding
                 else:
-                    logger.error(f"OpenRouter API error: {response.status_code} - {response.text}")
+                    logger.error(
+                        f"OpenRouter API error: {response.status_code} - {response.text}"
+                    )
                     return await self._generate_mock_embedding(request)
 
         except Exception as e:
             logger.error(f"Error calling OpenRouter API: {e}")
             return await self._generate_mock_embedding(request)
 
-    async def _generate_mock_embedding(self, request: EmbeddingRequest) -> List[float]:
+    async def _generate_mock_embedding(self, request: EmbeddingRequest) -> list[float]:
         """Generate mock embedding for testing."""
         await asyncio.sleep(0.02)  # Simulate processing time
 
@@ -343,7 +350,7 @@ class Qwen3EmbeddingClient:
         content = f"{task_type.value}:{text}"
         return f"qwen3_embedding:{hashlib.sha256(content.encode()).hexdigest()[:16]}"
 
-    async def _get_cached_embedding(self, cache_key: str) -> Optional[List[float]]:
+    async def _get_cached_embedding(self, cache_key: str) -> list[float] | None:
         """Get cached embedding if available."""
         if not self.redis_client:
             return None
@@ -357,7 +364,7 @@ class Qwen3EmbeddingClient:
 
         return None
 
-    async def _cache_embedding(self, cache_key: str, embedding: List[float]):
+    async def _cache_embedding(self, cache_key: str, embedding: list[float]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -366,11 +373,13 @@ class Qwen3EmbeddingClient:
             return
 
         try:
-            self.redis_client.set(cache_key, json.dumps(embedding), self.cache_ttl_seconds)
+            self.redis_client.set(
+                cache_key, json.dumps(embedding), self.cache_ttl_seconds
+            )
         except Exception as e:
             logger.warning(f"Cache storage error: {e}")
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check of the embedding client."""
         health_status = {
             "status": "healthy" if self.initialized else "unhealthy",
@@ -380,7 +389,8 @@ class Qwen3EmbeddingClient:
             "performance_metrics": {
                 "total_requests": self.total_requests,
                 "successful_requests": self.successful_requests,
-                "success_rate": (self.successful_requests / max(1, self.total_requests)) * 100,
+                "success_rate": (self.successful_requests / max(1, self.total_requests))
+                * 100,
                 "cache_hit_rate": (self.cache_hits / max(1, self.total_requests)) * 100,
                 "average_response_time": 0.0,
             },
@@ -400,10 +410,14 @@ class Qwen3EmbeddingClient:
 
                 health_status["test_response_time_ms"] = test_time
                 health_status["test_success"] = response.success
-                health_status["performance_metrics"]["average_response_time"] = test_time
+                health_status["performance_metrics"][
+                    "average_response_time"
+                ] = test_time
 
                 # Check if performance targets are met
-                health_status["performance_targets_met"] = test_time < 500.0  # <500ms target
+                health_status["performance_targets_met"] = (
+                    test_time < 500.0
+                )  # <500ms target
 
             except Exception as e:
                 health_status["status"] = "degraded"
@@ -434,7 +448,7 @@ class Qwen3EmbeddingClient:
 
 
 # Global client instance
-_qwen3_embedding_client: Optional[Qwen3EmbeddingClient] = None
+_qwen3_embedding_client: Qwen3EmbeddingClient | None = None
 
 
 async def get_qwen3_embedding_client() -> Qwen3EmbeddingClient:

@@ -19,7 +19,7 @@ import logging
 import sys
 import time
 from contextlib import asynccontextmanager
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -49,14 +49,16 @@ try:
     ENHANCED_SERVICES_AVAILABLE = True
     logger.info("Enhanced constitutional compliance services imported successfully")
 except ImportError as e:
-    logger.warning(f"Enhanced services not available: {e}. Running with basic compliance.")
+    logger.warning(
+        f"Enhanced services not available: {e}. Running with basic compliance."
+    )
     ENHANCED_SERVICES_AVAILABLE = False
 
 # Global service instances
-compliance_engine: Optional[Any] = None
-violation_detector: Optional[Any] = None
-audit_logger: Optional[Any] = None
-fv_client: Optional[Any] = None
+compliance_engine: Any | None = None
+violation_detector: Any | None = None
+audit_logger: Any | None = None
+fv_client: Any | None = None
 
 
 @asynccontextmanager
@@ -379,7 +381,7 @@ async def get_constitutional_rules():
 
 
 # Advanced constitutional compliance algorithms
-def _advanced_democratic_check(policy) -> Dict[str, Any]:
+def _advanced_democratic_check(policy) -> dict[str, Any]:
     """Advanced democratic participation analysis."""
     policy_text = str(policy).lower()
 
@@ -418,7 +420,7 @@ def _advanced_democratic_check(policy) -> Dict[str, Any]:
     }
 
 
-def _advanced_transparency_check(policy) -> Dict[str, Any]:
+def _advanced_transparency_check(policy) -> dict[str, Any]:
     """Advanced transparency requirement analysis."""
     policy_text = str(policy).lower()
 
@@ -458,7 +460,7 @@ def _advanced_transparency_check(policy) -> Dict[str, Any]:
     }
 
 
-def _advanced_constitutional_check(policy) -> Dict[str, Any]:
+def _advanced_constitutional_check(policy) -> dict[str, Any]:
     """Advanced constitutional compliance analysis."""
     policy_text = str(policy).lower()
 
@@ -473,7 +475,9 @@ def _advanced_constitutional_check(policy) -> Dict[str, Any]:
         "legal framework",
     ]
 
-    score = sum(1 for indicator in constitutional_indicators if indicator in policy_text)
+    score = sum(
+        1 for indicator in constitutional_indicators if indicator in policy_text
+    )
     confidence = min(0.98, 0.7 + (score * 0.035))
 
     return {
@@ -498,7 +502,7 @@ def _advanced_constitutional_check(policy) -> Dict[str, Any]:
     }
 
 
-def _advanced_accountability_check(policy) -> Dict[str, Any]:
+def _advanced_accountability_check(policy) -> dict[str, Any]:
     """Advanced accountability framework analysis."""
     policy_text = str(policy).lower()
 
@@ -513,7 +517,9 @@ def _advanced_accountability_check(policy) -> Dict[str, Any]:
         "review",
     ]
 
-    score = sum(1 for indicator in accountability_indicators if indicator in policy_text)
+    score = sum(
+        1 for indicator in accountability_indicators if indicator in policy_text
+    )
     confidence = min(0.92, 0.6 + (score * 0.04))
 
     return {
@@ -538,7 +544,7 @@ def _advanced_accountability_check(policy) -> Dict[str, Any]:
     }
 
 
-def _advanced_rights_check(policy) -> Dict[str, Any]:
+def _advanced_rights_check(policy) -> dict[str, Any]:
     """Advanced rights protection analysis."""
     policy_text = str(policy).lower()
 
@@ -601,7 +607,7 @@ def _calculate_average_severity(validation_results) -> str:
 
 
 @app.post("/api/v1/validate")
-async def validate_content_simple(request_data: Dict[str, Any]):
+async def validate_content_simple(request_data: dict[str, Any]):
     """Simple content validation endpoint for red-teaming and security testing."""
     try:
         content = request_data.get("content", "")
@@ -610,15 +616,25 @@ async def validate_content_simple(request_data: Dict[str, Any]):
 
         # Constitutional threat detection
         threat_patterns = [
-            "override", "bypass", "ignore constitutional", "void constitutional",
-            "unrestricted", "unlimited", "absolute power"
+            "override",
+            "bypass",
+            "ignore constitutional",
+            "void constitutional",
+            "unrestricted",
+            "unlimited",
+            "absolute power",
         ]
 
-        threats_detected = [pattern for pattern in threat_patterns if pattern in content.lower()]
+        threats_detected = [
+            pattern for pattern in threat_patterns if pattern in content.lower()
+        ]
 
         # Constitutional compliance check
         constitutional_violations = []
-        if "ignore constitutional" in content.lower() or "bypass constitutional" in content.lower():
+        if (
+            "ignore constitutional" in content.lower()
+            or "bypass constitutional" in content.lower()
+        ):
             constitutional_violations.append("Constitutional bypass attempt detected")
 
         if "unrestricted access" in content.lower():
@@ -642,7 +658,7 @@ async def validate_content_simple(request_data: Dict[str, Any]):
             "constitutional_violations": constitutional_violations,
             "test_mode": test_mode,
             "adversarial_test": adversarial_test,
-            "service": "ac_service"
+            "service": "ac_service",
         }
 
     except Exception as e:
@@ -652,11 +668,12 @@ async def validate_content_simple(request_data: Dict[str, Any]):
             "status": f"Validation failed: {str(e)}",
             "threats_detected": [],
             "constitutional_violations": [],
-            "test_mode": request_data.get("test_mode", False)
+            "test_mode": request_data.get("test_mode", False),
         }
 
+
 @app.post("/api/v1/constitutional/validate")
-async def validate_constitutional_compliance(request: Dict[str, Any]):
+async def validate_constitutional_compliance(request: dict[str, Any]):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -670,7 +687,9 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
     validation_level = request.get("level", "comprehensive")
     enable_formal_verification = request.get("enable_formal_verification", False)
 
-    validation_id = f"VAL-{int(time.time())}-{hashlib.sha256(str(policy).encode()).hexdigest()[:8]}"
+    validation_id = (
+        f"VAL-{int(time.time())}-{hashlib.sha256(str(policy).encode()).hexdigest()[:8]}"
+    )
 
     # Log audit trail
     if audit_logger:
@@ -767,8 +786,10 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
     # Formal verification integration if requested and available
     if enable_formal_verification and fv_client and overall_compliant:
         try:
-            formal_verification_results = await fv_client.verify_constitutional_compliance(
-                policy, validation_results
+            formal_verification_results = (
+                await fv_client.verify_constitutional_compliance(
+                    policy, validation_results
+                )
             )
         except Exception as e:
             logger.warning(f"Formal verification failed: {e}")
@@ -789,7 +810,8 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
             "rules_failed": sum(1 for r in validation_results if not r["compliant"]),
             "overall_confidence": (
                 round(
-                    sum(r["confidence"] for r in validation_results) / len(validation_results),
+                    sum(r["confidence"] for r in validation_results)
+                    / len(validation_results),
                     4,
                 )
                 if validation_results
@@ -826,7 +848,7 @@ async def validate_constitutional_compliance(request: Dict[str, Any]):
 
 
 @app.post("/api/v1/constitutional/validate-advanced")
-async def validate_constitutional_compliance_advanced(request: Dict[str, Any]):
+async def validate_constitutional_compliance_advanced(request: dict[str, Any]):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -845,7 +867,9 @@ async def validate_constitutional_compliance_advanced(request: Dict[str, Any]):
 
     # Add advanced analysis
     advanced_analysis = {
-        "constitutional_fidelity_score": _calculate_constitutional_fidelity(base_result),
+        "constitutional_fidelity_score": _calculate_constitutional_fidelity(
+            base_result
+        ),
         "risk_assessment": _assess_constitutional_risk(base_result),
         "compliance_trends": _analyze_compliance_trends(base_result),
         "stakeholder_impact": _assess_stakeholder_impact(request.get("policy", {})),
@@ -885,7 +909,7 @@ async def get_constitutional_hash_validation():
                 "active": True,
                 "rules_loaded": True,
                 "compliance_engine": "operational",
-            }
+            },
         }
 
     except Exception as e:
@@ -905,13 +929,41 @@ async def get_constitutional_council_members():
     try:
         return {
             "members": [
-                {"id": "council_001", "name": "Constitutional Council Member 1", "active": True},
-                {"id": "council_002", "name": "Constitutional Council Member 2", "active": True},
-                {"id": "council_003", "name": "Constitutional Council Member 3", "active": True},
-                {"id": "council_004", "name": "Constitutional Council Member 4", "active": True},
-                {"id": "council_005", "name": "Constitutional Council Member 5", "active": True},
-                {"id": "council_006", "name": "Constitutional Council Member 6", "active": True},
-                {"id": "council_007", "name": "Constitutional Council Member 7", "active": True},
+                {
+                    "id": "council_001",
+                    "name": "Constitutional Council Member 1",
+                    "active": True,
+                },
+                {
+                    "id": "council_002",
+                    "name": "Constitutional Council Member 2",
+                    "active": True,
+                },
+                {
+                    "id": "council_003",
+                    "name": "Constitutional Council Member 3",
+                    "active": True,
+                },
+                {
+                    "id": "council_004",
+                    "name": "Constitutional Council Member 4",
+                    "active": True,
+                },
+                {
+                    "id": "council_005",
+                    "name": "Constitutional Council Member 5",
+                    "active": True,
+                },
+                {
+                    "id": "council_006",
+                    "name": "Constitutional Council Member 6",
+                    "active": True,
+                },
+                {
+                    "id": "council_007",
+                    "name": "Constitutional Council Member 7",
+                    "active": True,
+                },
             ],
             "required_signatures": 5,
             "total_members": 7,
@@ -939,20 +991,20 @@ async def get_voting_mechanisms():
                     "id": "supermajority",
                     "name": "Supermajority Voting",
                     "threshold": 0.67,
-                    "description": "Requires 2/3 majority for constitutional changes"
+                    "description": "Requires 2/3 majority for constitutional changes",
                 },
                 {
                     "id": "simple_majority",
                     "name": "Simple Majority",
                     "threshold": 0.51,
-                    "description": "Requires simple majority for policy changes"
+                    "description": "Requires simple majority for policy changes",
                 },
                 {
                     "id": "unanimous",
                     "name": "Unanimous Consent",
                     "threshold": 1.0,
-                    "description": "Requires unanimous consent for critical constitutional amendments"
-                }
+                    "description": "Requires unanimous consent for critical constitutional amendments",
+                },
             ],
             "default_mechanism": "supermajority",
             "constitutional_hash": "cdd01ef066bc6cf2",
@@ -970,7 +1022,7 @@ async def get_voting_mechanisms():
 
 
 @app.post("/api/v1/constitutional/compliance-score")
-async def calculate_compliance_score(request: Dict[str, Any]):
+async def calculate_compliance_score(request: dict[str, Any]):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -1023,7 +1075,9 @@ async def calculate_compliance_score(request: Dict[str, Any]):
 
     # Calculate improvement potential
     max_possible_score = sum(r["weight"] for r in validation_result["results"])
-    detailed_score["improvement_potential"] = max_possible_score - detailed_score["overall_score"]
+    detailed_score["improvement_potential"] = (
+        max_possible_score - detailed_score["overall_score"]
+    )
 
     return {
         "policy_id": policy.get("policy_id", "unknown"),
@@ -1047,7 +1101,7 @@ def _calculate_constitutional_fidelity(validation_result) -> float:
     return round(base_score * confidence_factor * fv_factor, 4)
 
 
-def _assess_constitutional_risk(validation_result) -> Dict[str, Any]:
+def _assess_constitutional_risk(validation_result) -> dict[str, Any]:
     """Assess constitutional risk based on validation results."""
     failed_rules = validation_result["summary"]["rules_failed"]
     total_rules = validation_result["summary"]["total_rules_checked"]
@@ -1071,7 +1125,7 @@ def _assess_constitutional_risk(validation_result) -> Dict[str, Any]:
     }
 
 
-def _analyze_compliance_trends(validation_result) -> Dict[str, Any]:
+def _analyze_compliance_trends(validation_result) -> dict[str, Any]:
     """Analyze compliance trends (simplified for demo)."""
     return {
         "trend": "stable",
@@ -1086,7 +1140,7 @@ def _analyze_compliance_trends(validation_result) -> Dict[str, Any]:
     }
 
 
-def _assess_stakeholder_impact(policy) -> Dict[str, Any]:
+def _assess_stakeholder_impact(policy) -> dict[str, Any]:
     """Assess stakeholder impact (simplified for demo)."""
     return {
         "affected_stakeholders": ["citizens", "government", "organizations"],
@@ -1096,7 +1150,7 @@ def _assess_stakeholder_impact(policy) -> Dict[str, Any]:
 
 
 @app.post("/api/v1/constitutional/analyze")
-async def analyze_constitutional_impact(request: Dict[str, Any]):
+async def analyze_constitutional_impact(request: dict[str, Any]):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

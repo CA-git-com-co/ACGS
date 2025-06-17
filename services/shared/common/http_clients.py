@@ -9,7 +9,7 @@ import logging
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -123,16 +123,18 @@ class ACGSHttpClient:
         """Close the HTTP client."""
         await self.client.aclose()
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
+    )
     async def request(
         self,
         method: str,
         endpoint: str,
-        data: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
-        auth_token: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        auth_token: str | None = None,
+    ) -> dict[str, Any]:
         """
         Make HTTP request with circuit breaker and retry logic.
 
@@ -176,7 +178,9 @@ class ACGSHttpClient:
             duration = time.time() - start_time
 
             # Log request metrics
-            logger.info(f"HTTP {method} {endpoint} - {response.status_code} - {duration:.3f}s")
+            logger.info(
+                f"HTTP {method} {endpoint} - {response.status_code} - {duration:.3f}s"
+            )
 
             if response.status_code >= 400:
                 self.circuit_breaker.record_failure()
@@ -196,7 +200,9 @@ class ACGSHttpClient:
         except httpx.RequestError as e:
             self.circuit_breaker.record_failure()
             logger.error(f"Request error for {endpoint}: {e}")
-            raise ServiceUnavailableError(f"Service unavailable: {str(e)}", "SERVICE_UNAVAILABLE")
+            raise ServiceUnavailableError(
+                f"Service unavailable: {str(e)}", "SERVICE_UNAVAILABLE"
+            )
         except Exception as e:
             self.circuit_breaker.record_failure()
             logger.error(f"Unexpected error for {endpoint}: {e}")
@@ -213,7 +219,7 @@ class ServiceClient:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.clients: Dict[ServiceType, ACGSHttpClient] = {}
+        self.clients: dict[ServiceType, ACGSHttpClient] = {}
         self._setup_default_configs()
 
     def _setup_default_configs(self):
@@ -236,7 +242,7 @@ class ServiceClient:
 
     async def call_service(
         self, service: ServiceType, method: str, endpoint: str, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Call a specific ACGS service.
 

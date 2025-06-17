@@ -12,9 +12,9 @@ import hashlib
 import json
 import logging
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class PolicyFileInfo:
     framework: str
     last_modified: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         data = asdict(self)
         data["last_modified"] = self.last_modified.isoformat()
@@ -49,25 +49,41 @@ class FrameworkBreakdown:
     yaml_count: int
     unknown_count: int
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         return asdict(self)
 
     @property
     def datalog_percentage(self) -> float:
-        return (self.datalog_count / self.total_policies * 100) if self.total_policies > 0 else 0.0
+        return (
+            (self.datalog_count / self.total_policies * 100)
+            if self.total_policies > 0
+            else 0.0
+        )
 
     @property
     def rego_percentage(self) -> float:
-        return (self.rego_count / self.total_policies * 100) if self.total_policies > 0 else 0.0
+        return (
+            (self.rego_count / self.total_policies * 100)
+            if self.total_policies > 0
+            else 0.0
+        )
 
     @property
     def json_percentage(self) -> float:
-        return (self.json_count / self.total_policies * 100) if self.total_policies > 0 else 0.0
+        return (
+            (self.json_count / self.total_policies * 100)
+            if self.total_policies > 0
+            else 0.0
+        )
 
     @property
     def yaml_percentage(self) -> float:
-        return (self.yaml_count / self.total_policies * 100) if self.total_policies > 0 else 0.0
+        return (
+            (self.yaml_count / self.total_policies * 100)
+            if self.total_policies > 0
+            else 0.0
+        )
 
 
 @dataclass
@@ -81,11 +97,11 @@ class PolicyManifest:
     total_files: int
     total_policies: int
     framework_breakdown: FrameworkBreakdown
-    files: List[PolicyFileInfo]
-    integrity_info: Dict[str, Any]
-    metadata: Dict[str, Any]
+    files: list[PolicyFileInfo]
+    integrity_info: dict[str, Any]
+    metadata: dict[str, Any]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization"""
         data = {
             "manifest_version": self.manifest_version,
@@ -122,8 +138,8 @@ class ManifestManager:
         dataset_path: str,
         dataset_name: str,
         dataset_version: str,
-        include_patterns: List[str] = None,
-        exclude_patterns: List[str] = None,
+        include_patterns: list[str] = None,
+        exclude_patterns: list[str] = None,
     ) -> PolicyManifest:
         """
         Generate a comprehensive manifest for a policy dataset.
@@ -148,7 +164,9 @@ class ManifestManager:
         if not dataset_path.exists():
             raise FileNotFoundError(f"Dataset path does not exist: {dataset_path}")
 
-        logger.info(f"Generating manifest for dataset: {dataset_name} v{dataset_version}")
+        logger.info(
+            f"Generating manifest for dataset: {dataset_name} v{dataset_version}"
+        )
 
         # Collect file information
         files_info = []
@@ -196,13 +214,13 @@ class ManifestManager:
             "dataset_path": str(dataset_path),
             "include_patterns": include_patterns,
             "exclude_patterns": exclude_patterns,
-            "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
+            "analysis_timestamp": datetime.now(UTC).isoformat(),
         }
 
         # Create manifest
         manifest = PolicyManifest(
             manifest_version=self.manifest_version,
-            generated_at=datetime.now(timezone.utc),
+            generated_at=datetime.now(UTC),
             dataset_name=dataset_name,
             dataset_version=dataset_version,
             total_files=len(files_info),
@@ -213,10 +231,14 @@ class ManifestManager:
             metadata=metadata,
         )
 
-        logger.info(f"Generated manifest: {len(files_info)} files, {total_policies} policies")
+        logger.info(
+            f"Generated manifest: {len(files_info)} files, {total_policies} policies"
+        )
         return manifest
 
-    def _should_exclude_file(self, file_path: Path, exclude_patterns: List[str]) -> bool:
+    def _should_exclude_file(
+        self, file_path: Path, exclude_patterns: list[str]
+    ) -> bool:
         """Check if file should be excluded based on patterns"""
         file_name = file_path.name
         for pattern in exclude_patterns:
@@ -232,7 +254,7 @@ class ManifestManager:
         # Get file stats
         stat = file_path.stat()
         size_bytes = stat.st_size
-        last_modified = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
+        last_modified = datetime.fromtimestamp(stat.st_mtime, tz=UTC)
 
         # Determine framework and count records
         framework, record_count = self._analyze_file_content(file_path)
@@ -258,10 +280,10 @@ class ManifestManager:
                 sha256_hash.update(chunk)
         return sha256_hash.hexdigest()
 
-    def _analyze_file_content(self, file_path: Path) -> Tuple[str, int]:
+    def _analyze_file_content(self, file_path: Path) -> tuple[str, int]:
         """Analyze file content to determine framework and count records"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Determine framework
@@ -270,7 +292,9 @@ class ManifestManager:
             # Count records
             if file_path.suffix == ".jsonl":
                 # JSONL file - count lines
-                record_count = len([line for line in content.split("\n") if line.strip()])
+                record_count = len(
+                    [line for line in content.split("\n") if line.strip()]
+                )
             elif file_path.suffix in [".json", ".yaml", ".yml"]:
                 # Single document files
                 record_count = 1
@@ -308,7 +332,9 @@ class ManifestManager:
             return "YAML"
 
         # Content-based detection
-        if "package " in content and ("allow" in content_lower or "deny" in content_lower):
+        if "package " in content and (
+            "allow" in content_lower or "deny" in content_lower
+        ):
             return "Rego"
         elif content.strip().startswith("{") or '"Statement"' in content:
             return "JSON"
@@ -319,7 +345,9 @@ class ManifestManager:
 
         return "Unknown"
 
-    def _generate_integrity_info(self, files_info: List[PolicyFileInfo]) -> Dict[str, Any]:
+    def _generate_integrity_info(
+        self, files_info: list[PolicyFileInfo]
+    ) -> dict[str, Any]:
         """Generate integrity information for the dataset"""
         # Calculate overall dataset hash
         all_hashes = [f.sha256 for f in files_info]
@@ -334,10 +362,12 @@ class ManifestManager:
             "total_size_bytes": total_size,
             "hash_algorithm": "SHA-256",
             "file_count": len(files_info),
-            "integrity_check_timestamp": datetime.now(timezone.utc).isoformat(),
+            "integrity_check_timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def validate_manifest(self, manifest_path: str, dataset_path: str) -> Dict[str, Any]:
+    def validate_manifest(
+        self, manifest_path: str, dataset_path: str
+    ) -> dict[str, Any]:
         """
         Validate a manifest against the actual dataset.
 
@@ -349,7 +379,7 @@ class ManifestManager:
             Validation result dictionary
         """
         try:
-            with open(manifest_path, "r") as f:
+            with open(manifest_path) as f:
                 manifest_data = json.load(f)
 
             validation_result = {
@@ -395,7 +425,9 @@ class ManifestManager:
                             f"expected {expected_size}, got {actual_size}"
                         )
                 else:
-                    validation_result["errors"].append(f"File not found: {file_info['file_path']}")
+                    validation_result["errors"].append(
+                        f"File not found: {file_info['file_path']}"
+                    )
                     validation_result["is_valid"] = False
 
                 validation_result["file_checks"].append(file_check)
@@ -422,7 +454,7 @@ class ManifestManager:
 
     def load_manifest(self, manifest_path: str) -> PolicyManifest:
         """Load manifest from file"""
-        with open(manifest_path, "r") as f:
+        with open(manifest_path) as f:
             data = json.load(f)
 
         # Convert back to PolicyManifest object

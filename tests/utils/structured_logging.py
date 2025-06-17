@@ -11,9 +11,9 @@ import logging
 import sys
 import time
 import traceback
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class StructuredTestLogger:
@@ -57,12 +57,12 @@ class StructuredTestLogger:
         self.current_test = None
         self.test_start_time = None
 
-    def start_test_session(self, session_info: Dict[str, Any]):
+    def start_test_session(self, session_info: dict[str, Any]):
         """Start a new test session with metadata."""
         session_data = {
             "event_type": "test_session_start",
             "session_id": self.test_session_id,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "session_info": session_info,
             "python_version": sys.version,
             "platform": sys.platform,
@@ -72,7 +72,7 @@ class StructuredTestLogger:
         )
 
     def start_test(
-        self, test_name: str, test_metadata: Optional[Dict[str, Any]] = None
+        self, test_name: str, test_metadata: dict[str, Any] | None = None
     ):
         """Start logging for a specific test."""
         self.current_test = test_name
@@ -82,7 +82,7 @@ class StructuredTestLogger:
             "event_type": "test_start",
             "session_id": self.test_session_id,
             "test_name": test_name,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "metadata": test_metadata or {},
         }
         self.logger.info(
@@ -90,7 +90,7 @@ class StructuredTestLogger:
         )
 
     def end_test(
-        self, test_name: str, status: str, error_info: Optional[Dict[str, Any]] = None
+        self, test_name: str, status: str, error_info: dict[str, Any] | None = None
     ):
         """End logging for a specific test."""
         end_time = time.time()
@@ -102,7 +102,7 @@ class StructuredTestLogger:
             "test_name": test_name,
             "status": status,  # "passed", "failed", "skipped"
             "duration_seconds": duration,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "error_info": error_info,
         }
 
@@ -125,7 +125,7 @@ class StructuredTestLogger:
         self.test_start_time = None
 
     def log_test_step(
-        self, step_name: str, step_data: Dict[str, Any], level: str = "info"
+        self, step_name: str, step_data: dict[str, Any], level: str = "info"
     ):
         """Log a specific test step with structured data."""
         step_log = {
@@ -133,7 +133,7 @@ class StructuredTestLogger:
             "session_id": self.test_session_id,
             "test_name": self.current_test,
             "step_name": step_name,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "step_data": step_data,
         }
 
@@ -141,7 +141,7 @@ class StructuredTestLogger:
         log_method(f"Test step: {step_name}", extra={"structured_data": step_log})
 
     def log_performance_metric(
-        self, metric_name: str, value: float, unit: str, context: Dict[str, Any] = None
+        self, metric_name: str, value: float, unit: str, context: dict[str, Any] = None
     ):
         """Log performance metrics with structured data."""
         metric_data = {
@@ -151,7 +151,7 @@ class StructuredTestLogger:
             "metric_name": metric_name,
             "value": value,
             "unit": unit,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "context": context or {},
         }
         self.logger.info(
@@ -163,8 +163,8 @@ class StructuredTestLogger:
         self,
         service_name: str,
         operation: str,
-        request_data: Dict[str, Any],
-        response_data: Dict[str, Any],
+        request_data: dict[str, Any],
+        response_data: dict[str, Any],
         duration_ms: float,
         success: bool,
     ):
@@ -179,7 +179,7 @@ class StructuredTestLogger:
             "response_data": response_data,
             "duration_ms": duration_ms,
             "success": success,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         if success:
@@ -193,7 +193,7 @@ class StructuredTestLogger:
                 extra={"structured_data": interaction_data},
             )
 
-    def log_error(self, error: Exception, context: Dict[str, Any] = None):
+    def log_error(self, error: Exception, context: dict[str, Any] = None):
         """Log error with full traceback and context."""
         error_data = {
             "event_type": "error",
@@ -203,7 +203,7 @@ class StructuredTestLogger:
             "error_message": str(error),
             "traceback": traceback.format_exc(),
             "context": context or {},
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
         self.logger.error(
             f"Error occurred: {type(error).__name__}: {error}",
@@ -222,7 +222,7 @@ class StructuredTestLogger:
         summary_data = {
             "event_type": "test_session_end",
             "session_id": self.test_session_id,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "summary": {
                 "total_tests": total_tests,
                 "passed_tests": passed_tests,
@@ -251,7 +251,7 @@ class JSONFormatter(logging.Formatter):
     def format(self, record):
         log_entry = {
             "timestamp": datetime.fromtimestamp(
-                record.created, timezone.utc
+                record.created, UTC
             ).isoformat(),
             "level": record.levelname,
             "logger": record.name,

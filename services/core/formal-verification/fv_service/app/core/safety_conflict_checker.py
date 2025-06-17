@@ -6,7 +6,6 @@ Implements real-time safety property verification and conflict detection
 import hashlib
 import logging
 import time
-from typing import Dict, List, Optional
 
 from ..schemas import (
     ConflictCheckRequest,
@@ -35,7 +34,7 @@ class SafetyPropertyChecker:
         self.safety_cache = {}  # Cache for safety check results
 
     async def check_safety_properties(
-        self, request: SafetyCheckRequest, policy_rules: List[PolicyRule]
+        self, request: SafetyCheckRequest, policy_rules: list[PolicyRule]
     ) -> SafetyCheckResponse:
         """
         Check safety properties against policy rules.
@@ -61,7 +60,10 @@ class SafetyPropertyChecker:
             results.append(result)
 
             # Track critical violations
-            if result.status == "violated" and safety_property.criticality_level == "critical":
+            if (
+                result.status == "violated"
+                and safety_property.criticality_level == "critical"
+            ):
                 critical_violations.append(
                     f"Critical violation: {safety_property.property_description}"
                 )
@@ -83,10 +85,10 @@ class SafetyPropertyChecker:
     async def _check_single_property(
         self,
         safety_property: SafetyProperty,
-        policy_rules: List[PolicyRule],
+        policy_rules: list[PolicyRule],
         verification_method: str,
-        depth_limit: Optional[int],
-        time_limit: Optional[int],
+        depth_limit: int | None,
+        time_limit: int | None,
     ) -> SafetyCheckResult:
         """
         Check a single safety property against all policy rules.
@@ -98,11 +100,15 @@ class SafetyPropertyChecker:
             rules_hash = hashlib.sha256(
                 "".join(rule.rule_content for rule in policy_rules).encode()
             ).hexdigest()
-            cache_key = f"{safety_property.property_id}_{rules_hash}_{verification_method}"
+            cache_key = (
+                f"{safety_property.property_id}_{rules_hash}_{verification_method}"
+            )
 
             # Check cache
             if cache_key in self.safety_cache:
-                logger.debug(f"Using cached result for property {safety_property.property_id}")
+                logger.debug(
+                    f"Using cached result for property {safety_property.property_id}"
+                )
                 return self.safety_cache[cache_key]
 
             # Perform verification based on method
@@ -111,9 +117,13 @@ class SafetyPropertyChecker:
                     safety_property, policy_rules, depth_limit
                 )
             elif verification_method == "symbolic_execution":
-                result = await self._symbolic_execution_check(safety_property, policy_rules)
+                result = await self._symbolic_execution_check(
+                    safety_property, policy_rules
+                )
             elif verification_method == "abstract_interpretation":
-                result = await self._abstract_interpretation_check(safety_property, policy_rules)
+                result = await self._abstract_interpretation_check(
+                    safety_property, policy_rules
+                )
             else:
                 # Default to pattern-based checking
                 result = await self._pattern_based_check(safety_property, policy_rules)
@@ -140,8 +150,8 @@ class SafetyPropertyChecker:
     async def _bounded_model_check_property(
         self,
         safety_property: SafetyProperty,
-        policy_rules: List[PolicyRule],
-        depth_limit: Optional[int],
+        policy_rules: list[PolicyRule],
+        depth_limit: int | None,
     ) -> SafetyCheckResult:
         """
         Simulate bounded model checking for safety property.
@@ -175,7 +185,9 @@ class SafetyPropertyChecker:
                     "discriminate" in rule_content
                     and "fairness" in safety_property.formal_specification.lower()
                 ):
-                    violations.append(f"Rule {rule.id} may contain discriminatory logic")
+                    violations.append(
+                        f"Rule {rule.id} may contain discriminatory logic"
+                    )
 
         if violations:
             return SafetyCheckResult(
@@ -193,7 +205,7 @@ class SafetyPropertyChecker:
             )
 
     async def _symbolic_execution_check(
-        self, safety_property: SafetyProperty, policy_rules: List[PolicyRule]
+        self, safety_property: SafetyProperty, policy_rules: list[PolicyRule]
     ) -> SafetyCheckResult:
         """
         Simulate symbolic execution for safety property checking.
@@ -208,10 +220,16 @@ class SafetyPropertyChecker:
                 "null" in rule.rule_content.lower()
                 and "null_pointer" in safety_property.formal_specification.lower()
             ):
-                violations.append(f"Potential null pointer dereference in rule {rule.id}")
+                violations.append(
+                    f"Potential null pointer dereference in rule {rule.id}"
+                )
 
         status = "violated" if violations else "satisfied"
-        trace = "; ".join(violations) if violations else f"Explored {paths_explored} symbolic paths"
+        trace = (
+            "; ".join(violations)
+            if violations
+            else f"Explored {paths_explored} symbolic paths"
+        )
 
         return SafetyCheckResult(
             property_id=safety_property.property_id,
@@ -221,7 +239,7 @@ class SafetyPropertyChecker:
         )
 
     async def _abstract_interpretation_check(
-        self, safety_property: SafetyProperty, policy_rules: List[PolicyRule]
+        self, safety_property: SafetyProperty, policy_rules: list[PolicyRule]
     ) -> SafetyCheckResult:
         """
         Simulate abstract interpretation for safety property checking.
@@ -240,7 +258,9 @@ class SafetyPropertyChecker:
 
         status = "violated" if violations else "satisfied"
         trace = (
-            "; ".join(violations) if violations else f"Analyzed {abstract_states} abstract states"
+            "; ".join(violations)
+            if violations
+            else f"Analyzed {abstract_states} abstract states"
         )
 
         return SafetyCheckResult(
@@ -251,7 +271,7 @@ class SafetyPropertyChecker:
         )
 
     async def _pattern_based_check(
-        self, safety_property: SafetyProperty, policy_rules: List[PolicyRule]
+        self, safety_property: SafetyProperty, policy_rules: list[PolicyRule]
     ) -> SafetyCheckResult:
         """
         Pattern-based safety property checking (fallback method).
@@ -287,7 +307,7 @@ class SafetyPropertyChecker:
             counter_example_trace=trace if status == "violated" else None,
         )
 
-    def _determine_safety_status(self, results: List[SafetyCheckResult]) -> str:
+    def _determine_safety_status(self, results: list[SafetyCheckResult]) -> str:
         """
         Determine overall safety status from individual results.
         """
@@ -308,7 +328,7 @@ class SafetyPropertyChecker:
             return "inconclusive"
 
     def _generate_safety_summary(
-        self, results: List[SafetyCheckResult], critical_violations: List[str]
+        self, results: list[SafetyCheckResult], critical_violations: list[str]
     ) -> str:
         """
         Generate summary of safety check results.
@@ -340,20 +360,22 @@ class ConflictDetector:
     async def detect_conflicts(
         self,
         request: ConflictCheckRequest,
-        all_policy_rules: Dict[str, List[PolicyRule]],
+        all_policy_rules: dict[str, list[PolicyRule]],
     ) -> ConflictCheckResponse:
         """
         Detect conflicts between rule sets.
         """
         start_time = time.time()
 
-        logger.info(f"Starting conflict detection for {len(request.rule_sets)} rule sets")
+        logger.info(
+            f"Starting conflict detection for {len(request.rule_sets)} rule sets"
+        )
 
         conflicts = []
 
         # Check conflicts between different rule sets
         for i, rule_set_1 in enumerate(request.rule_sets):
-            for j, rule_set_2 in enumerate(request.rule_sets[i + 1 :], i + 1):
+            for _j, rule_set_2 in enumerate(request.rule_sets[i + 1 :], i + 1):
                 set_conflicts = await self._detect_conflicts_between_sets(
                     rule_set_1,
                     rule_set_2,
@@ -393,10 +415,10 @@ class ConflictDetector:
         self,
         set_name_1: str,
         set_name_2: str,
-        rules_1: List[PolicyRule],
-        rules_2: List[PolicyRule],
-        conflict_types: List[ConflictType],
-    ) -> List[ConflictDetectionResult]:
+        rules_1: list[PolicyRule],
+        rules_2: list[PolicyRule],
+        conflict_types: list[ConflictType],
+    ) -> list[ConflictDetectionResult]:
         """
         Detect conflicts between two rule sets.
         """
@@ -416,16 +438,16 @@ class ConflictDetector:
     async def _detect_internal_conflicts(
         self,
         rule_set_name: str,
-        rules: List[PolicyRule],
-        conflict_types: List[ConflictType],
-    ) -> List[ConflictDetectionResult]:
+        rules: list[PolicyRule],
+        conflict_types: list[ConflictType],
+    ) -> list[ConflictDetectionResult]:
         """
         Detect conflicts within a single rule set.
         """
         conflicts = []
 
         for i, rule_1 in enumerate(rules):
-            for j, rule_2 in enumerate(rules[i + 1 :], i + 1):
+            for _j, rule_2 in enumerate(rules[i + 1 :], i + 1):
                 for conflict_type in conflict_types:
                     conflict = await self._check_rule_pair_conflict(
                         rule_1, rule_2, conflict_type, f"{rule_set_name}_internal"
@@ -441,7 +463,7 @@ class ConflictDetector:
         rule_2: PolicyRule,
         conflict_type: ConflictType,
         context: str,
-    ) -> Optional[ConflictDetectionResult]:
+    ) -> ConflictDetectionResult | None:
         """
         Check for a specific type of conflict between two rules.
         """
@@ -455,7 +477,9 @@ class ConflictDetector:
         if conflict_type == ConflictType.LOGICAL_CONTRADICTION:
             conflict = await self._check_logical_contradiction(rule_1, rule_2, context)
         elif conflict_type == ConflictType.PRACTICAL_INCOMPATIBILITY:
-            conflict = await self._check_practical_incompatibility(rule_1, rule_2, context)
+            conflict = await self._check_practical_incompatibility(
+                rule_1, rule_2, context
+            )
         elif conflict_type == ConflictType.PRIORITY_CONFLICT:
             conflict = await self._check_priority_conflict(rule_1, rule_2, context)
         elif conflict_type == ConflictType.RESOURCE_CONFLICT:
@@ -468,7 +492,7 @@ class ConflictDetector:
 
     async def _check_logical_contradiction(
         self, rule_1: PolicyRule, rule_2: PolicyRule, context: str
-    ) -> Optional[ConflictDetectionResult]:
+    ) -> ConflictDetectionResult | None:
         """
         Check for logical contradictions between rules.
         """
@@ -508,7 +532,7 @@ class ConflictDetector:
 
     async def _check_practical_incompatibility(
         self, rule_1: PolicyRule, rule_2: PolicyRule, context: str
-    ) -> Optional[ConflictDetectionResult]:
+    ) -> ConflictDetectionResult | None:
         """
         Check for practical incompatibilities between rules.
         """
@@ -538,7 +562,7 @@ class ConflictDetector:
 
     async def _check_priority_conflict(
         self, rule_1: PolicyRule, rule_2: PolicyRule, context: str
-    ) -> Optional[ConflictDetectionResult]:
+    ) -> ConflictDetectionResult | None:
         """
         Check for priority conflicts between rules.
         """
@@ -569,7 +593,7 @@ class ConflictDetector:
 
     async def _check_resource_conflict(
         self, rule_1: PolicyRule, rule_2: PolicyRule, context: str
-    ) -> Optional[ConflictDetectionResult]:
+    ) -> ConflictDetectionResult | None:
         """
         Check for resource conflicts between rules.
         """
@@ -594,7 +618,7 @@ class ConflictDetector:
         return None
 
     def _generate_conflict_summary(
-        self, conflicts: List[ConflictDetectionResult], rule_sets: List[str]
+        self, conflicts: list[ConflictDetectionResult], rule_sets: list[str]
     ) -> str:
         """
         Generate summary of conflict detection results.

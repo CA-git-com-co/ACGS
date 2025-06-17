@@ -8,7 +8,7 @@ dependency injection framework.
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Type
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -25,12 +25,12 @@ class ServiceScope(Enum):
 class ServiceRegistration:
     """Service registration information."""
 
-    interface: Type
-    implementation: Type
+    interface: type
+    implementation: type
     scope: ServiceScope
-    factory: Optional[callable] = None
-    instance: Optional[Any] = None
-    dependencies: List[Type] = None
+    factory: callable | None = None
+    instance: Any | None = None
+    dependencies: list[type] = None
 
     def __post_init__(self):
         # requires: Valid input parameters
@@ -53,13 +53,13 @@ class ServiceRegistry:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize service registry."""
-        self._registrations: Dict[Type, ServiceRegistration] = {}
-        self._instances: Dict[Type, Any] = {}
+        self._registrations: dict[type, ServiceRegistration] = {}
+        self._instances: dict[type, Any] = {}
 
     def register(
         self,
-        interface: Type,
-        implementation: Type = None,
+        interface: type,
+        implementation: type = None,
         scope: ServiceScope = ServiceScope.TRANSIENT,
         factory: callable = None,
     ) -> "ServiceRegistry":
@@ -90,19 +90,25 @@ class ServiceRegistry:
 
         return self
 
-    def register_singleton(self, interface: Type, implementation: Type = None) -> "ServiceRegistry":
+    def register_singleton(
+        self, interface: type, implementation: type = None
+    ) -> "ServiceRegistry":
         """Register a singleton service."""
         return self.register(interface, implementation, ServiceScope.SINGLETON)
 
-    def register_transient(self, interface: Type, implementation: Type = None) -> "ServiceRegistry":
+    def register_transient(
+        self, interface: type, implementation: type = None
+    ) -> "ServiceRegistry":
         """Register a transient service."""
         return self.register(interface, implementation, ServiceScope.TRANSIENT)
 
-    def register_scoped(self, interface: Type, implementation: Type = None) -> "ServiceRegistry":
+    def register_scoped(
+        self, interface: type, implementation: type = None
+    ) -> "ServiceRegistry":
         """Register a scoped service."""
         return self.register(interface, implementation, ServiceScope.SCOPED)
 
-    def register_instance(self, interface: Type, instance: Any) -> "ServiceRegistry":
+    def register_instance(self, interface: type, instance: Any) -> "ServiceRegistry":
         """
         Register a pre-created instance.
 
@@ -126,7 +132,7 @@ class ServiceRegistry:
         logger.debug(f"Registered instance {interface} -> {instance}")
         return self
 
-    def get_registration(self, interface: Type) -> Optional[ServiceRegistration]:
+    def get_registration(self, interface: type) -> ServiceRegistration | None:
         """
         Get service registration.
 
@@ -138,7 +144,7 @@ class ServiceRegistry:
         """
         return self._registrations.get(interface)
 
-    def is_registered(self, interface: Type) -> bool:
+    def is_registered(self, interface: type) -> bool:
         """
         Check if service is registered.
 
@@ -150,11 +156,11 @@ class ServiceRegistry:
         """
         return interface in self._registrations
 
-    def get_all_registrations(self) -> Dict[Type, ServiceRegistration]:
+    def get_all_registrations(self) -> dict[type, ServiceRegistration]:
         """Get all service registrations."""
         return self._registrations.copy()
 
-    def unregister(self, interface: Type) -> bool:
+    def unregister(self, interface: type) -> bool:
         """
         Unregister a service.
 
@@ -180,7 +186,7 @@ class ServiceRegistry:
         self._instances.clear()
         logger.debug("Cleared all registrations")
 
-    def get_dependency_graph(self) -> Dict[Type, List[Type]]:
+    def get_dependency_graph(self) -> dict[type, list[type]]:
         """
         Get dependency graph for all registered services.
 
@@ -192,7 +198,7 @@ class ServiceRegistry:
             for interface, registration in self._registrations.items()
         }
 
-    def validate_registrations(self) -> List[str]:
+    def validate_registrations(self) -> list[str]:
         """
         Validate all registrations for missing dependencies.
 
@@ -204,11 +210,13 @@ class ServiceRegistry:
         for interface, registration in self._registrations.items():
             for dependency in registration.dependencies:
                 if not self.is_registered(dependency):
-                    errors.append(f"Service {interface} depends on unregistered {dependency}")
+                    errors.append(
+                        f"Service {interface} depends on unregistered {dependency}"
+                    )
 
         return errors
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get registry statistics."""
         scope_counts = {}
         for registration in self._registrations.values():
@@ -223,7 +231,7 @@ class ServiceRegistry:
 
 
 # Global registry instance
-_registry: Optional[ServiceRegistry] = None
+_registry: ServiceRegistry | None = None
 
 
 def get_service_registry() -> ServiceRegistry:

@@ -7,7 +7,7 @@ import asyncio
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import psutil
 import structlog
@@ -27,7 +27,9 @@ class DatabasePerformanceOptimizer:
         # ensures: Correct function execution
         # sha256: func_hash
         self.database_url = database_url
-        self.engine = async_engine if not database_url else create_async_engine(database_url)
+        self.engine = (
+            async_engine if not database_url else create_async_engine(database_url)
+        )
         self.performance_metrics = {}
         self.slow_queries = []
         self.optimization_history = []
@@ -48,7 +50,7 @@ class DatabasePerformanceOptimizer:
             logger.error("Failed to initialize database optimizer", error=str(e))
             return False
 
-    async def analyze_current_performance(self) -> Dict[str, Any]:
+    async def analyze_current_performance(self) -> dict[str, Any]:
         """Analyze current database performance metrics."""
         metrics = {
             "timestamp": datetime.utcnow().isoformat(),
@@ -65,12 +67,12 @@ class DatabasePerformanceOptimizer:
                 conn_stats = await conn.execute(
                     text(
                         """
-                    SELECT 
+                    SELECT
                         count(*) as total_connections,
                         count(*) FILTER (WHERE state = 'active') as active_connections,
                         count(*) FILTER (WHERE state = 'idle') as idle_connections,
                         count(*) FILTER (WHERE state = 'idle in transaction') as idle_in_transaction
-                    FROM pg_stat_activity 
+                    FROM pg_stat_activity
                     WHERE datname = current_database()
                 """
                     )
@@ -82,15 +84,15 @@ class DatabasePerformanceOptimizer:
                     query_stats = await conn.execute(
                         text(
                             """
-                        SELECT 
+                        SELECT
                             calls,
                             total_exec_time,
                             mean_exec_time,
                             max_exec_time,
                             rows,
                             100.0 * shared_blks_hit / nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent
-                        FROM pg_stat_statements 
-                        ORDER BY total_exec_time DESC 
+                        FROM pg_stat_statements
+                        ORDER BY total_exec_time DESC
                         LIMIT 10
                     """
                         )
@@ -106,26 +108,28 @@ class DatabasePerformanceOptimizer:
                 index_stats = await conn.execute(
                     text(
                         """
-                    SELECT 
+                    SELECT
                         schemaname,
                         tablename,
                         indexname,
                         idx_tup_read,
                         idx_tup_fetch,
                         idx_scan
-                    FROM pg_stat_user_indexes 
-                    ORDER BY idx_scan DESC 
+                    FROM pg_stat_user_indexes
+                    ORDER BY idx_scan DESC
                     LIMIT 20
                 """
                     )
                 )
-                metrics["index_usage"] = [dict(row._mapping) for row in index_stats.fetchall()]
+                metrics["index_usage"] = [
+                    dict(row._mapping) for row in index_stats.fetchall()
+                ]
 
                 # Table statistics
                 table_stats = await conn.execute(
                     text(
                         """
-                    SELECT 
+                    SELECT
                         schemaname,
                         tablename,
                         n_tup_ins,
@@ -137,18 +141,20 @@ class DatabasePerformanceOptimizer:
                         last_autovacuum,
                         last_analyze,
                         last_autoanalyze
-                    FROM pg_stat_user_tables 
+                    FROM pg_stat_user_tables
                     ORDER BY n_live_tup DESC
                 """
                     )
                 )
-                metrics["table_stats"] = [dict(row._mapping) for row in table_stats.fetchall()]
+                metrics["table_stats"] = [
+                    dict(row._mapping) for row in table_stats.fetchall()
+                ]
 
                 # Database size information
                 db_size = await conn.execute(
                     text(
                         """
-                    SELECT 
+                    SELECT
                         pg_size_pretty(pg_database_size(current_database())) as database_size,
                         pg_database_size(current_database()) as database_size_bytes
                 """
@@ -169,7 +175,7 @@ class DatabasePerformanceOptimizer:
         self.performance_metrics = metrics
         return metrics
 
-    async def create_performance_indexes(self) -> Dict[str, Any]:
+    async def create_performance_indexes(self) -> dict[str, Any]:
         """Create optimized indexes for ACGS-1 governance operations."""
         index_results = {"created": [], "failed": [], "skipped": []}
 
@@ -285,15 +291,19 @@ class DatabasePerformanceOptimizer:
                         logger.info(f"Created index: {index_def['name']}")
 
                     except Exception as e:
-                        index_results["failed"].append({"name": index_def["name"], "error": str(e)})
-                        logger.warning(f"Failed to create index {index_def['name']}", error=str(e))
+                        index_results["failed"].append(
+                            {"name": index_def["name"], "error": str(e)}
+                        )
+                        logger.warning(
+                            f"Failed to create index {index_def['name']}", error=str(e)
+                        )
 
         except Exception as e:
             logger.error("Error creating performance indexes", error=str(e))
 
         return index_results
 
-    async def optimize_connection_pool(self) -> Dict[str, Any]:
+    async def optimize_connection_pool(self) -> dict[str, Any]:
         """Optimize database connection pool settings."""
         optimization_results = {
             "current_settings": {},
@@ -307,11 +317,11 @@ class DatabasePerformanceOptimizer:
                 current_settings = await conn.execute(
                     text(
                         """
-                    SELECT name, setting, unit, context 
-                    FROM pg_settings 
+                    SELECT name, setting, unit, context
+                    FROM pg_settings
                     WHERE name IN (
                         'max_connections',
-                        'shared_buffers', 
+                        'shared_buffers',
                         'effective_cache_size',
                         'work_mem',
                         'maintenance_work_mem',
@@ -358,7 +368,9 @@ class DatabasePerformanceOptimizer:
 
         return optimization_results
 
-    async def identify_slow_queries(self, threshold_ms: int = 1000) -> List[Dict[str, Any]]:
+    async def identify_slow_queries(
+        self, threshold_ms: int = 1000
+    ) -> list[dict[str, Any]]:
         """Identify and analyze slow queries."""
         slow_queries = []
 
@@ -393,11 +405,15 @@ class DatabasePerformanceOptimizer:
                         {"threshold": threshold_ms},
                     )
 
-                    slow_queries = [dict(row._mapping) for row in query_stats.fetchall()]
+                    slow_queries = [
+                        dict(row._mapping) for row in query_stats.fetchall()
+                    ]
 
                 except Exception:
                     # pg_stat_statements not available, use alternative method
-                    logger.warning("pg_stat_statements not available for slow query analysis")
+                    logger.warning(
+                        "pg_stat_statements not available for slow query analysis"
+                    )
 
         except Exception as e:
             logger.error("Error identifying slow queries", error=str(e))
@@ -405,7 +421,7 @@ class DatabasePerformanceOptimizer:
         self.slow_queries = slow_queries
         return slow_queries
 
-    async def vacuum_and_analyze(self) -> Dict[str, Any]:
+    async def vacuum_and_analyze(self) -> dict[str, Any]:
         """Perform database maintenance operations."""
         maintenance_results = {
             "vacuum_results": [],
@@ -419,8 +435,8 @@ class DatabasePerformanceOptimizer:
                 tables_query = await conn.execute(
                     text(
                         """
-                    SELECT tablename 
-                    FROM pg_tables 
+                    SELECT tablename
+                    FROM pg_tables
                     WHERE schemaname = 'public'
                 """
                     )
@@ -450,7 +466,7 @@ class DatabasePerformanceOptimizer:
 
         return maintenance_results
 
-    async def generate_performance_report(self) -> Dict[str, Any]:
+    async def generate_performance_report(self) -> dict[str, Any]:
         """Generate comprehensive performance report."""
         report = {
             "timestamp": datetime.utcnow().isoformat(),
@@ -538,7 +554,7 @@ class DatabasePerformanceOptimizer:
 
 
 # Global optimizer instance
-_db_optimizer: Optional[DatabasePerformanceOptimizer] = None
+_db_optimizer: DatabasePerformanceOptimizer | None = None
 
 
 async def get_database_optimizer() -> DatabasePerformanceOptimizer:

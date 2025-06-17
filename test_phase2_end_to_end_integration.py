@@ -121,7 +121,7 @@ async def test_ac_to_gs_integration():
 
                 if gs_response.status_code == 200:
                     synthesis_result = gs_response.json()
-                    print(f"   ✅ Synthesis successful")
+                    print("   ✅ Synthesis successful")
                     print(
                         f"   - WINA optimization applied: {synthesis_result.get('wina_optimization_applied', False)}"
                     )
@@ -174,7 +174,7 @@ async def test_constitutional_fidelity_monitoring():
         fidelity_score = analysis.get("constitutional_compatibility", 0.0)
         optimization_potential = analysis.get("optimization_potential", 0.0)
 
-        print(f"   ✅ Fidelity analysis completed")
+        print("   ✅ Fidelity analysis completed")
         print(f"   - Constitutional fidelity: {fidelity_score:.3f}")
         print(f"   - Optimization potential: {optimization_potential:.3f}")
 

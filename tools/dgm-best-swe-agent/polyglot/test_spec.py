@@ -6,7 +6,7 @@ import hashlib
 import platform
 import re
 from dataclasses import dataclass
-from typing import Union, cast
+from typing import cast
 
 from polyglot.constants import (
     MAP_REPO_TO_INSTALL,
@@ -130,7 +130,7 @@ class TestSpec:
 
 
 def get_test_specs_from_dataset(
-    dataset: Union[list[dict], list[TestSpec]],
+    dataset: list[dict] | list[TestSpec],
 ) -> list[TestSpec]:
     """
     Idempotent function that converts a list of SWEbenchInstance objects to a list of TestSpec objects.

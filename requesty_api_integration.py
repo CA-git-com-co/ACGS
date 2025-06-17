@@ -5,7 +5,6 @@ RequestyAPI Integration for Darwin Gödel Machine
 This module provides a simplified interface for the DGM to interact with the Requesty API.
 """
 
-from typing import Optional
 
 from requesty_example import RequestyAPIClient
 
@@ -17,11 +16,11 @@ class RequestyAPI:
     This class provides the interface expected by the DGM system.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """Initialize the Requesty API wrapper."""
         self.client = RequestyAPIClient(api_key)
 
-    def send_message(self, message: str, system_prompt: Optional[str] = None) -> str:
+    def send_message(self, message: str, system_prompt: str | None = None) -> str:
         """
         Send a message to the API and return the response content.
 
@@ -37,14 +36,14 @@ class RequestyAPI:
         """
         # Use a system prompt optimized for software engineering tasks
         if system_prompt is None:
-            system_prompt = """You are an expert software engineer and debugging specialist. 
-            You analyze code problems systematically and provide precise, working solutions. 
+            system_prompt = """You are an expert software engineer and debugging specialist.
+            You analyze code problems systematically and provide precise, working solutions.
             Focus on:
             - Identifying the root cause of issues
             - Providing working code fixes
             - Following best practices
             - Writing clear, maintainable code
-            
+
             When editing files, be specific about the exact changes needed."""
 
         result = self.client.chat_completion(

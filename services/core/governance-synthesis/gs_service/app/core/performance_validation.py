@@ -7,9 +7,9 @@ Provides real-time monitoring and benchmarking capabilities.
 
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -54,7 +54,7 @@ class PerformanceBaseline:
 
     # Context
     context_category: str
-    measurement_conditions: Dict[str, Any] = field(default_factory=dict)
+    measurement_conditions: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -85,7 +85,7 @@ class ConvergenceAnalysis:
     """Analysis of convergence behavior."""
 
     status: ConvergenceStatus
-    convergence_iteration: Optional[int]
+    convergence_iteration: int | None
     convergence_confidence: float  # 0-1 confidence in convergence
 
     # Convergence metrics
@@ -98,7 +98,7 @@ class ConvergenceAnalysis:
     trend_strength: float  # 0-1 strength of trend
 
     # Predictions
-    predicted_convergence_iteration: Optional[int]
+    predicted_convergence_iteration: int | None
     predicted_final_performance: float
 
 
@@ -112,13 +112,13 @@ class PerformanceValidator:
         self.target_improvement = target_improvement
         self.target_iterations = target_iterations
 
-        self.baselines: Dict[str, PerformanceBaseline] = {}
-        self.performance_history: List[PerformanceSnapshot] = []
-        self.convergence_analysis: Optional[ConvergenceAnalysis] = None
+        self.baselines: dict[str, PerformanceBaseline] = {}
+        self.performance_history: list[PerformanceSnapshot] = []
+        self.convergence_analysis: ConvergenceAnalysis | None = None
 
         # Tracking variables
         self.current_iteration = 0
-        self.start_time = datetime.now(timezone.utc)
+        self.start_time = datetime.now(UTC)
         self.last_analysis_iteration = 0
 
         logger.info(
@@ -136,7 +136,7 @@ class PerformanceValidator:
         reliability_score: float,
         sample_count: int,
         context_category: str = "general",
-        measurement_conditions: Dict[str, Any] = None,
+        measurement_conditions: dict[str, Any] = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -145,7 +145,7 @@ class PerformanceValidator:
         baseline = PerformanceBaseline(
             baseline_id=baseline_id,
             baseline_name=baseline_name,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
             average_reward=average_reward,
             success_rate=success_rate,
             response_time_ms=response_time_ms,
@@ -168,7 +168,7 @@ class PerformanceValidator:
         success_rate: float,
         response_time_ms: float,
         reliability_score: float,
-        template_selection_counts: Dict[str, int],
+        template_selection_counts: dict[str, int],
         baseline_id: str = None,
     ):
         # requires: Valid input parameters
@@ -192,11 +192,13 @@ class PerformanceValidator:
         # Calculate convergence indicators
         reward_variance = self._calculate_reward_variance()
         selection_entropy = self._calculate_selection_entropy(template_selection_counts)
-        convergence_score = self._calculate_convergence_score(reward_variance, selection_entropy)
+        convergence_score = self._calculate_convergence_score(
+            reward_variance, selection_entropy
+        )
 
         # Create performance snapshot
         snapshot = PerformanceSnapshot(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             iteration=self.current_iteration,
             average_reward=average_reward,
             success_rate=success_rate,
@@ -226,12 +228,13 @@ class PerformanceValidator:
             return 1.0  # High variance initially
 
         recent_rewards = [
-            snapshot.average_reward for snapshot in self.performance_history[-window_size:]
+            snapshot.average_reward
+            for snapshot in self.performance_history[-window_size:]
         ]
 
         return float(np.var(recent_rewards))
 
-    def _calculate_selection_entropy(self, selection_counts: Dict[str, int]) -> float:
+    def _calculate_selection_entropy(self, selection_counts: dict[str, int]) -> float:
         """Calculate entropy of template selection (diversity measure)."""
         if not selection_counts:
             return 0.0
@@ -275,7 +278,9 @@ class PerformanceValidator:
         recent_snapshots = self.performance_history[-20:]  # Last 20 iterations
 
         # Calculate stability metrics
-        reward_stability = self._calculate_stability([s.average_reward for s in recent_snapshots])
+        reward_stability = self._calculate_stability(
+            [s.average_reward for s in recent_snapshots]
+        )
         selection_stability = self._calculate_stability(
             [s.selection_entropy for s in recent_snapshots]
         )
@@ -293,7 +298,9 @@ class PerformanceValidator:
         convergence_confidence = 0.0
 
         if convergence_status == ConvergenceStatus.CONVERGED:
-            convergence_iteration, convergence_confidence = self._find_convergence_point()
+            convergence_iteration, convergence_confidence = (
+                self._find_convergence_point()
+            )
 
         # Trend analysis
         trend_direction, trend_strength = self._analyze_trend(recent_snapshots)
@@ -325,7 +332,7 @@ class PerformanceValidator:
             f"improvement_rate={improvement_rate:.3f}"
         )
 
-    def _calculate_stability(self, values: List[float]) -> float:
+    def _calculate_stability(self, values: list[float]) -> float:
         """Calculate stability score (0-1, higher = more stable)."""
         if len(values) < 2:
             return 0.0
@@ -342,7 +349,9 @@ class PerformanceValidator:
         stability = max(0.0, 1.0 - cv)
         return min(1.0, stability)
 
-    def _calculate_improvement_rate(self, snapshots: List[PerformanceSnapshot]) -> float:
+    def _calculate_improvement_rate(
+        self, snapshots: list[PerformanceSnapshot]
+    ) -> float:
         """Calculate rate of improvement per iteration."""
         if len(snapshots) < 2:
             return 0.0
@@ -355,7 +364,7 @@ class PerformanceValidator:
         n = len(iterations)
         sum_x = sum(iterations)
         sum_y = sum(rewards)
-        sum_xy = sum(x * y for x, y in zip(iterations, rewards))
+        sum_xy = sum(x * y for x, y in zip(iterations, rewards, strict=False))
         sum_x2 = sum(x * x for x in iterations)
 
         denominator = n * sum_x2 - sum_x * sum_x
@@ -376,7 +385,10 @@ class PerformanceValidator:
         stability_threshold = 0.8
         improvement_threshold = 0.001  # Very small improvement rate
 
-        if reward_stability > stability_threshold and selection_stability > stability_threshold:
+        if (
+            reward_stability > stability_threshold
+            and selection_stability > stability_threshold
+        ):
             if abs(improvement_rate) < improvement_threshold:
                 return ConvergenceStatus.CONVERGED
             elif improvement_rate > 0:
@@ -388,7 +400,7 @@ class PerformanceValidator:
         else:
             return ConvergenceStatus.CONVERGING
 
-    def _find_convergence_point(self) -> Tuple[Optional[int], float]:
+    def _find_convergence_point(self) -> tuple[int | None, float]:
         """Find the iteration where convergence occurred."""
         if len(self.performance_history) < 20:
             return None, 0.0
@@ -409,7 +421,7 @@ class PerformanceValidator:
 
         return None, 0.0
 
-    def _analyze_trend(self, snapshots: List[PerformanceSnapshot]) -> Tuple[str, float]:
+    def _analyze_trend(self, snapshots: list[PerformanceSnapshot]) -> tuple[str, float]:
         """Analyze performance trend."""
         if len(snapshots) < 3:
             return "stable", 0.0
@@ -431,7 +443,7 @@ class PerformanceValidator:
 
         return direction, max(0.0, strength)
 
-    def _predict_convergence_iteration(self) -> Optional[int]:
+    def _predict_convergence_iteration(self) -> int | None:
         """Predict when convergence will occur."""
         if not self.convergence_analysis or len(self.performance_history) < 10:
             return None
@@ -452,7 +464,9 @@ class PerformanceValidator:
             return self.current_iteration
 
         # Rough estimate
-        iterations_needed = int((current_variance - target_variance) / max(improvement_rate, 0.001))
+        iterations_needed = int(
+            (current_variance - target_variance) / max(improvement_rate, 0.001)
+        )
         predicted_iteration = self.current_iteration + iterations_needed
 
         return min(predicted_iteration, self.target_iterations)
@@ -478,7 +492,7 @@ class PerformanceValidator:
         predicted_performance = current_performance + adjusted_improvement
         return max(0.0, min(1.0, predicted_performance))
 
-    def check_performance_targets(self, baseline_id: str = None) -> Dict[str, Any]:
+    def check_performance_targets(self, baseline_id: str = None) -> dict[str, Any]:
         """Check if performance targets are being met."""
         if not self.performance_history:
             return {"status": "no_data"}
@@ -501,9 +515,12 @@ class PerformanceValidator:
             if self.convergence_analysis.status == ConvergenceStatus.CONVERGED:
                 convergence_target_met = (
                     self.convergence_analysis.convergence_iteration
-                    and self.convergence_analysis.convergence_iteration <= self.target_iterations
+                    and self.convergence_analysis.convergence_iteration
+                    <= self.target_iterations
                 )
-            convergence_progress = min(1.0, self.current_iteration / self.target_iterations)
+            convergence_progress = min(
+                1.0, self.current_iteration / self.target_iterations
+            )
 
         return {
             "status": "active",
@@ -553,7 +570,7 @@ class PerformanceValidator:
             },
         }
 
-    def export_performance_report(self) -> Dict[str, Any]:
+    def export_performance_report(self) -> dict[str, Any]:
         """Export comprehensive performance report."""
         if not self.performance_history:
             return {"error": "No performance data available"}
@@ -579,16 +596,20 @@ class PerformanceValidator:
         }
 
         return {
-            "report_generated": datetime.now(timezone.utc).isoformat(),
+            "report_generated": datetime.now(UTC).isoformat(),
             "validation_period": {
                 "start_time": self.start_time.isoformat(),
-                "duration_hours": (datetime.now(timezone.utc) - self.start_time).total_seconds()
+                "duration_hours": (
+                    datetime.now(UTC) - self.start_time
+                ).total_seconds()
                 / 3600,
             },
             "summary_statistics": summary_stats,
             "performance_targets": self.check_performance_targets(),
             "convergence_analysis": (
-                self.convergence_analysis.__dict__ if self.convergence_analysis else None
+                self.convergence_analysis.__dict__
+                if self.convergence_analysis
+                else None
             ),
             "baselines": {
                 baseline_id: {

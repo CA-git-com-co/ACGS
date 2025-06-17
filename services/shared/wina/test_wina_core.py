@@ -69,8 +69,8 @@ async def test_wina_configuration():
 
         # Test invalid configuration
         try:
-            invalid_config = WINAConfig(target_sparsity=1.5)  # Invalid value
-            assert False, "Should have raised WINAConfigurationError"
+            WINAConfig(target_sparsity=1.5)  # Invalid value
+            raise AssertionError("Should have raised WINAConfigurationError")
         except WINAConfigurationError:
             logger.info("✓ Configuration validation test passed")
 

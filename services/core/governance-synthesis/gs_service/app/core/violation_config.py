@@ -14,10 +14,10 @@ Classes:
 import logging
 import os
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -58,7 +58,7 @@ class ThresholdConfig:
     red_threshold: float
     enabled: bool = True
     description: str = ""
-    configuration: Dict[str, Any] = None
+    configuration: dict[str, Any] = None
     source: ConfigSource = ConfigSource.DEFAULT
 
     def __post_init__(self):
@@ -103,7 +103,7 @@ class ViolationConfigManager:
     and dynamic threshold adjustment for violation detection systems.
     """
 
-    def __init__(self, config_file_path: Optional[str] = None):
+    def __init__(self, config_file_path: str | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -114,8 +114,8 @@ class ViolationConfigManager:
             config_file_path: Path to configuration file (optional)
         """
         self.config_file_path = config_file_path
-        self.cached_thresholds: Dict[str, ThresholdConfig] = {}
-        self.cache_updated_at: Optional[datetime] = None
+        self.cached_thresholds: dict[str, ThresholdConfig] = {}
+        self.cache_updated_at: datetime | None = None
         self.cache_ttl_seconds = 300  # 5 minutes
 
         # Load initial configuration
@@ -123,7 +123,7 @@ class ViolationConfigManager:
 
         logger.info("Violation Configuration Manager initialized")
 
-    def get_threshold_config(self, threshold_name: str) -> Optional[ThresholdConfig]:
+    def get_threshold_config(self, threshold_name: str) -> ThresholdConfig | None:
         """
         Get threshold configuration by name.
 
@@ -144,7 +144,7 @@ class ViolationConfigManager:
             # Cache the result
             if config:
                 self.cached_thresholds[threshold_name] = config
-                self.cache_updated_at = datetime.now(timezone.utc)
+                self.cache_updated_at = datetime.now(UTC)
 
             return config
 
@@ -153,8 +153,8 @@ class ViolationConfigManager:
             return None
 
     async def get_all_threshold_configs(
-        self, db: Optional[AsyncSession] = None
-    ) -> Dict[str, ThresholdConfig]:
+        self, db: AsyncSession | None = None
+    ) -> dict[str, ThresholdConfig]:
         """
         Get all threshold configurations.
 
@@ -175,7 +175,7 @@ class ViolationConfigManager:
 
             # Load from database
             result = await db.execute(
-                select(ViolationThreshold).where(ViolationThreshold.enabled == True)
+                select(ViolationThreshold).where(ViolationThreshold.enabled)
             )
             db_thresholds = result.scalars().all()
 
@@ -206,7 +206,7 @@ class ViolationConfigManager:
 
             # Update cache
             self.cached_thresholds = configs
-            self.cache_updated_at = datetime.now(timezone.utc)
+            self.cache_updated_at = datetime.now(UTC)
 
             return configs.copy()
 
@@ -218,8 +218,8 @@ class ViolationConfigManager:
         self,
         threshold_name: str,
         config: ThresholdConfig,
-        user: Optional[User] = None,
-        db: Optional[AsyncSession] = None,
+        user: User | None = None,
+        db: AsyncSession | None = None,
     ) -> bool:
         """
         Update threshold configuration.
@@ -235,7 +235,9 @@ class ViolationConfigManager:
         """
         if db is None:
             async for db_session in get_async_db():
-                return await self.update_threshold_config(threshold_name, config, user, db_session)
+                return await self.update_threshold_config(
+                    threshold_name, config, user, db_session
+                )
 
         try:
             # Validate configuration
@@ -292,31 +294,45 @@ class ViolationConfigManager:
     def get_detection_config(self) -> ViolationDetectionConfig:
         """Get violation detection configuration."""
         return ViolationDetectionConfig(
-            scan_interval_seconds=int(os.getenv("VIOLATION_SCAN_INTERVAL_SECONDS", "30")),
+            scan_interval_seconds=int(
+                os.getenv("VIOLATION_SCAN_INTERVAL_SECONDS", "30")
+            ),
             batch_size=int(os.getenv("VIOLATION_BATCH_SIZE", "100")),
-            detection_timeout_seconds=int(os.getenv("VIOLATION_DETECTION_TIMEOUT_SECONDS", "60")),
+            detection_timeout_seconds=int(
+                os.getenv("VIOLATION_DETECTION_TIMEOUT_SECONDS", "60")
+            ),
             enable_real_time_scanning=os.getenv(
                 "ENABLE_REAL_TIME_VIOLATION_SCANNING", "true"
             ).lower()
             == "true",
-            enable_batch_analysis=os.getenv("ENABLE_BATCH_VIOLATION_ANALYSIS", "true").lower()
+            enable_batch_analysis=os.getenv(
+                "ENABLE_BATCH_VIOLATION_ANALYSIS", "true"
+            ).lower()
             == "true",
             enable_historical_analysis=os.getenv(
                 "ENABLE_HISTORICAL_VIOLATION_ANALYSIS", "true"
             ).lower()
             == "true",
             max_violations_per_scan=int(os.getenv("MAX_VIOLATIONS_PER_SCAN", "1000")),
-            cache_threshold_seconds=int(os.getenv("VIOLATION_CACHE_THRESHOLD_SECONDS", "300")),
+            cache_threshold_seconds=int(
+                os.getenv("VIOLATION_CACHE_THRESHOLD_SECONDS", "300")
+            ),
         )
 
     def get_escalation_config(self) -> EscalationConfig:
         """Get violation escalation configuration."""
         return EscalationConfig(
-            enable_automatic_escalation=os.getenv("ENABLE_AUTOMATIC_ESCALATION", "true").lower()
+            enable_automatic_escalation=os.getenv(
+                "ENABLE_AUTOMATIC_ESCALATION", "true"
+            ).lower()
             == "true",
-            enable_timeout_escalation=os.getenv("ENABLE_TIMEOUT_ESCALATION", "true").lower()
+            enable_timeout_escalation=os.getenv(
+                "ENABLE_TIMEOUT_ESCALATION", "true"
+            ).lower()
             == "true",
-            max_escalation_level=os.getenv("MAX_ESCALATION_LEVEL", "emergency_response"),
+            max_escalation_level=os.getenv(
+                "MAX_ESCALATION_LEVEL", "emergency_response"
+            ),
             default_response_time_minutes=int(
                 os.getenv("DEFAULT_ESCALATION_RESPONSE_TIME_MINUTES", "30")
             ),
@@ -346,12 +362,14 @@ class ViolationConfigManager:
                 file_configs = self._load_file_configs()
                 self.cached_thresholds.update(file_configs)
 
-            self.cache_updated_at = datetime.now(timezone.utc)
+            self.cache_updated_at = datetime.now(UTC)
 
         except Exception as e:
             logger.error(f"Error loading initial configuration: {e}")
 
-    def _load_threshold_from_sources(self, threshold_name: str) -> Optional[ThresholdConfig]:
+    def _load_threshold_from_sources(
+        self, threshold_name: str
+    ) -> ThresholdConfig | None:
         """Load threshold configuration from various sources."""
         # Try environment first
         env_config = self._load_environment_config(threshold_name)
@@ -368,7 +386,7 @@ class ViolationConfigManager:
         default_configs = self._get_default_configs()
         return default_configs.get(threshold_name)
 
-    def _load_environment_configs(self) -> Dict[str, ThresholdConfig]:
+    def _load_environment_configs(self) -> dict[str, ThresholdConfig]:
         """Load threshold configurations from environment variables."""
         configs = {}
 
@@ -377,9 +395,15 @@ class ViolationConfigManager:
             configs["fidelity_score"] = ThresholdConfig(
                 name="fidelity_score",
                 threshold_type=ThresholdType.FIDELITY_SCORE,
-                green_threshold=float(os.getenv("CONSTITUTIONAL_FIDELITY_GREEN_THRESHOLD", "0.85")),
-                amber_threshold=float(os.getenv("CONSTITUTIONAL_FIDELITY_AMBER_THRESHOLD", "0.70")),
-                red_threshold=float(os.getenv("CONSTITUTIONAL_FIDELITY_RED_THRESHOLD", "0.55")),
+                green_threshold=float(
+                    os.getenv("CONSTITUTIONAL_FIDELITY_GREEN_THRESHOLD", "0.85")
+                ),
+                amber_threshold=float(
+                    os.getenv("CONSTITUTIONAL_FIDELITY_AMBER_THRESHOLD", "0.70")
+                ),
+                red_threshold=float(
+                    os.getenv("CONSTITUTIONAL_FIDELITY_RED_THRESHOLD", "0.55")
+                ),
                 description="Constitutional fidelity score thresholds",
                 source=ConfigSource.ENVIRONMENT,
             )
@@ -389,8 +413,12 @@ class ViolationConfigManager:
             configs["violation_count"] = ThresholdConfig(
                 name="violation_count",
                 threshold_type=ThresholdType.VIOLATION_COUNT,
-                green_threshold=float(os.getenv("VIOLATION_COUNT_GREEN_THRESHOLD", "2")),
-                amber_threshold=float(os.getenv("VIOLATION_COUNT_AMBER_THRESHOLD", "5")),
+                green_threshold=float(
+                    os.getenv("VIOLATION_COUNT_GREEN_THRESHOLD", "2")
+                ),
+                amber_threshold=float(
+                    os.getenv("VIOLATION_COUNT_AMBER_THRESHOLD", "5")
+                ),
                 red_threshold=float(os.getenv("VIOLATION_COUNT_RED_THRESHOLD", "10")),
                 description="Violation count thresholds per hour",
                 source=ConfigSource.ENVIRONMENT,
@@ -398,23 +426,25 @@ class ViolationConfigManager:
 
         return configs
 
-    def _load_environment_config(self, threshold_name: str) -> Optional[ThresholdConfig]:
+    def _load_environment_config(
+        self, threshold_name: str
+    ) -> ThresholdConfig | None:
         """Load specific threshold configuration from environment variables."""
         env_configs = self._load_environment_configs()
         return env_configs.get(threshold_name)
 
-    def _load_file_configs(self) -> Dict[str, ThresholdConfig]:
+    def _load_file_configs(self) -> dict[str, ThresholdConfig]:
         """Load threshold configurations from file."""
         # This would implement file-based configuration loading
         # For now, return empty dict
         return {}
 
-    def _load_file_config(self, threshold_name: str) -> Optional[ThresholdConfig]:
+    def _load_file_config(self, threshold_name: str) -> ThresholdConfig | None:
         """Load specific threshold configuration from file."""
         file_configs = self._load_file_configs()
         return file_configs.get(threshold_name)
 
-    def _get_default_configs(self) -> Dict[str, ThresholdConfig]:
+    def _get_default_configs(self) -> dict[str, ThresholdConfig]:
         """Get default threshold configurations."""
         return {
             "fidelity_score": ThresholdConfig(
@@ -462,7 +492,9 @@ class ViolationConfigManager:
         """Validate threshold configuration."""
         try:
             # Check threshold ordering
-            if not (config.red_threshold <= config.amber_threshold <= config.green_threshold):
+            if not (
+                config.red_threshold <= config.amber_threshold <= config.green_threshold
+            ):
                 logger.error(f"Invalid threshold ordering for {config.name}")
                 return False
 
@@ -494,7 +526,7 @@ class ViolationConfigManager:
         if self.cache_updated_at is None:
             return False
 
-        cache_age = (datetime.now(timezone.utc) - self.cache_updated_at).total_seconds()
+        cache_age = (datetime.now(UTC) - self.cache_updated_at).total_seconds()
         return cache_age < self.cache_ttl_seconds
 
     def _invalidate_cache(self):
@@ -515,7 +547,7 @@ def get_violation_config_manager() -> ViolationConfigManager:
     return violation_config_manager
 
 
-def get_threshold_config(threshold_name: str) -> Optional[ThresholdConfig]:
+def get_threshold_config(threshold_name: str) -> ThresholdConfig | None:
     """Get threshold configuration by name."""
     return violation_config_manager.get_threshold_config(threshold_name)
 

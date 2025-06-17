@@ -238,7 +238,7 @@ class TestWINAECOversightCoordinator:
 
         for key in expected_keys:
             assert key in insights
-            assert isinstance(insights[key], (int, float, bool))
+            assert isinstance(insights[key], int | float | bool)
 
         # Test WINA optimization application
         analysis = {
@@ -652,15 +652,6 @@ class TestECServiceAPIIntegration:
     async def test_ec_service_oversight_api(self):
         """Test EC service oversight API endpoints."""
         # Mock oversight request
-        oversight_request = {
-            "target_system": "test_ec_system",
-            "context": "performance_optimization",
-            "requirements": ["efficiency_optimization", "constitutional_compliance"],
-            "optimization_objective": "maximize_performance",
-            "constitutional_constraints": ["fairness", "transparency"],
-            "priority_level": "high",
-            "metadata": {"test_mode": True},
-        }
 
         # Mock expected response
         expected_response = {
@@ -696,24 +687,6 @@ class TestECServiceAPIIntegration:
     async def test_alphaevolve_integration_api(self):
         """Test AlphaEvolve integration API endpoints."""
         # Mock EC governance request
-        governance_request = {
-            "context": "performance_optimization",
-            "proposals": [
-                {
-                    "proposal_id": "test_proposal_1",
-                    "algorithm_type": "genetic_algorithm",
-                    "parameters": {"population_size": 100, "generations": 50},
-                    "fitness_function": "maximize_efficiency",
-                    "constraints": ["resource_limit"],
-                    "objectives": ["performance", "efficiency"],
-                    "population_size": 100,
-                    "generations": 50,
-                    "metadata": {"test_mode": True},
-                }
-            ],
-            "constitutional_requirements": ["fairness", "transparency"],
-            "optimization_hints": {"wina_optimization": True},
-        }
 
         # Mock expected response
         expected_response = {

@@ -7,13 +7,12 @@ Showcases the complete constitutional governance workflow from principle to enfo
 import asyncio
 import json
 import logging
-import sys
-from datetime import datetime
-from typing import Dict
 
 # Add project paths
 import os
 import sys
+from datetime import datetime
+
 # Add blockchain directory to path for imports
 blockchain_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if blockchain_dir not in sys.path:
@@ -85,39 +84,39 @@ class QuantumagiDemo:
         # Create constitutional document
         constitution_content = """
         QUANTUMAGI CONSTITUTIONAL FRAMEWORK v1.0
-        
+
         PREAMBLE
         We, the community of Quantumagi, establish this constitutional framework
         to govern AI systems operating on the Solana blockchain with transparency,
         safety, and democratic participation.
-        
+
         ARTICLE I: FUNDAMENTAL PRINCIPLES
         Section 1: No Extrajudicial State Mutation (PC-001)
         AI systems shall not perform unauthorized state mutations without proper
         governance approval through established democratic processes.
-        
+
         Section 2: Democratic Governance Requirement (GV-001)
         All governance decisions affecting the community must be subject to
         transparent democratic voting with adequate deliberation time.
-        
+
         Section 3: Treasury Protection (FN-001)
         Community treasury operations exceeding established limits require
         multi-signature approval from elected treasury guardians.
-        
+
         ARTICLE II: AI SAFETY STANDARDS
         Section 1: Safety-First Operations (SF-001)
         All AI system deployments must undergo comprehensive safety validation
         with continuous monitoring and immediate halt capabilities.
-        
+
         Section 2: Transparency and Auditability (TR-001)
         All governance decisions and compliance checks must be publicly
         auditable with immutable logging on the blockchain.
-        
+
         ARTICLE III: ENFORCEMENT MECHANISMS
         Section 1: Prompt Governance Compiler (PGC)
         Real-time compliance checking shall be enforced through the PGC system
         with multi-model validation achieving 99.92% reliability.
-        
+
         Section 2: Appeals Process
         Community members may appeal policy violations through a multi-tier
         system including automated review and human oversight.
@@ -133,7 +132,7 @@ class QuantumagiDemo:
             f"✅ Constitutional document created ({len(constitution_content)} characters)"
         )
         print(f"📋 Constitution hash: {constitution_hash.hex()[:16]}...")
-        print(f"🏛️ Framework established with 5 core principles")
+        print("🏛️ Framework established with 5 core principles")
 
         # Simulate on-chain initialization
         await asyncio.sleep(1)
@@ -196,9 +195,9 @@ class QuantumagiDemo:
 
             # Generate policy rule
             rule_templates = {
-                "prompt_constitution": f"DENY unauthorized_state_mutations WITHOUT governance_approval",
-                "governance": f"REQUIRE governance_approval FOR policy_changes",
-                "financial": f"LIMIT treasury_operations TO authorized_amounts AND REQUIRE multi_sig_approval",
+                "prompt_constitution": "DENY unauthorized_state_mutations WITHOUT governance_approval",
+                "governance": "REQUIRE governance_approval FOR policy_changes",
+                "financial": "LIMIT treasury_operations TO authorized_amounts AND REQUIRE multi_sig_approval",
             }
 
             policy_rule = rule_templates.get(
@@ -366,7 +365,7 @@ class QuantumagiDemo:
 
         await asyncio.sleep(2)
 
-    def _mock_compliance_check(self, action: str, context: Dict) -> bool:
+    def _mock_compliance_check(self, action: str, context: dict) -> bool:
         """Mock PGC compliance checking logic"""
         action_lower = action.lower()
 
@@ -505,11 +504,11 @@ class QuantumagiDemo:
         else:
             compliance_success_rate = 0.0
 
-        print(f"🏛️  QUANTUMAGI DEMONSTRATION SUMMARY")
+        print("🏛️  QUANTUMAGI DEMONSTRATION SUMMARY")
         print(f"    Duration: {duration.total_seconds():.1f} seconds")
         print(f"    Constitution Hash: {self.demo_data['constitution_hash'][:16]}...")
         print()
-        print(f"📊 GOVERNANCE METRICS:")
+        print("📊 GOVERNANCE METRICS:")
         print(f"    Policies Created: {self.demo_data['metrics']['policies_created']}")
         print(f"    Policies Enacted: {enacted_policies}")
         print(
@@ -519,31 +518,35 @@ class QuantumagiDemo:
             f"    Appeals Processed: {self.demo_data['metrics']['appeals_processed']}"
         )
         print()
-        print(f"🎯 PERFORMANCE METRICS:")
+        print("🎯 PERFORMANCE METRICS:")
         # Calculate metrics with division by zero protection
-        policies_created = self.demo_data['metrics']['policies_created']
-        policy_enactment_rate = (enacted_policies / policies_created) if policies_created > 0 else 0.0
+        policies_created = self.demo_data["metrics"]["policies_created"]
+        policy_enactment_rate = (
+            (enacted_policies / policies_created) if policies_created > 0 else 0.0
+        )
 
         avg_confidence = 0.0
         if len(compliance_results) > 0:
-            avg_confidence = sum(r['confidence'] for r in compliance_results) / len(compliance_results)
+            avg_confidence = sum(r["confidence"] for r in compliance_results) / len(
+                compliance_results
+            )
 
         print(f"    Policy Enactment Rate: {policy_enactment_rate:.1%}")
         print(f"    PGC Accuracy: {compliance_success_rate:.1%}")
         print(f"    Average Confidence: {avg_confidence:.1f}%")
         print()
-        print(f"✅ SYSTEM STATUS:")
-        print(f"    Constitutional Framework: ACTIVE")
-        print(f"    GS Engine: OPERATIONAL")
-        print(f"    PGC Enforcement: ACTIVE")
-        print(f"    Appeals System: OPERATIONAL")
-        print(f"    Event Monitoring: ACTIVE")
+        print("✅ SYSTEM STATUS:")
+        print("    Constitutional Framework: ACTIVE")
+        print("    GS Engine: OPERATIONAL")
+        print("    PGC Enforcement: ACTIVE")
+        print("    Appeals System: OPERATIONAL")
+        print("    Event Monitoring: ACTIVE")
         print()
-        print(f"🎉 QUANTUMAGI DEMONSTRATION COMPLETE!")
-        print(f"    On-chain constitutional governance successfully demonstrated")
-        print(f"    AlphaEvolve-ACGS integration validated")
-        print(f"    Real-time compliance enforcement verified")
-        print(f"    Democratic governance process confirmed")
+        print("🎉 QUANTUMAGI DEMONSTRATION COMPLETE!")
+        print("    On-chain constitutional governance successfully demonstrated")
+        print("    AlphaEvolve-ACGS integration validated")
+        print("    Real-time compliance enforcement verified")
+        print("    Democratic governance process confirmed")
         print()
         print("=" * 80)
 

@@ -3,13 +3,13 @@ Phase 3: Appeal and Dispute Resolution API endpoints for ACGS-PGP
 Provides democratic governance mechanisms for challenging algorithmic decisions
 """
 
-from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # from app.core.auth import get_current_user_placeholder as get_current_user, require_integrity_admin, require_auditor
 from app import crud, schemas
 from app.database import get_async_db
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # from app.core.explainability import explainability_engine
 
@@ -67,7 +67,9 @@ router = APIRouter()
 # --- Appeal Management Endpoints ---
 
 
-@router.post("/appeals", response_model=schemas.Appeal, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/appeals", response_model=schemas.Appeal, status_code=status.HTTP_201_CREATED
+)
 async def create_appeal(
     appeal_data: schemas.AppealCreate,
     db: AsyncSession = Depends(get_async_db),
@@ -102,13 +104,15 @@ async def create_appeal(
         raise HTTPException(status_code=500, detail=f"Error creating appeal: {str(e)}")
 
 
-@router.get("/appeals", response_model=schemas.AppealList, status_code=status.HTTP_200_OK)
+@router.get(
+    "/appeals", response_model=schemas.AppealList, status_code=status.HTTP_200_OK
+)
 async def get_appeals(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
-    status_filter: Optional[str] = Query(None, alias="status"),
-    decision_id: Optional[str] = Query(None),
-    escalation_level: Optional[int] = Query(None, ge=1, le=4),
+    status_filter: str | None = Query(None, alias="status"),
+    decision_id: str | None = Query(None),
+    escalation_level: int | None = Query(None, ge=1, le=4),
     db: AsyncSession = Depends(get_async_db),
     current_user=Depends(get_current_user),
 ):
@@ -119,7 +123,10 @@ async def get_appeals(
     try:
         # Determine access level
         assigned_reviewer_id = None
-        if "integrity_admin" not in current_user.roles and "auditor" not in current_user.roles:
+        if (
+            "integrity_admin" not in current_user.roles
+            and "auditor" not in current_user.roles
+        ):
             # Regular users see only their appeals
             assigned_reviewer_id = current_user.id
 
@@ -143,7 +150,9 @@ async def get_appeals(
         return schemas.AppealList(appeals=appeals, total=total)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving appeals: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving appeals: {str(e)}"
+        )
 
 
 @router.get(
@@ -177,7 +186,9 @@ async def get_appeal(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving appeal: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving appeal: {str(e)}"
+        )
 
 
 @router.patch(
@@ -237,7 +248,9 @@ async def escalate_appeal(
     try:
         appeal = await crud.escalate_appeal(db, appeal_id)
         if not appeal:
-            raise HTTPException(status_code=404, detail="Appeal not found or cannot be escalated")
+            raise HTTPException(
+                status_code=404, detail="Appeal not found or cannot be escalated"
+            )
 
         # Log the escalation
         await crud.create_audit_log(
@@ -258,7 +271,9 @@ async def escalate_appeal(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error escalating appeal: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error escalating appeal: {str(e)}"
+        )
 
 
 # --- Dispute Resolution Endpoints ---
@@ -305,7 +320,9 @@ async def create_dispute_resolution(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating dispute resolution: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error creating dispute resolution: {str(e)}"
+        )
 
 
 @router.get(
@@ -316,9 +333,9 @@ async def create_dispute_resolution(
 async def get_dispute_resolutions(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
-    status_filter: Optional[str] = Query(None, alias="status"),
-    resolution_method: Optional[str] = Query(None),
-    appeal_id: Optional[int] = Query(None),
+    status_filter: str | None = Query(None, alias="status"),
+    resolution_method: str | None = Query(None),
+    appeal_id: int | None = Query(None),
     db: AsyncSession = Depends(get_async_db),
     current_user=Depends(require_auditor),
 ):
@@ -416,7 +433,9 @@ async def update_dispute_resolution(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating dispute resolution: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error updating dispute resolution: {str(e)}"
+        )
 
 
 # --- Explainability Endpoints ---
@@ -457,7 +476,9 @@ async def explain_decision(
         return explanation
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error generating explanation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error generating explanation: {str(e)}"
+        )
 
 
 @router.get(
@@ -491,4 +512,6 @@ async def get_rule_provenance(
         return provenance
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving rule provenance: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving rule provenance: {str(e)}"
+        )

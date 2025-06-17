@@ -9,7 +9,7 @@ for inter-service communication.
 import logging
 import time
 from contextlib import asynccontextmanager
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -35,7 +35,9 @@ class ACGSServiceClient:
     retry logic, authentication, and standardized error handling.
     """
 
-    def __init__(self, service_type: ServiceType, registry: Optional[ServiceRegistry] = None):
+    def __init__(
+        self, service_type: ServiceType, registry: ServiceRegistry | None = None
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -63,7 +65,7 @@ class ACGSServiceClient:
             },
         )
 
-        self._auth_token: Optional[str] = None
+        self._auth_token: str | None = None
         self._request_count = 0
         self._error_count = 0
 
@@ -93,17 +95,19 @@ class ACGSServiceClient:
         """Clear authentication token."""
         self._auth_token = None
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
+    )
     async def request(
         self,
         method: str,
         endpoint: str,
-        data: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
-        auth_token: Optional[str] = None,
-        timeout: Optional[float] = None,
-    ) -> Dict[str, Any]:
+        data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        auth_token: str | None = None,
+        timeout: float | None = None,
+    ) -> dict[str, Any]:
         """
         Make HTTP request with circuit breaker and retry logic.
 
@@ -241,33 +245,33 @@ class ACGSServiceClient:
 
             raise error
 
-    async def get(self, endpoint: str, **kwargs) -> Dict[str, Any]:
+    async def get(self, endpoint: str, **kwargs) -> dict[str, Any]:
         """Make GET request."""
         return await self.request("GET", endpoint, **kwargs)
 
     async def post(
-        self, endpoint: str, data: Optional[Dict[str, Any]] = None, **kwargs
-    ) -> Dict[str, Any]:
+        self, endpoint: str, data: dict[str, Any] | None = None, **kwargs
+    ) -> dict[str, Any]:
         """Make POST request."""
         return await self.request("POST", endpoint, data=data, **kwargs)
 
     async def put(
-        self, endpoint: str, data: Optional[Dict[str, Any]] = None, **kwargs
-    ) -> Dict[str, Any]:
+        self, endpoint: str, data: dict[str, Any] | None = None, **kwargs
+    ) -> dict[str, Any]:
         """Make PUT request."""
         return await self.request("PUT", endpoint, data=data, **kwargs)
 
     async def patch(
-        self, endpoint: str, data: Optional[Dict[str, Any]] = None, **kwargs
-    ) -> Dict[str, Any]:
+        self, endpoint: str, data: dict[str, Any] | None = None, **kwargs
+    ) -> dict[str, Any]:
         """Make PATCH request."""
         return await self.request("PATCH", endpoint, data=data, **kwargs)
 
-    async def delete(self, endpoint: str, **kwargs) -> Dict[str, Any]:
+    async def delete(self, endpoint: str, **kwargs) -> dict[str, Any]:
         """Make DELETE request."""
         return await self.request("DELETE", endpoint, **kwargs)
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """
         Perform health check on the service.
 
@@ -284,7 +288,7 @@ class ACGSServiceClient:
                 "timestamp": time.time(),
             }
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """
         Get client metrics.
 
@@ -309,13 +313,13 @@ class ServiceMesh:
     for inter-service communication.
     """
 
-    def __init__(self, registry: Optional[ServiceRegistry] = None):
+    def __init__(self, registry: ServiceRegistry | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         self.registry = registry or get_service_registry()
-        self.clients: Dict[ServiceType, ACGSServiceClient] = {}
-        self._auth_token: Optional[str] = None
+        self.clients: dict[ServiceType, ACGSServiceClient] = {}
+        self._auth_token: str | None = None
 
     def get_client(self, service_type: ServiceType) -> ACGSServiceClient:
         """
@@ -361,7 +365,7 @@ class ServiceMesh:
 
     async def call_service(
         self, service_type: ServiceType, method: str, endpoint: str, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Call a specific service.
 
@@ -377,7 +381,7 @@ class ServiceMesh:
         client = self.get_client(service_type)
         return await client.request(method, endpoint, **kwargs)
 
-    async def health_check_all(self) -> Dict[str, Any]:
+    async def health_check_all(self) -> dict[str, Any]:
         """
         Perform health check on all registered services.
 
@@ -401,7 +405,7 @@ class ServiceMesh:
 
         return format_response(data=results, metadata={"total_services": len(results)})
 
-    async def get_all_metrics(self) -> Dict[str, Any]:
+    async def get_all_metrics(self) -> dict[str, Any]:
         """
         Get metrics from all active clients.
 
@@ -413,7 +417,9 @@ class ServiceMesh:
         for service_type, client in self.clients.items():
             metrics[service_type.value] = client.get_metrics()
 
-        return format_response(data=metrics, metadata={"active_clients": len(self.clients)})
+        return format_response(
+            data=metrics, metadata={"active_clients": len(self.clients)}
+        )
 
     async def close_all(self):
         # requires: Valid input parameters
@@ -444,7 +450,7 @@ class ServiceMesh:
 
 
 # Global service mesh instance
-_service_mesh: Optional[ServiceMesh] = None
+_service_mesh: ServiceMesh | None = None
 
 
 def get_service_mesh() -> ServiceMesh:

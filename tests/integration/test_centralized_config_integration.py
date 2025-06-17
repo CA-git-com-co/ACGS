@@ -214,7 +214,7 @@ class CentralizedConfigIntegrationTest:
                 ("gs", "/synthesis", "http://localhost:8004/api/v1/synthesis"),
             ]
 
-            for service, path, expected_pattern in test_cases:
+            for service, path, _expected_pattern in test_cases:
                 url = self.config.get_service_url(service, api_path=path)
 
                 # Check that URL contains expected components
@@ -317,7 +317,7 @@ class CentralizedConfigIntegrationTest:
         overall_total = total_passed + total_failed
         success_rate = (total_passed / overall_total * 100) if overall_total > 0 else 0
 
-        print(f"\n🎯 OVERALL RESULTS:")
+        print("\n🎯 OVERALL RESULTS:")
         print(f"   Total Tests: {overall_total}")
         print(f"   Passed: {total_passed}")
         print(f"   Failed: {total_failed}")
@@ -327,7 +327,7 @@ class CentralizedConfigIntegrationTest:
         with open("centralized_config_test_results.json", "w") as f:
             json.dump(self.results, f, indent=2)
 
-        print(f"\n📄 Detailed results saved to: centralized_config_test_results.json")
+        print("\n📄 Detailed results saved to: centralized_config_test_results.json")
 
         return success_rate >= 80  # Consider successful if 80% or more tests pass
 

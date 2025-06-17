@@ -5,7 +5,7 @@ This test suite verifies the complete integration of WINA performance monitoring
 with the EC oversight coordinator and API endpoints.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, Mock
 
 import pytest
@@ -229,7 +229,7 @@ class TestWINAPerformanceIntegration:
             availability_percent=99.9,
             response_time_p95_ms=45.2,
             concurrent_operations=12,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         await collector.record_system_health_metrics(system_metrics)
 
@@ -247,7 +247,7 @@ class TestWINAPerformanceIntegration:
                 "efficiency": 0.95,
             },
             remediation_actions_taken=0,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         await collector.record_constitutional_compliance_metrics(compliance_metrics)
 
@@ -262,7 +262,7 @@ class TestWINAPerformanceIntegration:
             integration_success_rate=0.99,
             error_count=0,
             performance_improvement_ratio=0.42,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         await collector.record_integration_performance_metrics(integration_metrics)
 
@@ -277,7 +277,7 @@ class TestWINAPerformanceIntegration:
             activation_scores_std=0.18,
             performance_impact_ms=8.5,
             energy_savings_ratio=0.35,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         await collector.record_neuron_activation_metrics(neuron_metrics)
 
@@ -292,7 +292,7 @@ class TestWINAPerformanceIntegration:
             decision_latency_ms=2.1,
             accuracy_impact=-0.002,
             resource_savings=0.28,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         await collector.record_dynamic_gating_metrics(gating_metrics)
 
@@ -448,7 +448,7 @@ class TestWINAPerformanceIntegration:
             availability_percent=99.95,
             response_time_p95_ms=40.0,
             concurrent_operations=8,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         await collector.record_system_health_metrics(system_metrics)
 
@@ -469,7 +469,7 @@ class TestWINAPerformanceIntegration:
                 "efficiency": 0.95,
             },
             remediation_actions_taken=0,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         await collector.record_constitutional_compliance_metrics(compliance_metrics)
 
@@ -487,7 +487,7 @@ class TestWINAPerformanceIntegration:
             activation_scores_std=0.15,
             performance_impact_ms=12.0,
             energy_savings_ratio=optimization_result["gflops_reduction"] * 0.8,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         await collector.record_neuron_activation_metrics(neuron_metrics)
 
@@ -502,7 +502,7 @@ class TestWINAPerformanceIntegration:
             integration_success_rate=0.98,
             error_count=0,
             performance_improvement_ratio=optimization_result["gflops_reduction"],
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         await collector.record_integration_performance_metrics(integration_metrics)
 
@@ -513,7 +513,7 @@ class TestWINAPerformanceIntegration:
         assert len(collector.integration_performance_metrics) >= 1
 
         # 6. Generate performance report
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
         start_time = end_time - timedelta(hours=1)
 
         report = await collector.get_performance_report(start_time, end_time)

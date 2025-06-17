@@ -1,4 +1,3 @@
-from typing import Dict, List
 
 import numpy as np  # Added for type hinting and example matrix
 
@@ -8,7 +7,7 @@ from .svd_utils import apply_svd_transformation  # Added SVD import
 
 async def analyze_neuron_activations(
     activation_input: NeuronActivationInput,
-) -> List[AnalyzedNeuronActivation]:
+) -> list[AnalyzedNeuronActivation]:
     """
     Analyzes raw neuron activations to compute summary statistics.
 
@@ -19,7 +18,7 @@ async def analyze_neuron_activations(
         A list of analyzed neuron activation objects, each containing
         statistics like mean and variance for a neuron.
     """
-    analyzed_activations: List[AnalyzedNeuronActivation] = []
+    analyzed_activations: list[AnalyzedNeuronActivation] = []
 
     for neuron_id, activations in activation_input.activations.items():
         if not activations:
@@ -33,7 +32,9 @@ async def analyze_neuron_activations(
 
             # Calculate variance
             if n > 1:
-                variance_activation = sum((x - mean_activation) ** 2 for x in activations) / (n - 1)
+                variance_activation = sum(
+                    (x - mean_activation) ** 2 for x in activations
+                ) / (n - 1)
             else:
                 variance_activation = (
                     0.0  # Variance is undefined for a single data point or no data
@@ -51,7 +52,7 @@ async def analyze_neuron_activations(
 
 
 async def calculate_wina_weights(
-    analyzed_activations: List[AnalyzedNeuronActivation],
+    analyzed_activations: list[AnalyzedNeuronActivation],
     # Alternatively, could take NeuronActivationInput directly
     # activation_input: NeuronActivationInput
 ) -> WINAWeightOutput:
@@ -70,7 +71,7 @@ async def calculate_wina_weights(
         It assigns weights proportional to the mean activation.
         This should be replaced with the actual WINA algorithm logic.
     """
-    weights: Dict[str, float] = {}
+    weights: dict[str, float] = {}
 
     # Placeholder WINA calculation: weight is proportional to mean activation.
     # This is a simplified assumption and should be replaced with the actual WINA formula.

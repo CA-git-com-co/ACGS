@@ -104,11 +104,11 @@ LOG_LEVEL=INFO
 
 #### **Frontend Configuration**
 ```bash
-cd src/frontend
+cd applications/legacy-frontend
 cp .env.example .env
 ```
 
-Edit `applications/legacy-frontend/.env`:
+Edit `applications/legacy-applications/governance-dashboard/.env`:
 ```bash
 REACT_APP_API_BASE_URL=/api
 REACT_APP_ENVIRONMENT=development
@@ -132,10 +132,10 @@ curl -f http://localhost:3001/api/health           # Grafana
 From the project root directory:
 ```bash
 # Build and start all services with monitoring
-docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up --build -d
 
 # Verify all services are running
-docker-compose -f infrastructure/docker/docker-compose.yml ps
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml ps
 
 # Check service health endpoints
 for port in 8000 8001 8002 8003 8004 8005; do
@@ -208,7 +208,7 @@ python scripts/test_policy_pipeline.py --with-monitoring
 - **Concurrent Users:** Support for 100+ concurrent users
 
 5.  **Database Migrations (Manual, if needed):**
-    The `alembic-runner` service in `docker-compose.yml` is configured to run migrations on startup. If you need to run migrations manually:
+    The `alembic-runner` service in `infrastructure/docker/docker-compose.yml` is configured to run migrations on startup. If you need to run migrations manually:
     ```bash
     docker-compose exec alembic-runner alembic upgrade head 
     # or to create a new migration:
@@ -218,19 +218,19 @@ python scripts/test_policy_pipeline.py --with-monitoring
 
 6.  **Stopping Services:**
     ```bash
-    docker-compose down
+    docker-compose -f infrastructure/docker/docker-compose.yml down
     ```
     To remove volumes (e.g., PostgreSQL data):
     ```bash
-    docker-compose down -v
+    docker-compose -f infrastructure/docker/docker-compose.yml down -v
     ```
 
 ## Part 2: Kubernetes Deployment (Staging/Production)
 
-Refer to the `acgs-pgp/k8s/README.md` file for detailed instructions on deploying to Kubernetes. The general steps involve:
+Refer to the `acgs-pgp/infrastructure/kubernetes/README.md` file for detailed instructions on deploying to Kubernetes. The general steps involve:
 
-1.  **Prerequisites:** Ensure all prerequisites listed in `k8s/README.md` are met (Kubernetes cluster, `kubectl`, Docker images pushed to a registry, secrets created).
-2.  **Image Tagging:** Make sure your Docker images are tagged appropriately and pushed to your container registry. Update the `image:` fields in all Kubernetes YAML files (`k8s/*.yaml`) to point to your images.
+1.  **Prerequisites:** Ensure all prerequisites listed in `infrastructure/kubernetes/README.md` are met (Kubernetes cluster, `kubectl`, Docker images pushed to a registry, secrets created).
+2.  **Image Tagging:** Make sure your Docker images are tagged appropriately and pushed to your container registry. Update the `image:` fields in all Kubernetes YAML files (`infrastructure/kubernetes/*.yaml`) to point to your images.
 3.  **Apply Secrets and ConfigMaps:** Create necessary Kubernetes `Secret` and `ConfigMap` objects in your cluster (e.g., for database credentials, JWT secrets, PostgreSQL configuration).
 4.  **Deploy PostgreSQL:** Apply the `postgres-deployment.yaml` and `postgres-service.yaml` (or use a managed cloud database).
 5.  **Deploy Backend Services:** Apply the YAML files for each backend service (`auth-service.yaml`, `ac-service.yaml`, etc.).
@@ -242,7 +242,7 @@ Refer to the `acgs-pgp/k8s/README.md` file for detailed instructions on deployin
 
 *   **Service Connection Issues (Docker Compose):**
     *   Ensure `DATABASE_URL` in `.env` points to the Docker Compose PostgreSQL service name (e.g., `postgresql://user:password@postgres:5432/acgs_db`).
-    *   Check Nginx routing configuration in `docker-compose.yml` if services are not accessible via `http://localhost:8000`.
+    *   Check Nginx routing configuration in `infrastructure/docker/docker-compose.yml` if services are not accessible via `http://localhost:8000`.
 *   **Service Connection Issues (Kubernetes):**
     *   Verify `DATABASE_URL` in secrets points to the Kubernetes service name for PostgreSQL (e.g., `postgres-service:5432`).
     *   Check `ClusterIP` service definitions and ensure target ports match container ports.

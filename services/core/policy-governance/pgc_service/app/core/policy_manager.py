@@ -2,7 +2,7 @@ import asyncio
 import os
 import re
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..services.integrity_client import IntegrityPolicyRule, integrity_service_client
 from .datalog_engine import datalog_engine  # Use the global engine instance
@@ -40,8 +40,8 @@ class PolicyManager:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash  # Default: refresh every 5 minutes
-        self._active_rules: List[IntegrityPolicyRule] = []
-        self._last_refresh_time: Optional[datetime] = None
+        self._active_rules: list[IntegrityPolicyRule] = []
+        self._last_refresh_time: datetime | None = None
         self._refresh_interval = timedelta(seconds=refresh_interval_seconds)
         self._lock = asyncio.Lock()  # To prevent concurrent refresh operations
 
@@ -51,8 +51,8 @@ class PolicyManager:
         self.crypto_service = CryptoService() if CryptoService else None
 
         # Task 8: Initialize incremental compilation components
-        self.incremental_compiler: Optional[IncrementalCompiler] = None
-        self.opa_client: Optional[OPAClient] = None
+        self.incremental_compiler: IncrementalCompiler | None = None
+        self.opa_client: OPAClient | None = None
         self.enable_incremental_compilation = (
             os.getenv("ENABLE_INCREMENTAL_COMPILATION", "true").lower() == "true"
         )
@@ -68,7 +68,9 @@ class PolicyManager:
             "compilation_time_saved_ms": 0,
         }
 
-    async def get_active_rules(self, force_refresh: bool = False) -> List[IntegrityPolicyRule]:
+    async def get_active_rules(
+        self, force_refresh: bool = False
+    ) -> list[IntegrityPolicyRule]:
         """
         Returns the current list of active (verified) Datalog rules.
         Refreshes from the Integrity Service if the cache is stale or force_refresh is True.
@@ -84,8 +86,10 @@ class PolicyManager:
                 print("PolicyManager: Refreshing policies from Integrity Service...")
                 try:
                     # Fetch verified rules from Integrity Service
-                    fetched_rules = await integrity_service_client.list_verified_policy_rules(
-                        auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+                    fetched_rules = (
+                        await integrity_service_client.list_verified_policy_rules(
+                            auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+                        )
                     )
                     if (
                         fetched_rules is not None
@@ -97,7 +101,9 @@ class PolicyManager:
                         )
 
                         # Enhanced rule processing with format conversion and validation
-                        processed_rules = await self._process_and_validate_rules(self._active_rules)
+                        processed_rules = await self._process_and_validate_rules(
+                            self._active_rules
+                        )
 
                         # Task 8: Use incremental compilation if enabled
                         if self.enable_incremental_compilation:
@@ -107,7 +113,9 @@ class PolicyManager:
                         else:
                             # Fallback to traditional Datalog engine loading
                             datalog_engine.clear_rules_and_facts()  # Clear old rules and facts
-                            rule_strings = [rule.rule_content for rule in processed_rules]
+                            rule_strings = [
+                                rule.rule_content for rule in processed_rules
+                            ]
                             datalog_engine.load_rules(rule_strings)
 
                         print(
@@ -129,8 +137,8 @@ class PolicyManager:
         return self._active_rules
 
     async def _process_and_validate_rules(
-        self, rules: List[IntegrityPolicyRule]
-    ) -> List[IntegrityPolicyRule]:
+        self, rules: list[IntegrityPolicyRule]
+    ) -> list[IntegrityPolicyRule]:
         """
         Process and validate policy rules with enhanced integrity checks.
         Addresses audit findings for format conversion, signature verification, and validation.
@@ -172,21 +180,29 @@ class PolicyManager:
                         # Update rule content with converted version
                         rule.rule_content = conversion_result.converted_content
                         self._validation_stats["format_converted"] += 1
-                        logger.info(f"Converted rule from {detected_framework.value} to Rego")
+                        logger.info(
+                            f"Converted rule from {detected_framework.value} to Rego"
+                        )
 
                         # Update metadata
                         if hasattr(rule, "framework"):
                             rule.framework = "Rego"
                         if hasattr(rule, "import_dependencies"):
-                            rule.import_dependencies = conversion_result.import_dependencies
+                            rule.import_dependencies = (
+                                conversion_result.import_dependencies
+                            )
                     else:
-                        logger.error(f"Failed to convert rule: {conversion_result.error_message}")
+                        logger.error(
+                            f"Failed to convert rule: {conversion_result.error_message}"
+                        )
                         self._validation_stats["validation_failed"] += 1
                         continue
 
                 # 4. Validate syntax
                 if detected_framework == PolicyFramework.REGO or framework == "Rego":
-                    validation_result = self.format_router.validate_rego_syntax(rule.rule_content)
+                    validation_result = self.format_router.validate_rego_syntax(
+                        rule.rule_content
+                    )
                     if not validation_result.is_valid:
                         logger.error(
                             f"Rego syntax validation failed: {validation_result.error_message}"
@@ -195,7 +211,9 @@ class PolicyManager:
                         continue
 
                 # 5. Generate content hash for integrity
-                content_hash = self.format_router.generate_content_hash(rule.rule_content)
+                content_hash = self.format_router.generate_content_hash(
+                    rule.rule_content
+                )
                 if hasattr(rule, "content_hash"):
                     rule.content_hash = content_hash
 
@@ -206,7 +224,9 @@ class PolicyManager:
                 processed_rules.append(rule)
 
             except Exception as e:
-                logger.error(f"Error processing rule {getattr(rule, 'id', 'unknown')}: {e}")
+                logger.error(
+                    f"Error processing rule {getattr(rule, 'id', 'unknown')}: {e}"
+                )
                 self._validation_stats["validation_failed"] += 1
                 continue
 
@@ -215,7 +235,11 @@ class PolicyManager:
 
     async def _verify_rule_signature(self, rule: IntegrityPolicyRule) -> bool:
         """Verify PGP signature of a policy rule"""
-        if not self.crypto_service or not hasattr(rule, "pgp_signature") or not rule.pgp_signature:
+        if (
+            not self.crypto_service
+            or not hasattr(rule, "pgp_signature")
+            or not rule.pgp_signature
+        ):
             return True  # Skip verification if no crypto service or signature
 
         try:
@@ -226,7 +250,9 @@ class PolicyManager:
             signature_bytes = bytes.fromhex(rule.pgp_signature)
 
             # Verify signature
-            is_valid = self.crypto_service.verify_signature(message_to_verify, signature_bytes)
+            is_valid = self.crypto_service.verify_signature(
+                message_to_verify, signature_bytes
+            )
             return is_valid
 
         except Exception as e:
@@ -240,7 +266,9 @@ class PolicyManager:
 
         # Try to extract from comments
         comment_lines = [
-            line.strip()[1:].strip() for line in content.split("\n") if line.strip().startswith("#")
+            line.strip()[1:].strip()
+            for line in content.split("\n")
+            if line.strip().startswith("#")
         ]
         if comment_lines:
             return comment_lines[0]
@@ -260,7 +288,7 @@ class PolicyManager:
         return "Auto-generated policy rule description"
 
     async def _compile_policies_incrementally(
-        self, processed_rules: List[IntegrityPolicyRule], force_full: bool = False
+        self, processed_rules: list[IntegrityPolicyRule], force_full: bool = False
     ) -> None:
         """
         Task 8: Compile policies using incremental compilation engine.
@@ -291,9 +319,14 @@ class PolicyManager:
                 self._validation_stats["full_compilations"] += 1
 
             # Calculate time savings (estimated)
-            if compilation_metrics.incremental and compilation_metrics.compilation_time_ms > 0:
+            if (
+                compilation_metrics.incremental
+                and compilation_metrics.compilation_time_ms > 0
+            ):
                 estimated_full_time = len(processed_rules) * 10 + 100  # Rough estimate
-                time_saved = max(0, estimated_full_time - compilation_metrics.compilation_time_ms)
+                time_saved = max(
+                    0, estimated_full_time - compilation_metrics.compilation_time_ms
+                )
                 self._validation_stats["compilation_time_saved_ms"] += time_saved
 
             logger.info(
@@ -316,7 +349,7 @@ class PolicyManager:
             rule_strings = [rule.rule_content for rule in processed_rules]
             datalog_engine.load_rules(rule_strings)
 
-    async def get_compilation_metrics(self) -> Dict[str, Any]:
+    async def get_compilation_metrics(self) -> dict[str, Any]:
         """
         Task 8: Get incremental compilation performance metrics.
         """
@@ -335,12 +368,14 @@ class PolicyManager:
 
         return metrics
 
-    def get_active_rule_strings(self) -> List[str]:
+    def get_active_rule_strings(self) -> list[str]:
         """Returns only the rule content strings of the active rules."""
         # This method doesn't trigger a refresh on its own; relies on get_active_rules being called.
         # Or, could be adapted to also call get_active_rules if needed.
         if not self._active_rules and not self._last_refresh_time:  # If never loaded
-            print("PolicyManager: Rules not loaded yet. Consider calling get_active_rules() first.")
+            print(
+                "PolicyManager: Rules not loaded yet. Consider calling get_active_rules() first."
+            )
         return [rule.rule_content for rule in self._active_rules]
 
 
@@ -376,7 +411,9 @@ if __name__ == "__main__":
         # To test caching, you'd need to ensure refresh_interval is not immediately passed.
         # For this manual test, it will likely use cache if the first call was quick.
         # policy_manager._last_refresh_time = datetime.utcnow() # Simulate it just refreshed
-        print("\nSecond call (expecting cache for rules, but Datalog engine is already loaded):")
+        print(
+            "\nSecond call (expecting cache for rules, but Datalog engine is already loaded):"
+        )
         rules2 = await policy_manager.get_active_rules()
         print(f"Fetched {len(rules2)} rules on second call.")
 

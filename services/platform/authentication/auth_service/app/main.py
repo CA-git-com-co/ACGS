@@ -37,9 +37,10 @@ from app.core.config import settings
 
 # Enhanced Security Middleware
 try:
-    from services.shared.security_headers_middleware import SecurityHeadersMiddleware
-    from services.shared.rate_limiting_middleware import RateLimitingMiddleware
     from services.shared.input_validation_middleware import InputValidationMiddleware
+    from services.shared.rate_limiting_middleware import RateLimitingMiddleware
+    from services.shared.security_headers_middleware import SecurityHeadersMiddleware
+
     SECURITY_MIDDLEWARE_AVAILABLE = True
 except ImportError:
     SECURITY_MIDDLEWARE_AVAILABLE = False
@@ -48,7 +49,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-shared_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "shared")
+shared_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "shared"
+)
 sys.path.append(shared_path)
 from api_models import HealthCheckResponse, ServiceInfo, create_success_response
 from middleware import add_production_middleware, create_exception_handlers
@@ -114,6 +117,7 @@ logger = logging.getLogger(settings.PROJECT_NAME)
 # Initialize Limiter - temporarily disabled for debugging
 # limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan management with service initialization."""
@@ -128,6 +132,7 @@ async def lifespan(app: FastAPI):
         yield
     finally:
         logger.info("🔄 Shutting down Authentication Service")
+
 
 # Create FastAPI application with enhanced configuration
 app = FastAPI(
@@ -150,14 +155,13 @@ else:
     print("⚠️ Security middleware not available")
 
 
-
 # Add security middleware
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 # Add CORS middleware with SECURE production settings
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080").split(
-    ","
-)
+allowed_origins = os.getenv(
+    "ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8080"
+).split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,  # SECURITY FIX: No longer allow all origins
@@ -287,12 +291,20 @@ except ImportError as e:
 if ROUTERS_AVAILABLE:
     try:
         # Include the authentication router
-        app.include_router(auth_router, prefix="/auth", tags=["Authentication & Authorization"])
+        app.include_router(
+            auth_router, prefix="/auth", tags=["Authentication & Authorization"]
+        )
 
         # Include enterprise authentication routers
-        app.include_router(mfa_router, prefix="/auth/mfa", tags=["Multi-Factor Authentication"])
-        app.include_router(oauth_router, prefix="/auth/oauth", tags=["OAuth 2.0 & OpenID Connect"])
-        app.include_router(api_keys_router, prefix="/auth/api-keys", tags=["API Key Management"])
+        app.include_router(
+            mfa_router, prefix="/auth/mfa", tags=["Multi-Factor Authentication"]
+        )
+        app.include_router(
+            oauth_router, prefix="/auth/oauth", tags=["OAuth 2.0 & OpenID Connect"]
+        )
+        app.include_router(
+            api_keys_router, prefix="/auth/api-keys", tags=["API Key Management"]
+        )
         logger.info("✅ All API routers included successfully")
     except Exception as e:
         logger.warning(f"⚠️ Failed to include some routers: {e}")
@@ -419,7 +431,9 @@ async def startup_event():
     logger.info(f"🔌 Port: {SERVICE_PORT}")
     logger.info(f"📚 API Documentation: http://localhost:{SERVICE_PORT}/docs")
     logger.info(f"🔍 Health Check: http://localhost:{SERVICE_PORT}/health")
-    logger.info(f"🔐 Enterprise Features: {'Enabled' if ROUTERS_AVAILABLE else 'Minimal Mode'}")
+    logger.info(
+        f"🔐 Enterprise Features: {'Enabled' if ROUTERS_AVAILABLE else 'Minimal Mode'}"
+    )
 
 
 # Add shutdown event

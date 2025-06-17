@@ -5,7 +5,7 @@ Handles conflict detection, resolution strategies, and monitoring with QEC integ
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -46,7 +46,9 @@ async def create_conflict_resolution(
 ):
     """Create a new conflict resolution entry with QEC enhancement."""
     # Create the conflict resolution
-    conflict_resolution = await crud.create_ac_conflict_resolution(db, conflict, current_user.id)
+    conflict_resolution = await crud.create_ac_conflict_resolution(
+        db, conflict, current_user.id
+    )
 
     # Apply QEC enhancements using the resolver service
     try:
@@ -57,7 +59,9 @@ async def create_conflict_resolution(
         analysis = await qec_resolver.analyze_conflict(conflict_resolution, principles)
 
         # Update conflict resolution with QEC analysis results
-        conflict_resolution.resolution_details = conflict_resolution.resolution_details or {}
+        conflict_resolution.resolution_details = (
+            conflict_resolution.resolution_details or {}
+        )
         conflict_resolution.resolution_details["qec_analysis"] = {
             "constitutional_distances": analysis.constitutional_distances,
             "average_distance": analysis.average_distance,
@@ -71,11 +75,15 @@ async def create_conflict_resolution(
         await crud.update_ac_conflict_resolution(
             db,
             conflict_resolution.id,
-            ACConflictResolutionUpdate(resolution_details=conflict_resolution.resolution_details),
+            ACConflictResolutionUpdate(
+                resolution_details=conflict_resolution.resolution_details
+            ),
         )
 
     except Exception as e:
-        logger.warning(f"QEC enhancement failed for conflict {conflict_resolution.id}: {e}")
+        logger.warning(
+            f"QEC enhancement failed for conflict {conflict_resolution.id}: {e}"
+        )
 
     return conflict_resolution
 
@@ -96,13 +104,13 @@ async def get_conflict_resolution(
     return conflict
 
 
-@router.get("/", response_model=List[ACConflictResolution])
+@router.get("/", response_model=list[ACConflictResolution])
 async def list_conflict_resolutions(
     skip: int = 0,
     limit: int = 100,
-    status: Optional[str] = Query(None, description="Filter by status"),
-    severity: Optional[str] = Query(None, description="Filter by severity"),
-    priority_order: Optional[str] = Query(
+    status: str | None = Query(None, description="Filter by status"),
+    severity: str | None = Query(None, description="Filter by severity"),
+    priority_order: str | None = Query(
         None, description="Ordering: 'qec' for QEC-based prioritization"
     ),
     db: AsyncSession = Depends(get_db),
@@ -151,13 +159,17 @@ async def update_conflict_resolution(
         )
 
     # Update the conflict resolution
-    updated_conflict = await crud.update_ac_conflict_resolution(db, conflict_id, conflict_update)
+    updated_conflict = await crud.update_ac_conflict_resolution(
+        db, conflict_id, conflict_update
+    )
 
     # Re-evaluate with QEC if principles changed and QEC is available
     if QEC_AVAILABLE and conflict_update.principle_ids:
         try:
             # Recalculate QEC metrics for updated principles
-            principles = await crud.get_ac_principles_by_ids(db, conflict_update.principle_ids)
+            principles = await crud.get_ac_principles_by_ids(
+                db, conflict_update.principle_ids
+            )
 
             distance_scores = []
             for principle in principles:
@@ -174,19 +186,25 @@ async def update_conflict_resolution(
                 {
                     "distance_scores": distance_scores,
                     "average_distance": (
-                        sum(distance_scores) / len(distance_scores) if distance_scores else 0
+                        sum(distance_scores) / len(distance_scores)
+                        if distance_scores
+                        else 0
                     ),
                     "last_updated": datetime.now().isoformat(),
                 }
             )
 
-            updated_conflict.resolution_details = updated_conflict.resolution_details or {}
+            updated_conflict.resolution_details = (
+                updated_conflict.resolution_details or {}
+            )
             updated_conflict.resolution_details["qec_metadata"] = existing_qec
 
             await crud.update_ac_conflict_resolution(
                 db,
                 conflict_id,
-                ACConflictResolutionUpdate(resolution_details=updated_conflict.resolution_details),
+                ACConflictResolutionUpdate(
+                    resolution_details=updated_conflict.resolution_details
+                ),
             )
 
         except Exception as e:
@@ -233,7 +251,9 @@ async def generate_conflict_patch(
 
         # Perform QEC analysis if not already done
         existing_analysis = (
-            conflict.resolution_details.get("qec_analysis") if conflict.resolution_details else None
+            conflict.resolution_details.get("qec_analysis")
+            if conflict.resolution_details
+            else None
         )
         if existing_analysis:
             # Reconstruct analysis from stored data
@@ -290,7 +310,9 @@ async def get_conflict_qec_insights(
         )
 
     qec_analysis = (
-        conflict.resolution_details.get("qec_analysis", {}) if conflict.resolution_details else {}
+        conflict.resolution_details.get("qec_analysis", {})
+        if conflict.resolution_details
+        else {}
     )
 
     if not qec_analysis:
@@ -310,7 +332,9 @@ async def get_conflict_qec_insights(
         "priority_score": qec_analysis.get("priority_score", 0),
         "validation_scenarios": qec_analysis.get("validation_scenarios", []),
         "qec_metadata": qec_analysis.get("qec_metadata", {}),
-        "analysis_timestamp": qec_analysis.get("qec_metadata", {}).get("analysis_timestamp"),
+        "analysis_timestamp": qec_analysis.get("qec_metadata", {}).get(
+            "analysis_timestamp"
+        ),
     }
 
 
@@ -319,7 +343,7 @@ async def get_conflict_qec_insights(
 
 @router.post("/detect-conflicts")
 async def detect_conflicts(
-    principle_ids: Optional[List[int]] = None,
+    principle_ids: list[int] | None = None,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_policy_manager),
 ):
@@ -407,7 +431,7 @@ async def resolve_conflict_automatically(
 @router.post("/{conflict_id}/human-intervention")
 async def handle_human_intervention(
     conflict_id: int,
-    intervention_data: Dict[str, Any],
+    intervention_data: dict[str, Any],
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_policy_manager),
 ):

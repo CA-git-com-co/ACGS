@@ -12,7 +12,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Test logging directory
 TEST_LOG_DIR = Path("test_logs")
@@ -29,7 +29,7 @@ LOG_FILES = {
 }
 
 # Comprehensive logging configuration
-LOGGING_CONFIG: Dict[str, Any] = {
+LOGGING_CONFIG: dict[str, Any] = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
@@ -221,7 +221,7 @@ def log_test_result(
     # Log to performance logger
     perf_logger = logging.getLogger("test_performance")
     perf_logger.info(
-        f"",
+        "",
         extra={
             "test_name": test_name,
             "metric": "duration",
@@ -259,7 +259,7 @@ def log_coverage_info(
     )
 
     logger.info(
-        f"",
+        "",
         extra={
             "module": module,
             "coverage": f"{coverage_pct:.1f}%",

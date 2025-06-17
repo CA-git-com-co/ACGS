@@ -239,7 +239,9 @@ async def test_mock_federated_evaluation():
         # Submit evaluation
         task_id = await evaluator.submit_evaluation(mock_request)
         assert isinstance(task_id, str)
-        assert len(task_id) == 32  # SHA-256 hash truncated to 32 chars for better uniqueness
+        assert (
+            len(task_id) == 32
+        )  # SHA-256 hash truncated to 32 chars for better uniqueness
 
         # Check task status
         status = await evaluator.get_evaluation_status(task_id)

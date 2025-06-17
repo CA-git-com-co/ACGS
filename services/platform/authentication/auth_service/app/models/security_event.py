@@ -1,7 +1,6 @@
 # Enterprise Security Event Model
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from app.db.base_class import Base
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -13,6 +12,8 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class SecurityEvent(Base):
@@ -26,7 +27,9 @@ class SecurityEvent(Base):
     # Event details
     event_type = Column(String(100), nullable=False, index=True)
     event_category = Column(String(50), nullable=False, index=True)
-    severity = Column(String(20), nullable=False, index=True)  # info, warning, error, critical
+    severity = Column(
+        String(20), nullable=False, index=True
+    )  # info, warning, error, critical
     description = Column(Text, nullable=False)
 
     # Request context
@@ -45,7 +48,7 @@ class SecurityEvent(Base):
     # Timestamps
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
         index=True,
     )
@@ -65,7 +68,9 @@ class ApiKey(Base):
     # Key details
     name = Column(String(100), nullable=False)
     key_hash = Column(String(255), nullable=False, unique=True, index=True)
-    prefix = Column(String(20), nullable=False, index=True)  # First few chars for identification
+    prefix = Column(
+        String(20), nullable=False, index=True
+    )  # First few chars for identification
 
     # Permissions and limits
     scopes = Column(JSON, nullable=False, default=list)  # List of allowed scopes
@@ -80,7 +85,7 @@ class ApiKey(Base):
     # Timestamps
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
     )
     expires_at = Column(DateTime(timezone=True), nullable=True, index=True)
@@ -114,13 +119,13 @@ class OAuthAccount(Base):
     # Timestamps
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
     )
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )
 
@@ -149,14 +154,14 @@ class UserSession(Base):
     is_active = Column(Boolean, nullable=False, default=True, index=True)
     last_activity_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
     )
 
     # Timestamps
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
     )
     expires_at = Column(DateTime(timezone=True), nullable=False, index=True)

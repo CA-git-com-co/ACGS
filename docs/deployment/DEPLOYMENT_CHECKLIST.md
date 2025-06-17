@@ -425,7 +425,7 @@ echo "✅ All Phase 1 automated tests completed successfully"
 **Obtain Required Authentication Tokens:**
 ```bash
 # 1. First, ensure services are running
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # 2. Wait for services to be ready
 sleep 30
@@ -589,21 +589,21 @@ This phase introduces the "AlphaEvolve" governance layer for managing evolutiona
 # Check if AlphaEvolve directory exists
 if [ -d "alphaevolve_gs_engine" ]; then
     echo "✅ AlphaEvolve directory found"
-    ls -la alphaevolve_gs_engine/
+    ls -la integrations/alphaevolve-engine/
 else
     echo "⚠️  AlphaEvolve directory not found - Phase 2 not yet deployed"
 fi
 
 # Check AlphaEvolve requirements
-if [ -f "alphaevolve_gs_engine/requirements.txt" ]; then
+if [ -f "integrations/alphaevolve-engine/requirements.txt" ]; then
     echo "✅ AlphaEvolve requirements file found"
-    cat alphaevolve_gs_engine/requirements.txt
+    cat integrations/alphaevolve-engine/requirements.txt
 else
     echo "⚠️  AlphaEvolve requirements not found"
 fi
 
 # Check AlphaEvolve documentation
-if [ -f "alphaevolve_gs_engine/README.md" ]; then
+if [ -f "integrations/alphaevolve-engine/README.md" ]; then
     echo "✅ AlphaEvolve documentation found"
 else
     echo "⚠️  AlphaEvolve documentation not found"
@@ -1716,7 +1716,7 @@ curl -X POST http://localhost:8000/auth/register \
 docker exec acgs_auth_service env | grep -E "(DATABASE_URL|JWT_SECRET|CSRF_SECRET)"
 ```
 
-**If missing, add to docker-compose.yml**:
+**If missing, add to infrastructure/docker/docker-compose.yml**:
 ```yaml
 environment:
   - DATABASE_URL=postgresql+asyncpg://youruser:yourpassword@postgres:5432/yourdatabase_auth
@@ -1775,29 +1775,29 @@ kubectl get secrets
 ### 6.3 Deploy Services to Kubernetes
 ```bash
 # Deploy PostgreSQL first
-kubectl apply -f k8s/postgres-deployment.yaml
-kubectl apply -f k8s/postgres-service.yaml
+kubectl apply -f infrastructure/kubernetes/postgres-deployment.yaml
+kubectl apply -f infrastructure/kubernetes/postgres-service.yaml
 
 # Wait for PostgreSQL to be ready
 kubectl wait --for=condition=ready pod -l app=postgres --timeout=300s
 
 # Deploy Redis
-kubectl apply -f k8s/redis-deployment.yaml
-kubectl apply -f k8s/redis-service.yaml
+kubectl apply -f infrastructure/kubernetes/redis-deployment.yaml
+kubectl apply -f infrastructure/kubernetes/redis-service.yaml
 
 # Deploy microservices
-kubectl apply -f k8s/auth-service.yaml
-kubectl apply -f k8s/ac-service.yaml
-kubectl apply -f k8s/gs-service.yaml
-kubectl apply -f k8s/fv-service.yaml
-kubectl apply -f k8s/integrity-service.yaml
-kubectl apply -f k8s/pgc-service.yaml
+kubectl apply -f infrastructure/kubernetes/auth-service.yaml
+kubectl apply -f infrastructure/kubernetes/ac-service.yaml
+kubectl apply -f infrastructure/kubernetes/gs-service.yaml
+kubectl apply -f infrastructure/kubernetes/fv-service.yaml
+kubectl apply -f infrastructure/kubernetes/integrity-service.yaml
+kubectl apply -f infrastructure/kubernetes/pgc-service.yaml
 
 # Deploy frontend (if available)
-kubectl apply -f k8s/frontend-deployment.yaml
+kubectl apply -f infrastructure/kubernetes/frontend-deployment.yaml
 
 # Deploy ingress/load balancer
-kubectl apply -f k8s/ingress.yaml
+kubectl apply -f infrastructure/kubernetes/ingress.yaml
 ```
 
 ### 6.4 Verify Kubernetes Deployment
@@ -1821,7 +1821,7 @@ kubectl logs -l app=auth-service --tail=50
 ```bash
 # If frontend exists, check build process
 if [ -d "frontend" ]; then
-    cd frontend
+    cd applications/governance-dashboard
     npm install
     npm run build
     cd ..
@@ -2134,14 +2134,14 @@ LIMIT 10;"
 ```bash
 # Docker Compose rollback
 # 1. Stop current services
-docker-compose down
+docker-compose -f infrastructure/docker/docker-compose.yml down
 
 # 2. Restore previous configuration
-git checkout HEAD~1 -- docker-compose.yml
+git checkout HEAD~1 -- infrastructure/docker/docker-compose.yml
 
 # 3. Rebuild and restart
-docker-compose build --no-cache
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml build --no-cache
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # 4. Verify rollback
 docker-compose ps
@@ -2186,7 +2186,7 @@ echo "🚨 Emergency Recovery Procedure"
 
 # 1. Stop all services
 echo "Stopping all services..."
-docker-compose down
+docker-compose -f infrastructure/docker/docker-compose.yml down
 
 # 2. Remove problematic containers
 echo "Removing containers..."
@@ -2197,7 +2197,7 @@ echo "Restoring database from latest backup..."
 LATEST_BACKUP=$(ls -t backup_*.sql.gz | head -1)
 if [ -n "$LATEST_BACKUP" ]; then
     gunzip -c "$LATEST_BACKUP" > restore.sql
-    docker-compose up -d postgres_db
+    docker-compose -f infrastructure/docker/docker-compose.yml up -d postgres_db
     sleep 30
     docker exec -i acgs_postgres psql -U acgs_user -d acgs_pgp_db < restore.sql
     rm restore.sql
@@ -2205,7 +2205,7 @@ fi
 
 # 4. Restart services
 echo "Restarting services..."
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # 5. Verify recovery
 echo "Verifying recovery..."
@@ -2264,7 +2264,7 @@ ab -n 100 -c 10 http://localhost:8000/auth/
 
 1. **Port Conflicts**:
    - Check with `netstat -tlnp | grep :PORT`
-   - Modify docker-compose.yml ports
+   - Modify infrastructure/docker/docker-compose.yml ports
 
 2. **Database Connection Issues**:
    - Verify DATABASE_URL format: `postgresql+asyncpg://user:pass@host:port/db`
@@ -2280,7 +2280,7 @@ ab -n 100 -c 10 http://localhost:8000/auth/
 
 5. **Network Issues**:
    - Verify Docker network: `docker network ls`
-   - Check service names match docker-compose.yml
+   - Check service names match infrastructure/docker/docker-compose.yml
 
 ## Success Criteria
 
@@ -2369,8 +2369,8 @@ cp .env.example .env
 # Edit .env with your configuration including new Phase 1 variables
 
 # 2. Build and start core services
-docker-compose build --no-cache
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml build --no-cache
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # 3. Verify basic functionality
 curl http://localhost:8000/auth/
@@ -2473,14 +2473,14 @@ if [ "$ENVIRONMENT" = "production" ]; then
     kubectl config set-context --current --namespace=acgs-pgp
 
     # Apply Kubernetes manifests
-    kubectl apply -f k8s/
+    kubectl apply -f infrastructure/kubernetes/
 
     # Wait for deployments
     kubectl wait --for=condition=available --timeout=600s deployment --all
 else
     echo "🔄 Development deployment with Docker Compose..."
-    docker-compose build --no-cache
-    docker-compose up -d
+    docker-compose -f infrastructure/docker/docker-compose.yml build --no-cache
+    docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
     # Wait for services to be ready
     echo "⏳ Waiting for services to start..."

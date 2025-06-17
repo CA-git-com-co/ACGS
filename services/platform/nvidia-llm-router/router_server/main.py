@@ -5,17 +5,16 @@ Main entry point for the router server service.
 Handles incoming LLM requests and routes them to appropriate models.
 """
 
-import asyncio
 import logging
 import os
 import time
 from contextlib import asynccontextmanager
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import uvicorn
 from api_key_manager import get_api_key_manager
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -34,31 +33,31 @@ logger = get_logger(__name__)
 class ChatMessage(BaseModel):
     role: str
     content: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class ChatCompletionRequest(BaseModel):
-    messages: List[ChatMessage]
-    model: Optional[str] = None
-    task_type: Optional[str] = None
-    complexity: Optional[str] = None
-    max_tokens: Optional[int] = None
-    temperature: Optional[float] = None
+    messages: list[ChatMessage]
+    model: str | None = None
+    task_type: str | None = None
+    complexity: str | None = None
+    max_tokens: int | None = None
+    temperature: float | None = None
     stream: bool = False
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class ChatCompletionResponse(BaseModel):
-    choices: List[Dict[str, Any]]
+    choices: list[dict[str, Any]]
     model: str
-    usage: Optional[Dict[str, int]] = None
-    metadata: Optional[Dict[str, Any]] = None
+    usage: dict[str, int] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 # Global variables
 controller_url = ""
 nvidia_api_base = ""
-session: Optional[aiohttp.ClientSession] = None
+session: aiohttp.ClientSession | None = None
 
 
 @asynccontextmanager
@@ -75,7 +74,9 @@ async def lifespan(app: FastAPI):
     controller_url = os.getenv(
         "LLM_ROUTER_CONTROLLER_URL", "http://nvidia_llm_router_controller:8080"
     )
-    nvidia_api_base = os.getenv("NVIDIA_API_BASE_URL", "https://integrate.api.nvidia.com/v1")
+    nvidia_api_base = os.getenv(
+        "NVIDIA_API_BASE_URL", "https://integrate.api.nvidia.com/v1"
+    )
 
     # Create HTTP session
     session = aiohttp.ClientSession()
@@ -107,14 +108,16 @@ app.add_middleware(
 )
 
 
-async def get_routing_config() -> Dict[str, Any]:
+async def get_routing_config() -> dict[str, Any]:
     """Get routing configuration from controller"""
     try:
         async with session.get(f"{controller_url}/config") as response:
             if response.status == 200:
                 return await response.json()
             else:
-                logger.warning(f"Failed to get config from controller: {response.status}")
+                logger.warning(
+                    f"Failed to get config from controller: {response.status}"
+                )
                 return {}
     except Exception as e:
         logger.error(f"Error getting config from controller: {e}")
@@ -139,7 +142,9 @@ async def select_model(request: ChatCompletionRequest) -> str:
 
     # Complexity-based routing
     if request.complexity:
-        complexity_config = config.get("complexity_routing", {}).get(request.complexity, {})
+        complexity_config = config.get("complexity_routing", {}).get(
+            request.complexity, {}
+        )
         preferred_tier = complexity_config.get("preferred_tier", "standard")
 
         # Get models from preferred tier
@@ -151,10 +156,14 @@ async def select_model(request: ChatCompletionRequest) -> str:
     return os.getenv("FALLBACK_MODEL", "nvidia/llama-3.1-8b-instruct")
 
 
-async def call_nvidia_api(model: str, messages: List[ChatMessage], **kwargs) -> Dict[str, Any]:
+async def call_nvidia_api(
+    model: str, messages: list[ChatMessage], **kwargs
+) -> dict[str, Any]:
     """Call NVIDIA API with the selected model"""
     api_key_manager = get_api_key_manager()
-    api_key = await api_key_manager.get_api_key_with_fallback("nvidia_primary", "NVIDIA_API_KEY")
+    api_key = await api_key_manager.get_api_key_with_fallback(
+        "nvidia_primary", "NVIDIA_API_KEY"
+    )
 
     if not api_key:
         raise HTTPException(status_code=500, detail="NVIDIA API key not available")
@@ -184,7 +193,7 @@ async def call_nvidia_api(model: str, messages: List[ChatMessage], **kwargs) -> 
                 logger.error(f"NVIDIA API error {response.status}: {error_text}")
                 raise HTTPException(status_code=response.status, detail=error_text)
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise HTTPException(status_code=408, detail="Request timeout")
     except Exception as e:
         logger.error(f"Error calling NVIDIA API: {e}")

@@ -17,16 +17,13 @@ Formal Verification Comments:
 # sha256: evolutionary_tensor_decomposition_groq_tests_v1.0
 """
 
-import asyncio
 import json
 import os
 import time
 import unittest
-from typing import Any, Dict
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import numpy as np
-import pytest
 
 # Import the service to test
 from services.core.governance_synthesis.gs_service.app.services.groq_tensor_service import (
@@ -47,7 +44,10 @@ class TestGroqTensorService(unittest.TestCase):
         self.test_matrix = np.random.rand(10, 10)
         self.test_constraints = GovernanceConstraints(
             constitutional_hash="cdd01ef066bc6cf2",
-            compliance_requirements={"accuracy_threshold": 0.95, "constitutional_compliance": True},
+            compliance_requirements={
+                "accuracy_threshold": 0.95,
+                "constitutional_compliance": True,
+            },
             performance_targets={
                 "response_time_ms": 2000,
                 "accuracy": 0.95,
@@ -82,7 +82,9 @@ class TestGroqTensorService(unittest.TestCase):
 
         # Verify calculations
         self.assertEqual(analysis["rank"], 2)
-        self.assertAlmostEqual(analysis["frobenius_norm"], np.linalg.norm(matrix, "fro"))
+        self.assertAlmostEqual(
+            analysis["frobenius_norm"], np.linalg.norm(matrix, "fro")
+        )
 
     def test_decomposition_type_selection(self):
         """Test optimal decomposition type selection."""
@@ -100,7 +102,9 @@ class TestGroqTensorService(unittest.TestCase):
             matrix_analysis, constitutional_constraints
         )
 
-        self.assertEqual(decomposition_type, TensorDecompositionType.CONSTITUTIONAL_HYBRID)
+        self.assertEqual(
+            decomposition_type, TensorDecompositionType.CONSTITUTIONAL_HYBRID
+        )
 
         # Test sparse matrix
         sparse_analysis = {"sparsity": 0.2, "condition_number": 50, "shape": (100, 100)}
@@ -124,7 +128,9 @@ class TestGroqTensorService(unittest.TestCase):
         service = GroqTensorService()
 
         with self.assertRaises(ValueError) as context:
-            await service.generate_tensor_decomposition(self.test_matrix, self.test_constraints)
+            await service.generate_tensor_decomposition(
+                self.test_matrix, self.test_constraints
+            )
 
         self.assertIn("GROQ_API_KEY not configured", str(context.exception))
 
@@ -167,7 +173,9 @@ class TestGroqTensorService(unittest.TestCase):
         self.assertIn("svd_decomposition", result.algorithm_code)
         self.assertEqual(result.accuracy_estimate, 0.96)
         self.assertTrue(result.constitutional_compliance)
-        self.assertEqual(result.governance_metadata["constitutional_hash"], "cdd01ef066bc6cf2")
+        self.assertEqual(
+            result.governance_metadata["constitutional_hash"], "cdd01ef066bc6cf2"
+        )
         self.assertIn("generation_timestamp", result.governance_metadata)
 
     @patch.dict(os.environ, {"GROQ_API_KEY": "test_api_key"})
@@ -191,7 +199,9 @@ class TestGroqTensorService(unittest.TestCase):
 
         self.assertIsInstance(result, TensorDecomposition)
         self.assertIn("constitutional_svd_decomposition", result.algorithm_code)
-        self.assertEqual(result.governance_metadata["generation_method"], "local_fallback")
+        self.assertEqual(
+            result.governance_metadata["generation_method"], "local_fallback"
+        )
 
     @patch.dict(os.environ, {"GROQ_API_KEY": "test_api_key"})
     @patch("aiohttp.ClientSession.post")
@@ -207,9 +217,11 @@ class TestGroqTensorService(unittest.TestCase):
         service.api_key = "test_api_key"
 
         # Trigger multiple failures to open circuit breaker
-        for i in range(6):  # Exceed failure threshold of 5
+        for _i in range(6):  # Exceed failure threshold of 5
             try:
-                await service.generate_tensor_decomposition(self.test_matrix, self.test_constraints)
+                await service.generate_tensor_decomposition(
+                    self.test_matrix, self.test_constraints
+                )
             except Exception:
                 pass  # Expected failures
 
@@ -219,7 +231,9 @@ class TestGroqTensorService(unittest.TestCase):
 
         # Next request should fail immediately due to circuit breaker
         with self.assertRaises(Exception) as context:
-            await service.generate_tensor_decomposition(self.test_matrix, self.test_constraints)
+            await service.generate_tensor_decomposition(
+                self.test_matrix, self.test_constraints
+            )
 
         self.assertIn("Circuit breaker is OPEN", str(context.exception))
 
@@ -274,7 +288,9 @@ class TestGroqTensorService(unittest.TestCase):
         self.assertEqual(result.decomposition_type, TensorDecompositionType.SVD)
         self.assertIn("constitutional_svd_decomposition", result.algorithm_code)
         self.assertTrue(result.constitutional_compliance)
-        self.assertEqual(result.governance_metadata["generation_method"], "local_fallback")
+        self.assertEqual(
+            result.governance_metadata["generation_method"], "local_fallback"
+        )
         self.assertGreaterEqual(result.accuracy_estimate, 0.9)
 
     def test_metrics_tracking(self):
@@ -391,7 +407,9 @@ class TestTensorDecompositionTypes(unittest.TestCase):
         self.assertIn(TensorDecompositionType.CONSTITUTIONAL_HYBRID, types)
 
         # Test string values
-        self.assertEqual(TensorDecompositionType.SVD.value, "singular_value_decomposition")
+        self.assertEqual(
+            TensorDecompositionType.SVD.value, "singular_value_decomposition"
+        )
         self.assertEqual(
             TensorDecompositionType.CONSTITUTIONAL_HYBRID.value, "constitutional_hybrid"
         )

@@ -12,10 +12,10 @@ The ACGS-PGP framework has been successfully reorganized into a logical, maintai
 ```
 ACGS-master/
 ├── backend/
-├── frontend/
+├── applications/governance-dashboard/
 ├── shared/
 ├── alembic/
-├── k8s/
+├── infrastructure/kubernetes/
 ├── docs/
 ├── test_*.py (scattered)
 ├── *.md (mixed documentation)
@@ -34,15 +34,15 @@ ACGS-master/
 │   │   ├── integrity_service/
 │   │   ├── pgc_service/
 │   │   └── shared/                # Shared backend modules
-│   ├── frontend/                  # React frontend
-│   └── alphaevolve_gs_engine/     # AlphaEvolve integration
+│   ├── applications/governance-dashboard/                  # React frontend
+│   └── integrations/alphaevolve-engine/     # AlphaEvolve integration
 ├── tests/                         # Centralized test directory
 │   ├── unit/                      # Unit tests by service
 │   ├── integration/               # Integration tests
 │   └── e2e/                       # End-to-end tests
 ├── config/                        # All configuration files
 │   ├── docker/                    # Docker configurations
-│   ├── k8s/                       # Kubernetes manifests
+│   ├── infrastructure/kubernetes/                       # Kubernetes manifests
 │   ├── env/                       # Environment files
 │   └── monitoring/                # Monitoring configurations
 ├── docs/                          # Documentation by type
@@ -60,8 +60,8 @@ ACGS-master/
 ### 2. File Movements and Updates
 
 #### Configuration Files
-- **Docker Compose**: Moved to `infrastructure/docker/docker-compose.yml`
-- **Kubernetes**: Moved to `config/k8s/`
+- **Docker Compose**: Moved to `infrastructure/docker/infrastructure/docker/docker-compose.yml`
+- **Kubernetes**: Moved to `config/infrastructure/kubernetes/`
 - **Environment**: Moved to `config/env/`
 - **Monitoring**: Moved to `config/monitoring/`
 
@@ -126,7 +126,7 @@ ACGS-master/
    git pull origin main
    
    # Update Docker Compose commands
-   docker-compose -f infrastructure/docker/docker-compose.yml up
+   docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up
    ```
 
 2. **Update Import Statements**:

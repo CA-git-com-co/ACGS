@@ -1,8 +1,9 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from app.db.base_class import Base
 from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class User(Base):
@@ -40,13 +41,13 @@ class User(Base):
     # Timestamps
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
     )
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )
     last_login_at = Column(DateTime(timezone=True), nullable=True)

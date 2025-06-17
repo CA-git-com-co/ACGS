@@ -17,7 +17,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import plotly.graph_objects as go
 from fastapi import WebSocket, WebSocketDisconnect
@@ -45,7 +45,7 @@ class ScalabilityDashboard:
         # sha256: func_hash
         """Initialize scalability dashboard."""
         self.metrics_collector = metrics_collector
-        self.websocket_connections: List[WebSocket] = []
+        self.websocket_connections: list[WebSocket] = []
         self.dashboard_active = False
 
         # Dashboard configuration
@@ -97,7 +97,7 @@ class ScalabilityDashboard:
                 logger.error(f"Error in dashboard update loop: {e}")
                 await asyncio.sleep(5)
 
-    async def _broadcast_to_websockets(self, data: Dict[str, Any]) -> None:
+    async def _broadcast_to_websockets(self, data: dict[str, Any]) -> None:
         """Broadcast data to all connected websockets."""
         if not self.websocket_connections:
             return
@@ -122,7 +122,9 @@ class ScalabilityDashboard:
         """Add a new websocket connection."""
         await websocket.accept()
         self.websocket_connections.append(websocket)
-        logger.info(f"Added websocket connection, total: {len(self.websocket_connections)}")
+        logger.info(
+            f"Added websocket connection, total: {len(self.websocket_connections)}"
+        )
 
         # Send initial data
         try:
@@ -135,9 +137,11 @@ class ScalabilityDashboard:
         """Remove a websocket connection."""
         if websocket in self.websocket_connections:
             self.websocket_connections.remove(websocket)
-            logger.info(f"Removed websocket connection, total: {len(self.websocket_connections)}")
+            logger.info(
+                f"Removed websocket connection, total: {len(self.websocket_connections)}"
+            )
 
-    async def get_dashboard_data(self) -> Dict[str, Any]:
+    async def get_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive dashboard data."""
         try:
             # Get metrics summary
@@ -171,7 +175,7 @@ class ScalabilityDashboard:
             logger.error(f"Failed to generate dashboard data: {e}")
             return {"error": str(e), "timestamp": datetime.utcnow().isoformat()}
 
-    async def _generate_dashboard_charts(self) -> Dict[str, Any]:
+    async def _generate_dashboard_charts(self) -> dict[str, Any]:
         """Generate interactive charts for the dashboard."""
         charts = {}
 
@@ -186,10 +190,14 @@ class ScalabilityDashboard:
             charts["resource_chart"] = await self._create_resource_utilization_chart()
 
             # Concurrent operations chart
-            charts["concurrent_ops_chart"] = await self._create_concurrent_operations_chart()
+            charts["concurrent_ops_chart"] = (
+                await self._create_concurrent_operations_chart()
+            )
 
             # Scalability scores chart
-            charts["scalability_scores_chart"] = await self._create_scalability_scores_chart()
+            charts["scalability_scores_chart"] = (
+                await self._create_scalability_scores_chart()
+            )
 
             # Alert trend chart
             charts["alert_trend_chart"] = await self._create_alert_trend_chart()
@@ -200,7 +208,7 @@ class ScalabilityDashboard:
 
         return charts
 
-    async def _create_latency_chart(self) -> Dict[str, Any]:
+    async def _create_latency_chart(self) -> dict[str, Any]:
         """Create latency metrics chart."""
         fig = go.Figure()
 
@@ -222,7 +230,7 @@ class ScalabilityDashboard:
                     y=p95_latencies,
                     mode="lines+markers",
                     name=f"{component_name} P95",
-                    line=dict(width=2),
+                    line={"width": 2},
                 )
             )
 
@@ -236,7 +244,7 @@ class ScalabilityDashboard:
 
         return json.loads(fig.to_json())
 
-    async def _create_throughput_chart(self) -> Dict[str, Any]:
+    async def _create_throughput_chart(self) -> dict[str, Any]:
         """Create throughput metrics chart."""
         fig = go.Figure()
 
@@ -258,7 +266,7 @@ class ScalabilityDashboard:
                     y=ops_per_second,
                     mode="lines+markers",
                     name=f"{component_name} Ops/sec",
-                    line=dict(width=2),
+                    line={"width": 2},
                 )
             )
 
@@ -272,7 +280,7 @@ class ScalabilityDashboard:
 
         return json.loads(fig.to_json())
 
-    async def _create_resource_utilization_chart(self) -> Dict[str, Any]:
+    async def _create_resource_utilization_chart(self) -> dict[str, Any]:
         """Create resource utilization chart."""
         fig = go.Figure()
 
@@ -291,7 +299,7 @@ class ScalabilityDashboard:
                     y=cpu_percents,
                     mode="lines+markers",
                     name="CPU %",
-                    line=dict(color="red", width=2),
+                    line={"color": "red", "width": 2},
                 )
             )
 
@@ -301,7 +309,7 @@ class ScalabilityDashboard:
                     y=memory_percents,
                     mode="lines+markers",
                     name="Memory %",
-                    line=dict(color="blue", width=2),
+                    line={"color": "blue", "width": 2},
                 )
             )
 
@@ -309,14 +317,14 @@ class ScalabilityDashboard:
             title="System Resource Utilization",
             xaxis_title="Time",
             yaxis_title="Utilization (%)",
-            yaxis=dict(range=[0, 100]),
+            yaxis={"range": [0, 100]},
             hovermode="x unified",
             template="plotly_white",
         )
 
         return json.loads(fig.to_json())
 
-    async def _create_concurrent_operations_chart(self) -> Dict[str, Any]:
+    async def _create_concurrent_operations_chart(self) -> dict[str, Any]:
         """Create concurrent operations chart."""
         fig = go.Figure()
 
@@ -339,7 +347,7 @@ class ScalabilityDashboard:
                     y=active_ops,
                     mode="lines+markers",
                     name=f"{component_name} Active Ops",
-                    line=dict(width=2),
+                    line={"width": 2},
                 )
             )
 
@@ -349,7 +357,7 @@ class ScalabilityDashboard:
                     y=queue_sizes,
                     mode="lines+markers",
                     name=f"{component_name} Queue Size",
-                    line=dict(dash="dash", width=2),
+                    line={"dash": "dash", "width": 2},
                 )
             )
 
@@ -363,9 +371,11 @@ class ScalabilityDashboard:
 
         return json.loads(fig.to_json())
 
-    async def _create_scalability_scores_chart(self) -> Dict[str, Any]:
+    async def _create_scalability_scores_chart(self) -> dict[str, Any]:
         """Create scalability scores chart."""
-        scalability_scores = await self.metrics_collector._calculate_scalability_scores()
+        scalability_scores = (
+            await self.metrics_collector._calculate_scalability_scores()
+        )
 
         if not scalability_scores:
             return {"data": [], "layout": {"title": "No scalability data available"}}
@@ -387,13 +397,13 @@ class ScalabilityDashboard:
             title="Component Scalability Scores",
             xaxis_title="Component",
             yaxis_title="Scalability Score",
-            yaxis=dict(range=[0, 1]),
+            yaxis={"range": [0, 1]},
             template="plotly_white",
         )
 
         return json.loads(fig.to_json())
 
-    async def _create_alert_trend_chart(self) -> Dict[str, Any]:
+    async def _create_alert_trend_chart(self) -> dict[str, Any]:
         """Create alert trend chart."""
         # Group alerts by hour for the last 24 hours
         now = datetime.utcnow()
@@ -418,7 +428,7 @@ class ScalabilityDashboard:
                 y=[counts["WARNING"] for counts in alert_counts.values()],
                 mode="lines+markers",
                 name="Warning Alerts",
-                line=dict(color="orange", width=2),
+                line={"color": "orange", "width": 2},
             )
         )
 
@@ -429,7 +439,7 @@ class ScalabilityDashboard:
                 y=[counts["CRITICAL"] for counts in alert_counts.values()],
                 mode="lines+markers",
                 name="Critical Alerts",
-                line=dict(color="red", width=2),
+                line={"color": "red", "width": 2},
             )
         )
 
@@ -443,10 +453,12 @@ class ScalabilityDashboard:
 
         return json.loads(fig.to_json())
 
-    async def _get_alert_summary(self) -> Dict[str, Any]:
+    async def _get_alert_summary(self) -> dict[str, Any]:
         """Get alert summary for the dashboard."""
         active_alerts = [
-            alert for alert in self.metrics_collector.active_alerts.values() if not alert.resolved
+            alert
+            for alert in self.metrics_collector.active_alerts.values()
+            if not alert.resolved
         ]
 
         recent_alerts = list(self.metrics_collector.alert_history)[-10:]
@@ -469,7 +481,7 @@ class ScalabilityDashboard:
             ],
         }
 
-    async def _get_component_health_overview(self) -> Dict[str, Any]:
+    async def _get_component_health_overview(self) -> dict[str, Any]:
         """Get component health overview."""
         health_overview = {}
 
@@ -491,7 +503,9 @@ class ScalabilityDashboard:
 
             # Check throughput
             if component_name in self.metrics_collector.throughput_metrics:
-                latest_throughput = self.metrics_collector.throughput_metrics[component_name]
+                latest_throughput = self.metrics_collector.throughput_metrics[
+                    component_name
+                ]
                 if (
                     latest_throughput
                     and latest_throughput[-1].operations_per_second
@@ -502,7 +516,9 @@ class ScalabilityDashboard:
 
             # Check resource utilization
             if component_name in self.metrics_collector.resource_metrics:
-                latest_resource = self.metrics_collector.resource_metrics[component_name]
+                latest_resource = self.metrics_collector.resource_metrics[
+                    component_name
+                ]
                 if latest_resource:
                     if (
                         latest_resource[-1].cpu_percent
@@ -525,7 +541,7 @@ class ScalabilityDashboard:
 
         return health_overview
 
-    async def _get_performance_trends(self) -> Dict[str, Any]:
+    async def _get_performance_trends(self) -> dict[str, Any]:
         """Get performance trends analysis."""
         trends = {}
 
@@ -537,21 +553,28 @@ class ScalabilityDashboard:
             if component_name in self.metrics_collector.latency_metrics:
                 metrics_queue = self.metrics_collector.latency_metrics[component_name]
                 if len(metrics_queue) >= 5:
-                    recent_latencies = [m.p95_latency_ms for m in list(metrics_queue)[-10:]]
+                    recent_latencies = [
+                        m.p95_latency_ms for m in list(metrics_queue)[-10:]
+                    ]
                     trend_direction = (
-                        "increasing" if recent_latencies[-1] > recent_latencies[0] else "decreasing"
+                        "increasing"
+                        if recent_latencies[-1] > recent_latencies[0]
+                        else "decreasing"
                     )
                     component_trends["latency"] = {
                         "direction": trend_direction,
                         "change_percent": (
-                            (recent_latencies[-1] - recent_latencies[0]) / recent_latencies[0]
+                            (recent_latencies[-1] - recent_latencies[0])
+                            / recent_latencies[0]
                         )
                         * 100,
                     }
 
             # Throughput trend
             if component_name in self.metrics_collector.throughput_metrics:
-                metrics_queue = self.metrics_collector.throughput_metrics[component_name]
+                metrics_queue = self.metrics_collector.throughput_metrics[
+                    component_name
+                ]
                 if len(metrics_queue) >= 5:
                     recent_throughputs = [
                         m.operations_per_second for m in list(metrics_queue)[-10:]
@@ -564,7 +587,8 @@ class ScalabilityDashboard:
                     component_trends["throughput"] = {
                         "direction": trend_direction,
                         "change_percent": (
-                            (recent_throughputs[-1] - recent_throughputs[0]) / recent_throughputs[0]
+                            (recent_throughputs[-1] - recent_throughputs[0])
+                            / recent_throughputs[0]
                         )
                         * 100,
                     }
@@ -574,7 +598,7 @@ class ScalabilityDashboard:
 
         return trends
 
-    async def _get_system_status(self) -> Dict[str, Any]:
+    async def _get_system_status(self) -> dict[str, Any]:
         """Get overall system status."""
         # Count healthy vs unhealthy components
         component_health = await self._get_component_health_overview()
@@ -638,102 +662,102 @@ class ScalabilityDashboard:
                 <h1>ACGS Scalability Dashboard</h1>
                 <div id="status">Loading...</div>
             </div>
-            
+
             <div class="refresh-indicator" id="refreshIndicator" style="display: none;">
                 Updating...
             </div>
-            
+
             <div class="dashboard-grid">
                 <div class="metric-card">
                     <h3>System Status</h3>
                     <div id="systemStatus">Loading...</div>
                 </div>
-                
+
                 <div class="metric-card">
                     <h3>Component Health</h3>
                     <div id="componentHealth">Loading...</div>
                 </div>
             </div>
-            
+
             <div class="chart-container">
                 <div id="latencyChart"></div>
             </div>
-            
+
             <div class="chart-container">
                 <div id="throughputChart"></div>
             </div>
-            
+
             <div class="chart-container">
                 <div id="resourceChart"></div>
             </div>
-            
+
             <div class="chart-container">
                 <div id="scalabilityScoresChart"></div>
             </div>
-            
+
             <div class="metric-card">
                 <h3>Recent Alerts</h3>
                 <div id="recentAlerts">Loading...</div>
             </div>
-            
+
             <script>
                 let ws = null;
-                
+
                 function connectWebSocket() {
                     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
                     const wsUrl = protocol + '//' + window.location.host + '/ws/scalability';
-                    
+
                     ws = new WebSocket(wsUrl);
-                    
+
                     ws.onopen = function() {
                         console.log('WebSocket connected');
                         document.getElementById('status').innerHTML = '<span class="status-healthy">Connected</span>';
                     };
-                    
+
                     ws.onmessage = function(event) {
                         const data = JSON.parse(event.data);
                         updateDashboard(data);
-                        
+
                         # Show refresh indicator briefly
                         const indicator = document.getElementById('refreshIndicator');
                         indicator.style.display = 'block';
                         setTimeout(() => { indicator.style.display = 'none'; }, 1000);
                     };
-                    
+
                     ws.onclose = function() {
                         console.log('WebSocket disconnected');
                         document.getElementById('status').innerHTML = '<span class="status-critical">Disconnected</span>';
                         # Reconnect after 5 seconds
                         setTimeout(connectWebSocket, 5000);
                     };
-                    
+
                     ws.onerror = function(error) {
                         console.error('WebSocket error:', error);
                         document.getElementById('status').innerHTML = '<span class="status-critical">Error</span>';
                     };
                 }
-                
+
                 function updateDashboard(data) {
                     # Update system status
                     updateSystemStatus(data.system_status);
-                    
+
                     # Update component health
                     updateComponentHealth(data.component_health);
-                    
+
                     # Update charts
                     if (data.charts) {
                         updateCharts(data.charts);
                     }
-                    
+
                     # Update alerts
                     updateAlerts(data.alerts);
                 }
-                
+
                 function updateSystemStatus(status) {
                     const statusEl = document.getElementById('systemStatus');
-                    const statusClass = status.overall_status === 'healthy' ? 'status-healthy' : 
+                    const statusClass = status.overall_status === 'healthy' ? 'status-healthy' :
                                        status.overall_status === 'degraded' ? 'status-degraded' : 'status-critical';
-                    
+
                     statusEl.innerHTML = `
                         <div class="${statusClass}">Status: ${status.overall_status.toUpperCase()}</div>
                         <div>Healthy Components: ${status.healthy_components}/${status.total_components}</div>
@@ -741,15 +765,15 @@ class ScalabilityDashboard:
                         <div>Critical Alerts: ${status.critical_alerts}</div>
                     `;
                 }
-                
+
                 function updateComponentHealth(health) {
                     const healthEl = document.getElementById('componentHealth');
                     let html = '';
-                    
+
                     for (const [component, info] of Object.entries(health)) {
-                        const statusClass = info.status === 'healthy' ? 'status-healthy' : 
+                        const statusClass = info.status === 'healthy' ? 'status-healthy' :
                                            info.status === 'degraded' ? 'status-degraded' : 'status-critical';
-                        
+
                         html += `
                             <div>
                                 <strong>${component}</strong>: <span class="${statusClass}">${info.status}</span>
@@ -757,37 +781,37 @@ class ScalabilityDashboard:
                             </div>
                         `;
                     }
-                    
+
                     healthEl.innerHTML = html || 'No components registered';
                 }
-                
+
                 function updateCharts(charts) {
                     if (charts.latency_chart) {
                         Plotly.react('latencyChart', charts.latency_chart.data, charts.latency_chart.layout);
                     }
-                    
+
                     if (charts.throughput_chart) {
                         Plotly.react('throughputChart', charts.throughput_chart.data, charts.throughput_chart.layout);
                     }
-                    
+
                     if (charts.resource_chart) {
                         Plotly.react('resourceChart', charts.resource_chart.data, charts.resource_chart.layout);
                     }
-                    
+
                     if (charts.scalability_scores_chart) {
                         Plotly.react('scalabilityScoresChart', charts.scalability_scores_chart.data, charts.scalability_scores_chart.layout);
                     }
                 }
-                
+
                 function updateAlerts(alerts) {
                     const alertsEl = document.getElementById('recentAlerts');
                     let html = '';
-                    
+
                     if (alerts.recent_alerts && alerts.recent_alerts.length > 0) {
                         for (const alert of alerts.recent_alerts) {
                             const alertClass = alert.severity === 'WARNING' ? 'alert-warning' : 'alert-critical';
                             const timestamp = new Date(alert.timestamp).toLocaleString();
-                            
+
                             html += `
                                 <div class="alert-item ${alertClass}">
                                     <strong>${alert.component}</strong> - ${alert.severity}<br>
@@ -799,10 +823,10 @@ class ScalabilityDashboard:
                     } else {
                         html = '<div>No recent alerts</div>';
                     }
-                    
+
                     alertsEl.innerHTML = html;
                 }
-                
+
                 # Initialize WebSocket connection
                 connectWebSocket();
             </script>
@@ -812,7 +836,7 @@ class ScalabilityDashboard:
 
 
 # Global dashboard instance
-_scalability_dashboard: Optional[ScalabilityDashboard] = None
+_scalability_dashboard: ScalabilityDashboard | None = None
 
 
 async def get_scalability_dashboard() -> ScalabilityDashboard:

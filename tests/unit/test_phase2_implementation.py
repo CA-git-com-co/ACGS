@@ -8,7 +8,7 @@ and <50ms policy decision latency requirements are maintained.
 
 import asyncio
 import time
-from typing import Any, Dict
+from typing import Any
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
@@ -405,7 +405,7 @@ class TestPerformanceRequirements:
 
         @injectable
         class MockPolicyService:
-            async def evaluate_policy(self, context: Dict[str, Any]) -> Dict[str, Any]:
+            async def evaluate_policy(self, context: dict[str, Any]) -> dict[str, Any]:
                 # Simulate policy evaluation
                 await asyncio.sleep(0.01)  # 10ms processing time
                 return {"decision": "allow", "confidence": 0.95}
@@ -542,8 +542,8 @@ class TestIntegration:
                 self.pool_manager = pool_manager
 
             async def process_request(
-                self, request_data: Dict[str, Any]
-            ) -> Dict[str, Any]:
+                self, request_data: dict[str, Any]
+            ) -> dict[str, Any]:
                 # Simulate complete workflow
                 start_time = time.time()
 

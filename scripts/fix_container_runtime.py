@@ -12,7 +12,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -57,7 +57,7 @@ class ContainerRuntimeFixer:
             logger.warning(f"⚠️ Docker check failed: {e}")
             return False
 
-    def detect_cgroup_version(self) -> Optional[str]:
+    def detect_cgroup_version(self) -> str | None:
         """Detect cgroup version."""
         try:
             # Check if cgroup v2 is mounted
@@ -76,7 +76,7 @@ class ContainerRuntimeFixer:
             logger.error(f"❌ Failed to detect cgroup version: {e}")
             return None
 
-    def check_cgroup_configuration(self) -> Dict[str, Any]:
+    def check_cgroup_configuration(self) -> dict[str, Any]:
         """Check cgroup configuration for issues."""
         logger.info("🔍 Checking cgroup configuration")
 
@@ -140,7 +140,7 @@ class ContainerRuntimeFixer:
                 try:
                     docker_cgroup_path = "/sys/fs/cgroup/docker"
                     if os.path.exists(docker_cgroup_path):
-                        with open(f"{docker_cgroup_path}/cgroup.type", "r") as f:
+                        with open(f"{docker_cgroup_path}/cgroup.type") as f:
                             cgroup_type = f.read().strip()
                             if cgroup_type == "threaded":
                                 config_status["issues"].append(
@@ -244,7 +244,7 @@ echo "🚀 Starting host-based ACGS deployment"
 check_service() {
     local service_name=$1
     local port=$2
-    
+
     if curl -f -s "http://localhost:$port/health" > /dev/null 2>&1; then
         echo "✅ $service_name is running on port $port"
         return 0
@@ -302,7 +302,7 @@ echo "Note: Services need to be started manually in separate terminals"
             logger.error(f"❌ Failed to implement host-based fallback: {e}")
             return False
 
-    async def validate_container_runtime(self) -> Dict[str, Any]:
+    async def validate_container_runtime(self) -> dict[str, Any]:
         """Validate container runtime after fixes."""
         logger.info("🔍 Validating container runtime")
 
@@ -347,7 +347,7 @@ echo "Note: Services need to be started manually in separate terminals"
 
         return validation_results
 
-    async def fix_complete_runtime(self) -> Dict[str, Any]:
+    async def fix_complete_runtime(self) -> dict[str, Any]:
         """Fix complete container runtime configuration."""
         logger.info("🚀 Starting container runtime fixes")
         logger.info("=" * 60)

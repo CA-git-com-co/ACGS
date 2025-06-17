@@ -8,7 +8,7 @@ import json
 import subprocess
 import sys
 import time
-from typing import Any, Dict
+from typing import Any
 
 
 class AuthenticationTester:
@@ -25,11 +25,11 @@ class AuthenticationTester:
         self,
         method: str,
         url: str,
-        headers: Dict[str, str] = None,
+        headers: dict[str, str] = None,
         data: Any = None,
         form_data: bool = False,
         timeout: int = 10,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute curl command and return response."""
         cmd = ["curl", "-s", "-w", "\\n%{http_code}", "-X", method]
 
@@ -124,10 +124,10 @@ class AuthenticationTester:
 
                 if self.access_token:
                     self.success_count += 1
-                    print(f"✅ User login successful, token acquired")
+                    print("✅ User login successful, token acquired")
                     return True
                 else:
-                    print(f"❌ Login successful but no access token in response")
+                    print("❌ Login successful but no access token in response")
                     return False
             except json.JSONDecodeError:
                 print(f"❌ Login response not valid JSON: {result['response']}")
@@ -158,13 +158,13 @@ class AuthenticationTester:
                 response_data = json.loads(result["response"])
                 if response_data.get("username") == self.test_username:
                     self.success_count += 1
-                    print(f"✅ Authenticated request successful")
+                    print("✅ Authenticated request successful")
                     return True
                 else:
-                    print(f"❌ Authenticated request returned wrong user data")
+                    print("❌ Authenticated request returned wrong user data")
                     return False
             except json.JSONDecodeError:
-                print(f"❌ Authenticated request response not valid JSON")
+                print("❌ Authenticated request response not valid JSON")
                 return False
         else:
             print(
@@ -195,13 +195,13 @@ class AuthenticationTester:
                 if new_access_token and new_access_token != self.access_token:
                     self.access_token = new_access_token  # Update token
                     self.success_count += 1
-                    print(f"✅ Token refresh successful")
+                    print("✅ Token refresh successful")
                     return True
                 else:
-                    print(f"❌ Token refresh did not return new token")
+                    print("❌ Token refresh did not return new token")
                     return False
             except json.JSONDecodeError:
-                print(f"❌ Token refresh response not valid JSON")
+                print("❌ Token refresh response not valid JSON")
                 return False
         else:
             print(
@@ -226,7 +226,7 @@ class AuthenticationTester:
 
         if result["success"]:
             self.success_count += 1
-            print(f"✅ User logout successful")
+            print("✅ User logout successful")
             return True
         else:
             print(
@@ -278,7 +278,7 @@ class AuthenticationTester:
         success &= self.test_role_based_access()
 
         # Print summary
-        print(f"\n📊 Authentication Test Summary:")
+        print("\n📊 Authentication Test Summary:")
         print(f"Total tests: {self.total_tests}")
         print(f"Successful: {self.success_count}")
         print(f"Failed: {self.total_tests - self.success_count}")

@@ -9,9 +9,9 @@ import json
 import logging
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 from .adversarial_framework import (
     AdversarialTestReport,
@@ -54,14 +54,14 @@ class HardeningRecommendation:
     description: str
     category: HardeningCategory
     priority: HardeningPriority
-    affected_services: List[str]
-    vulnerability_types: List[AttackCategory]
-    implementation_steps: List[str]
-    verification_steps: List[str]
+    affected_services: list[str]
+    vulnerability_types: list[AttackCategory]
+    implementation_steps: list[str]
+    verification_steps: list[str]
     estimated_effort: str  # e.g., "2-4 hours", "1-2 days"
     risk_reduction: float  # 0.0 to 1.0
-    compliance_frameworks: List[str]
-    references: List[str]
+    compliance_frameworks: list[str]
+    references: list[str]
 
 
 @dataclass
@@ -74,9 +74,9 @@ class SecurityHardeningReport:
     critical_recommendations: int
     high_priority_recommendations: int
     estimated_attack_surface_reduction: float
-    recommendations: List[HardeningRecommendation]
-    implementation_roadmap: Dict[str, List[str]]
-    compliance_mapping: Dict[str, List[str]]
+    recommendations: list[HardeningRecommendation]
+    implementation_roadmap: dict[str, list[str]]
+    compliance_mapping: dict[str, list[str]]
 
 
 class SecurityHardeningRecommendations:
@@ -100,7 +100,7 @@ class SecurityHardeningRecommendations:
 
     def generate_recommendations(
         self,
-        vulnerabilities: List[VulnerabilityResult],
+        vulnerabilities: list[VulnerabilityResult],
         adversarial_report: AdversarialTestReport,
     ) -> SecurityHardeningReport:
         """Generate security hardening recommendations based on vulnerability assessment."""
@@ -149,7 +149,7 @@ class SecurityHardeningRecommendations:
 
         report = SecurityHardeningReport(
             report_id=f"hardening_report_{int(time.time())}",
-            generation_time=datetime.now(timezone.utc),
+            generation_time=datetime.now(UTC),
             total_recommendations=len(prioritized_recommendations),
             critical_recommendations=critical_count,
             high_priority_recommendations=high_count,
@@ -165,8 +165,8 @@ class SecurityHardeningRecommendations:
         return report
 
     def _analyze_vulnerabilities(
-        self, vulnerabilities: List[VulnerabilityResult]
-    ) -> Dict[str, Any]:
+        self, vulnerabilities: list[VulnerabilityResult]
+    ) -> dict[str, Any]:
         """Analyze vulnerabilities to identify patterns and priorities."""
         analysis = {
             "by_category": {},
@@ -208,8 +208,8 @@ class SecurityHardeningRecommendations:
         return analysis
 
     def _generate_recommendations_from_analysis(
-        self, analysis: Dict[str, Any]
-    ) -> List[HardeningRecommendation]:
+        self, analysis: dict[str, Any]
+    ) -> list[HardeningRecommendation]:
         """Generate recommendations based on vulnerability analysis."""
         recommendations = []
 
@@ -245,8 +245,8 @@ class SecurityHardeningRecommendations:
         return unique_recommendations
 
     def _generate_category_recommendations(
-        self, category: str, vulnerabilities: List[VulnerabilityResult]
-    ) -> List[HardeningRecommendation]:
+        self, category: str, vulnerabilities: list[VulnerabilityResult]
+    ) -> list[HardeningRecommendation]:
         """Generate recommendations for a specific vulnerability category."""
         recommendations = []
 
@@ -274,8 +274,8 @@ class SecurityHardeningRecommendations:
         return recommendations
 
     def _get_constitutional_hardening_recommendations(
-        self, vulnerabilities: List[VulnerabilityResult]
-    ) -> List[HardeningRecommendation]:
+        self, vulnerabilities: list[VulnerabilityResult]
+    ) -> list[HardeningRecommendation]:
         """Generate constitutional manipulation hardening recommendations."""
         return [
             HardeningRecommendation(
@@ -329,8 +329,8 @@ class SecurityHardeningRecommendations:
         ]
 
     def _get_llm_hardening_recommendations(
-        self, vulnerabilities: List[VulnerabilityResult]
-    ) -> List[HardeningRecommendation]:
+        self, vulnerabilities: list[VulnerabilityResult]
+    ) -> list[HardeningRecommendation]:
         """Generate LLM security hardening recommendations."""
         return [
             HardeningRecommendation(
@@ -361,9 +361,9 @@ class SecurityHardeningRecommendations:
 
     def _prioritize_recommendations(
         self,
-        recommendations: List[HardeningRecommendation],
+        recommendations: list[HardeningRecommendation],
         adversarial_report: AdversarialTestReport,
-    ) -> List[HardeningRecommendation]:
+    ) -> list[HardeningRecommendation]:
         """Prioritize recommendations based on risk and impact."""
 
         # Calculate priority scores
@@ -387,7 +387,7 @@ class SecurityHardeningRecommendations:
         return prioritized
 
     def _calculate_attack_surface_reduction(
-        self, recommendations: List[HardeningRecommendation]
+        self, recommendations: list[HardeningRecommendation]
     ) -> float:
         """Calculate estimated attack surface reduction from implementing recommendations."""
 
@@ -415,8 +415,8 @@ class SecurityHardeningRecommendations:
         return reduction
 
     def _create_implementation_roadmap(
-        self, recommendations: List[HardeningRecommendation]
-    ) -> Dict[str, List[str]]:
+        self, recommendations: list[HardeningRecommendation]
+    ) -> dict[str, list[str]]:
         """Create implementation roadmap organized by phases."""
         roadmap = {
             "Phase 1 - Critical (0-2 weeks)": [],
@@ -440,8 +440,8 @@ class SecurityHardeningRecommendations:
         return roadmap
 
     def _map_to_compliance_frameworks(
-        self, recommendations: List[HardeningRecommendation]
-    ) -> Dict[str, List[str]]:
+        self, recommendations: list[HardeningRecommendation]
+    ) -> dict[str, list[str]]:
         """Map recommendations to compliance frameworks."""
         mapping = {}
 
@@ -453,7 +453,7 @@ class SecurityHardeningRecommendations:
 
         return mapping
 
-    def _load_hardening_templates(self) -> Dict[str, Any]:
+    def _load_hardening_templates(self) -> dict[str, Any]:
         """Load hardening recommendation templates."""
         # This would typically load from a configuration file
         return {
@@ -465,8 +465,8 @@ class SecurityHardeningRecommendations:
         }
 
     def _identify_attack_patterns(
-        self, vulnerabilities: List[VulnerabilityResult]
-    ) -> List[str]:
+        self, vulnerabilities: list[VulnerabilityResult]
+    ) -> list[str]:
         """Identify common attack patterns from vulnerabilities."""
         patterns = []
 
@@ -490,8 +490,8 @@ class SecurityHardeningRecommendations:
         return patterns
 
     def _identify_common_weaknesses(
-        self, vulnerabilities: List[VulnerabilityResult]
-    ) -> List[str]:
+        self, vulnerabilities: list[VulnerabilityResult]
+    ) -> list[str]:
         """Identify common security weaknesses."""
         weaknesses = []
 
@@ -513,29 +513,29 @@ class SecurityHardeningRecommendations:
         return weaknesses
 
     def _generate_service_recommendations(
-        self, service: str, vulnerabilities: List[VulnerabilityResult]
-    ) -> List[HardeningRecommendation]:
+        self, service: str, vulnerabilities: list[VulnerabilityResult]
+    ) -> list[HardeningRecommendation]:
         """Generate service-specific recommendations."""
         # Implementation for service-specific recommendations
         return []
 
     def _generate_pattern_recommendations(
-        self, patterns: List[str]
-    ) -> List[HardeningRecommendation]:
+        self, patterns: list[str]
+    ) -> list[HardeningRecommendation]:
         """Generate pattern-based recommendations."""
         # Implementation for pattern-based recommendations
         return []
 
     def _generate_weakness_recommendations(
-        self, weaknesses: List[str]
-    ) -> List[HardeningRecommendation]:
+        self, weaknesses: list[str]
+    ) -> list[HardeningRecommendation]:
         """Generate weakness-based recommendations."""
         # Implementation for weakness-based recommendations
         return []
 
     def _deduplicate_recommendations(
-        self, recommendations: List[HardeningRecommendation]
-    ) -> List[HardeningRecommendation]:
+        self, recommendations: list[HardeningRecommendation]
+    ) -> list[HardeningRecommendation]:
         """Remove duplicate recommendations."""
         seen_ids = set()
         unique_recommendations = []

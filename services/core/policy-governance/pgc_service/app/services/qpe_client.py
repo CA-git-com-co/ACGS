@@ -12,7 +12,6 @@ Formal Verification Comments:
 # sha256: opa_schrodinger_quantum_superposition_pgc_client_v1.0
 """
 
-import asyncio
 import logging
 import time
 
@@ -20,9 +19,8 @@ import time
 # For now, we'll create mock classes to represent the structure
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
-import grpc
 from grpc import aio as grpc_aio
 
 logger = logging.getLogger(__name__)
@@ -115,7 +113,7 @@ class QPEClient:
         """
         self.service_url = service_url
         self.timeout = timeout
-        self.channel: Optional[grpc_aio.Channel] = None
+        self.channel: grpc_aio.Channel | None = None
         self.stub = None
 
         # Performance metrics
@@ -181,7 +179,9 @@ class QPEClient:
                 self.metrics["entanglement_verifications"] += 1
             else:
                 self.metrics["entanglement_failures"] += 1
-                logger.warning(f"Entanglement tag verification failed for policy {policy_id}")
+                logger.warning(
+                    f"Entanglement tag verification failed for policy {policy_id}"
+                )
 
             # Update metrics
             latency_ms = (time.time() - start_time) * 1000
@@ -201,7 +201,7 @@ class QPEClient:
             raise
 
     async def measure(
-        self, policy_id: str, context: Dict[str, str], force_collapse: bool = False
+        self, policy_id: str, context: dict[str, str], force_collapse: bool = False
     ) -> MeasureResponse:
         """
         Measure policy state (collapses superposition).
@@ -221,7 +221,11 @@ class QPEClient:
             stub = await self._get_stub()
 
             # Create measure request
-            request = {"policy_id": policy_id, "context": context, "force_collapse": force_collapse}
+            request = {
+                "policy_id": policy_id,
+                "context": context,
+                "force_collapse": force_collapse,
+            }
 
             # Call QPE service
             response = await stub.Measure(request, timeout=self.timeout)
@@ -231,7 +235,9 @@ class QPEClient:
                 self.metrics["entanglement_verifications"] += 1
             else:
                 self.metrics["entanglement_failures"] += 1
-                logger.warning(f"Entanglement tag verification failed for policy {policy_id}")
+                logger.warning(
+                    f"Entanglement tag verification failed for policy {policy_id}"
+                )
 
             # Update metrics
             latency_ms = (time.time() - start_time) * 1000
@@ -286,7 +292,10 @@ class QPEClient:
             raise
 
     async def observe(
-        self, policy_id: str, observer_id: str, observation_reason: str = "stakeholder_review"
+        self,
+        policy_id: str,
+        observer_id: str,
+        observation_reason: str = "stakeholder_review",
     ) -> ObserveResponse:
         """
         Observer effect - force state collapse through stakeholder observation.
@@ -327,7 +336,7 @@ class QPEClient:
             logger.error(f"QPE observe failed for policy {policy_id}: {str(e)}")
             raise
 
-    async def get_quantum_state(self, policy_id: str) -> Optional[QuantumPolicy]:
+    async def get_quantum_state(self, policy_id: str) -> QuantumPolicy | None:
         """
         Get current quantum state without collapse (for monitoring).
 
@@ -349,10 +358,12 @@ class QPEClient:
             return response.quantum_state
 
         except Exception as e:
-            logger.error(f"QPE get quantum state failed for policy {policy_id}: {str(e)}")
+            logger.error(
+                f"QPE get quantum state failed for policy {policy_id}: {str(e)}"
+            )
             raise
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """
         Check QPE service health.
 
@@ -372,7 +383,11 @@ class QPEClient:
 
         except Exception as e:
             logger.error(f"QPE health check failed: {str(e)}")
-            return {"healthy": False, "status": f"Health check failed: {str(e)}", "details": {}}
+            return {
+                "healthy": False,
+                "status": f"Health check failed: {str(e)}",
+                "details": {},
+            }
 
     def _verify_entanglement_tag(self, policy_id: str, tag: bytes) -> bool:
         """
@@ -404,9 +419,11 @@ class QPEClient:
         # Update average latency
         total = self.metrics["total_requests"]
         current_avg = self.metrics["average_latency_ms"]
-        self.metrics["average_latency_ms"] = ((current_avg * (total - 1)) + latency_ms) / total
+        self.metrics["average_latency_ms"] = (
+            (current_avg * (total - 1)) + latency_ms
+        ) / total
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get client performance metrics."""
         total = self.metrics["total_requests"]
         success_rate = self.metrics["successful_requests"] / total if total > 0 else 0.0
@@ -442,7 +459,9 @@ class MockQPEStub:
         import hmac
 
         # Generate mock entanglement tag
-        tag = hmac.new(b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256).digest()
+        tag = hmac.new(
+            b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256
+        ).digest()
 
         # Mock response
         class MockResponse:
@@ -471,7 +490,9 @@ class MockQPEStub:
         import hmac
 
         # Generate mock entanglement tag
-        tag = hmac.new(b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256).digest()
+        tag = hmac.new(
+            b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256
+        ).digest()
 
         # Mock response
         class MockResponse:
@@ -501,7 +522,9 @@ class MockQPEStub:
         import hashlib
         import hmac
 
-        tag = hmac.new(b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256).digest()
+        tag = hmac.new(
+            b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256
+        ).digest()
 
         class MockResponse:
             def __init__(self):

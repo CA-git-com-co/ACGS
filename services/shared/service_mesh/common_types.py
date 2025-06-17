@@ -6,7 +6,6 @@ failover_circuit_breaker.py
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional
 
 
 class ServiceType(str, Enum):
@@ -49,16 +48,16 @@ class ServiceInstance:
     port: int
     health_url: str
     status: str = "unknown"  # healthy, unhealthy, unknown
-    last_check: Optional[float] = None
-    response_time: Optional[float] = None
-    metadata: Dict[str, str] = field(default_factory=dict)
+    last_check: float | None = None
+    response_time: float | None = None
+    metadata: dict[str, str] = field(default_factory=dict)
 
     # Load balancing attributes
     weight: int = ServiceWeight.NORMAL.value
     current_connections: int = 0
     total_requests: int = 0
     failed_requests: int = 0
-    last_selected: Optional[float] = None
+    last_selected: float | None = None
     priority: int = 1  # Lower number = higher priority
 
     @property

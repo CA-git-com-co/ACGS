@@ -9,7 +9,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional, Set
+from typing import Any
 from uuid import uuid4
 
 from app.models import ACAmendment, ACAmendmentComment, ACAmendmentVote
@@ -36,18 +36,20 @@ class ConstitutionalCouncilDashboard:
         # ensures: Correct function execution
         # sha256: func_hash
         self.db = db
-        self.websocket_connections: Dict[str, WebSocket] = {}
+        self.websocket_connections: dict[str, WebSocket] = {}
         self.dashboard_active = False
         self.update_interval = 5  # seconds
 
         # Metrics collectors
         self.metrics = get_metrics("constitutional_council_dashboard")
-        self.constitutional_metrics = get_constitutional_metrics("constitutional_council_dashboard")
+        self.constitutional_metrics = get_constitutional_metrics(
+            "constitutional_council_dashboard"
+        )
 
         # Dashboard state tracking
         self.last_update = datetime.utcnow()
-        self.active_amendments: Set[int] = set()
-        self.stakeholder_sessions: Dict[str, Dict[str, Any]] = {}
+        self.active_amendments: set[int] = set()
+        self.stakeholder_sessions: dict[str, dict[str, Any]] = {}
 
         logger.info("Constitutional Council Dashboard initialized")
 
@@ -78,7 +80,7 @@ class ConstitutionalCouncilDashboard:
         logger.info("Stopped Constitutional Council dashboard")
 
     async def add_websocket_connection(
-        self, websocket: WebSocket, user_id: Optional[int] = None
+        self, websocket: WebSocket, user_id: int | None = None
     ) -> str:
         """Add a new WebSocket connection and return connection ID."""
         await websocket.accept()
@@ -149,7 +151,7 @@ class ConstitutionalCouncilDashboard:
                 logger.error(f"Error in dashboard update loop: {e}")
                 await asyncio.sleep(5)
 
-    async def _broadcast_to_websockets(self, data: Dict[str, Any]) -> None:
+    async def _broadcast_to_websockets(self, data: dict[str, Any]) -> None:
         """Broadcast data to all connected WebSocket clients."""
         if not self.websocket_connections:
             return
@@ -163,7 +165,9 @@ class ConstitutionalCouncilDashboard:
 
                 # Update last activity for stakeholder sessions
                 if connection_id in self.stakeholder_sessions:
-                    self.stakeholder_sessions[connection_id]["last_activity"] = datetime.utcnow()
+                    self.stakeholder_sessions[connection_id][
+                        "last_activity"
+                    ] = datetime.utcnow()
 
             except WebSocketDisconnect:
                 disconnected_clients.append(connection_id)
@@ -175,7 +179,7 @@ class ConstitutionalCouncilDashboard:
         for connection_id in disconnected_clients:
             await self.remove_websocket_connection(connection_id)
 
-    async def get_dashboard_data(self) -> Dict[str, Any]:
+    async def get_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive real-time dashboard data."""
         try:
             # Get amendment workflow metrics
@@ -214,7 +218,7 @@ class ConstitutionalCouncilDashboard:
                 "dashboard_status": "error",
             }
 
-    async def _get_amendment_workflow_metrics(self) -> Dict[str, Any]:
+    async def _get_amendment_workflow_metrics(self) -> dict[str, Any]:
         """Get real-time amendment workflow metrics."""
         try:
             # Get amendments by status
@@ -242,7 +246,9 @@ class ConstitutionalCouncilDashboard:
             completed_amendments = status_counts.get("approved", 0) + status_counts.get(
                 "rejected", 0
             )
-            completion_rate = completed_amendments / total_amendments if total_amendments > 0 else 0
+            completion_rate = (
+                completed_amendments / total_amendments if total_amendments > 0 else 0
+            )
 
             return {
                 "status_distribution": status_counts,
@@ -273,7 +279,7 @@ class ConstitutionalCouncilDashboard:
             logger.error(f"Failed to get amendment workflow metrics: {e}")
             return {"error": str(e)}
 
-    async def _get_stakeholder_engagement_metrics(self) -> Dict[str, Any]:
+    async def _get_stakeholder_engagement_metrics(self) -> dict[str, Any]:
         """Get real-time stakeholder engagement metrics."""
         try:
             # Get active stakeholder sessions
@@ -290,7 +296,9 @@ class ConstitutionalCouncilDashboard:
                 session_durations.append(duration)
 
             avg_session_duration = (
-                sum(session_durations) / len(session_durations) if session_durations else 0
+                sum(session_durations) / len(session_durations)
+                if session_durations
+                else 0
             )
 
             # Get recent comments and votes (last 24 hours)
@@ -315,7 +323,8 @@ class ConstitutionalCouncilDashboard:
                 "recent_activity": {
                     "comments_24h": recent_comments,
                     "votes_24h": recent_votes,
-                    "engagement_rate": (recent_comments + recent_votes) / max(active_sessions, 1),
+                    "engagement_rate": (recent_comments + recent_votes)
+                    / max(active_sessions, 1),
                 },
                 "real_time_participation": {
                     "connected_stakeholders": active_sessions,
@@ -333,11 +342,13 @@ class ConstitutionalCouncilDashboard:
             logger.error(f"Failed to get stakeholder engagement metrics: {e}")
             return {"error": str(e)}
 
-    async def _get_voting_progress_data(self) -> Dict[str, Any]:
+    async def _get_voting_progress_data(self) -> dict[str, Any]:
         """Get real-time voting progress data."""
         try:
             # Get amendments currently in voting phase
-            voting_amendments_query = select(ACAmendment).where(ACAmendment.status == "voting")
+            voting_amendments_query = select(ACAmendment).where(
+                ACAmendment.status == "voting"
+            )
 
             voting_result = await self.db.execute(voting_amendments_query)
             voting_amendments = voting_result.scalars().all()
@@ -411,7 +422,7 @@ class ConstitutionalCouncilDashboard:
             logger.error(f"Failed to get voting progress data: {e}")
             return {"error": str(e)}
 
-    async def _get_performance_metrics(self) -> Dict[str, Any]:
+    async def _get_performance_metrics(self) -> dict[str, Any]:
         """Get real-time system performance metrics."""
         try:
             # Calculate workflow processing times
@@ -466,7 +477,7 @@ class ConstitutionalCouncilDashboard:
             logger.error(f"Failed to get performance metrics: {e}")
             return {"error": str(e)}
 
-    async def _get_real_time_alerts(self) -> Dict[str, Any]:
+    async def _get_real_time_alerts(self) -> dict[str, Any]:
         """Get real-time alerts and notifications."""
         try:
             alerts = []
@@ -553,7 +564,7 @@ class ConstitutionalCouncilDashboard:
             return {"error": str(e)}
 
     async def broadcast_amendment_update(
-        self, amendment_id: int, update_type: str, data: Dict[str, Any]
+        self, amendment_id: int, update_type: str, data: dict[str, Any]
     ) -> None:
         """Broadcast amendment-specific updates to connected clients."""
         try:
@@ -577,7 +588,9 @@ class ConstitutionalCouncilDashboard:
         except Exception as e:
             logger.error(f"Failed to broadcast amendment update: {e}")
 
-    async def broadcast_voting_update(self, amendment_id: int, vote_data: Dict[str, Any]) -> None:
+    async def broadcast_voting_update(
+        self, amendment_id: int, vote_data: dict[str, Any]
+    ) -> None:
         """Broadcast voting updates to connected clients."""
         try:
             voting_message = {
@@ -593,7 +606,7 @@ class ConstitutionalCouncilDashboard:
             logger.error(f"Failed to broadcast voting update: {e}")
 
     async def broadcast_stakeholder_activity(
-        self, activity_type: str, data: Dict[str, Any]
+        self, activity_type: str, data: dict[str, Any]
     ) -> None:
         """Broadcast stakeholder activity updates to connected clients."""
         try:
@@ -611,7 +624,7 @@ class ConstitutionalCouncilDashboard:
 
 
 # Global dashboard instance
-dashboard_instance: Optional[ConstitutionalCouncilDashboard] = None
+dashboard_instance: ConstitutionalCouncilDashboard | None = None
 
 
 def get_constitutional_council_dashboard(

@@ -8,8 +8,7 @@ manipulation vulnerabilities in the ACGS-PGP system.
 import json
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Dict, List
+from datetime import UTC, datetime
 
 import aiohttp
 
@@ -48,8 +47,8 @@ class ConstitutionalAttackTester:
         ]
 
     async def run_tests(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run constitutional manipulation attack tests."""
         vulnerabilities = []
 
@@ -83,9 +82,9 @@ class ConstitutionalAttackTester:
         self,
         attack_vector: str,
         ac_endpoint: str,
-        available_services: List[str],
-        service_endpoints: Dict[str, str],
-    ) -> List[VulnerabilityResult]:
+        available_services: list[str],
+        service_endpoints: dict[str, str],
+    ) -> list[VulnerabilityResult]:
         """Test a specific constitutional attack vector."""
 
         if attack_vector == "principle_hierarchy_manipulation":
@@ -109,7 +108,7 @@ class ConstitutionalAttackTester:
 
     async def _test_principle_hierarchy_manipulation(
         self, ac_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test principle hierarchy manipulation attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -174,7 +173,7 @@ class ConstitutionalAttackTester:
                                     ],
                                     cvss_score=7.5,
                                     execution_time_ms=execution_time,
-                                    timestamp=datetime.now(timezone.utc),
+                                    timestamp=datetime.now(UTC),
                                 )
                             )
 
@@ -185,7 +184,7 @@ class ConstitutionalAttackTester:
 
     async def _test_amendment_bypass(
         self, ac_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test constitutional amendment bypass attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -243,7 +242,7 @@ class ConstitutionalAttackTester:
                                     ],
                                     cvss_score=9.0,
                                     execution_time_ms=execution_time,
-                                    timestamp=datetime.now(timezone.utc),
+                                    timestamp=datetime.now(UTC),
                                 )
                             )
 
@@ -254,7 +253,7 @@ class ConstitutionalAttackTester:
 
     async def _test_voting_mechanism_exploit(
         self, ac_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test voting mechanism exploitation attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -339,7 +338,7 @@ class ConstitutionalAttackTester:
                                                     cvss_score=8.0,
                                                     execution_time_ms=execution_time,
                                                     timestamp=datetime.now(
-                                                        timezone.utc
+                                                        UTC
                                                     ),
                                                 )
                                             )
@@ -374,7 +373,7 @@ class ConstitutionalAttackTester:
                                                 ],
                                                 cvss_score=8.0,
                                                 execution_time_ms=execution_time,
-                                                timestamp=datetime.now(timezone.utc),
+                                                timestamp=datetime.now(UTC),
                                             )
                                         )
 
@@ -385,7 +384,7 @@ class ConstitutionalAttackTester:
 
     async def _test_access_control_circumvention(
         self, ac_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test access control circumvention attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -453,7 +452,7 @@ class ConstitutionalAttackTester:
                                     ],
                                     cvss_score=9.5,
                                     execution_time_ms=execution_time,
-                                    timestamp=datetime.now(timezone.utc),
+                                    timestamp=datetime.now(UTC),
                                 )
                             )
 
@@ -464,28 +463,28 @@ class ConstitutionalAttackTester:
 
     async def _test_principle_injection(
         self, ac_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test principle injection attacks."""
         # Implementation for principle injection testing
         return []
 
     async def _test_constitutional_council_bypass(
         self, ac_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test constitutional council bypass attacks."""
         # Implementation for constitutional council bypass testing
         return []
 
     async def _test_meta_rule_manipulation(
         self, ac_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test meta-rule manipulation attacks."""
         # Implementation for meta-rule manipulation testing
         return []
 
     async def _test_conflict_resolution_exploit(
         self, ac_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test conflict resolution exploitation attacks."""
         # Implementation for conflict resolution exploit testing
         return []

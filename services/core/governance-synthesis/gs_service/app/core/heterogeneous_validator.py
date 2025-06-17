@@ -4,7 +4,7 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any
 
 import numpy as np
 
@@ -17,8 +17,8 @@ class GovernanceContext:
 
     constitutional_hash: str
     policy_type: str
-    compliance_requirements: Dict[str, Any]
-    performance_targets: Dict[str, float]
+    compliance_requirements: dict[str, Any]
+    performance_targets: dict[str, float]
 
 
 @dataclass
@@ -27,8 +27,8 @@ class ValidationResult:
 
     score: float
     confidence: float
-    details: Dict[str, Any]
-    error_message: Optional[str] = None
+    details: dict[str, Any]
+    error_message: str | None = None
 
 
 class BaseValidator(ABC):
@@ -40,10 +40,16 @@ class BaseValidator(ABC):
         # sha256: func_hash
         self.name = name
         self.weight = weight
-        self.metrics = {"total_validations": 0, "average_latency_ms": 0.0, "error_rate": 0.0}
+        self.metrics = {
+            "total_validations": 0,
+            "average_latency_ms": 0.0,
+            "error_rate": 0.0,
+        }
 
     @abstractmethod
-    async def validate(self, policy_data: Dict, context: GovernanceContext) -> ValidationResult:
+    async def validate(
+        self, policy_data: dict, context: GovernanceContext
+    ) -> ValidationResult:
         """Validate policy data against governance context."""
         pass
 
@@ -57,11 +63,15 @@ class PrimaryValidator(BaseValidator):
         # sha256: func_hash
         super().__init__("primary", weight=0.2)
 
-    async def validate(self, policy_data: Dict, context: GovernanceContext) -> ValidationResult:
+    async def validate(
+        self, policy_data: dict, context: GovernanceContext
+    ) -> ValidationResult:
         logger.debug("PrimaryValidator validating policy")
         # Simulate GPT-4 validation logic
         return ValidationResult(
-            score=0.95, confidence=0.9, details={"validator": "primary", "method": "gpt4_analysis"}
+            score=0.95,
+            confidence=0.9,
+            details={"validator": "primary", "method": "gpt4_analysis"},
         )
 
 
@@ -74,7 +84,9 @@ class AdversarialValidator(BaseValidator):
         # sha256: func_hash
         super().__init__("adversarial", weight=0.25)
 
-    async def validate(self, policy_data: Dict, context: GovernanceContext) -> ValidationResult:
+    async def validate(
+        self, policy_data: dict, context: GovernanceContext
+    ) -> ValidationResult:
         logger.debug("AdversarialValidator validating policy")
         # Simulate adversarial validation logic
         return ValidationResult(
@@ -93,7 +105,9 @@ class FormalValidator(BaseValidator):
         # sha256: func_hash
         super().__init__("formal", weight=0.3)
 
-    async def validate(self, policy_data: Dict, context: GovernanceContext) -> ValidationResult:
+    async def validate(
+        self, policy_data: dict, context: GovernanceContext
+    ) -> ValidationResult:
         logger.debug("FormalValidator validating policy")
         # Simulate Z3 formal verification
         return ValidationResult(
@@ -112,7 +126,9 @@ class SemanticValidator(BaseValidator):
         # sha256: func_hash
         super().__init__("semantic", weight=0.1)
 
-    async def validate(self, policy_data: Dict, context: GovernanceContext) -> ValidationResult:
+    async def validate(
+        self, policy_data: dict, context: GovernanceContext
+    ) -> ValidationResult:
         logger.debug("SemanticValidator validating policy")
         # Simulate semantic validation
         return ValidationResult(
@@ -137,10 +153,15 @@ class HeterogeneousValidator:
     Maintains >90% confidence threshold for policy approval.
     """
 
-    def __init__(self, weights: Optional[Dict[str, float]] = None, threshold: float = 0.9) -> None:
+    def __init__(
+        self, weights: dict[str, float] | None = None, threshold: float = 0.9
+    ) -> None:
         # Import Gemini validators
         try:
-            from ..validators.gemini_validators import GeminiFlashValidator, GeminiProValidator
+            from ..validators.gemini_validators import (
+                GeminiFlashValidator,
+                GeminiProValidator,
+            )
 
             gemini_available = True
         except ImportError:
@@ -182,8 +203,8 @@ class HeterogeneousValidator:
         }
 
     async def validate_synthesis(
-        self, policy_data: Dict[str, Any], context: GovernanceContext
-    ) -> Dict[str, Any]:
+        self, policy_data: dict[str, Any], context: GovernanceContext
+    ) -> dict[str, Any]:
         """
         Execute heterogeneous validation with weighted consensus.
 
@@ -239,7 +260,11 @@ class HeterogeneousValidator:
         }
 
     async def _safe_validate(
-        self, name: str, validator: BaseValidator, policy_data: Dict, context: GovernanceContext
+        self,
+        name: str,
+        validator: BaseValidator,
+        policy_data: dict,
+        context: GovernanceContext,
     ) -> tuple[str, ValidationResult]:
         """Safely execute validator with error handling."""
         try:
@@ -250,11 +275,14 @@ class HeterogeneousValidator:
             return (
                 name,
                 ValidationResult(
-                    score=0.0, confidence=0.0, details={"error": str(exc)}, error_message=str(exc)
+                    score=0.0,
+                    confidence=0.0,
+                    details={"error": str(exc)},
+                    error_message=str(exc),
                 ),
             )
 
-    def _compute_weighted_consensus(self, scores: Dict[str, float]) -> Dict[str, Any]:
+    def _compute_weighted_consensus(self, scores: dict[str, float]) -> dict[str, Any]:
         """
         Compute weighted consensus with enhanced metrics.
 
@@ -269,7 +297,9 @@ class HeterogeneousValidator:
             }
 
         # Calculate weighted score
-        weighted_score = sum(scores[k] * self.weights.get(k, 0.0) for k in scores if scores[k] > 0)
+        weighted_score = sum(
+            scores[k] * self.weights.get(k, 0.0) for k in scores if scores[k] > 0
+        )
 
         # Calculate agreement factor (minimum score among active validators)
         active_scores = [s for s in scores.values() if s > 0]
@@ -294,7 +324,7 @@ class HeterogeneousValidator:
         }
 
     def _update_consensus_metrics(
-        self, consensus_result: Dict[str, Any], detailed_results: Dict[str, Any]
+        self, consensus_result: dict[str, Any], detailed_results: dict[str, Any]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution

@@ -22,6 +22,7 @@ try:
         create_validation_context,
     )
     from fv_service.app.schemas import ValidationResult
+
     MULTI_MODEL_AVAILABLE = True
 except ImportError:
     # Mock implementations for testing when module is not available
@@ -57,21 +58,21 @@ except ImportError:
         async def validate_multi_model(self, context):
             # Calculate total validations based on models
             total_validations = 0
-            models = getattr(context, 'models', {})
-            for model_type, model_list in models.items():
+            models = getattr(context, "models", {})
+            for _model_type, model_list in models.items():
                 total_validations += len(model_list)
 
             # Simulate some failures for invalid data
             failed_validations = 0
-            for model_type, model_list in models.items():
+            for _model_type, model_list in models.items():
                 for model in model_list:
-                    if not model.get('content') and not model.get('description'):
+                    if not model.get("content") and not model.get("description"):
                         failed_validations += 1
 
             successful_validations = total_validations - failed_validations
 
             return AggregatedValidationResult(
-                request_id=getattr(context, 'request_id', 'test'),
+                request_id=getattr(context, "request_id", "test"),
                 overall_status="success" if failed_validations == 0 else "failed",
                 total_validations=total_validations,
                 successful_validations=successful_validations,
@@ -128,11 +129,7 @@ except ImportError:
         return EnhancedMultiModelValidator()
 
     def create_validation_context(request_id, models, **kwargs):
-        return ValidationContext(
-            request_id=request_id,
-            models=models,
-            **kwargs
-        )
+        return ValidationContext(request_id=request_id, models=models, **kwargs)
 
 
 class TestEnhancedMultiModelValidator:

@@ -8,7 +8,6 @@ import asyncio
 import logging
 import os
 import sys
-from typing import Optional
 
 import asyncpg
 
@@ -24,7 +23,7 @@ class DatabaseSchemaFixer:
 
     def __init__(self, database_url: str):
         self.database_url = database_url
-        self.connection: Optional[asyncpg.Connection] = None
+        self.connection: asyncpg.Connection | None = None
 
     async def connect(self):
         """Connect to the database."""
@@ -62,7 +61,7 @@ class DatabaseSchemaFixer:
             users_info = await self.connection.fetch(
                 """
                 SELECT column_name, data_type, is_nullable
-                FROM information_schema.columns 
+                FROM information_schema.columns
                 WHERE table_name = 'users' AND table_schema = 'public'
                 ORDER BY ordinal_position
             """
@@ -86,7 +85,7 @@ class DatabaseSchemaFixer:
             tokens_info = await self.connection.fetch(
                 """
                 SELECT column_name, data_type, is_nullable
-                FROM information_schema.columns 
+                FROM information_schema.columns
                 WHERE table_name = 'refresh_tokens' AND table_schema = 'public'
                 ORDER BY ordinal_position
             """
@@ -110,7 +109,7 @@ class DatabaseSchemaFixer:
             constraints = await self.connection.fetch(
                 """
                 SELECT conname, contype, pg_get_constraintdef(oid) as definition
-                FROM pg_constraint 
+                FROM pg_constraint
                 WHERE conrelid = 'refresh_tokens'::regclass
                 AND contype = 'f'
             """
@@ -158,7 +157,7 @@ class DatabaseSchemaFixer:
                 try:
                     users_id_type = await self.connection.fetchval(
                         """
-                        SELECT data_type FROM information_schema.columns 
+                        SELECT data_type FROM information_schema.columns
                         WHERE table_name = 'users' AND column_name = 'id' AND table_schema = 'public'
                     """
                     )
@@ -180,8 +179,8 @@ class DatabaseSchemaFixer:
                 logger.info("Step 2: Populating UUID column with generated UUIDs...")
                 await self.connection.execute(
                     """
-                    UPDATE users 
-                    SET id_uuid = uuid_generate_v4() 
+                    UPDATE users
+                    SET id_uuid = uuid_generate_v4()
                     WHERE id_uuid IS NULL
                 """
                 )
@@ -198,9 +197,9 @@ class DatabaseSchemaFixer:
                 logger.info("Step 4: Mapping refresh_tokens to new UUID values...")
                 await self.connection.execute(
                     """
-                    UPDATE refresh_tokens 
-                    SET user_id_uuid = users.id_uuid 
-                    FROM users 
+                    UPDATE refresh_tokens
+                    SET user_id_uuid = users.id_uuid
+                    FROM users
                     WHERE refresh_tokens.user_id = users.id
                 """
                 )
@@ -253,8 +252,8 @@ class DatabaseSchemaFixer:
                 logger.info("Step 10: Recreating foreign key constraint...")
                 await self.connection.execute(
                     """
-                    ALTER TABLE refresh_tokens 
-                    ADD CONSTRAINT refresh_tokens_user_id_fkey 
+                    ALTER TABLE refresh_tokens
+                    ADD CONSTRAINT refresh_tokens_user_id_fkey
                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
                 """
                 )
@@ -278,7 +277,7 @@ class DatabaseSchemaFixer:
             # Check users.id is now UUID
             users_id_type = await self.connection.fetchval(
                 """
-                SELECT data_type FROM information_schema.columns 
+                SELECT data_type FROM information_schema.columns
                 WHERE table_name = 'users' AND column_name = 'id' AND table_schema = 'public'
             """
             )
@@ -290,7 +289,7 @@ class DatabaseSchemaFixer:
             # Check refresh_tokens.user_id is now UUID
             tokens_user_id_type = await self.connection.fetchval(
                 """
-                SELECT data_type FROM information_schema.columns 
+                SELECT data_type FROM information_schema.columns
                 WHERE table_name = 'refresh_tokens' AND column_name = 'user_id' AND table_schema = 'public'
             """
             )
@@ -305,7 +304,7 @@ class DatabaseSchemaFixer:
             fk_exists = await self.connection.fetchval(
                 """
                 SELECT EXISTS(
-                    SELECT 1 FROM pg_constraint 
+                    SELECT 1 FROM pg_constraint
                     WHERE conname = 'refresh_tokens_user_id_fkey'
                     AND contype = 'f'
                 )

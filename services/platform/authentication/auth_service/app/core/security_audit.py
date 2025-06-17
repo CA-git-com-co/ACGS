@@ -1,7 +1,7 @@
 # Enterprise Security Audit Logging
 import uuid
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from fastapi import Request
 from sqlalchemy import and_, desc, select
@@ -109,11 +109,11 @@ class SecurityAuditLogger:
         self,
         db: AsyncSession,
         event_type: str,
-        user_id: Optional[int] = None,
-        request: Optional[Request] = None,
+        user_id: int | None = None,
+        request: Request | None = None,
         success: bool = True,
-        error_message: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        error_message: str | None = None,
+        metadata: dict[str, Any] | None = None,
         severity: str = "info",
     ) -> SecurityEvent:
         """Log a security event"""
@@ -138,7 +138,10 @@ class SecurityAuditLogger:
             ip_address = self.get_client_ip(request)
             user_agent = request.headers.get("user-agent")
             endpoint = f"{request.method} {request.url.path}"
-            request_id = request.headers.get(self.request_id_header) or self.generate_request_id()
+            request_id = (
+                request.headers.get(self.request_id_header)
+                or self.generate_request_id()
+            )
 
         # Create security event
         event = SecurityEvent(
@@ -212,16 +215,16 @@ class SecurityAuditLogger:
     async def get_events(
         self,
         db: AsyncSession,
-        user_id: Optional[int] = None,
-        event_type: Optional[str] = None,
-        category: Optional[str] = None,
-        severity: Optional[str] = None,
-        success: Optional[bool] = None,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
+        user_id: int | None = None,
+        event_type: str | None = None,
+        category: str | None = None,
+        severity: str | None = None,
+        success: bool | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
         limit: int = 100,
         offset: int = 0,
-    ) -> List[SecurityEvent]:
+    ) -> list[SecurityEvent]:
         """Query security events with filters"""
 
         query = select(SecurityEvent)
@@ -265,19 +268,21 @@ class SecurityAuditLogger:
     async def get_security_summary(
         self,
         db: AsyncSession,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
-    ) -> Dict[str, Any]:
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+    ) -> dict[str, Any]:
         """Get security event summary statistics"""
 
         if not start_date:
-            start_date = datetime.now(timezone.utc) - timedelta(days=7)
+            start_date = datetime.now(UTC) - timedelta(days=7)
 
         if not end_date:
-            end_date = datetime.now(timezone.utc)
+            end_date = datetime.now(UTC)
 
         # Get all events in date range
-        events = await self.get_events(db, start_date=start_date, end_date=end_date, limit=10000)
+        events = await self.get_events(
+            db, start_date=start_date, end_date=end_date, limit=10000
+        )
 
         # Calculate statistics
         total_events = len(events)
@@ -287,7 +292,9 @@ class SecurityAuditLogger:
         # Group by category
         category_counts = {}
         for event in events:
-            category_counts[event.event_category] = category_counts.get(event.event_category, 0) + 1
+            category_counts[event.event_category] = (
+                category_counts.get(event.event_category, 0) + 1
+            )
 
         # Group by severity
         severity_counts = {}
@@ -297,7 +304,9 @@ class SecurityAuditLogger:
         # Group by event type
         event_type_counts = {}
         for event in events:
-            event_type_counts[event.event_type] = event_type_counts.get(event.event_type, 0) + 1
+            event_type_counts[event.event_type] = (
+                event_type_counts.get(event.event_type, 0) + 1
+            )
 
         # Get top IP addresses
         ip_counts = {}
@@ -316,7 +325,9 @@ class SecurityAuditLogger:
                 "total_events": total_events,
                 "successful_events": successful_events,
                 "failed_events": failed_events,
-                "success_rate": (successful_events / total_events if total_events > 0 else 0),
+                "success_rate": (
+                    successful_events / total_events if total_events > 0 else 0
+                ),
             },
             "by_category": category_counts,
             "by_severity": severity_counts,

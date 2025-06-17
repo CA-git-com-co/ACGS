@@ -22,7 +22,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         salt = bytes.fromhex(salt_hex)
 
         # Hash the plain password with the same salt
-        computed_hash = hashlib.pbkdf2_hmac("sha256", plain_password.encode(), salt, 100000)
+        computed_hash = hashlib.pbkdf2_hmac(
+            "sha256", plain_password.encode(), salt, 100000
+        )
         computed_hash_hex = computed_hash.hex()
 
         return secrets.compare_digest(computed_hash_hex, stored_hash)

@@ -55,7 +55,7 @@ curl http://localhost:8002/health
 #### Permanent Fix
 ```bash
 # 1. Update Docker Compose network configuration
-# Add explicit network aliases in docker-compose.yml:
+# Add explicit network aliases in infrastructure/docker/docker-compose.yml:
 services:
   postgres_db:
     networks:
@@ -178,7 +178,7 @@ docker-compose logs postgres_db
 **Missing Dependencies**
 ```bash
 # Rebuild container with latest dependencies
-docker-compose build service_name --no-cache
+docker-compose -f infrastructure/docker/docker-compose.yml build service_name --no-cache
 
 # Check requirements.txt
 cat backend/service_name/requirements.txt
@@ -582,12 +582,12 @@ scrape_configs:
 docker-compose restart service_name
 
 # Full system restart
-docker-compose down
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml down
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # Rollback to previous version
 git checkout previous_tag
-docker-compose up -d --build
+docker-compose -f infrastructure/docker/docker-compose.yml up -d --build
 ```
 
 ### Database Recovery

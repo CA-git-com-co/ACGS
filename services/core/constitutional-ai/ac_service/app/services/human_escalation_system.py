@@ -17,7 +17,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -67,11 +67,11 @@ class EscalationRule:
     """Rule for determining escalation requirements."""
 
     rule_id: str
-    trigger_conditions: Dict[str, Any]
+    trigger_conditions: dict[str, Any]
     target_level: EscalationLevel
     timeout_minutes: int
-    required_roles: List[str]
-    notification_channels: List[NotificationChannel]
+    required_roles: list[str]
+    notification_channels: list[NotificationChannel]
     priority_boost: float
 
 
@@ -83,11 +83,11 @@ class EscalationRequest:
     escalation_level: EscalationLevel
     escalation_reason: EscalationReason
     urgency_score: float
-    required_roles: List[str]
-    context_data: Dict[str, Any]
+    required_roles: list[str]
+    context_data: dict[str, Any]
     timeout_deadline: datetime
-    notification_channels: List[NotificationChannel]
-    escalation_metadata: Dict[str, Any]
+    notification_channels: list[NotificationChannel]
+    escalation_metadata: dict[str, Any]
 
 
 @dataclass
@@ -96,10 +96,10 @@ class EscalationResponse:
 
     success: bool
     escalation_id: str
-    assigned_users: List[int]
-    notification_results: Dict[str, bool]
+    assigned_users: list[int]
+    notification_results: dict[str, bool]
     estimated_response_time: timedelta
-    escalation_metadata: Dict[str, Any]
+    escalation_metadata: dict[str, Any]
 
 
 class HumanEscalationSystem:
@@ -131,9 +131,9 @@ class HumanEscalationSystem:
         }
 
         # Active escalations tracking
-        self.active_escalations: Dict[int, EscalationRequest] = {}
+        self.active_escalations: dict[int, EscalationRequest] = {}
 
-    def _initialize_escalation_rules(self) -> List[EscalationRule]:
+    def _initialize_escalation_rules(self) -> list[EscalationRule]:
         """Initialize escalation rules configuration."""
         return [
             # Critical severity immediate escalation
@@ -207,9 +207,9 @@ class HumanEscalationSystem:
         self,
         db: AsyncSession,
         conflict: ACConflictResolution,
-        resolution_result: Optional[ResolutionResult] = None,
-        detection_result: Optional[ConflictDetectionResult] = None,
-    ) -> Optional[EscalationRequest]:
+        resolution_result: ResolutionResult | None = None,
+        detection_result: ConflictDetectionResult | None = None,
+    ) -> EscalationRequest | None:
         """
         Evaluate if a conflict requires human escalation.
 
@@ -251,8 +251,8 @@ class HumanEscalationSystem:
         self,
         rule: EscalationRule,
         conflict: ACConflictResolution,
-        resolution_result: Optional[ResolutionResult],
-        detection_result: Optional[ConflictDetectionResult],
+        resolution_result: ResolutionResult | None,
+        detection_result: ConflictDetectionResult | None,
     ) -> bool:
         """Check if an escalation rule is triggered."""
         conditions = rule.trigger_conditions
@@ -313,8 +313,8 @@ class HumanEscalationSystem:
         db: AsyncSession,
         conflict: ACConflictResolution,
         rule: EscalationRule,
-        resolution_result: Optional[ResolutionResult],
-        detection_result: Optional[ConflictDetectionResult],
+        resolution_result: ResolutionResult | None,
+        detection_result: ConflictDetectionResult | None,
     ) -> EscalationRequest:
         """Create an escalation request based on triggered rule."""
         # Calculate urgency score
@@ -338,7 +338,9 @@ class HumanEscalationSystem:
             "principle_ids": conflict.principle_ids,
             "rule_triggered": rule.rule_id,
             "resolution_attempts": (
-                conflict.resolution_details.get("attempts", 0) if conflict.resolution_details else 0
+                conflict.resolution_details.get("attempts", 0)
+                if conflict.resolution_details
+                else 0
             ),
         }
 

@@ -78,7 +78,7 @@ Enhanced preflight checks to detect changes in:
 ### 2. **solana-anchor.yml** - Dedicated Solana/Anchor Testing
 - **Created**: New workflow specifically for blockchain development
 - **Features**: 
-  - Multi-project support (blockchain/, quantumagi_core/)
+  - Multi-project support (blockchain/, blockchain/)
   - Comprehensive Rust security auditing
   - Anchor program verification
   - Detailed test reporting
@@ -101,8 +101,8 @@ Enhanced preflight checks to detect changes in:
 ## Project Structure Fixes
 
 ### Missing Configuration Files Created
-1. **quantumagi_core/package.json** - Node.js configuration for Quantumagi project
-2. **quantumagi_core/Anchor.toml** - Anchor configuration for Quantumagi project
+1. **blockchain/package.json** - Node.js configuration for Quantumagi project
+2. **blockchain/Anchor.toml** - Anchor configuration for Quantumagi project
 
 ### Validation Script Issues Resolved
 - **Problem**: YAML parsing issue where `on:` key was interpreted as boolean `True`

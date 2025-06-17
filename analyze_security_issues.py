@@ -14,7 +14,7 @@ def analyze_bandit_report(report_file):
     """Analyze Bandit security report and categorize issues."""
 
     try:
-        with open(report_file, "r") as f:
+        with open(report_file) as f:
             data = json.load(f)
     except FileNotFoundError:
         print(f"❌ Error: Report file {report_file} not found")

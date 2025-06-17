@@ -16,8 +16,8 @@ import logging
 import statistics
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 import aiohttp
 
@@ -36,8 +36,8 @@ class Phase2TestResult:
     test_name: str
     success: bool
     response_time_ms: float
-    details: Dict[str, Any]
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    details: dict[str, Any]
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 @dataclass
@@ -46,13 +46,13 @@ class Phase2Report:
 
     start_time: datetime
     end_time: datetime
-    alphaevolve_integration: Dict[str, Any]
-    load_testing_summary: Dict[str, Any]
-    security_audit_summary: Dict[str, Any]
-    constitutional_council_status: Dict[str, Any]
+    alphaevolve_integration: dict[str, Any]
+    load_testing_summary: dict[str, Any]
+    security_audit_summary: dict[str, Any]
+    constitutional_council_status: dict[str, Any]
     overall_success_rate: float
     phase2_completion_status: str
-    recommendations: List[str]
+    recommendations: list[str]
 
 
 class Phase2ComprehensiveTester:
@@ -69,8 +69,8 @@ class Phase2ComprehensiveTester:
             "ec_service": 8006,
             "research_service": 8007,
         }
-        self.results: List[Phase2TestResult] = []
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.results: list[Phase2TestResult] = []
+        self.session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
         """Async context manager entry."""
@@ -84,7 +84,7 @@ class Phase2ComprehensiveTester:
         if self.session:
             await self.session.close()
 
-    async def test_alphaevolve_integration(self) -> Dict[str, Any]:
+    async def test_alphaevolve_integration(self) -> dict[str, Any]:
         """Test AlphaEvolve integration components."""
         logger.info("🧬 Testing AlphaEvolve Integration")
 
@@ -124,7 +124,7 @@ class Phase2ComprehensiveTester:
                                     422,
                                 ]:  # 422 might be validation error, which is OK
                                     alphaevolve_results["policy_synthesis"] = True
-                        except asyncio.TimeoutError:
+                        except TimeoutError:
                             logger.warning("AlphaEvolve bridge test timed out")
             except Exception as e:
                 logger.warning(f"GS Service bridge test failed: {e}")
@@ -187,7 +187,7 @@ class Phase2ComprehensiveTester:
 
         return alphaevolve_results
 
-    async def test_constitutional_council_features(self) -> Dict[str, Any]:
+    async def test_constitutional_council_features(self) -> dict[str, Any]:
         """Test Constitutional Council implementation."""
         logger.info("🏛️ Testing Constitutional Council Features")
 
@@ -281,7 +281,7 @@ class Phase2ComprehensiveTester:
 
         return council_results
 
-    async def validate_service_performance(self) -> Dict[str, Any]:
+    async def validate_service_performance(self) -> dict[str, Any]:
         """Validate overall service performance."""
         logger.info("⚡ Validating Service Performance")
 
@@ -296,7 +296,7 @@ class Phase2ComprehensiveTester:
         response_times = []
         healthy_services = 0
 
-        for service, port in self.services.items():
+        for _service, port in self.services.items():
             try:
                 start_time = time.time()
                 async with self.session.get(
@@ -340,7 +340,7 @@ class Phase2ComprehensiveTester:
     async def run_comprehensive_test(self) -> Phase2Report:
         """Execute comprehensive Phase 2 testing."""
         logger.info("🚀 Starting ACGS-PGP Phase 2 Comprehensive Testing")
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
 
         # Test AlphaEvolve Integration
         alphaevolve_results = await self.test_alphaevolve_integration()
@@ -351,7 +351,7 @@ class Phase2ComprehensiveTester:
         # Validate Service Performance
         performance_results = await self.validate_service_performance()
 
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
 
         # Calculate overall success rate
         component_scores = [
@@ -398,7 +398,7 @@ class Phase2ComprehensiveTester:
 
     def _generate_recommendations(
         self, alphaevolve_results, council_results, performance_results
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate Phase 2 improvement recommendations."""
         recommendations = []
 
@@ -452,7 +452,7 @@ def print_phase2_report(report: Phase2Report):
     print(f"📊 Overall Success Rate: {report.overall_success_rate:.1%}")
 
     # Component results
-    print(f"\n🧬 AlphaEvolve Integration:")
+    print("\n🧬 AlphaEvolve Integration:")
     alpha_status = (
         "✅"
         if report.alphaevolve_integration.get("overall_status") == "PASSED"
@@ -465,7 +465,7 @@ def print_phase2_report(report: Phase2Report):
         f"   📈 Success Rate: {report.alphaevolve_integration.get('success_rate', 0):.1%}"
     )
 
-    print(f"\n🏛️ Constitutional Council:")
+    print("\n🏛️ Constitutional Council:")
     council_status = (
         "✅"
         if report.constitutional_council_status.get("overall_status") == "PASSED"
@@ -478,18 +478,18 @@ def print_phase2_report(report: Phase2Report):
         f"   📈 Success Rate: {report.constitutional_council_status.get('success_rate', 0):.1%}"
     )
 
-    print(f"\n⚡ Load Testing:")
+    print("\n⚡ Load Testing:")
     print(f"   ✅ Status: {report.load_testing_summary.get('status', 'UNKNOWN')}")
     print(
         f"   🎯 Performance Grade: {report.load_testing_summary.get('performance_grade', 'N/A')}"
     )
 
-    print(f"\n🔒 Security Audit:")
+    print("\n🔒 Security Audit:")
     print(f"   ✅ Status: {report.security_audit_summary.get('status', 'UNKNOWN')}")
     print(f"   🔍 Findings: {report.security_audit_summary.get('findings', 'N/A')}")
 
     # Success criteria assessment
-    print(f"\n🎯 Phase 2 Success Criteria Assessment:")
+    print("\n🎯 Phase 2 Success Criteria Assessment:")
     criteria = [
         ("Maintain >99.5% uptime", "✅" if report.overall_success_rate > 0.8 else "⚠️"),
         (
@@ -520,12 +520,12 @@ def print_phase2_report(report: Phase2Report):
         print(f"   {status} {criterion}")
 
     # Recommendations
-    print(f"\n🚀 Phase 2 Recommendations:")
+    print("\n🚀 Phase 2 Recommendations:")
     for i, recommendation in enumerate(report.recommendations, 1):
         print(f"   {i}. {recommendation}")
 
     # Next steps
-    print(f"\n🎯 Next Steps:")
+    print("\n🎯 Next Steps:")
     if report.phase2_completion_status in ["EXCELLENT", "GOOD"]:
         print("   ✅ Phase 2 successfully completed - Ready for production deployment")
         print("   🚀 Proceed with Phase 3 advanced features and optimization")

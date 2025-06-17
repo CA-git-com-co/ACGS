@@ -10,7 +10,7 @@ import logging
 import sys
 import time
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 import aiohttp
 
@@ -213,7 +213,7 @@ class Phase3CriticalFixesValidator:
                 "target_met": False,
             }
 
-    async def _test_cache_hit_rate(self) -> Dict[str, Any]:
+    async def _test_cache_hit_rate(self) -> dict[str, Any]:
         """Test cache hit rate with constitutional validation endpoint."""
         base_url = self.available_services["ac_service"]
         endpoint = f"{base_url}/api/v1/principles/validate-constitutional"
@@ -240,7 +240,7 @@ class Phase3CriticalFixesValidator:
 
         async with aiohttp.ClientSession() as session:
             # Make multiple requests to test caching
-            for i in range(20):
+            for _i in range(20):
                 start_time = time.time()
 
                 try:
@@ -475,7 +475,7 @@ class Phase3CriticalFixesValidator:
             json.dump(self.validation_results, f, indent=2)
 
         logger.info(
-            f"\n📄 Detailed results saved to: phase3_critical_fixes_validation_results.json"
+            "\n📄 Detailed results saved to: phase3_critical_fixes_validation_results.json"
         )
 
 

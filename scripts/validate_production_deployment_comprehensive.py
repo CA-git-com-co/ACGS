@@ -11,7 +11,7 @@ import json
 import subprocess
 import sys
 import time
-from typing import Any, Dict
+from typing import Any
 
 import aiohttp
 
@@ -28,7 +28,7 @@ class ProductionValidator:
             "recommendations": [],
         }
 
-    async def validate_all(self) -> Dict[str, Any]:
+    async def validate_all(self) -> dict[str, Any]:
         """Run all production validation checks"""
         print("🚀 Starting ACGS-PGP Production Deployment Validation")
         print("=" * 60)
@@ -177,7 +177,7 @@ class ProductionValidator:
                     start_time = time.time()
                     async with session.get(
                         endpoint, timeout=aiohttp.ClientTimeout(total=10)
-                    ) as response:
+                    ):
                         end_time = time.time()
                         response_time = (end_time - start_time) * 1000  # Convert to ms
                         response_times.append(response_time)
@@ -384,7 +384,7 @@ class ProductionValidator:
             print("❌ Overall Status: FAIL - Critical Issues Found")
 
         # Print summary
-        print(f"\n📈 Summary:")
+        print("\n📈 Summary:")
         print(f"   Total Checks: {len(self.results['checks'])}")
         print(
             f"   Passed: {len(self.results['checks']) - failed_checks - warning_checks}"
@@ -394,7 +394,7 @@ class ProductionValidator:
 
         # Print SLA compliance
         if self.results["sla_compliance"]:
-            print(f"\n🎯 SLA Compliance:")
+            print("\n🎯 SLA Compliance:")
             for metric, data in self.results["sla_compliance"].items():
                 status_icon = "✅" if data["status"] == "PASS" else "❌"
                 print(
@@ -405,7 +405,7 @@ class ProductionValidator:
         with open("production_validation_report.json", "w") as f:
             json.dump(self.results, f, indent=2)
 
-        print(f"\n📄 Detailed report saved to: production_validation_report.json")
+        print("\n📄 Detailed report saved to: production_validation_report.json")
 
 
 async def main():

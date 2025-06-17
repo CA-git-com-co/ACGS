@@ -72,7 +72,7 @@ class ServiceStartupDebugger:
                     print(f"   requirements.txt: ✅ {req_file}")
                     break
             else:
-                print(f"   requirements.txt: ❌ Not found")
+                print("   requirements.txt: ❌ Not found")
 
             # List directory contents
             if service_dir.exists():
@@ -249,7 +249,7 @@ class ServiceStartupDebugger:
                 print(f"   Startup: {'✅' if startup_ok else '❌'}")
             else:
                 print(f"\n📊 {service_name} Summary:")
-                print(f"   Directory: ❌ - Cannot proceed")
+                print("   Directory: ❌ - Cannot proceed")
 
 
 async def main():

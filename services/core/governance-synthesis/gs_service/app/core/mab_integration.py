@@ -6,8 +6,8 @@ constitutional prompting, and GS service workflows.
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, Tuple
+from datetime import UTC, datetime
+from typing import Any
 
 from ..schemas import (
     ConstitutionalSynthesisInput,
@@ -52,7 +52,9 @@ class MABIntegratedGSService:
         self.mab_optimizer = MABPromptOptimizer(self.mab_config)
 
         # Initialize LLM reliability framework
-        self.reliability_config = reliability_config or self._default_reliability_config()
+        self.reliability_config = (
+            reliability_config or self._default_reliability_config()
+        )
         self.reliability_framework = LLMReliabilityFramework(self.reliability_config)
 
         # Initialize constitutional prompting
@@ -115,16 +117,16 @@ class MABIntegratedGSService:
                 name="Constitutional Compliance Template",
                 template_content="""
                 Analyze the following constitutional principle and generate a compliant policy rule:
-                
+
                 Constitutional Principle: {principle}
                 Context: {context}
-                
+
                 Requirements:
                 1. Ensure full constitutional compliance
                 2. Maintain clarity and enforceability
                 3. Consider all stakeholder impacts
                 4. Include appropriate safeguards
-                
+
                 Generate a {target_format} policy rule:
                 """,
                 category="constitutional",
@@ -134,17 +136,17 @@ class MABIntegratedGSService:
                 name="Safety-Critical Policy Template",
                 template_content="""
                 Create a safety-critical policy rule for the following principle:
-                
+
                 Principle: {principle}
                 Safety Context: {context}
-                
+
                 SAFETY REQUIREMENTS:
                 - Fail-safe defaults (deny by default)
                 - Explicit authorization requirements
                 - Audit trail generation
                 - Error handling and recovery
                 - Compliance verification
-                
+
                 Generate {target_format} code with safety annotations:
                 """,
                 category="safety_critical",
@@ -154,17 +156,17 @@ class MABIntegratedGSService:
                 name="Fairness-Aware Policy Template",
                 template_content="""
                 Generate a bias-free, fairness-aware policy for:
-                
+
                 Principle: {principle}
                 Fairness Context: {context}
-                
+
                 FAIRNESS REQUIREMENTS:
                 - Demographic parity considerations
                 - Individual fairness principles
                 - Procedural fairness guarantees
                 - Intersectionality awareness
                 - Bias mitigation measures
-                
+
                 Create {target_format} policy with fairness annotations:
                 """,
                 category="fairness_aware",
@@ -174,17 +176,17 @@ class MABIntegratedGSService:
                 name="Adaptive Contextual Template",
                 template_content="""
                 Synthesize a contextually adaptive policy rule:
-                
+
                 Core Principle: {principle}
                 Environmental Context: {context}
                 Adaptation Requirements: {adaptation_factors}
-                
+
                 ADAPTIVE FEATURES:
                 - Context-sensitive conditions
                 - Dynamic threshold adjustment
                 - Environmental factor integration
                 - Stakeholder-specific provisions
-                
+
                 Generate adaptive {target_format} policy:
                 """,
                 category="adaptive",
@@ -199,14 +201,14 @@ class MABIntegratedGSService:
     async def synthesize_with_mab_optimization(
         self,
         synthesis_input: ConstitutionalSynthesisInput,
-        context: Dict[str, Any] = None,
-    ) -> Tuple[ConstitutionalSynthesisOutput, Dict[str, Any]]:
+        context: dict[str, Any] = None,
+    ) -> tuple[ConstitutionalSynthesisOutput, dict[str, Any]]:
         """
         Synthesize constitutional policies with MAB-optimized prompts.
 
         Combines MAB prompt selection, LLM reliability validation, and constitutional compliance.
         """
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
         context = context or {}
 
         # Update metrics
@@ -221,17 +223,21 @@ class MABIntegratedGSService:
                 "principle_complexity": len(synthesis_input.context.split()),
             }
 
-            selected_template = await self.mab_optimizer.select_optimal_prompt(prompt_context)
+            selected_template = await self.mab_optimizer.select_optimal_prompt(
+                prompt_context
+            )
             if not selected_template:
                 raise ValueError("No suitable prompt template available")
 
             self.integration_metrics["mab_selections"] += 1
 
             # 2. Build constitutional context
-            constitutional_context = await self.constitutional_builder.build_constitutional_context(
-                context=synthesis_input.context,
-                category=prompt_context.get("category", "general"),
-                auth_token=context.get("auth_token"),
+            constitutional_context = (
+                await self.constitutional_builder.build_constitutional_context(
+                    context=synthesis_input.context,
+                    category=prompt_context.get("category", "general"),
+                    auth_token=context.get("auth_token"),
+                )
             )
 
             # 3. Generate optimized prompt
@@ -263,7 +269,7 @@ class MABIntegratedGSService:
             )
 
             # 7. Calculate integration metrics
-            response_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+            response_time = (datetime.now(UTC) - start_time).total_seconds()
             self._update_integration_metrics(response_time, True)
 
             integration_metadata = {
@@ -277,7 +283,9 @@ class MABIntegratedGSService:
                 ),
                 "mab_metrics": self.mab_optimizer.get_optimization_metrics(),
                 "response_time_seconds": response_time,
-                "constitutional_context_size": len(constitutional_context.get("principles", [])),
+                "constitutional_context_size": len(
+                    constitutional_context.get("principles", [])
+                ),
             }
 
             return synthesis_output, integration_metadata
@@ -291,7 +299,7 @@ class MABIntegratedGSService:
         self,
         template: PromptTemplate,
         synthesis_input: ConstitutionalSynthesisInput,
-        constitutional_context: Dict[str, Any],
+        constitutional_context: dict[str, Any],
     ) -> str:
         """Build optimized prompt using selected template and constitutional context."""
 
@@ -316,7 +324,7 @@ class MABIntegratedGSService:
             constitutional_preamble = f"""
             CONSTITUTIONAL FRAMEWORK:
             {constitutional_context['normative_framework']}
-            
+
             """
             formatted_prompt = constitutional_preamble + formatted_prompt
 
@@ -326,7 +334,7 @@ class MABIntegratedGSService:
         self,
         llm_output: LLMStructuredOutput,
         synthesis_input: ConstitutionalSynthesisInput,
-        constitutional_context: Dict[str, Any],
+        constitutional_context: dict[str, Any],
     ) -> ConstitutionalSynthesisOutput:
         """Convert LLM output to constitutional synthesis format."""
 
@@ -366,13 +374,21 @@ class MABIntegratedGSService:
 
         # Update success rate
         if success:
-            current_successes = self.integration_metrics["success_rate"] * (total_requests - 1)
-            self.integration_metrics["success_rate"] = (current_successes + 1) / total_requests
+            current_successes = self.integration_metrics["success_rate"] * (
+                total_requests - 1
+            )
+            self.integration_metrics["success_rate"] = (
+                current_successes + 1
+            ) / total_requests
         else:
-            current_successes = self.integration_metrics["success_rate"] * (total_requests - 1)
-            self.integration_metrics["success_rate"] = current_successes / total_requests
+            current_successes = self.integration_metrics["success_rate"] * (
+                total_requests - 1
+            )
+            self.integration_metrics["success_rate"] = (
+                current_successes / total_requests
+            )
 
-    async def get_integration_status(self) -> Dict[str, Any]:
+    async def get_integration_status(self) -> dict[str, Any]:
         """Get comprehensive integration status and metrics."""
         mab_metrics = self.mab_optimizer.get_optimization_metrics()
         best_templates = self.mab_optimizer.get_best_performing_templates(3)
@@ -387,6 +403,8 @@ class MABIntegratedGSService:
                 "consensus_threshold": self.reliability_config.consensus_threshold,
             },
             "system_status": (
-                "operational" if self.integration_metrics["success_rate"] > 0.95 else "degraded"
+                "operational"
+                if self.integration_metrics["success_rate"] > 0.95
+                else "degraded"
             ),
         }

@@ -19,7 +19,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -36,8 +36,8 @@ class ErrorHandlingResult:
     functions_analyzed: int
     error_handlers_added: int
     logging_statements_added: int
-    changes_made: List[str]
-    errors: List[str]
+    changes_made: list[str]
+    errors: list[str]
 
 
 class ErrorHandlingStandardizer:
@@ -45,7 +45,7 @@ class ErrorHandlingStandardizer:
 
     def __init__(self, project_root: str):
         self.project_root = Path(project_root)
-        self.results: List[ErrorHandlingResult] = []
+        self.results: list[ErrorHandlingResult] = []
 
         # Standard error handling patterns for ACGS-PGP
         self.error_patterns = {
@@ -78,7 +78,7 @@ class ErrorHandlingStandardizer:
 
     def analyze_function_for_error_handling(
         self, node: ast.FunctionDef
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Analyze function for error handling improvements."""
         analysis = {
             "has_try_catch": False,
@@ -121,19 +121,19 @@ class ErrorHandlingStandardizer:
         return analysis
 
     def generate_error_handling_code(
-        self, function_name: str, risky_operations: List[str]
+        self, function_name: str, risky_operations: list[str]
     ) -> str:
         """Generate standardized error handling code."""
         error_handling_code = f"""
     try:
         # Original function logic here
         logger.info(f"Executing {function_name}")
-        
+
         # Function implementation
-        
+
         logger.info(f"{function_name} completed successfully")
         return result
-        
+
     except SQLAlchemyError as e:
         error_msg = f"Database operation failed in {function_name}: {{str(e)}}"
         logger.error(error_msg)
@@ -146,7 +146,7 @@ class ErrorHandlingStandardizer:
                 "timestamp": datetime.now().isoformat()
             }}
         )
-    
+
     except ValidationError as e:
         error_msg = f"Validation failed in {function_name}: {{str(e)}}"
         logger.warning(error_msg)
@@ -159,7 +159,7 @@ class ErrorHandlingStandardizer:
                 "timestamp": datetime.now().isoformat()
             }}
         )
-    
+
     except Exception as e:
         error_msg = f"Unexpected error in {function_name}: {{str(e)}}"
         logger.error(error_msg, exc_info=True)
@@ -187,7 +187,7 @@ class ErrorHandlingStandardizer:
         )
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Parse the AST
@@ -324,7 +324,7 @@ def main():
     )
 
     print(f"\n{'='*60}")
-    print(f"ERROR HANDLING STANDARDIZATION SUMMARY")
+    print("ERROR HANDLING STANDARDIZATION SUMMARY")
     print(f"{'='*60}")
     print(f"Files Processed: {len(standardizer.results)}")
     print(f"Functions Analyzed: {total_functions}")

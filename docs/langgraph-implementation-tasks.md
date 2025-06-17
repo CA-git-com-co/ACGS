@@ -32,7 +32,7 @@ This document outlines the detailed task breakdown for implementing LangGraph in
 
 4. **16.4 Docker Integration Testing**
    - Update AC service Dockerfile with LangGraph dependencies
-   - Test `docker-compose up -d ac_service` startup
+   - Test `docker-compose -f infrastructure/docker/docker-compose.yml up -d ac_service` startup
    - Validate service health at http://localhost:8001/health
    - Test workflow capabilities endpoint response
 

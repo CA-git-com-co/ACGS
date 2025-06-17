@@ -9,9 +9,9 @@ import json
 import logging
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 import numpy as np
@@ -46,8 +46,8 @@ class VulnerabilitySeverity(Enum):
 class AdversarialTestConfig:
     """Configuration for adversarial testing framework."""
 
-    target_services: List[str] = None
-    attack_categories: List[AttackCategory] = None
+    target_services: list[str] = None
+    attack_categories: list[AttackCategory] = None
     max_test_cases: int = 1000
     timeout_seconds: int = 600
     parallel_execution: bool = True
@@ -83,11 +83,11 @@ class VulnerabilityResult:
     attack_vector: str
     impact_assessment: str
     proof_of_concept: str
-    mitigation_recommendations: List[str]
+    mitigation_recommendations: list[str]
     cvss_score: float
     execution_time_ms: float
     timestamp: datetime
-    additional_metadata: Dict[str, Any] = None
+    additional_metadata: dict[str, Any] = None
 
 
 @dataclass
@@ -99,13 +99,13 @@ class AdversarialTestReport:
     end_time: datetime
     total_tests_executed: int
     vulnerabilities_found: int
-    vulnerability_distribution: Dict[VulnerabilitySeverity, int]
-    attack_success_rate: Dict[AttackCategory, float]
+    vulnerability_distribution: dict[VulnerabilitySeverity, int]
+    attack_success_rate: dict[AttackCategory, float]
     overall_security_score: float
-    critical_vulnerabilities: List[VulnerabilityResult]
-    recommendations: List[str]
-    test_coverage: Dict[str, float]
-    performance_impact: Dict[str, float]
+    critical_vulnerabilities: list[VulnerabilityResult]
+    recommendations: list[str]
+    test_coverage: dict[str, float]
+    performance_impact: dict[str, float]
 
 
 class AdversarialTestingFramework:
@@ -121,8 +121,8 @@ class AdversarialTestingFramework:
     def __init__(self, config: AdversarialTestConfig = None):
         self.config = config or AdversarialTestConfig()
         self.session_id = f"adversarial_test_{int(time.time())}"
-        self.vulnerabilities: List[VulnerabilityResult] = []
-        self.test_results: Dict[str, Any] = {}
+        self.vulnerabilities: list[VulnerabilityResult] = []
+        self.test_results: dict[str, Any] = {}
 
         # Service endpoints
         self.service_endpoints = {
@@ -176,7 +176,7 @@ class AdversarialTestingFramework:
         Returns:
             AdversarialTestReport: Comprehensive test results and recommendations
         """
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
         logger.info(
             f"Starting comprehensive adversarial assessment - Session: {self.session_id}"
         )
@@ -200,7 +200,7 @@ class AdversarialTestingFramework:
                 total_tests += len(category_results)
 
         # Generate comprehensive report
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
         report = self._generate_comprehensive_report(start_time, end_time, total_tests)
 
         logger.info(
@@ -208,7 +208,7 @@ class AdversarialTestingFramework:
         )
         return report
 
-    async def _check_service_availability(self) -> List[str]:
+    async def _check_service_availability(self) -> list[str]:
         """Check which services are available for testing."""
         available_services = []
 
@@ -227,8 +227,8 @@ class AdversarialTestingFramework:
         return available_services
 
     async def _run_category_tests(
-        self, category: AttackCategory, available_services: List[str]
-    ) -> List[VulnerabilityResult]:
+        self, category: AttackCategory, available_services: list[str]
+    ) -> list[VulnerabilityResult]:
         """Run tests for a specific attack category."""
         if category not in self.testers:
             logger.warning(f"No tester available for category: {category}")
@@ -252,7 +252,7 @@ class AdversarialTestingFramework:
         """Generate comprehensive adversarial testing report."""
 
         # Calculate vulnerability distribution
-        vulnerability_distribution = {severity: 0 for severity in VulnerabilitySeverity}
+        vulnerability_distribution = dict.fromkeys(VulnerabilitySeverity, 0)
         for vuln in self.vulnerabilities:
             vulnerability_distribution[vuln.severity] += 1
 
@@ -323,7 +323,7 @@ class AdversarialTestingFramework:
 
         return max(0.0, 1.0 - (total_weight / max_possible_weight))
 
-    def _generate_security_recommendations(self) -> List[str]:
+    def _generate_security_recommendations(self) -> list[str]:
         """Generate security recommendations based on findings."""
         recommendations = []
 
@@ -373,7 +373,7 @@ class AdversarialTestingFramework:
 
         return recommendations
 
-    def _calculate_test_coverage(self) -> Dict[str, float]:
+    def _calculate_test_coverage(self) -> dict[str, float]:
         """Calculate test coverage by service and category."""
         coverage = {}
 
@@ -397,7 +397,7 @@ class AdversarialTestingFramework:
 
         return coverage
 
-    def _calculate_performance_impact(self) -> Dict[str, float]:
+    def _calculate_performance_impact(self) -> dict[str, float]:
         """Calculate performance impact of adversarial tests."""
         if not self.vulnerabilities:
             return {}

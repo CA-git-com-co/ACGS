@@ -93,7 +93,7 @@ ls -la reports/acgs_critical_execution_report_*.json
 - **Location**: `blockchain/transaction_batching_config.json`
 - **Features**: Batch up to 10 operations, 60% cost reduction
 - **Target**: <0.01 SOL per governance action
-- **Template**: `blockchain/programs/quantumagi-core/src/batching.rs`
+- **Template**: `blockchain/programs/blockchain/src/batching.rs`
 
 **Formal Verification Optimization**
 - **Location**: `services/core/formal-verification/z3_optimization_config.json`
@@ -176,13 +176,13 @@ docker exec acgs_redis redis-cli info stats
 ### Troubleshooting
 ```bash
 # Check container status
-docker-compose -f infrastructure/docker/docker-compose.yml ps
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml ps
 
 # View service logs
-docker-compose -f infrastructure/docker/docker-compose.yml logs [service_name]
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml logs [service_name]
 
 # Restart specific service
-docker-compose -f infrastructure/docker/docker-compose.yml restart [service_name]
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml restart [service_name]
 ```
 
 ## 📋 Next Steps & Recommendations

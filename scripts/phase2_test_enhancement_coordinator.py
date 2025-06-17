@@ -11,7 +11,6 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 
 @dataclass
@@ -22,17 +21,17 @@ class TestCoverageTarget:
     current_coverage: float
     target_coverage: float
     priority: str
-    test_files: List[str] = field(default_factory=list)
+    test_files: list[str] = field(default_factory=list)
 
 
 @dataclass
 class Phase2ExecutionPlan:
     """Phase 2 execution plan configuration."""
 
-    anchor_targets: List[TestCoverageTarget]
-    python_targets: List[TestCoverageTarget]
-    e2e_targets: List[str]
-    success_criteria: Dict[str, float]
+    anchor_targets: list[TestCoverageTarget]
+    python_targets: list[TestCoverageTarget]
+    e2e_targets: list[str]
+    success_criteria: dict[str, float]
 
 
 class Phase2TestEnhancementCoordinator:

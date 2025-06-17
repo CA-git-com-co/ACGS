@@ -116,7 +116,7 @@ def main():
     # Save as SVG with transparent background
     plt.savefig(os.path.join(dgm_dir, "dgm_progress.svg"), transparent=True)
     plt.close()
-    print(f"\nProgress plot saved at:")
+    print("\nProgress plot saved at:")
     print(f"- {os.path.join(dgm_dir, 'dgm_progress.png')}")
     print(f"- {os.path.join(dgm_dir, 'dgm_progress.svg')}")
 

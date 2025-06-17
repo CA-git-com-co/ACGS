@@ -8,8 +8,7 @@ vulnerabilities in the ACGS-PGP microservices architecture.
 import json
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Dict, List
+from datetime import UTC, datetime
 
 import aiohttp
 
@@ -80,8 +79,8 @@ class CrossServiceVulnerabilityScanner:
         }
 
     async def run_tests(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run cross-service vulnerability tests."""
         vulnerabilities = []
 
@@ -110,9 +109,9 @@ class CrossServiceVulnerabilityScanner:
     async def _test_vulnerability_vector(
         self,
         vector: str,
-        available_services: List[str],
-        service_endpoints: Dict[str, str],
-    ) -> List[VulnerabilityResult]:
+        available_services: list[str],
+        service_endpoints: dict[str, str],
+    ) -> list[VulnerabilityResult]:
         """Test a specific cross-service vulnerability vector."""
 
         if vector == "service_authentication_bypass":
@@ -151,8 +150,8 @@ class CrossServiceVulnerabilityScanner:
             return []
 
     async def _test_service_authentication_bypass(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Test service-to-service authentication bypass."""
         vulnerabilities = []
         start_time = time.time()
@@ -225,7 +224,7 @@ class CrossServiceVulnerabilityScanner:
                                             ],
                                             cvss_score=9.0,
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(timezone.utc),
+                                            timestamp=datetime.now(UTC),
                                         )
                                     )
 
@@ -235,8 +234,8 @@ class CrossServiceVulnerabilityScanner:
         return vulnerabilities
 
     async def _test_inter_service_data_injection(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Test inter-service data injection attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -303,7 +302,7 @@ class CrossServiceVulnerabilityScanner:
                                             ],
                                             cvss_score=8.0,
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(timezone.utc),
+                                            timestamp=datetime.now(UTC),
                                         )
                                     )
 
@@ -313,8 +312,8 @@ class CrossServiceVulnerabilityScanner:
         return vulnerabilities
 
     async def _test_service_impersonation(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Test service impersonation attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -378,7 +377,7 @@ class CrossServiceVulnerabilityScanner:
                                             ],
                                             cvss_score=9.5,
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(timezone.utc),
+                                            timestamp=datetime.now(UTC),
                                         )
                                     )
 
@@ -387,7 +386,7 @@ class CrossServiceVulnerabilityScanner:
 
         return vulnerabilities
 
-    def _detect_auth_bypass_success(self, response_data: Dict, payload: Dict) -> bool:
+    def _detect_auth_bypass_success(self, response_data: dict, payload: dict) -> bool:
         """Detect if authentication bypass was successful."""
         response_str = json.dumps(response_data).lower()
 
@@ -403,7 +402,7 @@ class CrossServiceVulnerabilityScanner:
         return any(indicator in response_str for indicator in bypass_indicators)
 
     def _detect_data_injection_success(
-        self, response_data: Dict, payload: Dict
+        self, response_data: dict, payload: dict
     ) -> bool:
         """Detect if data injection was successful."""
         response_str = json.dumps(response_data).lower()
@@ -420,13 +419,13 @@ class CrossServiceVulnerabilityScanner:
         ]
 
         # Check if payload was reflected in response
-        for key, value in payload.items():
+        for _key, value in payload.items():
             if str(value).lower() in response_str:
                 return True
 
         return any(indicator in response_str for indicator in injection_indicators)
 
-    def _detect_impersonation_success(self, response_data: Dict, payload: Dict) -> bool:
+    def _detect_impersonation_success(self, response_data: dict, payload: dict) -> bool:
         """Detect if service impersonation was successful."""
         response_str = json.dumps(response_data).lower()
 
@@ -441,36 +440,36 @@ class CrossServiceVulnerabilityScanner:
         return any(indicator in response_str for indicator in impersonation_indicators)
 
     async def _test_service_mesh_exploitation(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Test service mesh exploitation attacks."""
         # Implementation for service mesh exploitation testing
         return []
 
     async def _test_api_gateway_bypass(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Test API gateway bypass attacks."""
         # Implementation for API gateway bypass testing
         return []
 
     async def _test_service_discovery_manipulation(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Test service discovery manipulation attacks."""
         # Implementation for service discovery manipulation testing
         return []
 
     async def _test_load_balancer_exploitation(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Test load balancer exploitation attacks."""
         # Implementation for load balancer exploitation testing
         return []
 
     async def _test_circuit_breaker_bypass(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Test circuit breaker bypass attacks."""
         # Implementation for circuit breaker bypass testing
         return []

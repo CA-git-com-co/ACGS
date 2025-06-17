@@ -12,7 +12,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -21,12 +21,12 @@ class CoverageResult:
 
     module: str
     coverage_pct: float
-    missing_lines: List[int]
-    excluded_lines: List[int]
+    missing_lines: list[int]
+    excluded_lines: list[int]
     total_lines: int
     covered_lines: int
     branch_coverage: float = 0.0
-    missing_branches: List[str] = None
+    missing_branches: list[str] = None
 
 
 class CoverageAnalyzer:
@@ -37,7 +37,7 @@ class CoverageAnalyzer:
         self.coverage_data = {}
         self.results = []
 
-    def run_coverage_analysis(self) -> Dict[str, Any]:
+    def run_coverage_analysis(self) -> dict[str, Any]:
         """Run comprehensive coverage analysis."""
         print("🔍 Running ACGS-PGP Coverage Analysis")
         print("=" * 60)
@@ -124,7 +124,7 @@ class CoverageAnalyzer:
             return
 
         try:
-            with open(coverage_file, "r") as f:
+            with open(coverage_file) as f:
                 self.coverage_data = json.load(f)
 
             # Parse file coverage data
@@ -174,7 +174,7 @@ class CoverageAnalyzer:
         except Exception as e:
             print(f"❌ Failed to parse coverage data: {e}")
 
-    def _analyze_coverage_gaps(self) -> List[Dict[str, Any]]:
+    def _analyze_coverage_gaps(self) -> list[dict[str, Any]]:
         """Analyze coverage gaps and identify areas needing attention."""
         gaps = []
 
@@ -233,7 +233,7 @@ class CoverageAnalyzer:
 
         return priority
 
-    def _get_module_recommendations(self, result: CoverageResult) -> List[str]:
+    def _get_module_recommendations(self, result: CoverageResult) -> list[str]:
         """Get specific recommendations for improving module coverage."""
         recommendations = []
 
@@ -269,7 +269,7 @@ class CoverageAnalyzer:
 
         return recommendations
 
-    def _generate_recommendations(self) -> Dict[str, Any]:
+    def _generate_recommendations(self) -> dict[str, Any]:
         """Generate overall recommendations for improving coverage."""
         total_modules = len(self.results)
         modules_above_95 = len([r for r in self.results if r.coverage_pct >= 95])
@@ -327,8 +327,8 @@ class CoverageAnalyzer:
         return recommendations
 
     def _create_coverage_report(
-        self, gaps: List[Dict], recommendations: Dict
-    ) -> Dict[str, Any]:
+        self, gaps: list[dict], recommendations: dict
+    ) -> dict[str, Any]:
         """Create comprehensive coverage report."""
         return {
             "timestamp": datetime.now().isoformat(),
@@ -357,7 +357,7 @@ class CoverageAnalyzer:
             ],
         }
 
-    def _save_coverage_results(self, report: Dict[str, Any]):
+    def _save_coverage_results(self, report: dict[str, Any]):
         """Save coverage analysis results."""
         # Save JSON report
         report_file = self.project_root / "coverage_analysis_report.json"
@@ -368,7 +368,7 @@ class CoverageAnalyzer:
 
         # Print summary
         summary = report["summary"]
-        print(f"\n📊 Coverage Summary:")
+        print("\n📊 Coverage Summary:")
         print(f"  Overall Coverage: {summary['overall_coverage']:.1f}%")
         print(f"  Target Coverage: {summary['target_coverage']:.1f}%")
         print(

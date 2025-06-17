@@ -81,22 +81,22 @@ psql $DATABASE_URL -c "\dt qec_*"
 ### 4. Build and Deploy Services
 ```bash
 # Build all services
-docker-compose build
+docker-compose -f infrastructure/docker/docker-compose.yml build
 
 # Start core services
-docker-compose up -d postgres redis
+docker-compose -f infrastructure/docker/docker-compose.yml up -d postgres redis
 
 # Wait for database to be ready
 sleep 10
 
 # Start application services
-docker-compose up -d ac_service gs_service fv_service pgc_service integrity_service
+docker-compose -f infrastructure/docker/docker-compose.yml up -d ac_service gs_service fv_service pgc_service integrity_service
 
 # Start monitoring stack
-docker-compose up -d prometheus grafana
+docker-compose -f infrastructure/docker/docker-compose.yml up -d prometheus grafana
 
 # Start frontend
-docker-compose up -d frontend nginx
+docker-compose -f infrastructure/docker/docker-compose.yml up -d frontend nginx
 ```
 
 ### 5. Verify Deployment

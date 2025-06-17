@@ -14,11 +14,9 @@ Key Features:
 """
 
 import asyncio
-import json
-import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import aiohttp
 import structlog
@@ -34,11 +32,11 @@ class OpenRouterResponse:
 
     content: str
     model: str
-    usage: Dict[str, int]
+    usage: dict[str, int]
     response_time_ms: float
     success: bool
-    error: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    error: str | None = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -46,11 +44,11 @@ class OpenRouterRequest:
     """Request to OpenRouter API."""
 
     model: str
-    messages: List[Dict[str, str]]
+    messages: list[dict[str, str]]
     temperature: float = 0.3
     max_tokens: int = 4096
     timeout: float = 30.0
-    extra_headers: Optional[Dict[str, str]] = None
+    extra_headers: dict[str, str] | None = None
 
 
 class OpenRouterClient:
@@ -61,7 +59,7 @@ class OpenRouterClient:
     and integration with ACGS-1 constitutional governance requirements.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -73,7 +71,7 @@ class OpenRouterClient:
             raise ValueError("OpenRouter API key is required")
 
         self.base_url = "https://openrouter.ai/api/v1"
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
         # Performance tracking
         self.total_requests = 0
@@ -124,8 +122,8 @@ class OpenRouterClient:
             logger.info("OpenRouter client closed")
 
     def _get_default_headers(
-        self, extra_headers: Optional[Dict[str, str]] = None
-    ) -> Dict[str, str]:
+        self, extra_headers: dict[str, str] | None = None
+    ) -> dict[str, str]:
         """Get default headers for OpenRouter API requests."""
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -229,7 +227,7 @@ class OpenRouterClient:
 
     async def _make_request_with_retry(
         self, method: str, url: str, max_retries: int = 3, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Make HTTP request with exponential backoff retry logic."""
 
         for attempt in range(max_retries + 1):
@@ -263,7 +261,7 @@ class OpenRouterClient:
                             message=f"HTTP {response.status}: {error_text}",
                         )
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 if attempt < max_retries:
                     wait_time = 2**attempt
                     logger.warning(
@@ -294,7 +292,7 @@ class OpenRouterClient:
         """Get OpenRouter model ID from friendly name."""
         return self.supported_models.get(model_name, model_name)
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get client performance metrics."""
         success_rate = (self.successful_requests / max(1, self.total_requests)) * 100
         avg_response_time = self.total_response_time / max(1, self.successful_requests)
@@ -308,7 +306,7 @@ class OpenRouterClient:
             "supported_models": list(self.supported_models.keys()),
         }
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check of OpenRouter API connectivity."""
         try:
             test_request = OpenRouterRequest(
@@ -339,7 +337,7 @@ class OpenRouterClient:
 
 
 # Global client instance
-_openrouter_client: Optional[OpenRouterClient] = None
+_openrouter_client: OpenRouterClient | None = None
 
 
 async def get_openrouter_client() -> OpenRouterClient:

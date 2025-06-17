@@ -20,7 +20,7 @@ Target Performance:
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from services.shared.wina.config import load_wina_config_from_env
 from services.shared.wina.metrics import WINAMetrics
@@ -84,13 +84,13 @@ class WINARegoSynthesisMetrics:
 class WINARegoSynthesisResult:
     """Result of WINA-optimized Rego policy synthesis."""
 
-    policy_suggestion: Optional[PolicySuggestion]
+    policy_suggestion: PolicySuggestion | None
     rego_content: str
     constitutional_compliance: bool
-    wina_optimization: Optional[WINAOptimizationResult]
+    wina_optimization: WINAOptimizationResult | None
     synthesis_metrics: WINARegoSynthesisMetrics
-    validation_result: Optional[Dict[str, Any]]
-    warnings: List[str]
+    validation_result: dict[str, Any] | None
+    warnings: list[str]
     success: bool
 
 
@@ -118,14 +118,18 @@ class WINARegoSynthesizer:
         # Initialize WINA components
         if enable_wina:
             try:
-                self.wina_config, self.wina_integration_config = load_wina_config_from_env()
+                self.wina_config, self.wina_integration_config = (
+                    load_wina_config_from_env()
+                )
                 self.wina_integrator = WINAModelIntegrator(
                     self.wina_config, self.wina_integration_config
                 )
                 self.wina_metrics = WINAMetrics(self.wina_config)
                 logger.info("WINA optimization enabled for Rego policy synthesis")
             except Exception as e:
-                logger.warning(f"Failed to initialize WINA: {e}. Disabling WINA optimization.")
+                logger.warning(
+                    f"Failed to initialize WINA: {e}. Disabling WINA optimization."
+                )
                 self.enable_wina = False
 
         # Initialize LLM components
@@ -136,7 +140,9 @@ class WINARegoSynthesizer:
         if ALPHAEVOLVE_AVAILABLE:
             try:
                 llm_service = get_llm_service("real")  # Use real LLM for production
-                self.alphaevolve_synthesizer = LLMPolicyGenerator(llm_service=llm_service)
+                self.alphaevolve_synthesizer = LLMPolicyGenerator(
+                    llm_service=llm_service
+                )
                 logger.info("AlphaEvolve PolicySynthesizer initialized")
             except Exception as e:
                 logger.warning(f"Failed to initialize AlphaEvolve synthesizer: {e}")
@@ -145,7 +151,7 @@ class WINARegoSynthesizer:
             self.alphaevolve_synthesizer = None
 
         # Performance tracking
-        self._synthesis_history: List[WINARegoSynthesisResult] = []
+        self._synthesis_history: list[WINARegoSynthesisResult] = []
         self._performance_metrics = {
             "total_syntheses": 0,
             "wina_optimized_syntheses": 0,
@@ -158,10 +164,10 @@ class WINARegoSynthesizer:
     async def synthesize_rego_policy(
         self,
         synthesis_goal: str,
-        constitutional_principles: List[Dict[str, Any]],
-        constraints: Optional[List[str]] = None,
-        context_data: Optional[Dict[str, Any]] = None,
-        apply_wina: Optional[bool] = None,
+        constitutional_principles: list[dict[str, Any]],
+        constraints: list[str] | None = None,
+        context_data: dict[str, Any] | None = None,
+        apply_wina: bool | None = None,
     ) -> WINARegoSynthesisResult:
         """
         Synthesize a Rego policy with WINA optimization.
@@ -187,8 +193,10 @@ class WINARegoSynthesizer:
             )
 
             # Phase 1: Constitutional prompting with WINA optimization
-            constitutional_synthesis_input = await self._prepare_constitutional_synthesis_input(
-                synthesis_goal, constitutional_principles, constraints, context_data
+            constitutional_synthesis_input = (
+                await self._prepare_constitutional_synthesis_input(
+                    synthesis_goal, constitutional_principles, constraints, context_data
+                )
             )
 
             # Phase 2: WINA-optimized constitutional synthesis
@@ -240,7 +248,8 @@ class WINARegoSynthesizer:
                 synthesis_metrics=synthesis_metrics,
                 validation_result=validation_result,
                 warnings=warnings,
-                success=validation_result.get("is_valid", False) and constitutional_compliance,
+                success=validation_result.get("is_valid", False)
+                and constitutional_compliance,
             )
 
             # Update tracking
@@ -283,9 +292,9 @@ class WINARegoSynthesizer:
     async def _prepare_constitutional_synthesis_input(
         self,
         synthesis_goal: str,
-        constitutional_principles: List[Dict[str, Any]],
-        constraints: Optional[List[str]],
-        context_data: Optional[Dict[str, Any]],
+        constitutional_principles: list[dict[str, Any]],
+        constraints: list[str] | None,
+        context_data: dict[str, Any] | None,
     ) -> ConstitutionalSynthesisInput:
         """Prepare constitutional synthesis input with Rego-specific prompting."""
 
@@ -344,11 +353,11 @@ class WINARegoSynthesizer:
     async def _synthesize_with_alphaevolve(
         self,
         synthesis_goal: str,
-        constitutional_principles: List[Dict[str, Any]],
-        constraints: Optional[List[str]],
-        context_data: Optional[Dict[str, Any]],
+        constitutional_principles: list[dict[str, Any]],
+        constraints: list[str] | None,
+        context_data: dict[str, Any] | None,
         wina_synthesis_result: WINAOptimizedSynthesisResult,
-    ) -> Optional[PolicySuggestion]:
+    ) -> PolicySuggestion | None:
         """Synthesize policy using AlphaEvolve with WINA optimization context."""
 
         if not self.alphaevolve_synthesizer:
@@ -370,7 +379,9 @@ class WINARegoSynthesizer:
             )
 
             # Synthesize with AlphaEvolve
-            policy_suggestion = self.alphaevolve_synthesizer.synthesize_policy(alphaevolve_input)
+            policy_suggestion = self.alphaevolve_synthesizer.synthesize_policy(
+                alphaevolve_input
+            )
 
             if policy_suggestion:
                 logger.info(
@@ -389,7 +400,7 @@ class WINARegoSynthesizer:
     async def _extract_rego_content(
         self,
         wina_synthesis_result: WINAOptimizedSynthesisResult,
-        policy_suggestion: Optional[PolicySuggestion],
+        policy_suggestion: PolicySuggestion | None,
         synthesis_goal: str,
     ) -> str:
         """Extract and prioritize Rego content from synthesis results."""
@@ -491,7 +502,7 @@ default deny = false
 
         return content.strip()
 
-    async def _validate_rego_policy(self, rego_content: str) -> Dict[str, Any]:
+    async def _validate_rego_policy(self, rego_content: str) -> dict[str, Any]:
         """Validate Rego policy syntax and structure."""
 
         validation_result = {
@@ -516,11 +527,16 @@ default deny = false
 
             # Check for basic Rego syntax elements
             required_elements = ["package ", "default ", "{", "}"]
-            missing_elements = [elem for elem in required_elements if elem not in rego_content]
+            missing_elements = [
+                elem for elem in required_elements if elem not in rego_content
+            ]
 
             if missing_elements:
                 validation_result["warnings"].extend(
-                    [f"Missing Rego element: {elem.strip()}" for elem in missing_elements]
+                    [
+                        f"Missing Rego element: {elem.strip()}"
+                        for elem in missing_elements
+                    ]
                 )
 
             # Basic syntax validation (simplified)
@@ -540,7 +556,8 @@ default deny = false
 
             # Overall validation
             validation_result["is_valid"] = (
-                validation_result["syntax_valid"] and len(validation_result["errors"]) == 0
+                validation_result["syntax_valid"]
+                and len(validation_result["errors"]) == 0
             )
 
             logger.debug(f"Rego validation result: {validation_result}")
@@ -554,8 +571,8 @@ default deny = false
     async def _verify_constitutional_compliance(
         self,
         rego_content: str,
-        constitutional_principles: List[Dict[str, Any]],
-        wina_optimization: Optional[WINAOptimizationResult],
+        constitutional_principles: list[dict[str, Any]],
+        wina_optimization: WINAOptimizationResult | None,
     ) -> bool:
         """Verify constitutional compliance of the generated Rego policy."""
 
@@ -569,7 +586,9 @@ default deny = false
             # Check if policy content references constitutional principles
             principle_references = 0
             for principle in constitutional_principles:
-                principle_text = principle.get("description", "") or principle.get("text", "")
+                principle_text = principle.get("description", "") or principle.get(
+                    "text", ""
+                )
                 if principle_text:
                     # Simple keyword matching (could be enhanced with semantic analysis)
                     keywords = principle_text.lower().split()[:5]  # Take first 5 words
@@ -579,7 +598,9 @@ default deny = false
                             break
 
             # Constitutional compliance based on principle integration
-            principle_compliance = principle_references > 0 or len(constitutional_principles) == 0
+            principle_compliance = (
+                principle_references > 0 or len(constitutional_principles) == 0
+            )
             compliance_checks.append(principle_compliance)
 
             # Check for basic policy structure compliance
@@ -589,7 +610,9 @@ default deny = false
             compliance_checks.append(structure_compliance)
 
             # Overall compliance
-            constitutional_compliance = all(compliance_checks) if compliance_checks else True
+            constitutional_compliance = (
+                all(compliance_checks) if compliance_checks else True
+            )
 
             logger.debug(
                 f"Constitutional compliance: {constitutional_compliance}, "
@@ -606,7 +629,7 @@ default deny = false
         self,
         wina_synthesis_result: WINAOptimizedSynthesisResult,
         synthesis_time: float,
-        validation_result: Dict[str, Any],
+        validation_result: dict[str, Any],
         constitutional_compliance: bool,
     ) -> WINARegoSynthesisMetrics:
         """Calculate comprehensive synthesis metrics."""
@@ -618,7 +641,9 @@ default deny = false
 
         if wina_synthesis_result.wina_optimization:
             gflops_reduction = wina_synthesis_result.wina_optimization.gflops_reduction
-            accuracy_preservation = wina_synthesis_result.wina_optimization.accuracy_preservation
+            accuracy_preservation = (
+                wina_synthesis_result.wina_optimization.accuracy_preservation
+            )
             optimization_applied = True
 
         # Calculate policy complexity score (simplified)
@@ -657,15 +682,19 @@ default deny = false
             # Update running averages
             if result.wina_optimization:
                 current_gflops = self._performance_metrics["average_gflops_reduction"]
-                current_accuracy = self._performance_metrics["average_accuracy_preservation"]
+                current_accuracy = self._performance_metrics[
+                    "average_accuracy_preservation"
+                ]
 
                 n = self._performance_metrics["wina_optimized_syntheses"]
                 if n > 0:
                     self._performance_metrics["average_gflops_reduction"] = (
-                        current_gflops * (n - 1) + result.synthesis_metrics.gflops_reduction
+                        current_gflops * (n - 1)
+                        + result.synthesis_metrics.gflops_reduction
                     ) / n
                     self._performance_metrics["average_accuracy_preservation"] = (
-                        current_accuracy * (n - 1) + result.synthesis_metrics.accuracy_preservation
+                        current_accuracy * (n - 1)
+                        + result.synthesis_metrics.accuracy_preservation
                     ) / n
 
             # Update success rates
@@ -673,14 +702,18 @@ default deny = false
                 1 for r in self._synthesis_history if r.constitutional_compliance
             )
             valid_syntheses = sum(
-                1 for r in self._synthesis_history if r.synthesis_metrics.rego_validation_success
+                1
+                for r in self._synthesis_history
+                if r.synthesis_metrics.rego_validation_success
             )
 
             total = len(self._synthesis_history)
             self._performance_metrics["constitutional_compliance_rate"] = (
                 compliant_syntheses / total
             )
-            self._performance_metrics["rego_validation_success_rate"] = valid_syntheses / total
+            self._performance_metrics["rego_validation_success_rate"] = (
+                valid_syntheses / total
+            )
 
             # Log performance update
             logger.debug(
@@ -692,7 +725,7 @@ default deny = false
         except Exception as e:
             logger.error(f"Failed to update synthesis tracking: {e}")
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get comprehensive performance summary."""
 
         return {
@@ -717,7 +750,7 @@ default deny = false
 
 
 # Global instance for easy access
-_wina_rego_synthesizer: Optional[WINARegoSynthesizer] = None
+_wina_rego_synthesizer: WINARegoSynthesizer | None = None
 
 
 def get_wina_rego_synthesizer(enable_wina: bool = True) -> WINARegoSynthesizer:
@@ -740,10 +773,10 @@ def get_wina_rego_synthesizer(enable_wina: bool = True) -> WINARegoSynthesizer:
 
 async def synthesize_rego_policy_with_wina(
     synthesis_goal: str,
-    constitutional_principles: List[Dict[str, Any]],
-    constraints: Optional[List[str]] = None,
-    context_data: Optional[Dict[str, Any]] = None,
-    apply_wina: Optional[bool] = None,
+    constitutional_principles: list[dict[str, Any]],
+    constraints: list[str] | None = None,
+    context_data: dict[str, Any] | None = None,
+    apply_wina: bool | None = None,
 ) -> WINARegoSynthesisResult:
     """
     Helper function to synthesize Rego policy with WINA optimization.
@@ -769,8 +802,8 @@ async def synthesize_rego_policy_with_wina(
 
 
 async def batch_synthesize_rego_policies_with_wina(
-    synthesis_requests: List[Dict[str, Any]], enable_wina: bool = True
-) -> List[WINARegoSynthesisResult]:
+    synthesis_requests: list[dict[str, Any]], enable_wina: bool = True
+) -> list[WINARegoSynthesisResult]:
     """
     Batch synthesize multiple Rego policies with WINA optimization.
 
@@ -822,7 +855,7 @@ async def batch_synthesize_rego_policies_with_wina(
     return results
 
 
-def get_wina_rego_synthesis_performance_summary() -> Dict[str, Any]:
+def get_wina_rego_synthesis_performance_summary() -> dict[str, Any]:
     """
     Get performance summary for WINA Rego synthesis operations.
 
@@ -888,7 +921,7 @@ class WINARegoSynthesisIntegration:
     async def integrate_with_alphaevolve_bridge(
         ec_context: str,
         optimization_objective: str,
-        constitutional_constraints: List[str],
+        constitutional_constraints: list[str],
         apply_wina: bool = True,
     ) -> WINARegoSynthesisResult:
         """
@@ -903,9 +936,7 @@ class WINARegoSynthesisIntegration:
         Returns:
             WINARegoSynthesisResult
         """
-        synthesis_goal = (
-            f"Generate governance rules for evolutionary computation: {optimization_objective}"
-        )
+        synthesis_goal = f"Generate governance rules for evolutionary computation: {optimization_objective}"
 
         # Create constitutional principles from constraints
         constitutional_principles = [

@@ -444,9 +444,9 @@ class ApplicationsRestructurer:
         
         # Check for any remaining old import patterns
         old_import_patterns = [
-            "from src.frontend", 
+            "from services.core.frontend", 
             "import src.frontend",
-            "from src.backend",
+            "from services.core.backend",
             "import src.backend"
         ]
         

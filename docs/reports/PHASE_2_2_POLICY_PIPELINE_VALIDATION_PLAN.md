@@ -101,8 +101,8 @@ scripts/policy_latency_testing.py --target-latency 50ms
 1. **Kubernetes Auto-scaling Testing**
    ```yaml
    # Update deployment configurations
-   k8s/deployments/ac-service-deployment.yaml
-   k8s/deployments/gs-service-deployment.yaml
+   infrastructure/kubernetes/deployments/ac-service-deployment.yaml
+   infrastructure/kubernetes/deployments/gs-service-deployment.yaml
    ```
 
 2. **Load Balancer Configuration**

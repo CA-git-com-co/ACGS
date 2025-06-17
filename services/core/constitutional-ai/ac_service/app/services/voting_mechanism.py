@@ -19,7 +19,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -68,7 +68,11 @@ class VoteWeight:
     @property
     def total_weight(self) -> float:
         """Calculate total vote weight."""
-        return self.base_weight * self.role_multiplier + self.expertise_bonus + self.stake_weight
+        return (
+            self.base_weight * self.role_multiplier
+            + self.expertise_bonus
+            + self.stake_weight
+        )
 
 
 @dataclass
@@ -88,7 +92,7 @@ class VotingResult:
     actual_threshold: float
     algorithm_used: ConsensusAlgorithm
     result: str  # "approved", "rejected", "no_consensus"
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -101,11 +105,11 @@ class VotingSession:
     threshold: float
     start_time: datetime
     end_time: datetime
-    eligible_voters: List[int]
-    vote_weights: Dict[int, VoteWeight]
-    current_votes: Dict[int, VoteType]
+    eligible_voters: list[int]
+    vote_weights: dict[int, VoteWeight]
+    current_votes: dict[int, VoteType]
     status: VotingStatus
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class VotingMechanismService:
@@ -122,8 +126,8 @@ class VotingMechanismService:
         # sha256: func_hash
         """Initialize the voting mechanism service."""
         self.db = db_session
-        self.active_sessions: Dict[str, VotingSession] = {}
-        self.vote_history: List[VotingResult] = []
+        self.active_sessions: dict[str, VotingSession] = {}
+        self.vote_history: list[VotingResult] = []
 
         # Configuration
         self.fraud_detection_enabled = True
@@ -147,9 +151,9 @@ class VotingMechanismService:
         amendment_id: int,
         algorithm: ConsensusAlgorithm,
         duration_hours: int = 72,
-        eligible_voters: Optional[List[int]] = None,
-        custom_threshold: Optional[float] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        eligible_voters: list[int] | None = None,
+        custom_threshold: float | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> str:
         """
         Create a new voting session for an amendment.
@@ -178,7 +182,9 @@ class VotingMechanismService:
                 eligible_voters = await self._get_council_members()
 
             # Generate vote weights
-            vote_weights = await self._calculate_vote_weights(eligible_voters, algorithm)
+            vote_weights = await self._calculate_vote_weights(
+                eligible_voters, algorithm
+            )
 
             # Determine threshold
             threshold = custom_threshold or self.consensus_thresholds[algorithm]
@@ -209,7 +215,9 @@ class VotingMechanismService:
             # Send notifications
             await self._notify_eligible_voters(session)
 
-            logger.info(f"Created voting session {session_id} for amendment " f"{amendment_id}")
+            logger.info(
+                f"Created voting session {session_id} for amendment " f"{amendment_id}"
+            )
             return session_id
 
         except Exception as e:
@@ -221,8 +229,8 @@ class VotingMechanismService:
         session_id: str,
         voter_id: int,
         vote: VoteType,
-        reasoning: Optional[str] = None,
-        vote_signature: Optional[str] = None,
+        reasoning: str | None = None,
+        vote_signature: str | None = None,
     ) -> bool:
         """
         Cast a vote in an active session.
@@ -265,7 +273,9 @@ class VotingMechanismService:
 
             # Verify vote signature if required
             if self.vote_verification_required and vote_signature:
-                signature_valid = await self._verify_vote_signature(voter_id, vote, vote_signature)
+                signature_valid = await self._verify_vote_signature(
+                    voter_id, vote, vote_signature
+                )
                 if not signature_valid:
                     raise ValueError("Invalid vote signature")
 
@@ -305,7 +315,9 @@ class VotingMechanismService:
                 raise ValueError(f"Voting session {session_id} not found")
 
             # Count votes
-            votes_for = sum(1 for vote in session.current_votes.values() if vote == VoteType.FOR)
+            votes_for = sum(
+                1 for vote in session.current_votes.values() if vote == VoteType.FOR
+            )
             votes_against = sum(
                 1 for vote in session.current_votes.values() if vote == VoteType.AGAINST
             )
@@ -330,13 +342,15 @@ class VotingMechanismService:
                     weighted_abstain += weight
 
             # Apply consensus algorithm
-            consensus_reached, actual_threshold, result = await self._apply_consensus_algorithm(
-                session,
-                votes_for,
-                votes_against,
-                total_votes,
-                weighted_for,
-                weighted_against,
+            consensus_reached, actual_threshold, result = (
+                await self._apply_consensus_algorithm(
+                    session,
+                    votes_for,
+                    votes_against,
+                    total_votes,
+                    weighted_for,
+                    weighted_against,
+                )
             )
 
             # Create result object
@@ -395,7 +409,9 @@ class VotingMechanismService:
             session.status = VotingStatus.COMPLETED
 
             # Update amendment based on result
-            await self._update_amendment_from_voting_result(session.amendment_id, result)
+            await self._update_amendment_from_voting_result(
+                session.amendment_id, result
+            )
 
             # Remove from active sessions
             del self.active_sessions[session_id]
@@ -403,14 +419,17 @@ class VotingMechanismService:
             # Send final notifications
             await self._notify_voting_completion(session, result)
 
-            logger.info(f"Finalized voting session {session_id} with result: " f"{result.result}")
+            logger.info(
+                f"Finalized voting session {session_id} with result: "
+                f"{result.result}"
+            )
             return result
 
         except Exception as e:
             logger.error(f"Failed to finalize voting session: {e}")
             raise
 
-    async def get_voting_status(self, session_id: str) -> Dict[str, Any]:
+    async def get_voting_status(self, session_id: str) -> dict[str, Any]:
         """
         Get current status of a voting session.
 
@@ -429,7 +448,9 @@ class VotingMechanismService:
             result = await self.calculate_voting_result(session_id)
 
             # Time remaining
-            time_remaining = max(0, (session.end_time - datetime.utcnow()).total_seconds())
+            time_remaining = max(
+                0, (session.end_time - datetime.utcnow()).total_seconds()
+            )
 
             return {
                 "session_id": session_id,
@@ -437,7 +458,9 @@ class VotingMechanismService:
                 "status": session.status.value,
                 "algorithm": session.algorithm.value,
                 "time_remaining_seconds": time_remaining,
-                "participation_rate": (result.total_votes / result.total_eligible_voters),
+                "participation_rate": (
+                    result.total_votes / result.total_eligible_voters
+                ),
                 "current_result": result.result,
                 "consensus_reached": result.consensus_reached,
                 "votes": {
@@ -470,15 +493,15 @@ class VotingMechanismService:
         data = f"{amendment_id}_{timestamp}"
         return hashlib.sha256(data.encode()).hexdigest()[:16]
 
-    async def _get_council_members(self) -> List[int]:
+    async def _get_council_members(self) -> list[int]:
         """Get list of Constitutional Council member IDs."""
         # This would query the user/role system
         # For now, return a placeholder
         return [1, 2, 3, 4, 5]  # Replace with actual query
 
     async def _calculate_vote_weights(
-        self, voter_ids: List[int], algorithm: ConsensusAlgorithm
-    ) -> Dict[int, VoteWeight]:
+        self, voter_ids: list[int], algorithm: ConsensusAlgorithm
+    ) -> dict[int, VoteWeight]:
         """Calculate vote weights for each voter."""
         weights = {}
 
@@ -531,7 +554,7 @@ class VotingMechanismService:
         total_votes: int,
         weighted_for: float,
         weighted_against: float,
-    ) -> Tuple[bool, float, str]:
+    ) -> tuple[bool, float, str]:
         """
         Apply the consensus algorithm to determine result.
 
@@ -581,7 +604,9 @@ class VotingMechanismService:
             quadratic_against = weighted_against**0.5
             quadratic_total = quadratic_for + quadratic_against
 
-            actual_threshold = quadratic_for / quadratic_total if quadratic_total > 0 else 0.0
+            actual_threshold = (
+                quadratic_for / quadratic_total if quadratic_total > 0 else 0.0
+            )
             consensus_reached = actual_threshold >= required_threshold
             result = "approved" if consensus_reached else "rejected"
 
@@ -595,14 +620,16 @@ class VotingMechanismService:
         session_id: str,
         voter_id: int,
         vote: VoteType,
-        signature: Optional[str],
+        signature: str | None,
     ) -> bool:
         """Detect potential voting fraud."""
         # Implement fraud detection logic
         # Check for duplicate votes, timing patterns, etc.
         return False  # Placeholder
 
-    async def _verify_vote_signature(self, voter_id: int, vote: VoteType, signature: str) -> bool:
+    async def _verify_vote_signature(
+        self, voter_id: int, vote: VoteType, signature: str
+    ) -> bool:
         """Verify cryptographic vote signature."""
         # Implement signature verification
         return True  # Placeholder
@@ -616,7 +643,9 @@ class VotingMechanismService:
     ) -> None:
         """Update amendment with voting information."""
         # This would update the amendment record in the database
-        logger.info(f"Updated amendment {amendment_id} voting status to " f"{status.value}")
+        logger.info(
+            f"Updated amendment {amendment_id} voting status to " f"{status.value}"
+        )
 
     async def _update_amendment_from_voting_result(
         self, amendment_id: int, result: VotingResult
@@ -631,18 +660,22 @@ class VotingMechanismService:
         session_id: str,
         voter_id: int,
         vote: VoteType,
-        reasoning: Optional[str],
+        reasoning: str | None,
     ) -> None:
         """Store individual vote record in database."""
         # Store vote record for audit trail
-        logger.info(f"Stored vote record for voter {voter_id} in session " f"{session_id}")
+        logger.info(
+            f"Stored vote record for voter {voter_id} in session " f"{session_id}"
+        )
 
     async def _check_consensus(self, session_id: str) -> None:
         """Check if consensus has been reached early."""
         session = self.active_sessions[session_id]
         result = await self.calculate_voting_result(session_id)
 
-        if result.consensus_reached and len(session.current_votes) == len(session.eligible_voters):
+        if result.consensus_reached and len(session.current_votes) == len(
+            session.eligible_voters
+        ):
             # Early completion if all votes are in and consensus is reached
             await self.finalize_voting_session(session_id)
 
@@ -664,14 +697,16 @@ class VotingMechanismService:
         # Send WebSocket updates to connected clients
         logger.info(f"Broadcasted voting update for session {session_id}")
 
-    async def _notify_voting_completion(self, session: VotingSession, result: VotingResult) -> None:
+    async def _notify_voting_completion(
+        self, session: VotingSession, result: VotingResult
+    ) -> None:
         """Send voting completion notifications."""
         # Send completion notifications
         logger.info(f"Notified completion of voting session {session.session_id}")
 
 
 # Global service instance
-_voting_service: Optional[VotingMechanismService] = None
+_voting_service: VotingMechanismService | None = None
 
 
 async def get_voting_service(db: AsyncSession) -> VotingMechanismService:

@@ -38,7 +38,7 @@ async def wait_for_service(service_name: str, port: int, max_wait: int = 60) -> 
     """Wait for a service to become healthy."""
     print(f"   ⏳ Waiting for {service_name} on port {port}...")
 
-    for i in range(max_wait):
+    for _i in range(max_wait):
         if await check_service_health(service_name, port):
             print(f"   ✅ {service_name} is healthy")
             return True
@@ -73,7 +73,7 @@ def start_docker_services():
             print("   ✅ Docker services started successfully")
             return True
         else:
-            print(f"   ❌ Docker services failed to start:")
+            print("   ❌ Docker services failed to start:")
             print(f"   STDOUT: {result.stdout}")
             print(f"   STDERR: {result.stderr}")
             return False
@@ -214,7 +214,7 @@ async def generate_deployment_report(healthy_services, integration_tests):
     service_health = len(healthy_services) / len(SERVICES)
     integration_health = len(integration_tests) >= 2
 
-    print(f"\n🎯 Overall Status:")
+    print("\n🎯 Overall Status:")
     print(
         f"   Services: {len(healthy_services)}/{len(SERVICES)} healthy ({service_health:.1%})"
     )
@@ -244,7 +244,7 @@ async def generate_deployment_report(healthy_services, integration_tests):
     with open("phase2_deployment_report.json", "w") as f:
         json.dump(report, f, indent=2)
 
-    print(f"\n📄 Deployment report saved to: phase2_deployment_report.json")
+    print("\n📄 Deployment report saved to: phase2_deployment_report.json")
 
     return deployment_status == "SUCCESS"
 

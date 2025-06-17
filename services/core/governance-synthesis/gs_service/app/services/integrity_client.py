@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 import httpx
 
@@ -9,7 +8,9 @@ from ..schemas import (  # Using schemas defined in gs_service
 )
 
 # Load environment variables
-INTEGRITY_SERVICE_URL = os.getenv("INTEGRITY_SERVICE_URL", "http://integrity_service:8000/api/v1")
+INTEGRITY_SERVICE_URL = os.getenv(
+    "INTEGRITY_SERVICE_URL", "http://integrity_service:8000/api/v1"
+)
 
 
 class IntegrityServiceClient:
@@ -24,8 +25,8 @@ class IntegrityServiceClient:
     async def store_policy_rule(
         self,
         rule_data: PolicyRuleCreate,
-        auth_token: Optional[str] = None,  # Placeholder for auth
-    ) -> Optional[PolicyRule]:
+        auth_token: str | None = None,  # Placeholder for auth
+    ) -> PolicyRule | None:
         """
         Stores a new policy rule in the Integrity Service.
         """
@@ -64,8 +65,8 @@ class IntegrityServiceClient:
             return None
 
     async def get_policy_rule_by_id(
-        self, rule_id: int, auth_token: Optional[str] = None
-    ) -> Optional[PolicyRule]:
+        self, rule_id: int, auth_token: str | None = None
+    ) -> PolicyRule | None:
         """
         Fetches a policy rule by its ID from the Integrity Service.
         """
@@ -84,7 +85,9 @@ class IntegrityServiceClient:
             )
             return None
         except httpx.RequestError as e:
-            print(f"Request error fetching rule {rule_id} from Integrity Service: {str(e)}")
+            print(
+                f"Request error fetching rule {rule_id} from Integrity Service: {str(e)}"
+            )
             return None
         except Exception as e:
             print(f"Unexpected error fetching rule {rule_id}: {str(e)}")
@@ -116,7 +119,7 @@ if __name__ == "__main__":
         # The integrity_service placeholder auth uses "internal_service_token" for POST /policies/
 
         # Example: Store a new rule
-        new_rule_data = PolicyRuleCreate(
+        PolicyRuleCreate(
             rule_content="test_rule(X) :- condition(X).",
             source_principle_ids=[101, 102],
         )

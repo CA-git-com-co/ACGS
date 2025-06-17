@@ -14,7 +14,6 @@ Key Features:
 
 import logging
 from datetime import datetime, timedelta
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -55,7 +54,7 @@ consultation_service = PublicConsultationService(hitl_sampler)
 async def submit_public_proposal(
     proposal_data: PublicProposalCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user),
+    current_user: User | None = Depends(get_current_user),
 ):
     """
     Submit a public amendment proposal for constitutional consideration.
@@ -119,7 +118,7 @@ async def submit_public_proposal(
 async def submit_public_feedback(
     feedback_data: PublicFeedbackCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user),
+    current_user: User | None = Depends(get_current_user),
 ):
     """
     Submit public feedback on proposals or amendments.
@@ -181,11 +180,15 @@ async def submit_public_feedback(
         )
 
 
-@router.get("/proposals", response_model=List[PublicProposalResponse])
+@router.get("/proposals", response_model=list[PublicProposalResponse])
 async def get_public_proposals(
-    status: Optional[str] = Query(None, description="Filter by proposal status"),
-    stakeholder_group: Optional[str] = Query(None, description="Filter by stakeholder group"),
-    limit: int = Query(20, ge=1, le=100, description="Maximum number of proposals to return"),
+    status: str | None = Query(None, description="Filter by proposal status"),
+    stakeholder_group: str | None = Query(
+        None, description="Filter by stakeholder group"
+    ),
+    limit: int = Query(
+        20, ge=1, le=100, description="Maximum number of proposals to return"
+    ),
     offset: int = Query(0, ge=0, description="Number of proposals to skip"),
     db: AsyncSession = Depends(get_db),
 ):
@@ -203,10 +206,12 @@ async def get_public_proposals(
                 id=i,
                 title=f"Public Proposal {i}: Enhanced Privacy Protection",
                 description=f"This proposal aims to strengthen privacy protections for citizens in AI governance systems. Proposal {i} details...",
-                proposed_changes=f"Add new privacy principle requiring explicit consent for data processing in governance decisions.",
-                justification=f"Current privacy protections are insufficient for modern AI governance needs.",
+                proposed_changes="Add new privacy principle requiring explicit consent for data processing in governance decisions.",
+                justification="Current privacy protections are insufficient for modern AI governance needs.",
                 submitter_name=f"Citizen {i}",
-                submitter_organization=(f"Privacy Advocacy Group {i}" if i % 2 == 0 else None),
+                submitter_organization=(
+                    f"Privacy Advocacy Group {i}" if i % 2 == 0 else None
+                ),
                 stakeholder_group="citizen",
                 status="open" if i <= 3 else "review",
                 created_at=datetime.utcnow() - timedelta(days=i * 5),
@@ -255,7 +260,7 @@ async def get_public_proposal(proposal_id: int, db: AsyncSession = Depends(get_d
         proposal = PublicProposalResponse(
             id=proposal_id,
             title=f"Public Proposal {proposal_id}: Enhanced Privacy Protection",
-            description=f"Comprehensive proposal for strengthening privacy protections in AI governance. This proposal addresses current gaps in privacy safeguards and proposes specific improvements to ensure citizen data protection.",
+            description="Comprehensive proposal for strengthening privacy protections in AI governance. This proposal addresses current gaps in privacy safeguards and proposes specific improvements to ensure citizen data protection.",
             proposed_changes="1. Add explicit consent requirement for all data processing\n2. Implement data minimization principles\n3. Establish citizen data rights framework\n4. Create privacy impact assessment requirements",
             justification="Current privacy protections are insufficient for the complexity of modern AI governance systems. Citizens need stronger safeguards to maintain trust in democratic AI governance.",
             submitter_name="Dr. Privacy Advocate",
@@ -280,11 +285,13 @@ async def get_public_proposal(proposal_id: int, db: AsyncSession = Depends(get_d
         )
 
 
-@router.get("/feedback/{proposal_id}", response_model=List[PublicFeedbackResponse])
+@router.get("/feedback/{proposal_id}", response_model=list[PublicFeedbackResponse])
 async def get_proposal_feedback(
     proposal_id: int,
-    feedback_type: Optional[str] = Query(None, description="Filter by feedback type"),
-    limit: int = Query(20, ge=1, le=100, description="Maximum number of feedback items to return"),
+    feedback_type: str | None = Query(None, description="Filter by feedback type"),
+    limit: int = Query(
+        20, ge=1, le=100, description="Maximum number of feedback items to return"
+    ),
     offset: int = Query(0, ge=0, description="Number of feedback items to skip"),
     db: AsyncSession = Depends(get_db),
 ):
@@ -332,7 +339,7 @@ async def get_proposal_feedback(
 
 @router.get("/metrics", response_model=ConsultationMetricsResponse)
 async def get_consultation_metrics(
-    time_period_days: Optional[int] = Query(
+    time_period_days: int | None = Query(
         30, ge=1, le=365, description="Time period for metrics calculation"
     ),
     db: AsyncSession = Depends(get_db),
@@ -452,7 +459,9 @@ async def get_transparency_dashboard(db: AsyncSession = Depends(get_db)):
                 "active_amendments": 2,
                 "recent_votes": 5,
                 "public_comments_enabled": True,
-                "next_voting_deadline": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+                "next_voting_deadline": (
+                    datetime.utcnow() + timedelta(days=7)
+                ).isoformat(),
             },
             "participation_trends": {
                 "daily_participants": [15, 23, 18, 31, 27, 19, 25],

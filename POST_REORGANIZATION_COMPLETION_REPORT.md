@@ -147,7 +147,7 @@ The ACGS-1 post-reorganization validation and configuration updates have been **
 ### Service Startup Commands
 ```bash
 # Start all services using Docker Compose
-docker-compose -f infrastructure/docker/docker-compose.yml up -d
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up -d
 
 # Or start individual services
 cd services/platform/authentication && python -m uvicorn app.main:app --port 8000

@@ -6,7 +6,7 @@ and intelligent invalidation strategies for optimal performance.
 """
 
 import asyncio
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import redis.asyncio as redis
 import structlog
@@ -24,9 +24,9 @@ class CacheManager:
         # ensures: Correct function execution
         # sha256: func_hash
         self.redis_url = redis_url
-        self.redis_client: Optional[redis.Redis] = None
-        self.caches: Dict[str, MultiTierCache] = {}
-        self.warming_tasks: List[asyncio.Task] = []
+        self.redis_client: redis.Redis | None = None
+        self.caches: dict[str, MultiTierCache] = {}
+        self.warming_tasks: list[asyncio.Task] = []
         self._initialized = False
 
     async def initialize(self):
@@ -71,28 +71,48 @@ class CacheManager:
         """Initialize different cache instances for different use cases."""
 
         # Policy decision cache - high performance, short TTL
-        policy_l1 = LRUCache(max_size=500, default_ttl=CACHE_TTL_POLICIES["policy_decisions"])
-        policy_l2 = RedisCache(self.redis_client, key_prefix="acgs:policy:", enable_pubsub=True)
+        policy_l1 = LRUCache(
+            max_size=500, default_ttl=CACHE_TTL_POLICIES["policy_decisions"]
+        )
+        policy_l2 = RedisCache(
+            self.redis_client, key_prefix="acgs:policy:", enable_pubsub=True
+        )
         self.caches["policy_decisions"] = MultiTierCache(policy_l1, policy_l2)
 
         # Governance rules cache - medium performance, longer TTL
-        rules_l1 = LRUCache(max_size=1000, default_ttl=CACHE_TTL_POLICIES["governance_rules"])
-        rules_l2 = RedisCache(self.redis_client, key_prefix="acgs:rules:", enable_pubsub=True)
+        rules_l1 = LRUCache(
+            max_size=1000, default_ttl=CACHE_TTL_POLICIES["governance_rules"]
+        )
+        rules_l2 = RedisCache(
+            self.redis_client, key_prefix="acgs:rules:", enable_pubsub=True
+        )
         self.caches["governance_rules"] = MultiTierCache(rules_l1, rules_l2)
 
         # Static configuration cache - low frequency, very long TTL
-        config_l1 = LRUCache(max_size=200, default_ttl=CACHE_TTL_POLICIES["static_configuration"])
-        config_l2 = RedisCache(self.redis_client, key_prefix="acgs:config:", enable_pubsub=True)
+        config_l1 = LRUCache(
+            max_size=200, default_ttl=CACHE_TTL_POLICIES["static_configuration"]
+        )
+        config_l2 = RedisCache(
+            self.redis_client, key_prefix="acgs:config:", enable_pubsub=True
+        )
         self.caches["static_configuration"] = MultiTierCache(config_l1, config_l2)
 
         # User sessions cache - medium frequency, medium TTL
-        session_l1 = LRUCache(max_size=2000, default_ttl=CACHE_TTL_POLICIES["user_sessions"])
-        session_l2 = RedisCache(self.redis_client, key_prefix="acgs:sessions:", enable_pubsub=True)
+        session_l1 = LRUCache(
+            max_size=2000, default_ttl=CACHE_TTL_POLICIES["user_sessions"]
+        )
+        session_l2 = RedisCache(
+            self.redis_client, key_prefix="acgs:sessions:", enable_pubsub=True
+        )
         self.caches["user_sessions"] = MultiTierCache(session_l1, session_l2)
 
         # API responses cache - high frequency, short TTL
-        api_l1 = LRUCache(max_size=1500, default_ttl=CACHE_TTL_POLICIES["api_responses"])
-        api_l2 = RedisCache(self.redis_client, key_prefix="acgs:api:", enable_pubsub=True)
+        api_l1 = LRUCache(
+            max_size=1500, default_ttl=CACHE_TTL_POLICIES["api_responses"]
+        )
+        api_l2 = RedisCache(
+            self.redis_client, key_prefix="acgs:api:", enable_pubsub=True
+        )
         self.caches["api_responses"] = MultiTierCache(api_l1, api_l2)
 
         logger.info("Cache instances initialized", cache_types=list(self.caches.keys()))
@@ -192,19 +212,21 @@ class CacheManager:
                     )
 
                 await cache.warm_cache(warming_data)
-                logger.info("Static configuration cache warmed", items=len(config_items))
+                logger.info(
+                    "Static configuration cache warmed", items=len(config_items)
+                )
 
         except Exception as e:
             logger.error("Failed to warm static configuration cache", error=str(e))
 
-    async def get_cache(self, cache_type: str) -> Optional[MultiTierCache]:
+    async def get_cache(self, cache_type: str) -> MultiTierCache | None:
         """Get cache instance by type."""
         if not self._initialized:
             await self.initialize()
 
         return self.caches.get(cache_type)
 
-    async def get_cache_stats(self) -> Dict[str, Any]:
+    async def get_cache_stats(self) -> dict[str, Any]:
         """Get comprehensive cache statistics."""
         if not self._initialized:
             return {}
@@ -223,7 +245,9 @@ class CacheManager:
         cache = await self.get_cache(cache_type)
         if cache:
             await cache.delete_by_pattern(pattern)
-            logger.info("Cache pattern invalidated", cache_type=cache_type, pattern=pattern)
+            logger.info(
+                "Cache pattern invalidated", cache_type=cache_type, pattern=pattern
+            )
 
     async def invalidate_cache_tag(self, cache_type: str, tag: str):
         # requires: Valid input parameters
@@ -265,7 +289,7 @@ class CacheManager:
 
 
 # Global cache manager instance
-_cache_manager: Optional[CacheManager] = None
+_cache_manager: CacheManager | None = None
 
 
 async def get_cache_manager() -> CacheManager:

@@ -25,8 +25,7 @@ def apply_patch(git_dname, patch_str):
         cmd,
         input=patch_str,
         text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=False,
     )
     # Check if the patch was applied successfully
@@ -46,7 +45,7 @@ def diff_versus_commit(git_dname, commit):
     # Get diff of tracked files
     diff_cmd = ["git", "-C", git_dname, "diff", commit]
     result = subprocess.run(
-        diff_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False
+        diff_cmd, capture_output=True, check=False
     )
     diff_output = result.stdout.decode()
 
@@ -60,7 +59,7 @@ def diff_versus_commit(git_dname, commit):
         "--exclude-standard",
     ]
     result = subprocess.run(
-        untracked_files_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False
+        untracked_files_cmd, capture_output=True, check=False
     )
     untracked_files = result.stdout.decode().splitlines()
 

@@ -458,7 +458,7 @@ class TestRealWorldScenarios:
 
         # Analyze workflow performance
         successful_workflows = [
-            r for r in results if isinstance(r, (int, float)) and r > 0
+            r for r in results if isinstance(r, int | float) and r > 0
         ]
 
         if successful_workflows:
@@ -523,7 +523,7 @@ class TestRealWorldScenarios:
 
         # Analyze results
         successful_checks = [
-            r for r in results if isinstance(r, (int, float)) and r > 0
+            r for r in results if isinstance(r, int | float) and r > 0
         ]
 
         if successful_checks:

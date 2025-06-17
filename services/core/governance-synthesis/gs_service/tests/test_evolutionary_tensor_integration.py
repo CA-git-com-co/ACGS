@@ -22,22 +22,18 @@ import json
 import os
 import time
 import unittest
-from typing import Any, Dict, List
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import numpy as np
-import pytest
 
 # Import components for integration testing
 from services.core.governance_synthesis.gs_service.app.core.heterogeneous_validator import (
     GovernanceContext,
     HeterogeneousValidator,
-    ValidationResult,
 )
 from services.core.governance_synthesis.gs_service.app.services.groq_tensor_service import (
     GovernanceConstraints,
     GroqTensorService,
-    TensorDecompositionType,
 )
 
 
@@ -86,7 +82,10 @@ class TestEvolutionaryTensorIntegration(unittest.TestCase):
             ],
         )
 
-    @patch.dict(os.environ, {"GEMINI_API_KEY": "test_gemini_key", "GROQ_API_KEY": "test_groq_key"})
+    @patch.dict(
+        os.environ,
+        {"GEMINI_API_KEY": "test_gemini_key", "GROQ_API_KEY": "test_groq_key"},
+    )
     async def test_end_to_end_constitutional_governance_workflow(self):
         """Test complete end-to-end constitutional governance workflow."""
         # Phase 1: Multi-Model Validation
@@ -189,18 +188,18 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
     \"\"\"
     # Regularized SVD for numerical stability
     U, s, Vt = np.linalg.svd(matrix + 1e-12 * np.eye(matrix.shape[0]))
-    
+
     # Constitutional compliance check
     if governance_constraints['constitutional_hash'] != 'cdd01ef066bc6cf2':
         raise ValueError('Constitutional hash mismatch')
-    
+
     # Accuracy validation
     reconstruction = U @ np.diag(s) @ Vt
     error = np.linalg.norm(matrix - reconstruction, 'fro') / np.linalg.norm(matrix, 'fro')
-    
+
     if error > 0.05:  # >95% accuracy requirement
         raise ValueError('Accuracy requirement not met')
-    
+
     return U, s, Vt, error
 """,
                                     "parameters": {
@@ -210,7 +209,10 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
                                     },
                                     "accuracy_estimate": 0.97,
                                     "complexity": "O(min(m,n)^2 * max(m,n))",
-                                    "error_bounds": {"frobenius": 0.003, "spectral": 0.001},
+                                    "error_bounds": {
+                                        "frobenius": 0.003,
+                                        "spectral": 0.001,
+                                    },
                                     "constitutional_compliance_notes": "Full compliance with ACGS-1 governance requirements",
                                 }
                             )
@@ -234,7 +236,8 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
             self.assertGreaterEqual(result.accuracy_estimate, 0.95)
             self.assertTrue(result.constitutional_compliance)
             self.assertEqual(
-                result.governance_metadata["constitutional_hash"], self.constitutional_hash
+                result.governance_metadata["constitutional_hash"],
+                self.constitutional_hash,
             )
 
             # Verify performance requirements
@@ -281,7 +284,9 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         self.assertEqual(self.constitutional_hash, "cdd01ef066bc6cf2")
 
         # Test governance context structure
-        self.assertEqual(self.governance_context.constitutional_hash, self.constitutional_hash)
+        self.assertEqual(
+            self.governance_context.constitutional_hash, self.constitutional_hash
+        )
         self.assertEqual(self.governance_context.policy_type, "constitutional")
 
         # Test compliance requirements
@@ -314,9 +319,15 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         # Validate configuration requirements
         self.assertGreaterEqual(federated_config["min_nodes"], 2)
         self.assertLessEqual(federated_config["max_nodes"], 20)
-        self.assertLess(federated_config["tensor_metrics"]["decomposition_error"], 0.005)
-        self.assertGreater(federated_config["tensor_metrics"]["computational_efficiency"], 0.90)
-        self.assertEqual(federated_config["tensor_metrics"]["constitutional_compliance"], 1.0)
+        self.assertLess(
+            federated_config["tensor_metrics"]["decomposition_error"], 0.005
+        )
+        self.assertGreater(
+            federated_config["tensor_metrics"]["computational_efficiency"], 0.90
+        )
+        self.assertEqual(
+            federated_config["tensor_metrics"]["constitutional_compliance"], 1.0
+        )
 
         # Test batch processing configuration
         self.assertEqual(federated_config["batch_size"], 16)
@@ -339,7 +350,7 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         }
 
         # Validate service configuration
-        for service_name, config in expected_services.items():
+        for _service_name, config in expected_services.items():
             self.assertIn("port", config)
             self.assertIn("endpoint", config)
             self.assertGreaterEqual(config["port"], 8000)
@@ -370,7 +381,9 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         }
 
         for check_name, required in compliance_checks.items():
-            self.assertTrue(required, f"{check_name} must be enabled for constitutional governance")
+            self.assertTrue(
+                required, f"{check_name} must be enabled for constitutional governance"
+            )
 
         # Test security configuration
         security_config = {
@@ -466,7 +479,9 @@ class TestSystemValidation(unittest.TestCase):
         }
 
         for requirement, needed in verification_requirements.items():
-            self.assertTrue(needed, f"Formal verification requirement {requirement} must be met")
+            self.assertTrue(
+                needed, f"Formal verification requirement {requirement} must be met"
+            )
 
     def test_deployment_readiness(self):
         """Test deployment readiness criteria."""

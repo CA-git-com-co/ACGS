@@ -7,7 +7,7 @@ and test edge cases across all ACGS-PGP components.
 """
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Union
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -21,7 +21,7 @@ class TestDataGenerator:
     """Generate test data for comprehensive coverage."""
 
     @staticmethod
-    def generate_principle_test_data() -> List[Dict[str, Any]]:
+    def generate_principle_test_data() -> list[dict[str, Any]]:
         """Generate test data for AC principles."""
         return [
             # Valid principles
@@ -80,7 +80,7 @@ class TestDataGenerator:
         ]
 
     @staticmethod
-    def generate_policy_test_data() -> List[Dict[str, Any]]:
+    def generate_policy_test_data() -> list[dict[str, Any]]:
         """Generate test data for policies."""
         return [
             # Valid Rego policies
@@ -137,7 +137,7 @@ class TestDataGenerator:
         ]
 
     @staticmethod
-    def generate_bias_detection_test_data() -> List[Dict[str, Any]]:
+    def generate_bias_detection_test_data() -> list[dict[str, Any]]:
         """Generate test data for bias detection."""
         return [
             # Balanced dataset
@@ -219,7 +219,7 @@ class TestDataGenerator:
         ]
 
     @staticmethod
-    def generate_auth_test_data() -> List[Dict[str, Any]]:
+    def generate_auth_test_data() -> list[dict[str, Any]]:
         """Generate test data for authentication."""
         return [
             # Valid credentials
@@ -319,7 +319,7 @@ class EdgeCaseGenerator:
     """Generate edge cases for comprehensive testing."""
 
     @staticmethod
-    def generate_string_edge_cases() -> List[str]:
+    def generate_string_edge_cases() -> list[str]:
         """Generate string edge cases."""
         return [
             "",  # Empty string
@@ -339,7 +339,7 @@ class EdgeCaseGenerator:
         ]
 
     @staticmethod
-    def generate_numeric_edge_cases() -> List[Union[int, float]]:
+    def generate_numeric_edge_cases() -> list[int | float]:
         """Generate numeric edge cases."""
         return [
             0,  # Zero
@@ -358,7 +358,7 @@ class EdgeCaseGenerator:
         ]
 
     @staticmethod
-    def generate_datetime_edge_cases() -> List[datetime]:
+    def generate_datetime_edge_cases() -> list[datetime]:
         """Generate datetime edge cases."""
         now = datetime.now()
         return [
@@ -474,4 +474,4 @@ if __name__ == "__main__":
     db_mock = mock_gen.create_mock_database_session()
     http_mock = mock_gen.create_mock_http_client()
     llm_mock = mock_gen.create_mock_llm_service()
-    print(f"  Created mocks: database, HTTP client, LLM service")
+    print("  Created mocks: database, HTTP client, LLM service")

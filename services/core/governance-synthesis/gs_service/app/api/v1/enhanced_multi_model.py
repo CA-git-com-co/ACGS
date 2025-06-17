@@ -6,7 +6,7 @@ boosting-based weighted majority vote, and cluster-based dynamic model selection
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -49,12 +49,16 @@ class ValidationRequest(BaseModel):
     query: str = Field(..., description="Query for validation")
     query_type: str = Field(default="general", description="Type of query")
     complexity_score: float = Field(default=0.5, description="Query complexity (0-1)")
-    constitutional_requirements: List[str] = Field(
+    constitutional_requirements: list[str] = Field(
         default_factory=list, description="Constitutional requirements"
     )
     bias_sensitivity: float = Field(default=0.5, description="Bias sensitivity (0-1)")
-    uncertainty_tolerance: float = Field(default=0.3, description="Uncertainty tolerance (0-1)")
-    target_cluster: Optional[ModelCluster] = Field(default=None, description="Target model cluster")
+    uncertainty_tolerance: float = Field(
+        default=0.3, description="Uncertainty tolerance (0-1)"
+    )
+    target_cluster: ModelCluster | None = Field(
+        default=None, description="Target model cluster"
+    )
     strategy: ValidationStrategy = Field(
         default=ValidationStrategy.HYBRID_ENSEMBLE, description="Validation strategy"
     )
@@ -75,8 +79,8 @@ class EnsembleValidationResponse(BaseModel):
     final_prediction: str
     confidence: float
     strategy_used: str
-    model_contributions: List[Dict[str, Any]]
-    uncertainty_quantification: Dict[str, float]
+    model_contributions: list[dict[str, Any]]
+    uncertainty_quantification: dict[str, float]
     constitutional_fidelity: float
     validation_time: float
     consensus_level: float
@@ -92,8 +96,8 @@ class ValidationMetricsResponse(BaseModel):
     average_constitutional_fidelity: float
     average_consensus_level: float
     average_validation_time: float
-    strategy_usage_distribution: Dict[str, int]
-    model_usage_statistics: Dict[str, int]
+    strategy_usage_distribution: dict[str, int]
+    model_usage_statistics: dict[str, int]
     reliability_target: str
     current_reliability: str
     timestamp: str
@@ -224,7 +228,9 @@ async def get_validation_metrics(
             total_validations=metrics.get("total_validations", 0),
             recent_validations=metrics.get("recent_validations", 0),
             average_confidence=metrics.get("average_confidence", 0.0),
-            average_constitutional_fidelity=metrics.get("average_constitutional_fidelity", 0.0),
+            average_constitutional_fidelity=metrics.get(
+                "average_constitutional_fidelity", 0.0
+            ),
             average_consensus_level=metrics.get("average_consensus_level", 0.0),
             average_validation_time=metrics.get("average_validation_time", 0.0),
             strategy_usage_distribution=metrics.get("strategy_usage_distribution", {}),

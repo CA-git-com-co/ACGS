@@ -15,7 +15,7 @@ request validation, and response formatting.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import BaseModel, Field, field_validator
@@ -41,16 +41,18 @@ router = APIRouter(prefix="/wina-oversight", tags=["WINA EC Oversight"])
 class OversightRequestModel(BaseModel):
     """API model for EC oversight requests."""
 
-    request_id: str = Field(..., description="Unique identifier for the oversight request")
+    request_id: str = Field(
+        ..., description="Unique identifier for the oversight request"
+    )
     oversight_type: str = Field(..., description="Type of oversight operation")
     target_system: str = Field(..., description="System being overseen")
-    governance_requirements: List[str] = Field(
+    governance_requirements: list[str] = Field(
         default_factory=list, description="Governance requirements to evaluate"
     )
-    constitutional_constraints: List[str] = Field(
+    constitutional_constraints: list[str] = Field(
         default_factory=list, description="Constitutional constraints to enforce"
     )
-    performance_thresholds: Dict[str, float] = Field(
+    performance_thresholds: dict[str, float] = Field(
         default_factory=dict, description="Performance thresholds to meet"
     )
     priority_level: str = Field(
@@ -59,7 +61,9 @@ class OversightRequestModel(BaseModel):
     wina_optimization_enabled: bool = Field(
         default=True, description="Whether to enable WINA optimization"
     )
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    metadata: dict[str, Any] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
 
     @field_validator("oversight_type")
     @classmethod
@@ -80,7 +84,9 @@ class OversightRequestModel(BaseModel):
         # sha256: func_hash
         valid_priorities = ["normal", "high", "critical"]
         if v not in valid_priorities:
-            raise ValueError(f"Invalid priority_level. Must be one of: {valid_priorities}")
+            raise ValueError(
+                f"Invalid priority_level. Must be one of: {valid_priorities}"
+            )
         return v
 
 
@@ -88,7 +94,7 @@ class OversightStrategySelection(BaseModel):
     """API model for oversight strategy selection requests."""
 
     request_data: OversightRequestModel
-    optimization_hints: Optional[Dict[str, Any]] = Field(
+    optimization_hints: dict[str, Any] | None = Field(
         default=None, description="Optional optimization hints"
     )
 
@@ -96,10 +102,12 @@ class OversightStrategySelection(BaseModel):
 class ReportingPeriodModel(BaseModel):
     """API model for reporting period specification."""
 
-    start_time: Optional[datetime] = Field(
+    start_time: datetime | None = Field(
         default=None, description="Start time for reporting period"
     )
-    end_time: Optional[datetime] = Field(default=None, description="End time for reporting period")
+    end_time: datetime | None = Field(
+        default=None, description="End time for reporting period"
+    )
 
     @field_validator("end_time")
     @classmethod
@@ -146,13 +154,13 @@ class OversightResultResponse(BaseModel):
     oversight_metrics: OversightMetricsResponse
     constitutional_compliance: bool
     wina_optimization_applied: bool
-    governance_recommendations: List[str]
-    constitutional_updates_suggested: List[Dict[str, Any]]
-    performance_insights: Dict[str, Any]
-    warnings: List[str]
-    errors: List[str]
-    wina_insights: Dict[str, Any]
-    feedback_data: Dict[str, Any]
+    governance_recommendations: list[str]
+    constitutional_updates_suggested: list[dict[str, Any]]
+    performance_insights: dict[str, Any]
+    warnings: list[str]
+    errors: list[str]
+    wina_insights: dict[str, Any]
+    feedback_data: dict[str, Any]
 
 
 # API Dependencies
@@ -175,7 +183,7 @@ async def get_oversight_coordinator() -> WINAECOversightCoordinator:
 @router.post("/coordinate", response_model=OversightResultResponse)
 async def coordinate_oversight(
     request_data: OversightRequestModel,
-    optimization_hints: Optional[Dict[str, Any]] = Body(default=None),
+    optimization_hints: dict[str, Any] | None = Body(default=None),
     coordinator: WINAECOversightCoordinator = Depends(get_oversight_coordinator),
 ) -> OversightResultResponse:
     """
@@ -201,7 +209,9 @@ async def coordinate_oversight(
         )
 
         # Execute oversight coordination
-        result = await coordinator.coordinate_oversight(oversight_request, optimization_hints)
+        result = await coordinator.coordinate_oversight(
+            oversight_request, optimization_hints
+        )
 
         # Convert result to API response format
         response = OversightResultResponse(
@@ -243,14 +253,16 @@ async def coordinate_oversight(
         raise HTTPException(status_code=400, detail=f"Invalid request: {str(e)}")
     except Exception as e:
         logger.error(f"Oversight coordination failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Oversight coordination failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Oversight coordination failed: {str(e)}"
+        )
 
 
 @router.post("/select-strategy")
 async def select_oversight_strategy(
     strategy_request: OversightStrategySelection,
     coordinator: WINAECOversightCoordinator = Depends(get_oversight_coordinator),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Select optimal oversight strategy based on WINA insights and request context.
 
@@ -258,12 +270,16 @@ async def select_oversight_strategy(
     strategy based on WINA optimization potential and constitutional requirements.
     """
     try:
-        logger.info(f"Selecting strategy for request: {strategy_request.request_data.request_id}")
+        logger.info(
+            f"Selecting strategy for request: {strategy_request.request_data.request_id}"
+        )
 
         # Convert API model to internal format
         oversight_request = ECOversightRequest(
             request_id=strategy_request.request_data.request_id,
-            oversight_type=ECOversightContext(strategy_request.request_data.oversight_type),
+            oversight_type=ECOversightContext(
+                strategy_request.request_data.oversight_type
+            ),
             target_system=strategy_request.request_data.target_system,
             governance_requirements=strategy_request.request_data.governance_requirements,
             constitutional_constraints=strategy_request.request_data.constitutional_constraints,
@@ -298,14 +314,16 @@ async def select_oversight_strategy(
         raise HTTPException(status_code=400, detail=f"Invalid request: {str(e)}")
     except Exception as e:
         logger.error(f"Strategy selection failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Strategy selection failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Strategy selection failed: {str(e)}"
+        )
 
 
 @router.post("/generate-report")
 async def generate_comprehensive_report(
-    reporting_period: Optional[ReportingPeriodModel] = Body(default=None),
+    reporting_period: ReportingPeriodModel | None = Body(default=None),
     coordinator: WINAECOversightCoordinator = Depends(get_oversight_coordinator),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate a comprehensive EC Layer oversight report.
 
@@ -317,7 +335,11 @@ async def generate_comprehensive_report(
 
         # Convert reporting period if provided
         period_tuple = None
-        if reporting_period and reporting_period.start_time and reporting_period.end_time:
+        if (
+            reporting_period
+            and reporting_period.start_time
+            and reporting_period.end_time
+        ):
             period_tuple = (reporting_period.start_time, reporting_period.end_time)
 
         # Generate report
@@ -352,11 +374,13 @@ async def generate_comprehensive_report(
 
     except Exception as e:
         logger.error(f"Report generation failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Report generation failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Report generation failed: {str(e)}"
+        )
 
 
 @router.get("/strategies")
-async def get_available_strategies() -> Dict[str, Any]:
+async def get_available_strategies() -> dict[str, Any]:
     """
     Get available oversight strategies and their descriptions.
 
@@ -389,7 +413,7 @@ async def get_available_strategies() -> Dict[str, Any]:
 
 
 @router.get("/contexts")
-async def get_oversight_contexts() -> Dict[str, Any]:
+async def get_oversight_contexts() -> dict[str, Any]:
     """
     Get available oversight contexts and their descriptions.
 
@@ -423,7 +447,7 @@ async def get_oversight_contexts() -> Dict[str, Any]:
 @router.get("/health")
 async def get_oversight_health(
     coordinator: WINAECOversightCoordinator = Depends(get_oversight_coordinator),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get oversight system health status and performance metrics.
 
@@ -433,7 +457,9 @@ async def get_oversight_health(
     try:
         # Get recent operations for health analysis
         recent_operations = (
-            coordinator._oversight_history[-100:] if coordinator._oversight_history else []
+            coordinator._oversight_history[-100:]
+            if coordinator._oversight_history
+            else []
         )
 
         # Calculate health metrics
@@ -485,7 +511,12 @@ async def get_oversight_health(
                 > 0.9
             ):
                 health_metrics["system_status"] = "excellent"
-            elif health_metrics.get("performance_metrics", {}).get("avg_confidence_score", 0) > 0.7:
+            elif (
+                health_metrics.get("performance_metrics", {}).get(
+                    "avg_confidence_score", 0
+                )
+                > 0.7
+            ):
                 health_metrics["system_status"] = "good"
             else:
                 health_metrics["system_status"] = "degraded"
@@ -494,7 +525,9 @@ async def get_oversight_health(
 
     except Exception as e:
         logger.error(f"Health status retrieval failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Health status retrieval failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Health status retrieval failed: {str(e)}"
+        )
 
 
 # Helper functions for endpoint responses
@@ -513,7 +546,7 @@ def _get_strategy_description(strategy: ECOversightStrategy) -> str:
     return descriptions.get(strategy, "Unknown strategy")
 
 
-def _get_strategy_use_cases(strategy: ECOversightStrategy) -> List[str]:
+def _get_strategy_use_cases(strategy: ECOversightStrategy) -> list[str]:
     """Get use cases for an oversight strategy."""
     use_cases = {
         ECOversightStrategy.STANDARD: ["Fallback operations", "WINA unavailable"],
@@ -554,7 +587,7 @@ def _get_context_description(context: ECOversightContext) -> str:
     return descriptions.get(context, "Unknown context")
 
 
-def _get_context_typical_strategies(context: ECOversightContext) -> List[str]:
+def _get_context_typical_strategies(context: ECOversightContext) -> list[str]:
     """Get typical strategies for an oversight context."""
     typical_strategies = {
         ECOversightContext.ROUTINE_MONITORING: ["wina_optimized", "standard"],

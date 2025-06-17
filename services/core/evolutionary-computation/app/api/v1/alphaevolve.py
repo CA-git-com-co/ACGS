@@ -8,7 +8,7 @@ governance framework, including WINA-optimized constitutional oversight.
 import logging
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from app.core.wina_oversight_coordinator import WINAECOversightCoordinator
 from app.services.ac_client import ac_service_client
@@ -26,24 +26,28 @@ class ECProposal(BaseModel):
 
     proposal_id: str = Field(..., description="Unique proposal identifier")
     algorithm_type: str = Field(..., description="EC algorithm type")
-    parameters: Dict[str, Any] = Field(..., description="Algorithm parameters")
+    parameters: dict[str, Any] = Field(..., description="Algorithm parameters")
     fitness_function: str = Field(..., description="Fitness function definition")
-    constraints: List[str] = Field(default_factory=list, description="Optimization constraints")
-    objectives: List[str] = Field(..., description="Optimization objectives")
+    constraints: list[str] = Field(
+        default_factory=list, description="Optimization constraints"
+    )
+    objectives: list[str] = Field(..., description="Optimization objectives")
     population_size: int = Field(..., description="Population size")
     generations: int = Field(..., description="Number of generations")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    metadata: dict[str, Any] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
 
 
 class ECGovernanceRequest(BaseModel):
     """Request for EC governance evaluation."""
 
     context: str = Field(..., description="Governance context")
-    proposals: List[ECProposal] = Field(..., description="EC proposals to evaluate")
-    constitutional_requirements: List[str] = Field(
+    proposals: list[ECProposal] = Field(..., description="EC proposals to evaluate")
+    constitutional_requirements: list[str] = Field(
         default_factory=list, description="Constitutional requirements"
     )
-    optimization_hints: Optional[Dict[str, Any]] = Field(
+    optimization_hints: dict[str, Any] | None = Field(
         None, description="WINA optimization hints"
     )
 
@@ -54,12 +58,16 @@ class ECGovernanceDecision(BaseModel):
     proposal_id: str = Field(..., description="Proposal identifier")
     decision: str = Field(..., description="Governance decision")
     rationale: str = Field(..., description="Decision rationale")
-    governance_penalty: float = Field(..., description="Governance penalty for fitness function")
-    constitutional_compliance: bool = Field(..., description="Constitutional compliance status")
-    enforcement_actions: List[str] = Field(
+    governance_penalty: float = Field(
+        ..., description="Governance penalty for fitness function"
+    )
+    constitutional_compliance: bool = Field(
+        ..., description="Constitutional compliance status"
+    )
+    enforcement_actions: list[str] = Field(
         default_factory=list, description="Required enforcement actions"
     )
-    recommendations: List[str] = Field(
+    recommendations: list[str] = Field(
         default_factory=list, description="Governance recommendations"
     )
     confidence_score: float = Field(..., description="Decision confidence score")
@@ -69,34 +77,52 @@ class ECGovernanceResponse(BaseModel):
     """Response for EC governance evaluation."""
 
     evaluation_id: str = Field(..., description="Unique evaluation identifier")
-    decisions: List[ECGovernanceDecision] = Field(
+    decisions: list[ECGovernanceDecision] = Field(
         ..., description="Individual governance decisions"
     )
-    batch_summary: Dict[str, Any] = Field(..., description="Batch evaluation summary")
-    processing_time_ms: float = Field(..., description="Processing time in milliseconds")
-    constitutional_compliance_rate: float = Field(..., description="Overall compliance rate")
-    recommendations: List[str] = Field(default_factory=list, description="Overall recommendations")
+    batch_summary: dict[str, Any] = Field(..., description="Batch evaluation summary")
+    processing_time_ms: float = Field(
+        ..., description="Processing time in milliseconds"
+    )
+    constitutional_compliance_rate: float = Field(
+        ..., description="Overall compliance rate"
+    )
+    recommendations: list[str] = Field(
+        default_factory=list, description="Overall recommendations"
+    )
 
 
 class ECOptimizationRequest(BaseModel):
     """Request for EC optimization with constitutional constraints."""
 
     optimization_context: str = Field(..., description="Optimization context")
-    algorithm_config: Dict[str, Any] = Field(..., description="Algorithm configuration")
-    constitutional_constraints: List[str] = Field(..., description="Constitutional constraints")
-    performance_targets: Dict[str, float] = Field(..., description="Performance targets")
-    wina_optimization: bool = Field(default=True, description="Enable WINA optimization")
+    algorithm_config: dict[str, Any] = Field(..., description="Algorithm configuration")
+    constitutional_constraints: list[str] = Field(
+        ..., description="Constitutional constraints"
+    )
+    performance_targets: dict[str, float] = Field(
+        ..., description="Performance targets"
+    )
+    wina_optimization: bool = Field(
+        default=True, description="Enable WINA optimization"
+    )
 
 
 class ECOptimizationResponse(BaseModel):
     """Response for EC optimization."""
 
     optimization_id: str = Field(..., description="Unique optimization identifier")
-    optimized_config: Dict[str, Any] = Field(..., description="Optimized algorithm configuration")
-    performance_improvements: Dict[str, float] = Field(..., description="Performance improvements")
-    constitutional_compliance: bool = Field(..., description="Constitutional compliance status")
-    wina_insights: Dict[str, Any] = Field(..., description="WINA optimization insights")
-    recommendations: List[str] = Field(
+    optimized_config: dict[str, Any] = Field(
+        ..., description="Optimized algorithm configuration"
+    )
+    performance_improvements: dict[str, float] = Field(
+        ..., description="Performance improvements"
+    )
+    constitutional_compliance: bool = Field(
+        ..., description="Constitutional compliance status"
+    )
+    wina_insights: dict[str, Any] = Field(..., description="WINA optimization insights")
+    recommendations: list[str] = Field(
         default_factory=list, description="Optimization recommendations"
     )
 
@@ -125,7 +151,9 @@ async def evaluate_ec_governance(
     evaluation_id = str(uuid.uuid4())
 
     try:
-        logger.info(f"Starting EC governance evaluation for {len(request.proposals)} proposals")
+        logger.info(
+            f"Starting EC governance evaluation for {len(request.proposals)} proposals"
+        )
 
         # Convert proposals to format expected by GS service
         gs_proposals = []
@@ -161,7 +189,9 @@ async def evaluate_ec_governance(
                 decision=gs_decision.get("decision", "requires_review"),
                 rationale=gs_decision.get("rationale", ""),
                 governance_penalty=gs_decision.get("governance_penalty", 0.0),
-                constitutional_compliance=gs_decision.get("constitutional_compliance", False),
+                constitutional_compliance=gs_decision.get(
+                    "constitutional_compliance", False
+                ),
                 enforcement_actions=gs_decision.get("enforcement_actions", []),
                 recommendations=gs_decision.get("recommendations", []),
                 confidence_score=gs_decision.get("confidence_score", 0.0),
@@ -194,12 +224,18 @@ async def evaluate_ec_governance(
             "total_proposals": len(request.proposals),
             "approved_proposals": sum(1 for d in decisions if d.decision == "approved"),
             "denied_proposals": sum(1 for d in decisions if d.decision == "denied"),
-            "conditional_proposals": sum(1 for d in decisions if d.decision == "conditional"),
+            "conditional_proposals": sum(
+                1 for d in decisions if d.decision == "conditional"
+            ),
             "average_confidence_score": (
-                sum(d.confidence_score for d in decisions) / len(decisions) if decisions else 0.0
+                sum(d.confidence_score for d in decisions) / len(decisions)
+                if decisions
+                else 0.0
             ),
             "average_governance_penalty": (
-                sum(d.governance_penalty for d in decisions) / len(decisions) if decisions else 0.0
+                sum(d.governance_penalty for d in decisions) / len(decisions)
+                if decisions
+                else 0.0
             ),
             "wina_optimization_applied": request.optimization_hints is not None,
         }
@@ -223,7 +259,9 @@ async def evaluate_ec_governance(
 
     except Exception as e:
         logger.error(f"EC governance evaluation failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Governance evaluation failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Governance evaluation failed: {str(e)}"
+        )
 
 
 @router.post("/optimize", response_model=ECOptimizationResponse)
@@ -274,7 +312,8 @@ async def optimize_ec_algorithm(
                     efficiency_factor = wina_insights.get("gflops_reduction", 0.0)
                     if efficiency_factor > 0.4:  # Significant efficiency gain
                         optimized_config["population_size"] = int(
-                            optimized_config["population_size"] * (1 + efficiency_factor * 0.2)
+                            optimized_config["population_size"]
+                            * (1 + efficiency_factor * 0.2)
                         )
 
                 if "mutation_rate" in optimized_config:
@@ -290,7 +329,7 @@ async def optimize_ec_algorithm(
 
         # Calculate performance improvements
         performance_improvements = {}
-        for target, value in request.performance_targets.items():
+        for target, _value in request.performance_targets.items():
             if target in ["efficiency", "accuracy", "convergence_speed"]:
                 # Estimate improvement based on WINA insights
                 base_improvement = 0.1  # 10% base improvement
@@ -317,7 +356,9 @@ async def optimize_ec_algorithm(
         # Generate recommendations
         recommendations = []
         if not constitutional_compliance:
-            recommendations.append("Review optimization parameters for constitutional compliance")
+            recommendations.append(
+                "Review optimization parameters for constitutional compliance"
+            )
         if wina_insights.get("gflops_reduction", 0.0) > 0.5:
             recommendations.append(
                 "Consider leveraging WINA optimization for additional efficiency gains"
@@ -343,7 +384,9 @@ async def optimize_ec_algorithm(
 
     except Exception as e:
         logger.error(f"EC algorithm optimization failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Algorithm optimization failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Algorithm optimization failed: {str(e)}"
+        )
 
 
 async def _report_governance_evaluation(
@@ -364,8 +407,12 @@ async def _report_governance_evaluation(
             },
             metrics={
                 "processing_time_ms": response.processing_time_ms,
-                "average_confidence_score": response.batch_summary["average_confidence_score"],
-                "average_governance_penalty": response.batch_summary["average_governance_penalty"],
+                "average_confidence_score": response.batch_summary[
+                    "average_confidence_score"
+                ],
+                "average_governance_penalty": response.batch_summary[
+                    "average_governance_penalty"
+                ],
             },
         )
         logger.debug(f"Reported governance evaluation {evaluation_id} to AC service")

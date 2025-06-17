@@ -7,7 +7,7 @@ import json
 import logging
 import time
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import asyncpg
 
@@ -41,8 +41,8 @@ class LoadBalancingMetrics:
     failure_count: int
     current_connections: int
     total_requests: int
-    cpu_usage: Optional[float] = None
-    memory_usage: Optional[float] = None
+    cpu_usage: float | None = None
+    memory_usage: float | None = None
 
 
 class DatabaseConnectionManager:
@@ -64,8 +64,8 @@ class DatabaseConnectionManager:
             config: Connection pool configuration
         """
         self.config = config
-        self.pools: Dict[str, asyncpg.Pool] = {}
-        self.pool_metrics: Dict[str, Dict[str, Any]] = {}
+        self.pools: dict[str, asyncpg.Pool] = {}
+        self.pool_metrics: dict[str, dict[str, Any]] = {}
 
     async def create_pool(self, pool_name: str, database_url: str) -> asyncpg.Pool:
         """
@@ -104,12 +104,12 @@ class DatabaseConnectionManager:
         )
         return pool
 
-    async def get_pool(self, pool_name: str) -> Optional[asyncpg.Pool]:
+    async def get_pool(self, pool_name: str) -> asyncpg.Pool | None:
         """Get connection pool by name."""
         return self.pools.get(pool_name)
 
     async def execute_query(
-        self, pool_name: str, query: str, *args, timeout: Optional[float] = None
+        self, pool_name: str, query: str, *args, timeout: float | None = None
     ) -> Any:
         """
         Execute query with performance tracking.
@@ -165,7 +165,7 @@ class DatabaseConnectionManager:
 
         self.pool_metrics[pool_name] = metrics
 
-    async def get_pool_stats(self, pool_name: str) -> Dict[str, Any]:
+    async def get_pool_stats(self, pool_name: str) -> dict[str, Any]:
         """Get connection pool statistics."""
         pool = self.pools.get(pool_name)
         metrics = self.pool_metrics.get(pool_name, {})
@@ -228,7 +228,7 @@ class RedisLoadBalancingCache:
         self.HEALTH_TTL = 60  # 1 minute
 
     async def cache_service_instances(
-        self, service_type: ServiceType, instances: List[ServiceInstance]
+        self, service_type: ServiceType, instances: list[ServiceInstance]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -253,11 +253,13 @@ class RedisLoadBalancingCache:
             for inst in instances
         ]
 
-        await self.redis_client.setex(key, self.INSTANCE_TTL, json.dumps(instances_data))
+        await self.redis_client.setex(
+            key, self.INSTANCE_TTL, json.dumps(instances_data)
+        )
 
     async def get_cached_service_instances(
         self, service_type: ServiceType
-    ) -> Optional[List[Dict[str, Any]]]:
+    ) -> list[dict[str, Any]] | None:
         """Get cached service instances."""
         key = f"{self.SERVICE_INSTANCES_PREFIX}:{service_type.value}"
 
@@ -279,7 +281,7 @@ class RedisLoadBalancingCache:
 
     async def get_session_affinity(
         self, session_id: str, service_type: ServiceType
-    ) -> Optional[str]:
+    ) -> str | None:
         """Get cached session affinity."""
         key = f"{self.SESSION_AFFINITY_PREFIX}:{session_id}:{service_type.value}"
 
@@ -292,11 +294,13 @@ class RedisLoadBalancingCache:
         """Cache load balancing metrics."""
         key = f"{self.METRICS_PREFIX}:{metrics.service_type}:{metrics.instance_id}"
 
-        await self.redis_client.setex(key, self.METRICS_TTL, json.dumps(asdict(metrics)))
+        await self.redis_client.setex(
+            key, self.METRICS_TTL, json.dumps(asdict(metrics))
+        )
 
     async def get_cached_metrics(
         self, service_type: str, instance_id: str
-    ) -> Optional[LoadBalancingMetrics]:
+    ) -> LoadBalancingMetrics | None:
         """Get cached load balancing metrics."""
         key = f"{self.METRICS_PREFIX}:{service_type}:{instance_id}"
 
@@ -311,7 +315,7 @@ class RedisLoadBalancingCache:
         service_type: ServiceType,
         instance_id: str,
         is_healthy: bool,
-        response_time: Optional[float] = None,
+        response_time: float | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -329,7 +333,7 @@ class RedisLoadBalancingCache:
 
     async def get_cached_health_status(
         self, service_type: ServiceType, instance_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get cached health status."""
         key = f"{self.HEALTH_PREFIX}:{service_type.value}:{instance_id}"
 
@@ -354,7 +358,7 @@ class RedisLoadBalancingCache:
             if keys:
                 await self.redis_client.delete(*keys)
 
-    async def get_cache_stats(self) -> Dict[str, Any]:
+    async def get_cache_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         stats = {}
 
@@ -378,7 +382,9 @@ class InfrastructureIntegrationManager:
     performance monitoring for optimal load balancing performance.
     """
 
-    def __init__(self, redis_client: AdvancedRedisClient, db_config: ConnectionPoolConfig):
+    def __init__(
+        self, redis_client: AdvancedRedisClient, db_config: ConnectionPoolConfig
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -393,10 +399,10 @@ class InfrastructureIntegrationManager:
         self.db_manager = DatabaseConnectionManager(db_config)
 
         # Performance tracking
-        self.performance_metrics: Dict[str, Any] = {}
+        self.performance_metrics: dict[str, Any] = {}
         self.last_metrics_update = time.time()
 
-    async def initialize_database_pools(self, database_configs: Dict[str, str]):
+    async def initialize_database_pools(self, database_configs: dict[str, str]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -410,7 +416,7 @@ class InfrastructureIntegrationManager:
             await self.db_manager.create_pool(pool_name, database_url)
 
     async def cache_service_discovery_data(
-        self, service_type: ServiceType, instances: List[ServiceInstance]
+        self, service_type: ServiceType, instances: list[ServiceInstance]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -429,7 +435,7 @@ class InfrastructureIntegrationManager:
 
     async def get_cached_service_data(
         self, service_type: ServiceType
-    ) -> Optional[List[Dict[str, Any]]]:
+    ) -> list[dict[str, Any]] | None:
         """Get cached service discovery data."""
         return await self.redis_cache.get_cached_service_instances(service_type)
 
@@ -463,8 +469,8 @@ class InfrastructureIntegrationManager:
         # sha256: func_hash
         """Store metrics in PostgreSQL for analysis."""
         query = """
-        INSERT INTO load_balancing_metrics 
-        (service_type, instance_id, timestamp, response_time, success_count, 
+        INSERT INTO load_balancing_metrics
+        (service_type, instance_id, timestamp, response_time, success_count,
          failure_count, current_connections, total_requests)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         """
@@ -487,17 +493,17 @@ class InfrastructureIntegrationManager:
 
     async def get_performance_analytics(
         self, service_type: ServiceType, time_range_hours: int = 24
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get performance analytics from database."""
         query = """
-        SELECT 
+        SELECT
             instance_id,
             AVG(response_time) as avg_response_time,
             SUM(success_count) as total_success,
             SUM(failure_count) as total_failures,
             AVG(current_connections) as avg_connections
-        FROM load_balancing_metrics 
-        WHERE service_type = $1 
+        FROM load_balancing_metrics
+        WHERE service_type = $1
         AND timestamp > $2
         GROUP BY instance_id
         """
@@ -518,7 +524,7 @@ class InfrastructureIntegrationManager:
             logger.error(f"Failed to get performance analytics: {e}")
             return {}
 
-    async def get_system_health_summary(self) -> Dict[str, Any]:
+    async def get_system_health_summary(self) -> dict[str, Any]:
         """Get overall system health summary."""
         cache_stats = await self.redis_cache.get_cache_stats()
 
@@ -542,7 +548,7 @@ class InfrastructureIntegrationManager:
 
 
 # Global infrastructure integration manager
-_infrastructure_manager: Optional[InfrastructureIntegrationManager] = None
+_infrastructure_manager: InfrastructureIntegrationManager | None = None
 
 
 async def initialize_load_balancing_schema(db_manager: DatabaseConnectionManager):
@@ -609,6 +615,8 @@ async def get_infrastructure_manager() -> InfrastructureIntegrationManager:
         # Initialize with default configuration
         redis_client = AdvancedRedisClient("load_balancing")
         db_config = ConnectionPoolConfig()
-        _infrastructure_manager = InfrastructureIntegrationManager(redis_client, db_config)
+        _infrastructure_manager = InfrastructureIntegrationManager(
+            redis_client, db_config
+        )
 
     return _infrastructure_manager

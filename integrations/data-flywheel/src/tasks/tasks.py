@@ -21,9 +21,9 @@ from typing import Any
 from bson import ObjectId
 from celery import Celery, chain, group, signals
 
-from src.api.db import init_db
-from src.api.db_manager import TaskDBManager, get_db_manager
-from src.api.models import (
+from services.core.api.db import init_db
+from services.core.api.db_manager import TaskDBManager, get_db_manager
+from services.core.api.models import (
     DatasetType,
     EvalType,
     EvaluationResult,
@@ -37,21 +37,24 @@ from src.api.models import (
     ToolEvalType,
     WorkloadClassification,
 )
-from src.api.schemas import DeploymentStatus
-from src.config import DataSplitConfig, NIMConfig, settings
-from src.lib.flywheel.cancellation import FlywheelCancelledError, check_cancellation
-from src.lib.flywheel.cleanup_manager import CleanupManager
-from src.lib.flywheel.job_manager import FlywheelJobManager
-from src.lib.flywheel.util import (
+from services.core.api.schemas import DeploymentStatus
+from services.core.config import DataSplitConfig, NIMConfig, settings
+from services.core.lib.flywheel.cancellation import (
+    FlywheelCancelledError,
+    check_cancellation,
+)
+from services.core.lib.flywheel.cleanup_manager import CleanupManager
+from services.core.lib.flywheel.job_manager import FlywheelJobManager
+from services.core.lib.flywheel.util import (
     identify_workload_type,
 )
-from src.lib.integration.dataset_creator import DatasetCreator
-from src.lib.integration.record_exporter import RecordExporter
-from src.lib.nemo.customizer import Customizer
-from src.lib.nemo.dms_client import DMSClient
-from src.lib.nemo.evaluator import Evaluator
-from src.lib.nemo.llm_as_judge import LLMAsJudge
-from src.log_utils import setup_logging
+from services.core.lib.integration.dataset_creator import DatasetCreator
+from services.core.lib.integration.record_exporter import RecordExporter
+from services.core.lib.nemo.customizer import Customizer
+from services.core.lib.nemo.dms_client import DMSClient
+from services.core.lib.nemo.evaluator import Evaluator
+from services.core.lib.nemo.llm_as_judge import LLMAsJudge
+from services.core.log_utils import setup_logging
 
 logger = setup_logging("data_flywheel.tasks")
 

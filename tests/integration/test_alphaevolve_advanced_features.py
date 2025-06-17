@@ -15,9 +15,9 @@ import asyncio
 import sys
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import pytest
 
@@ -67,6 +67,7 @@ except ImportError as e:
         def __init__(self):
             pass
 
+
 # Mock classes for testing (these would be implemented in actual advanced features)
 from dataclasses import dataclass
 from enum import Enum
@@ -115,11 +116,11 @@ class StakeholderInput:
 
 @dataclass
 class ConstitutionalContext:
-    principle_ids: List[str]
+    principle_ids: list[str]
     amendment_id: str = ""
     governance_stage: GovernanceStage = GovernanceStage.PUBLIC_CONSULTATION
-    constitutional_requirements: Dict[str, Any] = None
-    compliance_thresholds: Dict[str, float] = None
+    constitutional_requirements: dict[str, Any] = None
+    compliance_thresholds: dict[str, float] = None
 
 
 @dataclass
@@ -128,7 +129,7 @@ class ConstitutionalTopic:
     title: str
     description: str
     constitutional_context: str
-    related_principles: List[str]
+    related_principles: list[str]
 
 
 @dataclass
@@ -172,7 +173,7 @@ class CollectiveDecision:
     constitutional_alignment_score: float
     stakeholder_consensus_level: float
     confidence_score: float
-    bias_mitigation_applied: List[str]
+    bias_mitigation_applied: list[str]
 
 
 @dataclass
@@ -190,7 +191,7 @@ class EnsembleDecision:
     confidence_score: float
     constitutional_compliance: float
     validation_passed: bool
-    model_contributions: Dict[str, float]
+    model_contributions: dict[str, float]
 
 
 @dataclass
@@ -213,7 +214,7 @@ class PolisIntegration:
             conversation_id=str(uuid.uuid4()),
             topic=topic.title,
             description=topic.description,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
             participant_count=total_participants,
         )
 
@@ -295,7 +296,7 @@ class TestAdvancedDemocraticParticipation:
                 role=StakeholderRole.CITIZEN,
                 input_text="AI systems should prioritize human welfare and dignity in all decisions",
                 constitutional_context="fundamental_rights",
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 confidence_score=0.9,
             ),
             StakeholderInput(
@@ -303,7 +304,7 @@ class TestAdvancedDemocraticParticipation:
                 role=StakeholderRole.EXPERT,
                 input_text="Constitutional AI requires transparent decision-making processes with clear audit trails",
                 constitutional_context="transparency_accountability",
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 confidence_score=0.95,
             ),
             StakeholderInput(
@@ -311,7 +312,7 @@ class TestAdvancedDemocraticParticipation:
                 role=StakeholderRole.REPRESENTATIVE,
                 input_text="Democratic governance must include diverse stakeholder perspectives in AI policy formation",
                 constitutional_context="democratic_participation",
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 confidence_score=0.85,
             ),
         ]
@@ -467,7 +468,7 @@ class TestAdvancedDemocraticParticipation:
         # Validate constitutional compliance (proxy for bias reduction)
         assert collective_decision.constitutional_alignment_score >= 0.8
 
-        print(f"✅ Bias reduction validation completed")
+        print("✅ Bias reduction validation completed")
         print(f"   Bias mitigation strategies applied: {bias_mitigation_count}")
         print(
             f"   Constitutional alignment (bias proxy): {collective_decision.constitutional_alignment_score:.3f}"
@@ -565,7 +566,7 @@ class TestFederatedLearningOrchestrator:
             reliability_rate >= 0.999
         ), f"Reliability rate {reliability_rate:.4f} below 99.9% target"
 
-        print(f"✅ Reliability target validation completed")
+        print("✅ Reliability target validation completed")
         print(f"   Successful decisions: {successful_decisions}/{total_decisions}")
         print(
             f"   Reliability rate: {reliability_rate:.4f} ({reliability_rate*100:.2f}%)"
@@ -666,7 +667,7 @@ class TestHardwareAccelerationManager:
             avg_compliance >= 0.85
         ), f"Average compliance {avg_compliance:.3f} below 85% target"
 
-        print(f"✅ Performance targets validation completed")
+        print("✅ Performance targets validation completed")
         print(f"   Average latency: {avg_latency:.2f}ms (target: <25ms)")
         print(f"   Average compliance: {avg_compliance:.3f} (target: >0.85)")
         print(f"   Tasks processed: {len(latencies)}")
@@ -700,7 +701,7 @@ class TestIntegratedPerformanceValidation:
                 role=StakeholderRole.CITIZEN,
                 input_text=f"Democratic input {i}",
                 constitutional_context="test_context",
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
             for i in range(10)
         ]
@@ -775,7 +776,7 @@ class TestIntegratedPerformanceValidation:
         total_time = (time.time() - total_start_time) * 1000
 
         # Validate overall performance targets
-        print(f"\n📊 Performance Validation Results:")
+        print("\n📊 Performance Validation Results:")
         print(f"   Total end-to-end time: {total_time:.2f}ms")
 
         for component, metrics in component_metrics.items():
@@ -810,10 +811,10 @@ class TestIntegratedPerformanceValidation:
             total_time <= 200.0
         ), f"Total end-to-end time {total_time:.2f}ms exceeds 200ms threshold"
 
-        print(f"\n✅ End-to-end performance validation PASSED")
+        print("\n✅ End-to-end performance validation PASSED")
         print(f"   All components successful: {all_successful}")
         print(f"   Max component latency: {max_component_latency:.2f}ms")
-        print(f"   Performance targets achieved: ✅")
+        print("   Performance targets achieved: ✅")
 
 
 if __name__ == "__main__":

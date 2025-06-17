@@ -210,7 +210,7 @@ PGC_SERVICE_URL=http://localhost:8005
 docker build -t acgs-research-service ./services/core/research_service
 
 # Run with docker-compose
-docker-compose up research_service
+docker-compose -f infrastructure/docker/docker-compose.yml up research_service
 ```
 
 ### Database Setup

@@ -17,7 +17,11 @@ import json
 import logging
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
+
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi.websockets import WebSocketState
+from pydantic import BaseModel
 
 from app.services.qec_error_correction_service import (
     QECErrorCorrectionService,
@@ -31,9 +35,6 @@ from app.workflows.multi_model_manager import get_multi_model_manager
 from app.workflows.structured_output_models import (
     ConstitutionalFidelityScore,
 )
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from fastapi.websockets import WebSocketState
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -46,10 +47,10 @@ class FidelityAlert(BaseModel):
     alert_type: str  # "violation", "threshold", "performance", "escalation"
     severity: str  # "green", "amber", "red", "critical"
     message: str
-    fidelity_score: Optional[float] = None
+    fidelity_score: float | None = None
     violations: int = 0
     timestamp: datetime
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
 
 
 class ViolationAlert(BaseModel):
@@ -61,13 +62,13 @@ class ViolationAlert(BaseModel):
     severity: str  # ViolationSeverity enum value
     title: str
     description: str
-    fidelity_score: Optional[float] = None
-    distance_score: Optional[float] = None
-    recommended_actions: List[str] = []
+    fidelity_score: float | None = None
+    distance_score: float | None = None
+    recommended_actions: list[str] = []
     escalated: bool = False
-    escalation_level: Optional[str] = None
+    escalation_level: str | None = None
     timestamp: datetime
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
 
 
 class ErrorCorrectionAlert(BaseModel):
@@ -77,16 +78,16 @@ class ErrorCorrectionAlert(BaseModel):
     correction_id: str
     alert_type: str  # "conflict_detected", "correction_applied", "escalation_required"
     status: str  # ErrorCorrectionStatus enum value
-    conflict_type: Optional[str] = None  # ConflictType enum value
-    resolution_strategy: Optional[str] = None  # ResolutionStrategy enum value
+    conflict_type: str | None = None  # ConflictType enum value
+    resolution_strategy: str | None = None  # ResolutionStrategy enum value
     title: str
     description: str
     response_time_seconds: float = 0.0
-    fidelity_improvement: Optional[float] = None
+    fidelity_improvement: float | None = None
     escalation_required: bool = False
-    recommended_actions: List[str] = []
+    recommended_actions: list[str] = []
     timestamp: datetime
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
 
 
 class FidelityMonitoringSession:
@@ -98,16 +99,16 @@ class FidelityMonitoringSession:
         # sha256: func_hash
         self.websocket = websocket
         self.session_id = session_id
-        self.subscribed_workflows: Set[str] = set()
+        self.subscribed_workflows: set[str] = set()
         self.alert_thresholds = {
             "green": 0.85,  # Above this is green
             "amber": 0.70,  # Between amber and green is amber
             "red": 0.55,  # Below this is red
         }
-        self.last_alert_time: Optional[datetime] = None
+        self.last_alert_time: datetime | None = None
         self.alert_cooldown_seconds = 30  # Minimum time between alerts
 
-    async def send_message(self, message: Dict[str, Any]):
+    async def send_message(self, message: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -150,7 +151,7 @@ class FidelityMonitoringSession:
         # Check if alert should be sent
         await self._check_and_send_alert(workflow_id, fidelity_score)
 
-    async def send_performance_metrics(self, metrics: Dict[str, Any]):
+    async def send_performance_metrics(self, metrics: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -171,7 +172,8 @@ class FidelityMonitoringSession:
         # Check cooldown
         if (
             self.last_alert_time
-            and (datetime.utcnow() - self.last_alert_time).seconds < self.alert_cooldown_seconds
+            and (datetime.utcnow() - self.last_alert_time).seconds
+            < self.alert_cooldown_seconds
         ):
             return
 
@@ -328,8 +330,10 @@ class FidelityMonitoringManager:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.active_sessions: Dict[str, FidelityMonitoringSession] = {}
-        self.workflow_subscribers: Dict[str, Set[str]] = {}  # workflow_id -> session_ids
+        self.active_sessions: dict[str, FidelityMonitoringSession] = {}
+        self.workflow_subscribers: dict[str, set[str]] = (
+            {}
+        )  # workflow_id -> session_ids
 
     def add_session(self, session: FidelityMonitoringSession):
         # requires: Valid input parameters
@@ -383,7 +387,7 @@ class FidelityMonitoringManager:
                     session = self.active_sessions[session_id]
                     await session.send_fidelity_update(workflow_id, fidelity_score)
 
-    async def broadcast_performance_metrics(self, metrics: Dict[str, Any]):
+    async def broadcast_performance_metrics(self, metrics: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -504,7 +508,9 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
         if message_type == "subscribe_workflow":
             workflow_id = data.get("workflow_id")
             if workflow_id:
-                monitoring_manager.subscribe_session_to_workflow(session.session_id, workflow_id)
+                monitoring_manager.subscribe_session_to_workflow(
+                    session.session_id, workflow_id
+                )
                 await session.send_message(
                     {
                         "type": "subscription_confirmed",
@@ -554,10 +560,14 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
                                 "green"
                                 if current_fidelity.composite_score >= 0.85
                                 else (
-                                    "amber" if current_fidelity.composite_score >= 0.70 else "red"
+                                    "amber"
+                                    if current_fidelity.composite_score >= 0.70
+                                    else "red"
                                 )
                             ),
-                            "violation_count": len(session.fidelity_monitor.get_active_alerts()),
+                            "violation_count": len(
+                                session.fidelity_monitor.get_active_alerts()
+                            ),
                             "fidelity_components": {
                                 "principle_coverage": current_fidelity.principle_coverage,
                                 "synthesis_success": current_fidelity.synthesis_success,
@@ -651,7 +661,9 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
                 )
 
         elif message_type == "ping":
-            await session.send_message({"type": "pong", "timestamp": datetime.utcnow().isoformat()})
+            await session.send_message(
+                {"type": "pong", "timestamp": datetime.utcnow().isoformat()}
+            )
 
         else:
             await session.send_message(
@@ -697,7 +709,9 @@ async def start_performance_monitoring():
 
             # Check for performance alerts
             overall_metrics = metrics.get("overall", {})
-            reliability_target_met = overall_metrics.get("reliability_target_met", False)
+            reliability_target_met = overall_metrics.get(
+                "reliability_target_met", False
+            )
 
             if not reliability_target_met:
                 alert = FidelityAlert(
@@ -721,7 +735,9 @@ async def start_performance_monitoring():
 
 
 # Function to be called from workflow to broadcast fidelity updates
-async def broadcast_fidelity_update(workflow_id: str, fidelity_score: ConstitutionalFidelityScore):
+async def broadcast_fidelity_update(
+    workflow_id: str, fidelity_score: ConstitutionalFidelityScore
+):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

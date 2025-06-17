@@ -26,9 +26,9 @@ import json
 import os
 import subprocess
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 
@@ -42,7 +42,7 @@ class ComprehensiveIntegrationTestRunner:
     """Comprehensive integration test runner for ACGS-PGP production readiness."""
 
     def __init__(self):
-        self.start_time = datetime.now(timezone.utc)
+        self.start_time = datetime.now(UTC)
         self.results = {
             "test_execution_id": f"integration_test_{int(time.time())}",
             "start_time": self.start_time.isoformat(),
@@ -89,7 +89,7 @@ class ComprehensiveIntegrationTestRunner:
             "test_service_integration.py",
         ]
 
-    async def run_comprehensive_tests(self) -> Dict[str, Any]:
+    async def run_comprehensive_tests(self) -> dict[str, Any]:
         """Execute comprehensive integration testing workflow."""
         print("🚀 ACGS-PGP Step 6: Comprehensive Integration Testing")
         print("=" * 70)
@@ -260,7 +260,7 @@ class ComprehensiveIntegrationTestRunner:
 
             except subprocess.TimeoutExpired:
                 collection_results[test_file] = {"status": "timeout"}
-                print(f"    ⏰ Test execution timed out")
+                print("    ⏰ Test execution timed out")
             except Exception as e:
                 collection_results[test_file] = {"status": "error", "error": str(e)}
                 print(f"    ❌ Error: {e}")
@@ -311,7 +311,7 @@ class ComprehensiveIntegrationTestRunner:
         self.results["cross_service_tests"] = cross_service_results
         print()
 
-    async def _test_cross_service_authentication(self) -> Dict[str, Any]:
+    async def _test_cross_service_authentication(self) -> dict[str, Any]:
         """Test authentication flow across all services."""
         print("  🔐 Testing cross-service authentication...")
 
@@ -388,7 +388,7 @@ class ComprehensiveIntegrationTestRunner:
 
         return auth_results
 
-    async def _test_api_endpoints(self) -> Dict[str, Any]:
+    async def _test_api_endpoints(self) -> dict[str, Any]:
         """Test critical API endpoints across services."""
         print("  🌐 Testing API endpoints...")
 
@@ -474,7 +474,7 @@ class ComprehensiveIntegrationTestRunner:
 
         return endpoint_results
 
-    async def _test_service_communication(self) -> Dict[str, Any]:
+    async def _test_service_communication(self) -> dict[str, Any]:
         """Test inter-service communication patterns."""
         print("  📡 Testing service communication...")
 
@@ -570,7 +570,7 @@ class ComprehensiveIntegrationTestRunner:
         self.results["phase_validation"] = phase_results
         print()
 
-    async def _validate_phase1_features(self) -> Dict[str, Any]:
+    async def _validate_phase1_features(self) -> dict[str, Any]:
         """Validate Phase 1 constitutional governance features."""
         print("  📜 Validating Phase 1 features...")
 
@@ -644,7 +644,7 @@ class ComprehensiveIntegrationTestRunner:
 
         return phase1_results
 
-    async def _validate_phase2_features(self) -> Dict[str, Any]:
+    async def _validate_phase2_features(self) -> dict[str, Any]:
         """Validate Phase 2 AlphaEvolve integration features."""
         print("  🧬 Validating Phase 2 features...")
 
@@ -705,7 +705,7 @@ class ComprehensiveIntegrationTestRunner:
 
         return phase2_results
 
-    async def _validate_phase3_features(self) -> Dict[str, Any]:
+    async def _validate_phase3_features(self) -> dict[str, Any]:
         """Validate Phase 3 advanced features."""
         print("  🔒 Validating Phase 3 features...")
 
@@ -1028,7 +1028,7 @@ class ComprehensiveIntegrationTestRunner:
         print("📋 Generating Integration Test Report")
         print("-" * 50)
 
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
         execution_time = (end_time - self.start_time).total_seconds()
 
         # Calculate summary metrics

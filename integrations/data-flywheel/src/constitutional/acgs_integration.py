@@ -6,17 +6,14 @@ enabling the Data Flywheel to collect governance traffic, validate constitutiona
 compliance, and optimize governance models while maintaining constitutional adherence.
 """
 
-import asyncio
-import json
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any
 
 import httpx
 import yaml
 from elasticsearch import Elasticsearch
-from pydantic import BaseModel
 
 
 @dataclass
@@ -27,10 +24,10 @@ class GovernanceTrafficLog:
     workload_id: str
     client_id: str
     service_name: str
-    request: Dict[str, Any]
-    response: Dict[str, Any]
-    constitutional_context: Dict[str, Any]
-    performance_metrics: Dict[str, Any]
+    request: dict[str, Any]
+    response: dict[str, Any]
+    constitutional_context: dict[str, Any]
+    performance_metrics: dict[str, Any]
 
 
 class ACGSServiceIntegration:
@@ -60,10 +57,10 @@ class ACGSServiceIntegration:
         self.es_client = None
         self._init_elasticsearch()
 
-    def _load_config(self, config_path: str) -> Dict:
+    def _load_config(self, config_path: str) -> dict:
         """Load ACGS-1 configuration"""
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return yaml.safe_load(f)
         except Exception as e:
             self.logger.error(f"Failed to load config from {config_path}: {e}")
@@ -104,8 +101,8 @@ class ACGSServiceIntegration:
     async def collect_governance_traffic(
         self,
         time_range: timedelta = timedelta(hours=24),
-        workload_filter: Optional[List[str]] = None,
-    ) -> List[GovernanceTrafficLog]:
+        workload_filter: list[str] | None = None,
+    ) -> list[GovernanceTrafficLog]:
         """
         Collect governance traffic from ACGS-1 services for Data Flywheel processing
 
@@ -140,10 +137,10 @@ class ACGSServiceIntegration:
     async def _collect_service_traffic(
         self,
         service_name: str,
-        service_config: Dict,
+        service_config: dict,
         time_range: timedelta,
-        workload_filter: Optional[List[str]],
-    ) -> List[GovernanceTrafficLog]:
+        workload_filter: list[str] | None,
+    ) -> list[GovernanceTrafficLog]:
         """Collect traffic from a specific ACGS-1 service"""
 
         port = service_config.get("port")
@@ -175,8 +172,8 @@ class ACGSServiceIntegration:
             return []
 
     def _parse_service_logs(
-        self, service_name: str, logs_data: Dict
-    ) -> List[GovernanceTrafficLog]:
+        self, service_name: str, logs_data: dict
+    ) -> list[GovernanceTrafficLog]:
         """Parse service logs into GovernanceTrafficLog objects"""
         traffic_logs = []
 
@@ -204,10 +201,10 @@ class ACGSServiceIntegration:
         self,
         workload_id: str,
         service_name: str,
-        request_data: Dict,
-        response_data: Dict,
-        constitutional_context: Optional[Dict] = None,
-        performance_metrics: Optional[Dict] = None,
+        request_data: dict,
+        response_data: dict,
+        constitutional_context: dict | None = None,
+        performance_metrics: dict | None = None,
     ):
         """
         Log a governance interaction for Data Flywheel processing
@@ -242,7 +239,7 @@ class ACGSServiceIntegration:
         except Exception as e:
             self.logger.error(f"Failed to log governance interaction: {e}")
 
-    async def validate_service_health(self) -> Dict[str, bool]:
+    async def validate_service_health(self) -> dict[str, bool]:
         """Validate health of all ACGS-1 services"""
         health_status = {}
 
@@ -262,7 +259,7 @@ class ACGSServiceIntegration:
 
         return health_status
 
-    async def get_constitutional_context(self, workload_id: str) -> Dict[str, Any]:
+    async def get_constitutional_context(self, workload_id: str) -> dict[str, Any]:
         """
         Get constitutional context for a specific governance workload
 
@@ -303,8 +300,8 @@ class ACGSServiceIntegration:
     async def notify_optimization_result(
         self,
         workload_id: str,
-        optimization_result: Dict[str, Any],
-        constitutional_compliance: Dict[str, Any],
+        optimization_result: dict[str, Any],
+        constitutional_compliance: dict[str, Any],
     ):
         """
         Notify ACGS-1 services about Data Flywheel optimization results
@@ -348,14 +345,14 @@ class ACGSServiceIntegration:
             except Exception as e:
                 self.logger.error(f"Error notifying {service_mapping}: {e}")
 
-    def get_workload_service_mapping(self) -> Dict[str, str]:
+    def get_workload_service_mapping(self) -> dict[str, str]:
         """Get mapping of governance workloads to ACGS-1 services"""
         return self.workload_mapping.copy()
 
-    def get_optimization_targets(self) -> Dict[str, float]:
+    def get_optimization_targets(self) -> dict[str, float]:
         """Get optimization targets for governance models"""
         return self.governance_config.get("optimization_targets", {})
 
-    def get_evaluation_criteria(self) -> Dict[str, float]:
+    def get_evaluation_criteria(self) -> dict[str, float]:
         """Get evaluation criteria weights for governance models"""
         return self.governance_config.get("evaluation_criteria", {})

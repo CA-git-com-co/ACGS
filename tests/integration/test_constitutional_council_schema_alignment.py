@@ -5,7 +5,7 @@ Tests the enhanced schema, optimistic locking, Redis caching, and state machine 
 """
 
 import asyncio
-from typing import Any, Dict
+from typing import Any
 
 import aiohttp
 
@@ -38,8 +38,8 @@ class ConstitutionalCouncilSchemaTest:
             await self.session.close()
 
     async def request(
-        self, method: str, endpoint: str, token: str = None, data: Dict[Any, Any] = None
-    ) -> Dict[Any, Any]:
+        self, method: str, endpoint: str, token: str = None, data: dict[Any, Any] = None
+    ) -> dict[Any, Any]:
         """Make HTTP request to AC service."""
         url = f"{BASE_URL}{endpoint}"
         headers = {}
@@ -279,7 +279,7 @@ class ConstitutionalCouncilSchemaTest:
             # Verify rapid processing fields
             if (
                 amendment_data.get("urgency_level") == "emergency"
-                and amendment_data.get("rapid_processing_requested") == True
+                and amendment_data.get("rapid_processing_requested")
                 and amendment_data.get("processing_metrics") is not None
             ):
                 print("✅ Rapid co-evolution processing enabled")

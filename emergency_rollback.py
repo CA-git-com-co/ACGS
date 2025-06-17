@@ -7,7 +7,7 @@ Use if any merge causes critical issues
 import logging
 import subprocess
 import sys
-from typing import Any, Dict
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ class EmergencyRollback:
             },
         }
 
-    def check_git_status(self) -> Dict[str, Any]:
+    def check_git_status(self) -> dict[str, Any]:
         """Check current git status"""
         logger.info("📊 Checking git status...")
 
@@ -79,7 +79,7 @@ class EmergencyRollback:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def execute_rollback(self, dependency: str, dry_run: bool = True) -> Dict[str, Any]:
+    def execute_rollback(self, dependency: str, dry_run: bool = True) -> dict[str, Any]:
         """Execute rollback for specific dependency"""
         logger.info(
             f"🔄 {'Simulating' if dry_run else 'Executing'} rollback for {dependency}..."
@@ -130,7 +130,7 @@ class EmergencyRollback:
 
         return results
 
-    def validate_rollback(self) -> Dict[str, Any]:
+    def validate_rollback(self) -> dict[str, Any]:
         """Validate system after rollback"""
         logger.info("✅ Validating system after rollback...")
 

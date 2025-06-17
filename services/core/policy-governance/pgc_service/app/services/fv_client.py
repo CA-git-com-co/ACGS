@@ -6,10 +6,9 @@ policy correctness through formal verification techniques.
 """
 
 import asyncio
-import json
 import logging
 import time
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import httpx
 from httpx import AsyncClient, Timeout
@@ -67,7 +66,10 @@ class CircuitBreaker:
             else:
                 raise Exception("Circuit breaker is open")
 
-        if self.state == "half-open" and self.half_open_calls >= self.half_open_max_calls:
+        if (
+            self.state == "half-open"
+            and self.half_open_calls >= self.half_open_max_calls
+        ):
             raise Exception("Circuit breaker is half-open and max calls reached")
 
         try:
@@ -115,7 +117,7 @@ class FVServiceClient:
         if self.circuit_breaker_enabled:
             self.circuit_breaker = CircuitBreaker()
 
-        self.client: Optional[AsyncClient] = None
+        self.client: AsyncClient | None = None
 
     async def initialize(self) -> None:
         """Initialize HTTP client if not already initialized."""
@@ -135,8 +137,8 @@ class FVServiceClient:
             self.client = None
 
     async def _make_request(
-        self, method: str, endpoint: str, data: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, method: str, endpoint: str, data: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Make HTTP request to FV service with retry logic.
 
         Args:
@@ -157,7 +159,8 @@ class FVServiceClient:
 
         for attempt in range(self.retry_attempts):
             try:
-                exec_func = lambda: self._execute_request(method, url, data)
+                def exec_func():
+                    return self._execute_request(method, url, data)
 
                 if self.circuit_breaker_enabled:
                     response = await self.circuit_breaker.execute(exec_func)
@@ -173,12 +176,14 @@ class FVServiceClient:
                 if attempt < self.retry_attempts - 1:
                     await asyncio.sleep(self.retry_delay_ms / 1000)
                 else:
-                    logger.error(f"Request to {url} failed after {self.retry_attempts} attempts")
+                    logger.error(
+                        f"Request to {url} failed after {self.retry_attempts} attempts"
+                    )
                     raise
 
     async def _execute_request(
-        self, method: str, url: str, data: Optional[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, method: str, url: str, data: dict[str, Any] | None
+    ) -> dict[str, Any]:
         """Execute HTTP request.
 
         Args:
@@ -224,7 +229,7 @@ class FVServiceClient:
 
     async def verify_policy(
         self, policy_content: str, policy_id: str, verification_level: str = "standard"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Verify policy using formal verification techniques.
 
         Args:
@@ -246,8 +251,8 @@ class FVServiceClient:
         return await self._make_request("POST", endpoint, data)
 
     async def verify_policy_batch(
-        self, policies: List[Dict[str, str]], verification_level: str = "standard"
-    ) -> Dict[str, Any]:
+        self, policies: list[dict[str, str]], verification_level: str = "standard"
+    ) -> dict[str, Any]:
         """Verify multiple policies in a single batch request.
 
         Args:
@@ -267,8 +272,8 @@ class FVServiceClient:
         return await self._make_request("POST", endpoint, data)
 
     async def verify_constitutional_compliance(
-        self, policy_content: str, principle_ids: List[str]
-    ) -> Dict[str, Any]:
+        self, policy_content: str, principle_ids: list[str]
+    ) -> dict[str, Any]:
         """Verify policy's compliance with constitutional principles.
 
         Args:
@@ -287,7 +292,7 @@ class FVServiceClient:
 
         return await self._make_request("POST", endpoint, data)
 
-    async def get_verification_status(self, verification_id: str) -> Dict[str, Any]:
+    async def get_verification_status(self, verification_id: str) -> dict[str, Any]:
         """Get status of an asynchronous verification request.
 
         Args:
@@ -299,7 +304,7 @@ class FVServiceClient:
         endpoint = f"/api/v1/verification/status/{verification_id}"
         return await self._make_request("GET", endpoint)
 
-    async def get_service_health(self) -> Dict[str, Any]:
+    async def get_service_health(self) -> dict[str, Any]:
         """Get FV service health status.
 
         Returns:

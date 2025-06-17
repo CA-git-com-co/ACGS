@@ -19,9 +19,9 @@ import logging
 import statistics
 from collections import deque
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 try:
     from prometheus_client import (
@@ -121,7 +121,7 @@ class WINAConstitutionalComplianceMetrics:
     violations_detected: int
     compliance_check_time_ms: float
     constitutional_overhead_ratio: float
-    principle_adherence_breakdown: Dict[str, float]
+    principle_adherence_breakdown: dict[str, float]
     remediation_actions_taken: int
     timestamp: datetime
 
@@ -181,18 +181,18 @@ class WINAPerformanceReport:
     """Comprehensive performance report."""
 
     report_id: str
-    reporting_period: Tuple[datetime, datetime]
+    reporting_period: tuple[datetime, datetime]
     overall_gflops_reduction: float
     overall_accuracy_retention: float
     constitutional_compliance_rate: float
     total_operations: int
     performance_targets_met: bool
-    component_metrics: Dict[str, Any]
-    integration_metrics: Dict[str, Any]
-    health_metrics: Dict[str, Any]
-    alerts_triggered: List[Dict[str, Any]]
-    recommendations: List[str]
-    trends: Dict[str, Any]
+    component_metrics: dict[str, Any]
+    integration_metrics: dict[str, Any]
+    health_metrics: dict[str, Any]
+    alerts_triggered: list[dict[str, Any]]
+    recommendations: list[str]
+    trends: dict[str, Any]
     timestamp: datetime
 
 
@@ -204,7 +204,9 @@ class WINAPerformanceCollector:
     access to performance data with real-time monitoring capabilities.
     """
 
-    def __init__(self, monitoring_level: WINAMonitoringLevel = WINAMonitoringLevel.DETAILED):
+    def __init__(
+        self, monitoring_level: WINAMonitoringLevel = WINAMonitoringLevel.DETAILED
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -226,7 +228,7 @@ class WINAPerformanceCollector:
         self.system_health_metrics: deque = deque(maxlen=1000)
 
         # Component-specific metrics storage
-        self.component_metrics: Dict[WINAComponentType, deque] = {
+        self.component_metrics: dict[WINAComponentType, deque] = {
             component_type: deque(maxlen=5000) for component_type in WINAComponentType
         }
 
@@ -235,7 +237,7 @@ class WINAPerformanceCollector:
         self.alerts_history: deque = deque(maxlen=1000)
 
         # Real-time monitoring
-        self.real_time_metrics: Dict[str, Any] = {}
+        self.real_time_metrics: dict[str, Any] = {}
         self.monitoring_active = False
         self.collection_interval = 30  # seconds
 
@@ -361,7 +363,9 @@ class WINAPerformanceCollector:
                 logger.error(f"Error in monitoring loop: {e}")
                 await asyncio.sleep(5)
 
-    async def record_neuron_activation_metrics(self, metrics: WINANeuronActivationMetrics) -> None:
+    async def record_neuron_activation_metrics(
+        self, metrics: WINANeuronActivationMetrics
+    ) -> None:
         """Record neuron activation metrics."""
         try:
             self.neuron_activation_metrics.append(metrics)
@@ -372,7 +376,9 @@ class WINAPerformanceCollector:
                     layer=metrics.layer_name
                 ).set(metrics.activation_ratio)
 
-            logger.debug(f"Recorded neuron activation metrics for layer {metrics.layer_name}")
+            logger.debug(
+                f"Recorded neuron activation metrics for layer {metrics.layer_name}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to record neuron activation metrics: {e}")
@@ -391,22 +397,26 @@ class WINAPerformanceCollector:
                     layer=metrics.layer_name
                 ).set(metrics.compression_ratio)
 
-            logger.debug(f"Recorded SVD transformation metrics for layer {metrics.layer_name}")
+            logger.debug(
+                f"Recorded SVD transformation metrics for layer {metrics.layer_name}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to record SVD transformation metrics: {e}")
             raise WINAMetricsError(f"SVD transformation metrics recording failed: {e}")
 
-    async def record_dynamic_gating_metrics(self, metrics: WINADynamicGatingMetrics) -> None:
+    async def record_dynamic_gating_metrics(
+        self, metrics: WINADynamicGatingMetrics
+    ) -> None:
         """Record dynamic gating metrics."""
         try:
             self.dynamic_gating_metrics.append(metrics)
 
             # Update Prometheus metrics
             if PROMETHEUS_AVAILABLE and hasattr(self, "prometheus_metrics"):
-                self.prometheus_metrics["gating_efficiency"].labels(gate_id=metrics.gate_id).set(
-                    metrics.gating_efficiency
-                )
+                self.prometheus_metrics["gating_efficiency"].labels(
+                    gate_id=metrics.gate_id
+                ).set(metrics.gating_efficiency)
 
             logger.debug(f"Recorded dynamic gating metrics for gate {metrics.gate_id}")
 
@@ -427,18 +437,26 @@ class WINAPerformanceCollector:
                     component=metrics.component_type
                 ).set(metrics.compliance_score)
 
-            logger.debug(f"Recorded constitutional compliance metrics for {metrics.component_type}")
+            logger.debug(
+                f"Recorded constitutional compliance metrics for {metrics.component_type}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to record constitutional compliance metrics: {e}")
-            raise WINAMetricsError(f"Constitutional compliance metrics recording failed: {e}")
+            raise WINAMetricsError(
+                f"Constitutional compliance metrics recording failed: {e}"
+            )
 
-    async def record_learning_feedback_metrics(self, metrics: WINALearningFeedbackMetrics) -> None:
+    async def record_learning_feedback_metrics(
+        self, metrics: WINALearningFeedbackMetrics
+    ) -> None:
         """Record learning feedback metrics."""
         try:
             self.learning_feedback_metrics.append(metrics)
 
-            logger.debug(f"Recorded learning feedback metrics from {metrics.feedback_source}")
+            logger.debug(
+                f"Recorded learning feedback metrics from {metrics.feedback_source}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to record learning feedback metrics: {e}")
@@ -463,7 +481,9 @@ class WINAPerformanceCollector:
             logger.error(f"Failed to record integration metrics: {e}")
             raise WINAMetricsError(f"Integration metrics recording failed: {e}")
 
-    async def record_system_health_metrics(self, metrics: WINASystemHealthMetrics) -> None:
+    async def record_system_health_metrics(
+        self, metrics: WINASystemHealthMetrics
+    ) -> None:
         """Record system health metrics."""
         try:
             self.system_health_metrics.append(metrics)
@@ -476,7 +496,9 @@ class WINAPerformanceCollector:
                 self.prometheus_metrics["system_memory_utilization"].set(
                     metrics.memory_utilization_percent
                 )
-                self.prometheus_metrics["system_error_rate"].set(metrics.error_rate_percent)
+                self.prometheus_metrics["system_error_rate"].set(
+                    metrics.error_rate_percent
+                )
 
             logger.debug("Recorded system health metrics")
 
@@ -508,7 +530,7 @@ class WINAPerformanceCollector:
                 "operation_type": operation_type,
                 "duration_ms": duration_ms,
                 "success": success,
-                "timestamp": datetime.now(timezone.utc),
+                "timestamp": datetime.now(UTC),
             }
             self.component_metrics[component].append(operation_data)
 
@@ -520,7 +542,7 @@ class WINAPerformanceCollector:
     async def _collect_real_time_metrics(self) -> None:
         """Collect real-time metrics for monitoring."""
         try:
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
 
             # Calculate real-time performance metrics
             self.real_time_metrics = {
@@ -538,7 +560,7 @@ class WINAPerformanceCollector:
         except Exception as e:
             logger.error(f"Real-time metrics collection failed: {e}")
 
-    async def _calculate_neuron_activation_summary(self) -> Dict[str, Any]:
+    async def _calculate_neuron_activation_summary(self) -> dict[str, Any]:
         """Calculate neuron activation summary metrics."""
         if not self.neuron_activation_metrics:
             return {"total_layers": 0, "avg_activation_ratio": 0.0}
@@ -546,24 +568,28 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.neuron_activation_metrics
-            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
             return {"total_layers": 0, "avg_activation_ratio": 0.0}
 
         return {
-            "total_layers": len(set(m.layer_name for m in recent_metrics)),
-            "avg_activation_ratio": statistics.mean(m.activation_ratio for m in recent_metrics),
+            "total_layers": len({m.layer_name for m in recent_metrics}),
+            "avg_activation_ratio": statistics.mean(
+                m.activation_ratio for m in recent_metrics
+            ),
             "avg_performance_impact_ms": statistics.mean(
                 m.performance_impact_ms for m in recent_metrics
             ),
-            "avg_energy_savings": statistics.mean(m.energy_savings_ratio for m in recent_metrics),
+            "avg_energy_savings": statistics.mean(
+                m.energy_savings_ratio for m in recent_metrics
+            ),
             "total_neurons_managed": sum(m.total_neurons for m in recent_metrics),
             "total_neurons_active": sum(m.active_neurons for m in recent_metrics),
         }
 
-    async def _calculate_svd_transformation_summary(self) -> Dict[str, Any]:
+    async def _calculate_svd_transformation_summary(self) -> dict[str, Any]:
         """Calculate SVD transformation summary metrics."""
         if not self.svd_transformation_metrics:
             return {"total_transformations": 0, "avg_compression_ratio": 0.0}
@@ -571,7 +597,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.svd_transformation_metrics
-            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
@@ -579,8 +605,12 @@ class WINAPerformanceCollector:
 
         return {
             "total_transformations": len(recent_metrics),
-            "avg_compression_ratio": statistics.mean(m.compression_ratio for m in recent_metrics),
-            "avg_rank_reduction": statistics.mean(m.rank_reduction_ratio for m in recent_metrics),
+            "avg_compression_ratio": statistics.mean(
+                m.compression_ratio for m in recent_metrics
+            ),
+            "avg_rank_reduction": statistics.mean(
+                m.rank_reduction_ratio for m in recent_metrics
+            ),
             "avg_computation_time_ms": statistics.mean(
                 m.svd_computation_time_ms for m in recent_metrics
             ),
@@ -590,7 +620,7 @@ class WINAPerformanceCollector:
             ),
         }
 
-    async def _calculate_dynamic_gating_summary(self) -> Dict[str, Any]:
+    async def _calculate_dynamic_gating_summary(self) -> dict[str, Any]:
         """Calculate dynamic gating summary metrics."""
         if not self.dynamic_gating_metrics:
             return {"total_gates": 0, "avg_gating_efficiency": 0.0}
@@ -598,24 +628,28 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.dynamic_gating_metrics
-            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
             return {"total_gates": 0, "avg_gating_efficiency": 0.0}
 
         return {
-            "total_gates": len(set(m.gate_id for m in recent_metrics)),
-            "avg_gating_efficiency": statistics.mean(m.gating_efficiency for m in recent_metrics),
+            "total_gates": len({m.gate_id for m in recent_metrics}),
+            "avg_gating_efficiency": statistics.mean(
+                m.gating_efficiency for m in recent_metrics
+            ),
             "avg_decision_latency_ms": statistics.mean(
                 m.decision_latency_ms for m in recent_metrics
             ),
-            "avg_resource_savings": statistics.mean(m.resource_savings for m in recent_metrics),
+            "avg_resource_savings": statistics.mean(
+                m.resource_savings for m in recent_metrics
+            ),
             "total_gates_activated": sum(m.gates_activated for m in recent_metrics),
-            "gating_strategies": list(set(m.gating_strategy for m in recent_metrics)),
+            "gating_strategies": list({m.gating_strategy for m in recent_metrics}),
         }
 
-    async def _calculate_constitutional_compliance_summary(self) -> Dict[str, Any]:
+    async def _calculate_constitutional_compliance_summary(self) -> dict[str, Any]:
         """Calculate constitutional compliance summary metrics."""
         if not self.constitutional_compliance_metrics:
             return {"avg_compliance_score": 1.0, "total_violations": 0}
@@ -623,24 +657,30 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.constitutional_compliance_metrics
-            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
             return {"avg_compliance_score": 1.0, "total_violations": 0}
 
         return {
-            "avg_compliance_score": statistics.mean(m.compliance_score for m in recent_metrics),
+            "avg_compliance_score": statistics.mean(
+                m.compliance_score for m in recent_metrics
+            ),
             "total_violations": sum(m.violations_detected for m in recent_metrics),
-            "total_principles_evaluated": sum(m.principles_evaluated for m in recent_metrics),
+            "total_principles_evaluated": sum(
+                m.principles_evaluated for m in recent_metrics
+            ),
             "avg_check_time_ms": statistics.mean(
                 m.compliance_check_time_ms for m in recent_metrics
             ),
-            "components_monitored": len(set(m.component_type for m in recent_metrics)),
-            "remediation_actions": sum(m.remediation_actions_taken for m in recent_metrics),
+            "components_monitored": len({m.component_type for m in recent_metrics}),
+            "remediation_actions": sum(
+                m.remediation_actions_taken for m in recent_metrics
+            ),
         }
 
-    async def _calculate_learning_feedback_summary(self) -> Dict[str, Any]:
+    async def _calculate_learning_feedback_summary(self) -> dict[str, Any]:
         """Calculate learning feedback summary metrics."""
         if not self.learning_feedback_metrics:
             return {"total_adaptations": 0, "avg_effectiveness": 0.0}
@@ -648,7 +688,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.learning_feedback_metrics
-            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
@@ -659,13 +699,17 @@ class WINAPerformanceCollector:
             "avg_effectiveness": statistics.mean(
                 m.adaptation_effectiveness for m in recent_metrics
             ),
-            "avg_learning_accuracy": statistics.mean(m.learning_accuracy for m in recent_metrics),
-            "avg_convergence_rate": statistics.mean(m.convergence_rate for m in recent_metrics),
-            "feedback_sources": list(set(m.feedback_source for m in recent_metrics)),
-            "adaptation_types": list(set(m.adaptation_type for m in recent_metrics)),
+            "avg_learning_accuracy": statistics.mean(
+                m.learning_accuracy for m in recent_metrics
+            ),
+            "avg_convergence_rate": statistics.mean(
+                m.convergence_rate for m in recent_metrics
+            ),
+            "feedback_sources": list({m.feedback_source for m in recent_metrics}),
+            "adaptation_types": list({m.adaptation_type for m in recent_metrics}),
         }
 
-    async def _calculate_integration_performance_summary(self) -> Dict[str, Any]:
+    async def _calculate_integration_performance_summary(self) -> dict[str, Any]:
         """Calculate integration performance summary metrics."""
         if not self.integration_metrics:
             return {"total_integrations": 0, "avg_latency_ms": 0.0}
@@ -673,7 +717,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.integration_metrics
-            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=10)
+            if datetime.now(UTC) - m.timestamp < timedelta(minutes=10)
         ]
 
         if not recent_metrics:
@@ -681,18 +725,27 @@ class WINAPerformanceCollector:
 
         return {
             "total_integrations": len(recent_metrics),
-            "avg_latency_ms": statistics.mean(m.integration_latency_ms for m in recent_metrics),
-            "avg_success_rate": statistics.mean(m.integration_success_rate for m in recent_metrics),
-            "total_data_transferred_mb": sum(m.data_transfer_mb for m in recent_metrics),
+            "avg_latency_ms": statistics.mean(
+                m.integration_latency_ms for m in recent_metrics
+            ),
+            "avg_success_rate": statistics.mean(
+                m.integration_success_rate for m in recent_metrics
+            ),
+            "total_data_transferred_mb": sum(
+                m.data_transfer_mb for m in recent_metrics
+            ),
             "avg_performance_improvement": statistics.mean(
                 m.performance_improvement_ratio for m in recent_metrics
             ),
             "integration_pairs": len(
-                set(f"{m.source_component}->{m.target_component}" for m in recent_metrics)
+                {
+                    f"{m.source_component}->{m.target_component}"
+                    for m in recent_metrics
+                }
             ),
         }
 
-    async def _calculate_system_health_summary(self) -> Dict[str, Any]:
+    async def _calculate_system_health_summary(self) -> dict[str, Any]:
         """Calculate system health summary metrics."""
         if not self.system_health_metrics:
             return {"status": "unknown", "availability": 0.0}
@@ -700,7 +753,7 @@ class WINAPerformanceCollector:
         recent_metrics = [
             m
             for m in self.system_health_metrics
-            if datetime.now(timezone.utc) - m.timestamp < timedelta(minutes=5)
+            if datetime.now(UTC) - m.timestamp < timedelta(minutes=5)
         ]
 
         if not recent_metrics:
@@ -725,7 +778,7 @@ class WINAPerformanceCollector:
             "response_time_p95": latest_metric.response_time_p95_ms,
         }
 
-    async def _calculate_overall_performance_summary(self) -> Dict[str, Any]:
+    async def _calculate_overall_performance_summary(self) -> dict[str, Any]:
         """Calculate overall WINA performance summary."""
         try:
             # Calculate overall GFLOPs reduction
@@ -733,26 +786,31 @@ class WINAPerformanceCollector:
             if self.neuron_activation_metrics and self.svd_transformation_metrics:
                 neuron_savings = (
                     statistics.mean(
-                        m.energy_savings_ratio for m in self.neuron_activation_metrics[-10:]
+                        m.energy_savings_ratio
+                        for m in self.neuron_activation_metrics[-10:]
                     )
                     if self.neuron_activation_metrics
                     else 0.0
                 )
                 svd_savings = (
                     statistics.mean(
-                        m.compression_ratio for m in self.svd_transformation_metrics[-10:]
+                        m.compression_ratio
+                        for m in self.svd_transformation_metrics[-10:]
                     )
                     if self.svd_transformation_metrics
                     else 0.0
                 )
-                gflops_reduction = min((neuron_savings + svd_savings) / 2, 0.7)  # Cap at 70%
+                gflops_reduction = min(
+                    (neuron_savings + svd_savings) / 2, 0.7
+                )  # Cap at 70%
 
             # Calculate overall accuracy retention
             accuracy_retention = 0.95  # Default target
             if self.constitutional_compliance_metrics:
                 accuracy_retention = min(
                     statistics.mean(
-                        m.compliance_score for m in self.constitutional_compliance_metrics[-10:]
+                        m.compliance_score
+                        for m in self.constitutional_compliance_metrics[-10:]
                     ),
                     1.0,
                 )
@@ -788,7 +846,7 @@ class WINAPerformanceCollector:
         """Check for performance alerts and trigger notifications."""
         try:
             alerts = []
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
 
             # Check GFLOPs reduction target
             overall_perf = self.real_time_metrics.get("overall_performance", {})
@@ -854,23 +912,23 @@ class WINAPerformanceCollector:
 
             # Update core performance metrics
             for component in WINAComponentType:
-                self.prometheus_metrics["gflops_reduction"].labels(component=component.value).set(
-                    overall_perf.get("gflops_reduction_achieved", 0.0)
-                )
+                self.prometheus_metrics["gflops_reduction"].labels(
+                    component=component.value
+                ).set(overall_perf.get("gflops_reduction_achieved", 0.0))
 
-                self.prometheus_metrics["accuracy_retention"].labels(component=component.value).set(
-                    overall_perf.get("accuracy_retention", 0.95)
-                )
+                self.prometheus_metrics["accuracy_retention"].labels(
+                    component=component.value
+                ).set(overall_perf.get("accuracy_retention", 0.95))
 
         except Exception as e:
             logger.error(f"Prometheus metrics update failed: {e}")
 
-    async def get_real_time_metrics(self) -> Dict[str, Any]:
+    async def get_real_time_metrics(self) -> dict[str, Any]:
         """Get current real-time metrics."""
         return self.real_time_metrics.copy()
 
     async def get_performance_report(
-        self, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None
+        self, start_time: datetime | None = None, end_time: datetime | None = None
     ) -> WINAPerformanceReport:
         """
         Generate comprehensive performance report.
@@ -883,25 +941,35 @@ class WINAPerformanceCollector:
             WINAPerformanceReport with comprehensive analytics
         """
         if end_time is None:
-            end_time = datetime.now(timezone.utc)
+            end_time = datetime.now(UTC)
         if start_time is None:
             start_time = end_time - timedelta(hours=24)
 
         try:
             # Filter metrics by time range
-            filtered_metrics = await self._filter_metrics_by_time_range(start_time, end_time)
+            filtered_metrics = await self._filter_metrics_by_time_range(
+                start_time, end_time
+            )
 
             # Calculate overall performance
-            overall_metrics = await self._calculate_report_overall_metrics(filtered_metrics)
+            overall_metrics = await self._calculate_report_overall_metrics(
+                filtered_metrics
+            )
 
             # Calculate component metrics
-            component_metrics = await self._calculate_report_component_metrics(filtered_metrics)
+            component_metrics = await self._calculate_report_component_metrics(
+                filtered_metrics
+            )
 
             # Calculate integration metrics
-            integration_metrics = await self._calculate_report_integration_metrics(filtered_metrics)
+            integration_metrics = await self._calculate_report_integration_metrics(
+                filtered_metrics
+            )
 
             # Calculate health metrics
-            health_metrics = await self._calculate_report_health_metrics(filtered_metrics)
+            health_metrics = await self._calculate_report_health_metrics(
+                filtered_metrics
+            )
 
             # Get alerts for period
             period_alerts = [
@@ -924,8 +992,12 @@ class WINAPerformanceCollector:
                 report_id=f"WINA_PERF_REPORT_{int(end_time.timestamp())}",
                 reporting_period=(start_time, end_time),
                 overall_gflops_reduction=overall_metrics.get("gflops_reduction", 0.0),
-                overall_accuracy_retention=overall_metrics.get("accuracy_retention", 0.95),
-                constitutional_compliance_rate=overall_metrics.get("compliance_rate", 0.95),
+                overall_accuracy_retention=overall_metrics.get(
+                    "accuracy_retention", 0.95
+                ),
+                constitutional_compliance_rate=overall_metrics.get(
+                    "compliance_rate", 0.95
+                ),
                 total_operations=overall_metrics.get("total_operations", 0),
                 performance_targets_met=overall_metrics.get("targets_met", False),
                 component_metrics=component_metrics,
@@ -934,7 +1006,7 @@ class WINAPerformanceCollector:
                 alerts_triggered=period_alerts,
                 recommendations=recommendations,
                 trends=trends,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
 
             logger.info(f"Generated WINA performance report: {report.report_id}")
@@ -946,17 +1018,23 @@ class WINAPerformanceCollector:
 
     async def _filter_metrics_by_time_range(
         self, start_time: datetime, end_time: datetime
-    ) -> Dict[str, List]:
+    ) -> dict[str, list]:
         """Filter all metrics by time range."""
         return {
             "neuron_activation": [
-                m for m in self.neuron_activation_metrics if start_time <= m.timestamp <= end_time
+                m
+                for m in self.neuron_activation_metrics
+                if start_time <= m.timestamp <= end_time
             ],
             "svd_transformation": [
-                m for m in self.svd_transformation_metrics if start_time <= m.timestamp <= end_time
+                m
+                for m in self.svd_transformation_metrics
+                if start_time <= m.timestamp <= end_time
             ],
             "dynamic_gating": [
-                m for m in self.dynamic_gating_metrics if start_time <= m.timestamp <= end_time
+                m
+                for m in self.dynamic_gating_metrics
+                if start_time <= m.timestamp <= end_time
             ],
             "constitutional_compliance": [
                 m
@@ -964,26 +1042,36 @@ class WINAPerformanceCollector:
                 if start_time <= m.timestamp <= end_time
             ],
             "learning_feedback": [
-                m for m in self.learning_feedback_metrics if start_time <= m.timestamp <= end_time
+                m
+                for m in self.learning_feedback_metrics
+                if start_time <= m.timestamp <= end_time
             ],
             "integration": [
-                m for m in self.integration_metrics if start_time <= m.timestamp <= end_time
+                m
+                for m in self.integration_metrics
+                if start_time <= m.timestamp <= end_time
             ],
             "system_health": [
-                m for m in self.system_health_metrics if start_time <= m.timestamp <= end_time
+                m
+                for m in self.system_health_metrics
+                if start_time <= m.timestamp <= end_time
             ],
         }
 
     async def _calculate_report_overall_metrics(
-        self, filtered_metrics: Dict[str, List]
-    ) -> Dict[str, Any]:
+        self, filtered_metrics: dict[str, list]
+    ) -> dict[str, Any]:
         """Calculate overall metrics for performance report."""
         try:
             # Calculate GFLOPs reduction from neuron activation and SVD
             gflops_reduction = 0.0
-            if filtered_metrics["neuron_activation"] and filtered_metrics["svd_transformation"]:
+            if (
+                filtered_metrics["neuron_activation"]
+                and filtered_metrics["svd_transformation"]
+            ):
                 neuron_savings = statistics.mean(
-                    m.energy_savings_ratio for m in filtered_metrics["neuron_activation"]
+                    m.energy_savings_ratio
+                    for m in filtered_metrics["neuron_activation"]
                 )
                 svd_compression = statistics.mean(
                     m.compression_ratio for m in filtered_metrics["svd_transformation"]
@@ -994,15 +1082,20 @@ class WINAPerformanceCollector:
             accuracy_retention = 0.95
             if filtered_metrics["constitutional_compliance"]:
                 accuracy_retention = statistics.mean(
-                    m.compliance_score for m in filtered_metrics["constitutional_compliance"]
+                    m.compliance_score
+                    for m in filtered_metrics["constitutional_compliance"]
                 )
 
             # Calculate total operations
-            total_operations = sum(len(metrics) for metrics in filtered_metrics.values())
+            total_operations = sum(
+                len(metrics) for metrics in filtered_metrics.values()
+            )
 
             # Check if targets are met
             targets_met = (
-                gflops_reduction >= 0.4 and gflops_reduction <= 0.7 and accuracy_retention >= 0.95
+                gflops_reduction >= 0.4
+                and gflops_reduction <= 0.7
+                and accuracy_retention >= 0.95
             )
 
             return {
@@ -1024,8 +1117,8 @@ class WINAPerformanceCollector:
             }
 
     async def _calculate_report_component_metrics(
-        self, filtered_metrics: Dict[str, List]
-    ) -> Dict[str, Any]:
+        self, filtered_metrics: dict[str, list]
+    ) -> dict[str, Any]:
         """Calculate component-specific metrics for performance report."""
         component_metrics = {}
 
@@ -1034,13 +1127,15 @@ class WINAPerformanceCollector:
             if filtered_metrics["neuron_activation"]:
                 component_metrics["neuron_activation"] = {
                     "total_layers": len(
-                        set(m.layer_name for m in filtered_metrics["neuron_activation"])
+                        {m.layer_name for m in filtered_metrics["neuron_activation"]}
                     ),
                     "avg_activation_ratio": statistics.mean(
-                        m.activation_ratio for m in filtered_metrics["neuron_activation"]
+                        m.activation_ratio
+                        for m in filtered_metrics["neuron_activation"]
                     ),
                     "avg_energy_savings": statistics.mean(
-                        m.energy_savings_ratio for m in filtered_metrics["neuron_activation"]
+                        m.energy_savings_ratio
+                        for m in filtered_metrics["neuron_activation"]
                     ),
                     "total_neurons_managed": sum(
                         m.total_neurons for m in filtered_metrics["neuron_activation"]
@@ -1050,22 +1145,29 @@ class WINAPerformanceCollector:
             # SVD transformation metrics
             if filtered_metrics["svd_transformation"]:
                 component_metrics["svd_transformation"] = {
-                    "total_transformations": len(filtered_metrics["svd_transformation"]),
+                    "total_transformations": len(
+                        filtered_metrics["svd_transformation"]
+                    ),
                     "avg_compression_ratio": statistics.mean(
-                        m.compression_ratio for m in filtered_metrics["svd_transformation"]
+                        m.compression_ratio
+                        for m in filtered_metrics["svd_transformation"]
                     ),
                     "total_memory_savings_mb": sum(
-                        m.memory_savings_mb for m in filtered_metrics["svd_transformation"]
+                        m.memory_savings_mb
+                        for m in filtered_metrics["svd_transformation"]
                     ),
                     "avg_computation_time_ms": statistics.mean(
-                        m.svd_computation_time_ms for m in filtered_metrics["svd_transformation"]
+                        m.svd_computation_time_ms
+                        for m in filtered_metrics["svd_transformation"]
                     ),
                 }
 
             # Dynamic gating metrics
             if filtered_metrics["dynamic_gating"]:
                 component_metrics["dynamic_gating"] = {
-                    "total_gates": len(set(m.gate_id for m in filtered_metrics["dynamic_gating"])),
+                    "total_gates": len(
+                        {m.gate_id for m in filtered_metrics["dynamic_gating"]}
+                    ),
                     "avg_gating_efficiency": statistics.mean(
                         m.gating_efficiency for m in filtered_metrics["dynamic_gating"]
                     ),
@@ -1083,8 +1185,8 @@ class WINAPerformanceCollector:
         return component_metrics
 
     async def _calculate_report_integration_metrics(
-        self, filtered_metrics: Dict[str, List]
-    ) -> Dict[str, Any]:
+        self, filtered_metrics: dict[str, list]
+    ) -> dict[str, Any]:
         """Calculate integration metrics for performance report."""
         try:
             if not filtered_metrics["integration"]:
@@ -1102,13 +1204,14 @@ class WINAPerformanceCollector:
                     m.data_transfer_mb for m in filtered_metrics["integration"]
                 ),
                 "avg_performance_improvement": statistics.mean(
-                    m.performance_improvement_ratio for m in filtered_metrics["integration"]
+                    m.performance_improvement_ratio
+                    for m in filtered_metrics["integration"]
                 ),
                 "unique_integration_pairs": len(
-                    set(
+                    {
                         f"{m.source_component}->{m.target_component}"
                         for m in filtered_metrics["integration"]
-                    )
+                    }
                 ),
             }
 
@@ -1117,15 +1220,17 @@ class WINAPerformanceCollector:
             return {}
 
     async def _calculate_report_health_metrics(
-        self, filtered_metrics: Dict[str, List]
-    ) -> Dict[str, Any]:
+        self, filtered_metrics: dict[str, list]
+    ) -> dict[str, Any]:
         """Calculate health metrics for performance report."""
         try:
             if not filtered_metrics["system_health"]:
                 return {}
 
             latest_health = (
-                filtered_metrics["system_health"][-1] if filtered_metrics["system_health"] else None
+                filtered_metrics["system_health"][-1]
+                if filtered_metrics["system_health"]
+                else None
             )
 
             return {
@@ -1133,7 +1238,8 @@ class WINAPerformanceCollector:
                     m.cpu_utilization_percent for m in filtered_metrics["system_health"]
                 ),
                 "avg_memory_utilization": statistics.mean(
-                    m.memory_utilization_percent for m in filtered_metrics["system_health"]
+                    m.memory_utilization_percent
+                    for m in filtered_metrics["system_health"]
                 ),
                 "avg_error_rate": statistics.mean(
                     m.error_rate_percent for m in filtered_metrics["system_health"]
@@ -1154,10 +1260,10 @@ class WINAPerformanceCollector:
 
     async def _generate_performance_recommendations(
         self,
-        overall_metrics: Dict[str, Any],
-        component_metrics: Dict[str, Any],
-        health_metrics: Dict[str, Any],
-    ) -> List[str]:
+        overall_metrics: dict[str, Any],
+        component_metrics: dict[str, Any],
+        health_metrics: dict[str, Any],
+    ) -> list[str]:
         """Generate performance recommendations based on metrics."""
         recommendations = []
 
@@ -1192,23 +1298,27 @@ class WINAPerformanceCollector:
 
             # Health recommendations
             if health_metrics.get("avg_error_rate", 0.0) > 5.0:
-                recommendations.append("Elevated error rate detected - review system configuration")
+                recommendations.append(
+                    "Elevated error rate detected - review system configuration"
+                )
 
             if not recommendations:
                 recommendations.append("System performing within optimal parameters")
 
         except Exception as e:
             logger.error(f"Recommendation generation failed: {e}")
-            recommendations.append("Unable to generate recommendations due to analysis error")
+            recommendations.append(
+                "Unable to generate recommendations due to analysis error"
+            )
 
         return recommendations
 
     async def _calculate_performance_trends(
         self,
-        filtered_metrics: Dict[str, List],
+        filtered_metrics: dict[str, list],
         start_time: datetime,
         end_time: datetime,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Calculate performance trends over the reporting period."""
         try:
             trends = {}
@@ -1216,15 +1326,22 @@ class WINAPerformanceCollector:
             # Calculate GFLOPs reduction trend
             if filtered_metrics["neuron_activation"]:
                 energy_savings = [
-                    m.energy_savings_ratio for m in filtered_metrics["neuron_activation"]
+                    m.energy_savings_ratio
+                    for m in filtered_metrics["neuron_activation"]
                 ]
                 if len(energy_savings) > 1:
                     trends["gflops_reduction_trend"] = {
                         "direction": (
-                            "improving" if energy_savings[-1] > energy_savings[0] else "declining"
+                            "improving"
+                            if energy_savings[-1] > energy_savings[0]
+                            else "declining"
                         ),
                         "change_percent": (
-                            ((energy_savings[-1] - energy_savings[0]) / energy_savings[0]) * 100
+                            (
+                                (energy_savings[-1] - energy_savings[0])
+                                / energy_savings[0]
+                            )
+                            * 100
                             if energy_savings[0] != 0
                             else 0
                         ),
@@ -1233,7 +1350,8 @@ class WINAPerformanceCollector:
             # Calculate accuracy trend
             if filtered_metrics["constitutional_compliance"]:
                 compliance_scores = [
-                    m.compliance_score for m in filtered_metrics["constitutional_compliance"]
+                    m.compliance_score
+                    for m in filtered_metrics["constitutional_compliance"]
                 ]
                 if len(compliance_scores) > 1:
                     trends["accuracy_trend"] = {
@@ -1243,7 +1361,10 @@ class WINAPerformanceCollector:
                             else "declining"
                         ),
                         "change_percent": (
-                            ((compliance_scores[-1] - compliance_scores[0]) / compliance_scores[0])
+                            (
+                                (compliance_scores[-1] - compliance_scores[0])
+                                / compliance_scores[0]
+                            )
                             * 100
                             if compliance_scores[0] != 0
                             else 0
@@ -1265,7 +1386,7 @@ class WINAPerformanceCollector:
 
 
 # Global performance collector instance
-_wina_performance_collector: Optional[WINAPerformanceCollector] = None
+_wina_performance_collector: WINAPerformanceCollector | None = None
 
 
 async def get_wina_performance_collector() -> WINAPerformanceCollector:

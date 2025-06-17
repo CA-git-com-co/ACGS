@@ -7,9 +7,14 @@ and threshold configuration management.
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from sqlalchemy import and_, desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 # Import WebSocket broadcasting
 from app.api.v1.fidelity_monitoring_websocket import ViolationAlert as WSViolationAlert
@@ -33,11 +38,6 @@ from app.services.violation_escalation_service import (
     EscalationLevel,
     ViolationEscalationService,
 )
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
-from sqlalchemy import and_, desc, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
-
 from services.shared.auth import get_current_active_user
 from services.shared.database import get_async_db
 from services.shared.models import (
@@ -55,16 +55,16 @@ violation_escalation_service = ViolationEscalationService()
 violation_audit_service = ViolationAuditService()
 
 
-@router.get("/violations", response_model=Dict[str, Any])
+@router.get("/violations", response_model=dict[str, Any])
 async def get_violations(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
-    violation_type: Optional[str] = Query(None),
-    severity: Optional[str] = Query(None),
-    status: Optional[str] = Query(None),
-    escalated: Optional[bool] = Query(None),
-    start_date: Optional[datetime] = Query(None),
-    end_date: Optional[datetime] = Query(None),
+    violation_type: str | None = Query(None),
+    severity: str | None = Query(None),
+    status: str | None = Query(None),
+    escalated: bool | None = Query(None),
+    start_date: datetime | None = Query(None),
+    end_date: datetime | None = Query(None),
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(get_current_active_user),
 ):
@@ -120,7 +120,11 @@ async def get_violations(
         if filters:
             query = query.where(and_(*filters))
 
-        query = query.order_by(desc(ConstitutionalViolation.detected_at)).offset(skip).limit(limit)
+        query = (
+            query.order_by(desc(ConstitutionalViolation.detected_at))
+            .offset(skip)
+            .limit(limit)
+        )
 
         result = await db.execute(query)
         violations = result.scalars().all()
@@ -135,10 +139,14 @@ async def get_violations(
                 "description": violation.violation_description,
                 "detection_method": violation.detection_method,
                 "fidelity_score": (
-                    float(violation.fidelity_score) if violation.fidelity_score else None
+                    float(violation.fidelity_score)
+                    if violation.fidelity_score
+                    else None
                 ),
                 "distance_score": (
-                    float(violation.distance_score) if violation.distance_score else None
+                    float(violation.distance_score)
+                    if violation.distance_score
+                    else None
                 ),
                 "status": violation.status,
                 "escalated": violation.escalated,
@@ -174,10 +182,12 @@ async def get_violations(
 
     except Exception as e:
         logger.error(f"Error getting violations: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get violations: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get violations: {str(e)}"
+        )
 
 
-@router.get("/violations/{violation_id}", response_model=Dict[str, Any])
+@router.get("/violations/{violation_id}", response_model=dict[str, Any])
 async def get_violation(
     violation_id: UUID,
     db: AsyncSession = Depends(get_async_db),
@@ -210,7 +220,9 @@ async def get_violation(
             raise HTTPException(status_code=404, detail="Violation not found")
 
         # Get audit history
-        audit_history = await violation_audit_service.get_violation_history(str(violation_id), db)
+        audit_history = await violation_audit_service.get_violation_history(
+            str(violation_id), db
+        )
 
         # Get escalation history
         escalations_result = await db.execute(
@@ -228,10 +240,14 @@ async def get_violation(
                 "escalation_level": escalation.escalation_level,
                 "escalation_reason": escalation.escalation_reason,
                 "status": escalation.status,
-                "assigned_to": (str(escalation.assigned_to) if escalation.assigned_to else None),
+                "assigned_to": (
+                    str(escalation.assigned_to) if escalation.assigned_to else None
+                ),
                 "escalated_at": escalation.escalated_at.isoformat(),
                 "resolved_at": (
-                    escalation.resolved_at.isoformat() if escalation.resolved_at else None
+                    escalation.resolved_at.isoformat()
+                    if escalation.resolved_at
+                    else None
                 ),
                 "response_time_seconds": escalation.response_time_seconds,
                 "resolution_time_seconds": escalation.resolution_time_seconds,
@@ -246,10 +262,14 @@ async def get_violation(
                 "description": violation.violation_description,
                 "detection_method": violation.detection_method,
                 "fidelity_score": (
-                    float(violation.fidelity_score) if violation.fidelity_score else None
+                    float(violation.fidelity_score)
+                    if violation.fidelity_score
+                    else None
                 ),
                 "distance_score": (
-                    float(violation.distance_score) if violation.distance_score else None
+                    float(violation.distance_score)
+                    if violation.distance_score
+                    else None
                 ),
                 "status": violation.status,
                 "resolution_status": violation.resolution_status,
@@ -262,7 +282,9 @@ async def get_violation(
                 ),
                 "context_data": violation.context_data,
                 "detection_metadata": violation.detection_metadata,
-                "principle_id": (str(violation.principle_id) if violation.principle_id else None),
+                "principle_id": (
+                    str(violation.principle_id) if violation.principle_id else None
+                ),
                 "policy_id": str(violation.policy_id) if violation.policy_id else None,
             },
             "audit_history": audit_history,
@@ -273,10 +295,12 @@ async def get_violation(
         raise
     except Exception as e:
         logger.error(f"Error getting violation {violation_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get violation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get violation: {str(e)}"
+        )
 
 
-@router.post("/violations/scan", response_model=Dict[str, Any])
+@router.post("/violations/scan", response_model=dict[str, Any])
 async def trigger_violation_scan(
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_async_db),
@@ -301,7 +325,7 @@ async def trigger_violation_scan(
             "scan_initiated": True,
             "message": "Violation scan initiated in background",
             "initiated_by": current_user.username,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     except Exception as e:
@@ -345,8 +369,10 @@ async def perform_violation_scan(db: AsyncSession):
                 )
 
                 # Check for escalation
-                escalation_result = await violation_escalation_service.evaluate_escalation(
-                    violation, db
+                escalation_result = (
+                    await violation_escalation_service.evaluate_escalation(
+                        violation, db
+                    )
                 )
                 if escalation_result and escalation_result.escalated:
                     # Broadcast escalation notification
@@ -367,7 +393,7 @@ async def perform_violation_scan(db: AsyncSession):
                     recommended_actions=detection_result.recommended_actions,
                     escalated=violation.escalated,
                     escalation_level=violation.escalation_level,
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                 )
 
                 # Broadcast violation alert
@@ -383,7 +409,7 @@ async def perform_violation_scan(db: AsyncSession):
         await db.rollback()
 
 
-@router.post("/violations/{violation_id}/escalate", response_model=Dict[str, Any])
+@router.post("/violations/{violation_id}/escalate", response_model=dict[str, Any])
 async def escalate_violation(
     violation_id: UUID,
     escalation_level: EscalationLevel,
@@ -407,7 +433,9 @@ async def escalate_violation(
     try:
         # Get violation
         result = await db.execute(
-            select(ConstitutionalViolation).where(ConstitutionalViolation.id == violation_id)
+            select(ConstitutionalViolation).where(
+                ConstitutionalViolation.id == violation_id
+            )
         )
         violation = result.scalar_one_or_none()
 
@@ -449,17 +477,19 @@ async def escalate_violation(
                 "error_message": escalation_result.error_message,
             },
             "escalated_by": current_user.username,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error escalating violation {violation_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to escalate violation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to escalate violation: {str(e)}"
+        )
 
 
-@router.put("/violations/{violation_id}/resolve", response_model=Dict[str, Any])
+@router.put("/violations/{violation_id}/resolve", response_model=dict[str, Any])
 async def resolve_violation(
     violation_id: UUID,
     resolution_description: str,
@@ -483,7 +513,9 @@ async def resolve_violation(
     try:
         # Get violation
         result = await db.execute(
-            select(ConstitutionalViolation).where(ConstitutionalViolation.id == violation_id)
+            select(ConstitutionalViolation).where(
+                ConstitutionalViolation.id == violation_id
+            )
         )
         violation = result.scalar_one_or_none()
 
@@ -494,7 +526,7 @@ async def resolve_violation(
         violation.status = "resolved"
         violation.resolution_status = resolution_status
         violation.resolution_description = resolution_description
-        violation.resolved_at = datetime.now(timezone.utc)
+        violation.resolved_at = datetime.now(UTC)
         violation.resolved_by = current_user.id
 
         await db.commit()
@@ -525,14 +557,16 @@ async def resolve_violation(
     except Exception as e:
         logger.error(f"Error resolving violation {violation_id}: {e}")
         await db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to resolve violation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to resolve violation: {str(e)}"
+        )
 
 
-@router.get("/analytics", response_model=Dict[str, Any])
+@router.get("/analytics", response_model=dict[str, Any])
 async def get_violation_analytics(
     period: AnalyticsPeriod = Query(AnalyticsPeriod.DAY),
-    start_time: Optional[datetime] = Query(None),
-    end_time: Optional[datetime] = Query(None),
+    start_time: datetime | None = Query(None),
+    end_time: datetime | None = Query(None),
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(get_current_active_user),
 ):
@@ -568,16 +602,18 @@ async def get_violation_analytics(
                 "top_violation_sources": analytics.top_violation_sources,
                 "trend_analysis": analytics.trend_analysis,
             },
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "generated_by": current_user.username,
         }
 
     except Exception as e:
         logger.error(f"Error getting violation analytics: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get analytics: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get analytics: {str(e)}"
+        )
 
 
-@router.get("/compliance-report", response_model=Dict[str, Any])
+@router.get("/compliance-report", response_model=dict[str, Any])
 async def get_compliance_report(
     start_time: datetime = Query(...),
     end_time: datetime = Query(...),
@@ -597,7 +633,9 @@ async def get_compliance_report(
         Compliance report
     """
     try:
-        report = await violation_audit_service.generate_compliance_report(start_time, end_time, db)
+        report = await violation_audit_service.generate_compliance_report(
+            start_time, end_time, db
+        )
 
         return {
             "compliance_report": {
@@ -619,10 +657,12 @@ async def get_compliance_report(
 
     except Exception as e:
         logger.error(f"Error generating compliance report: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to generate report: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to generate report: {str(e)}"
+        )
 
 
-@router.get("/thresholds", response_model=Dict[str, Any])
+@router.get("/thresholds", response_model=dict[str, Any])
 async def get_violation_thresholds(
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(get_current_active_user),
@@ -657,18 +697,20 @@ async def get_violation_thresholds(
 
         return {
             "thresholds": thresholds_data,
-            "retrieved_at": datetime.now(timezone.utc).isoformat(),
+            "retrieved_at": datetime.now(UTC).isoformat(),
         }
 
     except Exception as e:
         logger.error(f"Error getting violation thresholds: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get thresholds: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get thresholds: {str(e)}"
+        )
 
 
-@router.put("/thresholds/{threshold_name}", response_model=Dict[str, Any])
+@router.put("/thresholds/{threshold_name}", response_model=dict[str, Any])
 async def update_violation_threshold(
     threshold_name: str,
-    threshold_config: Dict[str, Any],
+    threshold_config: dict[str, Any],
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(get_current_active_user),
 ):
@@ -719,11 +761,13 @@ async def update_violation_threshold(
             "updated": True,
             "threshold_name": threshold_name,
             "updated_by": current_user.username,
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(UTC).isoformat(),
         }
 
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error updating threshold {threshold_name}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to update threshold: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to update threshold: {str(e)}"
+        )

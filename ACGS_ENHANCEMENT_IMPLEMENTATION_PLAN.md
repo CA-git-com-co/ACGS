@@ -130,7 +130,7 @@ describe("Quantumagi Core Tests", () => {
 
 ### 2.3 Frontend Testing Infrastructure
 **Priority**: MEDIUM  
-**Scope**: applications/frontend/ React components
+**Scope**: applications/applications/governance-dashboard/ React components
 
 **Actions**:
 ```javascript

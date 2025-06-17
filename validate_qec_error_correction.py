@@ -82,7 +82,7 @@ def test_data_structures():
         )
 
         # Test ConflictDetectionResult
-        conflict_result = ConflictDetectionResult(
+        ConflictDetectionResult(
             conflict_detected=True,
             conflict_type=ConflictType.PRINCIPLE_CONTRADICTION,
             severity=None,  # Will be imported from violation_detection_service
@@ -96,7 +96,7 @@ def test_data_structures():
         print("✅ ConflictDetectionResult created")
 
         # Test ErrorCorrectionResult
-        correction_result = ErrorCorrectionResult(
+        ErrorCorrectionResult(
             correction_id="test_correction_123",
             status=ErrorCorrectionStatus.RESOLVED_AUTOMATICALLY,
             conflict_type=ConflictType.POLICY_INCONSISTENCY,
@@ -112,7 +112,7 @@ def test_data_structures():
         print("✅ ErrorCorrectionResult created")
 
         # Test PolicyRefinementSuggestion
-        refinement_suggestion = PolicyRefinementSuggestion(
+        PolicyRefinementSuggestion(
             suggestion_id="suggestion_123",
             policy_id="policy_456",
             principle_id="principle_789",

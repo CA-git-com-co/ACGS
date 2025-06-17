@@ -1,7 +1,7 @@
 # acgs-pgp/auth_service/app/tests/conftest.py
 import asyncio
 import os
-from typing import AsyncGenerator, Generator  # AsyncGenerator for async fixture
+from collections.abc import AsyncGenerator, Generator  # AsyncGenerator for async fixture
 
 import pytest
 
@@ -42,7 +42,9 @@ from sqlalchemy.orm import sessionmaker
 # Default: sqlite+aiosqlite:///./test_auth_app.db
 
 # Ensure test DB URL is set, default to in-memory SQLite.
-TEST_DB_URL = os.getenv("TEST_ASYNC_DATABASE_URL", "sqlite+aiosqlite:///./test_auth_app.db")
+TEST_DB_URL = os.getenv(
+    "TEST_ASYNC_DATABASE_URL", "sqlite+aiosqlite:///./test_auth_app.db"
+)
 settings.SQLALCHEMY_DATABASE_URI = TEST_DB_URL  # Override for test session
 
 

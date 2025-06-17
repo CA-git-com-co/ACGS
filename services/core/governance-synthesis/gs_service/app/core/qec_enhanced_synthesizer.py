@@ -14,7 +14,7 @@ import logging
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from integrations.alphaevolve_engine.core.constitutional_principle import (
     ConstitutionalPrinciple,
@@ -49,9 +49,9 @@ class QECSynthesisInput:
     """Enhanced synthesis input with QEC metadata."""
 
     principle: ConstitutionalPrinciple
-    context: Dict[str, Any]
+    context: dict[str, Any]
     llm_input: LLMInterpretationInput
-    qec_metadata: Optional[Dict[str, Any]] = None
+    qec_metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -61,9 +61,9 @@ class QECSynthesisOutput:
     llm_output: LLMStructuredOutput
     reliability_metrics: ReliabilityMetrics
     constitutional_distance: float
-    error_predictions: Dict[FailureType, float]
-    recovery_strategy_used: Optional[RecoveryStrategy]
-    qec_metadata: Dict[str, Any]
+    error_predictions: dict[FailureType, float]
+    recovery_strategy_used: RecoveryStrategy | None
+    qec_metadata: dict[str, Any]
     synthesis_success: bool
     total_attempts: int
 
@@ -77,7 +77,7 @@ class QECEnhancedSynthesizer:
     failure recovery time.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -118,7 +118,9 @@ class QECEnhancedSynthesizer:
         await self.llm_framework.initialize()
         logger.info("QEC-Enhanced Synthesizer fully initialized")
 
-    async def synthesize_with_qec(self, synthesis_input: QECSynthesisInput) -> QECSynthesisOutput:
+    async def synthesize_with_qec(
+        self, synthesis_input: QECSynthesisInput
+    ) -> QECSynthesisOutput:
         """
         Synthesize policy with QEC-inspired enhancements.
 
@@ -139,7 +141,9 @@ class QECEnhancedSynthesizer:
             )
 
             # Phase 2: Error Prediction
-            prediction_result = self.error_predictor.predict_synthesis_challenges(principle)
+            prediction_result = self.error_predictor.predict_synthesis_challenges(
+                principle
+            )
             logger.debug(
                 f"Error prediction for {principle.principle_id}: risk={prediction_result.overall_risk_score:.3f}"
             )
@@ -197,8 +201,10 @@ class QECEnhancedSynthesizer:
         for attempt in range(max_attempts):
             try:
                 # Attempt synthesis
-                llm_output, reliability_metrics = await self.llm_framework.process_with_reliability(
-                    synthesis_input.llm_input
+                llm_output, reliability_metrics = (
+                    await self.llm_framework.process_with_reliability(
+                        synthesis_input.llm_input
+                    )
                 )
 
                 # Validate synthesis result
@@ -248,11 +254,13 @@ class QECEnhancedSynthesizer:
                     recovery_strategy_used = recovery_strategy
 
                     # Execute recovery strategy
-                    recovery_result = self.recovery_dispatcher.execute_recovery_strategy(
-                        recovery_strategy,
-                        principle.principle_id,
-                        synthesis_input.llm_input.dict(),
-                        {"error": str(e), "attempt": attempt},
+                    recovery_result = (
+                        self.recovery_dispatcher.execute_recovery_strategy(
+                            recovery_strategy,
+                            principle.principle_id,
+                            synthesis_input.llm_input.dict(),
+                            {"error": str(e), "attempt": attempt},
+                        )
                     )
 
                     if (
@@ -339,7 +347,7 @@ class QECEnhancedSynthesizer:
             return FailureType.SEMANTIC_CONFLICT
 
     def _calculate_prediction_accuracy(
-        self, prediction_result, actual_error: Optional[Exception]
+        self, prediction_result, actual_error: Exception | None
     ) -> float:
         """Calculate accuracy of error prediction."""
         if actual_error is None:
@@ -371,7 +379,7 @@ class QECEnhancedSynthesizer:
             total_attempts=1,
         )
 
-    def get_synthesis_statistics(self) -> Dict[str, Any]:
+    def get_synthesis_statistics(self) -> dict[str, Any]:
         """Get synthesis performance statistics."""
         total = self.synthesis_stats["total_attempts"]
         successful = self.synthesis_stats["successful_syntheses"]
@@ -385,10 +393,12 @@ class QECEnhancedSynthesizer:
             "qec_interventions": interventions,
             "recovery_successes": recovery_successes,
             "recovery_success_rate": recovery_successes / max(interventions, 1),
-            "improvement_from_qec": ((recovery_successes / max(total, 1)) if total > 0 else 0.0),
+            "improvement_from_qec": (
+                (recovery_successes / max(total, 1)) if total > 0 else 0.0
+            ),
         }
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration for QEC enhancements."""
         return {
             "max_synthesis_attempts": 3,

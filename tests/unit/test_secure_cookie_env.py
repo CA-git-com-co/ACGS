@@ -11,7 +11,7 @@ def reload_endpoints():
     import services.platform.authentication.app.core.security as security
 
     if not hasattr(security, "get_current_active_user_from_cookie"):
-        setattr(security, "get_current_active_user_from_cookie", lambda: None)
+        security.get_current_active_user_from_cookie = lambda: None
 
     # Ensure the schemas module refers to the actual schemas.py file
     root = Path(__file__).resolve().parents[2]

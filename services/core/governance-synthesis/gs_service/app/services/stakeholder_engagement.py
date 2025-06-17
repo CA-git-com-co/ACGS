@@ -7,9 +7,9 @@ for the ACGS-PGP Constitutional Council and violation escalation workflows.
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class NotificationTemplate:
     template_id: str
     subject_template: str
     body_template: str
-    channels: List[NotificationChannel]
+    channels: list[NotificationChannel]
     priority: str = "normal"  # low, normal, high, urgent
 
 
@@ -53,10 +53,10 @@ class NotificationResult:
 
     notification_id: str
     sent: bool
-    channels_used: List[NotificationChannel]
+    channels_used: list[NotificationChannel]
     recipients_count: int
-    error_message: Optional[str] = None
-    sent_at: Optional[datetime] = None
+    error_message: str | None = None
+    sent_at: datetime | None = None
 
 
 class StakeholderNotificationService:
@@ -67,7 +67,7 @@ class StakeholderNotificationService:
     workflows, violation escalations, and public consultation processes.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -91,9 +91,9 @@ class StakeholderNotificationService:
     async def send_notification(
         self,
         template_id: str,
-        recipients: List[str],
-        context: Dict[str, Any],
-        channels: Optional[List[NotificationChannel]] = None,
+        recipients: list[str],
+        context: dict[str, Any],
+        channels: list[NotificationChannel] | None = None,
         priority: str = "normal",
     ) -> NotificationResult:
         """
@@ -109,7 +109,9 @@ class StakeholderNotificationService:
         Returns:
             NotificationResult with sending details
         """
-        notification_id = f"notif_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{template_id}"
+        notification_id = (
+            f"notif_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{template_id}"
+        )
 
         try:
             # Get template
@@ -151,7 +153,7 @@ class StakeholderNotificationService:
                 sent=total_sent > 0,
                 channels_used=channels_used,
                 recipients_count=total_sent,
-                sent_at=datetime.now(timezone.utc),
+                sent_at=datetime.now(UTC),
             )
 
         except Exception as e:
@@ -167,7 +169,7 @@ class StakeholderNotificationService:
     async def _send_via_channel(
         self,
         channel: NotificationChannel,
-        recipients: List[str],
+        recipients: list[str],
         subject: str,
         body: str,
         priority: str,
@@ -184,7 +186,7 @@ class StakeholderNotificationService:
             return 0
 
     async def _send_email_notifications(
-        self, recipients: List[str], subject: str, body: str
+        self, recipients: list[str], subject: str, body: str
     ) -> int:
         """Send email notifications."""
         try:
@@ -203,7 +205,9 @@ class StakeholderNotificationService:
         """Send direct email notification."""
         try:
             # For development/testing, just log the email
-            logger.info(f"EMAIL NOTIFICATION: To: {recipient_email}, Subject: {subject}")
+            logger.info(
+                f"EMAIL NOTIFICATION: To: {recipient_email}, Subject: {subject}"
+            )
             logger.debug(f"Email content: {content}")
 
             # In production, this would use actual SMTP configuration
@@ -219,7 +223,7 @@ class StakeholderNotificationService:
             return False
 
     async def _send_websocket_notifications(
-        self, recipients: List[str], subject: str, body: str
+        self, recipients: list[str], subject: str, body: str
     ) -> int:
         """Send WebSocket notifications."""
         try:
@@ -232,17 +236,21 @@ class StakeholderNotificationService:
             logger.error(f"Error sending WebSocket notifications: {e}")
             return 0
 
-    async def _send_sms_notifications(self, recipients: List[str], subject: str, body: str) -> int:
+    async def _send_sms_notifications(
+        self, recipients: list[str], subject: str, body: str
+    ) -> int:
         """Send SMS notifications."""
         try:
             # For now, just log SMS notifications
-            logger.info(f"SMS NOTIFICATION: Recipients: {len(recipients)}, Subject: {subject}")
+            logger.info(
+                f"SMS NOTIFICATION: Recipients: {len(recipients)}, Subject: {subject}"
+            )
             return len(recipients)
         except Exception as e:
             logger.error(f"Error sending SMS notifications: {e}")
             return 0
 
-    def _render_template(self, template: str, context: Dict[str, Any]) -> str:
+    def _render_template(self, template: str, context: dict[str, Any]) -> str:
         """Render template with context variables."""
         try:
             # Simple template rendering (in production, use Jinja2 or similar)
@@ -254,7 +262,7 @@ class StakeholderNotificationService:
             logger.error(f"Error rendering template: {e}")
             return template
 
-    def _initialize_templates(self) -> Dict[str, NotificationTemplate]:
+    def _initialize_templates(self) -> dict[str, NotificationTemplate]:
         """Initialize notification templates."""
         return {
             "violation_escalation": NotificationTemplate(
@@ -277,7 +285,7 @@ class StakeholderNotificationService:
             ),
         }
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration."""
         return {
             "email": {

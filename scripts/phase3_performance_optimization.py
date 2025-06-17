@@ -20,7 +20,6 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -56,7 +55,7 @@ class PerformanceOptimizer:
             },
         }
 
-    def optimize_solana_performance(self) -> Dict:
+    def optimize_solana_performance(self) -> dict:
         """Optimize Solana program performance and cost."""
         logger.info("Starting Solana performance optimization...")
 
@@ -87,7 +86,7 @@ class PerformanceOptimizer:
         self.optimization_results["solana_optimization"] = solana_results
         return solana_results
 
-    def _analyze_program_costs(self, program_dir: Path) -> Dict:
+    def _analyze_program_costs(self, program_dir: Path) -> dict:
         """Analyze costs for a specific Solana program."""
         program_analysis = {
             "name": program_dir.name,
@@ -112,12 +111,12 @@ class PerformanceOptimizer:
 
         return program_analysis
 
-    def _analyze_rust_file_costs(self, src_file: Path) -> Dict:
+    def _analyze_rust_file_costs(self, src_file: Path) -> dict:
         """Analyze cost patterns in Rust source file."""
         cost_analysis = {"instructions": [], "account_sizes": {}}
 
         try:
-            with open(src_file, "r") as f:
+            with open(src_file) as f:
                 content = f.read()
 
                 # Extract instruction functions and estimate complexity
@@ -224,7 +223,7 @@ class PerformanceOptimizer:
         field_pattern = r"(\w+):\s*([^,\n]+)"
         fields = re.findall(field_pattern, account_fields)
 
-        for field_name, field_type in fields:
+        for _field_name, field_type in fields:
             field_type = field_type.strip()
 
             # Handle basic types
@@ -238,7 +237,7 @@ class PerformanceOptimizer:
 
         return size
 
-    def _calculate_program_costs(self, program_analysis: Dict) -> Dict:
+    def _calculate_program_costs(self, program_analysis: dict) -> dict:
         """Calculate estimated costs for program operations."""
         costs = {
             "deployment_cost": 0.0,
@@ -270,8 +269,8 @@ class PerformanceOptimizer:
         return costs
 
     def _generate_solana_optimizations(
-        self, programs_analyzed: List[Dict]
-    ) -> List[Dict]:
+        self, programs_analyzed: list[dict]
+    ) -> list[dict]:
         """Generate Solana optimization recommendations."""
         recommendations = []
 
@@ -321,7 +320,7 @@ class PerformanceOptimizer:
 
         return recommendations
 
-    def _implement_solana_optimizations(self, recommendations: List[Dict]):
+    def _implement_solana_optimizations(self, recommendations: list[dict]):
         """Implement Solana optimization recommendations."""
         logger.info("Implementing Solana optimizations...")
 
@@ -343,7 +342,7 @@ class PerformanceOptimizer:
 
         logger.info(f"Optimization plan created: {optimization_file}")
 
-    def optimize_llm_performance(self) -> Dict:
+    def optimize_llm_performance(self) -> dict:
         """Optimize LLM pipeline performance."""
         logger.info("Starting LLM performance optimization...")
 
@@ -377,7 +376,7 @@ class PerformanceOptimizer:
         self.optimization_results["llm_optimization"] = llm_results
         return llm_results
 
-    def _analyze_llm_service(self, service_dir: Path) -> Dict:
+    def _analyze_llm_service(self, service_dir: Path) -> dict:
         """Analyze LLM service performance characteristics."""
         analysis = {
             "service_name": service_dir.name,
@@ -404,12 +403,12 @@ class PerformanceOptimizer:
 
         return analysis
 
-    def _identify_llm_bottlenecks(self, py_file: Path) -> List[Dict]:
+    def _identify_llm_bottlenecks(self, py_file: Path) -> list[dict]:
         """Identify performance bottlenecks in Python LLM code."""
         bottlenecks = []
 
         try:
-            with open(py_file, "r") as f:
+            with open(py_file) as f:
                 content = f.read()
 
                 # Look for synchronous LLM calls
@@ -450,7 +449,7 @@ class PerformanceOptimizer:
 
         return bottlenecks
 
-    def _implement_llm_caching(self) -> Dict:
+    def _implement_llm_caching(self) -> dict:
         """Implement LLM response caching."""
         caching_config = {
             "redis_config": {
@@ -476,7 +475,7 @@ class PerformanceOptimizer:
         logger.info(f"LLM caching configuration created: {config_file}")
         return caching_config
 
-    def _setup_llm_monitoring(self) -> Dict:
+    def _setup_llm_monitoring(self) -> dict:
         """Setup LLM performance monitoring."""
         monitoring_config = {
             "metrics": [

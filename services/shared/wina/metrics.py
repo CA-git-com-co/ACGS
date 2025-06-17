@@ -9,8 +9,8 @@ import asyncio
 import logging
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 import numpy as np
 
@@ -21,7 +21,9 @@ try:
 except ImportError:
     PROMETHEUS_AVAILABLE = False
     logger = logging.getLogger(__name__)
-    logger.warning("Prometheus client not available, metrics will be stored locally only")
+    logger.warning(
+        "Prometheus client not available, metrics will be stored locally only"
+    )
 
 from .config import WINAConfig
 from .exceptions import WINAMetricsError
@@ -78,7 +80,7 @@ class WINAMetricsConfig:
     enable_detailed_logging: bool = True
     snapshot_interval: int = 60
     history_retention: int = 1000
-    alert_thresholds: Dict[str, float] = field(
+    alert_thresholds: dict[str, float] = field(
         default_factory=lambda: {
             "gflops_reduction_min": 0.3,  # Minimum 30% GFLOPs reduction
             "accuracy_retention_min": 0.95,  # Minimum 95% accuracy retention
@@ -101,8 +103,8 @@ class GFLOPsTracker:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize GFLOPs tracker."""
-        self.operation_counts: Dict[str, int] = defaultdict(int)
-        self.layer_gflops: Dict[str, float] = {}
+        self.operation_counts: dict[str, int] = defaultdict(int)
+        self.layer_gflops: dict[str, float] = {}
 
         logger.debug("Initialized GFLOPs tracker")
 
@@ -133,7 +135,7 @@ class GFLOPsTracker:
             raise WINAMetricsError(f"GFLOPs estimation failed: {e}")
 
     def estimate_optimized_gflops(
-        self, model: Any, input_data: Any, activation_masks: Dict[str, Any]
+        self, model: Any, input_data: Any, activation_masks: dict[str, Any]
     ) -> float:
         """
         Estimate GFLOPs for model inference with WINA optimization.
@@ -181,7 +183,7 @@ class GFLOPsTracker:
         self.layer_gflops[layer_name] = gflops
         logger.debug(f"Tracked {gflops} GFLOPs for layer {layer_name}")
 
-    def get_layer_breakdown(self) -> Dict[str, float]:
+    def get_layer_breakdown(self) -> dict[str, float]:
         """
         Get GFLOPs breakdown by layer.
 
@@ -211,7 +213,7 @@ class PerformanceMonitor:
         """
         self.config = config
         self.snapshots: deque = deque(maxlen=config.history_retention)
-        self.alerts_triggered: List[Dict[str, Any]] = []
+        self.alerts_triggered: list[dict[str, Any]] = []
         self.monitoring_active = False
 
         # Prometheus metrics (if available)
@@ -299,10 +301,18 @@ class PerformanceMonitor:
 
             # Update Prometheus metrics
             if PROMETHEUS_AVAILABLE and hasattr(self, "prometheus_metrics"):
-                self.prometheus_metrics["gflops_reduction"].set(snapshot.gflops_reduction)
-                self.prometheus_metrics["accuracy_retention"].set(snapshot.accuracy_retention)
-                self.prometheus_metrics["sparsity_achieved"].set(snapshot.sparsity_achieved)
-                self.prometheus_metrics["optimization_time"].observe(snapshot.optimization_overhead)
+                self.prometheus_metrics["gflops_reduction"].set(
+                    snapshot.gflops_reduction
+                )
+                self.prometheus_metrics["accuracy_retention"].set(
+                    snapshot.accuracy_retention
+                )
+                self.prometheus_metrics["sparsity_achieved"].set(
+                    snapshot.sparsity_achieved
+                )
+                self.prometheus_metrics["optimization_time"].observe(
+                    snapshot.optimization_overhead
+                )
                 self.prometheus_metrics["optimizations_total"].inc()
 
             # Check for alerts
@@ -368,7 +378,9 @@ class PerformanceMonitor:
             )
 
         # Check optimization overhead
-        if snapshot.optimization_overhead > thresholds.get("optimization_overhead_max", 0.05):
+        if snapshot.optimization_overhead > thresholds.get(
+            "optimization_overhead_max", 0.05
+        ):
             alerts.append(
                 {
                     "type": "optimization_overhead_high",
@@ -384,7 +396,9 @@ class PerformanceMonitor:
             self.alerts_triggered.append(alert)
             logger.warning(f"WINA Performance Alert: {alert['message']}")
 
-    def get_performance_summary(self, window_minutes: Optional[int] = None) -> Dict[str, Any]:
+    def get_performance_summary(
+        self, window_minutes: int | None = None
+    ) -> dict[str, Any]:
         """
         Get performance summary for a time window.
 
@@ -400,7 +414,7 @@ class PerformanceMonitor:
         # Filter snapshots by time window if specified
         snapshots = list(self.snapshots)
         if window_minutes:
-            cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=window_minutes)
+            cutoff_time = datetime.now(UTC) - timedelta(minutes=window_minutes)
             snapshots = [s for s in snapshots if s.timestamp >= cutoff_time]
 
         if not snapshots:
@@ -438,7 +452,7 @@ class PerformanceMonitor:
                     for a in self.alerts_triggered
                     if not window_minutes
                     or a["timestamp"]
-                    >= datetime.now(timezone.utc) - timedelta(minutes=window_minutes)
+                    >= datetime.now(UTC) - timedelta(minutes=window_minutes)
                 ]
             ),
         }
@@ -457,7 +471,7 @@ class WINAMetrics:
     def __init__(
         self,
         wina_config: WINAConfig,
-        metrics_config: Optional[WINAMetricsConfig] = None,
+        metrics_config: WINAMetricsConfig | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -476,8 +490,8 @@ class WINAMetrics:
         self.performance_monitor = PerformanceMonitor(self.metrics_config)
 
         # Metrics storage
-        self.optimization_history: List[Dict[str, Any]] = []
-        self.current_metrics: Dict[str, float] = {}
+        self.optimization_history: list[dict[str, Any]] = []
+        self.current_metrics: dict[str, float] = {}
 
         logger.info("Initialized WINA metrics collection system")
 
@@ -495,13 +509,17 @@ class WINAMetrics:
 
             # Create performance snapshot
             snapshot = WINAPerformanceSnapshot(
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 gflops_baseline=metrics.get("baseline_gflops", 0.0),
                 gflops_optimized=metrics.get("optimized_gflops", 0.0),
                 gflops_reduction=metrics.get("gflops_reduction", 0.0),
                 accuracy_baseline=1.0,  # Placeholder
-                accuracy_optimized=accuracy_metrics.get("estimated_accuracy_retention", 0.95),
-                accuracy_retention=accuracy_metrics.get("estimated_accuracy_retention", 0.95),
+                accuracy_optimized=accuracy_metrics.get(
+                    "estimated_accuracy_retention", 0.95
+                ),
+                accuracy_retention=accuracy_metrics.get(
+                    "estimated_accuracy_retention", 0.95
+                ),
                 latency_baseline=1.0,  # Placeholder
                 latency_optimized=1.0,  # Placeholder
                 sparsity_achieved=metrics.get("average_sparsity", 0.0),
@@ -528,7 +546,7 @@ class WINAMetrics:
             logger.error(f"Failed to record optimization metrics: {e}")
             raise WINAMetricsError(f"Optimization recording failed: {e}")
 
-    async def get_current_metrics(self) -> Dict[str, Any]:
+    async def get_current_metrics(self) -> dict[str, Any]:
         """
         Get current WINA metrics.
 

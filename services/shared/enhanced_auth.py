@@ -3,40 +3,39 @@ Enhanced ACGS Authentication Service
 High-performance authentication with Redis caching, connection pooling, and advanced security
 """
 
-import asyncio
-import hashlib
 import json
 import logging
 import os
 import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import aioredis
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
-from passlib.hash import bcrypt
 
 logger = logging.getLogger(__name__)
 
 # Production-grade Configuration
 SECRET_KEY = os.environ.get(
     "SECRET_KEY",
-    "acgs-production-secret-key-2024-constitutional-governance-jwt-signing-v2"
+    "acgs-production-secret-key-2024-constitutional-governance-jwt-signing-v2",
 )
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))  # Reduced for security
+ACCESS_TOKEN_EXPIRE_MINUTES = int(
+    os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
+)  # Reduced for security
 REFRESH_TOKEN_EXPIRE_DAYS = int(os.environ.get("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
 
 # Service-to-service authentication
 SERVICE_SECRET_KEY = os.environ.get(
     "SERVICE_SECRET_KEY",
-    "acgs-service-to-service-secret-key-2024-constitutional-governance-internal-auth"
+    "acgs-service-to-service-secret-key-2024-constitutional-governance-internal-auth",
 )
 SERVICE_TOKEN_EXPIRE_MINUTES = int(os.environ.get("SERVICE_TOKEN_EXPIRE_MINUTES", "60"))
 
@@ -151,17 +150,19 @@ class User:
     email: str
     role: UserRole
     is_active: bool = True
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    last_login: Optional[datetime] = None
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_login: datetime | None = None
     login_attempts: int = 0
-    locked_until: Optional[datetime] = None
+    locked_until: datetime | None = None
 
     # Security features
     mfa_enabled: bool = False
-    password_changed_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    password_changed_at: datetime = field(
+        default_factory=lambda: datetime.now(UTC)
+    )
     failed_login_attempts: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert user to dictionary for caching."""
         return {
             "id": self.id,
@@ -177,7 +178,7 @@ class User:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "User":
+    def from_dict(cls, data: dict[str, Any]) -> "User":
         """Create user from dictionary."""
         return cls(
             id=data["id"],
@@ -186,7 +187,11 @@ class User:
             role=UserRole(data["role"]),
             is_active=data["is_active"],
             created_at=datetime.fromisoformat(data["created_at"]),
-            last_login=datetime.fromisoformat(data["last_login"]) if data["last_login"] else None,
+            last_login=(
+                datetime.fromisoformat(data["last_login"])
+                if data["last_login"]
+                else None
+            ),
             mfa_enabled=data.get("mfa_enabled", False),
             password_changed_at=datetime.fromisoformat(data["password_changed_at"]),
             failed_login_attempts=data.get("failed_login_attempts", 0),
@@ -203,8 +208,8 @@ class TokenData:
     exp: int
     iat: int
     jti: str  # JWT ID for token tracking
-    service: Optional[str] = None
-    session_id: Optional[str] = None
+    service: str | None = None
+    session_id: str | None = None
 
 
 @dataclass
@@ -219,7 +224,7 @@ class UserSession:
     user_agent: str
     status: SessionStatus = SessionStatus.ACTIVE
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert session to dictionary for caching."""
         return {
             "session_id": self.session_id,
@@ -247,17 +252,17 @@ class AuthorizationError(Exception):
 class EnhancedAuthService:
     """High-performance authentication service with Redis caching."""
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: str | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         self.redis_url = redis_url or "redis://localhost:6379"
-        self.redis_client: Optional[aioredis.Redis] = None
+        self.redis_client: aioredis.Redis | None = None
 
         # In-memory fallback storage
-        self.users_db: Dict[str, Dict[str, Any]] = {}
-        self.active_tokens: Set[str] = set()
-        self.active_sessions: Dict[str, UserSession] = {}
+        self.users_db: dict[str, dict[str, Any]] = {}
+        self.active_tokens: set[str] = set()
+        self.active_sessions: dict[str, UserSession] = {}
 
         # Performance metrics
         self.auth_metrics = {
@@ -284,7 +289,10 @@ class EnhancedAuthService:
         """Initialize Redis connection and load users."""
         try:
             self.redis_client = await aioredis.from_url(
-                self.redis_url, encoding="utf-8", decode_responses=True, max_connections=20
+                self.redis_url,
+                encoding="utf-8",
+                decode_responses=True,
+                max_connections=20,
             )
             logger.info("Redis connection established for auth service")
 
@@ -360,7 +368,10 @@ class EnhancedAuthService:
                     user = User.from_dict(user_data["user_info"])
                     password_hash = user_data["password_hash"]
 
-                    self.users_db[username] = {"user": user, "password_hash": password_hash}
+                    self.users_db[username] = {
+                        "user": user,
+                        "password_hash": password_hash,
+                    }
 
             logger.info(f"Loaded {len(user_keys)} users from cache")
 
@@ -379,7 +390,10 @@ class EnhancedAuthService:
             user_key = f"user:{username}"
             await self.redis_client.hset(
                 user_key,
-                mapping={"user_info": json.dumps(user.to_dict()), "password_hash": password_hash},
+                mapping={
+                    "user_info": json.dumps(user.to_dict()),
+                    "password_hash": password_hash,
+                },
             )
             await self.redis_client.expire(user_key, 3600)  # 1 hour TTL
 
@@ -395,8 +409,12 @@ class EnhancedAuthService:
         return pwd_context.verify(plain_password, hashed_password)
 
     async def authenticate_user(
-        self, username: str, password: str, ip_address: str = "unknown", user_agent: str = "unknown"
-    ) -> Optional[User]:
+        self,
+        username: str,
+        password: str,
+        ip_address: str = "unknown",
+        user_agent: str = "unknown",
+    ) -> User | None:
         """Enhanced user authentication with caching and security features."""
         start_time = time.time()
 
@@ -412,7 +430,9 @@ class EnhancedAuthService:
 
                 if user_data:
                     # Cache for future use
-                    await self._cache_user(username, user_data["user"], user_data["password_hash"])
+                    await self._cache_user(
+                        username, user_data["user"], user_data["password_hash"]
+                    )
 
             if not user_data:
                 self._update_auth_metrics(time.time() - start_time, False)
@@ -421,7 +441,7 @@ class EnhancedAuthService:
             user = user_data["user"]
 
             # Check if user is locked
-            if user.locked_until and user.locked_until > datetime.now(timezone.utc):
+            if user.locked_until and user.locked_until > datetime.now(UTC):
                 raise AuthenticationError(f"Account locked until {user.locked_until}")
 
             # Verify password
@@ -431,8 +451,12 @@ class EnhancedAuthService:
 
                 # Lock account if too many failures
                 if user.failed_login_attempts >= self.max_login_attempts:
-                    user.locked_until = datetime.now(timezone.utc) + self.lockout_duration
-                    logger.warning(f"Account {username} locked due to too many failed attempts")
+                    user.locked_until = (
+                        datetime.now(UTC) + self.lockout_duration
+                    )
+                    logger.warning(
+                        f"Account {username} locked due to too many failed attempts"
+                    )
 
                 await self._cache_user(username, user, user_data["password_hash"])
                 self._update_auth_metrics(time.time() - start_time, False)
@@ -444,12 +468,12 @@ class EnhancedAuthService:
                 return None
 
             # Successful authentication
-            user.last_login = datetime.now(timezone.utc)
+            user.last_login = datetime.now(UTC)
             user.failed_login_attempts = 0
             user.locked_until = None
 
             # Create session
-            session = await self._create_session(user, ip_address, user_agent)
+            await self._create_session(user, ip_address, user_agent)
 
             # Update cache
             await self._cache_user(username, user, user_data["password_hash"])
@@ -462,7 +486,7 @@ class EnhancedAuthService:
             self._update_auth_metrics(time.time() - start_time, False)
             raise AuthenticationError(str(e))
 
-    async def _get_cached_user(self, username: str) -> Optional[Dict[str, Any]]:
+    async def _get_cached_user(self, username: str) -> dict[str, Any] | None:
         """Get user from cache."""
         if not self.redis_client:
             return None
@@ -482,15 +506,17 @@ class EnhancedAuthService:
 
         return None
 
-    async def _create_session(self, user: User, ip_address: str, user_agent: str) -> UserSession:
+    async def _create_session(
+        self, user: User, ip_address: str, user_agent: str
+    ) -> UserSession:
         """Create a new user session."""
         session_id = secrets.token_urlsafe(32)
 
         session = UserSession(
             session_id=session_id,
             user_id=user.id,
-            created_at=datetime.now(timezone.utc),
-            last_activity=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_activity=datetime.now(UTC),
             ip_address=ip_address,
             user_agent=user_agent,
         )
@@ -515,14 +541,16 @@ class EnhancedAuthService:
     async def create_access_token(
         self,
         user: User,
-        session_id: Optional[str] = None,
-        expires_delta: Optional[timedelta] = None,
+        session_id: str | None = None,
+        expires_delta: timedelta | None = None,
     ) -> str:
         """Create an access token with enhanced security."""
         if expires_delta:
-            expire = datetime.now(timezone.utc) + expires_delta
+            expire = datetime.now(UTC) + expires_delta
         else:
-            expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+            expire = datetime.now(UTC) + timedelta(
+                minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+            )
 
         # Generate unique JWT ID
         jti = secrets.token_urlsafe(16)
@@ -532,7 +560,7 @@ class EnhancedAuthService:
             "username": user.username,
             "role": user.role.value,
             "exp": expire,
-            "iat": datetime.now(timezone.utc),
+            "iat": datetime.now(UTC),
             "jti": jti,
             "service": "acgs",
             "session_id": session_id,
@@ -548,7 +576,7 @@ class EnhancedAuthService:
                 token_key = f"token:{jti}"
                 await self.redis_client.setex(
                     token_key,
-                    int((expire - datetime.now(timezone.utc)).total_seconds()),
+                    int((expire - datetime.now(UTC)).total_seconds()),
                     json.dumps(
                         {
                             "user_id": user.id,
@@ -632,7 +660,7 @@ class EnhancedAuthService:
             alpha * response_time + (1 - alpha) * self.auth_metrics["avg_auth_time"]
         )
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get authentication performance metrics."""
         total_auths = self.auth_metrics["total_authentications"]
         success_rate = (
@@ -641,8 +669,12 @@ class EnhancedAuthService:
             else 1.0
         )
 
-        cache_total = self.auth_metrics["cache_hits"] + self.auth_metrics["cache_misses"]
-        cache_hit_rate = self.auth_metrics["cache_hits"] / cache_total if cache_total > 0 else 0.0
+        cache_total = (
+            self.auth_metrics["cache_hits"] + self.auth_metrics["cache_misses"]
+        )
+        cache_hit_rate = (
+            self.auth_metrics["cache_hits"] / cache_total if cache_total > 0 else 0.0
+        )
 
         return {
             "total_authentications": total_auths,
@@ -742,44 +774,61 @@ class PermissionChecker:
     """Enhanced permission checking for constitutional governance."""
 
     @staticmethod
-    def has_permission(user: User, permission: ConstitutionalPermission | ServicePermission) -> bool:
+    def has_permission(
+        user: User, permission: ConstitutionalPermission | ServicePermission
+    ) -> bool:
         """Check if user has a specific permission."""
         user_permissions = ROLE_PERMISSIONS.get(user.role, [])
         return permission in user_permissions
 
     @staticmethod
-    def has_any_permission(user: User, permissions: List[ConstitutionalPermission | ServicePermission]) -> bool:
+    def has_any_permission(
+        user: User, permissions: list[ConstitutionalPermission | ServicePermission]
+    ) -> bool:
         """Check if user has any of the specified permissions."""
         user_permissions = ROLE_PERMISSIONS.get(user.role, [])
         return any(permission in user_permissions for permission in permissions)
 
     @staticmethod
-    def has_all_permissions(user: User, permissions: List[ConstitutionalPermission | ServicePermission]) -> bool:
+    def has_all_permissions(
+        user: User, permissions: list[ConstitutionalPermission | ServicePermission]
+    ) -> bool:
         """Check if user has all of the specified permissions."""
         user_permissions = ROLE_PERMISSIONS.get(user.role, [])
         return all(permission in user_permissions for permission in permissions)
 
     @staticmethod
-    def get_user_permissions(user: User) -> List[ConstitutionalPermission | ServicePermission]:
+    def get_user_permissions(
+        user: User,
+    ) -> list[ConstitutionalPermission | ServicePermission]:
         """Get all permissions for a user."""
         return ROLE_PERMISSIONS.get(user.role, [])
 
 
 def require_permission(permission: ConstitutionalPermission | ServicePermission):
     """Decorator to require specific permission for endpoint access."""
-    async def permission_checker(current_user: User = Depends(get_current_user)) -> User:
+
+    async def permission_checker(
+        current_user: User = Depends(get_current_user),
+    ) -> User:
         if not PermissionChecker.has_permission(current_user, permission):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Insufficient permissions. Required: {permission.value}",
             )
         return current_user
+
     return permission_checker
 
 
-def require_any_permission(permissions: List[ConstitutionalPermission | ServicePermission]):
+def require_any_permission(
+    permissions: list[ConstitutionalPermission | ServicePermission],
+):
     """Decorator to require any of the specified permissions."""
-    async def permission_checker(current_user: User = Depends(get_current_user)) -> User:
+
+    async def permission_checker(
+        current_user: User = Depends(get_current_user),
+    ) -> User:
         if not PermissionChecker.has_any_permission(current_user, permissions):
             permission_names = [p.value for p in permissions]
             raise HTTPException(
@@ -787,11 +836,13 @@ def require_any_permission(permissions: List[ConstitutionalPermission | ServiceP
                 detail=f"Insufficient permissions. Required any of: {', '.join(permission_names)}",
             )
         return current_user
+
     return permission_checker
 
 
 def require_role(role: UserRole):
     """Decorator to require specific role for endpoint access."""
+
     async def role_checker(current_user: User = Depends(get_current_user)) -> User:
         if current_user.role != role:
             raise HTTPException(
@@ -799,6 +850,7 @@ def require_role(role: UserRole):
                 detail=f"Insufficient role. Required: {role.value}, Current: {current_user.role.value}",
             )
         return current_user
+
     return role_checker
 
 
@@ -807,19 +859,21 @@ class ServiceAuthManager:
     """Manages service-to-service authentication."""
 
     @staticmethod
-    def create_service_token(service_name: str, permissions: List[str] = None) -> str:
+    def create_service_token(service_name: str, permissions: list[str] = None) -> str:
         """Create a service-to-service authentication token."""
         if permissions is None:
             permissions = ["internal_service"]
 
-        expire = datetime.now(timezone.utc) + timedelta(minutes=SERVICE_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(UTC) + timedelta(
+            minutes=SERVICE_TOKEN_EXPIRE_MINUTES
+        )
         jti = secrets.token_urlsafe(16)
 
         payload = {
             "service_name": service_name,
             "permissions": permissions,
             "exp": expire,
-            "iat": datetime.now(timezone.utc),
+            "iat": datetime.now(UTC),
             "jti": jti,
             "type": "service_token",
         }
@@ -827,7 +881,7 @@ class ServiceAuthManager:
         return jwt.encode(payload, SERVICE_SECRET_KEY, algorithm=ALGORITHM)
 
     @staticmethod
-    def verify_service_token(token: str) -> Dict[str, Any]:
+    def verify_service_token(token: str) -> dict[str, Any]:
         """Verify a service-to-service token."""
         try:
             payload = jwt.decode(token, SERVICE_SECRET_KEY, algorithms=[ALGORITHM])
@@ -835,7 +889,7 @@ class ServiceAuthManager:
             if payload.get("type") != "service_token":
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid service token type"
+                    detail="Invalid service token type",
                 )
 
             return payload
@@ -843,16 +897,17 @@ class ServiceAuthManager:
         except jwt.ExpiredSignatureError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Service token has expired"
+                detail="Service token has expired",
             )
         except jwt.JWTError:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid service token"
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid service token"
             )
 
 
-async def get_service_auth(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
+async def get_service_auth(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> dict[str, Any]:
     """Dependency for service-to-service authentication."""
     return ServiceAuthManager.verify_service_token(credentials.credentials)
 
@@ -862,7 +917,9 @@ enhanced_auth_service = EnhancedAuthService()
 
 
 # FastAPI dependencies
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> User:
     """Get current authenticated user with enhanced performance."""
     try:
         token = credentials.credentials

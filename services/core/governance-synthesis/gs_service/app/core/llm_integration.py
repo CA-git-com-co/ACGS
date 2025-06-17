@@ -2,7 +2,6 @@
 import json
 import logging
 import os
-from typing import Dict, List, Optional
 
 import openai  # Placeholder for actual OpenAI client library
 
@@ -28,11 +27,13 @@ class MockLLMClient:
     async def get_structured_interpretation(
         self,
         query: LLMInterpretationInput,
-        wina_gating_mask: Optional[Dict[str, bool]] = None,
+        wina_gating_mask: dict[str, bool] | None = None,
     ) -> LLMStructuredOutput:
-        interpretations: List[LLMSuggestedRule] = []
+        interpretations: list[LLMSuggestedRule] = []
         raw_llm_response = f"Mock interpretation for principle {query.principle_id}: {query.principle_content[:30]}..."
-        logger.info(f"MockLLMClient: Processing query for principle ID {query.principle_id}")
+        logger.info(
+            f"MockLLMClient: Processing query for principle ID {query.principle_id}"
+        )
         if wina_gating_mask:
             logger.info(f"MockLLMClient: Received WINA gating mask: {wina_gating_mask}")
             # In a real scenario, this mask would influence the mock response generation.
@@ -42,12 +43,17 @@ class MockLLMClient:
             raw_llm_response += f" (WINA Gating Applied: {len(wina_gating_mask)} rules)"
 
         # Example: If principle mentions "user access control based on roles"
-        if "user" in query.principle_content.lower() and "role" in query.principle_content.lower():
+        if (
+            "user" in query.principle_content.lower()
+            and "role" in query.principle_content.lower()
+        ):
             head = LLMSuggestedAtom(
                 predicate_name="allow_action", arguments=["User", "Action", "Resource"]
             )
             body = [
-                LLMSuggestedAtom(predicate_name="user_has_role", arguments=["User", "Role"]),
+                LLMSuggestedAtom(
+                    predicate_name="user_has_role", arguments=["User", "Role"]
+                ),
                 LLMSuggestedAtom(
                     predicate_name="role_has_permission_for_action",
                     arguments=["Role", "Action", "Resource"],
@@ -74,7 +80,9 @@ class MockLLMClient:
                     predicate_name="user_is_authorized_for_sensitive",
                     arguments=["User"],
                 ),
-                LLMSuggestedAtom(predicate_name="data_is_classified_sensitive", arguments=["Data"]),
+                LLMSuggestedAtom(
+                    predicate_name="data_is_classified_sensitive", arguments=["Data"]
+                ),
             ]
             interpretations.append(
                 LLMSuggestedRule(
@@ -120,13 +128,15 @@ class MockLLMClient:
                 )
             )
 
-        logger.info(f"MockLLMClient: Generated {len(interpretations)} interpretation(s).")
+        logger.info(
+            f"MockLLMClient: Generated {len(interpretations)} interpretation(s)."
+        )
         return LLMStructuredOutput(
             interpretations=interpretations, raw_llm_response=raw_llm_response
         )
 
     async def get_constitutional_synthesis(
-        self, synthesis_input, wina_gating_mask: Optional[Dict[str, bool]] = None
+        self, synthesis_input, wina_gating_mask: dict[str, bool] | None = None
     ) -> "ConstitutionalSynthesisOutput":
         """Mock implementation of constitutional synthesis."""
         from ..schemas import (
@@ -140,8 +150,12 @@ class MockLLMClient:
         )
         raw_response_addition = ""
         if wina_gating_mask:
-            logger.info(f"MockLLMClient: Received WINA gating mask for CS: {wina_gating_mask}")
-            raw_response_addition = f" (WINA Gating Applied to CS: {len(wina_gating_mask)} rules)"
+            logger.info(
+                f"MockLLMClient: Received WINA gating mask for CS: {wina_gating_mask}"
+            )
+            raw_response_addition = (
+                f" (WINA Gating Applied to CS: {len(wina_gating_mask)} rules)"
+            )
 
         # Mock constitutional context
         mock_constitutional_context = {
@@ -175,7 +189,9 @@ class MockLLMClient:
                 principle_id=principle["id"],
                 principle_name=principle["name"],
                 priority_weight=principle["priority_weight"],
-                influence_level=("HIGH" if principle["priority_weight"] > 0.7 else "MEDIUM"),
+                influence_level=(
+                    "HIGH" if principle["priority_weight"] > 0.7 else "MEDIUM"
+                ),
                 compliance_score=0.9 - (i * 0.1),
             )
 
@@ -242,7 +258,9 @@ class GroqLLMClient:
         # Initialize the OpenAI client with Groq's endpoint if the API key is available
         try:
             self.client = (
-                openai.OpenAI(api_key=self.api_key, base_url="https://api.groq.com/openai/v1")
+                openai.OpenAI(
+                    api_key=self.api_key, base_url="https://api.groq.com/openai/v1"
+                )
                 if self.api_key
                 else None
             )
@@ -254,20 +272,22 @@ class GroqLLMClient:
     def _construct_prompt(
         self,
         query: LLMInterpretationInput,
-        wina_gating_mask: Optional[Dict[str, bool]] = None,
+        wina_gating_mask: dict[str, bool] | None = None,
     ) -> str:
         # Similar prompt construction as RealLLMClient but optimized for Llama models
         wina_directive = ""
         if wina_gating_mask:
             active_neurons = [nid for nid, active in wina_gating_mask.items() if active]
-            inactive_neurons = [nid for nid, active in wina_gating_mask.items() if not active]
-            wina_directive = f"\nWINA Gating Instructions:\n"
+            inactive_neurons = [
+                nid for nid, active in wina_gating_mask.items() if not active
+            ]
+            wina_directive = "\nWINA Gating Instructions:\n"
             if active_neurons:
-                wina_directive += f"- Prioritize concepts related to: {', '.join(active_neurons)}\n"
-            if inactive_neurons:
                 wina_directive += (
-                    f"- De-emphasize concepts related to: {', '.join(inactive_neurons)}\n"
+                    f"- Prioritize concepts related to: {', '.join(active_neurons)}\n"
                 )
+            if inactive_neurons:
+                wina_directive += f"- De-emphasize concepts related to: {', '.join(inactive_neurons)}\n"
             wina_directive += "Adjust your interpretation based on these WINA directives to optimize for computational efficiency while maintaining accuracy.\n"
 
         prompt = f"""
@@ -301,14 +321,18 @@ Focus on creating logical rules that capture the essence of the constitutional p
 """
         return prompt
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
+    )
     async def get_structured_interpretation(
         self,
         query: LLMInterpretationInput,
-        wina_gating_mask: Optional[Dict[str, bool]] = None,
+        wina_gating_mask: dict[str, bool] | None = None,
     ) -> LLMStructuredOutput:
         if not self.client:
-            logger.error("GroqLLMClient is not configured with an API key. Cannot make API calls.")
+            logger.error(
+                "GroqLLMClient is not configured with an API key. Cannot make API calls."
+            )
             return LLMStructuredOutput(
                 interpretations=[], raw_llm_response="GroqLLMClient not configured."
             )
@@ -460,7 +484,9 @@ Focus on creating logical rules that capture the essence of the constitutional p
         self, query: LLMInterpretationInput
     ) -> LLMStructuredOutput:
         if not self.client:
-            logger.error("RealLLMClient is not configured with an API key. Cannot make API calls.")
+            logger.error(
+                "RealLLMClient is not configured with an API key. Cannot make API calls."
+            )
             # Fallback to a default error response or raise an exception
             return LLMStructuredOutput(
                 interpretations=[], raw_llm_response="RealLLMClient not configured."
@@ -565,7 +591,7 @@ Focus on creating logical rules that capture the essence of the constitutional p
             raise  # Reraise to potentially trigger tenacity if it's a type of error covered by retry policy
 
     async def get_constitutional_synthesis(
-        self, synthesis_input, wina_gating_mask: Optional[Dict[str, bool]] = None
+        self, synthesis_input, wina_gating_mask: dict[str, bool] | None = None
     ) -> "ConstitutionalSynthesisOutput":
         """
         Perform constitutional synthesis using constitutional prompting methodology.
@@ -584,7 +610,9 @@ Focus on creating logical rules that capture the essence of the constitutional p
         )
 
         if not self.client:
-            logger.error("RealLLMClient is not configured with an API key. Cannot make API calls.")
+            logger.error(
+                "RealLLMClient is not configured with an API key. Cannot make API calls."
+            )
             return ConstitutionalSynthesisOutput(
                 context=synthesis_input.context,
                 generated_rules=[],
@@ -610,34 +638,46 @@ Focus on creating logical rules that capture the essence of the constitutional p
             # or by augmenting the prompt string afterwards.
             # For simplicity, we'll augment the prompt string here if mask is present.
 
-            base_constitutional_prompt = constitutional_prompt_builder.build_constitutional_prompt(
-                constitutional_context=constitutional_context,
-                synthesis_request=synthesis_input.synthesis_request,
-                target_format=synthesis_input.target_format,
+            base_constitutional_prompt = (
+                constitutional_prompt_builder.build_constitutional_prompt(
+                    constitutional_context=constitutional_context,
+                    synthesis_request=synthesis_input.synthesis_request,
+                    target_format=synthesis_input.target_format,
+                )
             )
 
             wina_directive_cs = ""
             if wina_gating_mask:
-                active_neurons = [nid for nid, active in wina_gating_mask.items() if active]
-                inactive_neurons = [nid for nid, active in wina_gating_mask.items() if not active]
-                wina_directive_cs = f"\nWINA Gating Instructions for Constitutional Synthesis:\n"
+                active_neurons = [
+                    nid for nid, active in wina_gating_mask.items() if active
+                ]
+                inactive_neurons = [
+                    nid for nid, active in wina_gating_mask.items() if not active
+                ]
+                wina_directive_cs = (
+                    "\nWINA Gating Instructions for Constitutional Synthesis:\n"
+                )
                 if active_neurons:
-                    wina_directive_cs += (
-                        f"- Prioritize synthesis aspects related to: {', '.join(active_neurons)}\n"
-                    )
+                    wina_directive_cs += f"- Prioritize synthesis aspects related to: {', '.join(active_neurons)}\n"
                 if inactive_neurons:
                     wina_directive_cs += f"- De-emphasize synthesis aspects related to: {', '.join(inactive_neurons)}\n"
-                wina_directive_cs += "Adjust your synthesis based on these WINA directives.\n"
+                wina_directive_cs += (
+                    "Adjust your synthesis based on these WINA directives.\n"
+                )
 
             constitutional_prompt = base_constitutional_prompt + wina_directive_cs
 
             logger.info(
                 f"RealLLMClient: Performing constitutional synthesis for context '{synthesis_input.context}'. Prompt length: {len(constitutional_prompt)}"
             )
-            logger.debug(f"RealLLMClient: Constitutional prompt:\n{constitutional_prompt}")
+            logger.debug(
+                f"RealLLMClient: Constitutional prompt:\n{constitutional_prompt}"
+            )
 
             # MOCKED API CALL FOR NOW - Replace with actual OpenAI call
-            logger.warning("RealLLMClient: Using MOCKED API call for constitutional synthesis.")
+            logger.warning(
+                "RealLLMClient: Using MOCKED API call for constitutional synthesis."
+            )
 
             # Simulate constitutional synthesis response
             principles = constitutional_context.get("principles", [])
@@ -651,9 +691,12 @@ Focus on creating logical rules that capture the essence of the constitutional p
                     principle_name=principle["name"],
                     priority_weight=principle.get("priority_weight", 0.5),
                     influence_level=(
-                        "HIGH" if principle.get("priority_weight", 0.5) > 0.7 else "MEDIUM"
+                        "HIGH"
+                        if principle.get("priority_weight", 0.5) > 0.7
+                        else "MEDIUM"
                     ),
-                    compliance_score=0.85 + (i * 0.05),  # Simulate varying compliance scores
+                    compliance_score=0.85
+                    + (i * 0.05),  # Simulate varying compliance scores
                 )
 
                 mock_rule = ConstitutionallyCompliantRule(
@@ -735,13 +778,15 @@ def get_llm_client():
     elif llm_provider == "mock":
         return _mock_llm_client_instance
     else:
-        logger.warning(f"Unknown LLM_PROVIDER '{llm_provider}'. Defaulting to MockLLMClient.")
+        logger.warning(
+            f"Unknown LLM_PROVIDER '{llm_provider}'. Defaulting to MockLLMClient."
+        )
         return _mock_llm_client_instance
 
 
 async def query_llm_for_structured_output(
     input_data: LLMInterpretationInput,
-    wina_gating_mask: Optional[Dict[str, bool]] = None,
+    wina_gating_mask: dict[str, bool] | None = None,
 ) -> LLMStructuredOutput:
     """
     Helper function to query the chosen LLM for structured interpretation.
@@ -774,7 +819,7 @@ async def query_llm_for_structured_output(
 
 
 async def query_llm_for_constitutional_synthesis(
-    synthesis_input, wina_gating_mask: Optional[Dict[str, bool]] = None
+    synthesis_input, wina_gating_mask: dict[str, bool] | None = None
 ) -> "ConstitutionalSynthesisOutput":
     """
     Helper function to query the chosen LLM for constitutional synthesis.
@@ -783,7 +828,9 @@ async def query_llm_for_constitutional_synthesis(
     from ..schemas import ConstitutionalSynthesisOutput
 
     client = get_llm_client()
-    logger.info(f"Using LLM client for constitutional synthesis: {client.__class__.__name__}")
+    logger.info(
+        f"Using LLM client for constitutional synthesis: {client.__class__.__name__}"
+    )
     try:
         # Pass the gating mask to the client's method
         return await client.get_constitutional_synthesis(
@@ -831,7 +878,9 @@ if __name__ == "__main__":
         # To test RealLLMClient, ensure OPENAI_API_KEY is set in your environment
         # and set LLM_PROVIDER="real" (or comment out the os.getenv default for LLM_PROVIDER for testing)
         # For example, you might run: LLM_PROVIDER="real" OPENAI_api_key = os.getenv("API_KEY") python -m app.core.llm_integration
-        print("\n--- Testing with RealLLMClient (will be mocked if API key is missing) ---")
+        print(
+            "\n--- Testing with RealLLMClient (will be mocked if API key is missing) ---"
+        )
         # Temporarily set provider to real for this test, assuming API key might be available
         os.environ["LLM_PROVIDER"] = "real"
         # You might need to clear the cached client instance if you change env vars at runtime for testing

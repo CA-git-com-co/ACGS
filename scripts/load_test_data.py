@@ -8,7 +8,6 @@ import asyncio
 import json
 import os
 from datetime import datetime
-from typing import Dict
 
 import requests
 
@@ -20,17 +19,17 @@ class TestDataLoader:
         self.integrity_url = "http://localhost:8002"  # Integrity Service
         self.tokens = self.load_auth_tokens()
 
-    def load_auth_tokens(self) -> Dict[str, str]:
+    def load_auth_tokens(self) -> dict[str, str]:
         """Load authentication tokens from file"""
         try:
-            with open("auth_tokens.json", "r") as f:
+            with open("auth_tokens.json") as f:
                 data = json.load(f)
                 return data.get("tokens", {})
         except FileNotFoundError:
             print("⚠️  auth_tokens.json not found. Run setup_production_auth.py first")
             return {"admin": "admin_token"}  # Fallback
 
-    def get_auth_headers(self, role: str = "admin") -> Dict[str, str]:
+    def get_auth_headers(self, role: str = "admin") -> dict[str, str]:
         """Get authorization headers for API calls"""
         token = self.tokens.get(role, "admin_token")
         return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}

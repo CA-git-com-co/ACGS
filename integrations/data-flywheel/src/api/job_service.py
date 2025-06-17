@@ -18,10 +18,10 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import HTTPException
 
-from src.api.db import get_db
-from src.api.db_manager import get_db_manager
-from src.api.models import FlywheelRun
-from src.api.schemas import (
+from services.core.api.db import get_db
+from services.core.api.db_manager import get_db_manager
+from services.core.api.models import FlywheelRun
+from services.core.api.schemas import (
     Customization,
     DeploymentStatus,
     Evaluation,
@@ -33,8 +33,8 @@ from src.api.schemas import (
     NIMResponse,
     NIMRunStatus,
 )
-from src.log_utils import setup_logging
-from src.tasks.tasks import delete_job_resources
+from services.core.log_utils import setup_logging
+from services.core.tasks.tasks import delete_job_resources
 
 logger = setup_logging("data_flywheel.job_service")
 

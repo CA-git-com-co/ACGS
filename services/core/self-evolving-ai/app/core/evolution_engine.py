@@ -15,23 +15,22 @@ Key Features:
 """
 
 import asyncio
-import json
 import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import aiohttp
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
 
 class EvolutionStatus(Enum):
     """Evolution cycle status enumeration."""
+
     PENDING = "pending"
     INITIATED = "initiated"
     ANALYZING = "analyzing"
@@ -47,6 +46,7 @@ class EvolutionStatus(Enum):
 
 class EvolutionType(Enum):
     """Types of evolution operations."""
+
     POLICY_REFINEMENT = "policy_refinement"
     RULE_OPTIMIZATION = "rule_optimization"
     CONSTITUTIONAL_AMENDMENT = "constitutional_amendment"
@@ -57,11 +57,12 @@ class EvolutionType(Enum):
 @dataclass
 class EvolutionRequest:
     """Evolution request data structure."""
+
     evolution_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     evolution_type: EvolutionType = EvolutionType.POLICY_REFINEMENT
     description: str = ""
-    target_policies: List[str] = field(default_factory=list)
-    proposed_changes: Dict[str, Any] = field(default_factory=dict)
+    target_policies: list[str] = field(default_factory=list)
+    proposed_changes: dict[str, Any] = field(default_factory=dict)
     justification: str = ""
     requester_id: str = ""
     priority: str = "medium"  # low, medium, high, critical
@@ -69,34 +70,35 @@ class EvolutionRequest:
     requires_constitutional_validation: bool = True
     requires_formal_verification: bool = True
     status: EvolutionStatus = EvolutionStatus.PENDING
-    approver_id: Optional[str] = None
+    approver_id: str | None = None
     approval_notes: str = ""
-    approved_at: Optional[datetime] = None
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    approved_at: datetime | None = None
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 @dataclass
 class EvolutionResult:
     """Evolution result data structure."""
+
     evolution_id: str
     status: EvolutionStatus
     success: bool
-    changes_applied: Dict[str, Any] = field(default_factory=dict)
-    validation_results: Dict[str, Any] = field(default_factory=dict)
-    performance_metrics: Dict[str, Any] = field(default_factory=dict)
-    error_message: Optional[str] = None
-    completed_at: Optional[datetime] = None
+    changes_applied: dict[str, Any] = field(default_factory=dict)
+    validation_results: dict[str, Any] = field(default_factory=dict)
+    performance_metrics: dict[str, Any] = field(default_factory=dict)
+    error_message: str | None = None
+    completed_at: datetime | None = None
     rollback_available: bool = True
 
 
 class EvolutionEngine:
     """
     Core evolution engine for manual policy evolution with human oversight.
-    
+
     This engine implements the foundational capabilities for self-evolving AI
     governance while maintaining strict human control and safety mechanisms.
     """
-    
+
     def __init__(
         self,
         settings,
@@ -110,179 +112,186 @@ class EvolutionEngine:
         self.policy_orchestrator = policy_orchestrator
         self.background_processor = background_processor
         self.observability_framework = observability_framework
-        
+
         # Evolution tracking
-        self.active_evolutions: Dict[str, EvolutionRequest] = {}
-        self.evolution_history: List[EvolutionResult] = []
-        self.evolution_metrics: Dict[str, Any] = {
+        self.active_evolutions: dict[str, EvolutionRequest] = {}
+        self.evolution_history: list[EvolutionResult] = []
+        self.evolution_metrics: dict[str, Any] = {
             "total_evolutions": 0,
             "successful_evolutions": 0,
             "failed_evolutions": 0,
             "average_duration_minutes": 0,
             "human_approval_rate": 0,
         }
-        
+
         # Safety controls
         self.max_concurrent_evolutions = settings.MAX_CONCURRENT_EVOLUTIONS
         self.manual_approval_required = settings.MANUAL_APPROVAL_REQUIRED
         self.rollback_enabled = settings.ROLLBACK_ENABLED
-        
+
         # Service integration
         self.service_clients = {}
         self.constitution_hash = settings.CONSTITUTION_HASH
-        
+
         logger.info("Evolution engine initialized with manual oversight")
-    
+
     async def initialize(self):
         """Initialize the evolution engine."""
         try:
             # Initialize service clients
             await self._initialize_service_clients()
-            
+
             # Validate constitutional compliance
             await self._validate_constitutional_compliance()
-            
+
             # Start monitoring tasks
             asyncio.create_task(self._monitor_evolution_performance())
-            
+
             logger.info("✅ Evolution engine initialization complete")
-            
+
         except Exception as e:
             logger.error(f"❌ Evolution engine initialization failed: {e}")
             raise
-    
+
     async def initiate_evolution(
-        self, 
-        evolution_request: EvolutionRequest
-    ) -> Tuple[bool, str, Dict[str, Any]]:
+        self, evolution_request: EvolutionRequest
+    ) -> tuple[bool, str, dict[str, Any]]:
         """
         Initiate a manual policy evolution cycle.
-        
+
         Args:
             evolution_request: Evolution request details
-            
+
         Returns:
             Tuple of (success, evolution_id, status_info)
         """
         try:
             # Validate evolution request
-            validation_result = await self._validate_evolution_request(evolution_request)
+            validation_result = await self._validate_evolution_request(
+                evolution_request
+            )
             if not validation_result["valid"]:
                 return False, "", validation_result
-            
+
             # Check concurrent evolution limits
             if len(self.active_evolutions) >= self.max_concurrent_evolutions:
-                return False, "", {
-                    "error": "Maximum concurrent evolutions reached",
-                    "limit": self.max_concurrent_evolutions,
-                    "active": len(self.active_evolutions),
-                }
-            
+                return (
+                    False,
+                    "",
+                    {
+                        "error": "Maximum concurrent evolutions reached",
+                        "limit": self.max_concurrent_evolutions,
+                        "active": len(self.active_evolutions),
+                    },
+                )
+
             # Security assessment
             security_assessment = await self.security_manager.assess_evolution_security(
                 evolution_request
             )
             if not security_assessment["approved"]:
-                return False, "", {
-                    "error": "Security assessment failed",
-                    "details": security_assessment,
-                }
-            
+                return (
+                    False,
+                    "",
+                    {
+                        "error": "Security assessment failed",
+                        "details": security_assessment,
+                    },
+                )
+
             # Add to active evolutions
             evolution_request.status = EvolutionStatus.INITIATED
             self.active_evolutions[evolution_request.evolution_id] = evolution_request
-            
+
             # Start evolution process in background
             asyncio.create_task(
                 self._execute_evolution_cycle(evolution_request.evolution_id)
             )
-            
+
             # Update metrics
             self.evolution_metrics["total_evolutions"] += 1
-            
+
             logger.info(f"Evolution {evolution_request.evolution_id} initiated")
-            
-            return True, evolution_request.evolution_id, {
-                "status": "initiated",
-                "evolution_id": evolution_request.evolution_id,
-                "estimated_duration": evolution_request.estimated_duration_minutes,
-                "requires_approval": self.manual_approval_required,
-            }
-            
+
+            return (
+                True,
+                evolution_request.evolution_id,
+                {
+                    "status": "initiated",
+                    "evolution_id": evolution_request.evolution_id,
+                    "estimated_duration": evolution_request.estimated_duration_minutes,
+                    "requires_approval": self.manual_approval_required,
+                },
+            )
+
         except Exception as e:
             logger.error(f"Failed to initiate evolution: {e}")
             return False, "", {"error": str(e)}
-    
+
     async def approve_evolution(
-        self, 
-        evolution_id: str, 
-        approver_id: str,
-        approval_notes: str = ""
-    ) -> Tuple[bool, Dict[str, Any]]:
+        self, evolution_id: str, approver_id: str, approval_notes: str = ""
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Approve a pending evolution (human-in-the-loop control).
-        
+
         Args:
             evolution_id: Evolution identifier
             approver_id: ID of the approving user
             approval_notes: Optional approval notes
-            
+
         Returns:
             Tuple of (success, status_info)
         """
         try:
             if evolution_id not in self.active_evolutions:
                 return False, {"error": "Evolution not found"}
-            
+
             evolution = self.active_evolutions[evolution_id]
-            
+
             if evolution.status != EvolutionStatus.PENDING_APPROVAL:
                 return False, {
                     "error": "Evolution not in pending approval state",
                     "current_status": evolution.status.value,
                 }
-            
+
             # Validate approver permissions
             approval_valid = await self._validate_approver_permissions(
                 approver_id, evolution
             )
             if not approval_valid:
                 return False, {"error": "Insufficient permissions for approval"}
-            
+
             # Record approval
             evolution.status = EvolutionStatus.APPROVED
             evolution.approver_id = approver_id
             evolution.approval_notes = approval_notes
-            evolution.approved_at = datetime.now(timezone.utc)
-            
+            evolution.approved_at = datetime.now(UTC)
+
             # Continue evolution process
-            asyncio.create_task(
-                self._continue_evolution_after_approval(evolution_id)
-            )
-            
+            asyncio.create_task(self._continue_evolution_after_approval(evolution_id))
+
             logger.info(f"Evolution {evolution_id} approved by {approver_id}")
-            
+
             return True, {
                 "status": "approved",
                 "evolution_id": evolution_id,
                 "approver_id": approver_id,
                 "approved_at": evolution.approved_at.isoformat(),
             }
-            
+
         except Exception as e:
             logger.error(f"Failed to approve evolution {evolution_id}: {e}")
             return False, {"error": str(e)}
-    
+
     async def get_evolution_status(
-        self, 
-        evolution_id: str
-    ) -> Tuple[bool, Dict[str, Any]]:
+        self, evolution_id: str
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Get the status of an evolution cycle.
-        
+
         Args:
             evolution_id: Evolution identifier
-            
+
         Returns:
             Tuple of (found, status_info)
         """
@@ -300,7 +309,7 @@ class EvolutionEngine:
                     "requires_approval": self.manual_approval_required,
                     "progress": await self._get_evolution_progress(evolution_id),
                 }
-            
+
             # Check evolution history
             for result in self.evolution_history:
                 if result.evolution_id == evolution_id:
@@ -308,121 +317,127 @@ class EvolutionEngine:
                         "evolution_id": evolution_id,
                         "status": result.status.value,
                         "success": result.success,
-                        "completed_at": result.completed_at.isoformat() if result.completed_at else None,
+                        "completed_at": (
+                            result.completed_at.isoformat()
+                            if result.completed_at
+                            else None
+                        ),
                         "changes_applied": result.changes_applied,
                         "validation_results": result.validation_results,
                         "performance_metrics": result.performance_metrics,
                         "rollback_available": result.rollback_available,
                     }
-            
+
             return False, {"error": "Evolution not found"}
-            
+
         except Exception as e:
             logger.error(f"Failed to get evolution status {evolution_id}: {e}")
             return False, {"error": str(e)}
-    
+
     async def rollback_evolution(
-        self, 
-        evolution_id: str,
-        rollback_reason: str = ""
-    ) -> Tuple[bool, Dict[str, Any]]:
+        self, evolution_id: str, rollback_reason: str = ""
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Rollback a completed evolution.
-        
+
         Args:
             evolution_id: Evolution identifier
             rollback_reason: Reason for rollback
-            
+
         Returns:
             Tuple of (success, rollback_info)
         """
         try:
             if not self.rollback_enabled:
                 return False, {"error": "Rollback is disabled"}
-            
+
             # Find evolution in history
             evolution_result = None
             for result in self.evolution_history:
                 if result.evolution_id == evolution_id:
                     evolution_result = result
                     break
-            
+
             if not evolution_result:
                 return False, {"error": "Evolution not found in history"}
-            
+
             if not evolution_result.rollback_available:
                 return False, {"error": "Rollback not available for this evolution"}
-            
+
             if evolution_result.status == EvolutionStatus.ROLLED_BACK:
                 return False, {"error": "Evolution already rolled back"}
-            
+
             # Execute rollback
             rollback_success = await self._execute_rollback(
                 evolution_result, rollback_reason
             )
-            
+
             if rollback_success:
                 evolution_result.status = EvolutionStatus.ROLLED_BACK
                 logger.info(f"Evolution {evolution_id} rolled back successfully")
-                
+
                 return True, {
                     "evolution_id": evolution_id,
                     "status": "rolled_back",
                     "rollback_reason": rollback_reason,
-                    "rolled_back_at": datetime.now(timezone.utc).isoformat(),
+                    "rolled_back_at": datetime.now(UTC).isoformat(),
                 }
             else:
                 return False, {"error": "Rollback execution failed"}
-            
+
         except Exception as e:
             logger.error(f"Failed to rollback evolution {evolution_id}: {e}")
             return False, {"error": str(e)}
-    
-    async def get_evolution_metrics(self) -> Dict[str, Any]:
+
+    async def get_evolution_metrics(self) -> dict[str, Any]:
         """Get evolution engine performance metrics."""
         try:
             # Calculate current metrics
             total_evolutions = len(self.evolution_history) + len(self.active_evolutions)
             successful_evolutions = sum(
-                1 for result in self.evolution_history 
+                1
+                for result in self.evolution_history
                 if result.success and result.status == EvolutionStatus.COMPLETED
             )
-            
+
             # Calculate average duration
             completed_evolutions = [
-                result for result in self.evolution_history
+                result
+                for result in self.evolution_history
                 if result.completed_at and result.status == EvolutionStatus.COMPLETED
             ]
-            
+
             if completed_evolutions:
                 total_duration = sum(
                     (result.completed_at - result.created_at).total_seconds() / 60
                     for result in completed_evolutions
-                    if hasattr(result, 'created_at')
+                    if hasattr(result, "created_at")
                 )
                 average_duration = total_duration / len(completed_evolutions)
             else:
                 average_duration = 0
-            
+
             return {
                 "total_evolutions": total_evolutions,
                 "active_evolutions": len(self.active_evolutions),
                 "successful_evolutions": successful_evolutions,
-                "failed_evolutions": len(self.evolution_history) - successful_evolutions,
-                "success_rate": successful_evolutions / max(len(self.evolution_history), 1),
+                "failed_evolutions": len(self.evolution_history)
+                - successful_evolutions,
+                "success_rate": successful_evolutions
+                / max(len(self.evolution_history), 1),
                 "average_duration_minutes": round(average_duration, 2),
                 "human_approval_required": self.manual_approval_required,
                 "rollback_enabled": self.rollback_enabled,
                 "max_concurrent_evolutions": self.max_concurrent_evolutions,
                 "constitution_hash": self.constitution_hash,
-                "last_updated": datetime.now(timezone.utc).isoformat(),
+                "last_updated": datetime.now(UTC).isoformat(),
             }
-            
+
         except Exception as e:
             logger.error(f"Failed to get evolution metrics: {e}")
             return {"error": str(e)}
-    
-    async def health_check(self) -> Dict[str, Any]:
+
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check for the evolution engine."""
         try:
             health_status = {
@@ -430,17 +445,23 @@ class EvolutionEngine:
                 "timestamp": time.time(),
                 "checks": {},
             }
-            
+
             # Check service integrations
             for service_name, client in self.service_clients.items():
                 try:
                     # Simple connectivity check - use the stored base URL
-                    base_url = getattr(client, '_base_url', f'http://localhost:800{list(self.service_clients.keys()).index(service_name)}')
+                    base_url = getattr(
+                        client,
+                        "_base_url",
+                        f"http://localhost:800{list(self.service_clients.keys()).index(service_name)}",
+                    )
                     async with client.get(f"{base_url}/health", timeout=5) as response:
                         if response.status == 200:
                             health_status["checks"][f"{service_name}_integration"] = {
                                 "healthy": True,
-                                "response_time_ms": response.headers.get("X-Response-Time", "unknown"),
+                                "response_time_ms": response.headers.get(
+                                    "X-Response-Time", "unknown"
+                                ),
                             }
                         else:
                             health_status["checks"][f"{service_name}_integration"] = {
@@ -454,7 +475,7 @@ class EvolutionEngine:
                         "error": str(e),
                     }
                     health_status["healthy"] = False
-            
+
             # Check evolution engine status
             health_status["checks"]["evolution_engine"] = {
                 "healthy": True,
@@ -462,9 +483,9 @@ class EvolutionEngine:
                 "max_concurrent": self.max_concurrent_evolutions,
                 "manual_approval_required": self.manual_approval_required,
             }
-            
+
             return health_status
-            
+
         except Exception as e:
             logger.error(f"Evolution engine health check failed: {e}")
             return {
@@ -472,27 +493,27 @@ class EvolutionEngine:
                 "error": str(e),
                 "timestamp": time.time(),
             }
-    
+
     async def shutdown(self):
         """Shutdown the evolution engine gracefully."""
         try:
             logger.info("Shutting down evolution engine...")
-            
+
             # Cancel active evolutions
             for evolution_id in list(self.active_evolutions.keys()):
                 evolution = self.active_evolutions[evolution_id]
                 evolution.status = EvolutionStatus.CANCELLED
                 logger.info(f"Cancelled evolution {evolution_id}")
-            
+
             # Close service clients
             for client in self.service_clients.values():
                 await client.close()
-            
+
             logger.info("✅ Evolution engine shutdown complete")
-            
+
         except Exception as e:
             logger.error(f"Error during evolution engine shutdown: {e}")
-    
+
     # Private helper methods
     async def _initialize_service_clients(self):
         """Initialize HTTP clients for ACGS-1 service integration."""
@@ -505,30 +526,36 @@ class EvolutionEngine:
             "pgc": self.settings.PGC_SERVICE_URL,
             "ec": self.settings.EC_SERVICE_URL,
         }
-        
+
         for service_name, url in service_urls.items():
             timeout = aiohttp.ClientTimeout(total=self.settings.SERVICE_TIMEOUT)
             # Store the base URL separately since aiohttp ClientSession doesn't store it as an attribute
             self.service_clients[service_name] = aiohttp.ClientSession(timeout=timeout)
             # Store the base URL for later use
             self.service_clients[service_name]._base_url = url
-        
+
         logger.info("Service clients initialized for ACGS-1 integration")
-    
+
     async def _validate_constitutional_compliance(self):
         """Validate constitutional compliance and hash."""
         try:
             # Verify constitution hash matches Quantumagi deployment
             if self.constitution_hash != "cdd01ef066bc6cf2":
-                raise ValueError(f"Constitution hash mismatch: {self.constitution_hash}")
+                raise ValueError(
+                    f"Constitution hash mismatch: {self.constitution_hash}"
+                )
 
-            logger.info(f"✅ Constitutional compliance validated: {self.constitution_hash}")
+            logger.info(
+                f"✅ Constitutional compliance validated: {self.constitution_hash}"
+            )
 
         except Exception as e:
             logger.error(f"Constitutional compliance validation failed: {e}")
             raise
 
-    async def _validate_evolution_request(self, request: EvolutionRequest) -> Dict[str, Any]:
+    async def _validate_evolution_request(
+        self, request: EvolutionRequest
+    ) -> dict[str, Any]:
         """Validate evolution request for safety and compliance."""
         validation_result = {"valid": True, "errors": []}
 
@@ -545,12 +572,18 @@ class EvolutionEngine:
 
             # Constitutional validation
             if request.requires_constitutional_validation:
-                constitutional_check = await self._check_constitutional_compliance(request)
+                constitutional_check = await self._check_constitutional_compliance(
+                    request
+                )
                 if not constitutional_check["compliant"]:
-                    validation_result["errors"].extend(constitutional_check["violations"])
+                    validation_result["errors"].extend(
+                        constitutional_check["violations"]
+                    )
 
             # Security validation
-            security_check = await self.security_manager.validate_evolution_request(request)
+            security_check = await self.security_manager.validate_evolution_request(
+                request
+            )
             if not security_check["secure"]:
                 validation_result["errors"].extend(security_check["security_issues"])
 
@@ -561,7 +594,9 @@ class EvolutionEngine:
             logger.error(f"Evolution request validation failed: {e}")
             return {"valid": False, "errors": [str(e)]}
 
-    async def _check_constitutional_compliance(self, request: EvolutionRequest) -> Dict[str, Any]:
+    async def _check_constitutional_compliance(
+        self, request: EvolutionRequest
+    ) -> dict[str, Any]:
         """Check constitutional compliance for evolution request."""
         try:
             # Use AC service for constitutional validation
@@ -571,7 +606,7 @@ class EvolutionEngine:
                     "evolution_type": request.evolution_type.value,
                     "proposed_changes": request.proposed_changes,
                     "constitution_hash": self.constitution_hash,
-                }
+                },
             ) as response:
                 if response.status == 200:
                     result = await response.json()
@@ -593,7 +628,9 @@ class EvolutionEngine:
                 "violations": [f"Constitutional validation error: {str(e)}"],
             }
 
-    async def _validate_approver_permissions(self, approver_id: str, evolution: EvolutionRequest) -> bool:
+    async def _validate_approver_permissions(
+        self, approver_id: str, evolution: EvolutionRequest
+    ) -> bool:
         """Validate approver has sufficient permissions."""
         try:
             # Use Auth service for permission validation
@@ -604,7 +641,7 @@ class EvolutionEngine:
                     "required_permissions": ["evolution_approval"],
                     "resource_type": "evolution",
                     "resource_id": evolution.evolution_id,
-                }
+                },
             ) as response:
                 if response.status == 200:
                     result = await response.json()
@@ -661,7 +698,9 @@ class EvolutionEngine:
             validation_result = await self._validate_evolution_results(evolution)
 
             if validation_result["valid"]:
-                await self._complete_evolution(evolution_id, execution_result, validation_result)
+                await self._complete_evolution(
+                    evolution_id, execution_result, validation_result
+                )
             else:
                 await self._fail_evolution(evolution_id, "Validation phase failed")
 
@@ -669,7 +708,9 @@ class EvolutionEngine:
             logger.error(f"Evolution continuation failed for {evolution_id}: {e}")
             await self._fail_evolution(evolution_id, str(e))
 
-    async def _analyze_evolution_impact(self, evolution: EvolutionRequest) -> Dict[str, Any]:
+    async def _analyze_evolution_impact(
+        self, evolution: EvolutionRequest
+    ) -> dict[str, Any]:
         """Analyze the potential impact of the evolution."""
         try:
             # Use FV service for formal verification
@@ -679,7 +720,7 @@ class EvolutionEngine:
                     "evolution_type": evolution.evolution_type.value,
                     "proposed_changes": evolution.proposed_changes,
                     "target_policies": evolution.target_policies,
-                }
+                },
             ) as response:
                 if response.status == 200:
                     result = await response.json()
@@ -689,13 +730,18 @@ class EvolutionEngine:
                         "impact_assessment": result.get("impact", {}),
                     }
                 else:
-                    return {"safe_to_proceed": False, "error": "Analysis service unavailable"}
+                    return {
+                        "safe_to_proceed": False,
+                        "error": "Analysis service unavailable",
+                    }
 
         except Exception as e:
             logger.error(f"Evolution impact analysis failed: {e}")
             return {"safe_to_proceed": False, "error": str(e)}
 
-    async def _execute_evolution_changes(self, evolution: EvolutionRequest) -> Dict[str, Any]:
+    async def _execute_evolution_changes(
+        self, evolution: EvolutionRequest
+    ) -> dict[str, Any]:
         """Execute the actual evolution changes."""
         try:
             # Use GS service for policy synthesis and updates
@@ -706,7 +752,7 @@ class EvolutionEngine:
                     "evolution_type": evolution.evolution_type.value,
                     "proposed_changes": evolution.proposed_changes,
                     "target_policies": evolution.target_policies,
-                }
+                },
             ) as response:
                 if response.status == 200:
                     result = await response.json()
@@ -716,13 +762,18 @@ class EvolutionEngine:
                         "affected_policies": result.get("affected_policies", []),
                     }
                 else:
-                    return {"success": False, "error": "Evolution execution service unavailable"}
+                    return {
+                        "success": False,
+                        "error": "Evolution execution service unavailable",
+                    }
 
         except Exception as e:
             logger.error(f"Evolution changes execution failed: {e}")
             return {"success": False, "error": str(e)}
 
-    async def _validate_evolution_results(self, evolution: EvolutionRequest) -> Dict[str, Any]:
+    async def _validate_evolution_results(
+        self, evolution: EvolutionRequest
+    ) -> dict[str, Any]:
         """Validate the results of evolution changes."""
         try:
             validation_results = {}
@@ -734,13 +785,16 @@ class EvolutionEngine:
                     json={
                         "evolution_id": evolution.evolution_id,
                         "target_policies": evolution.target_policies,
-                    }
+                    },
                 ) as response:
                     if response.status == 200:
                         fv_result = await response.json()
                         validation_results["formal_verification"] = fv_result
                     else:
-                        validation_results["formal_verification"] = {"valid": False, "error": "FV service unavailable"}
+                        validation_results["formal_verification"] = {
+                            "valid": False,
+                            "error": "FV service unavailable",
+                        }
 
             # Constitutional compliance check
             if evolution.requires_constitutional_validation:
@@ -749,13 +803,16 @@ class EvolutionEngine:
                     json={
                         "evolution_id": evolution.evolution_id,
                         "constitution_hash": self.constitution_hash,
-                    }
+                    },
                 ) as response:
                     if response.status == 200:
                         cc_result = await response.json()
                         validation_results["constitutional_compliance"] = cc_result
                     else:
-                        validation_results["constitutional_compliance"] = {"valid": False, "error": "CC service unavailable"}
+                        validation_results["constitutional_compliance"] = {
+                            "valid": False,
+                            "error": "CC service unavailable",
+                        }
 
             # PGC enforcement validation
             async with self.service_clients["pgc"].post(
@@ -763,18 +820,20 @@ class EvolutionEngine:
                 json={
                     "evolution_id": evolution.evolution_id,
                     "target_policies": evolution.target_policies,
-                }
+                },
             ) as response:
                 if response.status == 200:
                     pgc_result = await response.json()
                     validation_results["policy_governance"] = pgc_result
                 else:
-                    validation_results["policy_governance"] = {"valid": False, "error": "PGC service unavailable"}
+                    validation_results["policy_governance"] = {
+                        "valid": False,
+                        "error": "PGC service unavailable",
+                    }
 
             # Determine overall validity
             all_valid = all(
-                result.get("valid", False)
-                for result in validation_results.values()
+                result.get("valid", False) for result in validation_results.values()
             )
 
             return {
@@ -789,8 +848,8 @@ class EvolutionEngine:
     async def _complete_evolution(
         self,
         evolution_id: str,
-        execution_result: Dict[str, Any],
-        validation_result: Dict[str, Any]
+        execution_result: dict[str, Any],
+        validation_result: dict[str, Any],
     ):
         """Complete a successful evolution."""
         try:
@@ -803,8 +862,10 @@ class EvolutionEngine:
                 success=True,
                 changes_applied=execution_result.get("changes_applied", {}),
                 validation_results=validation_result.get("validation_results", {}),
-                performance_metrics=await self._calculate_performance_metrics(evolution),
-                completed_at=datetime.now(timezone.utc),
+                performance_metrics=await self._calculate_performance_metrics(
+                    evolution
+                ),
+                completed_at=datetime.now(UTC),
                 rollback_available=True,
             )
 
@@ -838,7 +899,7 @@ class EvolutionEngine:
                 status=EvolutionStatus.FAILED,
                 success=False,
                 error_message=error_message,
-                completed_at=datetime.now(timezone.utc),
+                completed_at=datetime.now(UTC),
                 rollback_available=False,
             )
 
@@ -858,7 +919,9 @@ class EvolutionEngine:
         except Exception as e:
             logger.error(f"Failed to handle evolution failure for {evolution_id}: {e}")
 
-    async def _execute_rollback(self, evolution_result: EvolutionResult, rollback_reason: str) -> bool:
+    async def _execute_rollback(
+        self, evolution_result: EvolutionResult, rollback_reason: str
+    ) -> bool:
         """Execute rollback of evolution changes."""
         try:
             # Use GS service for rollback
@@ -868,7 +931,7 @@ class EvolutionEngine:
                     "evolution_id": evolution_result.evolution_id,
                     "changes_to_rollback": evolution_result.changes_applied,
                     "rollback_reason": rollback_reason,
-                }
+                },
             ) as response:
                 if response.status == 200:
                     result = await response.json()
@@ -881,16 +944,20 @@ class EvolutionEngine:
             logger.error(f"Rollback execution failed: {e}")
             return False
 
-    async def _calculate_performance_metrics(self, evolution: EvolutionRequest) -> Dict[str, Any]:
+    async def _calculate_performance_metrics(
+        self, evolution: EvolutionRequest
+    ) -> dict[str, Any]:
         """Calculate performance metrics for completed evolution."""
         try:
-            end_time = datetime.now(timezone.utc)
+            end_time = datetime.now(UTC)
             duration_minutes = (end_time - evolution.created_at).total_seconds() / 60
 
             return {
                 "duration_minutes": round(duration_minutes, 2),
                 "estimated_duration_minutes": evolution.estimated_duration_minutes,
-                "duration_variance": round(duration_minutes - evolution.estimated_duration_minutes, 2),
+                "duration_variance": round(
+                    duration_minutes - evolution.estimated_duration_minutes, 2
+                ),
                 "evolution_type": evolution.evolution_type.value,
                 "target_policies_count": len(evolution.target_policies),
                 "completed_at": end_time.isoformat(),
@@ -900,7 +967,7 @@ class EvolutionEngine:
             logger.error(f"Failed to calculate performance metrics: {e}")
             return {"error": str(e)}
 
-    async def _get_evolution_progress(self, evolution_id: str) -> Dict[str, Any]:
+    async def _get_evolution_progress(self, evolution_id: str) -> dict[str, Any]:
         """Get current progress of an active evolution."""
         try:
             evolution = self.active_evolutions.get(evolution_id)
@@ -937,12 +1004,18 @@ class EvolutionEngine:
     def _estimate_completion_time(self, evolution: EvolutionRequest) -> str:
         """Estimate completion time for evolution."""
         try:
-            elapsed_minutes = (datetime.now(timezone.utc) - evolution.created_at).total_seconds() / 60
-            remaining_minutes = max(0, evolution.estimated_duration_minutes - elapsed_minutes)
+            elapsed_minutes = (
+                datetime.now(UTC) - evolution.created_at
+            ).total_seconds() / 60
+            remaining_minutes = max(
+                0, evolution.estimated_duration_minutes - elapsed_minutes
+            )
 
             if remaining_minutes > 0:
-                completion_time = datetime.now(timezone.utc).timestamp() + (remaining_minutes * 60)
-                return datetime.fromtimestamp(completion_time, timezone.utc).isoformat()
+                completion_time = datetime.now(UTC).timestamp() + (
+                    remaining_minutes * 60
+                )
+                return datetime.fromtimestamp(completion_time, UTC).isoformat()
             else:
                 return "overdue"
 
@@ -968,13 +1041,19 @@ class EvolutionEngine:
         while True:
             try:
                 # Check for overdue evolutions
-                current_time = datetime.now(timezone.utc)
+                current_time = datetime.now(UTC)
 
                 for evolution_id, evolution in list(self.active_evolutions.items()):
-                    elapsed_minutes = (current_time - evolution.created_at).total_seconds() / 60
+                    elapsed_minutes = (
+                        current_time - evolution.created_at
+                    ).total_seconds() / 60
 
-                    if elapsed_minutes > evolution.estimated_duration_minutes * 2:  # 2x overdue
-                        logger.warning(f"Evolution {evolution_id} is significantly overdue")
+                    if (
+                        elapsed_minutes > evolution.estimated_duration_minutes * 2
+                    ):  # 2x overdue
+                        logger.warning(
+                            f"Evolution {evolution_id} is significantly overdue"
+                        )
 
                         # Notify observability framework
                         await self.observability_framework.record_evolution_warning(
@@ -997,13 +1076,18 @@ class EvolutionEngine:
             # Calculate success rate
             total_completed = len(self.evolution_history)
             if total_completed > 0:
-                successful = sum(1 for result in self.evolution_history if result.success)
-                self.evolution_metrics["human_approval_rate"] = successful / total_completed
+                successful = sum(
+                    1 for result in self.evolution_history if result.success
+                )
+                self.evolution_metrics["human_approval_rate"] = (
+                    successful / total_completed
+                )
 
             # Calculate average duration
             completed_evolutions = [
-                result for result in self.evolution_history
-                if result.completed_at and hasattr(result, 'performance_metrics')
+                result
+                for result in self.evolution_history
+                if result.completed_at and hasattr(result, "performance_metrics")
             ]
 
             if completed_evolutions:
@@ -1013,7 +1097,9 @@ class EvolutionEngine:
                     if result.performance_metrics
                 ]
                 if durations:
-                    self.evolution_metrics["average_duration_minutes"] = sum(durations) / len(durations)
+                    self.evolution_metrics["average_duration_minutes"] = sum(
+                        durations
+                    ) / len(durations)
 
         except Exception as e:
             logger.error(f"Failed to update performance metrics: {e}")

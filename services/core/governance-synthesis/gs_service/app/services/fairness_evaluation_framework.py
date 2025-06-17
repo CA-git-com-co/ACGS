@@ -10,7 +10,7 @@ import json
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class ProtectedAttribute:
     """Definition of a protected attribute for fairness evaluation."""
 
     name: str
-    values: List[str]
+    values: list[str]
     is_binary: bool
     description: str
 
@@ -54,9 +54,9 @@ class DomainFairnessConfig:
 
     domain_type: DomainType
     has_protected_attributes: bool
-    protected_attributes: List[ProtectedAttribute]
-    applicable_metrics: List[str]
-    fairness_thresholds: Dict[str, float]
+    protected_attributes: list[ProtectedAttribute]
+    applicable_metrics: list[str]
+    fairness_thresholds: dict[str, float]
     rationale: str
 
 
@@ -69,7 +69,7 @@ class FairnessEvaluationFramework:
         # sha256: func_hash
         self.domain_configs = self._initialize_domain_configs()
 
-    def _initialize_domain_configs(self) -> Dict[DomainType, DomainFairnessConfig]:
+    def _initialize_domain_configs(self) -> dict[DomainType, DomainFairnessConfig]:
         """Initialize fairness configurations for different domains."""
         return {
             DomainType.ARITHMETIC: DomainFairnessConfig(
@@ -102,7 +102,9 @@ class FairnessEvaluationFramework:
                         False,
                         "Age category",
                     ),
-                    ProtectedAttribute("disability", ["yes", "no"], True, "Disability status"),
+                    ProtectedAttribute(
+                        "disability", ["yes", "no"], True, "Disability status"
+                    ),
                 ],
                 applicable_metrics=[
                     "demographic_parity",
@@ -126,7 +128,9 @@ class FairnessEvaluationFramework:
                         False,
                         "Racial/ethnic background",
                     ),
-                    ProtectedAttribute("gender", ["male", "female"], True, "Gender identity"),
+                    ProtectedAttribute(
+                        "gender", ["male", "female"], True, "Gender identity"
+                    ),
                     ProtectedAttribute(
                         "age_group",
                         ["young", "middle", "senior"],
@@ -156,7 +160,9 @@ class FairnessEvaluationFramework:
                         False,
                         "Racial/ethnic background",
                     ),
-                    ProtectedAttribute("gender", ["male", "female"], True, "Gender identity"),
+                    ProtectedAttribute(
+                        "gender", ["male", "female"], True, "Gender identity"
+                    ),
                     ProtectedAttribute(
                         "insurance_type",
                         ["private", "public", "uninsured"],
@@ -187,11 +193,11 @@ class FairnessEvaluationFramework:
     def evaluate_domain_fairness(
         self,
         domain_type: DomainType,
-        predictions: List[int],
-        ground_truth: List[int],
-        protected_attributes: Dict[str, List[str]],
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        predictions: list[int],
+        ground_truth: list[int],
+        protected_attributes: dict[str, list[str]],
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Evaluate fairness for a specific domain."""
         config = self.domain_configs.get(domain_type)
         if not config:
@@ -210,7 +216,9 @@ class FairnessEvaluationFramework:
             }
 
         # Validate protected attributes
-        validation_result = self._validate_protected_attributes(config, protected_attributes)
+        validation_result = self._validate_protected_attributes(
+            config, protected_attributes
+        )
         if not validation_result["valid"]:
             return {
                 "domain_type": domain_type.value,
@@ -231,15 +239,19 @@ class FairnessEvaluationFramework:
             "domain_type": domain_type.value,
             "fairness_applicable": True,
             "protected_attributes_analyzed": list(protected_attributes.keys()),
-            "fairness_metrics": [self._metric_to_dict(metric) for metric in fairness_metrics],
+            "fairness_metrics": [
+                self._metric_to_dict(metric) for metric in fairness_metrics
+            ],
             "overall_assessment": overall_assessment,
-            "recommendations": self._generate_fairness_recommendations(config, fairness_metrics),
+            "recommendations": self._generate_fairness_recommendations(
+                config, fairness_metrics
+            ),
             "context": context or {},
         }
 
     def _validate_protected_attributes(
-        self, config: DomainFairnessConfig, provided_attributes: Dict[str, List[str]]
-    ) -> Dict[str, Any]:
+        self, config: DomainFairnessConfig, provided_attributes: dict[str, list[str]]
+    ) -> dict[str, Any]:
         """Validate that required protected attributes are provided."""
         required_attrs = {attr.name for attr in config.protected_attributes}
         provided_attrs = set(provided_attributes.keys())
@@ -261,17 +273,19 @@ class FairnessEvaluationFramework:
 
                 unexpected_values = provided_values - expected_values
                 if unexpected_values:
-                    logger.warning(f"Unexpected values for {attr.name}: {unexpected_values}")
+                    logger.warning(
+                        f"Unexpected values for {attr.name}: {unexpected_values}"
+                    )
 
         return {"valid": True}
 
     def _calculate_fairness_metrics(
         self,
         config: DomainFairnessConfig,
-        predictions: List[int],
-        ground_truth: List[int],
-        protected_attributes: Dict[str, List[str]],
-    ) -> List[FairnessMetric]:
+        predictions: list[int],
+        ground_truth: list[int],
+        protected_attributes: dict[str, list[str]],
+    ) -> list[FairnessMetric]:
         """Calculate applicable fairness metrics for the domain."""
         metrics = []
 
@@ -321,8 +335,8 @@ class FairnessEvaluationFramework:
 
     def _calculate_demographic_parity(
         self,
-        predictions: List[int],
-        protected_attributes: Dict[str, List[str]],
+        predictions: list[int],
+        protected_attributes: dict[str, list[str]],
         threshold: float,
     ) -> FairnessMetric:
         """Calculate demographic parity (statistical parity)."""
@@ -338,7 +352,9 @@ class FairnessEvaluationFramework:
             group_indices = [i for i, val in enumerate(attr_values) if val == group]
             group_predictions = [predictions[i] for i in group_indices]
             selection_rate = (
-                sum(group_predictions) / len(group_predictions) if group_predictions else 0
+                sum(group_predictions) / len(group_predictions)
+                if group_predictions
+                else 0
             )
             selection_rates[group] = selection_rate
 
@@ -357,9 +373,9 @@ class FairnessEvaluationFramework:
 
     def _calculate_equalized_odds(
         self,
-        predictions: List[int],
-        ground_truth: List[int],
-        protected_attributes: Dict[str, List[str]],
+        predictions: list[int],
+        ground_truth: list[int],
+        protected_attributes: dict[str, list[str]],
         threshold: float,
     ) -> FairnessMetric:
         """Calculate equalized odds (equal TPR and FPR across groups)."""
@@ -376,10 +392,10 @@ class FairnessEvaluationFramework:
             group_true = [ground_truth[i] for i in group_indices]
 
             # Calculate TPR and FPR
-            tp = sum(1 for p, t in zip(group_pred, group_true) if p == 1 and t == 1)
-            fp = sum(1 for p, t in zip(group_pred, group_true) if p == 1 and t == 0)
-            tn = sum(1 for p, t in zip(group_pred, group_true) if p == 0 and t == 0)
-            fn = sum(1 for p, t in zip(group_pred, group_true) if p == 0 and t == 1)
+            tp = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 1 and t == 1)
+            fp = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 1 and t == 0)
+            tn = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 0 and t == 0)
+            fn = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 0 and t == 1)
 
             tpr = tp / (tp + fn) if (tp + fn) > 0 else 0
             fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
@@ -406,9 +422,9 @@ class FairnessEvaluationFramework:
 
     def _calculate_calibration(
         self,
-        predictions: List[int],
-        ground_truth: List[int],
-        protected_attributes: Dict[str, List[str]],
+        predictions: list[int],
+        ground_truth: list[int],
+        protected_attributes: dict[str, list[str]],
         threshold: float,
     ) -> FairnessMetric:
         """Calculate calibration (predictive accuracy by group)."""
@@ -423,7 +439,7 @@ class FairnessEvaluationFramework:
             group_pred = [predictions[i] for i in group_indices]
             group_true = [ground_truth[i] for i in group_indices]
 
-            correct = sum(1 for p, t in zip(group_pred, group_true) if p == t)
+            correct = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == t)
             accuracy = correct / len(group_pred) if group_pred else 0
             accuracy_by_group[group] = accuracy
 
@@ -442,9 +458,9 @@ class FairnessEvaluationFramework:
 
     def _calculate_predictive_parity(
         self,
-        predictions: List[int],
-        ground_truth: List[int],
-        protected_attributes: Dict[str, List[str]],
+        predictions: list[int],
+        ground_truth: list[int],
+        protected_attributes: dict[str, list[str]],
         threshold: float,
     ) -> FairnessMetric:
         """Calculate predictive parity (equal PPV across groups)."""
@@ -459,8 +475,8 @@ class FairnessEvaluationFramework:
             group_pred = [predictions[i] for i in group_indices]
             group_true = [ground_truth[i] for i in group_indices]
 
-            tp = sum(1 for p, t in zip(group_pred, group_true) if p == 1 and t == 1)
-            fp = sum(1 for p, t in zip(group_pred, group_true) if p == 1 and t == 0)
+            tp = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 1 and t == 1)
+            fp = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 1 and t == 0)
 
             ppv = tp / (tp + fp) if (tp + fp) > 0 else 0
             ppv_by_group[group] = ppv
@@ -480,9 +496,9 @@ class FairnessEvaluationFramework:
 
     def _calculate_treatment_equality(
         self,
-        predictions: List[int],
-        ground_truth: List[int],
-        protected_attributes: Dict[str, List[str]],
+        predictions: list[int],
+        ground_truth: list[int],
+        protected_attributes: dict[str, list[str]],
         threshold: float,
     ) -> FairnessMetric:
         """Calculate treatment equality (equal FN/FP ratio across groups)."""
@@ -497,15 +513,17 @@ class FairnessEvaluationFramework:
             group_pred = [predictions[i] for i in group_indices]
             group_true = [ground_truth[i] for i in group_indices]
 
-            fp = sum(1 for p, t in zip(group_pred, group_true) if p == 1 and t == 0)
-            fn = sum(1 for p, t in zip(group_pred, group_true) if p == 0 and t == 1)
+            fp = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 1 and t == 0)
+            fn = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 0 and t == 1)
 
             ratio = fn / fp if fp > 0 else float("inf") if fn > 0 else 0
             fn_fp_ratio_by_group[group] = ratio
 
         # Calculate maximum difference (excluding infinite values)
         finite_ratios = [r for r in fn_fp_ratio_by_group.values() if r != float("inf")]
-        max_diff = max(finite_ratios) - min(finite_ratios) if len(finite_ratios) > 1 else 0
+        max_diff = (
+            max(finite_ratios) - min(finite_ratios) if len(finite_ratios) > 1 else 0
+        )
 
         return FairnessMetric(
             name="treatment_equality",
@@ -517,8 +535,8 @@ class FairnessEvaluationFramework:
         )
 
     def _assess_overall_fairness(
-        self, config: DomainFairnessConfig, metrics: List[FairnessMetric]
-    ) -> Dict[str, Any]:
+        self, config: DomainFairnessConfig, metrics: list[FairnessMetric]
+    ) -> dict[str, Any]:
         """Assess overall fairness based on all metrics."""
         if not metrics:
             return {"overall_fair": False, "reason": "No fairness metrics calculated"}
@@ -537,8 +555,8 @@ class FairnessEvaluationFramework:
         }
 
     def _generate_fairness_recommendations(
-        self, config: DomainFairnessConfig, metrics: List[FairnessMetric]
-    ) -> List[str]:
+        self, config: DomainFairnessConfig, metrics: list[FairnessMetric]
+    ) -> list[str]:
         """Generate recommendations for improving fairness."""
         recommendations = []
 
@@ -565,7 +583,7 @@ class FairnessEvaluationFramework:
 
         return recommendations
 
-    def _metric_to_dict(self, metric: FairnessMetric) -> Dict[str, Any]:
+    def _metric_to_dict(self, metric: FairnessMetric) -> dict[str, Any]:
         """Convert fairness metric to dictionary."""
         return {
             "name": metric.name,

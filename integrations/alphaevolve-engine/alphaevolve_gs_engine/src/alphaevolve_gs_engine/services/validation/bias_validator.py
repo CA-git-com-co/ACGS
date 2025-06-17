@@ -13,7 +13,8 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from collections.abc import Callable
+from typing import Any
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
@@ -45,8 +46,8 @@ class BiasMetric:
         name: str,
         description: str,
         metric_type: str,  # "statistical", "qualitative_review"
-        configuration: Dict[str, Any],
-        evaluation_function: Optional[Callable] = None,
+        configuration: dict[str, Any],
+        evaluation_function: Callable | None = None,
     ):  # For complex custom metrics
         self.metric_id = metric_id
         self.name = name
@@ -94,12 +95,12 @@ class BiasValidator(ABC):
         self,
         policy_code: str,
         policy_id: str,
-        metrics: List[BiasMetric],
+        metrics: list[BiasMetric],
         # Data might be needed for statistical metrics, or scenarios for outcome generation
-        dataset: Optional[List[Dict[str, Any]]] = None,
+        dataset: list[dict[str, Any]] | None = None,
         policy_language: str = "rego",
-    ) -> List[
-        Tuple[str, bool, str, Optional[float]]
+    ) -> list[
+        tuple[str, bool, str, float | None]
     ]:  # metric_id, passed, message, metric_value
         """
         Assesses a given policy for biases using a set of metrics.
@@ -138,10 +139,10 @@ class FairnessMetricValidator(BiasValidator):
         self,
         policy_code: str,
         policy_id: str,
-        dataset: List[Dict[str, Any]],
+        dataset: list[dict[str, Any]],
         outcome_query: str,
         attribute_query: str,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         (Mocked) Evaluates policy for each item in dataset to get outcomes and protected attributes.
         A real version would call OPA for each item.
@@ -185,14 +186,14 @@ class FairnessMetricValidator(BiasValidator):
         return results
 
     def _calculate_demographic_parity(
-        self, outcomes: List[Dict[str, Any]], metric: BiasMetric
-    ) -> Tuple[bool, str, float]:
+        self, outcomes: list[dict[str, Any]], metric: BiasMetric
+    ) -> tuple[bool, str, float]:
         """Calculates demographic parity (simplified)."""
         # Config: "protected_attribute_query", "favorable_outcome_query", "threshold", "group_definitions"
         # group_definitions: {"groupA": ["val1", "val2"], "groupB": ["val3"]}
         # threshold: e.g. 0.8 for 80% rule (min_ratio >= threshold)
 
-        group_outcomes: Dict[str, List[bool]] = {
+        group_outcomes: dict[str, list[bool]] = {
             group_name: [] for group_name in metric.configuration["group_definitions"]
         }
 
@@ -209,7 +210,7 @@ class FairnessMetricValidator(BiasValidator):
                     group_outcomes[group_name].append(item_outcome)
                     break  # Assuming non-overlapping groups for simplicity
 
-        group_favor_rates: Dict[str, float] = {}
+        group_favor_rates: dict[str, float] = {}
         for group_name, results in group_outcomes.items():
             if not results:
                 group_favor_rates[group_name] = 0.0
@@ -254,11 +255,11 @@ class FairnessMetricValidator(BiasValidator):
         self,
         policy_code: str,
         policy_id: str,
-        metrics: List[BiasMetric],
-        dataset: Optional[List[Dict[str, Any]]] = None,
+        metrics: list[BiasMetric],
+        dataset: list[dict[str, Any]] | None = None,
         policy_language: str = "rego",
-    ) -> List[Tuple[str, bool, str, Optional[float]]]:
-        results: List[Tuple[str, bool, str, Optional[float]]] = []
+    ) -> list[tuple[str, bool, str, float | None]]:
+        results: list[tuple[str, bool, str, float | None]] = []
 
         for metric in metrics:
             if metric.metric_type != "statistical":
@@ -349,13 +350,11 @@ class LLMBiasReviewer(BiasValidator):
         self,
         policy_code: str,
         policy_id: str,
-        metrics: List[BiasMetric],
-        dataset: Optional[
-            List[Dict[str, Any]]
-        ] = None,  # Dataset not typically used by LLM reviewer
+        metrics: list[BiasMetric],
+        dataset: list[dict[str, Any]] | None = None,  # Dataset not typically used by LLM reviewer
         policy_language: str = "rego",
-    ) -> List[Tuple[str, bool, str, Optional[float]]]:
-        results: List[Tuple[str, bool, str, Optional[float]]] = []
+    ) -> list[tuple[str, bool, str, float | None]]:
+        results: list[tuple[str, bool, str, float | None]] = []
 
         for metric in metrics:
             if metric.metric_type != "qualitative_review":

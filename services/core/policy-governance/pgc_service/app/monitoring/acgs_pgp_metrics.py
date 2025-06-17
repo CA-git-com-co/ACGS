@@ -13,13 +13,10 @@ of the theoretical claims in the research paper.
 """
 
 import asyncio
-import json
 import logging
-import time
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Tuple
+from datetime import UTC, datetime
 
 import numpy as np
 
@@ -33,8 +30,8 @@ class ConstitutionalStabilityMetrics:
     lipschitz_constant: float = 0.0
     convergence_iterations: int = 0
     stability_score: float = 0.0
-    last_update: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    principle_changes: List[Dict] = field(default_factory=list)
+    last_update: datetime = field(default_factory=lambda: datetime.now(UTC))
+    principle_changes: list[dict] = field(default_factory=list)
     policy_synthesis_history: deque = field(default_factory=lambda: deque(maxlen=100))
 
 
@@ -88,7 +85,7 @@ class ACGSPGPMetricsCollector:
         self.policy_synthesis_results = deque(maxlen=100)
 
         self.monitoring_active = False
-        self.last_metrics_update = datetime.now(timezone.utc)
+        self.last_metrics_update = datetime.now(UTC)
 
     async def start_monitoring(self):
         # requires: Valid input parameters
@@ -116,13 +113,13 @@ class ACGSPGPMetricsCollector:
         latency_ms: float,
         policy_count: int,
         compliance_result: bool,
-        context: Dict = None,
+        context: dict = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Record a policy enforcement event for performance analysis"""
-        timestamp = datetime.now(timezone.utc)
+        timestamp = datetime.now(UTC)
 
         # Record latency
         self.latency_window.append(latency_ms)
@@ -148,14 +145,14 @@ class ACGSPGPMetricsCollector:
         self,
         principle_id: str,
         synthesis_success: bool,
-        constitutional_state: Dict,
+        constitutional_state: dict,
         synthesis_time_ms: float,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Record policy synthesis event for stability analysis"""
-        timestamp = datetime.now(timezone.utc)
+        timestamp = datetime.now(UTC)
 
         synthesis_event = {
             "timestamp": timestamp.isoformat(),
@@ -182,7 +179,7 @@ class ACGSPGPMetricsCollector:
         # ensures: Correct function execution
         # sha256: func_hash
         """Record adversarial attack attempt for robustness analysis"""
-        timestamp = datetime.now(timezone.utc)
+        datetime.now(UTC)
 
         if attack_type == "constitutional_capture":
             self.robustness_metrics.constitutional_capture_attempts += 1
@@ -196,7 +193,9 @@ class ACGSPGPMetricsCollector:
         )
 
         if total_attempts > 0:
-            detection_rate = 1.0 - (self.robustness_metrics.successful_attacks / total_attempts)
+            detection_rate = 1.0 - (
+                self.robustness_metrics.successful_attacks / total_attempts
+            )
             self.robustness_metrics.manipulation_detection_rate = detection_rate
 
     async def _update_performance_metrics(self):
@@ -218,7 +217,9 @@ class ACGSPGPMetricsCollector:
         recent_events = list(self.enforcement_history)[-100:]  # Last 100 events
         if recent_events:
             compliant_count = sum(1 for e in recent_events if e.get("compliant", False))
-            self.performance_metrics.compliance_rate = compliant_count / len(recent_events)
+            self.performance_metrics.compliance_rate = compliant_count / len(
+                recent_events
+            )
 
         # Update total counts
         self.performance_metrics.total_enforcements = len(self.enforcement_history)
@@ -248,7 +249,9 @@ class ACGSPGPMetricsCollector:
                 state_distance = self._calculate_state_distance(prev_state, curr_state)
                 if state_distance > 0:
                     # Policy change magnitude as output distance
-                    policy_distance = self._calculate_policy_distance(prev_state, curr_state)
+                    policy_distance = self._calculate_policy_distance(
+                        prev_state, curr_state
+                    )
                     lipschitz_estimate = policy_distance / state_distance
                     lipschitz_estimates.append(lipschitz_estimate)
 
@@ -304,7 +307,7 @@ class ACGSPGPMetricsCollector:
         except Exception as e:
             logger.error(f"Error in scaling analysis: {e}")
 
-    def _calculate_state_distance(self, state1: Dict, state2: Dict) -> float:
+    def _calculate_state_distance(self, state1: dict, state2: dict) -> float:
         """Calculate distance between constitutional states"""
         # Simplified implementation - could be enhanced with proper metric
         try:
@@ -324,7 +327,7 @@ class ACGSPGPMetricsCollector:
         except:
             return 1.0  # Default distance
 
-    def _calculate_policy_distance(self, state1: Dict, state2: Dict) -> float:
+    def _calculate_policy_distance(self, state1: dict, state2: dict) -> float:
         """Calculate distance between policy outputs"""
         # Simplified implementation
         try:
@@ -345,10 +348,15 @@ class ACGSPGPMetricsCollector:
                 recent_events = [
                     e
                     for e in self.enforcement_history
-                    if (datetime.now(timezone.utc) - datetime.fromisoformat(e["timestamp"])).seconds
+                    if (
+                        datetime.now(UTC)
+                        - datetime.fromisoformat(e["timestamp"])
+                    ).seconds
                     < 60
                 ]
-                self.performance_metrics.throughput_per_second = len(recent_events) / 60.0
+                self.performance_metrics.throughput_per_second = (
+                    len(recent_events) / 60.0
+                )
 
                 await asyncio.sleep(10)  # Update every 10 seconds
             except Exception as e:
@@ -400,20 +408,22 @@ class ACGSPGPMetricsCollector:
                 logger.error(f"Error in robustness monitoring: {e}")
                 await asyncio.sleep(60)
 
-    def get_paper_validation_report(self) -> Dict:
+    def get_paper_validation_report(self) -> dict:
         """Generate validation report for ACGS-PGP paper claims"""
         return {
             "constitutional_stability": {
                 "lipschitz_constant": self.stability_metrics.lipschitz_constant,
                 "paper_claim": 0.73,
-                "validated": abs(self.stability_metrics.lipschitz_constant - 0.73) < 0.1,
+                "validated": abs(self.stability_metrics.lipschitz_constant - 0.73)
+                < 0.1,
                 "stability_score": self.stability_metrics.stability_score,
                 "convergence_iterations": self.stability_metrics.convergence_iterations,
             },
             "enforcement_performance": {
                 "average_latency_ms": self.performance_metrics.average_latency_ms,
                 "paper_claim_ms": 37.0,
-                "sub_50ms_target_met": self.performance_metrics.average_latency_ms < 50.0,
+                "sub_50ms_target_met": self.performance_metrics.average_latency_ms
+                < 50.0,
                 "scaling_exponent": self.performance_metrics.scaling_exponent,
                 "paper_scaling_claim": 0.73,
                 "compliance_rate": self.performance_metrics.compliance_rate,
@@ -430,7 +440,7 @@ class ACGSPGPMetricsCollector:
                 "enforcement_events": len(self.enforcement_history),
                 "synthesis_events": len(self.policy_synthesis_results),
                 "monitoring_duration_hours": (
-                    datetime.now(timezone.utc) - self.last_metrics_update
+                    datetime.now(UTC) - self.last_metrics_update
                 ).total_seconds()
                 / 3600,
                 "last_update": self.last_metrics_update.isoformat(),
@@ -451,6 +461,6 @@ async def initialize_acgs_pgp_monitoring():
     logger.info("ACGS-PGP monitoring initialized")
 
 
-async def get_validation_report() -> Dict:
+async def get_validation_report() -> dict:
     """Get current validation report for paper claims"""
     return metrics_collector.get_paper_validation_report()

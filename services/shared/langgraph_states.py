@@ -7,9 +7,9 @@ the Gemini-LangGraph quickstart for constitutional governance workflows.
 """
 
 import operator
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Annotated, Any, Dict, List, Optional, TypedDict
+from typing import Annotated, Any, TypedDict
 
 try:
     from langgraph.graph import add_messages
@@ -57,22 +57,22 @@ class BaseACGSState(TypedDict):
     messages: Annotated[list, add_messages]
 
     # User and session context
-    user_id: Optional[str]
-    session_id: Optional[str]
-    workflow_id: Optional[str]
+    user_id: str | None
+    session_id: str | None
+    workflow_id: str | None
 
     # Temporal tracking
-    created_at: Optional[str]
-    updated_at: Optional[str]
+    created_at: str | None
+    updated_at: str | None
 
     # Workflow management
-    status: Optional[str]  # WorkflowStatus enum value
-    error_message: Optional[str]
-    retry_count: Optional[int]
+    status: str | None  # WorkflowStatus enum value
+    error_message: str | None
+    retry_count: int | None
 
     # Metadata and configuration
-    metadata: Optional[Dict[str, Any]]
-    configuration: Optional[Dict[str, Any]]
+    metadata: dict[str, Any] | None
+    configuration: dict[str, Any] | None
 
 
 class ConstitutionalCouncilState(BaseACGSState):
@@ -84,38 +84,36 @@ class ConstitutionalCouncilState(BaseACGSState):
     """
 
     # Amendment proposal data
-    amendment_proposal: Optional[Dict[str, Any]]
-    amendment_id: Optional[str]
-    amendment_type: Optional[
-        str
-    ]  # "principle_addition", "principle_modification", "meta_rule_change"
+    amendment_proposal: dict[str, Any] | None
+    amendment_id: str | None
+    amendment_type: str | None  # "principle_addition", "principle_modification", "meta_rule_change"
 
     # Stakeholder engagement
-    stakeholder_feedback: Annotated[List[Dict[str, Any]], operator.add]
-    stakeholder_notifications: Annotated[List[Dict[str, Any]], operator.add]
-    required_stakeholders: Optional[List[str]]
+    stakeholder_feedback: Annotated[list[dict[str, Any]], operator.add]
+    stakeholder_notifications: Annotated[list[dict[str, Any]], operator.add]
+    required_stakeholders: list[str] | None
 
     # Constitutional analysis
-    constitutional_analysis: Optional[Dict[str, Any]]
-    compliance_score: Optional[float]
-    identified_conflicts: Annotated[List[Dict[str, Any]], operator.add]
+    constitutional_analysis: dict[str, Any] | None
+    compliance_score: float | None
+    identified_conflicts: Annotated[list[dict[str, Any]], operator.add]
 
     # Voting and decision process
-    voting_results: Optional[Dict[str, Any]]
-    voting_deadline: Optional[str]
-    quorum_met: Optional[bool]
+    voting_results: dict[str, Any] | None
+    voting_deadline: str | None
+    quorum_met: bool | None
 
     # Iterative refinement
-    refinement_iterations: Optional[int]
-    max_refinement_iterations: Optional[int]
-    is_constitutional: Optional[bool]
-    requires_refinement: Optional[bool]
-    escalation_required: Optional[bool]
+    refinement_iterations: int | None
+    max_refinement_iterations: int | None
+    is_constitutional: bool | None
+    requires_refinement: bool | None
+    escalation_required: bool | None
 
     # Workflow state tracking
-    current_phase: Optional[str]  # "proposal", "feedback", "analysis", "voting", "implementation"
-    phase_deadlines: Optional[Dict[str, str]]
-    automated_processing: Optional[bool]
+    current_phase: str | None  # "proposal", "feedback", "analysis", "voting", "implementation"
+    phase_deadlines: dict[str, str] | None
+    automated_processing: bool | None
 
 
 class PolicySynthesisState(BaseACGSState):
@@ -127,39 +125,39 @@ class PolicySynthesisState(BaseACGSState):
     """
 
     # Input constitutional principles
-    constitutional_principles: Optional[List[Dict[str, Any]]]
-    principle_ids: Optional[List[str]]
+    constitutional_principles: list[dict[str, Any]] | None
+    principle_ids: list[str] | None
 
     # Synthesis context and requirements
-    synthesis_context: Optional[Dict[str, Any]]
-    target_domain: Optional[str]
-    compliance_requirements: Optional[List[str]]
+    synthesis_context: dict[str, Any] | None
+    target_domain: str | None
+    compliance_requirements: list[str] | None
 
     # Generated policies and validation
-    generated_policies: Annotated[List[Dict[str, Any]], operator.add]
-    policy_templates: Optional[List[Dict[str, Any]]]
-    validation_results: Annotated[List[Dict[str, Any]], operator.add]
+    generated_policies: Annotated[list[dict[str, Any]], operator.add]
+    policy_templates: list[dict[str, Any]] | None
+    validation_results: Annotated[list[dict[str, Any]], operator.add]
 
     # Quality and compliance metrics
-    synthesis_iterations: Optional[int]
-    max_synthesis_iterations: Optional[int]
-    constitutional_fidelity_score: Optional[float]
-    fidelity_threshold: Optional[float]
+    synthesis_iterations: int | None
+    max_synthesis_iterations: int | None
+    constitutional_fidelity_score: float | None
+    fidelity_threshold: float | None
 
     # Multi-model LLM tracking
-    model_responses: Annotated[List[Dict[str, Any]], operator.add]
-    model_performance: Optional[Dict[str, Any]]
-    fallback_used: Optional[bool]
+    model_responses: Annotated[list[dict[str, Any]], operator.add]
+    model_performance: dict[str, Any] | None
+    fallback_used: bool | None
 
     # Human oversight and review
-    requires_human_review: Optional[bool]
-    human_feedback: Annotated[List[Dict[str, Any]], operator.add]
-    expert_validation: Optional[Dict[str, Any]]
+    requires_human_review: bool | None
+    human_feedback: Annotated[list[dict[str, Any]], operator.add]
+    expert_validation: dict[str, Any] | None
 
     # Output and deployment
-    final_policies: Optional[List[Dict[str, Any]]]
-    deployment_ready: Optional[bool]
-    rego_policies: Optional[List[str]]
+    final_policies: list[dict[str, Any]] | None
+    deployment_ready: bool | None
+    rego_policies: list[str] | None
 
 
 class ConstitutionalFidelityState(BaseACGSState):
@@ -171,31 +169,31 @@ class ConstitutionalFidelityState(BaseACGSState):
     """
 
     # Fidelity monitoring
-    current_fidelity_score: Optional[float]
-    fidelity_history: Annotated[List[Dict[str, Any]], operator.add]
-    fidelity_threshold: Optional[float]
-    alert_level: Optional[str]  # "green", "amber", "red"
+    current_fidelity_score: float | None
+    fidelity_history: Annotated[list[dict[str, Any]], operator.add]
+    fidelity_threshold: float | None
+    alert_level: str | None  # "green", "amber", "red"
 
     # Constitutional violations
-    detected_violations: Annotated[List[Dict[str, Any]], operator.add]
-    violation_severity: Optional[str]  # "low", "medium", "high", "critical"
-    violation_categories: Optional[List[str]]
+    detected_violations: Annotated[list[dict[str, Any]], operator.add]
+    violation_severity: str | None  # "low", "medium", "high", "critical"
+    violation_categories: list[str] | None
 
     # Error correction and recovery
-    corrective_actions: Annotated[List[Dict[str, Any]], operator.add]
-    correction_attempts: Optional[int]
-    max_correction_attempts: Optional[int]
-    recovery_strategies: Optional[List[str]]
+    corrective_actions: Annotated[list[dict[str, Any]], operator.add]
+    correction_attempts: int | None
+    max_correction_attempts: int | None
+    recovery_strategies: list[str] | None
 
     # Performance and metrics
-    monitoring_metrics: Optional[Dict[str, Any]]
-    performance_degradation: Optional[bool]
-    system_health: Optional[Dict[str, Any]]
+    monitoring_metrics: dict[str, Any] | None
+    performance_degradation: bool | None
+    system_health: dict[str, Any] | None
 
     # Escalation and human intervention
-    escalation_triggered: Optional[bool]
-    human_intervention_required: Optional[bool]
-    escalation_reason: Optional[str]
+    escalation_triggered: bool | None
+    human_intervention_required: bool | None
+    escalation_reason: str | None
 
 
 class MultiModelLLMState(BaseACGSState):
@@ -207,39 +205,39 @@ class MultiModelLLMState(BaseACGSState):
     """
 
     # Model configuration and selection
-    primary_model: Optional[str]
-    fallback_models: Optional[List[str]]
-    model_roles: Optional[Dict[str, str]]  # role -> model mapping
+    primary_model: str | None
+    fallback_models: list[str] | None
+    model_roles: dict[str, str] | None  # role -> model mapping
 
     # Request and response tracking
-    model_requests: Annotated[List[Dict[str, Any]], operator.add]
-    model_responses: Annotated[List[Dict[str, Any]], operator.add]
-    response_times: Annotated[List[float], operator.add]
+    model_requests: Annotated[list[dict[str, Any]], operator.add]
+    model_responses: Annotated[list[dict[str, Any]], operator.add]
+    response_times: Annotated[list[float], operator.add]
 
     # Reliability and performance metrics
-    success_rate: Optional[float]
-    average_response_time: Optional[float]
-    error_rate: Optional[float]
-    fallback_usage_rate: Optional[float]
+    success_rate: float | None
+    average_response_time: float | None
+    error_rate: float | None
+    fallback_usage_rate: float | None
 
     # Error handling and recovery
-    failed_requests: Annotated[List[Dict[str, Any]], operator.add]
-    retry_attempts: Optional[int]
-    max_retries: Optional[int]
-    circuit_breaker_status: Optional[str]  # "closed", "open", "half_open"
+    failed_requests: Annotated[list[dict[str, Any]], operator.add]
+    retry_attempts: int | None
+    max_retries: int | None
+    circuit_breaker_status: str | None  # "closed", "open", "half_open"
 
     # Quality assessment
-    output_quality_scores: Annotated[List[float], operator.add]
-    constitutional_compliance_scores: Annotated[List[float], operator.add]
-    bias_detection_results: Annotated[List[Dict[str, Any]], operator.add]
+    output_quality_scores: Annotated[list[float], operator.add]
+    constitutional_compliance_scores: Annotated[list[float], operator.add]
+    bias_detection_results: Annotated[list[dict[str, Any]], operator.add]
 
 
 def create_workflow_metadata(
     workflow_type: str,
-    user_id: Optional[str] = None,
-    session_id: Optional[str] = None,
-    configuration: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    user_id: str | None = None,
+    session_id: str | None = None,
+    configuration: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Create standardized metadata for ACGS-PGP workflows.
 
@@ -252,7 +250,7 @@ def create_workflow_metadata(
     Returns:
         Standardized metadata dictionary
     """
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
 
     return {
         "workflow_type": workflow_type,
@@ -269,8 +267,8 @@ def create_workflow_metadata(
 
 
 def update_workflow_status(
-    state: BaseACGSState, status: WorkflowStatus, error_message: Optional[str] = None
-) -> Dict[str, Any]:
+    state: BaseACGSState, status: WorkflowStatus, error_message: str | None = None
+) -> dict[str, Any]:
     """
     Update workflow status with timestamp and error handling.
 
@@ -284,7 +282,7 @@ def update_workflow_status(
     """
     update = {
         "status": status.value,
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(UTC).isoformat(),
     }
 
     if error_message:

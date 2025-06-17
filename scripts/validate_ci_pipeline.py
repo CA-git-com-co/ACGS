@@ -8,7 +8,7 @@ and ensures all workflows are properly configured for the project structure.
 
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import yaml
 
@@ -39,7 +39,7 @@ class CIPipelineValidator:
     def validate_workflow_syntax(self, workflow_file: Path) -> bool:
         """Validate YAML syntax of workflow file"""
         try:
-            with open(workflow_file, "r") as f:
+            with open(workflow_file) as f:
                 yaml.safe_load(f)
             self.log_info(f"Workflow {workflow_file.name} has valid YAML syntax")
             return True
@@ -50,7 +50,7 @@ class CIPipelineValidator:
             self.log_error(f"Error reading {workflow_file.name}: {e}")
             return False
 
-    def validate_project_structure(self) -> Dict[str, bool]:
+    def validate_project_structure(self) -> dict[str, bool]:
         """Validate that referenced paths in workflows exist"""
         structure = {
             "blockchain_dir": (self.repo_root / "blockchain").exists(),
@@ -82,7 +82,7 @@ class CIPipelineValidator:
         return structure
 
     def validate_workflow_dependencies(
-        self, workflow_content: Dict[str, Any], workflow_name: str
+        self, workflow_content: dict[str, Any], workflow_name: str
     ):
         """Validate job dependencies in workflow"""
         if "jobs" not in workflow_content:
@@ -116,7 +116,7 @@ class CIPipelineValidator:
                         )
 
     def validate_action_versions(
-        self, workflow_content: Dict[str, Any], workflow_name: str
+        self, workflow_content: dict[str, Any], workflow_name: str
     ):
         """Validate that GitHub Actions use recent versions"""
         recommended_versions = {
@@ -158,7 +158,7 @@ class CIPipelineValidator:
                     check_steps(job_config["steps"], job_name)
 
     def validate_environment_variables(
-        self, workflow_content: Dict[str, Any], workflow_name: str
+        self, workflow_content: dict[str, Any], workflow_name: str
     ):
         """Validate environment variables are properly defined"""
         required_env_vars = {
@@ -189,7 +189,7 @@ class CIPipelineValidator:
                     )
 
     def validate_workflow_triggers(
-        self, workflow_content: Dict[str, Any], workflow_name: str
+        self, workflow_content: dict[str, Any], workflow_name: str
     ):
         """Validate workflow triggers are appropriate"""
         # Handle YAML parsing quirk where 'on:' becomes boolean True
@@ -272,7 +272,7 @@ class CIPipelineValidator:
 
             # Load and validate workflow content
             try:
-                with open(workflow_file, "r") as f:
+                with open(workflow_file) as f:
                     workflow_content = yaml.safe_load(f)
 
                 self.validate_workflow_dependencies(

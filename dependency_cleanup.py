@@ -17,7 +17,6 @@ import json
 import logging
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -69,7 +68,7 @@ class DependencyCleanup:
         for package_file in package_files:
             if self._should_process_file(package_file):
                 try:
-                    with open(package_file, "r") as f:
+                    with open(package_file) as f:
                         package_data = json.load(f)
 
                     # Remove common unused dependencies
@@ -109,7 +108,7 @@ class DependencyCleanup:
         for cargo_file in cargo_files:
             if self._should_process_file(cargo_file):
                 try:
-                    with open(cargo_file, "r") as f:
+                    with open(cargo_file) as f:
                         content = f.read()
 
                     # Basic cleanup - remove empty lines and normalize formatting
@@ -136,7 +135,7 @@ class DependencyCleanup:
                         f"Cargo.toml error: {cargo_file}"
                     )
 
-    def _merge_requirements_files(self, service_name: str, req_files: List[Path]):
+    def _merge_requirements_files(self, service_name: str, req_files: list[Path]):
         """Merge multiple requirements files for a service."""
         logger.info(f"Merging {len(req_files)} requirements files for {service_name}")
 
@@ -146,7 +145,7 @@ class DependencyCleanup:
         # Read all requirements files
         for req_file in req_files:
             try:
-                with open(req_file, "r") as f:
+                with open(req_file) as f:
                     lines = f.readlines()
 
                 for line in lines:
@@ -196,7 +195,7 @@ class DependencyCleanup:
     def _clean_single_requirements_file(self, req_file: Path):
         """Clean a single requirements file."""
         try:
-            with open(req_file, "r") as f:
+            with open(req_file) as f:
                 lines = f.readlines()
 
             cleaned_lines = []
@@ -226,13 +225,8 @@ class DependencyCleanup:
         except Exception as e:
             logger.error(f"Error cleaning requirements file {req_file}: {e}")
 
-    def _remove_unused_npm_dependencies(self, package_data: Dict):
+    def _remove_unused_npm_dependencies(self, package_data: dict):
         """Remove commonly unused npm dependencies."""
-        unused_deps = [
-            "@types/node",  # Often included but not needed
-            "typescript",  # Should be in devDependencies
-            "nodemon",  # Development only
-        ]
 
         dependencies = package_data.get("dependencies", {})
         package_data.get("devDependencies", {})
@@ -295,7 +289,7 @@ class DependencyCleanup:
         for req_file in self.project_root.glob("**/requirements*.txt"):
             if self._should_process_file(req_file):
                 try:
-                    with open(req_file, "r") as f:
+                    with open(req_file) as f:
                         for line in f:
                             line = line.strip()
                             if (
@@ -314,7 +308,7 @@ class DependencyCleanup:
         for package_file in self.project_root.glob("**/package.json"):
             if self._should_process_file(package_file):
                 try:
-                    with open(package_file, "r") as f:
+                    with open(package_file) as f:
                         package_data = json.load(f)
 
                     for dep_type in ["dependencies", "devDependencies"]:
@@ -356,7 +350,7 @@ class DependencyCleanup:
         logger.info(f"✅ Dependency cleanup completed. Report: {report_path}")
 
         # Summary
-        logger.info(f"📊 Summary:")
+        logger.info("📊 Summary:")
         logger.info(
             f"  - {len(self.dependency_report['requirements_files_processed'])} requirements files processed"
         )

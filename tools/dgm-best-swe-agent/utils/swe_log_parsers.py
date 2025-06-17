@@ -21,7 +21,7 @@ def parse_log_pytest(log: str) -> dict[str, str]:
     """
     test_status_map = {}
     for line in log.split("\n"):
-        if any([line.startswith(x.value) for x in TestStatus]):
+        if any(line.startswith(x.value) for x in TestStatus):
             # Additional parsing for FAILED status
             if line.startswith(TestStatus.FAILED.value):
                 line = line.replace(" - ", " ")
@@ -44,7 +44,7 @@ def parse_log_pytest_options(log: str) -> dict[str, str]:
     option_pattern = re.compile(r"(.*?)\[(.*)\]")
     test_status_map = {}
     for line in log.split("\n"):
-        if any([line.startswith(x.value) for x in TestStatus]):
+        if any(line.startswith(x.value) for x in TestStatus):
             # Additional parsing for FAILED status
             if line.startswith(TestStatus.FAILED.value):
                 line = line.replace(" - ", " ")
@@ -162,13 +162,13 @@ def parse_log_pytest_v2(log: str) -> dict[str, str]:
         line = re.sub(r"\[(\d+)m", "", line)
         translator = str.maketrans("", "", escapes)
         line = line.translate(translator)
-        if any([line.startswith(x.value) for x in TestStatus]):
+        if any(line.startswith(x.value) for x in TestStatus):
             if line.startswith(TestStatus.FAILED.value):
                 line = line.replace(" - ", " ")
             test_case = line.split()
             test_status_map[test_case[1]] = test_case[0]
         # Support older pytest versions by checking if the line ends with the test status
-        elif any([line.endswith(x.value) for x in TestStatus]):
+        elif any(line.endswith(x.value) for x in TestStatus):
             test_case = line.split()
             test_status_map[test_case[0]] = test_case[1]
     return test_status_map
@@ -246,7 +246,7 @@ def parse_log_matplotlib(log: str) -> dict[str, str]:
     for line in log.split("\n"):
         line = line.replace("MouseButton.LEFT", "1")
         line = line.replace("MouseButton.RIGHT", "3")
-        if any([line.startswith(x.value) for x in TestStatus]):
+        if any(line.startswith(x.value) for x in TestStatus):
             # Additional parsing for FAILED status
             if line.startswith(TestStatus.FAILED.value):
                 line = line.replace(" - ", " ")

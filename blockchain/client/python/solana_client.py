@@ -9,7 +9,7 @@ import asyncio
 import json
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Import our GS Engine
 from gs_engine.governance_synthesis import (
@@ -33,7 +33,7 @@ class ConstitutionAccount:
     version: int
     is_active: bool
     created_at: int
-    updated_at: Optional[int]
+    updated_at: int | None
 
 
 @dataclass
@@ -47,8 +47,8 @@ class PolicyAccount:
     is_active: bool
     proposed_at: int
     proposed_by: Pubkey
-    enacted_at: Optional[int]
-    enacted_by: Optional[Pubkey]
+    enacted_at: int | None
+    enacted_by: Pubkey | None
     votes_for: int
     votes_against: int
 
@@ -201,7 +201,7 @@ class QuantumagiSolanaClient:
             raise
 
     async def check_compliance(
-        self, policy_id: int, action: str, action_context: Dict[str, Any]
+        self, policy_id: int, action: str, action_context: dict[str, Any]
     ) -> bool:
         """
         Check if an action complies with a specific policy
@@ -214,7 +214,7 @@ class QuantumagiSolanaClient:
             )
 
             # Create instruction data
-            instruction_data = self._create_compliance_check_instruction(
+            self._create_compliance_check_instruction(
                 action, action_context
             )
 
@@ -224,7 +224,7 @@ class QuantumagiSolanaClient:
 
             # Send transaction and check result
             try:
-                signature = await self.client.send_transaction(
+                await self.client.send_transaction(
                     transaction, [self.payer_keypair], opts={"commitment": Confirmed}
                 )
 
@@ -242,7 +242,7 @@ class QuantumagiSolanaClient:
             self.logger.error(f"Error during compliance check: {e}")
             return False
 
-    async def get_constitution(self) -> Optional[ConstitutionAccount]:
+    async def get_constitution(self) -> ConstitutionAccount | None:
         """Fetch the current constitution from the blockchain"""
         try:
             constitution_pda, _ = Pubkey.find_program_address(
@@ -262,7 +262,7 @@ class QuantumagiSolanaClient:
             self.logger.error(f"Failed to fetch constitution: {e}")
             return None
 
-    async def get_policy(self, policy_id: int) -> Optional[PolicyAccount]:
+    async def get_policy(self, policy_id: int) -> PolicyAccount | None:
         """Fetch a specific policy from the blockchain"""
         try:
             policy_pda, _ = Pubkey.find_program_address(
@@ -282,7 +282,7 @@ class QuantumagiSolanaClient:
             self.logger.error(f"Failed to fetch policy {policy_id}: {e}")
             return None
 
-    async def list_active_policies(self) -> List[PolicyAccount]:
+    async def list_active_policies(self) -> list[PolicyAccount]:
         """List all active policies"""
         # This would require scanning all policy accounts
         # Simplified implementation
@@ -317,7 +317,7 @@ class QuantumagiSolanaClient:
         """Create instruction data for enacting a policy"""
         return b"enact_policy"
 
-    def _create_compliance_check_instruction(self, action: str, context: Dict) -> bytes:
+    def _create_compliance_check_instruction(self, action: str, context: dict) -> bytes:
         """Create instruction data for compliance checking"""
         data = {"action": action, "context": context}
         return json.dumps(data).encode()

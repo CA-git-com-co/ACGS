@@ -7,7 +7,7 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..schemas import (
     ValidationResult,
@@ -45,11 +45,11 @@ class ValidationError:
     severity: ValidationSeverity
     message: str
     detailed_description: str
-    affected_models: List[str]
-    source_location: Optional[Dict[str, Any]] = None
-    suggested_fix: Optional[str] = None
-    related_errors: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    affected_models: list[str]
+    source_location: dict[str, Any] | None = None
+    suggested_fix: str | None = None
+    related_errors: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -60,11 +60,11 @@ class CrossModelValidationRule:
     rule_name: str
     validation_type: CrossModelValidationType
     description: str
-    affected_model_types: List[str]
+    affected_model_types: list[str]
     validation_function: str  # Function name to execute
     severity: ValidationSeverity
     enabled: bool = True
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -72,8 +72,8 @@ class ValidationContext:
     """Context for validation execution."""
 
     request_id: str
-    models: Dict[str, Any]
-    validation_rules: List[CrossModelValidationRule]
+    models: dict[str, Any]
+    validation_rules: list[CrossModelValidationRule]
     performance_budget_ms: int = 30000
     max_concurrent_validations: int = 10
     enable_caching: bool = True
@@ -89,11 +89,11 @@ class AggregatedValidationResult:
     total_validations: int
     successful_validations: int
     failed_validations: int
-    errors: List[ValidationError]
-    warnings: List[ValidationError]
-    performance_metrics: Dict[str, Any]
-    cross_model_issues: List[Dict[str, Any]]
-    recommendations: List[str]
+    errors: list[ValidationError]
+    warnings: list[ValidationError]
+    performance_metrics: dict[str, Any]
+    cross_model_issues: list[dict[str, Any]]
+    recommendations: list[str]
     execution_time_ms: int
 
 
@@ -104,9 +104,9 @@ class EnhancedMultiModelValidator:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.validation_cache: Dict[str, Any] = {}
-        self.performance_metrics: Dict[str, Any] = defaultdict(list)
-        self.cross_model_rules: List[CrossModelValidationRule] = []
+        self.validation_cache: dict[str, Any] = {}
+        self.performance_metrics: dict[str, Any] = defaultdict(list)
+        self.cross_model_rules: list[CrossModelValidationRule] = []
         self._initialize_cross_model_rules()
 
     def _initialize_cross_model_rules(self) -> None:
@@ -163,18 +163,19 @@ class EnhancedMultiModelValidator:
             ),
         ]
 
-    async def validate_multi_model(self, context: ValidationContext) -> AggregatedValidationResult:
+    async def validate_multi_model(
+        self, context: ValidationContext
+    ) -> AggregatedValidationResult:
         """
         Enhanced multi-model validation with improved error handling and performance.
         """
         start_time = time.time()
-        logger.info(f"Starting enhanced multi-model validation for request {context.request_id}")
+        logger.info(
+            f"Starting enhanced multi-model validation for request {context.request_id}"
+        )
 
         # Initialize result tracking
-        errors: List[ValidationError] = []
-        warnings: List[ValidationError] = []
-        cross_model_issues: List[Dict[str, Any]] = []
-        recommendations: List[str] = []
+        recommendations: list[str] = []
 
         try:
             # Phase 1: Individual model validation
@@ -223,7 +224,7 @@ class EnhancedMultiModelValidator:
 
     async def _validate_individual_models(
         self, context: ValidationContext
-    ) -> Dict[str, List[ValidationResult]]:
+    ) -> dict[str, list[ValidationResult]]:
         """Validate individual models with performance optimization."""
         results = {}
 
@@ -260,7 +261,7 @@ class EnhancedMultiModelValidator:
 
     async def _validate_single_model(
         self, model_type: str, model_data: Any, context: ValidationContext
-    ) -> List[ValidationResult]:
+    ) -> list[ValidationResult]:
         """Validate a single model with caching."""
         cache_key = f"{model_type}_{hash(str(model_data))}"
 
@@ -297,7 +298,9 @@ class EnhancedMultiModelValidator:
                     confidence_score=0.0,
                     error_details=str(e),
                     suggestions=["Check model data format", "Review validation logic"],
-                    metadata={"execution_time_ms": int((time.time() - start_time) * 1000)},
+                    metadata={
+                        "execution_time_ms": int((time.time() - start_time) * 1000)
+                    },
                 )
             ]
 
@@ -316,7 +319,7 @@ class EnhancedMultiModelValidator:
 
     async def _validate_cross_model_rules(
         self, context: ValidationContext
-    ) -> List[ValidationError]:
+    ) -> list[ValidationError]:
         """Execute cross-model validation rules."""
         errors = []
 
@@ -327,7 +330,8 @@ class EnhancedMultiModelValidator:
             try:
                 # Check if required models are available
                 if not all(
-                    model_type in context.models for model_type in rule.affected_model_types
+                    model_type in context.models
+                    for model_type in rule.affected_model_types
                 ):
                     continue
 
@@ -352,7 +356,7 @@ class EnhancedMultiModelValidator:
 
     async def _execute_cross_model_rule(
         self, rule: CrossModelValidationRule, context: ValidationContext
-    ) -> List[ValidationError]:
+    ) -> list[ValidationError]:
         """Execute a specific cross-model validation rule."""
         if rule.validation_function == "validate_policy_principle_consistency":
             return await self._validate_policy_principle_consistency(context)
@@ -370,7 +374,7 @@ class EnhancedMultiModelValidator:
 
     async def _validate_policy_principle_consistency(
         self, context: ValidationContext
-    ) -> List[ValidationError]:
+    ) -> list[ValidationError]:
         """Validate consistency between policy rules and AC principles."""
         errors = []
 
@@ -409,7 +413,7 @@ class EnhancedMultiModelValidator:
 
     async def _validate_coverage_completeness(
         self, context: ValidationContext
-    ) -> List[ValidationError]:
+    ) -> list[ValidationError]:
         """Validate completeness of policy coverage for AC principles."""
         errors = []
 
@@ -420,7 +424,9 @@ class EnhancedMultiModelValidator:
             return errors
 
         # Check for principles without policy coverage
-        policy_topics = {self._extract_topic(rule.get("content", "")) for rule in policy_rules}
+        policy_topics = {
+            self._extract_topic(rule.get("content", "")) for rule in policy_rules
+        }
 
         for principle in ac_principles:
             principle_topic = principle.get("topic", "").lower()
@@ -443,7 +449,7 @@ class EnhancedMultiModelValidator:
 
     async def _validate_semantic_coherence(
         self, context: ValidationContext
-    ) -> List[ValidationError]:
+    ) -> list[ValidationError]:
         """Validate semantic coherence across model types."""
         errors = []
 
@@ -470,7 +476,7 @@ class EnhancedMultiModelValidator:
                             error_type="semantic_conflict",
                             severity=ValidationSeverity.HIGH,
                             message=f"Semantic conflict between rule {rule_id} and safety property {safety_id}",
-                            detailed_description=f"Policy rule and safety property contain contradictory statements",
+                            detailed_description="Policy rule and safety property contain contradictory statements",
                             affected_models=["policy_rule", "safety_property"],
                             suggested_fix="Review and resolve contradictory statements between models",
                         )
@@ -511,7 +517,9 @@ class EnhancedMultiModelValidator:
             content1_negative and content2_positive
         )
 
-    async def _validate_safety_conflicts(self, context: ValidationContext) -> List[ValidationError]:
+    async def _validate_safety_conflicts(
+        self, context: ValidationContext
+    ) -> list[ValidationError]:
         """Validate safety conflicts between policies and safety properties."""
         errors = []
 
@@ -557,7 +565,7 @@ class EnhancedMultiModelValidator:
 
     async def _validate_regulatory_compliance(
         self, context: ValidationContext
-    ) -> List[ValidationError]:
+    ) -> list[ValidationError]:
         """Validate regulatory compliance across models."""
         errors = []
 
@@ -611,7 +619,9 @@ class EnhancedMultiModelValidator:
 
         return has_safety_requirement and has_violation_pattern
 
-    def _check_compliance_coverage(self, rule_content: str, requirement_desc: str) -> bool:
+    def _check_compliance_coverage(
+        self, rule_content: str, requirement_desc: str
+    ) -> bool:
         """Check if rule content addresses compliance requirement."""
         # Extract key terms from requirement
         req_terms = set(requirement_desc.split())
@@ -621,7 +631,9 @@ class EnhancedMultiModelValidator:
         overlap = len(req_terms.intersection(rule_terms))
         return overlap >= min(3, len(req_terms) * 0.3)  # At least 30% overlap
 
-    async def _validate_policy_rules(self, policy_rules: List[Any]) -> List[ValidationResult]:
+    async def _validate_policy_rules(
+        self, policy_rules: list[Any]
+    ) -> list[ValidationResult]:
         """Validate individual policy rules."""
         results = []
 
@@ -639,7 +651,10 @@ class EnhancedMultiModelValidator:
                 issues.append("Rule content too short")
 
             # Check for basic syntax patterns
-            if "allow" not in rule_content.lower() and "deny" not in rule_content.lower():
+            if (
+                "allow" not in rule_content.lower()
+                and "deny" not in rule_content.lower()
+            ):
                 issues.append("Rule lacks clear allow/deny directive")
 
             status = "failed" if issues else "verified"
@@ -678,7 +693,9 @@ class EnhancedMultiModelValidator:
 
         return results
 
-    async def _validate_ac_principles(self, ac_principles: List[Any]) -> List[ValidationResult]:
+    async def _validate_ac_principles(
+        self, ac_principles: list[Any]
+    ) -> list[ValidationResult]:
         """Validate individual AC principles."""
         results = []
 
@@ -714,7 +731,9 @@ class EnhancedMultiModelValidator:
                     confidence_score=confidence,
                     error_details="; ".join(issues) if issues else None,
                     suggestions=(
-                        ["Expand principle content", "Add more detail"] if issues else None
+                        ["Expand principle content", "Add more detail"]
+                        if issues
+                        else None
                     ),
                     metadata={"principle_id": principle_id, "execution_time_ms": 15},
                 )
@@ -723,8 +742,8 @@ class EnhancedMultiModelValidator:
         return results
 
     async def _validate_safety_properties(
-        self, safety_properties: List[Any]
-    ) -> List[ValidationResult]:
+        self, safety_properties: list[Any]
+    ) -> list[ValidationResult]:
         """Validate individual safety properties."""
         results = []
 
@@ -760,7 +779,9 @@ class EnhancedMultiModelValidator:
                     confidence_score=confidence,
                     error_details="; ".join(issues) if issues else None,
                     suggestions=(
-                        ["Add safety keywords", "Improve description"] if issues else None
+                        ["Add safety keywords", "Improve description"]
+                        if issues
+                        else None
                     ),
                     metadata={"property_id": prop_id, "execution_time_ms": 12},
                 )
@@ -771,8 +792,8 @@ class EnhancedMultiModelValidator:
     async def _aggregate_validation_results(
         self,
         context: ValidationContext,
-        individual_results: Dict[str, List[ValidationResult]],
-        cross_model_errors: List[ValidationError],
+        individual_results: dict[str, list[ValidationResult]],
+        cross_model_errors: list[ValidationError],
         start_time: float,
     ) -> AggregatedValidationResult:
         """Aggregate all validation results into a comprehensive report."""
@@ -780,7 +801,10 @@ class EnhancedMultiModelValidator:
         # Count totals
         total_validations = sum(len(results) for results in individual_results.values())
         successful_validations = sum(
-            1 for results in individual_results.values() for result in results if result.is_valid
+            1
+            for results in individual_results.values()
+            for result in results
+            if result.is_valid
         )
         failed_validations = total_validations - successful_validations
 
@@ -815,7 +839,8 @@ class EnhancedMultiModelValidator:
                 execution_time / total_validations if total_validations > 0 else 0
             ),
             "cache_hit_rate": len(self.validation_cache) / max(total_validations, 1),
-            "performance_budget_utilization": execution_time / context.performance_budget_ms,
+            "performance_budget_utilization": execution_time
+            / context.performance_budget_ms,
         }
 
         # Identify cross-model issues
@@ -854,7 +879,9 @@ class EnhancedMultiModelValidator:
             execution_time_ms=execution_time,
         )
 
-    async def _generate_recommendations(self, result: AggregatedValidationResult) -> List[str]:
+    async def _generate_recommendations(
+        self, result: AggregatedValidationResult
+    ) -> list[str]:
         """Generate actionable recommendations based on validation results."""
         recommendations = []
 
@@ -869,13 +896,19 @@ class EnhancedMultiModelValidator:
         error_types = [error.error_type for error in result.errors]
 
         if "policy_principle_mismatch" in error_types:
-            recommendations.append("Review policy rules to ensure alignment with AC principles")
+            recommendations.append(
+                "Review policy rules to ensure alignment with AC principles"
+            )
 
         if "incomplete_policy_coverage" in error_types:
-            recommendations.append("Create additional policy rules to cover all AC principles")
+            recommendations.append(
+                "Create additional policy rules to cover all AC principles"
+            )
 
         if "safety_violation" in error_types:
-            recommendations.append("Critical: Review and fix safety violations in policy rules")
+            recommendations.append(
+                "Critical: Review and fix safety violations in policy rules"
+            )
 
         if "regulatory_compliance_gap" in error_types:
             recommendations.append(
@@ -909,7 +942,7 @@ def create_enhanced_multi_model_validator() -> EnhancedMultiModelValidator:
 # Utility functions for validation context creation
 def create_validation_context(
     request_id: str,
-    models: Dict[str, Any],
+    models: dict[str, Any],
     performance_budget_ms: int = 30000,
     max_concurrent_validations: int = 10,
     enable_caching: bool = True,

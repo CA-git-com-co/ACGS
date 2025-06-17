@@ -23,7 +23,7 @@ This guide provides step-by-step instructions for deploying ACGS-PGP to Kubernet
 kubectl create namespace acgs-pgp
 
 # Create service account with appropriate permissions
-kubectl apply -f k8s/rbac/
+kubectl apply -f infrastructure/kubernetes/rbac/
 ```
 
 ## Step 2: Secrets and ConfigMaps
@@ -86,16 +86,16 @@ helm repo update
 # Install Prometheus Operator with custom values
 helm install prometheus-operator prometheus-community/kube-prometheus-stack \
   --namespace acgs-pgp \
-  --values k8s/monitoring/prometheus-values.yaml \
+  --values infrastructure/kubernetes/monitoring/prometheus-values.yaml \
   --wait
 ```
 
 ### Custom ACGS-PGP Monitoring
 ```bash
 # Deploy custom ServiceMonitors and PrometheusRules
-kubectl apply -f k8s/monitoring/service-monitors.yaml
-kubectl apply -f k8s/monitoring/prometheus-rules.yaml
-kubectl apply -f k8s/monitoring/grafana-dashboards.yaml
+kubectl apply -f infrastructure/kubernetes/monitoring/service-monitors.yaml
+kubectl apply -f infrastructure/kubernetes/monitoring/prometheus-rules.yaml
+kubectl apply -f infrastructure/kubernetes/monitoring/grafana-dashboards.yaml
 ```
 
 ## Step 4: Deploy Database
@@ -103,13 +103,13 @@ kubectl apply -f k8s/monitoring/grafana-dashboards.yaml
 ### PostgreSQL with High Availability
 ```bash
 # Deploy PostgreSQL cluster
-kubectl apply -f k8s/database/postgres-cluster.yaml
+kubectl apply -f infrastructure/kubernetes/database/postgres-cluster.yaml
 
 # Wait for PostgreSQL to be ready
 kubectl wait --for=condition=ready pod -l app=postgres --timeout=300s -n acgs-pgp
 
 # Run database migrations
-kubectl apply -f k8s/database/migration-job.yaml
+kubectl apply -f infrastructure/kubernetes/database/migration-job.yaml
 kubectl wait --for=condition=complete job/alembic-migration --timeout=300s -n acgs-pgp
 ```
 
@@ -118,12 +118,12 @@ kubectl wait --for=condition=complete job/alembic-migration --timeout=300s -n ac
 ### Core Services Deployment
 ```bash
 # Deploy services in dependency order
-kubectl apply -f k8s/services/auth-service.yaml
-kubectl apply -f k8s/services/ac-service.yaml
-kubectl apply -f k8s/services/integrity-service.yaml
-kubectl apply -f k8s/services/fv-service.yaml
-kubectl apply -f k8s/services/gs-service.yaml
-kubectl apply -f k8s/services/pgc-service.yaml
+kubectl apply -f infrastructure/kubernetes/services/auth-service.yaml
+kubectl apply -f infrastructure/kubernetes/services/ac-service.yaml
+kubectl apply -f infrastructure/kubernetes/services/integrity-service.yaml
+kubectl apply -f infrastructure/kubernetes/services/fv-service.yaml
+kubectl apply -f infrastructure/kubernetes/services/gs-service.yaml
+kubectl apply -f infrastructure/kubernetes/services/pgc-service.yaml
 
 # Wait for all services to be ready
 kubectl wait --for=condition=available deployment --all --timeout=600s -n acgs-pgp
@@ -132,21 +132,21 @@ kubectl wait --for=condition=available deployment --all --timeout=600s -n acgs-p
 ### Load Balancer and Ingress
 ```bash
 # Deploy Nginx load balancer
-kubectl apply -f k8s/ingress/nginx-configmap.yaml
-kubectl apply -f k8s/ingress/nginx-deployment.yaml
+kubectl apply -f infrastructure/kubernetes/ingress/nginx-configmap.yaml
+kubectl apply -f infrastructure/kubernetes/ingress/nginx-deployment.yaml
 
 # Deploy ingress with SSL termination
-kubectl apply -f k8s/ingress/acgs-ingress.yaml
+kubectl apply -f infrastructure/kubernetes/ingress/acgs-ingress.yaml
 ```
 
 ## Step 6: Deploy Frontend
 
 ```bash
 # Deploy React frontend
-kubectl apply -f k8s/frontend/frontend-deployment.yaml
+kubectl apply -f infrastructure/kubernetes/applications/governance-dashboard/frontend-deployment.yaml
 
 # Configure frontend ingress
-kubectl apply -f k8s/frontend/frontend-ingress.yaml
+kubectl apply -f infrastructure/kubernetes/applications/governance-dashboard/frontend-ingress.yaml
 ```
 
 ## Step 7: Validation and Testing
@@ -180,7 +180,7 @@ echo "Prometheus available at http://localhost:9090"
 ### Load Testing
 ```bash
 # Run production load test
-kubectl apply -f k8s/testing/load-test-job.yaml
+kubectl apply -f infrastructure/kubernetes/testing/load-test-job.yaml
 kubectl logs -f job/acgs-load-test -n acgs-pgp
 ```
 
@@ -189,7 +189,7 @@ kubectl logs -f job/acgs-load-test -n acgs-pgp
 ### Horizontal Pod Autoscaler
 ```bash
 # Deploy HPA for auto-scaling
-kubectl apply -f k8s/autoscaling/hpa.yaml
+kubectl apply -f infrastructure/kubernetes/autoscaling/hpa.yaml
 
 # Verify HPA status
 kubectl get hpa -n acgs-pgp
@@ -198,14 +198,14 @@ kubectl get hpa -n acgs-pgp
 ### Network Policies
 ```bash
 # Apply network security policies
-kubectl apply -f k8s/security/network-policies.yaml
+kubectl apply -f infrastructure/kubernetes/security/network-policies.yaml
 ```
 
 ### Backup Configuration
 ```bash
 # Deploy backup CronJobs
-kubectl apply -f k8s/backup/postgres-backup.yaml
-kubectl apply -f k8s/backup/monitoring-backup.yaml
+kubectl apply -f infrastructure/kubernetes/backup/postgres-backup.yaml
+kubectl apply -f infrastructure/kubernetes/backup/monitoring-backup.yaml
 ```
 
 ## Production Monitoring Targets
@@ -282,13 +282,13 @@ kubectl rollout status deployment/auth-service -n acgs-pgp
 ```bash
 # Run database migrations
 kubectl create job --from=cronjob/postgres-backup manual-backup -n acgs-pgp
-kubectl apply -f k8s/database/migration-job.yaml
+kubectl apply -f infrastructure/kubernetes/database/migration-job.yaml
 ```
 
 ### Monitoring Maintenance
 ```bash
 # Update Grafana dashboards
-kubectl apply -f k8s/monitoring/grafana-dashboards.yaml
+kubectl apply -f infrastructure/kubernetes/monitoring/grafana-dashboards.yaml
 
 # Reload Prometheus configuration
 kubectl annotate prometheus prometheus-operator-kube-p-prometheus prometheus.io/reload=true -n acgs-pgp

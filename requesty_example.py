@@ -24,7 +24,7 @@ Next steps for testing:
 
 import os
 import sys
-from typing import Any, Dict, Optional
+from typing import Any
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -41,7 +41,7 @@ class RequestyAPIClient:
     router service, which provides access to various AI models including Claude.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """
         Initialize the Requesty API client.
 
@@ -65,10 +65,10 @@ class RequestyAPIClient:
     def chat_completion(
         self,
         message: str,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         max_tokens: int = 1000,
         temperature: float = 0.7,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Send a chat completion request to Claude via Requesty router.
 
@@ -132,7 +132,7 @@ def main():
 
         # Test message
         test_message = """
-        Explain the concept of quantum computing in simple terms, 
+        Explain the concept of quantum computing in simple terms,
         including its potential advantages over classical computing.
         """
 
@@ -166,7 +166,7 @@ def main():
             print(result["content"])
             print("-" * 40)
         else:
-            print(f"\n❌ API call failed!")
+            print("\n❌ API call failed!")
             print(f"Error Type: {result['error_type']}")
             print(f"Error Message: {result['error']}")
 

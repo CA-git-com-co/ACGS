@@ -1,5 +1,4 @@
 import os
-from typing import List, Optional
 
 import httpx
 
@@ -51,8 +50,8 @@ class ACServiceClient:
         self.client = httpx.AsyncClient(base_url=self.base_url, timeout=timeout_config)
 
     async def get_principle_by_id(
-        self, principle_id: int, auth_token: Optional[str] = None
-    ) -> Optional[ACPrinciple]:
+        self, principle_id: int, auth_token: str | None = None
+    ) -> ACPrinciple | None:
         # Use service token if no auth token provided
         if not auth_token:
             auth_token = await get_service_token()
@@ -60,7 +59,9 @@ class ACServiceClient:
         headers = get_auth_headers(auth_token)
 
         try:
-            response = await self.client.get(f"/principles/{principle_id}", headers=headers)
+            response = await self.client.get(
+                f"/principles/{principle_id}", headers=headers
+            )
             response.raise_for_status()
             data = response.json()
             return ACPrinciple(**data)
@@ -70,15 +71,19 @@ class ACServiceClient:
             )
             return None
         except httpx.RequestError as e:
-            print(f"AC Client: Request error fetching principle {principle_id}: {str(e)}")
+            print(
+                f"AC Client: Request error fetching principle {principle_id}: {str(e)}"
+            )
             return None
         except Exception as e:
-            print(f"AC Client: Unexpected error fetching principle {principle_id}: {str(e)}")
+            print(
+                f"AC Client: Unexpected error fetching principle {principle_id}: {str(e)}"
+            )
             return None
 
     async def list_principles_by_ids(
-        self, principle_ids: List[int], auth_token: Optional[str] = None
-    ) -> List[ACPrinciple]:
+        self, principle_ids: list[int], auth_token: str | None = None
+    ) -> list[ACPrinciple]:
         """Fetches multiple principles by their IDs."""
         # Note: This assumes ac_service might not have a batch endpoint.
         # If it did, that would be more efficient.

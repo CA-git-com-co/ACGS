@@ -90,7 +90,7 @@
 
 **Resolution Steps:**
 1. Removed problematic alembic_runner container
-2. Started services individually with `docker-compose up -d --no-deps`
+2. Started services individually with `docker-compose -f infrastructure/docker/docker-compose.yml up -d --no-deps`
 3. Validated each service health endpoint
 4. Achieved 100% operational status
 

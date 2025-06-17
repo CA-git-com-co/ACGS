@@ -161,7 +161,7 @@ def auto_recovery_algorithm():
 
 ### Immediate Actions (0-4 hours)
 1. **Run remediation script**: `bash scripts/fix_ci_failures.sh`
-2. **Deploy updated services**: `docker-compose up --build -d`
+2. **Deploy updated services**: `docker-compose -f infrastructure/docker/docker-compose.yml up --build -d`
 3. **Validate health checks**: Confirm all services are operational
 4. **Run test suite**: Verify >95% test pass rate
 

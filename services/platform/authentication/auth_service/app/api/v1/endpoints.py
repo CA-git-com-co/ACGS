@@ -1,10 +1,4 @@
 # backend/auth_service/app/api/v1/endpoints.py
-from datetime import datetime as dt  # Use dt alias for datetime objects
-from datetime import (
-    timedelta,
-    timezone,
-)
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -29,23 +23,23 @@ from . import deps  # Assuming deps.get_db is correctly defined for AsyncSession
 class Token(BaseModel):
     access_token: str
     token_type: str
-    refresh_token: Optional[str] = None
+    refresh_token: str | None = None
 
 
 class UserCreate(BaseModel):
     username: str
     email: str
     password: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+    first_name: str | None = None
+    last_name: str | None = None
 
 
 class UserInDB(BaseModel):
     id: int
     username: str
     email: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+    first_name: str | None = None
+    last_name: str | None = None
     is_active: bool
     is_superuser: bool
 
@@ -62,7 +56,9 @@ SECURE_COOKIE = getattr(settings, "ENVIRONMENT", "production") != "development"
 
 @router.post("/register", response_model=UserInDB, status_code=status.HTTP_201_CREATED)
 async def register_user(user: UserCreate, db: AsyncSession = Depends(deps.get_db)):
-    db_user_by_username = await crud_user.get_user_by_username(db, username=user.username)
+    db_user_by_username = await crud_user.get_user_by_username(
+        db, username=user.username
+    )
     if db_user_by_username:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -88,14 +84,18 @@ async def login_for_access_token(
     csrf_protect: CsrfProtect = Depends(),
 ):
     user_obj = await crud_user.get_user_by_username(db, username=form_data.username)
-    if not user_obj or not security.verify_password(form_data.password, user_obj.hashed_password):
+    if not user_obj or not security.verify_password(
+        form_data.password, user_obj.hashed_password
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     if not user_obj.is_active:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
+        )
 
     # Create access token
     access_token_str, access_jti = security.create_access_token(
@@ -200,7 +200,9 @@ async def refresh_token(
     )
 
     # Issue new tokens
-    user_obj = await crud_user.get_user(db, user_id=token_data.user_id)  # Fetch user for roles
+    user_obj = await crud_user.get_user(
+        db, user_id=token_data.user_id
+    )  # Fetch user for roles
     if not user_obj or not user_obj.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -210,8 +212,10 @@ async def refresh_token(
     new_access_token_str, new_access_jti = security.create_access_token(
         subject=user_obj.username, user_id=user_obj.id, roles=[user_obj.role]
     )
-    new_refresh_token_str, new_refresh_jti, new_refresh_expires_at = security.create_refresh_token(
-        subject=user_obj.username, user_id=user_obj.id, roles=[user_obj.role]
+    new_refresh_token_str, new_refresh_jti, new_refresh_expires_at = (
+        security.create_refresh_token(
+            subject=user_obj.username, user_id=user_obj.id, roles=[user_obj.role]
+        )
     )
     await crud_refresh_token.create_refresh_token(
         db,
@@ -249,7 +253,9 @@ async def refresh_token(
         secure=SECURE_COOKIE,
         samesite="lax",
     )
-    return Token(access_token=new_access_token_str, token_type="bearer", refresh_token=None)
+    return Token(
+        access_token=new_access_token_str, token_type="bearer", refresh_token=None
+    )
 
 
 @router.post("/logout", status_code=status.HTTP_200_OK)
@@ -310,7 +316,9 @@ async def logout(
         httponly=True,
         samesite="lax",
     )
-    csrf_protect.unset_csrf_cookie(response)  # Deletes CSRF cookie to prevent token reuse
+    csrf_protect.unset_csrf_cookie(
+        response
+    )  # Deletes CSRF cookie to prevent token reuse
 
     return {"message": "Logout successful"}
 

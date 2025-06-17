@@ -5,7 +5,7 @@ This module tests the WINA-informed constitutional principle update functionalit
 including analysis, proposal, approval, and monitoring workflows.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -35,9 +35,9 @@ class TestWINAConstitutionalPrincipleAnalyzer:
             "category": "efficiency",
             "policy_code": """
             package efficiency_optimization
-            
+
             default allow_optimization = false
-            
+
             allow_optimization {
                 input.accuracy_retention >= 0.95
                 input.safety_verified == true
@@ -257,7 +257,7 @@ class TestWINAConstitutionalUpdateService:
             efficiency_impact={"gflops_reduction": 0.5},
             compliance_assessment={"score": 0.9},
             approval_status="approved",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         # Apply update
@@ -289,7 +289,7 @@ class TestWINAConstitutionalUpdateService:
                 "overall_compliance_score": 0.9,
             },
             approval_status="approved",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         # Monitor performance
@@ -322,7 +322,7 @@ class TestWINAConstitutionalUpdateService:
             efficiency_impact={"gflops_reduction": 0.3},
             compliance_assessment={"score": 0.95},
             approval_status="pending",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             risk_assessment={"overall_risk_level": "low"},
         )
 

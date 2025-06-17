@@ -389,7 +389,7 @@ class Phase3SecurityTester:
             "rate_limiting_tests",
             "input_validation_tests",
         ]:
-            for test_name, results in self.results[category].items():
+            for _test_name, results in self.results[category].items():
                 all_tests.append(results.get("target_met", False))
 
         passed_tests = sum(all_tests)
@@ -459,7 +459,7 @@ class Phase3SecurityTester:
             json.dump(self.results, f, indent=2)
 
         logger.info(
-            f"\n📄 Detailed results saved to: phase3_security_test_results.json"
+            "\n📄 Detailed results saved to: phase3_security_test_results.json"
         )
 
 

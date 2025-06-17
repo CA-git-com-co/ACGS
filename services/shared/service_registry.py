@@ -5,11 +5,10 @@ Centralized service discovery and health monitoring for all ACGS services
 
 import asyncio
 import logging
-import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 
@@ -35,14 +34,14 @@ class ServiceInfo:
     port: int
     health_endpoint: str = "/health"
     version: str = "1.0.0"
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     # Runtime information
     status: ServiceStatus = ServiceStatus.UNKNOWN
-    last_health_check: Optional[datetime] = None
+    last_health_check: datetime | None = None
     health_check_failures: int = 0
-    registered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    registered_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     @property
     def base_url(self) -> str:
@@ -62,10 +61,10 @@ class ServiceRegistry:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.services: Dict[str, ServiceInfo] = {}
+        self.services: dict[str, ServiceInfo] = {}
         self.health_check_interval = health_check_interval
         self.max_failures = max_failures
-        self._health_check_task: Optional[asyncio.Task] = None
+        self._health_check_task: asyncio.Task | None = None
         self._running = False
 
         # Initialize with known ACGS services
@@ -96,7 +95,9 @@ class ServiceRegistry:
                 "host": "localhost",
                 "port": 8002,
                 "tags": ["core", "security"],
-                "metadata": {"description": "Cryptographic integrity and verification service"},
+                "metadata": {
+                    "description": "Cryptographic integrity and verification service"
+                },
             },
             {
                 "name": "fv_service",
@@ -200,8 +201,8 @@ class ServiceRegistry:
         port: int,
         health_endpoint: str = "/health",
         version: str = "1.0.0",
-        tags: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        tags: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ServiceInfo:
         """Register a new service."""
         service_info = ServiceInfo(
@@ -226,21 +227,23 @@ class ServiceRegistry:
             return True
         return False
 
-    def get_service(self, name: str) -> Optional[ServiceInfo]:
+    def get_service(self, name: str) -> ServiceInfo | None:
         """Get service information by name."""
         return self.services.get(name)
 
-    def get_services_by_tag(self, tag: str) -> List[ServiceInfo]:
+    def get_services_by_tag(self, tag: str) -> list[ServiceInfo]:
         """Get all services with a specific tag."""
         return [service for service in self.services.values() if tag in service.tags]
 
-    def get_healthy_services(self) -> List[ServiceInfo]:
+    def get_healthy_services(self) -> list[ServiceInfo]:
         """Get all healthy services."""
         return [
-            service for service in self.services.values() if service.status == ServiceStatus.HEALTHY
+            service
+            for service in self.services.values()
+            if service.status == ServiceStatus.HEALTHY
         ]
 
-    def get_all_services(self) -> Dict[str, ServiceInfo]:
+    def get_all_services(self) -> dict[str, ServiceInfo]:
         """Get all registered services."""
         return self.services.copy()
 
@@ -259,20 +262,20 @@ class ServiceRegistry:
                     if service.health_check_failures >= self.max_failures:
                         service.status = ServiceStatus.UNHEALTHY
 
-                service.last_health_check = datetime.now(timezone.utc)
+                service.last_health_check = datetime.now(UTC)
                 return is_healthy
 
         except Exception as e:
             logger.debug(f"Health check failed for {service.name}: {e}")
             service.health_check_failures += 1
-            service.last_health_check = datetime.now(timezone.utc)
+            service.last_health_check = datetime.now(UTC)
 
             if service.health_check_failures >= self.max_failures:
                 service.status = ServiceStatus.UNHEALTHY
 
             return False
 
-    async def check_all_services_health(self) -> Dict[str, bool]:
+    async def check_all_services_health(self) -> dict[str, bool]:
         """Check health of all registered services."""
         tasks = []
         service_names = []
@@ -307,14 +310,14 @@ class ServiceRegistry:
                 logger.error(f"Health check loop error: {e}")
                 await asyncio.sleep(5)  # Short delay before retry
 
-    def get_service_url(self, service_name: str, endpoint: str = "") -> Optional[str]:
+    def get_service_url(self, service_name: str, endpoint: str = "") -> str | None:
         """Get full URL for a service endpoint."""
         service = self.get_service(service_name)
         if service and service.status == ServiceStatus.HEALTHY:
             return f"{service.base_url}{endpoint}"
         return None
 
-    def get_registry_status(self) -> Dict[str, Any]:
+    def get_registry_status(self) -> dict[str, Any]:
         """Get overall registry status."""
         total_services = len(self.services)
         healthy_services = len(self.get_healthy_services())
@@ -326,12 +329,14 @@ class ServiceRegistry:
             "health_percentage": (
                 (healthy_services / total_services * 100) if total_services > 0 else 0
             ),
-            "last_check": datetime.now(timezone.utc).isoformat(),
+            "last_check": datetime.now(UTC).isoformat(),
             "services": {
                 name: {
                     "status": service.status.value,
                     "last_health_check": (
-                        service.last_health_check.isoformat() if service.last_health_check else None
+                        service.last_health_check.isoformat()
+                        if service.last_health_check
+                        else None
                     ),
                     "failures": service.health_check_failures,
                     "url": service.base_url,
@@ -345,7 +350,7 @@ class ServiceRegistry:
 service_registry = ServiceRegistry()
 
 
-async def get_service_url(service_name: str, endpoint: str = "") -> Optional[str]:
+async def get_service_url(service_name: str, endpoint: str = "") -> str | None:
     """Convenience function to get service URL."""
     return service_registry.get_service_url(service_name, endpoint)
 
@@ -354,9 +359,9 @@ async def call_service(
     service_name: str,
     endpoint: str,
     method: str = "GET",
-    data: Optional[Dict[str, Any]] = None,
+    data: dict[str, Any] | None = None,
     timeout: float = 30.0,
-) -> Optional[Dict[str, Any]]:
+) -> dict[str, Any] | None:
     """Make a call to another ACGS service."""
     service_url = await get_service_url(service_name, endpoint)
     if not service_url:
@@ -380,7 +385,9 @@ async def call_service(
             if response.status_code == 200:
                 return response.json()
             else:
-                logger.error(f"Service call failed: {response.status_code} - {response.text}")
+                logger.error(
+                    f"Service call failed: {response.status_code} - {response.text}"
+                )
                 return None
 
     except Exception as e:

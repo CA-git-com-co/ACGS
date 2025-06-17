@@ -24,7 +24,7 @@ def apply_direct_fix():
     print(f"🔧 Applying direct fix to {gs_main_path}")
 
     # Read the current file
-    with open(gs_main_path, "r") as f:
+    with open(gs_main_path) as f:
         content = f.read()
 
     # Create backup

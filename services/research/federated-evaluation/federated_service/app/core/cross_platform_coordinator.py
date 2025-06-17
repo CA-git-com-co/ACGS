@@ -9,8 +9,8 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 import numpy as np
 from shared import get_config
@@ -64,8 +64,8 @@ class CrossPlatformEvaluationRequest:
 
     request_id: str
     policy_content: str
-    evaluation_criteria: Dict[str, Any]
-    target_platforms: List[PlatformType]
+    evaluation_criteria: dict[str, Any]
+    target_platforms: list[PlatformType]
     mode: EvaluationMode = EvaluationMode.CONSTITUTIONAL
 
     # Byzantine fault tolerance settings
@@ -73,11 +73,11 @@ class CrossPlatformEvaluationRequest:
     min_consensus_platforms: int = 2
 
     # MAB integration
-    mab_context: Dict[str, Any] = field(default_factory=dict)
+    mab_context: dict[str, Any] = field(default_factory=dict)
     enable_mab_optimization: bool = True
 
     # Privacy and security
-    privacy_requirements: Dict[str, Any] = field(default_factory=dict)
+    privacy_requirements: dict[str, Any] = field(default_factory=dict)
     timeout_seconds: float = 60.0
 
 
@@ -95,10 +95,10 @@ class CrossPlatformEvaluationResult:
     aggregated_fairness_score: float = 0.0
 
     # Platform-specific results
-    platform_results: Dict[str, EvaluationResponse] = field(default_factory=dict)
+    platform_results: dict[str, EvaluationResponse] = field(default_factory=dict)
 
     # Byzantine fault tolerance metrics
-    byzantine_nodes_detected: List[str] = field(default_factory=list)
+    byzantine_nodes_detected: list[str] = field(default_factory=list)
     consensus_achieved: bool = False
     consensus_confidence: float = 0.0
 
@@ -108,11 +108,11 @@ class CrossPlatformEvaluationResult:
     total_cost_estimate: float = 0.0
 
     # Error handling
-    failed_platforms: List[str] = field(default_factory=list)
-    error_summary: Optional[str] = None
+    failed_platforms: list[str] = field(default_factory=list)
+    error_summary: str | None = None
 
     # Metadata
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 class CrossPlatformCoordinator:
@@ -131,9 +131,9 @@ class CrossPlatformCoordinator:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.adapters: Dict[PlatformType, BasePlatformAdapter] = {}
-        self.secure_aggregator: Optional[SecureAggregator] = None
-        self.active_evaluations: Dict[str, CrossPlatformEvaluationRequest] = {}
+        self.adapters: dict[PlatformType, BasePlatformAdapter] = {}
+        self.secure_aggregator: SecureAggregator | None = None
+        self.active_evaluations: dict[str, CrossPlatformEvaluationRequest] = {}
 
         # Performance tracking
         self.coordinator_metrics = {
@@ -231,7 +231,9 @@ class CrossPlatformCoordinator:
                 logger.warning(f"Failed to initialize Groq adapter: {e}")
 
         if not self.adapters:
-            logger.warning("No platform adapters initialized - check API key configuration")
+            logger.warning(
+                "No platform adapters initialized - check API key configuration"
+            )
 
     async def evaluate_cross_platform(
         self, request: CrossPlatformEvaluationRequest
@@ -250,7 +252,9 @@ class CrossPlatformCoordinator:
             self.active_evaluations[request.request_id] = request
 
             # Select available platforms
-            available_platforms = self._select_available_platforms(request.target_platforms)
+            available_platforms = self._select_available_platforms(
+                request.target_platforms
+            )
             if len(available_platforms) < request.min_consensus_platforms:
                 raise ValueError(
                     f"Insufficient platforms available: {len(available_platforms)} < {request.min_consensus_platforms}"
@@ -305,18 +309,21 @@ class CrossPlatformCoordinator:
             self.active_evaluations.pop(request.request_id, None)
 
     def _select_available_platforms(
-        self, target_platforms: List[PlatformType]
-    ) -> List[PlatformType]:
+        self, target_platforms: list[PlatformType]
+    ) -> list[PlatformType]:
         """Select available platforms from target list."""
         available = []
         for platform in target_platforms:
-            if platform in self.adapters and self.adapters[platform].status == AdapterStatus.ACTIVE:
+            if (
+                platform in self.adapters
+                and self.adapters[platform].status == AdapterStatus.ACTIVE
+            ):
                 available.append(platform)
         return available
 
     async def _execute_parallel_evaluations(
-        self, request: CrossPlatformEvaluationRequest, platforms: List[PlatformType]
-    ) -> Dict[PlatformType, EvaluationResponse]:
+        self, request: CrossPlatformEvaluationRequest, platforms: list[PlatformType]
+    ) -> dict[PlatformType, EvaluationResponse]:
         """Execute evaluations in parallel across platforms."""
         tasks = []
 
@@ -357,14 +364,16 @@ class CrossPlatformCoordinator:
 
     async def _apply_byzantine_fault_tolerance(
         self,
-        platform_results: Dict[PlatformType, EvaluationResponse],
+        platform_results: dict[PlatformType, EvaluationResponse],
         request: CrossPlatformEvaluationRequest,
-    ) -> Dict[PlatformType, EvaluationResponse]:
+    ) -> dict[PlatformType, EvaluationResponse]:
         """Apply Byzantine fault tolerance to filter out malicious/faulty nodes."""
         try:
             # Only consider successful results
             successful_results = {
-                platform: result for platform, result in platform_results.items() if result.success
+                platform: result
+                for platform, result in platform_results.items()
+                if result.success
             }
 
             if len(successful_results) < request.min_consensus_platforms:
@@ -410,9 +419,9 @@ class CrossPlatformCoordinator:
 
     def _detect_byzantine_nodes_statistical(
         self,
-        metrics_by_platform: Dict[PlatformType, Dict[str, float]],
+        metrics_by_platform: dict[PlatformType, dict[str, float]],
         tolerance: float,
-    ) -> List[PlatformType]:
+    ) -> list[PlatformType]:
         """Detect Byzantine nodes using statistical outlier detection."""
         import numpy as np
 
@@ -429,7 +438,9 @@ class CrossPlatformCoordinator:
                 "safety_score",
                 "fairness_score",
             ]:
-                values = [metrics[metric_name] for metrics in metrics_by_platform.values()]
+                values = [
+                    metrics[metric_name] for metrics in metrics_by_platform.values()
+                ]
                 platforms = list(metrics_by_platform.keys())
 
                 # Calculate median and MAD (Median Absolute Deviation)
@@ -460,7 +471,7 @@ class CrossPlatformCoordinator:
     async def _aggregate_cross_platform_results(
         self,
         request: CrossPlatformEvaluationRequest,
-        platform_results: Dict[PlatformType, EvaluationResponse],
+        platform_results: dict[PlatformType, EvaluationResponse],
         start_time: float,
     ) -> CrossPlatformEvaluationResult:
         """Aggregate results from multiple platforms using secure aggregation."""
@@ -496,9 +507,15 @@ class CrossPlatformCoordinator:
 
             # Perform secure aggregation
             if aggregation_data:
-                aggregated_scores = await self._secure_aggregate_scores(aggregation_data)
-                consensus_achieved = len(aggregation_data) >= request.min_consensus_platforms
-                consensus_confidence = len(aggregation_data) / len(request.target_platforms)
+                aggregated_scores = await self._secure_aggregate_scores(
+                    aggregation_data
+                )
+                consensus_achieved = (
+                    len(aggregation_data) >= request.min_consensus_platforms
+                )
+                consensus_confidence = len(aggregation_data) / len(
+                    request.target_platforms
+                )
             else:
                 aggregated_scores = {
                     "policy_compliance_score": 0.0,
@@ -511,22 +528,31 @@ class CrossPlatformCoordinator:
 
             # Detect Byzantine nodes
             all_platforms = set(platform_results.keys())
-            successful_platforms = set(
-                platform for platform, result in platform_results.items() if result.success
-            )
+            successful_platforms = {
+                platform
+                for platform, result in platform_results.items()
+                if result.success
+            }
             byzantine_platforms = all_platforms - successful_platforms
 
             return CrossPlatformEvaluationResult(
                 request_id=request.request_id,
                 success=consensus_achieved,
-                aggregated_policy_compliance=aggregated_scores["policy_compliance_score"],
-                aggregated_constitutional_alignment=aggregated_scores["constitutional_alignment"],
+                aggregated_policy_compliance=aggregated_scores[
+                    "policy_compliance_score"
+                ],
+                aggregated_constitutional_alignment=aggregated_scores[
+                    "constitutional_alignment"
+                ],
                 aggregated_safety_score=aggregated_scores["safety_score"],
                 aggregated_fairness_score=aggregated_scores["fairness_score"],
                 platform_results={
-                    platform.value: result for platform, result in platform_results.items()
+                    platform.value: result
+                    for platform, result in platform_results.items()
                 },
-                byzantine_nodes_detected=[platform.value for platform in byzantine_platforms],
+                byzantine_nodes_detected=[
+                    platform.value for platform in byzantine_platforms
+                ],
                 consensus_achieved=consensus_achieved,
                 consensus_confidence=consensus_confidence,
                 total_execution_time_ms=execution_time,
@@ -546,8 +572,8 @@ class CrossPlatformCoordinator:
             )
 
     async def _secure_aggregate_scores(
-        self, aggregation_data: Dict[str, Dict[str, float]]
-    ) -> Dict[str, float]:
+        self, aggregation_data: dict[str, dict[str, float]]
+    ) -> dict[str, float]:
         """Securely aggregate scores using weighted averaging."""
         try:
             if not aggregation_data:
@@ -583,7 +609,7 @@ class CrossPlatformCoordinator:
                 "fairness_score": 0.0,
             }
 
-    async def get_coordinator_status(self) -> Dict[str, Any]:
+    async def get_coordinator_status(self) -> dict[str, Any]:
         """Get coordinator status and metrics."""
         adapter_status = {}
         for platform, adapter in self.adapters.items():
@@ -598,21 +624,25 @@ class CrossPlatformCoordinator:
             "initialized": self._initialized,
             "total_adapters": len(self.adapters),
             "active_adapters": sum(
-                1 for adapter in self.adapters.values() if adapter.status == AdapterStatus.ACTIVE
+                1
+                for adapter in self.adapters.values()
+                if adapter.status == AdapterStatus.ACTIVE
             ),
             "active_evaluations": len(self.active_evaluations),
             "coordinator_metrics": self.coordinator_metrics,
             "adapter_status": adapter_status,
         }
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform comprehensive health check."""
         try:
             status = await self.get_coordinator_status()
 
             # Determine overall health
             healthy_adapters = sum(
-                1 for adapter in self.adapters.values() if adapter.status == AdapterStatus.ACTIVE
+                1
+                for adapter in self.adapters.values()
+                if adapter.status == AdapterStatus.ACTIVE
             )
 
             overall_health = "healthy" if healthy_adapters > 0 else "unhealthy"

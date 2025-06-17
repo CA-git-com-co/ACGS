@@ -12,7 +12,7 @@ import statistics
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class FairnessConstraint:
     """Constraint for fair policy generation."""
 
     metric: FairnessMetric
-    protected_attributes: List[ProtectedAttribute]
+    protected_attributes: list[ProtectedAttribute]
     threshold: float
     weight: float = 1.0
     mandatory: bool = True
@@ -60,7 +60,7 @@ class FairnessConstraint:
 class FairnessGenerationConfig:
     """Configuration for proactive fairness generation."""
 
-    fairness_constraints: List[FairnessConstraint] = field(default_factory=list)
+    fairness_constraints: list[FairnessConstraint] = field(default_factory=list)
     bias_detection_threshold: float = 0.1
     fairness_optimization_iterations: int = 100
     diversity_promotion_factor: float = 0.3
@@ -75,11 +75,11 @@ class FairnessAssessment:
     """Assessment of policy fairness."""
 
     overall_fairness_score: float
-    metric_scores: Dict[FairnessMetric, float]
-    protected_group_impacts: Dict[ProtectedAttribute, Dict[str, float]]
-    bias_indicators: List[str]
-    fairness_violations: List[str]
-    improvement_suggestions: List[str]
+    metric_scores: dict[FairnessMetric, float]
+    protected_group_impacts: dict[ProtectedAttribute, dict[str, float]]
+    bias_indicators: list[str]
+    fairness_violations: list[str]
+    improvement_suggestions: list[str]
     confidence_level: float
 
 
@@ -94,7 +94,7 @@ class BiasDetectionEngine:
         self.bias_patterns = self._load_bias_patterns()
         self.historical_bias_data = {}
 
-    def _load_bias_patterns(self) -> Dict[str, List[str]]:
+    def _load_bias_patterns(self) -> dict[str, list[str]]:
         """Load known bias patterns for detection."""
         return {
             "demographic_bias": [
@@ -125,8 +125,8 @@ class BiasDetectionEngine:
         }
 
     async def detect_bias_in_policy(
-        self, policy_content: str, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, policy_content: str, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Detect potential bias in policy content."""
         bias_indicators = []
         bias_score = 0.0
@@ -153,7 +153,7 @@ class BiasDetectionEngine:
             "mitigation_required": bias_score > self.config.bias_detection_threshold,
         }
 
-    async def _detect_textual_bias(self, policy_content: str) -> Dict[str, Any]:
+    async def _detect_textual_bias(self, policy_content: str) -> dict[str, Any]:
         """Detect bias through textual analysis."""
         indicators = []
         score = 0.0
@@ -177,30 +177,41 @@ class BiasDetectionEngine:
         return {"indicators": indicators, "score": score}
 
     async def _detect_structural_bias(
-        self, policy_content: str, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, policy_content: str, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Detect structural bias in policy design."""
         indicators = []
         score = 0.0
 
         # Check for accessibility barriers
-        if "physical" in policy_content.lower() and "accommodation" not in policy_content.lower():
+        if (
+            "physical" in policy_content.lower()
+            and "accommodation" not in policy_content.lower()
+        ):
             indicators.append(
                 "Potential accessibility barrier: physical requirements without accommodations"
             )
             score += 0.2
 
         # Check for economic barriers
-        if any(term in policy_content.lower() for term in ["fee", "cost", "payment", "purchase"]):
+        if any(
+            term in policy_content.lower()
+            for term in ["fee", "cost", "payment", "purchase"]
+        ):
             if (
                 "waiver" not in policy_content.lower()
                 and "assistance" not in policy_content.lower()
             ):
-                indicators.append("Potential economic barrier: costs without assistance provisions")
+                indicators.append(
+                    "Potential economic barrier: costs without assistance provisions"
+                )
                 score += 0.15
 
         # Check for technological barriers
-        if any(term in policy_content.lower() for term in ["online", "digital", "app", "website"]):
+        if any(
+            term in policy_content.lower()
+            for term in ["online", "digital", "app", "website"]
+        ):
             if "alternative" not in policy_content.lower():
                 indicators.append(
                     "Potential digital divide: digital requirements without alternatives"
@@ -209,7 +220,7 @@ class BiasDetectionEngine:
 
         return {"indicators": indicators, "score": score}
 
-    async def _check_historical_patterns(self, policy_content: str) -> Dict[str, Any]:
+    async def _check_historical_patterns(self, policy_content: str) -> dict[str, Any]:
         """Check against historical bias patterns."""
         indicators = []
         score = 0.0
@@ -258,14 +269,14 @@ class FairnessOptimizer:
         self.optimization_history = []
 
     async def optimize_policy_for_fairness(
-        self, initial_policy: str, context: Dict[str, Any]
-    ) -> Tuple[str, FairnessAssessment]:
+        self, initial_policy: str, context: dict[str, Any]
+    ) -> tuple[str, FairnessAssessment]:
         """Optimize policy content for fairness."""
         current_policy = initial_policy
         best_policy = initial_policy
         best_assessment = await self._assess_policy_fairness(initial_policy, context)
 
-        for iteration in range(self.config.fairness_optimization_iterations):
+        for _iteration in range(self.config.fairness_optimization_iterations):
             # Generate policy variations
             variations = await self._generate_policy_variations(current_policy, context)
 
@@ -273,7 +284,10 @@ class FairnessOptimizer:
             for variation in variations:
                 assessment = await self._assess_policy_fairness(variation, context)
 
-                if assessment.overall_fairness_score > best_assessment.overall_fairness_score:
+                if (
+                    assessment.overall_fairness_score
+                    > best_assessment.overall_fairness_score
+                ):
                     best_policy = variation
                     best_assessment = assessment
 
@@ -286,7 +300,9 @@ class FairnessOptimizer:
 
         return best_policy, best_assessment
 
-    async def _generate_policy_variations(self, policy: str, context: Dict[str, Any]) -> List[str]:
+    async def _generate_policy_variations(
+        self, policy: str, context: dict[str, Any]
+    ) -> list[str]:
         """Generate variations of policy for fairness optimization."""
         variations = []
 
@@ -304,7 +320,7 @@ class FairnessOptimizer:
 
         return variations[:10]  # Limit to top 10 variations
 
-    async def _add_inclusive_language(self, policy: str) -> List[str]:
+    async def _add_inclusive_language(self, policy: str) -> list[str]:
         """Add inclusive language to policy."""
         variations = []
 
@@ -333,15 +349,13 @@ class FairnessOptimizer:
 
         return variations
 
-    async def _add_accessibility_provisions(self, policy: str) -> List[str]:
+    async def _add_accessibility_provisions(self, policy: str) -> list[str]:
         """Add accessibility provisions to policy."""
         variations = []
 
         # Add accommodation clauses
         if "accommodation" not in policy.lower():
-            accommodation_clause = (
-                "\n\nReasonable accommodations will be provided for individuals with disabilities."
-            )
+            accommodation_clause = "\n\nReasonable accommodations will be provided for individuals with disabilities."
             variations.append(policy + accommodation_clause)
 
         # Add alternative access methods
@@ -352,15 +366,13 @@ class FairnessOptimizer:
 
         return variations
 
-    async def _add_diversity_considerations(self, policy: str) -> List[str]:
+    async def _add_diversity_considerations(self, policy: str) -> list[str]:
         """Add diversity and inclusion considerations."""
         variations = []
 
         # Add diversity statement
         if "diversity" not in policy.lower() and "inclusion" not in policy.lower():
-            diversity_clause = (
-                "\n\nThis policy promotes diversity, equity, and inclusion in all its applications."
-            )
+            diversity_clause = "\n\nThis policy promotes diversity, equity, and inclusion in all its applications."
             variations.append(policy + diversity_clause)
 
         # Add cultural sensitivity
@@ -371,7 +383,7 @@ class FairnessOptimizer:
         return variations
 
     async def _assess_policy_fairness(
-        self, policy: str, context: Dict[str, Any]
+        self, policy: str, context: dict[str, Any]
     ) -> FairnessAssessment:
         """Assess the fairness of a policy."""
         # Simplified fairness assessment - would be more sophisticated in practice
@@ -420,7 +432,7 @@ class FairnessOptimizer:
         )
 
     async def _calculate_metric_score(
-        self, policy: str, constraint: FairnessConstraint, context: Dict[str, Any]
+        self, policy: str, constraint: FairnessConstraint, context: dict[str, Any]
     ) -> float:
         """Calculate score for a specific fairness metric."""
         # Simplified metric calculation - would use actual fairness algorithms
@@ -503,22 +515,26 @@ class ProactiveFairnessGenerator:
     async def generate_fair_policy(
         self,
         initial_policy: str,
-        context: Dict[str, Any],
-        requirements: Dict[str, Any] = None,
-    ) -> Tuple[str, FairnessAssessment]:
+        context: dict[str, Any],
+        requirements: dict[str, Any] = None,
+    ) -> tuple[str, FairnessAssessment]:
         """Generate a fair policy from initial content."""
         start_time = time.time()
 
         logger.info("Starting proactive fair policy generation")
 
         # Step 1: Detect bias in initial policy
-        bias_analysis = await self.bias_detector.detect_bias_in_policy(initial_policy, context)
+        bias_analysis = await self.bias_detector.detect_bias_in_policy(
+            initial_policy, context
+        )
 
         # Step 2: Optimize for fairness if bias detected or low fairness score
         if bias_analysis["mitigation_required"]:
             logger.info("Bias detected - optimizing for fairness")
             optimized_policy, assessment = (
-                await self.fairness_optimizer.optimize_policy_for_fairness(initial_policy, context)
+                await self.fairness_optimizer.optimize_policy_for_fairness(
+                    initial_policy, context
+                )
             )
         else:
             # Still assess fairness even if no bias detected
@@ -528,7 +544,9 @@ class ProactiveFairnessGenerator:
             optimized_policy = initial_policy
 
         # Step 3: Final validation
-        final_bias_check = await self.bias_detector.detect_bias_in_policy(optimized_policy, context)
+        final_bias_check = await self.bias_detector.detect_bias_in_policy(
+            optimized_policy, context
+        )
 
         # Update assessment with bias information
         assessment.bias_indicators = final_bias_check["bias_indicators"]
@@ -545,13 +563,15 @@ class ProactiveFairnessGenerator:
             }
         )
 
-        logger.info(f"Fair policy generation completed in {time.time() - start_time:.2f}s")
+        logger.info(
+            f"Fair policy generation completed in {time.time() - start_time:.2f}s"
+        )
 
         return optimized_policy, assessment
 
     async def monitor_fairness_drift(
-        self, policy_id: str, usage_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, policy_id: str, usage_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Monitor for fairness drift in deployed policies."""
         # Simplified drift detection - would analyze actual usage patterns
 
@@ -576,7 +596,9 @@ class ProactiveFairnessGenerator:
             for group, outcomes in outcome_data.items():
                 success_rate = outcomes.get("success_rate", 0.5)
                 if success_rate < 0.6:
-                    drift_indicators.append(f"Low success rate for {group}: {success_rate:.2f}")
+                    drift_indicators.append(
+                        f"Low success rate for {group}: {success_rate:.2f}"
+                    )
                     drift_score += 0.15
 
         return {
@@ -584,21 +606,31 @@ class ProactiveFairnessGenerator:
             "drift_score": drift_score,
             "drift_indicators": drift_indicators,
             "recommendation": (
-                "Review and update policy" if drift_score > 0.2 else "Continue monitoring"
+                "Review and update policy"
+                if drift_score > 0.2
+                else "Continue monitoring"
             ),
         }
 
-    def get_fairness_metrics(self) -> Dict[str, Any]:
+    def get_fairness_metrics(self) -> dict[str, Any]:
         """Get overall fairness metrics for the system."""
         if not self.generation_history:
             return {"error": "No generation history available"}
 
         recent_history = self.generation_history[-100:]  # Last 100 generations
 
-        avg_initial_bias = statistics.mean([h["initial_bias_score"] for h in recent_history])
-        avg_final_bias = statistics.mean([h["final_bias_score"] for h in recent_history])
-        avg_fairness_score = statistics.mean([h["fairness_score"] for h in recent_history])
-        optimization_rate = statistics.mean([h["optimization_applied"] for h in recent_history])
+        avg_initial_bias = statistics.mean(
+            [h["initial_bias_score"] for h in recent_history]
+        )
+        avg_final_bias = statistics.mean(
+            [h["final_bias_score"] for h in recent_history]
+        )
+        avg_fairness_score = statistics.mean(
+            [h["fairness_score"] for h in recent_history]
+        )
+        optimization_rate = statistics.mean(
+            [h["optimization_applied"] for h in recent_history]
+        )
 
         return {
             "average_initial_bias_score": avg_initial_bias,

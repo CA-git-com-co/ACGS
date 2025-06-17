@@ -8,9 +8,9 @@ all 6 ACGS-PGP microservices for seamless policy validation workflows.
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 
@@ -53,14 +53,14 @@ class ACGSIntegrationRequest:
     """Request for ACGS-PGP service integration with federated evaluation."""
 
     evaluation_task_id: str
-    target_services: List[ACGSServiceType]
+    target_services: list[ACGSServiceType]
     policy_content: str
-    evaluation_criteria: Dict[str, Any]
-    integration_context: Dict[str, Any] = field(default_factory=dict)
+    evaluation_criteria: dict[str, Any]
+    integration_context: dict[str, Any] = field(default_factory=dict)
     priority: str = "normal"  # low, normal, high, critical
 
     # Service-specific parameters
-    ac_principles: Optional[List[str]] = None
+    ac_principles: list[str] | None = None
     gs_constitutional_prompting: bool = True
     fv_verification_level: str = "standard"  # basic, standard, comprehensive
     integrity_signature_required: bool = True
@@ -75,21 +75,21 @@ class ACGSIntegrationResult:
     success: bool
 
     # Service-specific results
-    service_results: Dict[ACGSServiceType, Dict[str, Any]] = field(default_factory=dict)
+    service_results: dict[ACGSServiceType, dict[str, Any]] = field(default_factory=dict)
 
     # Integration metrics
     total_execution_time_ms: float = 0.0
-    service_response_times: Dict[ACGSServiceType, float] = field(default_factory=dict)
+    service_response_times: dict[ACGSServiceType, float] = field(default_factory=dict)
 
     # Federated evaluation results
-    federated_evaluation_result: Optional[Dict[str, Any]] = None
+    federated_evaluation_result: dict[str, Any] | None = None
 
     # Error handling
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
     # Metadata
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 class ACGSServiceIntegrator:
@@ -104,10 +104,10 @@ class ACGSServiceIntegrator:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.service_configs: Dict[ACGSServiceType, ACGSServiceConfig] = {}
-        self.federated_evaluator: Optional[FederatedEvaluator] = None
-        self.cross_platform_coordinator: Optional[CrossPlatformCoordinator] = None
-        self.http_client: Optional[httpx.AsyncClient] = None
+        self.service_configs: dict[ACGSServiceType, ACGSServiceConfig] = {}
+        self.federated_evaluator: FederatedEvaluator | None = None
+        self.cross_platform_coordinator: CrossPlatformCoordinator | None = None
+        self.http_client: httpx.AsyncClient | None = None
 
         # Integration metrics
         self.integration_metrics = {
@@ -121,7 +121,7 @@ class ACGSServiceIntegrator:
         self._initialized = False
 
     async def initialize(
-        self, service_configs: Optional[Dict[ACGSServiceType, ACGSServiceConfig]] = None
+        self, service_configs: dict[ACGSServiceType, ACGSServiceConfig] | None = None
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -209,9 +209,9 @@ class ACGSServiceIntegrator:
 
         # Update availability metrics
         for service_type, result in connectivity_results.items():
-            self.integration_metrics["service_availability"][service_type.value] = result[
-                "available"
-            ]
+            self.integration_metrics["service_availability"][service_type.value] = (
+                result["available"]
+            )
 
         available_services = sum(
             1 for result in connectivity_results.values() if result["available"]
@@ -253,7 +253,9 @@ class ACGSServiceIntegrator:
                         "target_services": [s.value for s in request.target_services],
                         "integration_context": request.integration_context,
                     },
-                    "target_platforms": request.integration_context.get("target_platforms", []),
+                    "target_platforms": request.integration_context.get(
+                        "target_platforms", []
+                    ),
                     "privacy_requirements": request.integration_context.get(
                         "privacy_requirements", {}
                     ),
@@ -274,14 +276,16 @@ class ACGSServiceIntegrator:
             logger.error(f"Failed to submit ACGS integration request: {e}")
             raise
 
-    async def get_integration_status(self, task_id: str) -> Optional[Dict[str, Any]]:
+    async def get_integration_status(self, task_id: str) -> dict[str, Any] | None:
         """Get the status of an ACGS integration request."""
         if not self._initialized:
             raise RuntimeError("ACGS service integrator not initialized")
 
         try:
             # Get federated evaluation status
-            federated_status = await self.federated_evaluator.get_evaluation_status(task_id)
+            federated_status = await self.federated_evaluator.get_evaluation_status(
+                task_id
+            )
 
             if not federated_status:
                 return None
@@ -290,9 +294,13 @@ class ACGSServiceIntegrator:
             acgs_status = {
                 **federated_status,
                 "acgs_integration": True,
-                "service_availability": self.integration_metrics["service_availability"],
+                "service_availability": self.integration_metrics[
+                    "service_availability"
+                ],
                 "integration_metrics": {
-                    "total_integrations": self.integration_metrics["total_integrations"],
+                    "total_integrations": self.integration_metrics[
+                        "total_integrations"
+                    ],
                     "success_rate": self._calculate_success_rate(),
                 },
             }
@@ -312,7 +320,7 @@ class ACGSServiceIntegrator:
         successful = self.integration_metrics["successful_integrations"]
         return successful / total
 
-    async def get_integration_metrics(self) -> Dict[str, Any]:
+    async def get_integration_metrics(self) -> dict[str, Any]:
         """Get comprehensive ACGS integration metrics."""
         if not self._initialized:
             raise RuntimeError("ACGS service integrator not initialized")
@@ -329,16 +337,17 @@ class ACGSServiceIntegrator:
                     service_type.value: {
                         "base_url": config.base_url,
                         "timeout_seconds": config.timeout_seconds,
-                        "available": self.integration_metrics["service_availability"].get(
-                            service_type.value, False
-                        ),
+                        "available": self.integration_metrics[
+                            "service_availability"
+                        ].get(service_type.value, False),
                     }
                     for service_type, config in self.service_configs.items()
                 },
                 "system_health": {
                     "integrator_initialized": self._initialized,
                     "federated_evaluator_ready": self.federated_evaluator is not None,
-                    "cross_platform_coordinator_ready": self.cross_platform_coordinator is not None,
+                    "cross_platform_coordinator_ready": self.cross_platform_coordinator
+                    is not None,
                     "http_client_ready": self.http_client is not None,
                 },
             }

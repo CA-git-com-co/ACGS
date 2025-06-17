@@ -8,7 +8,7 @@ logging, metrics collection, and filtering.
 import logging
 import time
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from .types import EventSeverity, get_event_severity
 
@@ -131,7 +131,9 @@ class MetricsMiddleware(EventMiddleware):
 
             # Keep only last 1000 processing times
             if len(self.metrics["processing_times"]) > 1000:
-                self.metrics["processing_times"] = self.metrics["processing_times"][-1000:]
+                self.metrics["processing_times"] = self.metrics["processing_times"][
+                    -1000:
+                ]
 
             return event
 
@@ -139,7 +141,7 @@ class MetricsMiddleware(EventMiddleware):
             logger.error(f"Error in metrics middleware: {e}")
             return event
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get collected metrics."""
         processing_times = self.metrics["processing_times"]
 
@@ -159,7 +161,7 @@ class MetricsMiddleware(EventMiddleware):
 class FilteringMiddleware(EventMiddleware):
     """Middleware for filtering events."""
 
-    def __init__(self, filters: Dict[str, Any]):
+    def __init__(self, filters: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -256,7 +258,7 @@ class ValidationMiddleware(EventMiddleware):
 class EnrichmentMiddleware(EventMiddleware):
     """Middleware for enriching events with additional data."""
 
-    def __init__(self, enrichment_data: Dict[str, Any] = None):
+    def __init__(self, enrichment_data: dict[str, Any] = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -314,7 +316,9 @@ class RateLimitingMiddleware(EventMiddleware):
 
             # Check rate limit
             if len(self.event_times) >= self.max_events_per_second:
-                logger.warning(f"Rate limit exceeded, dropping event {event.metadata.event_id}")
+                logger.warning(
+                    f"Rate limit exceeded, dropping event {event.metadata.event_id}"
+                )
                 return None
 
             # Add current timestamp

@@ -18,6 +18,7 @@ import asyncio
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
+
 from services.core.governance_synthesis.app.core.wina_rego_synthesis import (
     WINARegoSynthesisMetrics,
     WINARegoSynthesisResult,
@@ -161,7 +162,9 @@ deny {
             assert result.validation_result["is_valid"] is True
 
     @pytest.mark.asyncio
-    async def test_synthesize_rego_policy_without_wina(self, mock_constitutional_principles):
+    async def test_synthesize_rego_policy_without_wina(
+        self, mock_constitutional_principles
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -314,7 +317,9 @@ class TestWINARegoSynthesisAPI:
         """Test the main synthesis function."""
 
         synthesis_goal = "Create data access policy"
-        constitutional_principles = [{"description": "Protect user data", "type": "privacy"}]
+        constitutional_principles = [
+            {"description": "Protect user data", "type": "privacy"}
+        ]
 
         with patch(
             "app.core.wina_rego_synthesis.get_wina_rego_synthesizer"
@@ -419,7 +424,7 @@ class TestWINAPerformanceTargets:
         # This would be an integration test with actual WINA optimization
         # For now, we test the validation logic
 
-        synthesizer = WINARegoSynthesizer(enable_wina=True)
+        WINARegoSynthesizer(enable_wina=True)
 
         # Mock a result that meets the target
         mock_metrics = WINARegoSynthesisMetrics(

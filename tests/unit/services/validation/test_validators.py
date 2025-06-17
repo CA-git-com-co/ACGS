@@ -34,15 +34,18 @@ import pytest
 # Skip all tests in this module if AlphaEvolve is not available
 try:
     # Add AlphaEvolve to path
-    alphaevolve_path = os.path.join(os.path.dirname(__file__), "../../../../integrations/alphaevolve-engine/alphaevolve_gs_engine/src")
+    alphaevolve_path = os.path.join(
+        os.path.dirname(__file__),
+        "../../../../integrations/alphaevolve-engine/alphaevolve_gs_engine/src",
+    )
     if alphaevolve_path not in sys.path:
         sys.path.insert(0, alphaevolve_path)
 
     from alphaevolve_gs_engine.services.llm_service import get_llm_service
     from alphaevolve_gs_engine.services.validation.bias_validator import (
+        BiasMetric,
         FairnessMetricValidator,
         LLMBiasReviewer,
-        BiasMetric,
     )
     from alphaevolve_gs_engine.services.validation.conflict_validator import (
         ConflictDefinition,
@@ -53,9 +56,9 @@ try:
         MockFormalVerifier,
     )
     from alphaevolve_gs_engine.services.validation.safety_validator import (
-        SimulationBasedSafetyValidator,
         PatternBasedSafetyValidator,
         SafetyAssertion,
+        SimulationBasedSafetyValidator,
     )
     from alphaevolve_gs_engine.services.validation.semantic_validator import (
         ScenarioBasedSemanticValidator,
@@ -64,13 +67,16 @@ try:
     from alphaevolve_gs_engine.services.validation.syntactic_validator import (
         SyntacticValidator,
     )
+
     ALPHAEVOLVE_AVAILABLE = True
 except ImportError as e:
     print(f"AlphaEvolve engine not available: {e}")
     ALPHAEVOLVE_AVAILABLE = False
 
 # Skip all tests if AlphaEvolve is not available
-pytestmark = pytest.mark.skipif(not ALPHAEVOLVE_AVAILABLE, reason="AlphaEvolve engine not available")
+pytestmark = pytest.mark.skipif(
+    not ALPHAEVOLVE_AVAILABLE, reason="AlphaEvolve engine not available"
+)
 
 # Helper: Define some common Rego policies for testing
 VALID_REGO_POLICY = """
@@ -82,7 +88,7 @@ allow { input.user.role == "admin" }
 INVALID_REGO_POLICY_SYNTAX = """
 package test.invalid_syntax
 default allow = wrong_keyword # syntax error
-allow { input.user.role = "admin" } 
+allow { input.user.role = "admin" }
 """
 
 # For Semantic and Safety tests

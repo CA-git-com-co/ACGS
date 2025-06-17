@@ -16,10 +16,9 @@ Validation Areas:
 
 import json
 from pathlib import Path
-from typing import Dict
 
 
-def validate_file_structure() -> Dict:
+def validate_file_structure() -> dict:
     """Validate that critical file structure is intact."""
     print("🔍 Validating file structure...")
 
@@ -55,7 +54,7 @@ def validate_file_structure() -> Dict:
     return results
 
 
-def validate_security_configuration() -> Dict:
+def validate_security_configuration() -> dict:
     """Validate security configuration improvements."""
     print("🔒 Validating security configuration...")
 
@@ -79,7 +78,7 @@ def validate_security_configuration() -> Dict:
     # Check .gitignore has security patterns
     gitignore = Path(".gitignore")
     if gitignore.exists():
-        with open(gitignore, "r") as f:
+        with open(gitignore) as f:
             content = f.read()
             if "*.env" in content and "auth_tokens" in content:
                 results["gitignore_updated"] = True
@@ -100,7 +99,7 @@ def validate_security_configuration() -> Dict:
     return results
 
 
-def validate_dependency_consistency() -> Dict:
+def validate_dependency_consistency() -> dict:
     """Validate dependency management improvements."""
     print("📦 Validating dependency consistency...")
 
@@ -127,7 +126,7 @@ def validate_dependency_consistency() -> Dict:
 
     for package_file in package_files:
         try:
-            with open(package_file, "r") as f:
+            with open(package_file) as f:
                 data = json.load(f)
                 if "dependencies" in data and isinstance(data["dependencies"], dict):
                     clean_package_count += 1
@@ -148,7 +147,7 @@ def validate_dependency_consistency() -> Dict:
     return results
 
 
-def validate_quantumagi_deployment() -> Dict:
+def validate_quantumagi_deployment() -> dict:
     """Validate Quantumagi deployment integrity."""
     print("⚡ Validating Quantumagi deployment...")
 
@@ -207,7 +206,7 @@ def validate_quantumagi_deployment() -> Dict:
     constitution_file = blockchain_path / "constitution_data.json"
     if constitution_file.exists():
         try:
-            with open(constitution_file, "r") as f:
+            with open(constitution_file) as f:
                 constitution_data = json.load(f)
                 if "constitution_hash" in constitution_data:
                     results["constitution_data"] = True
@@ -220,7 +219,7 @@ def validate_quantumagi_deployment() -> Dict:
     return results
 
 
-def validate_service_configuration() -> Dict:
+def validate_service_configuration() -> dict:
     """Validate service configuration integrity."""
     print("⚙️ Validating service configuration...")
 
@@ -236,7 +235,7 @@ def validate_service_configuration() -> Dict:
     service_registry = Path("service_registry_config.json")
     if service_registry.exists():
         try:
-            with open(service_registry, "r") as f:
+            with open(service_registry) as f:
                 registry_data = json.load(f)
                 if "services" in registry_data:
                     results["service_registry"] = True
@@ -263,7 +262,7 @@ def validate_service_configuration() -> Dict:
     return results
 
 
-def generate_validation_report(validation_results: Dict) -> str:
+def generate_validation_report(validation_results: dict) -> str:
     """Generate comprehensive validation report."""
 
     report = {
@@ -281,7 +280,7 @@ def generate_validation_report(validation_results: Dict) -> str:
     }
 
     # Calculate summary
-    for validation_name, result in validation_results.items():
+    for _validation_name, result in validation_results.items():
         status = result.get("status", "UNKNOWN")
         if status == "PASS":
             report["summary"]["passed"] += 1

@@ -91,7 +91,7 @@ def simulate_fidelity_history():
         print(f"📊 Average score: {avg_score:.3f} ({avg_score*100:.1f}%)")
 
         # Show recent scores
-        print(f"\n📋 Recent scores:")
+        print("\n📋 Recent scores:")
         for entry in history[-5:]:
             score = entry["score"]
             if score >= 0.85:
@@ -152,7 +152,7 @@ def test_alert_generation():
 
         # Verify expectation
         if alert_level == expected:
-            print(f"   ✅ Test PASSED")
+            print("   ✅ Test PASSED")
         else:
             print(f"   ❌ Test FAILED (got {alert_level}, expected {expected})")
         print()

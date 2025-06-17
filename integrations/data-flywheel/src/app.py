@@ -14,10 +14,10 @@
 # limitations under the License.
 from fastapi import FastAPI
 
-from src.api.db import init_db
-from src.api.endpoints import router as api_router
-from src.lib.nemo.llm_as_judge import validate_llm_judge
-from src.log_utils import setup_logging
+from services.core.api.db import init_db
+from services.core.api.endpoints import router as api_router
+from services.core.lib.nemo.llm_as_judge import validate_llm_judge
+from services.core.log_utils import setup_logging
 
 logger = setup_logging("data_flywheel.app")
 

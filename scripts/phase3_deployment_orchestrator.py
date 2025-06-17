@@ -12,7 +12,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 
 class DeploymentOrchestrator:
@@ -158,7 +158,7 @@ class DeploymentOrchestrator:
             }
         )
 
-    async def execute_step(self, step: Dict[str, Any]) -> bool:
+    async def execute_step(self, step: dict[str, Any]) -> bool:
         """Execute a single deployment step"""
         step_name = step["name"]
         description = step["description"]

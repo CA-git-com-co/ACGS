@@ -37,7 +37,7 @@ The comprehensive inspection of the ACGS-1 constitutional governance system has 
 **Resolution**: Updated all port mappings in `docs/api/README.md` to match correct service assignments
 
 #### 3. **Outdated Path References** ✅ RESOLVED
-**Issue**: 32 files contained outdated `src/backend/` path references instead of new `services/` structure
+**Issue**: 32 files contained outdated `services/` path references instead of new `services/` structure
 
 **Files Updated**: 32 files with 177 total path replacements
 - Shell scripts: 15 files updated

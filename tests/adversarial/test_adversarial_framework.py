@@ -12,7 +12,7 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -73,7 +73,7 @@ class AdversarialTestRunner:
         self.framework = AdversarialTestingFramework(self.config)
         self.hardening_generator = SecurityHardeningRecommendations()
 
-    async def run_comprehensive_assessment(self) -> Dict[str, Any]:
+    async def run_comprehensive_assessment(self) -> dict[str, Any]:
         """Run comprehensive adversarial testing assessment."""
 
         logger.info("🚀 Starting ACGS-PGP Adversarial Testing Framework")
@@ -140,7 +140,7 @@ class AdversarialTestRunner:
 
     def _calculate_assessment_metrics(
         self, adversarial_report, hardening_report
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Calculate comprehensive assessment metrics."""
 
         # Vulnerability detection metrics

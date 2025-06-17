@@ -8,11 +8,11 @@ import logging
 import threading
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 # Local implementations to avoid shared module dependencies
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 import psutil
@@ -42,10 +42,10 @@ class AggregationStrategy(Enum):
 class ParallelTask:
     task_id: str
     task_type: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
     status: TaskStatus = TaskStatus.PENDING
     priority: TaskPriority = TaskPriority.MEDIUM
-    dependencies: List[str] = None
+    dependencies: list[str] = None
 
     def __post_init__(self):
         # requires: Valid input parameters
@@ -58,7 +58,7 @@ class ParallelTask:
 @dataclass
 class ValidationBatch:
     batch_id: str
-    tasks: List[ParallelTask]
+    tasks: list[ParallelTask]
     batch_size: int = 10
 
 
@@ -67,20 +67,20 @@ class ValidationResult:
     task_id: str
     success: bool
     result: Any
-    error: Optional[str] = None
+    error: str | None = None
 
 
 @dataclass
 class AggregatedResult:
     batch_id: str
-    results: List[ValidationResult]
+    results: list[ValidationResult]
     success_rate: float
-    aggregated_data: Dict[str, Any]
+    aggregated_data: dict[str, Any]
 
 
 # Mock classes for processing components
 class DependencyGraphAnalyzer:
-    def analyze_dependencies(self, tasks: List[ParallelTask]) -> Dict[str, List[str]]:
+    def analyze_dependencies(self, tasks: list[ParallelTask]) -> dict[str, list[str]]:
         return {}
 
 
@@ -91,7 +91,7 @@ class TaskPartitioner:
         # sha256: func_hash
         self.max_batch_size = max_batch_size
 
-    def partition_tasks(self, tasks: List[ParallelTask]) -> List[ValidationBatch]:
+    def partition_tasks(self, tasks: list[ParallelTask]) -> list[ValidationBatch]:
         batches = []
         for i in range(0, len(tasks), self.max_batch_size):
             batch_tasks = tasks[i : i + self.max_batch_size]
@@ -128,7 +128,7 @@ class ParallelExecutor:
 
 
 class ByzantineFaultTolerantAggregator:
-    def aggregate_results(self, results: List[ValidationResult]) -> AggregatedResult:
+    def aggregate_results(self, results: list[ValidationResult]) -> AggregatedResult:
         success_count = sum(1 for r in results if r.success)
         return AggregatedResult(
             batch_id="aggregated",
@@ -199,7 +199,9 @@ class PipelineConfig:
     default_timeout_seconds: float = 30.0
     enable_celery: bool = True
     enable_websocket_streaming: bool = True
-    aggregation_strategy: AggregationStrategy = AggregationStrategy.BYZANTINE_FAULT_TOLERANT
+    aggregation_strategy: AggregationStrategy = (
+        AggregationStrategy.BYZANTINE_FAULT_TOLERANT
+    )
     cache_ttl_seconds: int = 300
     retry_failed_tasks: bool = True
     max_retries: int = 3
@@ -248,9 +250,9 @@ class ResourceMetrics:
 class ConstitutionalValidationContext:
     """Context for constitutional compliance validation."""
 
-    amendment_id: Optional[int] = None
-    voting_session_id: Optional[str] = None
-    constitutional_principles: List[Dict[str, Any]] = None
+    amendment_id: int | None = None
+    voting_session_id: str | None = None
+    constitutional_principles: list[dict[str, Any]] = None
     governance_workflow_stage: str = "validation"
     democratic_legitimacy_required: bool = True
 
@@ -270,9 +272,9 @@ class ResourceMonitor:
         # ensures: Correct function execution
         # sha256: func_hash
         self.config = config
-        self.metrics_history: List[ResourceMetrics] = []
+        self.metrics_history: list[ResourceMetrics] = []
         self.monitoring_active = False
-        self.monitor_thread: Optional[threading.Thread] = None
+        self.monitor_thread: threading.Thread | None = None
         self.lock = threading.Lock()
 
     def start_monitoring(self):
@@ -282,7 +284,9 @@ class ResourceMonitor:
         """Start resource monitoring in background thread."""
         if not self.monitoring_active:
             self.monitoring_active = True
-            self.monitor_thread = threading.Thread(target=self._monitor_loop, daemon=True)
+            self.monitor_thread = threading.Thread(
+                target=self._monitor_loop, daemon=True
+            )
             self.monitor_thread.start()
             logger.info("Resource monitoring started")
 
@@ -321,25 +325,29 @@ class ResourceMonitor:
             memory_percent=psutil.virtual_memory().percent,
             active_tasks=0,  # Will be updated by pipeline
             queue_size=0,  # Will be updated by pipeline
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
-    def get_current_metrics(self) -> Optional[ResourceMetrics]:
+    def get_current_metrics(self) -> ResourceMetrics | None:
         """Get most recent resource metrics."""
         with self.lock:
             return self.metrics_history[-1] if self.metrics_history else None
 
     def get_average_utilization(self, window_minutes: int = 5) -> float:
         """Get average resource utilization over time window."""
-        cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=window_minutes)
+        cutoff_time = datetime.now(UTC) - timedelta(minutes=window_minutes)
 
         with self.lock:
-            recent_metrics = [m for m in self.metrics_history if m.timestamp >= cutoff_time]
+            recent_metrics = [
+                m for m in self.metrics_history if m.timestamp >= cutoff_time
+            ]
 
         if not recent_metrics:
             return 0.0
 
-        avg_efficiency = sum(m.utilization_efficiency for m in recent_metrics) / len(recent_metrics)
+        avg_efficiency = sum(m.utilization_efficiency for m in recent_metrics) / len(
+            recent_metrics
+        )
         return avg_efficiency
 
     def should_scale_up(self) -> bool:
@@ -350,7 +358,8 @@ class ResourceMonitor:
 
         # Scale up if utilization is below target and queue is growing
         return (
-            current_metrics.utilization_efficiency < self.config.target_resource_utilization * 0.8
+            current_metrics.utilization_efficiency
+            < self.config.target_resource_utilization * 0.8
             and current_metrics.queue_size > 10
         )
 
@@ -362,31 +371,38 @@ class ResourceMonitor:
 
         # Scale down if utilization is too high
         return (
-            current_metrics.utilization_efficiency > self.config.target_resource_utilization * 1.1
+            current_metrics.utilization_efficiency
+            > self.config.target_resource_utilization * 1.1
         )
 
 
 class ParallelValidationPipeline:
     """Main parallel validation pipeline for FV service."""
 
-    def __init__(self, config: Optional[PipelineConfig] = None):
+    def __init__(self, config: PipelineConfig | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         self.config = config or PipelineConfig()
         self.dependency_analyzer = DependencyGraphAnalyzer()
-        self.task_partitioner = TaskPartitioner(max_batch_size=self.config.max_batch_size)
-        self.parallel_executor = ParallelExecutor(max_concurrent=self.config.max_concurrent_tasks)
+        self.task_partitioner = TaskPartitioner(
+            max_batch_size=self.config.max_batch_size
+        )
+        self.parallel_executor = ParallelExecutor(
+            max_concurrent=self.config.max_concurrent_tasks
+        )
         self.aggregator = ByzantineFaultTolerantAggregator()
         self.metrics = get_metrics("fv_service")
 
         # Task 7: Resource monitoring and adaptive scaling
         self.resource_monitor = (
-            ResourceMonitor(self.config) if self.config.enable_adaptive_scaling else None
+            ResourceMonitor(self.config)
+            if self.config.enable_adaptive_scaling
+            else None
         )
         self.current_scale_factor = 1.0
-        self.task_queue: List[ParallelTask] = []
-        self.active_tasks: Dict[str, ParallelTask] = {}
+        self.task_queue: list[ParallelTask] = []
+        self.active_tasks: dict[str, ParallelTask] = {}
 
         # Task 7: Constitutional validation integration
         self.constitutional_validator = None
@@ -480,7 +496,7 @@ class ParallelValidationPipeline:
         self,
         request: VerificationRequest,
         enable_parallel: bool = True,
-        constitutional_context: Optional[ConstitutionalValidationContext] = None,
+        constitutional_context: ConstitutionalValidationContext | None = None,
     ) -> VerificationResponse:
         """Process verification request with enhanced parallel validation."""
         start_time = time.time()
@@ -522,7 +538,9 @@ class ParallelValidationPipeline:
                 )
             else:
                 # Use sequential processing for single rule or when parallel disabled
-                response = await self._process_sequential_verification(request, request_id)
+                response = await self._process_sequential_verification(
+                    request, request_id
+                )
 
             # Cache result
             await self._cache_result(request_id, request, response)
@@ -608,7 +626,9 @@ class ParallelValidationPipeline:
         """Scale up processing capacity."""
         if self.current_scale_factor < 2.0:  # Max 2x scaling
             self.current_scale_factor *= 1.2
-            new_concurrent = int(self.config.max_concurrent_tasks * self.current_scale_factor)
+            new_concurrent = int(
+                self.config.max_concurrent_tasks * self.current_scale_factor
+            )
             self.parallel_executor.max_concurrent = new_concurrent
             logger.info(
                 f"Scaled up to {new_concurrent} concurrent tasks (factor: {self.current_scale_factor:.2f})"
@@ -621,7 +641,9 @@ class ParallelValidationPipeline:
         """Scale down processing capacity."""
         if self.current_scale_factor > 0.5:  # Min 0.5x scaling
             self.current_scale_factor *= 0.8
-            new_concurrent = int(self.config.max_concurrent_tasks * self.current_scale_factor)
+            new_concurrent = int(
+                self.config.max_concurrent_tasks * self.current_scale_factor
+            )
             self.parallel_executor.max_concurrent = new_concurrent
             logger.info(
                 f"Scaled down to {new_concurrent} concurrent tasks (factor: {self.current_scale_factor:.2f})"
@@ -638,19 +660,25 @@ class ParallelValidationPipeline:
             # Check if request involves constitutional amendments
             if context.amendment_id:
                 # Validate amendment proposal compliance
-                amendment_valid = await self._validate_amendment_compliance(context.amendment_id)
+                amendment_valid = await self._validate_amendment_compliance(
+                    context.amendment_id
+                )
                 if not amendment_valid:
                     return False
 
             # Check democratic legitimacy requirements
             if context.democratic_legitimacy_required and context.voting_session_id:
-                voting_valid = await self._validate_voting_legitimacy(context.voting_session_id)
+                voting_valid = await self._validate_voting_legitimacy(
+                    context.voting_session_id
+                )
                 if not voting_valid:
                     return False
 
             # Validate against constitutional principles
             for principle in context.constitutional_principles:
-                principle_valid = await self._validate_against_principle(request, principle)
+                principle_valid = await self._validate_against_principle(
+                    request, principle
+                )
                 if not principle_valid:
                     return False
 
@@ -670,8 +698,10 @@ class ParallelValidationPipeline:
         try:
             # Check amendment status and voting requirements
             if self.constitutional_validator:
-                amendment_status = await self.constitutional_validator.get_amendment_status(
-                    amendment_id
+                amendment_status = (
+                    await self.constitutional_validator.get_amendment_status(
+                        amendment_id
+                    )
                 )
                 return amendment_status.get("status") in ["approved", "under_review"]
             return True
@@ -684,8 +714,10 @@ class ParallelValidationPipeline:
         try:
             # Check voting session validity and quorum
             if self.constitutional_validator:
-                voting_status = await self.constitutional_validator.get_voting_session_status(
-                    voting_session_id
+                voting_status = (
+                    await self.constitutional_validator.get_voting_session_status(
+                        voting_session_id
+                    )
                 )
                 return voting_status.get("quorum_met", False)
             return True
@@ -694,7 +726,7 @@ class ParallelValidationPipeline:
             return False
 
     async def _validate_against_principle(
-        self, request: VerificationRequest, principle: Dict[str, Any]
+        self, request: VerificationRequest, principle: dict[str, Any]
     ) -> bool:
         """Validate request against a constitutional principle."""
         try:
@@ -721,9 +753,11 @@ class ParallelValidationPipeline:
             "request_id": request_id,
             "latency_ms": latency_ms,
             "threshold_ms": self.config.performance_alert_threshold_ms,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "resource_metrics": (
-                self.resource_monitor.get_current_metrics() if self.resource_monitor else None
+                self.resource_monitor.get_current_metrics()
+                if self.resource_monitor
+                else None
             ),
         }
 
@@ -759,7 +793,7 @@ class ParallelValidationPipeline:
         self,
         request: VerificationRequest,
         request_id: str,
-        constitutional_context: Optional[ConstitutionalValidationContext] = None,
+        constitutional_context: ConstitutionalValidationContext | None = None,
     ) -> VerificationResponse:
         """Enhanced parallel verification with federated support."""
         logger.info(
@@ -784,7 +818,7 @@ class ParallelValidationPipeline:
         self,
         request: VerificationRequest,
         request_id: str,
-        constitutional_context: Optional[ConstitutionalValidationContext] = None,
+        constitutional_context: ConstitutionalValidationContext | None = None,
     ) -> VerificationResponse:
         """Process verification using federated evaluation framework."""
         try:
@@ -806,17 +840,23 @@ class ParallelValidationPipeline:
             }
 
             # Submit to federated coordinator
-            task_id = await self.federated_coordinator.coordinate_evaluation(federated_request)
+            task_id = await self.federated_coordinator.coordinate_evaluation(
+                federated_request
+            )
 
             # Wait for federated results with timeout
             timeout = self.config.default_timeout_seconds
             start_time = time.time()
 
             while time.time() - start_time < timeout:
-                federated_result = await self.federated_coordinator.get_evaluation_result(task_id)
+                federated_result = (
+                    await self.federated_coordinator.get_evaluation_result(task_id)
+                )
                 if federated_result and federated_result.get("status") == "completed":
                     # Convert federated result to verification response
-                    return self._convert_federated_to_verification_response(federated_result)
+                    return self._convert_federated_to_verification_response(
+                        federated_result
+                    )
 
                 await asyncio.sleep(1)
 
@@ -832,13 +872,14 @@ class ParallelValidationPipeline:
             return await self._process_parallel_verification(request, request_id)
 
     def _convert_federated_to_verification_response(
-        self, federated_result: Dict[str, Any]
+        self, federated_result: dict[str, Any]
     ) -> VerificationResponse:
         """Convert federated evaluation result to verification response."""
         # Update federated consensus metrics
         consensus_level = federated_result.get("consensus_level", 0.0)
         self.pipeline_metrics["federated_consensus_rate"] = (
-            self.pipeline_metrics["federated_consensus_rate"] * 0.9 + consensus_level * 0.1
+            self.pipeline_metrics["federated_consensus_rate"] * 0.9
+            + consensus_level * 0.1
         )
 
         # Convert to verification results
@@ -868,7 +909,9 @@ class ParallelValidationPipeline:
         self, request: VerificationRequest, request_id: str
     ) -> VerificationResponse:
         """Process verification using parallel pipeline."""
-        logger.info(f"Processing parallel verification for {len(request.policy_rule_refs)} rules")
+        logger.info(
+            f"Processing parallel verification for {len(request.policy_rule_refs)} rules"
+        )
 
         # Create parallel tasks
         tasks = []
@@ -878,7 +921,9 @@ class ParallelValidationPipeline:
                 payload={
                     "rule_id": rule_ref.id,
                     "rule_version": rule_ref.version,
-                    "ac_principle_refs": [ref.dict() for ref in (request.ac_principle_refs or [])],
+                    "ac_principle_refs": [
+                        ref.dict() for ref in (request.ac_principle_refs or [])
+                    ],
                     "verification_mode": "standard",
                     "request_id": request_id,
                 },
@@ -913,7 +958,7 @@ class ParallelValidationPipeline:
 
     async def _execute_batch_with_celery(
         self, batch: ValidationBatch, request_id: str
-    ) -> List[ValidationResult]:
+    ) -> list[ValidationResult]:
         """Execute batch using Celery distributed processing."""
         try:
             batch_id = await task_manager.submit_batch(
@@ -947,7 +992,7 @@ class ParallelValidationPipeline:
 
     async def _execute_batch_locally(
         self, batch: ValidationBatch, request_id: str
-    ) -> List[ValidationResult]:
+    ) -> list[ValidationResult]:
         """Execute batch using local parallel processing."""
         results = []
 
@@ -1016,7 +1061,9 @@ class ParallelValidationPipeline:
 
         return valid_results
 
-    async def _execute_policy_verification_task(self, task: ParallelTask) -> Dict[str, Any]:
+    async def _execute_policy_verification_task(
+        self, task: ParallelTask
+    ) -> dict[str, Any]:
         """Execute policy verification task."""
         # Import verification logic
         from ...services.ac_client import ac_service_client
@@ -1035,7 +1082,9 @@ class ParallelValidationPipeline:
             # Fetch AC principles
             principles = []
             if ac_principle_ids:
-                principles = await ac_service_client.get_principles_by_ids(ac_principle_ids)
+                principles = await ac_service_client.get_principles_by_ids(
+                    ac_principle_ids
+                )
 
             # Execute verification
             verification_results = await verify_policy_rules(rules, principles)
@@ -1055,7 +1104,7 @@ class ParallelValidationPipeline:
             logger.error(f"Policy verification task failed: {e}")
             return {"status": "error", "error": str(e)}
 
-    async def _execute_bias_detection_task(self, task: ParallelTask) -> Dict[str, Any]:
+    async def _execute_bias_detection_task(self, task: ParallelTask) -> dict[str, Any]:
         """Execute bias detection task."""
         # Mock implementation - replace with actual bias detection
         await asyncio.sleep(0.1)  # Simulate processing
@@ -1067,7 +1116,7 @@ class ParallelValidationPipeline:
             "confidence_score": 0.85,
         }
 
-    async def _execute_safety_check_task(self, task: ParallelTask) -> Dict[str, Any]:
+    async def _execute_safety_check_task(self, task: ParallelTask) -> dict[str, Any]:
         """Execute safety check task."""
         # Mock implementation - replace with actual safety check
         await asyncio.sleep(0.1)  # Simulate processing
@@ -1089,12 +1138,16 @@ class ParallelValidationPipeline:
 
         try:
             # Fetch policy rules
-            rules = await integrity_service_client.get_policy_rules_by_ids(request.policy_rule_ids)
+            rules = await integrity_service_client.get_policy_rules_by_ids(
+                request.policy_rule_ids
+            )
 
             # Fetch AC principles
             principles = []
             if request.ac_principle_ids:
-                principles = await ac_service_client.get_principles_by_ids(request.ac_principle_ids)
+                principles = await ac_service_client.get_principles_by_ids(
+                    request.ac_principle_ids
+                )
 
             # Execute verification
             verification_results = await verify_policy_rules(rules, principles)
@@ -1118,7 +1171,7 @@ class ParallelValidationPipeline:
             )
 
     def _convert_to_verification_response(
-        self, aggregated: AggregatedResult, individual_results: List[ValidationResult]
+        self, aggregated: AggregatedResult, individual_results: list[ValidationResult]
     ) -> VerificationResponse:
         """Convert aggregated result to verification response."""
         # Convert individual results to VerificationResult objects
@@ -1155,13 +1208,11 @@ class ParallelValidationPipeline:
 
     async def _check_cache(
         self, request_id: str, request: VerificationRequest
-    ) -> Optional[VerificationResponse]:
+    ) -> VerificationResponse | None:
         """Check Redis cache for existing results."""
         try:
             redis_client = await get_redis_client("fv_service")
-            cache_key = (
-                f"verification:{hash(str(sorted([ref.id for ref in request.policy_rule_refs])))}"
-            )
+            cache_key = f"verification:{hash(str(sorted([ref.id for ref in request.policy_rule_refs])))}"
             cached_data = await redis_client.get_json(cache_key)
 
             if cached_data:
@@ -1182,9 +1233,7 @@ class ParallelValidationPipeline:
         """Cache verification result."""
         try:
             redis_client = await get_redis_client("fv_service")
-            cache_key = (
-                f"verification:{hash(str(sorted([ref.id for ref in request.policy_rule_refs])))}"
-            )
+            cache_key = f"verification:{hash(str(sorted([ref.id for ref in request.policy_rule_refs])))}"
 
             # Convert response to dict for caching
             response_dict = {
@@ -1193,7 +1242,9 @@ class ParallelValidationPipeline:
                 "summary_message": response.summary_message,
             }
 
-            await redis_client.set_json(cache_key, response_dict, ttl=self.config.cache_ttl_seconds)
+            await redis_client.set_json(
+                cache_key, response_dict, ttl=self.config.cache_ttl_seconds
+            )
 
         except Exception as e:
             logger.error(f"Cache storage failed: {e}")
@@ -1216,7 +1267,8 @@ class ParallelValidationPipeline:
         # Update average latency (exponential moving average)
         alpha = 0.1
         self.pipeline_metrics["average_latency_ms"] = (
-            alpha * latency_ms + (1 - alpha) * self.pipeline_metrics["average_latency_ms"]
+            alpha * latency_ms
+            + (1 - alpha) * self.pipeline_metrics["average_latency_ms"]
         )
 
         # Update success rate
@@ -1225,9 +1277,11 @@ class ParallelValidationPipeline:
                 0.9 * self.pipeline_metrics["success_rate"] + 0.1
             )
         else:
-            self.pipeline_metrics["success_rate"] = 0.9 * self.pipeline_metrics["success_rate"]
+            self.pipeline_metrics["success_rate"] = (
+                0.9 * self.pipeline_metrics["success_rate"]
+            )
 
-    async def get_pipeline_statistics(self) -> Dict[str, Any]:
+    async def get_pipeline_statistics(self) -> dict[str, Any]:
         """Get pipeline performance statistics."""
         dependency_stats = self.dependency_analyzer.get_task_statistics()
 
@@ -1241,7 +1295,7 @@ class ParallelValidationPipeline:
                 else 0
             ),
             "celery_available": CELERY_AVAILABLE,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     async def shutdown(self) -> None:

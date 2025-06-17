@@ -16,7 +16,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -63,14 +63,14 @@ class ResolutionResult:
 
     success: bool
     strategy_used: ResolutionStrategy
-    resolution_details: Dict[str, Any]
+    resolution_details: dict[str, Any]
     confidence_score: float
     validation_passed: bool
-    generated_patch: Optional[str]
+    generated_patch: str | None
     escalation_required: bool
-    escalation_reason: Optional[str]
+    escalation_reason: str | None
     processing_time: float
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -81,8 +81,8 @@ class StrategyEvaluation:
     applicability_score: float
     expected_success_rate: float
     complexity_score: float
-    resource_requirements: Dict[str, Any]
-    risk_assessment: Dict[str, float]
+    resource_requirements: dict[str, Any]
+    risk_assessment: dict[str, float]
 
 
 class AutomatedResolutionEngine:
@@ -93,7 +93,7 @@ class AutomatedResolutionEngine:
     to achieve 80% auto-resolution target.
     """
 
-    def __init__(self, qec_resolver: Optional[QECConflictResolver] = None):
+    def __init__(self, qec_resolver: QECConflictResolver | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -129,8 +129,8 @@ class AutomatedResolutionEngine:
         self,
         db: AsyncSession,
         conflict: ACConflictResolution,
-        detection_result: Optional[ConflictDetectionResult] = None,
-        force_strategy: Optional[ResolutionStrategy] = None,
+        detection_result: ConflictDetectionResult | None = None,
+        force_strategy: ResolutionStrategy | None = None,
     ) -> ResolutionResult:
         """
         Attempt to automatically resolve a constitutional conflict.
@@ -154,7 +154,9 @@ class AutomatedResolutionEngine:
             principles = await self._get_conflict_principles(db, conflict)
 
             if not principles:
-                return self._create_failure_result("No principles found for conflict", start_time)
+                return self._create_failure_result(
+                    "No principles found for conflict", start_time
+                )
 
             # Evaluate available strategies
             if force_strategy:
@@ -226,7 +228,7 @@ class AutomatedResolutionEngine:
 
     async def _get_conflict_principles(
         self, db: AsyncSession, conflict: ACConflictResolution
-    ) -> List[Principle]:
+    ) -> list[Principle]:
         """Get principles involved in the conflict."""
         from sqlalchemy import select
 
@@ -240,9 +242,9 @@ class AutomatedResolutionEngine:
     async def _evaluate_strategies(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
-    ) -> List[StrategyEvaluation]:
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
+    ) -> list[StrategyEvaluation]:
         """Evaluate available resolution strategies for the conflict."""
         evaluations = []
 
@@ -263,7 +265,9 @@ class AutomatedResolutionEngine:
         for strategy, evaluator in strategy_evaluators.items():
             try:
                 evaluation = await evaluator(conflict, principles, detection_result)
-                if evaluation.applicability_score > 0.3:  # Minimum applicability threshold
+                if (
+                    evaluation.applicability_score > 0.3
+                ):  # Minimum applicability threshold
                     evaluations.append(evaluation)
             except Exception as e:
                 logger.warning(f"Failed to evaluate strategy {strategy.value}: {e}")
@@ -278,25 +282,31 @@ class AutomatedResolutionEngine:
     async def _evaluate_weighted_priority(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
     ) -> StrategyEvaluation:
         """Evaluate weighted priority strategy."""
         # Check if principles have priority weights
         has_priorities = any(
-            hasattr(p, "priority_weight") and p.priority_weight is not None for p in principles
+            hasattr(p, "priority_weight") and p.priority_weight is not None
+            for p in principles
         )
 
         applicability = 0.9 if has_priorities else 0.4
 
         # Higher applicability for priority conflicts
-        if detection_result and detection_result.conflict_type == ConflictType.PRIORITY_CONFLICT:
+        if (
+            detection_result
+            and detection_result.conflict_type == ConflictType.PRIORITY_CONFLICT
+        ):
             applicability = min(applicability + 0.3, 1.0)
 
         return StrategyEvaluation(
             strategy=ResolutionStrategy.WEIGHTED_PRIORITY,
             applicability_score=applicability,
-            expected_success_rate=self.strategy_success_rates[ResolutionStrategy.WEIGHTED_PRIORITY],
+            expected_success_rate=self.strategy_success_rates[
+                ResolutionStrategy.WEIGHTED_PRIORITY
+            ],
             complexity_score=0.3,  # Low complexity
             resource_requirements={"computation": "low", "human_input": "none"},
             risk_assessment={"data_loss": 0.1, "inconsistency": 0.2},
@@ -305,8 +315,8 @@ class AutomatedResolutionEngine:
     async def _evaluate_precedence_based(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
     ) -> StrategyEvaluation:
         """Evaluate precedence-based strategy."""
         # Check for clear precedence relationships
@@ -324,7 +334,9 @@ class AutomatedResolutionEngine:
         return StrategyEvaluation(
             strategy=ResolutionStrategy.PRECEDENCE_BASED,
             applicability_score=applicability,
-            expected_success_rate=self.strategy_success_rates[ResolutionStrategy.PRECEDENCE_BASED],
+            expected_success_rate=self.strategy_success_rates[
+                ResolutionStrategy.PRECEDENCE_BASED
+            ],
             complexity_score=0.2,  # Very low complexity
             resource_requirements={"computation": "low", "human_input": "none"},
             risk_assessment={"data_loss": 0.05, "inconsistency": 0.15},
@@ -333,14 +345,17 @@ class AutomatedResolutionEngine:
     async def _evaluate_scope_partitioning(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
     ) -> StrategyEvaluation:
         """Evaluate scope partitioning strategy."""
         # Check for scope overlap conflicts
         applicability = 0.6  # Default applicability
 
-        if detection_result and detection_result.conflict_type == ConflictType.SCOPE_OVERLAP:
+        if (
+            detection_result
+            and detection_result.conflict_type == ConflictType.SCOPE_OVERLAP
+        ):
             applicability = 0.95
 
         return StrategyEvaluation(
@@ -357,8 +372,8 @@ class AutomatedResolutionEngine:
     async def _evaluate_semantic_reconciliation(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
     ) -> StrategyEvaluation:
         """Evaluate semantic reconciliation strategy."""
         applicability = 0.5  # Default applicability
@@ -383,8 +398,8 @@ class AutomatedResolutionEngine:
     async def _evaluate_contextual_balancing(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
     ) -> StrategyEvaluation:
         """Evaluate contextual balancing strategy."""
         return StrategyEvaluation(
@@ -401,8 +416,8 @@ class AutomatedResolutionEngine:
     async def _evaluate_hierarchical_control(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
     ) -> StrategyEvaluation:
         """Evaluate hierarchical control strategy."""
         return StrategyEvaluation(
@@ -419,13 +434,16 @@ class AutomatedResolutionEngine:
     async def _evaluate_temporal_sequencing(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
     ) -> StrategyEvaluation:
         """Evaluate temporal sequencing strategy."""
         applicability = 0.4  # Default low applicability
 
-        if detection_result and detection_result.conflict_type == ConflictType.TEMPORAL_CONFLICT:
+        if (
+            detection_result
+            and detection_result.conflict_type == ConflictType.TEMPORAL_CONFLICT
+        ):
             applicability = 0.85
 
         return StrategyEvaluation(
@@ -442,14 +460,16 @@ class AutomatedResolutionEngine:
     async def _evaluate_consensus_based(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
     ) -> StrategyEvaluation:
         """Evaluate consensus-based strategy."""
         return StrategyEvaluation(
             strategy=ResolutionStrategy.CONSENSUS_BASED,
             applicability_score=0.6,
-            expected_success_rate=self.strategy_success_rates[ResolutionStrategy.CONSENSUS_BASED],
+            expected_success_rate=self.strategy_success_rates[
+                ResolutionStrategy.CONSENSUS_BASED
+            ],
             complexity_score=0.8,
             resource_requirements={"computation": "high", "human_input": "high"},
             risk_assessment={"data_loss": 0.1, "inconsistency": 0.2},
@@ -458,8 +478,8 @@ class AutomatedResolutionEngine:
     async def _evaluate_multi_objective(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
     ) -> StrategyEvaluation:
         """Evaluate multi-objective optimization strategy."""
         return StrategyEvaluation(
@@ -479,13 +499,16 @@ class AutomatedResolutionEngine:
     async def _evaluate_stakeholder_mediation(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
-        detection_result: Optional[ConflictDetectionResult],
+        principles: list[Principle],
+        detection_result: ConflictDetectionResult | None,
     ) -> StrategyEvaluation:
         """Evaluate stakeholder mediation strategy."""
         applicability = 0.3  # Default low applicability
 
-        if detection_result and detection_result.conflict_type == ConflictType.STAKEHOLDER_CONFLICT:
+        if (
+            detection_result
+            and detection_result.conflict_type == ConflictType.STAKEHOLDER_CONFLICT
+        ):
             applicability = 0.8
 
         return StrategyEvaluation(

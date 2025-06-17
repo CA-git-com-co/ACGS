@@ -17,7 +17,7 @@ import asyncio
 import sys
 import time
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 # Test imports
 try:
@@ -52,7 +52,7 @@ class Phase3EnhancedValidator:
         self.monitoring_service = None
         self.security_service = None
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run comprehensive Phase 3 enhanced validation."""
         print("🚀 Phase 3 Enhanced Implementation Validation")
         print("=" * 60)
@@ -383,7 +383,7 @@ class Phase3EnhancedValidator:
             )
             return False
 
-    def _generate_test_summary(self) -> Dict[str, Any]:
+    def _generate_test_summary(self) -> dict[str, Any]:
         """Generate comprehensive test summary."""
         passed_tests = [t for t in self.test_results if t["status"] == "passed"]
         failed_tests = [t for t in self.test_results if t["status"] == "failed"]

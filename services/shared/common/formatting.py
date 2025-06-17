@@ -7,10 +7,10 @@ duplicate formatting logic across services.
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ def format_datetime(
 
     # Ensure timezone awareness
     if timezone_aware and dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
 
     if format_type == DateTimeFormat.ISO:
         return dt.isoformat()
@@ -90,10 +90,10 @@ def format_datetime(
 def format_response(
     data: Any = None,
     status: ResponseStatus = ResponseStatus.SUCCESS,
-    message: Optional[str] = None,
-    metadata: Optional[Dict[str, Any]] = None,
-    pagination: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    message: str | None = None,
+    metadata: dict[str, Any] | None = None,
+    pagination: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Format standardized API response.
 
@@ -109,7 +109,7 @@ def format_response(
     """
     response = {
         "status": status.value,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
     if data is not None:
@@ -130,9 +130,9 @@ def format_response(
 def format_error(
     error_message: str,
     error_code: str = "UNKNOWN_ERROR",
-    details: Optional[Dict[str, Any]] = None,
-    suggestions: Optional[List[str]] = None,
-) -> Dict[str, Any]:
+    details: dict[str, Any] | None = None,
+    suggestions: list[str] | None = None,
+) -> dict[str, Any]:
     """
     Format standardized error response.
 
@@ -150,7 +150,7 @@ def format_error(
         "error": {
             "message": error_message,
             "code": error_code,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         },
     }
 
@@ -164,8 +164,8 @@ def format_error(
 
 
 def format_pagination(
-    page: int, size: int, total_items: int, total_pages: Optional[int] = None
-) -> Dict[str, Any]:
+    page: int, size: int, total_items: int, total_pages: int | None = None
+) -> dict[str, Any]:
     """
     Format pagination information.
 
@@ -192,12 +192,12 @@ def format_pagination(
 
 
 def format_list_response(
-    items: List[Any],
+    items: list[Any],
     page: int = 1,
     size: int = 10,
-    total_items: Optional[int] = None,
-    message: Optional[str] = None,
-) -> Dict[str, Any]:
+    total_items: int | None = None,
+    message: str | None = None,
+) -> dict[str, Any]:
     """
     Format paginated list response.
 
@@ -222,10 +222,10 @@ def format_list_response(
 def format_health_check(
     service_name: str,
     status: str = "healthy",
-    version: Optional[str] = None,
-    dependencies: Optional[Dict[str, str]] = None,
-    metrics: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    version: str | None = None,
+    dependencies: dict[str, str] | None = None,
+    metrics: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Format health check response.
 
@@ -242,7 +242,7 @@ def format_health_check(
     health_data = {
         "service": service_name,
         "status": status,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
     if version:
@@ -258,10 +258,10 @@ def format_health_check(
 
 
 def format_metrics(
-    metrics: Dict[str, Any],
-    service_name: Optional[str] = None,
-    time_range: Optional[Dict[str, str]] = None,
-) -> Dict[str, Any]:
+    metrics: dict[str, Any],
+    service_name: str | None = None,
+    time_range: dict[str, str] | None = None,
+) -> dict[str, Any]:
     """
     Format metrics response.
 
@@ -294,7 +294,7 @@ def sanitize_for_json(data: Any) -> Any:
     Returns:
         JSON-serializable data
     """
-    if isinstance(data, (str, int, float, bool, type(None))):
+    if isinstance(data, str | int | float | bool | type(None)):
         return data
     elif isinstance(data, datetime):
         return data.isoformat()
@@ -304,7 +304,7 @@ def sanitize_for_json(data: Any) -> Any:
         return data.value
     elif isinstance(data, dict):
         return {key: sanitize_for_json(value) for key, value in data.items()}
-    elif isinstance(data, (list, tuple)):
+    elif isinstance(data, list | tuple):
         return [sanitize_for_json(item) for item in data]
     elif hasattr(data, "__dict__"):
         return sanitize_for_json(data.__dict__)
@@ -312,7 +312,7 @@ def sanitize_for_json(data: Any) -> Any:
         return str(data)
 
 
-def safe_json_dumps(data: Any, indent: Optional[int] = None) -> str:
+def safe_json_dumps(data: Any, indent: int | None = None) -> str:
     """
     Safely serialize data to JSON string.
 
@@ -331,7 +331,7 @@ def safe_json_dumps(data: Any, indent: Optional[int] = None) -> str:
         return json.dumps({"error": "Serialization failed", "message": str(e)})
 
 
-def format_validation_errors(errors: List[Dict[str, Any]]) -> Dict[str, Any]:
+def format_validation_errors(errors: list[dict[str, Any]]) -> dict[str, Any]:
     """
     Format validation errors for API response.
 

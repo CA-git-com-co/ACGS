@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -16,11 +16,13 @@ class FeedbackType(str, Enum):
 
 
 class FeedbackInput(BaseModel):
-    feedback_type: FeedbackType = Field(..., description="Type of feedback being provided")
+    feedback_type: FeedbackType = Field(
+        ..., description="Type of feedback being provided"
+    )
     feedback_value: Any = Field(
         ..., description="Value of the feedback (e.g., score, boolean, text)"
     )
-    context: Optional[Dict[str, Any]] = Field(
+    context: dict[str, Any] | None = Field(
         None, description="Contextual information related to the feedback"
     )
 
@@ -30,14 +32,14 @@ class FeedbackInput(BaseModel):
         # ensures: Correct function execution
         # sha256: func_hash
         if info.data["feedback_type"] == FeedbackType.accuracy:
-            if not isinstance(v, (int, float)) or not (0 <= v <= 1):
+            if not isinstance(v, int | float) or not (0 <= v <= 1):
                 raise ValueError("Accuracy feedback must be a float between 0 and 1")
         return v
 
 
 class FeedbackResponse(BaseModel):
     message: str
-    feedback_id: Optional[str] = None
+    feedback_id: str | None = None
     status: str
     timestamp: datetime
 
@@ -46,19 +48,25 @@ class FeedbackResponse(BaseModel):
 class LearningDataInput(BaseModel):
     data_type: str = Field(
         ...,
-        description=("Type of learning data (e.g., 'constitutional_amendment', " "'policy_log')"),
+        description=(
+            "Type of learning data (e.g., 'constitutional_amendment', " "'policy_log')"
+        ),
     )
-    content: Dict[str, Any] = Field(..., description="The actual data content")
-    source: Optional[str] = Field(
+    content: dict[str, Any] = Field(..., description="The actual data content")
+    source: str | None = Field(
         None,
-        description=("Source of the data (e.g., 'constitutional_council', " "'user_feedback')"),
+        description=(
+            "Source of the data (e.g., 'constitutional_council', " "'user_feedback')"
+        ),
     )
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    metadata: dict[str, Any] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
 
 
 class LearningDataResponse(BaseModel):
     message: str
-    data_id: Optional[str] = None
+    data_id: str | None = None
     status: str
     timestamp: datetime
 
@@ -78,7 +86,9 @@ class LearningStrategy(str, Enum):
 
 
 class WINAContinuousLearningSystemConfig(BaseModel):
-    enabled: bool = Field(True, description="Enable/disable the continuous learning system")
+    enabled: bool = Field(
+        True, description="Enable/disable the continuous learning system"
+    )
     learning_interval_seconds: int = Field(
         3600, ge=60, description="How often the system checks for new data (in seconds)"
     )
@@ -91,7 +101,7 @@ class WINAContinuousLearningSystemConfig(BaseModel):
         LearningStrategy.reinforcement,
         description="Overall strategy for continuous learning",
     )
-    model_selection_criteria: Optional[List[str]] = Field(
+    model_selection_criteria: list[str] | None = Field(
         None, description="Criteria for selecting models post-training"
     )
 
@@ -101,10 +111,10 @@ class WINAContinuousLearningSystemStatus(BaseModel):
         ...,
         description=("Current operational status (e.g., 'running', 'paused', 'error')"),
     )
-    last_run_timestamp: Optional[datetime] = None
-    next_run_timestamp: Optional[datetime] = None
-    current_phase: Optional[LearningPhase] = None
+    last_run_timestamp: datetime | None = None
+    next_run_timestamp: datetime | None = None
+    current_phase: LearningPhase | None = None
     data_points_collected_since_last_retrain: int = 0
     models_trained_count: int = 0
     errors_count: int = 0
-    message: Optional[str] = None
+    message: str | None = None

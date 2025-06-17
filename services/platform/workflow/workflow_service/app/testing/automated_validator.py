@@ -5,10 +5,11 @@ Provides comprehensive testing, validation, and quality assurance
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -37,11 +38,11 @@ class TestCase:
     type: TestType
     description: str
     test_function: Callable
-    setup_function: Optional[Callable] = None
-    teardown_function: Optional[Callable] = None
+    setup_function: Callable | None = None
+    teardown_function: Callable | None = None
     timeout_seconds: int = 300
-    dependencies: List[str] = None
-    metadata: Dict[str, Any] = None
+    dependencies: list[str] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self):
         # requires: Valid input parameters
@@ -58,11 +59,11 @@ class TestResult:
     test_id: str
     status: TestStatus
     start_time: datetime
-    end_time: Optional[datetime] = None
-    duration_seconds: Optional[float] = None
-    error_message: Optional[str] = None
-    output: Optional[str] = None
-    metrics: Dict[str, Any] = None
+    end_time: datetime | None = None
+    duration_seconds: float | None = None
+    error_message: str | None = None
+    output: str | None = None
+    metrics: dict[str, Any] = None
 
     def __post_init__(self):
         # requires: Valid input parameters
@@ -77,7 +78,7 @@ class TestSuite:
     id: str
     name: str
     description: str
-    test_cases: List[TestCase]
+    test_cases: list[TestCase]
     parallel_execution: bool = True
     created_at: datetime = None
 
@@ -98,10 +99,10 @@ class AutomatedValidator:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.test_suites: Dict[str, TestSuite] = {}
-        self.test_results: Dict[str, List[TestResult]] = {}
-        self.validation_rules: Dict[str, Callable] = {}
-        self.performance_baselines: Dict[str, Dict[str, float]] = {}
+        self.test_suites: dict[str, TestSuite] = {}
+        self.test_results: dict[str, list[TestResult]] = {}
+        self.validation_rules: dict[str, Callable] = {}
+        self.performance_baselines: dict[str, dict[str, float]] = {}
         self._initialize_test_suites()
 
     def _initialize_test_suites(self):
@@ -206,7 +207,9 @@ class AutomatedValidator:
             test_cases=performance_tests,
         )
 
-    async def run_test_suite(self, suite_id: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+    async def run_test_suite(
+        self, suite_id: str, context: dict[str, Any] = None
+    ) -> dict[str, Any]:
         """Run a complete test suite"""
 
         if suite_id not in self.test_suites:
@@ -281,11 +284,15 @@ class AutomatedValidator:
             "test_results": [asdict(r) for r in test_results],
         }
 
-        logger.info(f"Test suite {suite.name} completed: {passed}/{len(suite.test_cases)} passed")
+        logger.info(
+            f"Test suite {suite.name} completed: {passed}/{len(suite.test_cases)} passed"
+        )
 
         return suite_result
 
-    async def _run_test_case(self, test_case: TestCase, context: Dict[str, Any]) -> TestResult:
+    async def _run_test_case(
+        self, test_case: TestCase, context: dict[str, Any]
+    ) -> TestResult:
         """Run a single test case"""
 
         start_time = datetime.utcnow()
@@ -312,7 +319,7 @@ class AutomatedValidator:
                 output=str(result) if result else None,
             )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             end_time = datetime.utcnow()
             duration = (end_time - start_time).total_seconds()
 
@@ -349,7 +356,7 @@ class AutomatedValidator:
         return test_result
 
     # Test implementation methods
-    async def _test_principle_consistency(self, context: Dict[str, Any]) -> bool:
+    async def _test_principle_consistency(self, context: dict[str, Any]) -> bool:
         """Test constitutional principle consistency"""
         # Implementation for principle consistency testing
         logger.info("Testing constitutional principle consistency")
@@ -369,7 +376,7 @@ class AutomatedValidator:
 
         return True
 
-    async def _test_conflict_resolution(self, context: Dict[str, Any]) -> bool:
+    async def _test_conflict_resolution(self, context: dict[str, Any]) -> bool:
         """Test conflict resolution mechanisms"""
         logger.info("Testing conflict resolution mechanisms")
 
@@ -382,11 +389,13 @@ class AutomatedValidator:
         # Validate conflict resolution logic
         for conflict in conflicts:
             if not conflict.get("resolution_strategy"):
-                raise Exception(f"Conflict {conflict.get('id')} has no resolution strategy")
+                raise Exception(
+                    f"Conflict {conflict.get('id')} has no resolution strategy"
+                )
 
         return True
 
-    async def _test_amendment_process(self, context: Dict[str, Any]) -> bool:
+    async def _test_amendment_process(self, context: dict[str, Any]) -> bool:
         """Test constitutional amendment process"""
         logger.info("Testing constitutional amendment process")
 
@@ -402,7 +411,7 @@ class AutomatedValidator:
 
         return True
 
-    async def _test_policy_synthesis_workflow(self, context: Dict[str, Any]) -> bool:
+    async def _test_policy_synthesis_workflow(self, context: dict[str, Any]) -> bool:
         """Test end-to-end policy synthesis workflow"""
         logger.info("Testing policy synthesis workflow")
 
@@ -424,7 +433,7 @@ class AutomatedValidator:
 
         return True
 
-    async def _test_service_communication(self, context: Dict[str, Any]) -> bool:
+    async def _test_service_communication(self, context: dict[str, Any]) -> bool:
         """Test inter-service communication"""
         logger.info("Testing inter-service communication")
 
@@ -445,7 +454,7 @@ class AutomatedValidator:
 
         return True
 
-    async def _test_cryptographic_integrity(self, context: Dict[str, Any]) -> bool:
+    async def _test_cryptographic_integrity(self, context: dict[str, Any]) -> bool:
         """Test cryptographic integrity"""
         logger.info("Testing cryptographic integrity")
 
@@ -461,7 +470,9 @@ class AutomatedValidator:
 
         return True
 
-    async def _test_policy_synthesis_performance(self, context: Dict[str, Any]) -> Dict[str, float]:
+    async def _test_policy_synthesis_performance(
+        self, context: dict[str, Any]
+    ) -> dict[str, float]:
         """Test policy synthesis performance"""
         logger.info("Testing policy synthesis performance")
 
@@ -474,14 +485,20 @@ class AutomatedValidator:
         duration = (end_time - start_time).total_seconds()
 
         # Check against baseline
-        baseline = self.performance_baselines.get("policy_synthesis", {}).get("duration", 1.0)
+        baseline = self.performance_baselines.get("policy_synthesis", {}).get(
+            "duration", 1.0
+        )
 
         if duration > baseline * 1.5:  # 50% slower than baseline
-            raise Exception(f"Performance degradation: {duration}s vs baseline {baseline}s")
+            raise Exception(
+                f"Performance degradation: {duration}s vs baseline {baseline}s"
+            )
 
         return {"duration": duration, "baseline": baseline}
 
-    async def _test_concurrent_workflows(self, context: Dict[str, Any]) -> Dict[str, Any]:
+    async def _test_concurrent_workflows(
+        self, context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Test concurrent workflow execution"""
         logger.info("Testing concurrent workflow execution")
 
@@ -489,7 +506,7 @@ class AutomatedValidator:
 
         # Simulate concurrent workflows
         tasks = []
-        for i in range(concurrent_count):
+        for _i in range(concurrent_count):
             task = asyncio.create_task(asyncio.sleep(0.1))
             tasks.append(task)
 
@@ -505,7 +522,9 @@ class AutomatedValidator:
             "avg_duration_per_workflow": duration / concurrent_count,
         }
 
-    async def _test_database_performance(self, context: Dict[str, Any]) -> Dict[str, float]:
+    async def _test_database_performance(
+        self, context: dict[str, Any]
+    ) -> dict[str, float]:
         """Test database performance"""
         logger.info("Testing database performance")
 
@@ -526,7 +545,7 @@ class AutomatedValidator:
         else:
             raise ValueError(f"Test suite {suite_id} not found")
 
-    def get_test_results(self, suite_id: str) -> Optional[List[Dict[str, Any]]]:
+    def get_test_results(self, suite_id: str) -> list[dict[str, Any]] | None:
         """Get test results for a suite"""
 
         if suite_id in self.test_results:
@@ -534,7 +553,7 @@ class AutomatedValidator:
 
         return None
 
-    def set_performance_baseline(self, test_name: str, metrics: Dict[str, float]):
+    def set_performance_baseline(self, test_name: str, metrics: dict[str, float]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

@@ -14,7 +14,7 @@ Usage:
 """
 
 import asyncio
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aiohttp
 
@@ -54,9 +54,9 @@ class PublicConsultationIntegrationTest:
         self,
         method: str,
         url: str,
-        token: Optional[str] = None,
-        data: Optional[Dict] = None,
-    ) -> Dict[str, Any]:
+        token: str | None = None,
+        data: dict | None = None,
+    ) -> dict[str, Any]:
         """Make HTTP request with optional authentication."""
         headers = {"Content-Type": "application/json"}
         if token:
@@ -94,7 +94,7 @@ class PublicConsultationIntegrationTest:
 
         return all_healthy
 
-    async def test_public_proposal_submission(self) -> Optional[int]:
+    async def test_public_proposal_submission(self) -> int | None:
         """Test public proposal submission without authentication."""
         print("\n📝 Testing Public Proposal Submission...")
 
@@ -250,7 +250,7 @@ class PublicConsultationIntegrationTest:
 
         # Test rate limiting (simulate multiple rapid requests)
         rapid_requests = []
-        for i in range(5):
+        for _i in range(5):
             rapid_requests.append(
                 self.make_request(
                     "GET",

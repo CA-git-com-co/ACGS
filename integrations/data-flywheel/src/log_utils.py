@@ -16,7 +16,7 @@
 import logging
 import sys
 
-from src.config import settings
+from services.core.config import settings
 
 
 def setup_logging(logger_name: str | None = None) -> logging.Logger:

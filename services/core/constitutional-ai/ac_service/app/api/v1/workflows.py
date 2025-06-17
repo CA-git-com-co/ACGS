@@ -7,17 +7,17 @@ and status management.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.workflows.constitutional_council_graph import (
     AmendmentProposalInput,
     execute_constitutional_council_workflow,
 )
 from app.workflows.workflow_manager import get_workflow_manager
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.shared.auth import get_current_active_user as get_current_user
 from services.shared.database import get_async_db
 from services.shared.models import User
@@ -32,8 +32,10 @@ class WorkflowInitRequest(BaseModel):
     """Request model for initializing a new workflow."""
 
     workflow_type: str = Field(..., description="Type of workflow to create")
-    initial_data: Dict[str, Any] = Field(..., description="Initial data for the workflow")
-    session_id: Optional[str] = Field(None, description="Optional session identifier")
+    initial_data: dict[str, Any] = Field(
+        ..., description="Initial data for the workflow"
+    )
+    session_id: str | None = Field(None, description="Optional session identifier")
 
 
 class WorkflowStatusResponse(BaseModel):
@@ -43,26 +45,26 @@ class WorkflowStatusResponse(BaseModel):
     type: str
     status: str
     created_at: str
-    current_phase: Optional[str] = None
+    current_phase: str | None = None
     refinement_iterations: int = 0
     requires_human_review: bool = False
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
 
 
 class WorkflowUpdateRequest(BaseModel):
     """Request model for updating workflow state."""
 
-    state_updates: Dict[str, Any] = Field(..., description="State updates to apply")
+    state_updates: dict[str, Any] = Field(..., description="State updates to apply")
 
 
 class WorkflowCapabilitiesResponse(BaseModel):
     """Response model for workflow capabilities."""
 
     langgraph_available: bool
-    supported_workflow_types: List[str]
+    supported_workflow_types: list[str]
     active_workflow_count: int
-    configuration: Dict[str, Any]
-    council_config: Dict[str, Any]
+    configuration: dict[str, Any]
+    council_config: dict[str, Any]
 
 
 @router.get("/capabilities", response_model=WorkflowCapabilitiesResponse)
@@ -90,7 +92,7 @@ async def get_workflow_capabilities():
         )
 
 
-@router.post("/initialize", response_model=Dict[str, str])
+@router.post("/initialize", response_model=dict[str, str])
 async def initialize_workflow(
     request: WorkflowInitRequest, current_user: User = Depends(get_current_user)
 ):
@@ -138,7 +140,9 @@ async def initialize_workflow(
 
 
 @router.get("/{workflow_id}/status", response_model=WorkflowStatusResponse)
-async def get_workflow_status(workflow_id: str, current_user: User = Depends(get_current_user)):
+async def get_workflow_status(
+    workflow_id: str, current_user: User = Depends(get_current_user)
+):
     """
     Get the current status of a workflow.
 
@@ -154,7 +158,9 @@ async def get_workflow_status(workflow_id: str, current_user: User = Depends(get
         status_info = await workflow_manager.get_workflow_status(workflow_id)
 
         if not status_info:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found"
+            )
 
         # Check if user has access to this workflow
         if status_info["metadata"].get("user_id") != str(current_user.id):
@@ -200,7 +206,9 @@ async def update_workflow_state(
         # Check if workflow exists and user has access
         status_info = await workflow_manager.get_workflow_status(workflow_id)
         if not status_info:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found"
+            )
 
         if status_info["metadata"].get("user_id") != str(current_user.id):
             if not current_user.is_admin:
@@ -210,7 +218,9 @@ async def update_workflow_state(
                 )
 
         # Update workflow state
-        success = await workflow_manager.update_workflow_state(workflow_id, request.state_updates)
+        success = await workflow_manager.update_workflow_state(
+            workflow_id, request.state_updates
+        )
 
         if not success:
             raise HTTPException(
@@ -232,9 +242,9 @@ async def update_workflow_state(
         )
 
 
-@router.get("/", response_model=List[WorkflowStatusResponse])
+@router.get("/", response_model=list[WorkflowStatusResponse])
 async def list_workflows(
-    workflow_type: Optional[str] = None, current_user: User = Depends(get_current_user)
+    workflow_type: str | None = None, current_user: User = Depends(get_current_user)
 ):
     """
     List active workflows for the current user.
@@ -289,7 +299,9 @@ async def cleanup_completed_workflows(
 
     try:
         workflow_manager = get_workflow_manager()
-        cleaned_count = await workflow_manager.cleanup_completed_workflows(max_age_hours)
+        cleaned_count = await workflow_manager.cleanup_completed_workflows(
+            max_age_hours
+        )
 
         logger.info(f"Admin {current_user.id} cleaned up {cleaned_count} workflows")
 
@@ -311,9 +323,11 @@ class ConstitutionalCouncilWorkflowRequest(BaseModel):
     amendment_type: str = Field(..., description="Type of amendment")
     proposed_changes: str = Field(..., description="Description of proposed changes")
     justification: str = Field(..., description="Rationale for the amendment")
-    proposed_content: Optional[str] = Field(None, description="New content if modifying/adding")
+    proposed_content: str | None = Field(
+        None, description="New content if modifying/adding"
+    )
     urgency_level: str = Field("normal", description="Urgency level for processing")
-    stakeholder_groups: Optional[List[str]] = Field(
+    stakeholder_groups: list[str] | None = Field(
         None, description="Specific stakeholder groups to involve"
     )
 
@@ -322,13 +336,13 @@ class ConstitutionalCouncilWorkflowResponse(BaseModel):
     """Response model for Constitutional Council workflow execution."""
 
     workflow_id: str
-    amendment_id: Optional[str] = None
+    amendment_id: str | None = None
     status: str
     current_phase: str
-    constitutional_analysis: Optional[Dict[str, Any]] = None
-    voting_results: Optional[Dict[str, Any]] = None
-    finalization_summary: Optional[Dict[str, Any]] = None
-    messages: List[Dict[str, Any]] = []
+    constitutional_analysis: dict[str, Any] | None = None
+    voting_results: dict[str, Any] | None = None
+    finalization_summary: dict[str, Any] | None = None
+    messages: list[dict[str, Any]] = []
 
 
 @router.post(
@@ -444,7 +458,9 @@ async def get_constitutional_council_workflow_state(
         workflow_state = await graph.get_workflow_state(workflow_id)
 
         if not workflow_state:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found"
+            )
 
         # Check access permissions
         if workflow_state.get("user_id") != str(current_user.id):

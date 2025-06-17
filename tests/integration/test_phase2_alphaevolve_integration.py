@@ -520,7 +520,7 @@ async def main():
                 indent=2,
             )
 
-        print(f"\n📄 Detailed results saved to: phase2_test_results.json")
+        print("\n📄 Detailed results saved to: phase2_test_results.json")
 
         if success:
             print("\n🎉 All Phase 2 AlphaEvolve integration tests passed!")

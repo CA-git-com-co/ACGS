@@ -85,7 +85,7 @@ async def test_fidelity_websocket():
                     response = await asyncio.wait_for(websocket.recv(), timeout=1.0)
                     update_msg = json.loads(response)
                     print(f"Real-time update: {json.dumps(update_msg, indent=2)}")
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     print(".", end="", flush=True)
                     continue
 

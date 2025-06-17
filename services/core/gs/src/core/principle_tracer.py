@@ -14,16 +14,13 @@ Key Features:
 - Integration with existing Policy Synthesis Engine
 """
 
-import asyncio
-import hashlib
-import json
 import logging
 import time
-from collections import Counter, defaultdict
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from collections import defaultdict
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 import networkx as nx
 import numpy as np
@@ -55,18 +52,28 @@ if PROMETHEUS_AVAILABLE:
     IMPACT_SCORE_DISTRIBUTION = Histogram(
         "gs_impact_score_distribution", "Distribution of impact scores"
     )
-    HIGH_IMPACT_RULES = Gauge("gs_high_impact_rules_count", "Number of high-impact rules")
-    PRINCIPLE_INFLUENCE = Gauge("gs_principle_influence_score", "Principle influence measurement")
+    HIGH_IMPACT_RULES = Gauge(
+        "gs_high_impact_rules_count", "Number of high-impact rules"
+    )
+    PRINCIPLE_INFLUENCE = Gauge(
+        "gs_principle_influence_score", "Principle influence measurement"
+    )
 
 
 class RelationshipType(Enum):
     """Types of principle-rule relationships."""
 
-    DIRECT_IMPLEMENTATION = "direct_implementation"  # Rule directly implements principle
+    DIRECT_IMPLEMENTATION = (
+        "direct_implementation"  # Rule directly implements principle
+    )
     INDIRECT_SUPPORT = "indirect_support"  # Rule supports principle indirectly
-    CONSTRAINT_ENFORCEMENT = "constraint_enforcement"  # Rule enforces principle constraints
+    CONSTRAINT_ENFORCEMENT = (
+        "constraint_enforcement"  # Rule enforces principle constraints
+    )
     CONFLICT_RESOLUTION = "conflict_resolution"  # Rule resolves principle conflicts
-    DERIVED_REQUIREMENT = "derived_requirement"  # Rule derived from principle requirements
+    DERIVED_REQUIREMENT = (
+        "derived_requirement"  # Rule derived from principle requirements
+    )
 
 
 class ImpactLevel(Enum):
@@ -101,7 +108,7 @@ class GovernanceRule:
     title: str
     content: str
     category: str
-    policy_id: Optional[str]
+    policy_id: str | None
     enforcement_level: str  # strict, moderate, advisory
     created_at: datetime
     last_updated: datetime
@@ -118,7 +125,7 @@ class PrincipleRuleRelationship:
     impact_score: float  # 0.0-1.0
     confidence: float  # 0.0-1.0
     reasoning: str
-    evidence: List[str]
+    evidence: list[str]
     created_at: datetime
     last_validated: datetime
 
@@ -133,9 +140,9 @@ class TraceabilityMetrics:
     coverage_percentage: float
     avg_impact_score: float
     high_impact_rules_count: int
-    orphaned_principles: List[str]  # Principles with no rules
-    orphaned_rules: List[str]  # Rules with no principles
-    principle_influence_scores: Dict[str, float]
+    orphaned_principles: list[str]  # Principles with no rules
+    orphaned_rules: list[str]  # Rules with no principles
+    principle_influence_scores: dict[str, float]
 
 
 class PrincipleTracer:
@@ -166,9 +173,9 @@ class PrincipleTracer:
         self.traceability_graph = nx.DiGraph()
 
         # Data storage
-        self.principles: Dict[str, ConstitutionalPrinciple] = {}
-        self.rules: Dict[str, GovernanceRule] = {}
-        self.relationships: Dict[Tuple[str, str], PrincipleRuleRelationship] = {}
+        self.principles: dict[str, ConstitutionalPrinciple] = {}
+        self.rules: dict[str, GovernanceRule] = {}
+        self.relationships: dict[tuple[str, str], PrincipleRuleRelationship] = {}
 
         # Performance tracking
         self.analysis_stats = {
@@ -181,7 +188,9 @@ class PrincipleTracer:
         # Policy engine integration
         self.policy_engine = None
 
-        logger.info(f"Initialized PrincipleTracer with constitutional_hash={constitutional_hash}")
+        logger.info(
+            f"Initialized PrincipleTracer with constitutional_hash={constitutional_hash}"
+        )
 
     async def initialize_policy_engine(self):
         # requires: Valid input parameters
@@ -284,7 +293,7 @@ class PrincipleTracer:
         rule: GovernanceRule,
         relationship_type: RelationshipType,
         usage_frequency: int = 0,
-        severity_indicators: List[str] = None,
+        severity_indicators: list[str] = None,
     ) -> float:
         """
         Calculate impact score for principle-rule relationship.
@@ -302,7 +311,9 @@ class PrincipleTracer:
             # Usage frequency component (0.0-1.0)
             # Normalize frequency using log scale for better distribution
             max_frequency = 1000  # Assumed maximum frequency
-            frequency_score = min(1.0, np.log1p(usage_frequency) / np.log1p(max_frequency))
+            frequency_score = min(
+                1.0, np.log1p(usage_frequency) / np.log1p(max_frequency)
+            )
 
             # Relationship type strength
             type_weights = {
@@ -327,7 +338,10 @@ class PrincipleTracer:
                 severity_count = sum(
                     1
                     for indicator in severity_indicators
-                    if any(critical in indicator.lower() for critical in critical_indicators)
+                    if any(
+                        critical in indicator.lower()
+                        for critical in critical_indicators
+                    )
                 )
                 severity_score = min(1.0, 0.3 + (severity_count * 0.2))
 
@@ -358,7 +372,7 @@ class PrincipleTracer:
         else:
             return ImpactLevel.MINIMAL
 
-    async def analyze_principle_influence(self, principle_id: str) -> Dict[str, Any]:
+    async def analyze_principle_influence(self, principle_id: str) -> dict[str, Any]:
         """Analyze influence of a specific principle across governance workflows."""
         try:
             if principle_id not in self.principles:
@@ -394,7 +408,8 @@ class PrincipleTracer:
                 (
                     (rule_count / max(1, len(self.rules))) * 0.4
                     + avg_impact * 0.4  # Coverage factor
-                    + (len(workflow_categories) / 10.0) * 0.2  # Impact factor  # Diversity factor
+                    + (len(workflow_categories) / 10.0)
+                    * 0.2  # Impact factor  # Diversity factor
                 ),
             )
 
@@ -408,18 +423,20 @@ class PrincipleTracer:
                 "workflow_coverage": len(workflow_categories),
                 "impact_distribution": dict(impact_distribution),
                 "connected_rules": connected_rules,
-                "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
+                "analysis_timestamp": datetime.now(UTC).isoformat(),
             }
 
         except Exception as e:
-            logger.error(f"Failed to analyze principle influence for {principle_id}: {e}")
+            logger.error(
+                f"Failed to analyze principle influence for {principle_id}: {e}"
+            )
             return {
                 "principle_id": principle_id,
                 "error": str(e),
                 "influence_score": 0.0,
             }
 
-    async def identify_high_impact_rules(self) -> List[Dict[str, Any]]:
+    async def identify_high_impact_rules(self) -> list[dict[str, Any]]:
         """Identify rules that affect more than the threshold number of principles."""
         try:
             rule_principle_count = defaultdict(list)
@@ -436,7 +453,9 @@ class PrincipleTracer:
                 if len(affected_principles) >= self.high_impact_principle_threshold:
                     rule = self.rules.get(rule_id)
                     if rule:
-                        avg_impact = rule_total_impact[rule_id] / len(affected_principles)
+                        avg_impact = rule_total_impact[rule_id] / len(
+                            affected_principles
+                        )
 
                         high_impact_rules.append(
                             {
@@ -453,7 +472,9 @@ class PrincipleTracer:
                         )
 
             # Sort by number of affected principles (descending)
-            high_impact_rules.sort(key=lambda x: x["affected_principles_count"], reverse=True)
+            high_impact_rules.sort(
+                key=lambda x: x["affected_principles_count"], reverse=True
+            )
 
             # Update Prometheus metrics
             if PROMETHEUS_AVAILABLE:
@@ -486,7 +507,9 @@ class PrincipleTracer:
                 impact_scores.append(relationship.impact_score)
 
             orphaned_principles = [
-                p_id for p_id in self.principles.keys() if p_id not in principles_with_rules
+                p_id
+                for p_id in self.principles.keys()
+                if p_id not in principles_with_rules
             ]
             orphaned_rules = [
                 r_id for r_id in self.rules.keys() if r_id not in rules_with_principles
@@ -494,7 +517,9 @@ class PrincipleTracer:
 
             # Calculate coverage percentage
             if total_principles > 0:
-                coverage_percentage = (len(principles_with_rules) / total_principles) * 100.0
+                coverage_percentage = (
+                    len(principles_with_rules) / total_principles
+                ) * 100.0
             else:
                 coverage_percentage = 0.0
 
@@ -504,7 +529,9 @@ class PrincipleTracer:
             # Calculate principle influence scores
             principle_influence_scores = {}
             for principle_id in self.principles.keys():
-                influence_analysis = await self.analyze_principle_influence(principle_id)
+                influence_analysis = await self.analyze_principle_influence(
+                    principle_id
+                )
                 principle_influence_scores[principle_id] = influence_analysis.get(
                     "influence_score", 0.0
                 )
@@ -532,19 +559,19 @@ class PrincipleTracer:
                 * (self.analysis_stats["total_analyses"] - 1)
                 + analysis_time
             ) / self.analysis_stats["total_analyses"]
-            self.analysis_stats["last_analysis_timestamp"] = datetime.now(timezone.utc)
+            self.analysis_stats["last_analysis_timestamp"] = datetime.now(UTC)
             self.analysis_stats["coverage_history"].append(
                 {
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "coverage_percentage": coverage_percentage,
                 }
             )
 
             # Keep only recent history
             if len(self.analysis_stats["coverage_history"]) > 100:
-                self.analysis_stats["coverage_history"] = self.analysis_stats["coverage_history"][
-                    -100:
-                ]
+                self.analysis_stats["coverage_history"] = self.analysis_stats[
+                    "coverage_history"
+                ][-100:]
 
             # Update Prometheus metrics
             if PROMETHEUS_AVAILABLE:
@@ -579,7 +606,7 @@ class PrincipleTracer:
                 principle_influence_scores={},
             )
 
-    async def generate_traceability_report(self) -> Dict[str, Any]:
+    async def generate_traceability_report(self) -> dict[str, Any]:
         """Generate comprehensive traceability analysis report."""
         try:
             # Calculate current metrics
@@ -596,7 +623,7 @@ class PrincipleTracer:
             )[:10]
 
             principle_analyses = []
-            for principle_id, influence_score in top_principles:
+            for principle_id, _influence_score in top_principles:
                 analysis = await self.analyze_principle_influence(principle_id)
                 principle_analyses.append(analysis)
 
@@ -614,7 +641,7 @@ class PrincipleTracer:
             # Compile comprehensive report
             report = {
                 "report_metadata": {
-                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                    "generated_at": datetime.now(UTC).isoformat(),
                     "constitutional_hash": self.constitutional_hash,
                     "analysis_version": "1.0.0",
                     "target_coverage": 100.0,
@@ -662,7 +689,9 @@ class PrincipleTracer:
                     ),
                     "coverage_trend": self._calculate_coverage_trend(),
                 },
-                "recommendations": self._generate_recommendations(metrics, high_impact_rules),
+                "recommendations": self._generate_recommendations(
+                    metrics, high_impact_rules
+                ),
             }
 
             return report
@@ -671,12 +700,12 @@ class PrincipleTracer:
             logger.error(f"Failed to generate traceability report: {e}")
             return {
                 "error": str(e),
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": datetime.now(UTC).isoformat(),
             }
 
     def _calculate_influence_distribution(
-        self, influence_scores: Dict[str, float]
-    ) -> Dict[str, int]:
+        self, influence_scores: dict[str, float]
+    ) -> dict[str, int]:
         """Calculate distribution of influence scores."""
         distribution = {"high": 0, "medium": 0, "low": 0}
 
@@ -710,8 +739,8 @@ class PrincipleTracer:
             return "stable"
 
     def _generate_recommendations(
-        self, metrics: TraceabilityMetrics, high_impact_rules: List[Dict]
-    ) -> List[str]:
+        self, metrics: TraceabilityMetrics, high_impact_rules: list[dict]
+    ) -> list[str]:
         """Generate actionable recommendations based on analysis."""
         recommendations = []
 
@@ -744,13 +773,15 @@ class PrincipleTracer:
 
         # Performance recommendations
         if self.analysis_stats["avg_analysis_time_ms"] > 1000:
-            recommendations.append("Optimize traceability analysis performance (current: >1s)")
+            recommendations.append(
+                "Optimize traceability analysis performance (current: >1s)"
+            )
 
         return recommendations
 
 
 # Global principle tracer instance
-_principle_tracer: Optional[PrincipleTracer] = None
+_principle_tracer: PrincipleTracer | None = None
 
 
 async def get_principle_tracer(

@@ -18,7 +18,7 @@ import os
 import subprocess
 import tempfile
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
@@ -73,13 +73,13 @@ class ConflictValidator(ABC):
     @abstractmethod
     def find_conflicts(
         self,
-        policies_to_check: List[
-            Dict[str, str]
+        policies_to_check: list[
+            dict[str, str]
         ],  # e.g., [{"id": "P1", "code": "rego code P1"}, ...]
-        conflict_definitions: List[ConflictDefinition],
+        conflict_definitions: list[ConflictDefinition],
         # Optional: context or specific input for which conflicts are checked
-        input_scenario: Optional[Dict[str, Any]] = None,
-    ) -> List[Dict[str, Any]]:  # List of found conflicts
+        input_scenario: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:  # List of found conflicts
         """
         Identifies conflicts among a set of policies based on conflict definitions.
 
@@ -107,7 +107,7 @@ class OPAConflictDetector(ConflictValidator):
     def __init__(
         self,
         opa_executable_path: str = "opa",
-        conflict_check_rego_files: Optional[List[str]] = None,
+        conflict_check_rego_files: list[str] | None = None,
     ):
         """
         Initializes the OPAConflictDetector.
@@ -147,10 +147,10 @@ class OPAConflictDetector(ConflictValidator):
 
     def _run_opa_eval_for_conflicts(
         self,
-        temp_policy_files: List[str],
+        temp_policy_files: list[str],
         conflict_query: str,
-        input_scenario_file: Optional[str],
-    ) -> Tuple[Optional[List[Any]], str]:
+        input_scenario_file: str | None,
+    ) -> tuple[list[Any] | None, str]:
         """
         Runs `opa eval` with a set of policy files and a conflict query.
         """
@@ -248,14 +248,14 @@ class OPAConflictDetector(ConflictValidator):
 
     def find_conflicts(
         self,
-        policies_to_check: List[Dict[str, str]],
-        conflict_definitions: List[ConflictDefinition],
-        input_scenario: Optional[Dict[str, Any]] = None,
-    ) -> List[Dict[str, Any]]:
+        policies_to_check: list[dict[str, str]],
+        conflict_definitions: list[ConflictDefinition],
+        input_scenario: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
 
-        all_detected_conflicts: List[Dict[str, Any]] = []
-        temp_file_paths: List[str] = []
-        input_scenario_file_path: Optional[str] = None
+        all_detected_conflicts: list[dict[str, Any]] = []
+        temp_file_paths: list[str] = []
+        input_scenario_file_path: str | None = None
 
         try:
             # Create temporary files for each policy to check
@@ -391,12 +391,12 @@ if __name__ == "__main__":
     permit_deny_on_http_port_80[conflict_info] {
         data.company.firewall.http_allowed == true
         data.company.firewall_ext.http_port_80_denied == true
-        
+
         conflict_info := {
             "type": "PermitThenDenyPort80",
             "message": "HTTP access is generally allowed, but denied on port 80, creating a conflict for port 80 HTTP traffic.",
             "conflicting_policies_involved_ids_mock": ["AllowAllHTTP", "DenyPort80"], # Mock IDs for now
-            "input_trigger_details": input 
+            "input_trigger_details": input
         }
     }
     """

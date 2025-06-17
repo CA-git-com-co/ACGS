@@ -93,7 +93,7 @@ Following systematic test suite remediation across all critical phases, ACGS-1 h
 ACGS-1/
 ├── blockchain/                          # 🔗 Solana/Anchor Programs
 │   ├── programs/                        # On-chain programs
-│   │   ├── quantumagi-core/            # Main governance program
+│   │   ├── blockchain/            # Main governance program
 │   │   ├── appeals/                    # Appeals handling
 │   │   └── logging/                    # Event logging
 │   ├── client/                         # Blockchain client libraries
@@ -210,7 +210,7 @@ python -m uvicorn app.main:app --reload --port 8006
 #### Or start all services with Docker Compose
 
 ```bash
-docker-compose -f infrastructure/docker/docker-compose.yml up -d
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up -d
 ```
 
 ### 4. Launch Frontend Applications

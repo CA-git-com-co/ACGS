@@ -6,15 +6,19 @@ High-performance service discovery with circuit breakers, connection pooling, an
 import asyncio
 import logging
 import time
-from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import aioredis
 import httpx
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -98,14 +102,14 @@ class ServiceInfo:
     port: int
     health_endpoint: str = "/health"
     version: str = "1.0.0"
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     # Runtime information
     status: ServiceStatus = ServiceStatus.UNKNOWN
-    last_health_check: Optional[datetime] = None
+    last_health_check: datetime | None = None
     health_check_failures: int = 0
-    registered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    registered_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     # Performance metrics
     avg_response_time: float = 0.0
@@ -140,11 +144,15 @@ class ServiceInfo:
 
         # Update average response time (exponential moving average)
         alpha = 0.1  # Smoothing factor
-        self.avg_response_time = (alpha * response_time) + ((1 - alpha) * self.avg_response_time)
+        self.avg_response_time = (alpha * response_time) + (
+            (1 - alpha) * self.avg_response_time
+        )
 
         # Update success rate
         self.success_rate = (
-            self.successful_requests / self.total_requests if self.total_requests > 0 else 1.0
+            self.successful_requests / self.total_requests
+            if self.total_requests > 0
+            else 1.0
         )
 
 
@@ -156,12 +164,12 @@ class EnhancedServiceRegistry:
         health_check_interval: int = 30,
         max_failures: int = 3,
         connection_pool_size: int = 100,
-        redis_url: Optional[str] = None,
+        redis_url: str | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.services: Dict[str, ServiceInfo] = {}
+        self.services: dict[str, ServiceInfo] = {}
         self.health_check_interval = health_check_interval
         self.max_failures = max_failures
         self.redis_url = redis_url
@@ -169,16 +177,18 @@ class EnhancedServiceRegistry:
         # HTTP client with connection pooling
         self.http_client = httpx.AsyncClient(
             timeout=httpx.Timeout(10.0, connect=5.0),
-            limits=httpx.Limits(max_connections=connection_pool_size, max_keepalive_connections=20),
+            limits=httpx.Limits(
+                max_connections=connection_pool_size, max_keepalive_connections=20
+            ),
             http2=True,
         )
 
         # Redis client for caching
-        self.redis_client: Optional[aioredis.Redis] = None
+        self.redis_client: aioredis.Redis | None = None
 
         # Background tasks
-        self._health_check_task: Optional[asyncio.Task] = None
-        self._metrics_task: Optional[asyncio.Task] = None
+        self._health_check_task: asyncio.Task | None = None
+        self._metrics_task: asyncio.Task | None = None
         self._running = False
 
         # Performance tracking
@@ -228,7 +238,12 @@ class EnhancedServiceRegistry:
                 "port": 8004,
                 "tags": ["core", "governance"],
             },
-            {"name": "pgc_service", "host": "localhost", "port": 8005, "tags": ["core", "policy"]},
+            {
+                "name": "pgc_service",
+                "host": "localhost",
+                "port": 8005,
+                "tags": ["core", "policy"],
+            },
             {
                 "name": "ec_service",
                 "host": "localhost",
@@ -290,7 +305,9 @@ class EnhancedServiceRegistry:
                 logger.warning(f"Failed to initialize Redis cache: {e}")
 
         # Start background tasks
-        self._health_check_task = asyncio.create_task(self._enhanced_health_check_loop())
+        self._health_check_task = asyncio.create_task(
+            self._enhanced_health_check_loop()
+        )
         self._metrics_task = asyncio.create_task(self._metrics_collection_loop())
 
         logger.info("Enhanced service registry started")
@@ -351,11 +368,13 @@ class EnhancedServiceRegistry:
                 else:
                     service.status = ServiceStatus.DEGRADED
 
-            service.last_health_check = datetime.now(timezone.utc)
+            service.last_health_check = datetime.now(UTC)
 
             # Cache result in Redis
             if self.redis_client:
-                await self._cache_service_health(service.name, is_healthy, response_time)
+                await self._cache_service_health(
+                    service.name, is_healthy, response_time
+                )
 
             return is_healthy
 
@@ -365,7 +384,7 @@ class EnhancedServiceRegistry:
 
             service.update_metrics(response_time, False)
             service.health_check_failures += 1
-            service.last_health_check = datetime.now(timezone.utc)
+            service.last_health_check = datetime.now(UTC)
             service.circuit_breaker.record_failure()
 
             if service.health_check_failures >= self.max_failures:
@@ -395,7 +414,7 @@ class EnhancedServiceRegistry:
         except Exception as e:
             logger.debug(f"Failed to cache health status for {service_name}: {e}")
 
-    async def check_all_services_health_parallel(self) -> Dict[str, bool]:
+    async def check_all_services_health_parallel(self) -> dict[str, bool]:
         """Parallel health checks for all services with improved performance."""
         start_time = time.time()
 
@@ -437,12 +456,15 @@ class EnhancedServiceRegistry:
         total_time = time.time() - start_time
         self.health_check_metrics["total_checks"] += len(service_names)
         self.health_check_metrics["successful_checks"] += successful_checks
-        self.health_check_metrics["failed_checks"] += len(service_names) - successful_checks
+        self.health_check_metrics["failed_checks"] += (
+            len(service_names) - successful_checks
+        )
 
         # Update average check time (exponential moving average)
         alpha = 0.1
         self.health_check_metrics["avg_check_time"] = (
-            alpha * total_time + (1 - alpha) * self.health_check_metrics["avg_check_time"]
+            alpha * total_time
+            + (1 - alpha) * self.health_check_metrics["avg_check_time"]
         )
 
         return health_status
@@ -492,7 +514,11 @@ class EnhancedServiceRegistry:
                 [s for s in self.services.values() if s.status == ServiceStatus.HEALTHY]
             )
             degraded_services = len(
-                [s for s in self.services.values() if s.status == ServiceStatus.DEGRADED]
+                [
+                    s
+                    for s in self.services.values()
+                    if s.status == ServiceStatus.DEGRADED
+                ]
             )
 
             metrics_data = {
@@ -500,10 +526,16 @@ class EnhancedServiceRegistry:
                 "total_services": total_services,
                 "healthy_services": healthy_services,
                 "degraded_services": degraded_services,
-                "unhealthy_services": total_services - healthy_services - degraded_services,
-                "avg_response_time": sum(s.avg_response_time for s in self.services.values())
+                "unhealthy_services": total_services
+                - healthy_services
+                - degraded_services,
+                "avg_response_time": sum(
+                    s.avg_response_time for s in self.services.values()
+                )
                 / total_services,
-                "overall_success_rate": sum(s.success_rate for s in self.services.values())
+                "overall_success_rate": sum(
+                    s.success_rate for s in self.services.values()
+                )
                 / total_services,
                 "health_check_metrics": self.health_check_metrics,
             }
@@ -517,8 +549,8 @@ class EnhancedServiceRegistry:
             logger.error(f"Failed to collect metrics: {e}")
 
     def get_healthy_services_with_load_balancing(
-        self, tag: Optional[str] = None
-    ) -> List[ServiceInfo]:
+        self, tag: str | None = None
+    ) -> list[ServiceInfo]:
         """Get healthy services with load balancing based on performance metrics."""
         services = self.services.values()
 
@@ -527,17 +559,21 @@ class EnhancedServiceRegistry:
 
         # Filter healthy and degraded services
         available_services = [
-            s for s in services if s.status in [ServiceStatus.HEALTHY, ServiceStatus.DEGRADED]
+            s
+            for s in services
+            if s.status in [ServiceStatus.HEALTHY, ServiceStatus.DEGRADED]
         ]
 
         # Sort by performance metrics (response time and success rate)
         available_services.sort(
-            key=lambda s: (s.avg_response_time * (2 - s.success_rate))  # Lower is better
+            key=lambda s: (
+                s.avg_response_time * (2 - s.success_rate)
+            )  # Lower is better
         )
 
         return available_services
 
-    def get_service_with_fallback(self, service_name: str) -> Optional[ServiceInfo]:
+    def get_service_with_fallback(self, service_name: str) -> ServiceInfo | None:
         """Get service with automatic fallback to similar services."""
         primary_service = self.services.get(service_name)
 
@@ -552,24 +588,26 @@ class EnhancedServiceRegistry:
                     any(tag in primary_service.tags for tag in service.tags)
                     and service.name != service_name
                 ):
-                    logger.warning(f"Using fallback service {service.name} for {service_name}")
+                    logger.warning(
+                        f"Using fallback service {service.name} for {service_name}"
+                    )
                     return service
 
         return None
 
-    def get_all_services(self) -> Dict[str, ServiceInfo]:
+    def get_all_services(self) -> dict[str, ServiceInfo]:
         """Get all registered services."""
         return self.services.copy()
 
-    def get_service(self, name: str) -> Optional[ServiceInfo]:
+    def get_service(self, name: str) -> ServiceInfo | None:
         """Get service information by name."""
         return self.services.get(name)
 
-    def get_services_by_tag(self, tag: str) -> List[ServiceInfo]:
+    def get_services_by_tag(self, tag: str) -> list[ServiceInfo]:
         """Get all services with a specific tag."""
         return [service for service in self.services.values() if tag in service.tags]
 
-    async def get_registry_performance_report(self) -> Dict[str, Any]:
+    async def get_registry_performance_report(self) -> dict[str, Any]:
         """Get comprehensive performance report."""
         total_services = len(self.services)
         healthy_count = len(
@@ -585,12 +623,14 @@ class EnhancedServiceRegistry:
                 "total_requests": service.total_requests,
                 "circuit_breaker_state": service.circuit_breaker.state.value,
                 "last_health_check": (
-                    service.last_health_check.isoformat() if service.last_health_check else None
+                    service.last_health_check.isoformat()
+                    if service.last_health_check
+                    else None
                 ),
             }
 
         return {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "overall_health_percentage": (
                 (healthy_count / total_services * 100) if total_services > 0 else 0
             ),

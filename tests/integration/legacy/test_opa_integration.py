@@ -158,7 +158,7 @@ def main():
         if test_func():
             passed += 1
         else:
-            print(f"  Test failed!")
+            print("  Test failed!")
 
     print("\n" + "=" * 50)
     print(f"Results: {passed}/{total} tests passed")

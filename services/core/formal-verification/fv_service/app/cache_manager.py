@@ -3,7 +3,7 @@ Cache Manager for fv_service - ACGS-1 Phase A3 Advanced Caching
 """
 
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 import structlog
 
@@ -22,7 +22,7 @@ class Fv_serviceCacheManager:
         # ensures: Correct function execution
         # sha256: func_hash
         self.service_name = "fv_service"
-        self.redis_client: Optional[AdvancedRedisClient] = None
+        self.redis_client: AdvancedRedisClient | None = None
         self._initialized = False
 
     async def initialize(self):
@@ -47,7 +47,7 @@ class Fv_serviceCacheManager:
             logger.error("Failed to initialize cache manager", error=str(e))
             raise
 
-    async def get_cache_metrics(self) -> Dict[str, Any]:
+    async def get_cache_metrics(self) -> dict[str, Any]:
         if not self.redis_client:
             await self.initialize()
 
@@ -62,7 +62,7 @@ class Fv_serviceCacheManager:
         }
 
 
-_cache_manager: Optional[Fv_serviceCacheManager] = None
+_cache_manager: Fv_serviceCacheManager | None = None
 
 
 async def get_cache_manager() -> Fv_serviceCacheManager:

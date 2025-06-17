@@ -10,7 +10,6 @@ import subprocess
 import sys
 import time
 from datetime import datetime
-from typing import Optional, Tuple
 
 import yaml
 
@@ -21,8 +20,8 @@ class DeploymentAutomator:
         self.deployment_issues = []
 
     def run_command(
-        self, command: str, cwd: Optional[str] = None, timeout: int = 300
-    ) -> Tuple[bool, str, str]:
+        self, command: str, cwd: str | None = None, timeout: int = 300
+    ) -> tuple[bool, str, str]:
         """Run a shell command and return success status, stdout, stderr"""
         try:
             result = subprocess.run(
@@ -360,7 +359,7 @@ echo "Backup completed: $BACKUP_DIR"
                 self.print_deployment_summary()
                 return False
 
-        print(f"\n✅ Deployment completed successfully!")
+        print("\n✅ Deployment completed successfully!")
         self.print_deployment_summary()
         return True
 
@@ -395,7 +394,7 @@ echo "Backup completed: $BACKUP_DIR"
         with open("deployment_report.json", "w") as f:
             json.dump(deployment_report, f, indent=2)
 
-        print(f"\n📊 Deployment report saved to: deployment_report.json")
+        print("\n📊 Deployment report saved to: deployment_report.json")
 
 
 def main():

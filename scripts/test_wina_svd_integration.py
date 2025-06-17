@@ -18,7 +18,7 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import numpy as np
 import torch
@@ -85,7 +85,7 @@ class WINASVDIntegrationTester:
 
         logger.info("WINA SVD Integration Tester initialized")
 
-    async def test_svd_transformation_accuracy(self) -> Dict[str, Any]:
+    async def test_svd_transformation_accuracy(self) -> dict[str, Any]:
         """Test SVD transformation accuracy and numerical stability."""
         logger.info("Testing SVD transformation accuracy...")
 
@@ -136,7 +136,7 @@ class WINASVDIntegrationTester:
 
         return test_results
 
-    async def test_model_weight_extraction(self) -> Dict[str, Any]:
+    async def test_model_weight_extraction(self) -> dict[str, Any]:
         """Test model weight extraction for different model types."""
         logger.info("Testing model weight extraction...")
 
@@ -156,9 +156,9 @@ class WINASVDIntegrationTester:
 
                 extraction_results[model_id] = {
                     "weights_extracted": len(weight_infos),
-                    "layer_types": list(set(info.layer_type for info in weight_infos)),
+                    "layer_types": list({info.layer_type for info in weight_infos}),
                     "matrix_types": list(
-                        set(info.matrix_type for info in weight_infos)
+                        {info.matrix_type for info in weight_infos}
                     ),
                     "total_parameters": sum(
                         info.weight_matrix.numel() for info in weight_infos
@@ -179,7 +179,7 @@ class WINASVDIntegrationTester:
 
         return extraction_results
 
-    async def test_end_to_end_optimization(self) -> Dict[str, Any]:
+    async def test_end_to_end_optimization(self) -> dict[str, Any]:
         """Test end-to-end model optimization with performance measurement."""
         logger.info("Testing end-to-end model optimization...")
 
@@ -226,7 +226,7 @@ class WINASVDIntegrationTester:
 
         return optimization_results
 
-    async def test_computational_invariance_verification(self) -> Dict[str, Any]:
+    async def test_computational_invariance_verification(self) -> dict[str, Any]:
         """Test computational invariance verification with policy synthesis workloads."""
         logger.info("Testing computational invariance verification...")
 
@@ -287,7 +287,7 @@ class WINASVDIntegrationTester:
             logger.error(f"Computational invariance verification failed: {e}")
             return {"error": str(e)}
 
-    async def test_policy_synthesis_integration(self) -> Dict[str, Any]:
+    async def test_policy_synthesis_integration(self) -> dict[str, Any]:
         """Test WINA integration with actual policy synthesis workloads."""
         logger.info("Testing policy synthesis integration...")
 
@@ -315,7 +315,7 @@ class WINASVDIntegrationTester:
 
         synthesis_results = {}
 
-        for i, test_input in enumerate(test_inputs):
+        for _i, test_input in enumerate(test_inputs):
             try:
                 # Test with WINA optimization enabled
                 result_with_wina = (
@@ -362,7 +362,7 @@ class WINASVDIntegrationTester:
 
         return synthesis_results
 
-    async def run_comprehensive_test(self) -> Dict[str, Any]:
+    async def run_comprehensive_test(self) -> dict[str, Any]:
         """Run comprehensive WINA SVD integration test suite."""
         logger.info("Starting comprehensive WINA SVD integration test...")
 
@@ -431,7 +431,7 @@ async def main():
             if "error" in suite_results:
                 print(f"  ✗ FAILED: {suite_results['error']}")
             else:
-                print(f"  ✓ PASSED")
+                print("  ✓ PASSED")
                 if isinstance(suite_results, dict):
                     for key, value in suite_results.items():
                         if isinstance(value, dict) and "error" not in value:
@@ -441,7 +441,7 @@ async def main():
 
         # Print test summary
         summary = results.get("test_summary", {})
-        print(f"\nTEST SUMMARY:")
+        print("\nTEST SUMMARY:")
         print(f"  Total time: {summary.get('total_test_time', 0):.2f}s")
         print(
             f"  Test suites: {summary.get('successful_suites', 0)}/{summary.get('test_suites_run', 0)}"

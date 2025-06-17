@@ -9,7 +9,6 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import List
 
 
 class ReorganizationValidator:
@@ -17,8 +16,8 @@ class ReorganizationValidator:
 
     def __init__(self, root_path: str):
         self.root_path = Path(root_path)
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def validate_directory_structure(self) -> bool:
         """Validate expected directory structure exists"""
@@ -83,7 +82,7 @@ class ReorganizationValidator:
                 continue
 
             try:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     content = f.read()
 
                 # Parse AST to find imports
@@ -112,7 +111,7 @@ class ReorganizationValidator:
         print("✅ All import paths are valid")
         return True
 
-    def _extract_imports(self, tree: ast.AST) -> List[str]:
+    def _extract_imports(self, tree: ast.AST) -> list[str]:
         """Extract import statements from AST"""
         imports = []
 
@@ -218,7 +217,7 @@ class ReorganizationValidator:
                 continue
 
             try:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     content = f.read()
                 ast.parse(content)
             except SyntaxError as e:

@@ -101,7 +101,7 @@ class TestCollectiveConstitutionalAI:
             r for r in bias_results if r.category == BiasCategory.RACE_ETHNICITY
         )
 
-        print(f"✅ BBQ Bias Evaluation Results:")
+        print("✅ BBQ Bias Evaluation Results:")
         print(f"   Age bias: {age_result.bias_score:.3f}")
         print(f"   Gender bias: {gender_result.bias_score:.3f}")
         print(f"   Race bias: {race_result.bias_score:.3f}")
@@ -175,10 +175,9 @@ class TestCollectiveConstitutionalAI:
         assert "democratic_legitimacy_score" in metrics
 
         # Validate target achievement
-        target_bias_reduction = 0.4  # 40% target from research
         actual_bias_reduction = metrics["average_bias_reduction"]
 
-        print(f"✅ Democratic Legitimacy Monitoring:")
+        print("✅ Democratic Legitimacy Monitoring:")
         print(f"   Total principles: {metrics['total_principles']}")
         print(
             f"   Avg stakeholder agreement: {metrics['average_stakeholder_agreement']:.1%}"
@@ -217,7 +216,7 @@ class TestEnhancedMultiModelValidation:
         assert len(result.model_contributions) > 0
         assert result.validation_time > 0.0
 
-        print(f"✅ Boosting Majority Vote:")
+        print("✅ Boosting Majority Vote:")
         print(f"   Confidence: {result.confidence:.3f}")
         print(f"   Constitutional fidelity: {result.constitutional_fidelity:.3f}")
         print(f"   Validation time: {result.validation_time:.3f}s")
@@ -243,7 +242,7 @@ class TestEnhancedMultiModelValidation:
         assert result.strategy_used == ValidationStrategy.CLUSTER_BASED_SELECTION
         assert result.consensus_level >= 0.0
 
-        print(f"✅ Cluster-based Selection:")
+        print("✅ Cluster-based Selection:")
         print(f"   Target cluster: {context.target_cluster.value}")
         print(f"   Consensus level: {result.consensus_level:.3f}")
 
@@ -269,7 +268,7 @@ class TestEnhancedMultiModelValidation:
         assert "aleatoric_uncertainty" in result.uncertainty_quantification
         assert "total_uncertainty" in result.uncertainty_quantification
 
-        print(f"✅ Uncertainty-weighted Validation:")
+        print("✅ Uncertainty-weighted Validation:")
         print(
             f"   Epistemic uncertainty: {result.uncertainty_quantification['epistemic_uncertainty']:.3f}"
         )
@@ -298,7 +297,7 @@ class TestEnhancedMultiModelValidation:
         assert result.confidence > 0.0
         assert result.constitutional_fidelity > 0.0
 
-        print(f"✅ Hybrid Ensemble Validation:")
+        print("✅ Hybrid Ensemble Validation:")
         print(f"   Models used: {len(result.model_contributions)}")
         print(f"   Overall confidence: {result.confidence:.3f}")
         print(f"   Constitutional fidelity: {result.constitutional_fidelity:.3f}")
@@ -317,7 +316,7 @@ class TestEnhancedMultiModelValidation:
         assert "model_usage_statistics" in metrics
         assert "reliability_target" in metrics
 
-        print(f"✅ Validation Metrics:")
+        print("✅ Validation Metrics:")
         print(f"   Total validations: {metrics['total_validations']}")
         print(f"   Average confidence: {metrics['average_confidence']:.3f}")
         print(f"   Reliability target: {metrics['reliability_target']}")
@@ -354,7 +353,7 @@ class TestUltraLowLatencyOptimization:
         # Check if target is met (sub-25ms)
         target_met = result.latency_ms <= optimizer.target_latency
 
-        print(f"✅ Ultra Low Latency Optimization:")
+        print("✅ Ultra Low Latency Optimization:")
         print(
             f"   Latency: {result.latency_ms:.2f}ms (target: {optimizer.target_latency}ms)"
         )
@@ -374,7 +373,7 @@ class TestUltraLowLatencyOptimization:
         latency_metrics = benchmark_results["latency_metrics"]
         performance_metrics = benchmark_results["performance_metrics"]
 
-        print(f"✅ Performance Benchmark (20 requests):")
+        print("✅ Performance Benchmark (20 requests):")
         print(f"   Avg latency: {latency_metrics['avg_latency_ms']:.2f}ms")
         print(f"   P95 latency: {latency_metrics['p95_latency_ms']:.2f}ms")
         print(f"   Cache hit rate: {performance_metrics['cache_hit_rate']:.1%}")
@@ -394,7 +393,7 @@ class TestUltraLowLatencyOptimization:
         assert "adjustments_made" in adaptation_result
         assert "next_review" in adaptation_result
 
-        print(f"✅ Adaptive Optimization:")
+        print("✅ Adaptive Optimization:")
         print(
             f"   Current avg latency: {adaptation_result['current_performance']['avg_latency_ms']:.2f}ms"
         )
@@ -494,7 +493,7 @@ async def test_end_to_end_alphaevolve_enhancement():
         bias_reduction * 0.3 + reliability_score * 0.4 + latency_improvement * 0.3
     )
 
-    print(f"   📊 Enhancement Metrics:")
+    print("   📊 Enhancement Metrics:")
     print(f"      Bias reduction: {bias_reduction:.1%} (target: 40%)")
     print(f"      Reliability score: {reliability_score:.1%} (target: >99.9%)")
     print(f"      Latency improvement: {latency_improvement:.1%} (target: 50%)")
@@ -509,7 +508,7 @@ async def test_end_to_end_alphaevolve_enhancement():
         in [DemocraticLegitimacyLevel.HIGH, DemocraticLegitimacyLevel.CONSENSUS],
     }
 
-    print(f"\n   🎯 Research Targets Achievement:")
+    print("\n   🎯 Research Targets Achievement:")
     for target, achieved in targets_met.items():
         status = "✅" if achieved else "⚠️"
         print(f"      {status} {target}: {'ACHIEVED' if achieved else 'IN PROGRESS'}")

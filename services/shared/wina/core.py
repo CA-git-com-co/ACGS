@@ -8,8 +8,8 @@ within the ACGS-PGP framework.
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import UTC, datetime
+from typing import Any
 
 import numpy as np
 import torch
@@ -57,12 +57,12 @@ class WINAOptimizationResult:
     """
 
     optimized_output: Any
-    activation_masks: Dict[str, WINAActivationMask]
-    performance_metrics: Dict[str, float]
-    accuracy_metrics: Dict[str, float]
+    activation_masks: dict[str, WINAActivationMask]
+    performance_metrics: dict[str, float]
+    accuracy_metrics: dict[str, float]
     optimization_time: float
     success: bool
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class WINACore:
@@ -77,7 +77,7 @@ class WINACore:
     def __init__(
         self,
         config: WINAConfig,
-        integration_config: Optional[WINAIntegrationConfig] = None,
+        integration_config: WINAIntegrationConfig | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -95,17 +95,19 @@ class WINACore:
         self.gflops_tracker = GFLOPsTracker()
 
         # Internal state
-        self._transformed_weights: Dict[str, torch.Tensor] = {}
-        self._column_norms: Dict[str, torch.Tensor] = {}
-        self._layer_configs: Dict[str, Dict[str, Any]] = {}
-        self._optimization_history: List[WINAOptimizationResult] = []
+        self._transformed_weights: dict[str, torch.Tensor] = {}
+        self._column_norms: dict[str, torch.Tensor] = {}
+        self._layer_configs: dict[str, dict[str, Any]] = {}
+        self._optimization_history: list[WINAOptimizationResult] = []
 
         logger.info(
             f"Initialized WINA core with target sparsity: {config.target_sparsity}, "
             f"GFLOPs reduction target: {config.gflops_reduction_target}"
         )
 
-    async def initialize_model_transformation(self, model: Any, layer_names: List[str]) -> bool:
+    async def initialize_model_transformation(
+        self, model: Any, layer_names: list[str]
+    ) -> bool:
         """
         Initialize model transformation for WINA optimization.
 
@@ -117,7 +119,9 @@ class WINACore:
             True if initialization successful, False otherwise
         """
         try:
-            logger.info(f"Initializing WINA transformation for {len(layer_names)} layers")
+            logger.info(
+                f"Initializing WINA transformation for {len(layer_names)} layers"
+            )
 
             for layer_name in layer_names:
                 # Get layer weights (this would be model-specific)
@@ -142,18 +146,24 @@ class WINACore:
                 self._layer_configs[layer_name] = {
                     "sparsity": layer_sparsity,
                     "num_neurons": layer_weights.shape[1],
-                    "active_neurons": int(layer_weights.shape[1] * (1 - layer_sparsity)),
+                    "active_neurons": int(
+                        layer_weights.shape[1] * (1 - layer_sparsity)
+                    ),
                 }
 
-            logger.info("WINA model transformation initialization completed successfully")
+            logger.info(
+                "WINA model transformation initialization completed successfully"
+            )
             return True
 
         except Exception as e:
             logger.error(f"Failed to initialize WINA model transformation: {e}")
-            raise WINAOptimizationError(f"Model transformation initialization failed: {e}")
+            raise WINAOptimizationError(
+                f"Model transformation initialization failed: {e}"
+            )
 
     async def optimize_inference(
-        self, model: Any, input_data: Any, layer_names: Optional[List[str]] = None
+        self, model: Any, input_data: Any, layer_names: list[str] | None = None
     ) -> WINAOptimizationResult:
         """
         Optimize model inference using WINA.
@@ -175,7 +185,9 @@ class WINACore:
             baseline_gflops = self.gflops_tracker.estimate_gflops(model, input_data)
 
             # Generate activation masks
-            activation_masks = await self._generate_activation_masks(model, input_data, layer_names)
+            activation_masks = await self._generate_activation_masks(
+                model, input_data, layer_names
+            )
 
             # Apply WINA optimization
             optimized_output = await self._apply_wina_optimization(
@@ -203,7 +215,9 @@ class WINACore:
 
             # Calculate accuracy metrics (placeholder - would need actual accuracy evaluation)
             accuracy_metrics = {
-                "estimated_accuracy_retention": self._estimate_accuracy_retention(activation_masks),
+                "estimated_accuracy_retention": self._estimate_accuracy_retention(
+                    activation_masks
+                ),
                 "constitutional_compliance": 1.0,  # Placeholder
             }
 
@@ -243,8 +257,8 @@ class WINACore:
             )
 
     async def _generate_activation_masks(
-        self, model: Any, input_data: Any, layer_names: Optional[List[str]] = None
-    ) -> Dict[str, WINAActivationMask]:
+        self, model: Any, input_data: Any, layer_names: list[str] | None = None
+    ) -> dict[str, WINAActivationMask]:
         """
         Generate activation masks for specified layers.
 
@@ -263,7 +277,9 @@ class WINACore:
 
         for layer_name in layer_names:
             if layer_name not in self._transformed_weights:
-                logger.warning(f"Layer {layer_name} not found in transformed weights, skipping")
+                logger.warning(
+                    f"Layer {layer_name} not found in transformed weights, skipping"
+                )
                 continue
 
             # Get hidden state for this layer (model-specific implementation needed)
@@ -290,12 +306,14 @@ class WINACore:
                 mask=mask,
                 scores=wina_scores,
                 sparsity_ratio=sparsity_ratio,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
 
         return activation_masks
 
-    def _calculate_wina_scores(self, hidden_state: torch.Tensor, layer_name: str) -> np.ndarray:
+    def _calculate_wina_scores(
+        self, hidden_state: torch.Tensor, layer_name: str
+    ) -> np.ndarray:
         """
         Calculate WINA scores for neuron activation.
 
@@ -335,7 +353,9 @@ class WINACore:
         # Mock implementation - return random weights
         return torch.randn(768, 768)  # Example dimensions
 
-    def _extract_hidden_state(self, model: Any, input_data: Any, layer_name: str) -> torch.Tensor:
+    def _extract_hidden_state(
+        self, model: Any, input_data: Any, layer_name: str
+    ) -> torch.Tensor:
         """
         Extract hidden state for a specific layer (model-specific implementation).
 
@@ -380,7 +400,7 @@ class WINACore:
         self,
         model: Any,
         input_data: Any,
-        activation_masks: Dict[str, WINAActivationMask],
+        activation_masks: dict[str, WINAActivationMask],
     ) -> Any:
         """
         Apply WINA optimization to model inference.
@@ -401,7 +421,7 @@ class WINACore:
         return {"optimized": True, "masks_applied": len(activation_masks)}
 
     def _estimate_accuracy_retention(
-        self, activation_masks: Dict[str, WINAActivationMask]
+        self, activation_masks: dict[str, WINAActivationMask]
     ) -> float:
         """
         Estimate accuracy retention based on activation masks.
@@ -413,11 +433,15 @@ class WINACore:
             Estimated accuracy retention ratio
         """
         # Simple heuristic based on average sparsity
-        avg_sparsity = np.mean([mask.sparsity_ratio for mask in activation_masks.values()])
+        avg_sparsity = np.mean(
+            [mask.sparsity_ratio for mask in activation_masks.values()]
+        )
 
         # Assume linear relationship between sparsity and accuracy retention
         # This is a simplified model - in practice, this would be more sophisticated
-        accuracy_retention = 1.0 - (avg_sparsity * 0.1)  # 10% accuracy loss per 100% sparsity
+        accuracy_retention = 1.0 - (
+            avg_sparsity * 0.1
+        )  # 10% accuracy loss per 100% sparsity
 
         return max(0.0, min(1.0, accuracy_retention))
 
@@ -449,7 +473,7 @@ class WINAOptimizer:
 
     async def optimize_gs_engine_inference(
         self, llm_client: Any, prompt: str, **kwargs
-    ) -> Tuple[Any, Dict[str, float]]:
+    ) -> tuple[Any, dict[str, float]]:
         """
         Optimize GS Engine LLM inference using WINA.
 
@@ -480,7 +504,7 @@ class WINAOptimizer:
             )
             return await llm_client.generate_text(prompt, **kwargs), {}
 
-    async def get_optimization_metrics(self) -> Dict[str, Any]:
+    async def get_optimization_metrics(self) -> dict[str, Any]:
         """
         Get current optimization metrics.
 

@@ -11,19 +11,19 @@ e.g., {{ENTITY}}, {{ACTION}}, {{RESOURCE}}, {{ATTRIBUTE}}, {{ROLE}}, {{PRINCIPLE
 
 # Template for asserting a user has a specific role based on an attribute
 USER_ROLE_ASSERTION = """\
-user_role_is({{USER_VAR}}, {{ROLE_VALUE}}) :- 
+user_role_is({{USER_VAR}}, {{ROLE_VALUE}}) :-
     has_attribute({{USER_VAR}}, '{{ROLE_ATTRIBUTE}}', {{ROLE_VALUE}}),
     principle_source({{PRINCIPLE_ID}})."""
 
 # Template for allowing an action if a user has a specific role
 ROLE_BASED_ACTION_ALLOW = """\
-can_perform({{USER_VAR}}, {{ACTION_VALUE}}, {{RESOURCE_VAR}}) :- 
+can_perform({{USER_VAR}}, {{ACTION_VALUE}}, {{RESOURCE_VAR}}) :-
     user_role_is({{USER_VAR}}, {{ROLE_VALUE}}),
     principle_source({{PRINCIPLE_ID}})."""
 
 # Template for allowing an action if a user has a specific role AND a resource has a specific property
 ROLE_RESOURCE_PROPERTY_ACTION_ALLOW = """\
-can_perform({{USER_VAR}}, {{ACTION_VALUE}}, {{RESOURCE_VAR}}) :- 
+can_perform({{USER_VAR}}, {{ACTION_VALUE}}, {{RESOURCE_VAR}}) :-
     user_role_is({{USER_VAR}}, {{ROLE_VALUE}}),
     resource_has_property({{RESOURCE_VAR}}, '{{PROPERTY_NAME}}', {{PROPERTY_VALUE}}),
     principle_source({{PRINCIPLE_ID}})."""

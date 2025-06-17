@@ -1,4 +1,3 @@
-from typing import List
 
 from ..schemas import ACPrinciple, ProofObligation
 
@@ -6,7 +5,7 @@ from ..schemas import ACPrinciple, ProofObligation
 # This is a very simplified mock. A real system would use NLP or structured data from principles.
 def generate_proof_obligations_from_principle(
     principle: ACPrinciple,
-) -> List[ProofObligation]:
+) -> list[ProofObligation]:
     """
     Generates proof obligations from a single AC principle.
     Mock implementation: Creates a generic obligation based on principle content.
@@ -57,13 +56,13 @@ def generate_proof_obligations_from_principle(
 
 
 async def generate_proof_obligations_from_principles(
-    principles: List[ACPrinciple],
-) -> List[ProofObligation]:
+    principles: list[ACPrinciple],
+) -> list[ProofObligation]:
     """
     Generates proof obligations from a list of AC principles.
     This would involve fetching principle details from AC Service if not already provided.
     """
-    all_obligations: List[ProofObligation] = []
+    all_obligations: list[ProofObligation] = []
     for p in principles:
         all_obligations.extend(generate_proof_obligations_from_principle(p))
     return all_obligations

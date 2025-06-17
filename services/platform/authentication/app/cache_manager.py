@@ -6,7 +6,7 @@ Implements service-specific caching strategies for authentication operations
 import hashlib
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import structlog
 from fastapi import Request
@@ -30,7 +30,7 @@ class AuthCacheManager:
         # ensures: Correct function execution
         # sha256: func_hash
         self.service_name = "auth_service"
-        self.redis_client: Optional[AdvancedRedisClient] = None
+        self.redis_client: AdvancedRedisClient | None = None
         self._initialized = False
 
     async def initialize(self):
@@ -60,7 +60,7 @@ class AuthCacheManager:
             raise
 
     async def cache_user_session(
-        self, user_id: str, session_data: Dict[str, Any], ttl: Optional[int] = None
+        self, user_id: str, session_data: dict[str, Any], ttl: int | None = None
     ) -> bool:
         """Cache user session data."""
         if not self.redis_client:
@@ -73,7 +73,7 @@ class AuthCacheManager:
             cache_key, session_data, ttl=session_ttl, prefix="sessions"
         )
 
-    async def get_user_session(self, user_id: str) -> Optional[Dict[str, Any]]:
+    async def get_user_session(self, user_id: str) -> dict[str, Any] | None:
         """Get cached user session data."""
         if not self.redis_client:
             await self.initialize()
@@ -90,7 +90,7 @@ class AuthCacheManager:
         return await self.redis_client.delete(cache_key, prefix="sessions")
 
     async def cache_auth_token(
-        self, token_hash: str, token_data: Dict[str, Any], ttl: Optional[int] = None
+        self, token_hash: str, token_data: dict[str, Any], ttl: int | None = None
     ) -> bool:
         """Cache authentication token data."""
         if not self.redis_client:
@@ -99,9 +99,11 @@ class AuthCacheManager:
         cache_key = f"auth_token:{token_hash}"
         token_ttl = ttl or CACHE_TTL_POLICIES["auth_tokens"]
 
-        return await self.redis_client.set(cache_key, token_data, ttl=token_ttl, prefix="tokens")
+        return await self.redis_client.set(
+            cache_key, token_data, ttl=token_ttl, prefix="tokens"
+        )
 
-    async def get_auth_token(self, token_hash: str) -> Optional[Dict[str, Any]]:
+    async def get_auth_token(self, token_hash: str) -> dict[str, Any] | None:
         """Get cached authentication token data."""
         if not self.redis_client:
             await self.initialize()
@@ -118,7 +120,7 @@ class AuthCacheManager:
         return await self.redis_client.delete(cache_key, prefix="tokens")
 
     async def cache_user_permissions(
-        self, user_id: str, permissions: List[str], ttl: Optional[int] = None
+        self, user_id: str, permissions: list[str], ttl: int | None = None
     ) -> bool:
         """Cache user permissions."""
         if not self.redis_client:
@@ -131,7 +133,7 @@ class AuthCacheManager:
             cache_key, permissions, ttl=permissions_ttl, prefix="permissions"
         )
 
-    async def get_user_permissions(self, user_id: str) -> Optional[List[str]]:
+    async def get_user_permissions(self, user_id: str) -> list[str] | None:
         """Get cached user permissions."""
         if not self.redis_client:
             await self.initialize()
@@ -147,7 +149,9 @@ class AuthCacheManager:
         cache_key = f"user_permissions:{user_id}"
         return await self.redis_client.delete(cache_key, prefix="permissions")
 
-    async def cache_rate_limit(self, identifier: str, count: int, window_seconds: int) -> bool:
+    async def cache_rate_limit(
+        self, identifier: str, count: int, window_seconds: int
+    ) -> bool:
         """Cache rate limiting data."""
         if not self.redis_client:
             await self.initialize()
@@ -161,7 +165,7 @@ class AuthCacheManager:
             prefix="rate_limits",
         )
 
-    async def get_rate_limit(self, identifier: str) -> Optional[Dict[str, Any]]:
+    async def get_rate_limit(self, identifier: str) -> dict[str, Any] | None:
         """Get cached rate limiting data."""
         if not self.redis_client:
             await self.initialize()
@@ -187,7 +191,9 @@ class AuthCacheManager:
             return current_count
 
         except Exception as e:
-            logger.error("Rate limit increment error", identifier=identifier, error=str(e))
+            logger.error(
+                "Rate limit increment error", identifier=identifier, error=str(e)
+            )
             return 0
 
     async def warm_cache(self):
@@ -220,7 +226,7 @@ class AuthCacheManager:
         except Exception as e:
             logger.error("Cache warming failed", error=str(e))
 
-    async def get_cache_metrics(self) -> Dict[str, Any]:
+    async def get_cache_metrics(self) -> dict[str, Any]:
         """Get cache performance metrics."""
         if not self.redis_client:
             await self.initialize()
@@ -241,7 +247,7 @@ class AuthCacheManager:
 
 
 # Global cache manager instance
-_auth_cache_manager: Optional[AuthCacheManager] = None
+_auth_cache_manager: AuthCacheManager | None = None
 
 
 async def get_auth_cache_manager() -> AuthCacheManager:
@@ -254,7 +260,7 @@ async def get_auth_cache_manager() -> AuthCacheManager:
 
 
 # Cache decorators for auth service
-def cache_auth_result(ttl: Optional[int] = None, cache_type: str = "auth_tokens"):
+def cache_auth_result(ttl: int | None = None, cache_type: str = "auth_tokens"):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -264,7 +270,9 @@ def cache_auth_result(ttl: Optional[int] = None, cache_type: str = "auth_tokens"
     )
 
 
-def generate_request_cache_key(request: Request, additional_params: Dict[str, Any] = None) -> str:
+def generate_request_cache_key(
+    request: Request, additional_params: dict[str, Any] = None
+) -> str:
     """Generate cache key from request parameters."""
     key_data = {
         "path": request.url.path,

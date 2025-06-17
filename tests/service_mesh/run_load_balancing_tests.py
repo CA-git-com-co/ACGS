@@ -9,7 +9,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 class LoadBalancingTestRunner:
@@ -22,7 +22,7 @@ class LoadBalancingTestRunner:
         self.start_time = None
         self.end_time = None
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all load balancing tests."""
         print("🚀 Starting ACGS-1 Load Balancing Test Suite")
         print("=" * 60)
@@ -80,7 +80,7 @@ class LoadBalancingTestRunner:
             "duration": self.end_time - self.start_time,
         }
 
-    def _run_unit_tests(self) -> Dict[str, Any]:
+    def _run_unit_tests(self) -> dict[str, Any]:
         """Run unit tests for load balancing components."""
         test_files = [
             "test_load_balancing.py::TestLoadBalancingStrategies",
@@ -90,7 +90,7 @@ class LoadBalancingTestRunner:
 
         return self._execute_pytest_tests(test_files, "unit")
 
-    def _run_performance_tests(self) -> Dict[str, Any]:
+    def _run_performance_tests(self) -> dict[str, Any]:
         """Run performance validation tests."""
         test_files = [
             "test_performance_validation.py::TestPerformanceTargets",
@@ -99,7 +99,7 @@ class LoadBalancingTestRunner:
 
         return self._execute_pytest_tests(test_files, "performance")
 
-    def _run_integration_tests(self) -> Dict[str, Any]:
+    def _run_integration_tests(self) -> dict[str, Any]:
         """Run integration tests."""
         test_files = [
             "test_integration.py::TestFullSystemIntegration",
@@ -108,7 +108,7 @@ class LoadBalancingTestRunner:
 
         return self._execute_pytest_tests(test_files, "integration")
 
-    def _run_stress_tests(self) -> Dict[str, Any]:
+    def _run_stress_tests(self) -> dict[str, Any]:
         """Run stress tests for >1000 concurrent users."""
         test_files = [
             "test_load_balancing.py::TestConcurrentLoadHandling",
@@ -117,7 +117,7 @@ class LoadBalancingTestRunner:
 
         return self._execute_pytest_tests(test_files, "stress")
 
-    def _run_e2e_tests(self) -> Dict[str, Any]:
+    def _run_e2e_tests(self) -> dict[str, Any]:
         """Run end-to-end tests."""
         test_files = [
             "test_integration.py::TestEndToEndScenarios",
@@ -127,8 +127,8 @@ class LoadBalancingTestRunner:
         return self._execute_pytest_tests(test_files, "e2e")
 
     def _execute_pytest_tests(
-        self, test_files: List[str], category: str
-    ) -> Dict[str, Any]:
+        self, test_files: list[str], category: str
+    ) -> dict[str, Any]:
         """Execute pytest tests and capture results."""
         test_dir = Path(__file__).parent
 
@@ -157,7 +157,7 @@ class LoadBalancingTestRunner:
             # Parse results
             results_file = test_dir / f"results_{category}.json"
             if results_file.exists():
-                with open(results_file, "r") as f:
+                with open(results_file) as f:
                     test_data = json.load(f)
 
                 return {
@@ -215,18 +215,18 @@ class LoadBalancingTestRunner:
         total_failed = sum(r.get("failed", 0) for r in self.test_results.values())
         total_tests = total_passed + total_failed
 
-        print(f"\n📈 Test Summary:")
+        print("\n📈 Test Summary:")
         print(f"   Total Tests: {total_tests}")
         print(f"   Passed: {total_passed}")
         print(f"   Failed: {total_failed}")
         print(f"   Success Rate: {(total_passed/max(total_tests, 1)*100):.1f}%")
 
         # Performance targets validation
-        print(f"\n🎯 Performance Targets:")
+        print("\n🎯 Performance Targets:")
         self._validate_performance_targets()
 
         # Category breakdown
-        print(f"\n📋 Category Breakdown:")
+        print("\n📋 Category Breakdown:")
         for category, result in self.test_results.items():
             status = "✅" if result.get("success", False) else "❌"
             passed = result.get("passed", 0)

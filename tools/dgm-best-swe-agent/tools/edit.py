@@ -1,6 +1,5 @@
 import subprocess
 from pathlib import Path
-from typing import List, Optional, Tuple
 
 
 def tool_info():
@@ -115,8 +114,8 @@ def read_file(path: Path) -> str:
 
 
 def read_file_range(
-    path: Path, line_range: Optional[List[int]] = None
-) -> Tuple[str, int]:
+    path: Path, line_range: list[int] | None = None
+) -> tuple[str, int]:
     """
     Read and return file contents within specified line range.
     Returns tuple of (content, start_line).
@@ -188,7 +187,7 @@ def str_replace_in_file(path: Path, old_str: str, new_str: str) -> str:
         return f"Error during string replacement: {e}"
 
 
-def view_path(path_obj: Path, view_range: Optional[List[int]] = None) -> str:
+def view_path(path_obj: Path, view_range: list[int] | None = None) -> str:
     """
     View the file contents (optionally within a range) or directory listing.
 
@@ -225,7 +224,7 @@ def tool_function(
     command: str,
     path: str,
     file_text: str = None,
-    view_range: Optional[List[int]] = None,
+    view_range: list[int] | None = None,
     old_str: str = None,
     new_str: str = None,
 ) -> str:

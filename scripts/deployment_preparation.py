@@ -14,7 +14,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import yaml
 
@@ -29,7 +29,7 @@ class DeploymentPreparator:
         self.project_root = Path.cwd()
         self.deployment_configs = {}
 
-    def prepare_deployment_infrastructure(self) -> Dict[str, Any]:
+    def prepare_deployment_infrastructure(self) -> dict[str, Any]:
         """Prepare complete deployment infrastructure."""
         logger.info("🚀 Preparing AlphaEvolve-ACGS Deployment Infrastructure")
 
@@ -64,7 +64,7 @@ class DeploymentPreparator:
         preparation_results["status"] = "completed"
         return preparation_results
 
-    def _optimize_docker_configs(self) -> Dict[str, Any]:
+    def _optimize_docker_configs(self) -> dict[str, Any]:
         """Optimize Docker configurations for production."""
 
         # Enhanced AC Service Dockerfile
@@ -182,9 +182,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
         }
 
         for service, dockerfile_content in dockerfiles.items():
-            dockerfile_path = (
-                self.project_root / f"services/{service}/Dockerfile.prod"
-            )
+            dockerfile_path = self.project_root / f"services/{service}/Dockerfile.prod"
             dockerfile_path.parent.mkdir(parents=True, exist_ok=True)
             dockerfile_path.write_text(dockerfile_content)
 
@@ -313,7 +311,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
             ],
         }
 
-    def _generate_k8s_manifests(self) -> Dict[str, Any]:
+    def _generate_k8s_manifests(self) -> dict[str, Any]:
         """Generate Kubernetes deployment manifests."""
 
         # AC Service Deployment
@@ -463,7 +461,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
             ],
         }
 
-    def _setup_monitoring(self) -> Dict[str, Any]:
+    def _setup_monitoring(self) -> dict[str, Any]:
         """Set up monitoring and alerting infrastructure."""
 
         # Prometheus configuration
@@ -615,7 +613,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
             "dashboard_panels": 4,
         }
 
-    def _configure_cicd(self) -> Dict[str, Any]:
+    def _configure_cicd(self) -> dict[str, Any]:
         """Configure CI/CD pipeline."""
 
         # GitHub Actions workflow
@@ -708,7 +706,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
             ],
         }
 
-    def _setup_environment_management(self) -> Dict[str, Any]:
+    def _setup_environment_management(self) -> dict[str, Any]:
         """Set up environment configuration management."""
 
         # Environment configurations
@@ -772,21 +770,21 @@ def main():
         print(f"\n📊 Overall Status: {results['status'].upper()}")
         print(f"⏰ Preparation Time: {results['timestamp']}")
 
-        print(f"\n📋 Component Results:")
+        print("\n📋 Component Results:")
         for component_name, component_results in results["components"].items():
             print(
                 f"   ✅ {component_name.replace('_', ' ').title()}: {component_results['status']}"
             )
 
-        print(f"\n🎯 Next Steps:")
-        print(f"   1. Review generated configurations")
-        print(f"   2. Set up secrets and environment variables")
-        print(f"   3. Configure container registry")
-        print(f"   4. Set up Kubernetes cluster")
-        print(f"   5. Deploy monitoring infrastructure")
-        print(f"   6. Run deployment validation")
+        print("\n🎯 Next Steps:")
+        print("   1. Review generated configurations")
+        print("   2. Set up secrets and environment variables")
+        print("   3. Configure container registry")
+        print("   4. Set up Kubernetes cluster")
+        print("   5. Deploy monitoring infrastructure")
+        print("   6. Run deployment validation")
 
-        print(f"\n✅ Deployment preparation completed successfully!")
+        print("\n✅ Deployment preparation completed successfully!")
 
     except Exception as e:
         logger.error(f"Deployment preparation failed: {e}")

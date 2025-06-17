@@ -19,9 +19,9 @@ import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 from web3 import Web3
@@ -88,10 +88,10 @@ class DelegationChain:
 
     delegator_id: str
     delegate_id: str
-    topic_scope: List[str]  # Topics this delegation covers
+    topic_scope: list[str]  # Topics this delegation covers
     delegation_weight: float
     created_at: datetime
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
     active: bool = True
 
 
@@ -101,12 +101,12 @@ class AIModeratedDiscussion:
 
     discussion_id: str
     topic: str
-    participants: List[str]
+    participants: list[str]
     ai_moderator_model: str
     discussion_summary: str
-    consensus_points: List[str]
-    divergent_points: List[str]
-    sentiment_analysis: Dict[str, float]
+    consensus_points: list[str]
+    divergent_points: list[str]
+    sentiment_analysis: dict[str, float]
     toxicity_score: float
     created_at: datetime
     status: str = "active"
@@ -118,11 +118,11 @@ class RealTimePolling:
 
     poll_id: str
     question: str
-    options: List[str]
-    responses: Dict[str, int]  # option -> count
-    sentiment_trend: List[Tuple[datetime, Dict[str, float]]]
-    geographic_distribution: Dict[str, Dict[str, int]]
-    demographic_breakdown: Dict[str, Dict[str, int]]
+    options: list[str]
+    responses: dict[str, int]  # option -> count
+    sentiment_trend: list[tuple[datetime, dict[str, float]]]
+    geographic_distribution: dict[str, dict[str, int]]
+    demographic_breakdown: dict[str, dict[str, int]]
     confidence_interval: float
     sample_size: int
     created_at: datetime
@@ -134,7 +134,7 @@ class AdvancedDemocraticParticipation:
     AI-mediated deliberation, and real-time sentiment monitoring.
     """
 
-    def __init__(self, blockchain_provider_url: Optional[str] = None):
+    def __init__(self, blockchain_provider_url: str | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -142,7 +142,9 @@ class AdvancedDemocraticParticipation:
         self.ccai = get_collective_constitutional_ai()
 
         # Blockchain integration
-        self.blockchain_provider_url = blockchain_provider_url or "http://localhost:8545"
+        self.blockchain_provider_url = (
+            blockchain_provider_url or "http://localhost:8545"
+        )
         self.w3 = None
         self.voting_contract_address = None
 
@@ -150,13 +152,15 @@ class AdvancedDemocraticParticipation:
         self._initialize_blockchain()
 
         # Active democratic processes
-        self.active_votes: Dict[str, Dict[str, Any]] = {}
-        self.delegation_chains: Dict[str, List[DelegationChain]] = defaultdict(list)
-        self.ai_discussions: Dict[str, AIModeratedDiscussion] = {}
-        self.real_time_polls: Dict[str, RealTimePolling] = {}
+        self.active_votes: dict[str, dict[str, Any]] = {}
+        self.delegation_chains: dict[str, list[DelegationChain]] = defaultdict(list)
+        self.ai_discussions: dict[str, AIModeratedDiscussion] = {}
+        self.real_time_polls: dict[str, RealTimePolling] = {}
 
         # Voting credits for quadratic voting
-        self.voter_credits: Dict[str, int] = defaultdict(lambda: 100)  # Default 100 credits
+        self.voter_credits: dict[str, int] = defaultdict(
+            lambda: 100
+        )  # Default 100 credits
 
     def _initialize_blockchain(self):
         # requires: Valid input parameters
@@ -174,7 +178,9 @@ class AdvancedDemocraticParticipation:
             else:
                 logger.warning("Blockchain connection failed - using local storage")
         except Exception as e:
-            logger.warning(f"Blockchain initialization failed: {e} - using local storage")
+            logger.warning(
+                f"Blockchain initialization failed: {e} - using local storage"
+            )
 
     async def create_blockchain_vote(
         self,
@@ -182,8 +188,8 @@ class AdvancedDemocraticParticipation:
         proposal_text: str,
         voting_mechanism: VotingMechanism,
         duration_hours: int = 168,  # 1 week default
-        eligible_voters: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        eligible_voters: list[str] | None = None,
+    ) -> dict[str, Any]:
         """
         Create a new blockchain-based vote for transparent democratic participation.
 
@@ -204,8 +210,8 @@ class AdvancedDemocraticParticipation:
             "proposal_id": proposal_id,
             "proposal_text": proposal_text,
             "voting_mechanism": voting_mechanism.value,
-            "created_at": datetime.now(timezone.utc),
-            "expires_at": datetime.now(timezone.utc) + timedelta(hours=duration_hours),
+            "created_at": datetime.now(UTC),
+            "expires_at": datetime.now(UTC) + timedelta(hours=duration_hours),
             "eligible_voters": eligible_voters or [],
             "votes": [],
             "status": "active",
@@ -241,7 +247,7 @@ class AdvancedDemocraticParticipation:
         self,
         vote_id: str,
         voter_id: str,
-        proposal_preference: Dict[str, int],  # proposal_option -> credits_allocated
+        proposal_preference: dict[str, int],  # proposal_option -> credits_allocated
     ) -> QuadraticVote:
         """
         Cast a quadratic vote with preference intensity measurement.
@@ -260,7 +266,7 @@ class AdvancedDemocraticParticipation:
         vote_config = self.active_votes[vote_id]
 
         # Check if vote is still active
-        if datetime.now(timezone.utc) > vote_config["expires_at"]:
+        if datetime.now(UTC) > vote_config["expires_at"]:
             raise ValueError(f"Vote {vote_id} has expired")
 
         # Calculate total credits used
@@ -268,7 +274,9 @@ class AdvancedDemocraticParticipation:
         available_credits = self.voter_credits[voter_id]
 
         if total_credits > available_credits:
-            raise ValueError(f"Insufficient credits: {total_credits} > {available_credits}")
+            raise ValueError(
+                f"Insufficient credits: {total_credits} > {available_credits}"
+            )
 
         # Calculate quadratic vote strength
         vote_strength = {}
@@ -287,7 +295,7 @@ class AdvancedDemocraticParticipation:
             credits_allocated=total_credits,
             vote_strength=sum(vote_strength.values()),
             preference_intensity=total_preference_intensity,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         # Record vote
@@ -322,7 +330,9 @@ class AdvancedDemocraticParticipation:
 
         # Record metrics
         self.metrics.increment("quadratic_votes_cast")
-        self.metrics.record_value("vote_preference_intensity", total_preference_intensity)
+        self.metrics.record_value(
+            "vote_preference_intensity", total_preference_intensity
+        )
 
         logger.info(f"Quadratic vote cast by {voter_id} for {vote_id}")
 
@@ -332,9 +342,9 @@ class AdvancedDemocraticParticipation:
         self,
         delegator_id: str,
         delegate_id: str,
-        topic_scope: List[str],
+        topic_scope: list[str],
         delegation_weight: float = 1.0,
-        duration_days: Optional[int] = None,
+        duration_days: int | None = None,
     ) -> DelegationChain:
         """
         Create a liquid democracy delegation chain.
@@ -353,14 +363,14 @@ class AdvancedDemocraticParticipation:
 
         expires_at = None
         if duration_days:
-            expires_at = datetime.now(timezone.utc) + timedelta(days=duration_days)
+            expires_at = datetime.now(UTC) + timedelta(days=duration_days)
 
         delegation = DelegationChain(
             delegator_id=delegator_id,
             delegate_id=delegate_id,
             topic_scope=topic_scope,
             delegation_weight=delegation_weight,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
             expires_at=expires_at,
             active=True,
         )
@@ -372,14 +382,16 @@ class AdvancedDemocraticParticipation:
         self.metrics.increment("delegations_created")
         self.metrics.record_value("delegation_weight", delegation_weight)
 
-        logger.info(f"Delegation created: {delegator_id} -> {delegate_id} for {topic_scope}")
+        logger.info(
+            f"Delegation created: {delegator_id} -> {delegate_id} for {topic_scope}"
+        )
 
         return delegation
 
     async def start_ai_moderated_discussion(
         self,
         topic: str,
-        participants: List[str],
+        participants: list[str],
         ai_moderator_model: str = "gpt-4",
         discussion_duration_hours: int = 24,
     ) -> AIModeratedDiscussion:
@@ -407,7 +419,7 @@ class AdvancedDemocraticParticipation:
             divergent_points=[],
             sentiment_analysis={},
             toxicity_score=0.0,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
             status="active",
         )
 
@@ -427,9 +439,9 @@ class AdvancedDemocraticParticipation:
     async def create_real_time_poll(
         self,
         question: str,
-        options: List[str],
+        options: list[str],
         target_sample_size: int = 1000,
-        geographic_targeting: Optional[Dict[str, Any]] = None,
+        geographic_targeting: dict[str, Any] | None = None,
     ) -> RealTimePolling:
         """
         Create a real-time polling system for continuous sentiment monitoring.
@@ -449,13 +461,13 @@ class AdvancedDemocraticParticipation:
             poll_id=poll_id,
             question=question,
             options=options,
-            responses={option: 0 for option in options},
+            responses=dict.fromkeys(options, 0),
             sentiment_trend=[],
             geographic_distribution={},
             demographic_breakdown={},
             confidence_interval=0.95,
             sample_size=0,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
 
         self.real_time_polls[poll_id] = poll
@@ -480,13 +492,6 @@ class AdvancedDemocraticParticipation:
         await asyncio.sleep(0.1)
 
         # Set up moderation guidelines
-        moderation_guidelines = {
-            "toxicity_threshold": 0.3,
-            "bias_detection": True,
-            "fact_checking": True,
-            "consensus_building": True,
-            "sentiment_monitoring": True,
-        }
 
         discussion.sentiment_analysis = {
             "positive": 0.0,
@@ -494,7 +499,9 @@ class AdvancedDemocraticParticipation:
             "neutral": 1.0,
         }
 
-        logger.debug(f"AI moderation initialized for discussion {discussion.discussion_id}")
+        logger.debug(
+            f"AI moderation initialized for discussion {discussion.discussion_id}"
+        )
 
     async def _initialize_real_time_monitoring(self, poll: RealTimePolling):
         # requires: Valid input parameters
@@ -505,12 +512,12 @@ class AdvancedDemocraticParticipation:
         await asyncio.sleep(0.1)
 
         # Initialize sentiment trend tracking
-        initial_sentiment = {option: 0.0 for option in poll.options}
-        poll.sentiment_trend.append((datetime.now(timezone.utc), initial_sentiment))
+        initial_sentiment = dict.fromkeys(poll.options, 0.0)
+        poll.sentiment_trend.append((datetime.now(UTC), initial_sentiment))
 
         logger.debug(f"Real-time monitoring initialized for poll {poll.poll_id}")
 
-    def _simulate_blockchain_transaction(self, vote_config: Dict[str, Any]) -> str:
+    def _simulate_blockchain_transaction(self, vote_config: dict[str, Any]) -> str:
         """Simulate blockchain transaction for vote creation."""
         # In production, this would interact with actual smart contract
         tx_data = json.dumps(vote_config, default=str)
@@ -530,17 +537,25 @@ class AdvancedDemocraticParticipation:
         # In production, this would map to actual wallet addresses
         return f"0x{hashlib.sha256(voter_id.encode()).hexdigest()[:40]}"
 
-    async def get_democratic_participation_metrics(self) -> Dict[str, Any]:
+    async def get_democratic_participation_metrics(self) -> dict[str, Any]:
         """Get comprehensive democratic participation metrics."""
-        active_votes_count = len([v for v in self.active_votes.values() if v["status"] == "active"])
-        total_delegations = sum(len(chains) for chains in self.delegation_chains.values())
-        active_discussions = len([d for d in self.ai_discussions.values() if d.status == "active"])
+        active_votes_count = len(
+            [v for v in self.active_votes.values() if v["status"] == "active"]
+        )
+        total_delegations = sum(
+            len(chains) for chains in self.delegation_chains.values()
+        )
+        active_discussions = len(
+            [d for d in self.ai_discussions.values() if d.status == "active"]
+        )
         active_polls = len(self.real_time_polls)
 
         # Calculate participation rates
         total_participants = set()
         for vote in self.active_votes.values():
-            total_participants.update(vote_data["voter_id"] for vote_data in vote["votes"])
+            total_participants.update(
+                vote_data["voter_id"] for vote_data in vote["votes"]
+            )
 
         for chains in self.delegation_chains.values():
             for chain in chains:
@@ -559,19 +574,21 @@ class AdvancedDemocraticParticipation:
             "unique_participants": len(total_participants),
             "participation_rate": participation_rate,
             "blockchain_integration": self.w3 is not None and self.w3.is_connected(),
-            "voting_mechanisms_available": [mechanism.value for mechanism in VotingMechanism],
+            "voting_mechanisms_available": [
+                mechanism.value for mechanism in VotingMechanism
+            ],
             "democratic_legitimacy_enhancement": {
                 "quadratic_voting": "preference_intensity_measurement",
                 "liquid_democracy": "delegation_chains",
                 "ai_moderation": "large_scale_deliberation",
                 "real_time_polling": "continuous_sentiment_monitoring",
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 
 # Global instance
-_advanced_democratic_participation: Optional[AdvancedDemocraticParticipation] = None
+_advanced_democratic_participation: AdvancedDemocraticParticipation | None = None
 
 
 def get_advanced_democratic_participation() -> AdvancedDemocraticParticipation:

@@ -8,9 +8,9 @@ Integrates with ACGS backend for principle retrieval and policy management
 import asyncio
 import json
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Callable, Dict, List, Optional
 
 import aiohttp
 import websockets
@@ -29,7 +29,7 @@ class SolanaEvent:
     event_type: str
     program_id: str
     account: str
-    data: Dict
+    data: dict
     slot: int
     timestamp: datetime
     signature: str
@@ -53,7 +53,7 @@ class QuantumagiEventMonitor:
     Listens for Solana events and triggers appropriate responses
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: dict):
         self.config = config
         self.logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ class QuantumagiEventMonitor:
         self.gs_engine = QuantumagiGSEngine(config.get("gs_engine", {}))
 
         # Event handlers
-        self.event_handlers: Dict[str, List[Callable]] = {
+        self.event_handlers: dict[str, list[Callable]] = {
             "constitution_initialized": [],
             "policy_proposed": [],
             "policy_enacted": [],
@@ -283,7 +283,7 @@ class QuantumagiEventMonitor:
 
                 self.event_queue.task_done()
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 continue
             except Exception as e:
                 self.logger.error(f"Error processing event: {e}")
@@ -308,7 +308,7 @@ class QuantumagiEventMonitor:
         elif event.event_type == "appeal_submitted":
             await self._handle_appeal_submitted(event)
 
-    async def _handle_new_principle(self, principle_data: Dict):
+    async def _handle_new_principle(self, principle_data: dict):
         """Handle new constitutional principle from ACGS"""
         self.logger.info(
             f"📜 New constitutional principle: {principle_data.get('id', 'Unknown')}"
@@ -408,7 +408,7 @@ class QuantumagiEventMonitor:
 
         # Could trigger human review notifications
 
-    async def _notify_acgs_policy_proposed(self, policy_data: Dict):
+    async def _notify_acgs_policy_proposed(self, policy_data: dict):
         """Notify ACGS backend of new policy proposal"""
         acgs_url = self.config.get("acgs_backend_url", "http://localhost:8000")
 
@@ -430,7 +430,7 @@ class QuantumagiEventMonitor:
         except Exception as e:
             self.logger.error(f"Failed to notify ACGS: {e}")
 
-    def _determine_event_type(self, account_data) -> Optional[str]:
+    def _determine_event_type(self, account_data) -> str | None:
         """Determine event type from account data"""
         # Simplified event type detection
         # In production, would properly decode Anchor account data
@@ -482,7 +482,7 @@ class QuantumagiEventMonitor:
             try:
                 await asyncio.sleep(300)  # Report every 5 minutes
 
-                self.logger.info(f"📊 Metrics Report:")
+                self.logger.info("📊 Metrics Report:")
                 self.logger.info(
                     f"  Events Processed: {self.metrics['events_processed']}"
                 )

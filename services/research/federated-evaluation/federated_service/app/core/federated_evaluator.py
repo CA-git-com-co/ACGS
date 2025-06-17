@@ -13,9 +13,9 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 
@@ -53,15 +53,15 @@ class FederatedNode:
     node_id: str
     platform_type: PlatformType
     endpoint_url: str
-    api_key: Optional[str] = None
-    capabilities: Dict[str, Any] = field(default_factory=dict)
+    api_key: str | None = None
+    capabilities: dict[str, Any] = field(default_factory=dict)
     status: str = "active"
-    last_heartbeat: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    performance_metrics: Dict[str, float] = field(default_factory=dict)
+    last_heartbeat: datetime = field(default_factory=lambda: datetime.now(UTC))
+    performance_metrics: dict[str, float] = field(default_factory=dict)
 
     # MAB integration
-    mab_template_preferences: Dict[str, float] = field(default_factory=dict)
-    prompt_optimization_history: List[Dict[str, Any]] = field(default_factory=list)
+    mab_template_preferences: dict[str, float] = field(default_factory=dict)
+    prompt_optimization_history: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -70,13 +70,13 @@ class EvaluationTask:
 
     task_id: str
     policy_content: str
-    evaluation_criteria: Dict[str, Any]
-    target_platforms: List[PlatformType]
-    mab_context: Dict[str, Any]
-    privacy_requirements: Dict[str, Any]
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    evaluation_criteria: dict[str, Any]
+    target_platforms: list[PlatformType]
+    mab_context: dict[str, Any]
+    privacy_requirements: dict[str, Any]
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     status: EvaluationStatus = EvaluationStatus.PENDING
-    results: Dict[str, Any] = field(default_factory=dict)
+    results: dict[str, Any] = field(default_factory=dict)
 
 
 class FederatedEvaluator:
@@ -85,13 +85,13 @@ class FederatedEvaluator:
     across multiple platforms while preserving privacy and integrating with MAB optimization.
     """
 
-    def __init__(self, config: Dict[str, Any] = None):
+    def __init__(self, config: dict[str, Any] = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         self.config = config or {}
-        self.nodes: Dict[str, FederatedNode] = {}
-        self.active_evaluations: Dict[str, EvaluationTask] = {}
+        self.nodes: dict[str, FederatedNode] = {}
+        self.active_evaluations: dict[str, EvaluationTask] = {}
         self.secure_aggregator = None  # Will be initialized later
         self.privacy_manager = None  # Will be initialized later
 
@@ -148,7 +148,9 @@ class FederatedEvaluator:
             # Setup Byzantine fault detection
             await self._initialize_byzantine_detection()
 
-            logger.info("Federated Evaluator initialized successfully with multi-node support")
+            logger.info(
+                "Federated Evaluator initialized successfully with multi-node support"
+            )
 
         except Exception as e:
             logger.error(f"Failed to initialize Federated Evaluator: {e}")
@@ -219,12 +221,14 @@ class FederatedEvaluator:
         """Background task to monitor node health and performance."""
         while True:
             try:
-                current_time = datetime.now(timezone.utc)
+                current_time = datetime.now(UTC)
 
                 for node_id, node in self.nodes.items():
                     # Check heartbeat timeout
                     if node.last_heartbeat:
-                        time_since_heartbeat = (current_time - node.last_heartbeat).total_seconds()
+                        time_since_heartbeat = (
+                            current_time - node.last_heartbeat
+                        ).total_seconds()
 
                         if time_since_heartbeat > self.node_timeout_threshold:
                             await self._handle_node_timeout(node_id)
@@ -277,7 +281,9 @@ class FederatedEvaluator:
 
             # Calculate health score based on multiple factors
             success_rate = node.successful_evaluations / max(node.total_evaluations, 1)
-            response_time_factor = min(1.0, 1000.0 / max(node.average_response_time_ms, 100.0))
+            response_time_factor = min(
+                1.0, 1000.0 / max(node.average_response_time_ms, 100.0)
+            )
 
             # Combine factors with weights
             health_score = (
@@ -325,15 +331,19 @@ class FederatedEvaluator:
                 await self._handle_performance_anomaly(node_id, anomalies)
 
         except Exception as e:
-            logger.error(f"Error checking performance anomalies for node {node_id}: {e}")
+            logger.error(
+                f"Error checking performance anomalies for node {node_id}: {e}"
+            )
 
-    async def _handle_performance_anomaly(self, node_id: str, anomalies: List[str]):
+    async def _handle_performance_anomaly(self, node_id: str, anomalies: list[str]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Handle detected performance anomalies."""
         try:
-            logger.warning(f"Performance anomalies detected for node {node_id}: {anomalies}")
+            logger.warning(
+                f"Performance anomalies detected for node {node_id}: {anomalies}"
+            )
 
             # Increase monitoring frequency for this node
             # Reduce evaluation assignments temporarily
@@ -355,7 +365,7 @@ class FederatedEvaluator:
                 self.nodes[node_id].status = "maintenance"
                 self.quarantined_nodes[node_id] = {
                     "reason": reason,
-                    "quarantined_at": datetime.now(timezone.utc),
+                    "quarantined_at": datetime.now(UTC),
                     "duration": self.byzantine_config["quarantine_duration"],
                 }
 
@@ -376,7 +386,9 @@ class FederatedEvaluator:
             import httpx
 
             # Create HTTP client for GS service communication
-            self.mab_client = httpx.AsyncClient(base_url="http://gs_service:8004", timeout=30.0)
+            self.mab_client = httpx.AsyncClient(
+                base_url="http://gs_service:8004", timeout=30.0
+            )
 
             # Test connection
             response = await self.mab_client.get("/health")
@@ -409,7 +421,9 @@ class FederatedEvaluator:
             # Store in database
             await self._store_node_config(node)
 
-            logger.info(f"Registered federated node: {node_id} ({node_config.platform_type.value})")
+            logger.info(
+                f"Registered federated node: {node_id} ({node_config.platform_type.value})"
+            )
             return node_id
 
         except Exception as e:
@@ -449,7 +463,9 @@ class FederatedEvaluator:
             await self._store_evaluation_in_db(task, selected_nodes)
 
             # Start evaluation asynchronously with selected nodes
-            asyncio.create_task(self._execute_federated_evaluation(task, selected_nodes))
+            asyncio.create_task(
+                self._execute_federated_evaluation(task, selected_nodes)
+            )
 
             logger.info(
                 f"Submitted federated evaluation: {task_id} with {len(selected_nodes)} nodes"
@@ -461,8 +477,8 @@ class FederatedEvaluator:
             raise
 
     async def _select_optimal_nodes(
-        self, target_platforms: List[str], evaluation_criteria: Dict[str, Any]
-    ) -> List[str]:
+        self, target_platforms: list[str], evaluation_criteria: dict[str, Any]
+    ) -> list[str]:
         """Select optimal nodes for federated evaluation based on platform requirements and performance."""
         try:
             # Filter nodes by platform type and status
@@ -476,7 +492,9 @@ class FederatedEvaluator:
                     available_nodes.append((node_id, node))
 
             if len(available_nodes) < 2:
-                raise ValueError(f"Insufficient nodes available for platforms: {target_platforms}")
+                raise ValueError(
+                    f"Insufficient nodes available for platforms: {target_platforms}"
+                )
 
             # Sort nodes by health score and current load
             def node_score(node_data):
@@ -506,21 +524,27 @@ class FederatedEvaluator:
                 target_node_count = min(max_nodes, 3)
 
             selected_node_count = max(min_nodes, target_node_count)
-            selected_nodes = [node_id for node_id, _ in available_nodes[:selected_node_count]]
+            selected_nodes = [
+                node_id for node_id, _ in available_nodes[:selected_node_count]
+            ]
 
             # Update current loads
             for node_id in selected_nodes:
                 current_load = self.node_load_balancer["current_loads"].get(node_id, 0)
                 self.node_load_balancer["current_loads"][node_id] = current_load + 1
 
-            logger.info(f"Selected {len(selected_nodes)} nodes for evaluation: {selected_nodes}")
+            logger.info(
+                f"Selected {len(selected_nodes)} nodes for evaluation: {selected_nodes}"
+            )
             return selected_nodes
 
         except Exception as e:
             logger.error(f"Failed to select optimal nodes: {e}")
             raise
 
-    async def _store_evaluation_in_db(self, task: EvaluationTask, selected_nodes: List[str]):
+    async def _store_evaluation_in_db(
+        self, task: EvaluationTask, selected_nodes: list[str]
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -598,25 +622,33 @@ class FederatedEvaluator:
                 task = self.active_evaluations[task_id]
 
                 # Select new nodes excluding the failed one
-                available_platforms = [p for p in task.target_platforms]
+                available_platforms = list(task.target_platforms)
                 new_nodes = await self._select_optimal_nodes(
                     available_platforms, task.evaluation_criteria
                 )
 
                 if new_nodes:
                     # Restart evaluation with new nodes
-                    asyncio.create_task(self._execute_federated_evaluation(task, new_nodes))
-                    logger.info(f"Redistributed evaluation {task_id} to new nodes: {new_nodes}")
+                    asyncio.create_task(
+                        self._execute_federated_evaluation(task, new_nodes)
+                    )
+                    logger.info(
+                        f"Redistributed evaluation {task_id} to new nodes: {new_nodes}"
+                    )
                 else:
                     # Mark evaluation as failed if no nodes available
                     task.status = EvaluationStatus.FAILED
-                    task.results["error"] = f"No available nodes after {failed_node_id} failure"
+                    task.results["error"] = (
+                        f"No available nodes after {failed_node_id} failure"
+                    )
                     logger.warning(
                         f"Failed to redistribute evaluation {task_id} - no available nodes"
                     )
 
         except Exception as e:
-            logger.error(f"Failed to redistribute evaluations from node {failed_node_id}: {e}")
+            logger.error(
+                f"Failed to redistribute evaluations from node {failed_node_id}: {e}"
+            )
 
     async def _update_load_balancing_weights(self):
         # requires: Valid input parameters
@@ -636,7 +668,7 @@ class FederatedEvaluator:
         except Exception as e:
             logger.error(f"Failed to update load balancing weights: {e}")
 
-    async def _get_mab_context(self, request: Any) -> Dict[str, Any]:
+    async def _get_mab_context(self, request: Any) -> dict[str, Any]:
         """Get MAB-optimized context for evaluation."""
         mab_context = {
             "category": request.evaluation_criteria.get("category", "constitutional"),
@@ -655,7 +687,9 @@ class FederatedEvaluator:
                 if response.status_code == 200:
                     template_data = response.json()
                     mab_context["selected_template"] = template_data
-                    logger.debug(f"MAB template selected: {template_data.get('template_id')}")
+                    logger.debug(
+                        f"MAB template selected: {template_data.get('template_id')}"
+                    )
 
             except Exception as e:
                 logger.warning(f"Failed to get MAB context: {e}")
@@ -688,7 +722,7 @@ class FederatedEvaluator:
                 try:
                     result = await asyncio.wait_for(node_task, timeout=120.0)
                     node_results[node_id] = result
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     logger.warning(f"Node {node_id} evaluation timed out")
                     node_results[node_id] = {"error": "timeout", "success": False}
                 except Exception as e:
@@ -718,7 +752,9 @@ class FederatedEvaluator:
             execution_time = time.time() - start_time
             await self._update_evaluation_metrics(task, execution_time, True)
 
-            logger.info(f"Federated evaluation completed: {task.task_id} in {execution_time:.2f}s")
+            logger.info(
+                f"Federated evaluation completed: {task.task_id} in {execution_time:.2f}s"
+            )
 
         except Exception as e:
             task.status = EvaluationStatus.FAILED
@@ -730,8 +766,8 @@ class FederatedEvaluator:
             logger.error(f"Federated evaluation failed: {task.task_id} - {e}")
 
     async def _select_evaluation_nodes(
-        self, target_platforms: List[PlatformType]
-    ) -> List[FederatedNode]:
+        self, target_platforms: list[PlatformType]
+    ) -> list[FederatedNode]:
         """Select optimal nodes for evaluation based on platform requirements."""
         selected_nodes = []
 
@@ -755,7 +791,9 @@ class FederatedEvaluator:
 
         return selected_nodes
 
-    async def _evaluate_on_node(self, node: FederatedNode, task: EvaluationTask) -> Dict[str, Any]:
+    async def _evaluate_on_node(
+        self, node: FederatedNode, task: EvaluationTask
+    ) -> dict[str, Any]:
         """Execute evaluation on a specific federated node."""
         try:
             # Prepare evaluation payload
@@ -791,8 +829,8 @@ class FederatedEvaluator:
             return {"error": str(e), "success": False, "node_id": node.node_id}
 
     async def _evaluate_cloud_platform(
-        self, node: FederatedNode, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, node: FederatedNode, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate policy on cloud platform (OpenAI, Anthropic, etc.)."""
         try:
             import httpx
@@ -833,8 +871,8 @@ class FederatedEvaluator:
             return {"error": str(e), "success": False, "node_id": node.node_id}
 
     async def _evaluate_edge_platform(
-        self, node: FederatedNode, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, node: FederatedNode, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate policy on edge platform (local deployment)."""
         try:
             # Mock edge evaluation - would integrate with actual edge deployment
@@ -864,8 +902,8 @@ class FederatedEvaluator:
             return {"error": str(e), "success": False, "node_id": node.node_id}
 
     async def _evaluate_federated_node(
-        self, node: FederatedNode, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, node: FederatedNode, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate policy on federated learning node."""
         try:
             import httpx
@@ -875,7 +913,11 @@ class FederatedEvaluator:
                 response = await client.post(
                     f"{node.endpoint_url}/federated-evaluate",
                     json=payload,
-                    headers=({"Authorization": f"Bearer {node.api_key}"} if node.api_key else {}),
+                    headers=(
+                        {"Authorization": f"Bearer {node.api_key}"}
+                        if node.api_key
+                        else {}
+                    ),
                 )
 
                 if response.status_code == 200:
@@ -894,7 +936,9 @@ class FederatedEvaluator:
         except Exception as e:
             return {"error": str(e), "success": False, "node_id": node.node_id}
 
-    async def _update_mab_performance(self, task: EvaluationTask, results: Dict[str, Any]):
+    async def _update_mab_performance(
+        self, task: EvaluationTask, results: dict[str, Any]
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -920,17 +964,23 @@ class FederatedEvaluator:
             }
 
             # Send update to MAB system
-            response = await self.mab_client.post("/api/v1/mab/update-performance", json=mab_update)
+            response = await self.mab_client.post(
+                "/api/v1/mab/update-performance", json=mab_update
+            )
 
             if response.status_code == 200:
-                logger.debug(f"MAB performance updated for template: {mab_update['template_id']}")
+                logger.debug(
+                    f"MAB performance updated for template: {mab_update['template_id']}"
+                )
             else:
-                logger.warning(f"Failed to update MAB performance: {response.status_code}")
+                logger.warning(
+                    f"Failed to update MAB performance: {response.status_code}"
+                )
 
         except Exception as e:
             logger.error(f"Failed to update MAB performance: {e}")
 
-    def _calculate_performance_score(self, results: Dict[str, Any]) -> float:
+    def _calculate_performance_score(self, results: dict[str, Any]) -> float:
         """Calculate composite performance score for MAB feedback."""
         try:
             # Weight different performance aspects
@@ -986,11 +1036,11 @@ class FederatedEvaluator:
 
                 # Update consistency and privacy scores from results
                 if task.results:
-                    self.evaluation_metrics["cross_platform_consistency"] = task.results.get(
-                        "consistency_score", 0.0
+                    self.evaluation_metrics["cross_platform_consistency"] = (
+                        task.results.get("consistency_score", 0.0)
                     )
-                    self.evaluation_metrics["privacy_preservation_score"] = task.results.get(
-                        "privacy_score", 0.0
+                    self.evaluation_metrics["privacy_preservation_score"] = (
+                        task.results.get("privacy_score", 0.0)
                     )
             else:
                 self.evaluation_metrics["failed_evaluations"] += 1
@@ -1006,7 +1056,7 @@ class FederatedEvaluator:
         except Exception as e:
             logger.error(f"Failed to update evaluation metrics: {e}")
 
-    async def _update_node_metrics(self, node: FederatedNode, result: Dict[str, Any]):
+    async def _update_node_metrics(self, node: FederatedNode, result: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -1026,7 +1076,9 @@ class FederatedEvaluator:
 
                 # Update response time
                 if "execution_time_ms" in result:
-                    current_avg = node.performance_metrics.get("average_response_time", 0.0)
+                    current_avg = node.performance_metrics.get(
+                        "average_response_time", 0.0
+                    )
                     total_evals = node.performance_metrics["total_evaluations"]
                     node.performance_metrics["average_response_time"] = (
                         current_avg * (total_evals - 1) + result["execution_time_ms"]
@@ -1042,12 +1094,12 @@ class FederatedEvaluator:
                 )
 
             # Update last heartbeat
-            node.last_heartbeat = datetime.now(timezone.utc)
+            node.last_heartbeat = datetime.now(UTC)
 
         except Exception as e:
             logger.error(f"Failed to update node metrics: {e}")
 
-    async def get_evaluation_status(self, task_id: str) -> Optional[Dict[str, Any]]:
+    async def get_evaluation_status(self, task_id: str) -> dict[str, Any] | None:
         """Get the status of a federated evaluation task."""
         try:
             if task_id not in self.active_evaluations:
@@ -1059,9 +1111,13 @@ class FederatedEvaluator:
                 "status": task.status.value,
                 "created_at": task.created_at.isoformat(),
                 "target_platforms": [p.value for p in task.target_platforms],
-                "results": (task.results if task.status == EvaluationStatus.COMPLETED else None),
+                "results": (
+                    task.results if task.status == EvaluationStatus.COMPLETED else None
+                ),
                 "error": (
-                    task.results.get("error") if task.status == EvaluationStatus.FAILED else None
+                    task.results.get("error")
+                    if task.status == EvaluationStatus.FAILED
+                    else None
                 ),
             }
 
@@ -1069,7 +1125,7 @@ class FederatedEvaluator:
             logger.error(f"Failed to get evaluation status: {e}")
             return None
 
-    async def get_node_status(self, node_id: str) -> Optional[Dict[str, Any]]:
+    async def get_node_status(self, node_id: str) -> dict[str, Any] | None:
         """Get the status of a federated node."""
         try:
             if node_id not in self.nodes:
@@ -1089,7 +1145,7 @@ class FederatedEvaluator:
             logger.error(f"Failed to get node status: {e}")
             return None
 
-    async def get_evaluation_metrics(self) -> Dict[str, Any]:
+    async def get_evaluation_metrics(self) -> dict[str, Any]:
         """Get global evaluation metrics."""
         return self.evaluation_metrics.copy()
 

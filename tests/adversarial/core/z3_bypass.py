@@ -5,12 +5,10 @@ This module implements adversarial tests targeting Z3 solver constraint bypass
 vulnerabilities in the ACGS-PGP formal verification service.
 """
 
-import asyncio
 import json
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Dict, List
+from datetime import UTC, datetime
 
 import aiohttp
 
@@ -77,8 +75,8 @@ class Z3BypassTester:
         }
 
     async def run_tests(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run Z3 solver bypass tests."""
         vulnerabilities = []
 
@@ -110,9 +108,9 @@ class Z3BypassTester:
         self,
         vector: str,
         fv_endpoint: str,
-        available_services: List[str],
-        service_endpoints: Dict[str, str],
-    ) -> List[VulnerabilityResult]:
+        available_services: list[str],
+        service_endpoints: dict[str, str],
+    ) -> list[VulnerabilityResult]:
         """Test a specific Z3 bypass vector."""
 
         if vector == "constraint_satisfaction_manipulation":
@@ -136,7 +134,7 @@ class Z3BypassTester:
 
     async def _test_constraint_satisfaction_manipulation(
         self, fv_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test constraint satisfaction manipulation attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -221,7 +219,7 @@ class Z3BypassTester:
                                         ],
                                         cvss_score=8.0,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(timezone.utc),
+                                        timestamp=datetime.now(UTC),
                                     )
                                 )
 
@@ -232,7 +230,7 @@ class Z3BypassTester:
 
     async def _test_smt_formula_injection(
         self, fv_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test SMT formula injection attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -311,11 +309,11 @@ class Z3BypassTester:
                                                 else 7.5
                                             ),
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(timezone.utc),
+                                            timestamp=datetime.now(UTC),
                                         )
                                     )
 
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     # Timeout might indicate successful timeout bomb
                     if formula_type == "timeout_bombs":
                         vulnerabilities.append(
@@ -335,7 +333,7 @@ class Z3BypassTester:
                                 ],
                                 cvss_score=6.5,
                                 execution_time_ms=60000,  # Timeout duration
-                                timestamp=datetime.now(timezone.utc),
+                                timestamp=datetime.now(UTC),
                             )
                         )
 
@@ -346,7 +344,7 @@ class Z3BypassTester:
 
     async def _test_solver_timeout_exploitation(
         self, fv_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test solver timeout exploitation attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -431,11 +429,11 @@ class Z3BypassTester:
                                         ],
                                         cvss_score=5.5,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(timezone.utc),
+                                        timestamp=datetime.now(UTC),
                                     )
                                 )
 
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     # Timeout indicates successful exploitation
                     vulnerabilities.append(
                         VulnerabilityResult(
@@ -454,7 +452,7 @@ class Z3BypassTester:
                             ],
                             cvss_score=6.0,
                             execution_time_ms=10000,  # Timeout duration
-                            timestamp=datetime.now(timezone.utc),
+                            timestamp=datetime.now(UTC),
                         )
                     )
 
@@ -465,7 +463,7 @@ class Z3BypassTester:
 
     async def _test_proof_obligation_bypass(
         self, fv_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test proof obligation bypass attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -540,7 +538,7 @@ class Z3BypassTester:
                                         ],
                                         cvss_score=9.5,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(timezone.utc),
+                                        timestamp=datetime.now(UTC),
                                     )
                                 )
 
@@ -550,7 +548,7 @@ class Z3BypassTester:
         return vulnerabilities
 
     def _detect_constraint_manipulation(
-        self, response_data: Dict, constraints: List[str]
+        self, response_data: dict, constraints: list[str]
     ) -> bool:
         """Detect if constraint manipulation was successful."""
         response_str = json.dumps(response_data).lower()
@@ -574,7 +572,7 @@ class Z3BypassTester:
         return False
 
     def _detect_smt_injection_success(
-        self, response_data: Dict, formula: str, formula_type: str
+        self, response_data: dict, formula: str, formula_type: str
     ) -> bool:
         """Detect if SMT formula injection was successful."""
         response_str = json.dumps(response_data).lower()
@@ -595,7 +593,7 @@ class Z3BypassTester:
         return False
 
     def _detect_timeout_exploitation(
-        self, response_data: Dict, execution_time: float
+        self, response_data: dict, execution_time: float
     ) -> bool:
         """Detect if timeout exploitation was successful."""
         # Check if execution time is suspiciously long
@@ -607,7 +605,7 @@ class Z3BypassTester:
 
         return any(indicator in response_str for indicator in timeout_indicators)
 
-    def _detect_proof_bypass(self, response_data: Dict, obligations: List[str]) -> bool:
+    def _detect_proof_bypass(self, response_data: dict, obligations: list[str]) -> bool:
         """Detect if proof obligation bypass was successful."""
         response_str = json.dumps(response_data).lower()
 
@@ -629,28 +627,28 @@ class Z3BypassTester:
 
     async def _test_satisfiability_confusion(
         self, fv_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test satisfiability confusion attacks."""
         # Implementation for satisfiability confusion testing
         return []
 
     async def _test_model_generation_manipulation(
         self, fv_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test model generation manipulation attacks."""
         # Implementation for model generation manipulation testing
         return []
 
     async def _test_assertion_negation_attack(
         self, fv_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test assertion negation attacks."""
         # Implementation for assertion negation testing
         return []
 
     async def _test_quantifier_explosion_attack(
         self, fv_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test quantifier explosion attacks."""
         # Implementation for quantifier explosion testing
         return []
