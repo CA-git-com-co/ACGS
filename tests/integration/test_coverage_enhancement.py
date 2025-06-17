@@ -5,7 +5,7 @@ This module contains parameterized tests designed to improve test coverage
 across all components and edge cases identified in the coverage report.
 """
 
-from typing import Any, Dict
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -44,7 +44,6 @@ try:
     from services.core.governance_synthesis.app.services.lipschitz_estimator import (
         LipschitzEstimator,
     )
-
     from services.platform.integrity.app.services.crypto_service import (
         CryptographicIntegrityService,
     )
@@ -90,7 +89,7 @@ class TestCoverageEnhancement:
             {"prompt_type": prompt_type, "expected_enhancement": expected_enhancement},
         )
 
-        async with mock_all_services() as mocks:
+        async with mock_all_services():
             builder = ConstitutionalPromptBuilder()
 
             # Test different prompt enhancement scenarios
@@ -131,7 +130,7 @@ class TestCoverageEnhancement:
     )
     @log_test_execution("llm_reliability_testing")
     async def test_llm_reliability_variations(
-        self, model_config: Dict[str, Any], reliability_threshold: float
+        self, model_config: dict[str, Any], reliability_threshold: float
     ):
         """Test LLM reliability across different model configurations."""
         test_logger.log_test_step(
@@ -142,7 +141,7 @@ class TestCoverageEnhancement:
             },
         )
 
-        async with mock_all_services() as mocks:
+        async with mock_all_services():
             if model_config["model"] == "local-llm":
                 llm_client = MockLLMClient()
             else:
@@ -206,7 +205,7 @@ class TestCoverageEnhancement:
     )
     @log_test_execution("lipschitz_estimation_testing")
     async def test_lipschitz_estimation_variations(
-        self, lipschitz_config: Dict[str, Any], expected_bound: float
+        self, lipschitz_config: dict[str, Any], expected_bound: float
     ):
         """Test Lipschitz constant estimation with different configurations."""
         test_logger.log_test_step(
@@ -268,7 +267,7 @@ class TestCoverageEnhancement:
             {"attack_type": attack_type, "robustness_threshold": robustness_threshold},
         )
 
-        async with mock_all_services() as mocks:
+        async with mock_all_services():
             # Mock the robustness testing process
             test_logger.log_test_step(
                 "execute_robustness_test",
@@ -305,7 +304,7 @@ class TestCoverageEnhancement:
     )
     @log_test_execution("fairness_generation_testing")
     async def test_fairness_generation_variations(
-        self, fairness_constraint: Dict[str, Any], generation_mode: str
+        self, fairness_constraint: dict[str, Any], generation_mode: str
     ):
         """Test proactive fairness generation with different constraints."""
         test_logger.log_test_step(
@@ -313,7 +312,7 @@ class TestCoverageEnhancement:
             {"constraint": fairness_constraint, "mode": generation_mode},
         )
 
-        async with mock_all_services() as mocks:
+        async with mock_all_services():
             # Mock fairness generation process
             test_logger.log_test_step(
                 "generate_fair_policy",

@@ -27,7 +27,7 @@ import time
 from dataclasses import dataclass, field
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # Import Requesty API integration
 try:
@@ -71,7 +71,7 @@ TEST_COMMANDS = {
 }
 
 # Global edit history for undo functionality
-edit_history: Dict[str, List[str]] = {}
+edit_history: dict[str, list[str]] = {}
 
 # Thread-local storage for logger instances
 thread_local = threading.local()
@@ -85,7 +85,7 @@ class SolutionAttempt:
     test_output: str  # Raw test output
     test_success: bool  # Whether tests passed
     test_stats: dict  # Test statistics (e.g., number of passed/failed tests)
-    error_messages: List[str] = field(
+    error_messages: list[str] = field(
         default_factory=list
     )  # List of specific error messages
     test_details: dict = field(
@@ -266,10 +266,10 @@ class DarwinGodelMachine:
         git_tempdir: str,
         base_commit: str,
         chat_history_file: str = "./dgm_chat_history.md",
-        test_description: Optional[str] = None,
+        test_description: str | None = None,
         language: str = "python",
-        config: Optional[DGMConfig] = None,
-        requesty_api: Optional[Any] = None,
+        config: DGMConfig | None = None,
+        requesty_api: Any | None = None,
     ):
         self.problem_statement = problem_statement
         self.git_tempdir = git_tempdir
@@ -288,7 +288,7 @@ class DarwinGodelMachine:
             f.write("")
 
         # Initialize solution archive for DGM
-        self.solution_archive: List[SolutionAttempt] = []
+        self.solution_archive: list[SolutionAttempt] = []
         self.generation_count = 0
 
         # Enhanced edit tool
@@ -327,7 +327,7 @@ class DarwinGodelMachine:
             safe_log(f"Error getting git diff: {e}")
             return []
 
-    def extract_test_details(self, output: str) -> Tuple[dict, List[str], dict]:
+    def extract_test_details(self, output: str) -> tuple[dict, list[str], dict]:
         """Extract detailed test information from the output."""
         error_messages = []
         test_details = {}
@@ -398,7 +398,7 @@ class DarwinGodelMachine:
 
         return stats, error_messages, test_details
 
-    def run_tests(self) -> Tuple[bool, str, dict]:
+    def run_tests(self) -> tuple[bool, str, dict]:
         """Run tests and return success status, output, and test statistics."""
         start_time = time.time()
         success = False
@@ -441,7 +441,7 @@ class DarwinGodelMachine:
 
         return success, output, stats
 
-    def analyze_test_results(self, attempts: List[SolutionAttempt]) -> str:
+    def analyze_test_results(self, attempts: list[SolutionAttempt]) -> str:
         """Analyze test results and create a detailed summary for the agent."""
         summary = "# 🧬 Darwin Gödel Machine - Test Results Analysis\n\n"
 
@@ -517,7 +517,7 @@ class DarwinGodelMachine:
 
         return summary
 
-    def select_improvement_strategy(self, attempts: List[SolutionAttempt]) -> str:
+    def select_improvement_strategy(self, attempts: list[SolutionAttempt]) -> str:
         """Select improvement strategy based on DGM principles."""
         if not attempts:
             return "initial_analysis"
@@ -611,7 +611,7 @@ Focus on producing working, tested code that follows best practices for {self.la
     def apply_patch(self, patch: str):
         """Apply a patch to the repository."""
         try:
-            proc = subprocess.run(
+            subprocess.run(
                 ["git", "apply"],
                 input=patch,
                 text=True,
@@ -628,7 +628,7 @@ Focus on producing working, tested code that follows best practices for {self.la
             self.solution_archive.append(attempt)
             safe_log(f"📚 Archived solution #{len(self.solution_archive)}")
 
-    def select_parent_solution(self) -> Optional[SolutionAttempt]:
+    def select_parent_solution(self) -> SolutionAttempt | None:
         """Select parent solution using DGM selection strategy."""
         if not self.solution_archive:
             return None
@@ -649,14 +649,14 @@ Focus on producing working, tested code that follows best practices for {self.la
                 self.solution_archive, key=lambda x: x.test_stats.get("passed", 0)
             )
 
-    def evolve(self) -> Optional[SolutionAttempt]:
+    def evolve(self) -> SolutionAttempt | None:
         """
         Main DGM evolution loop - the heart of the Darwin Gödel Machine.
         """
         safe_log("🧬 Starting DGM Evolution Process")
 
-        attempts: List[SolutionAttempt] = []
-        best_attempt: Optional[SolutionAttempt] = None
+        attempts: list[SolutionAttempt] = []
+        best_attempt: SolutionAttempt | None = None
 
         base_task = f"""I have uploaded a code repository in the directory {self.git_tempdir}. Help solve the following problem.
 
@@ -804,7 +804,7 @@ def main():
     # Load configuration
     config = DGMConfig(max_attempts=args.max_attempts)
     if args.config_file and os.path.exists(args.config_file):
-        with open(args.config_file, "r") as f:
+        with open(args.config_file) as f:
             config_data = json.load(f)
             for key, value in config_data.items():
                 if hasattr(config, key):
@@ -864,7 +864,7 @@ def main():
         with open(metadata_file, "w") as f:
             json.dump(solution_metadata, f, indent=2)
 
-        print(f"🧬 Darwin Gödel Machine completed successfully!")
+        print("🧬 Darwin Gödel Machine completed successfully!")
         print(f"📊 Final solution: Attempt #{final_solution.attempt_number}")
         print(f"✅ Test success: {final_solution.test_success}")
         print(

@@ -1,4 +1,3 @@
-from typing import Optional
 
 from pydantic import BaseModel, EmailStr
 
@@ -6,9 +5,9 @@ from pydantic import BaseModel, EmailStr
 class UserBase(BaseModel):
     email: EmailStr
     username: str
-    is_active: Optional[bool] = True
-    role: Optional[str] = "user"
-    full_name: Optional[str] = None
+    is_active: bool | None = True
+    role: str | None = "user"
+    full_name: str | None = None
 
 
 class UserCreate(UserBase):
@@ -16,7 +15,7 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
-    password: Optional[str] = None
+    password: str | None = None
 
 
 class UserInDBBase(UserBase):

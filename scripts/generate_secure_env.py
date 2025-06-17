@@ -14,7 +14,6 @@ import os
 import secrets
 import sys
 from datetime import datetime
-from typing import Dict
 
 
 def generate_secure_key(length: int = 64) -> str:
@@ -28,7 +27,7 @@ def generate_strong_password(length: int = 32) -> str:
     return "".join(secrets.choice(alphabet) for _ in range(length))
 
 
-def get_security_config(environment: str) -> Dict[str, str]:
+def get_security_config(environment: str) -> dict[str, str]:
     """Get security configuration based on environment."""
 
     # Generate secure keys
@@ -109,7 +108,7 @@ def get_security_config(environment: str) -> Dict[str, str]:
     return config
 
 
-def generate_env_file(config: Dict[str, str], output_file: str, environment: str):
+def generate_env_file(config: dict[str, str], output_file: str, environment: str):
     """Generate the .env file with security configuration."""
 
     header = f"""# =============================================================================
@@ -195,7 +194,7 @@ def generate_env_file(config: Dict[str, str], output_file: str, environment: str
                 # Add security comment for sensitive keys
                 if "SECRET" in key or "PASSWORD" in key:
                     content += (
-                        f"# SENSITIVE: Keep this value secure and rotate regularly\n"
+                        "# SENSITIVE: Keep this value secure and rotate regularly\n"
                     )
                 content += f"{key}={value}\n"
         content += "\n"

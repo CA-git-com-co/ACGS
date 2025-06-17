@@ -11,7 +11,7 @@ import json
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Setup logging
 logging.basicConfig(
@@ -28,40 +28,40 @@ class ConstitutionInitializer:
         self.project_root = Path(__file__).parent.parent
         self.constitution_data = self._load_constitution_data()
 
-    def _load_constitution_data(self) -> Dict[str, Any]:
+    def _load_constitution_data(self) -> dict[str, Any]:
         """Load constitution data and compute hash"""
         constitution_text = """
         # Quantumagi Constitutional Framework
-        
+
         ## Article I: Governance Principles
         1. Democratic Decision Making: All policy changes require community voting
         2. Transparency: All governance actions are recorded on-chain
         3. Accountability: Appeals process for disputed decisions
         4. Compliance: Real-time policy enforcement through PGC
-        
+
         ## Article II: Policy Categories
         1. PC-001: Core Constitutional Amendments
         2. Safety: Security and risk management policies
         3. Governance: Voting and decision-making procedures
         4. Financial: Economic and treasury management
-        
+
         ## Article III: Voting Mechanisms
         1. Proposal Submission: Any stakeholder may propose policies
         2. Voting Period: 7 days for standard proposals, 3 days for emergency
         3. Quorum Requirements: Minimum 10% participation for validity
         4. Approval Threshold: Simple majority (>50%) for passage
-        
+
         ## Article IV: Emergency Procedures
         1. Emergency Policy Deactivation: Immediate suspension for critical issues
         2. Fast-Track Voting: Reduced timeframes for urgent matters
         3. Override Mechanisms: Super-majority (67%) can override vetoes
-        
+
         ## Article V: Appeals Process
         1. Appeal Submission: 48-hour window after policy enactment
         2. Review Committee: Randomly selected stakeholder panel
         3. Resolution Timeline: 5 business days maximum
         4. Final Authority: Community vote on disputed appeals
-        
+
         ## Article VI: Compliance Framework
         1. Real-time Monitoring: Continuous PGC compliance checking
         2. Violation Reporting: Automated alerts for policy breaches
@@ -233,7 +233,7 @@ class ConstitutionInitializer:
         # Check constitution hash
         constitution_file = self.project_root / "constitution_data.json"
         if constitution_file.exists():
-            with open(constitution_file, "r") as f:
+            with open(constitution_file) as f:
                 data = json.load(f)
                 stored_hash = data["constitution"]["hash"]
                 expected_hash = self.constitution_data["hash"]

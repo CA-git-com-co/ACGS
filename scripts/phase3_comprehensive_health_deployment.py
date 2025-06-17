@@ -11,7 +11,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -117,7 +117,7 @@ class Phase3HealthDeploymentOrchestrator:
             self.log_action("Docker Environment Check", "ERROR", str(e))
             return False
 
-    async def check_infrastructure_health(self) -> Dict[str, Any]:
+    async def check_infrastructure_health(self) -> dict[str, Any]:
         """Check health of infrastructure components"""
         self.log_action("Infrastructure Health Assessment", "INFO")
 
@@ -189,7 +189,7 @@ class Phase3HealthDeploymentOrchestrator:
                         self.log_action(
                             f"{component.upper()} Health",
                             "ERROR",
-                            f"Cache not accessible",
+                            "Cache not accessible",
                         )
 
                 elif component == "opa":
@@ -234,7 +234,7 @@ class Phase3HealthDeploymentOrchestrator:
         self.health_report["infrastructure"] = infrastructure_results
         return infrastructure_results
 
-    async def check_service_health(self) -> Dict[str, Any]:
+    async def check_service_health(self) -> dict[str, Any]:
         """Check health of ACGS services"""
         self.log_action("ACGS Services Health Assessment", "INFO")
 
@@ -273,7 +273,7 @@ class Phase3HealthDeploymentOrchestrator:
                             response_time = None
                             response_data = None
 
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     status = "timeout"
                     response_time = None
                     response_data = None
@@ -341,8 +341,8 @@ class Phase3HealthDeploymentOrchestrator:
             return False
 
     async def deploy_acgs_services(
-        self, service_order: List[str] = None
-    ) -> Dict[str, bool]:
+        self, service_order: list[str] = None
+    ) -> dict[str, bool]:
         """Deploy ACGS services in dependency order"""
         if service_order is None:
             service_order = [

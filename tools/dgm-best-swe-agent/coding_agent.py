@@ -246,7 +246,7 @@ Your task is to run the regression tests in the {self.git_tempdir} directory to 
             if valid_patches and retry_count > 0:
                 previous_solutions = []
                 for i, (patch, report, score) in enumerate(
-                    zip(valid_patches, valid_reports, valid_scores)
+                    zip(valid_patches, valid_reports, valid_scores, strict=False)
                 ):
                     previous_solutions.append(
                         f"""
@@ -269,7 +269,7 @@ Please provide a different approach to solve the problem. Your solution must inc
             instruction += f"\n\nYour task is to make changes to the files in the {self.git_tempdir} directory to address the <problem_description>. I have already taken care of the required dependencies."
 
             # Run the agent
-            new_msg_history = chat_with_agent(
+            chat_with_agent(
                 instruction, model=self.code_model, msg_history=[], logging=safe_log
             )
 

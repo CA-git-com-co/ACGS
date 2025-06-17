@@ -9,7 +9,7 @@ and API documentation.
 import re
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, EmailStr, Field, validator
 from pydantic.types import SecretStr
@@ -83,7 +83,9 @@ class UserCreateRequest(BaseValidationModel):
         description="Username (alphanumeric, underscore, hyphen only)",
         example="john_doe",
     )
-    email: EmailStr = Field(..., description="Valid email address", example="john.doe@example.com")
+    email: EmailStr = Field(
+        ..., description="Valid email address", example="john.doe@example.com"
+    )
     password: SecretStr = Field(
         ...,
         min_length=8,
@@ -91,7 +93,7 @@ class UserCreateRequest(BaseValidationModel):
         description="Password (minimum 8 characters)",
         example="SecurePass123!",
     )
-    full_name: Optional[str] = Field(
+    full_name: str | None = Field(
         None, max_length=255, description="Full name", example="John Doe"
     )
     role: str = Field(
@@ -180,7 +182,9 @@ class PolicyCreateRequest(BaseValidationModel):
         description="Policy description",
         example="This policy governs environmental protection standards...",
     )
-    policy_type: PolicyType = Field(..., description="Type of policy", example=PolicyType.STANDARD)
+    policy_type: PolicyType = Field(
+        ..., description="Type of policy", example=PolicyType.STANDARD
+    )
     content: str = Field(
         ...,
         min_length=50,
@@ -188,7 +192,7 @@ class PolicyCreateRequest(BaseValidationModel):
         description="Policy content in Datalog or natural language",
         example="policy_rule(X) :- environmental_standard(X), compliance_check(X).",
     )
-    tags: List[str] = Field(
+    tags: list[str] = Field(
         default_factory=list,
         max_items=10,
         description="Policy tags for categorization",
@@ -199,7 +203,7 @@ class PolicyCreateRequest(BaseValidationModel):
         description="When the policy becomes effective",
         example="2024-01-01T00:00:00Z",
     )
-    expiry_date: Optional[datetime] = Field(
+    expiry_date: datetime | None = Field(
         None,
         description="When the policy expires (optional)",
         example="2025-01-01T00:00:00Z",
@@ -258,18 +262,20 @@ class PolicyCreateRequest(BaseValidationModel):
 class PolicyUpdateRequest(BaseValidationModel):
     """Policy update request validation."""
 
-    title: Optional[str] = Field(
+    title: str | None = Field(
         None, min_length=5, max_length=200, description="Updated policy title"
     )
-    description: Optional[str] = Field(
+    description: str | None = Field(
         None, min_length=10, max_length=2000, description="Updated policy description"
     )
-    content: Optional[str] = Field(
+    content: str | None = Field(
         None, min_length=50, max_length=10000, description="Updated policy content"
     )
-    tags: Optional[List[str]] = Field(None, max_items=10, description="Updated policy tags")
-    priority: Optional[Priority] = Field(None, description="Updated policy priority")
-    status: Optional[Status] = Field(None, description="Updated policy status")
+    tags: list[str] | None = Field(
+        None, max_items=10, description="Updated policy tags"
+    )
+    priority: Priority | None = Field(None, description="Updated policy priority")
+    status: Status | None = Field(None, description="Updated policy status")
 
     @validator("tags")
     def validate_tags_format(cls, v):
@@ -345,7 +351,7 @@ class SignatureRequest(BaseValidationModel):
         description="Content to be signed",
         example="Policy content to be digitally signed",
     )
-    key_id: Optional[str] = Field(
+    key_id: str | None = Field(
         None,
         regex=r"^[a-fA-F0-9]{8,64}$",
         description="Key ID for signing (hex format)",
@@ -375,7 +381,7 @@ class VerificationRequest(BaseValidationModel):
         description="Digital signature to verify",
         example="MEUCIQDxyz...",
     )
-    public_key: Optional[str] = Field(
+    public_key: str | None = Field(
         None,
         description="Public key for verification",
         example="-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...",
@@ -393,18 +399,20 @@ class SearchRequest(BaseValidationModel):
         description="Search query",
         example="environmental policy",
     )
-    filters: Optional[Dict[str, Any]] = Field(
+    filters: dict[str, Any] | None = Field(
         None,
         description="Search filters",
         example={"policy_type": "STANDARD", "status": "active"},
     )
-    sort_by: Optional[str] = Field(
+    sort_by: str | None = Field(
         "created_at",
         regex=r"^(created_at|updated_at|title|priority)$",
         description="Sort field",
         example="created_at",
     )
-    sort_order: str = Field("desc", regex=r"^(asc|desc)$", description="Sort order", example="desc")
+    sort_order: str = Field(
+        "desc", regex=r"^(asc|desc)$", description="Sort order", example="desc"
+    )
     page: int = Field(1, ge=1, le=1000, description="Page number", example=1)
     size: int = Field(20, ge=1, le=100, description="Items per page", example=20)
 
@@ -413,16 +421,16 @@ class SearchRequest(BaseValidationModel):
 class PerformanceMetricsRequest(BaseValidationModel):
     """Performance metrics request validation."""
 
-    service: Optional[ServiceType] = Field(
+    service: ServiceType | None = Field(
         None, description="Specific service to get metrics for", example=ServiceType.GS
     )
-    start_time: Optional[datetime] = Field(
+    start_time: datetime | None = Field(
         None, description="Start time for metrics range", example="2024-01-01T00:00:00Z"
     )
-    end_time: Optional[datetime] = Field(
+    end_time: datetime | None = Field(
         None, description="End time for metrics range", example="2024-01-02T00:00:00Z"
     )
-    metrics: List[str] = Field(
+    metrics: list[str] = Field(
         default_factory=lambda: ["response_time", "throughput", "error_rate"],
         max_items=20,
         description="Specific metrics to retrieve",
@@ -464,7 +472,7 @@ class FormalVerificationRequest(BaseValidationModel):
         description="Type of verification to perform",
         example="safety",
     )
-    properties: List[str] = Field(
+    properties: list[str] = Field(
         ...,
         min_items=1,
         max_items=20,
@@ -474,7 +482,7 @@ class FormalVerificationRequest(BaseValidationModel):
     timeout_seconds: int = Field(
         300, ge=10, le=3600, description="Verification timeout in seconds", example=300
     )
-    solver_options: Optional[Dict[str, Any]] = Field(
+    solver_options: dict[str, Any] | None = Field(
         None,
         description="Additional solver options",
         example={"max_iterations": 1000, "precision": "high"},
@@ -488,7 +496,9 @@ class FormalVerificationRequest(BaseValidationModel):
         """Validate properties format."""
         for prop in v:
             if not re.match(r"^[a-z_][a-z0-9_]*$", prop):
-                raise ValueError(f'Property "{prop}" must be lowercase with underscores only')
+                raise ValueError(
+                    f'Property "{prop}" must be lowercase with underscores only'
+                )
         return v
 
 
@@ -502,7 +512,7 @@ class BiasDetectionRequest(BaseValidationModel):
         description="Content to analyze for bias",
         example="Policy text to analyze for potential bias",
     )
-    bias_types: List[str] = Field(
+    bias_types: list[str] = Field(
         default_factory=lambda: ["gender", "racial", "age", "socioeconomic"],
         max_items=15,
         description="Types of bias to detect",
@@ -545,7 +555,7 @@ class BiasDetectionRequest(BaseValidationModel):
 class SynthesisRequest(BaseValidationModel):
     """Policy synthesis request validation."""
 
-    principles: List[str] = Field(
+    principles: list[str] = Field(
         ...,
         min_items=1,
         max_items=50,
@@ -577,7 +587,7 @@ class SynthesisRequest(BaseValidationModel):
         description="Complexity level of synthesized policy",
         example="medium",
     )
-    constraints: Optional[List[str]] = Field(
+    constraints: list[str] | None = Field(
         None,
         max_items=20,
         description="Additional constraints for synthesis",
@@ -595,7 +605,7 @@ class MultiModelConsensusRequest(BaseValidationModel):
         description="Input data for consensus analysis",
         example="Policy proposal for environmental regulations",
     )
-    models: List[str] = Field(
+    models: list[str] = Field(
         ...,
         min_items=2,
         max_items=10,

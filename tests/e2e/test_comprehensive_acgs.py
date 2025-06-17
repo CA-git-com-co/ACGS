@@ -225,7 +225,7 @@ class ACGSTestSuite:
                 f"{SERVICES['fv_service']}/api/v1/verify/", timeout=5
             )
             if response.status_code in [200, 405]:
-                print(f"  ✅ Formal verification endpoint: Available")
+                print("  ✅ Formal verification endpoint: Available")
                 self.results["phase3"]["passed"] += 1
                 self.results["phase3"]["tests"].append("Formal Verification: PASSED")
                 return True
@@ -343,7 +343,7 @@ class ACGSTestSuite:
             for test in results["tests"]:
                 print(f"    - {test}")
 
-        print(f"\n🎯 OVERALL RESULTS:")
+        print("\n🎯 OVERALL RESULTS:")
         print(f"  ✅ Total Passed: {total_passed}")
         print(f"  ❌ Total Failed: {total_failed}")
         print(

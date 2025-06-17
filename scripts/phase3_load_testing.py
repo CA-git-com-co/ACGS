@@ -165,7 +165,7 @@ class Phase3LoadTester:
                 "target_met": avg_latency < 50 and p95_latency < 50,
             }
 
-            logger.info(f"Policy Decision Latency Results:")
+            logger.info("Policy Decision Latency Results:")
             logger.info(f"  Average: {avg_latency:.2f}ms")
             logger.info(f"  95th percentile: {p95_latency:.2f}ms")
             logger.info(f"  99th percentile: {p99_latency:.2f}ms")
@@ -296,7 +296,7 @@ class Phase3LoadTester:
             ),
         }
 
-        logger.info(f"Cache Performance Results:")
+        logger.info("Cache Performance Results:")
         logger.info(f"  Service tested: {service_name}")
         logger.info(f"  Total requests: {cache_requests}")
         logger.info(f"  Cache hits: {cache_hits}")
@@ -363,7 +363,7 @@ class Phase3LoadTester:
             "security_active": rate_limit_violations > 0 or injection_attempts > 0,
         }
 
-        logger.info(f"Security Testing Results:")
+        logger.info("Security Testing Results:")
         logger.info(f"  Injection attempts: {injection_attempts}")
         logger.info(f"  Rate limit violations: {rate_limit_violations}")
         logger.info(f"  Auth failures: {auth_failures}")
@@ -414,7 +414,7 @@ class Phase3LoadTester:
             "production_ready": memory.percent < 85 and cpu_percent < 80,
         }
 
-        logger.info(f"System Resource Usage:")
+        logger.info("System Resource Usage:")
         logger.info(f"  CPU: {cpu_percent:.1f}% (target: <80%)")
         logger.info(f"  Memory: {memory.percent:.1f}% (target: <85%)")
         logger.info(f"  Available Memory: {memory.available / (1024**3):.1f} GB")
@@ -526,7 +526,7 @@ class Phase3LoadTester:
         with open("phase3_load_test_results.json", "w") as f:
             json.dump(self.results, f, indent=2)
 
-        logger.info(f"\n📄 Detailed results saved to: phase3_load_test_results.json")
+        logger.info("\n📄 Detailed results saved to: phase3_load_test_results.json")
 
 
 async def main():

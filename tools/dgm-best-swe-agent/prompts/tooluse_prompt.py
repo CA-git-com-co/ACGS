@@ -20,7 +20,7 @@ def get_tooluse_prompt():
     ]
     tools_available = "\n\n".join(tools_available)
     # Create the prompt
-    tooluse_prompt = """Here are the available tools:
+    tooluse_prompt = f"""Here are the available tools:
 {tools_available}
 
 Use the available tools in this format:
@@ -32,7 +32,5 @@ Use the available tools in this format:
 }}
 </tool_use>
 ```
-""".format(
-        tools_available=tools_available
-    )
+"""
     return tooluse_prompt.strip()

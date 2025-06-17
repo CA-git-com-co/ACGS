@@ -350,7 +350,7 @@ docker-compose -f infrastructure/docker/docker-compose.nvidia-router.yml ps
 
 ### Integration with Main Stack
 
-Add to your main `docker-compose.yml`:
+Add to your main `infrastructure/docker/docker-compose.yml`:
 
 ```yaml
 services:
@@ -441,7 +441,7 @@ Response caching is enabled for non-sensitive requests:
 Multiple router instances can be deployed for high availability:
 
 ```yaml
-# In docker-compose.yml
+# In infrastructure/docker/docker-compose.yml
 nvidia_llm_router_server_2:
   # ... same configuration as nvidia_llm_router_server ...
   container_name: acgs_nvidia_llm_router_server_2

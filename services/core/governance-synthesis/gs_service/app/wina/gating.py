@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from .models import GatingDecision, GatingThresholdConfig, WINAWeightOutput
 
@@ -18,7 +18,7 @@ async def determine_gating_decision(
         A GatingDecision object representing the active/inactive state of each
         neuron/component.
     """
-    gating_mask: Dict[str, bool] = {}
+    gating_mask: dict[str, bool] = {}
     processed_ids = set()
 
     for neuron_id, weight in wina_weights.weights.items():
@@ -32,10 +32,12 @@ async def determine_gating_decision(
             gating_mask[neuron_id] = gating_config.default_gating_state
             processed_ids.add(neuron_id)
 
-    decision_metadata: Dict[str, Any] = {
+    decision_metadata: dict[str, Any] = {
         "gating_threshold_used": gating_config.threshold,
         "default_gating_state_used": gating_config.default_gating_state,
-        "wina_calculation_method": wina_weights.metadata.get("calculation_method", "unknown"),
+        "wina_calculation_method": wina_weights.metadata.get(
+            "calculation_method", "unknown"
+        ),
         "num_components_processed": len(processed_ids),
         "num_components_activated": sum(1 for active in gating_mask.values() if active),
     }

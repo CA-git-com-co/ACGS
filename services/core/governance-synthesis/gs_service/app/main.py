@@ -17,12 +17,12 @@ import sys
 import time
 from contextlib import asynccontextmanager
 
-
 # Enhanced Security Middleware
 try:
-    from services.shared.security_headers_middleware import SecurityHeadersMiddleware
-    from services.shared.rate_limiting_middleware import RateLimitingMiddleware
     from services.shared.input_validation_middleware import InputValidationMiddleware
+    from services.shared.rate_limiting_middleware import RateLimitingMiddleware
+    from services.shared.security_headers_middleware import SecurityHeadersMiddleware
+
     SECURITY_MIDDLEWARE_AVAILABLE = True
 except ImportError:
     SECURITY_MIDDLEWARE_AVAILABLE = False
@@ -43,7 +43,9 @@ try:
 except ImportError as e:
     SHARED_COMPONENTS_AVAILABLE = False
     logger_shared = logging.getLogger("shared_components")
-    logger_shared.warning(f"Shared components not available: {e}. Using fallback implementations.")
+    logger_shared.warning(
+        f"Shared components not available: {e}. Using fallback implementations."
+    )
 
 # Configure enhanced logging for Phase A3 production
 logging.basicConfig(
@@ -85,7 +87,9 @@ SecurityMiddleware = None
 
 try:
     from app.api.v1.alphaevolve_integration import router as alphaevolve_router
-    from app.api.v1.constitutional_synthesis import router as constitutional_synthesis_router
+    from app.api.v1.constitutional_synthesis import (
+        router as constitutional_synthesis_router,
+    )
     from app.api.v1.enhanced_synthesis import router as enhanced_synthesis_router
 
     # Import Phase A3 governance workflows router
@@ -107,7 +111,9 @@ try:
     from app.workflows.policy_synthesis_workflow import PolicySynthesisWorkflow
 
     ROUTERS_AVAILABLE = True
-    logger.info("All API routers and services imported successfully (including Phase A3)")
+    logger.info(
+        "All API routers and services imported successfully (including Phase A3)"
+    )
 except ImportError as e:
     logger.warning(f"Some routers not available: {e}. Running in minimal mode.")
     phase_a3_synthesis_router = None
@@ -177,7 +183,6 @@ else:
     print("⚠️ Security middleware not available")
 
 
-
 # Add security middleware
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
@@ -229,7 +234,9 @@ try:
         endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
         return await endpoint_func()
 
-    logger.info("✅ Enhanced Prometheus metrics enabled for Governance Synthesis Service")
+    logger.info(
+        "✅ Enhanced Prometheus metrics enabled for Governance Synthesis Service"
+    )
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
 
@@ -349,12 +356,16 @@ async def health_check(request: Request):
         "uptime_seconds": uptime_seconds,
         "dependencies": {
             "enhanced_synthesis": (
-                "operational" if enhanced_synthesis_service is not None else "unavailable"
+                "operational"
+                if enhanced_synthesis_service is not None
+                else "unavailable"
             ),
             "multi_model_coordinator": (
                 "operational" if multi_model_coordinator is not None else "unavailable"
             ),
-            "policy_workflow": ("operational" if policy_workflow is not None else "unavailable"),
+            "policy_workflow": (
+                "operational" if policy_workflow is not None else "unavailable"
+            ),
             "shared_components": (
                 "operational" if SHARED_COMPONENTS_AVAILABLE else "fallback_mode"
             ),
@@ -368,7 +379,8 @@ async def health_check(request: Request):
         "synthesis_capabilities": {
             "standard_synthesis": True,
             "enhanced_validation": ROUTERS_AVAILABLE,
-            "multi_model_consensus": ROUTERS_AVAILABLE and multi_model_coordinator is not None,
+            "multi_model_consensus": ROUTERS_AVAILABLE
+            and multi_model_coordinator is not None,
             "human_review_integration": ROUTERS_AVAILABLE,
             "proactive_error_prediction": ROUTERS_AVAILABLE,
         },
@@ -468,7 +480,7 @@ async def get_constitutional_hash_validation():
                 "constitutional_synthesis": True,
                 "multi_model_coordination": ROUTERS_AVAILABLE,
                 "workflow_orchestration": ROUTERS_AVAILABLE,
-            }
+            },
         }
 
     except Exception as e:
@@ -492,11 +504,19 @@ async def validate_content(request_data: dict):
 
         # Security threat detection
         threat_patterns = [
-            "override", "bypass", "ignore", "unrestricted", "void",
-            "malicious", "corrupt", "poison"
+            "override",
+            "bypass",
+            "ignore",
+            "unrestricted",
+            "void",
+            "malicious",
+            "corrupt",
+            "poison",
         ]
 
-        threats_detected = [pattern for pattern in threat_patterns if pattern in content.lower()]
+        threats_detected = [
+            pattern for pattern in threat_patterns if pattern in content.lower()
+        ]
 
         # Constitutional compliance check
         constitutional_violations = []
@@ -520,7 +540,7 @@ async def validate_content(request_data: dict):
             "constitutional_violations": constitutional_violations,
             "test_mode": test_mode,
             "adversarial_test": adversarial_test,
-            "service": "gs_service"
+            "service": "gs_service",
         }
 
     except Exception as e:
@@ -530,8 +550,9 @@ async def validate_content(request_data: dict):
             "status": f"Validation failed: {str(e)}",
             "threats_detected": [],
             "constitutional_violations": [],
-            "test_mode": request_data.get("test_mode", False)
+            "test_mode": request_data.get("test_mode", False),
         }
+
 
 @app.get("/api/v1/performance")
 async def performance_metrics():
@@ -554,7 +575,9 @@ async def performance_metrics():
     ):
         try:
             # Get performance metrics from enhanced synthesis service
-            synthesis_metrics = await enhanced_synthesis_service.get_performance_metrics()
+            synthesis_metrics = (
+                await enhanced_synthesis_service.get_performance_metrics()
+            )
             metrics["synthesis_performance"] = synthesis_metrics
         except Exception as e:
             logger.warning(f"Failed to get synthesis metrics: {e}")
@@ -674,5 +697,7 @@ if __name__ == "__main__":
         "lifespan": "on",
     }
 
-    logger.info(f"🚀 Starting ACGS-1 Phase 3 Production GS Service on port {config['port']}")
+    logger.info(
+        f"🚀 Starting ACGS-1 Phase 3 Production GS Service on port {config['port']}"
+    )
     uvicorn.run(app, **config)

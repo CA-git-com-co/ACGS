@@ -6,9 +6,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import docker
-from polyglot.constants import MAP_REPO_VERSION_TO_SPECS, TEST_COMMANDS
-from polyglot.docker_build import build_container, build_env_images, cleanup_container
-from polyglot.test_spec import make_test_spec
 from prompts.testrepo_prompt import get_test_description
 from swe_bench.utils import (
     copy_from_container,
@@ -19,6 +16,10 @@ from swe_bench.utils import (
     setup_logger,
 )
 from utils.git_utils import remove_patch_by_files
+
+from polyglot.constants import MAP_REPO_VERSION_TO_SPECS, TEST_COMMANDS
+from polyglot.docker_build import build_container, build_env_images, cleanup_container
+from polyglot.test_spec import make_test_spec
 
 
 def get_eval_script(commands):
@@ -188,7 +189,7 @@ def process_entry(entry, out_dname, model_name_or_path, model_patch_paths):
             f"git -C /testbed reset --hard {entry['test_commit']}", workdir="/"
         )
         log_container_output(exec_result)
-        exec_result = container.exec_run(f"git -C /testbed clean -fd", workdir="/")
+        exec_result = container.exec_run("git -C /testbed clean -fd", workdir="/")
         log_container_output(exec_result)
         exec_result = container.exec_run("git -C /testbed stash pop", workdir="/")
         log_container_output(exec_result)
@@ -290,7 +291,7 @@ def harness(
     if model_patch_paths:
         for model_patch_path in model_patch_paths:
             # Read and modify model patch
-            with open(model_patch_path, "r") as f:
+            with open(model_patch_path) as f:
                 patch_content = f.read()
             patch_content = remove_patch_by_files(patch_content)
             # Placeholder for any patch modifications if needed
@@ -405,15 +406,15 @@ def harness(
         "empty_patch_instances": len(empty_patch_ids),
         "error_instances": len(error_ids),
         "unstopped_instances": len(unstopped_containers),
-        "completed_ids": list(sorted(completed_ids)),
-        "incomplete_ids": list(sorted(incomplete_ids)),
-        "empty_patch_ids": list(sorted(empty_patch_ids)),
-        "submitted_ids": list(sorted(result["instance_id"] for result in results)),
-        "resolved_ids": list(sorted(resolved_ids)),
-        "unresolved_ids": list(sorted(unresolved_ids)),
-        "error_ids": list(sorted(error_ids)),
-        "unstopped_containers": list(sorted(unstopped_containers)),
-        "unremoved_images": list(sorted(unremoved_images)),
+        "completed_ids": sorted(completed_ids),
+        "incomplete_ids": sorted(incomplete_ids),
+        "empty_patch_ids": sorted(empty_patch_ids),
+        "submitted_ids": sorted(result["instance_id"] for result in results),
+        "resolved_ids": sorted(resolved_ids),
+        "unresolved_ids": sorted(unresolved_ids),
+        "error_ids": sorted(error_ids),
+        "unstopped_containers": sorted(unstopped_containers),
+        "unremoved_images": sorted(unremoved_images),
         "schema_version": 2,
     }
 
@@ -459,7 +460,7 @@ def main():
 
     with open("polyglot/polyglot_benchmark_metadata.json") as f:
         metadata = json.loads(f.read())
-        language_task_list = [
+        [
             entry["instance_id"]
             for entry in metadata
             if entry["instance_id"].startswith("python")

@@ -21,10 +21,10 @@ import os
 import subprocess
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -66,12 +66,12 @@ class DeploymentMetrics:
 
     phase: DeploymentPhase
     start_time: datetime
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
     success: bool = False
-    performance_data: Dict[str, Any] = None
-    test_results: Dict[str, Any] = None
+    performance_data: dict[str, Any] = None
+    test_results: dict[str, Any] = None
     error_count: int = 0
-    warnings: List[str] = None
+    warnings: list[str] = None
 
     def __post_init__(self):
         if self.performance_data is None:
@@ -89,8 +89,8 @@ class PolicySynthesisDeploymentOrchestrator:
     def __init__(self, project_root: Path = None):
         self.project_root = project_root or Path.cwd()
         self.targets = PerformanceTargets()
-        self.deployment_metrics: List[DeploymentMetrics] = []
-        self.current_phase: Optional[DeploymentPhase] = None
+        self.deployment_metrics: list[DeploymentMetrics] = []
+        self.current_phase: DeploymentPhase | None = None
 
         # Configuration paths
         self.config_dir = self.project_root / "config"
@@ -101,14 +101,14 @@ class PolicySynthesisDeploymentOrchestrator:
         # Ensure directories exist
         self.monitoring_dir.mkdir(parents=True, exist_ok=True)
 
-        logger.info(f"Initialized Policy Synthesis Deployment Orchestrator")
+        logger.info("Initialized Policy Synthesis Deployment Orchestrator")
         logger.info(f"Project root: {self.project_root}")
 
-    async def execute_full_deployment_plan(self) -> Dict[str, Any]:
+    async def execute_full_deployment_plan(self) -> dict[str, Any]:
         """Execute the complete 10-week deployment and optimization plan."""
         logger.info("🚀 Starting Policy Synthesis Enhancement Deployment Plan")
 
-        deployment_start = datetime.now(timezone.utc)
+        deployment_start = datetime.now(UTC)
         overall_success = True
 
         try:
@@ -132,7 +132,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase5_result = await self.execute_phase_5_documentation()
             overall_success &= phase5_result["success"]
 
-            deployment_end = datetime.now(timezone.utc)
+            deployment_end = datetime.now(UTC)
 
             # Generate final report
             final_report = await self.generate_final_deployment_report(
@@ -151,7 +151,7 @@ class PolicySynthesisDeploymentOrchestrator:
                 "total_phases": 5,
             }
 
-    async def execute_phase_1_production_deployment(self) -> Dict[str, Any]:
+    async def execute_phase_1_production_deployment(self) -> dict[str, Any]:
         """
         Phase 1: Production Deployment and Monitoring (Week 1-2)
         - Deploy enhanced Policy Synthesis Enhancement system
@@ -163,7 +163,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
         phase_metrics = DeploymentMetrics(
             phase=DeploymentPhase.PRODUCTION_DEPLOYMENT,
-            start_time=datetime.now(timezone.utc),
+            start_time=datetime.now(UTC),
         )
 
         try:
@@ -217,7 +217,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase_metrics.warnings.append(f"Phase 1 error: {str(e)}")
 
         finally:
-            phase_metrics.end_time = datetime.now(timezone.utc)
+            phase_metrics.end_time = datetime.now(UTC)
             self.deployment_metrics.append(phase_metrics)
 
         return {
@@ -230,7 +230,7 @@ class PolicySynthesisDeploymentOrchestrator:
             "performance_data": phase_metrics.performance_data,
         }
 
-    async def _deploy_enhanced_services(self) -> Dict[str, Any]:
+    async def _deploy_enhanced_services(self) -> dict[str, Any]:
         """Deploy the enhanced Policy Synthesis services to production."""
         try:
             # Check if production environment is ready
@@ -274,7 +274,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _check_production_environment(self) -> Dict[str, Any]:
+    async def _check_production_environment(self) -> dict[str, Any]:
         """Check if production environment is ready for deployment."""
         checks = {
             "docker_available": False,
@@ -319,7 +319,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
         return {"ready": all(checks.values()), "checks": checks}
 
-    async def _verify_service_health(self) -> Dict[str, Any]:
+    async def _verify_service_health(self) -> dict[str, Any]:
         """Verify that all deployed services are healthy."""
         services = [
             ("ac_service", 8011),
@@ -357,7 +357,7 @@ class PolicySynthesisDeploymentOrchestrator:
             "total_services": len(services),
         }
 
-    async def _setup_monitoring_infrastructure(self) -> Dict[str, Any]:
+    async def _setup_monitoring_infrastructure(self) -> dict[str, Any]:
         """Set up comprehensive monitoring infrastructure for Policy Synthesis Enhancement."""
         try:
             # Create enhanced monitoring configuration
@@ -401,7 +401,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _create_enhanced_monitoring_config(self) -> Dict[str, Any]:
+    async def _create_enhanced_monitoring_config(self) -> dict[str, Any]:
         """Create enhanced monitoring configuration for Policy Synthesis Enhancement."""
 
         # Enhanced Prometheus configuration with Policy Synthesis metrics
@@ -454,7 +454,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
         return {"success": True, "config_path": str(prometheus_config_path)}
 
-    async def _setup_grafana_dashboards(self) -> Dict[str, Any]:
+    async def _setup_grafana_dashboards(self) -> dict[str, Any]:
         """Set up Grafana dashboards for Policy Synthesis Enhancement monitoring."""
         try:
             # Policy Synthesis Enhancement Dashboard
@@ -535,7 +535,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _setup_alerting_system(self) -> Dict[str, Any]:
+    async def _setup_alerting_system(self) -> dict[str, Any]:
         """Set up alerting system for Policy Synthesis Enhancement monitoring."""
         try:
             # Create alert rules for Policy Synthesis Enhancement
@@ -595,7 +595,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _setup_ab_testing_framework(self) -> Dict[str, Any]:
+    async def _setup_ab_testing_framework(self) -> dict[str, Any]:
         """Set up A/B testing framework for Policy Synthesis Enhancement."""
         try:
             # Create A/B testing configuration
@@ -641,7 +641,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _validate_production_deployment(self) -> Dict[str, Any]:
+    async def _validate_production_deployment(self) -> dict[str, Any]:
         """Validate the production deployment of Policy Synthesis Enhancement."""
         try:
             validation_results = {}
@@ -675,13 +675,13 @@ class PolicySynthesisDeploymentOrchestrator:
             return {
                 "success": all_tests_passed,
                 "validation_results": validation_results,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _test_policy_synthesis_endpoint(self) -> Dict[str, Any]:
+    async def _test_policy_synthesis_endpoint(self) -> dict[str, Any]:
         """Test the policy synthesis endpoint functionality."""
         try:
             # Test synthesis request
@@ -718,7 +718,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _test_multi_model_consensus(self) -> Dict[str, Any]:
+    async def _test_multi_model_consensus(self) -> dict[str, Any]:
         """Test multi-model consensus functionality."""
         try:
             # Test consensus request
@@ -754,14 +754,14 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _measure_performance_baseline(self) -> Dict[str, Any]:
+    async def _measure_performance_baseline(self) -> dict[str, Any]:
         """Measure performance baseline for Policy Synthesis Enhancement."""
         try:
             # Measure response times for multiple requests
             response_times = []
             success_count = 0
 
-            for i in range(10):
+            for _i in range(10):
                 start_time = time.time()
 
                 test_result = await self._test_policy_synthesis_endpoint()
@@ -794,7 +794,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"meets_targets": False, "error": str(e)}
 
-    async def execute_phase_2_threshold_optimization(self) -> Dict[str, Any]:
+    async def execute_phase_2_threshold_optimization(self) -> dict[str, Any]:
         """
         Phase 2: Threshold Optimization (Week 3-4)
         - Collect real-world performance data
@@ -806,7 +806,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
         phase_metrics = DeploymentMetrics(
             phase=DeploymentPhase.THRESHOLD_OPTIMIZATION,
-            start_time=datetime.now(timezone.utc),
+            start_time=datetime.now(UTC),
         )
 
         try:
@@ -853,7 +853,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase_metrics.warnings.append(f"Phase 2 error: {str(e)}")
 
         finally:
-            phase_metrics.end_time = datetime.now(timezone.utc)
+            phase_metrics.end_time = datetime.now(UTC)
             self.deployment_metrics.append(phase_metrics)
 
         return {
@@ -866,7 +866,7 @@ class PolicySynthesisDeploymentOrchestrator:
             "performance_data": phase_metrics.performance_data,
         }
 
-    async def execute_phase_3_testing_expansion(self) -> Dict[str, Any]:
+    async def execute_phase_3_testing_expansion(self) -> dict[str, Any]:
         """
         Phase 3: Comprehensive Testing Expansion (Week 5-6)
         - Develop integration tests using real ACGS scenarios
@@ -878,7 +878,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
         phase_metrics = DeploymentMetrics(
             phase=DeploymentPhase.TESTING_EXPANSION,
-            start_time=datetime.now(timezone.utc),
+            start_time=datetime.now(UTC),
         )
 
         try:
@@ -921,7 +921,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase_metrics.warnings.append(f"Phase 3 error: {str(e)}")
 
         finally:
-            phase_metrics.end_time = datetime.now(timezone.utc)
+            phase_metrics.end_time = datetime.now(UTC)
             self.deployment_metrics.append(phase_metrics)
 
         return {
@@ -934,7 +934,7 @@ class PolicySynthesisDeploymentOrchestrator:
             "test_results": phase_metrics.test_results,
         }
 
-    async def execute_phase_4_performance_analysis(self) -> Dict[str, Any]:
+    async def execute_phase_4_performance_analysis(self) -> dict[str, Any]:
         """
         Phase 4: Performance Analysis and Quality Assessment (Week 7-8)
         - Conduct comprehensive analysis of synthesis quality improvements
@@ -946,7 +946,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
         phase_metrics = DeploymentMetrics(
             phase=DeploymentPhase.PERFORMANCE_ANALYSIS,
-            start_time=datetime.now(timezone.utc),
+            start_time=datetime.now(UTC),
         )
 
         try:
@@ -985,7 +985,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase_metrics.warnings.append(f"Phase 4 error: {str(e)}")
 
         finally:
-            phase_metrics.end_time = datetime.now(timezone.utc)
+            phase_metrics.end_time = datetime.now(UTC)
             self.deployment_metrics.append(phase_metrics)
 
         return {
@@ -998,7 +998,7 @@ class PolicySynthesisDeploymentOrchestrator:
             "performance_data": phase_metrics.performance_data,
         }
 
-    async def execute_phase_5_documentation(self) -> Dict[str, Any]:
+    async def execute_phase_5_documentation(self) -> dict[str, Any]:
         """
         Phase 5: Documentation and Knowledge Transfer (Week 9-10)
         - Create comprehensive user documentation
@@ -1009,7 +1009,7 @@ class PolicySynthesisDeploymentOrchestrator:
         self.current_phase = DeploymentPhase.DOCUMENTATION
 
         phase_metrics = DeploymentMetrics(
-            phase=DeploymentPhase.DOCUMENTATION, start_time=datetime.now(timezone.utc)
+            phase=DeploymentPhase.DOCUMENTATION, start_time=datetime.now(UTC)
         )
 
         try:
@@ -1046,7 +1046,7 @@ class PolicySynthesisDeploymentOrchestrator:
             phase_metrics.warnings.append(f"Phase 5 error: {str(e)}")
 
         finally:
-            phase_metrics.end_time = datetime.now(timezone.utc)
+            phase_metrics.end_time = datetime.now(UTC)
             self.deployment_metrics.append(phase_metrics)
 
         return {
@@ -1060,7 +1060,7 @@ class PolicySynthesisDeploymentOrchestrator:
         }
 
     # Helper methods for Phase 2
-    async def _collect_performance_data(self) -> Dict[str, Any]:
+    async def _collect_performance_data(self) -> dict[str, Any]:
         """Collect real-world performance data from Policy Synthesis Enhancement."""
         try:
             # Simulate data collection from monitoring systems
@@ -1083,8 +1083,8 @@ class PolicySynthesisDeploymentOrchestrator:
             return {"success": False, "error": str(e)}
 
     async def _analyze_threshold_effectiveness(
-        self, data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze the effectiveness of current risk thresholds."""
         try:
             # Analyze threshold performance
@@ -1109,7 +1109,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _optimize_thresholds(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
+    async def _optimize_thresholds(self, analysis: dict[str, Any]) -> dict[str, Any]:
         """Optimize thresholds based on analysis results."""
         try:
             if not analysis["success"]:
@@ -1132,8 +1132,8 @@ class PolicySynthesisDeploymentOrchestrator:
             return {"success": False, "error": str(e)}
 
     async def _deploy_optimized_thresholds(
-        self, optimization: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, optimization: dict[str, Any]
+    ) -> dict[str, Any]:
         """Deploy optimized thresholds to production."""
         try:
             if not optimization["success"]:
@@ -1145,13 +1145,13 @@ class PolicySynthesisDeploymentOrchestrator:
             return {
                 "success": True,
                 "deployed_thresholds": optimization["optimized_thresholds"],
-                "deployment_timestamp": datetime.now(timezone.utc).isoformat(),
+                "deployment_timestamp": datetime.now(UTC).isoformat(),
             }
         except Exception as e:
             return {"success": False, "error": str(e)}
 
     # Helper methods for Phase 3
-    async def _develop_integration_tests(self) -> Dict[str, Any]:
+    async def _develop_integration_tests(self) -> dict[str, Any]:
         """Develop integration tests for Policy Synthesis Enhancement."""
         try:
             test_scenarios = [
@@ -1170,7 +1170,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _create_e2e_test_suites(self) -> Dict[str, Any]:
+    async def _create_e2e_test_suites(self) -> dict[str, Any]:
         """Create end-to-end test suites."""
         try:
             test_suites = [
@@ -1189,7 +1189,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _execute_comprehensive_tests(self) -> Dict[str, Any]:
+    async def _execute_comprehensive_tests(self) -> dict[str, Any]:
         """Execute comprehensive test suite."""
         try:
             # Simulate test execution
@@ -1206,7 +1206,7 @@ class PolicySynthesisDeploymentOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def _measure_test_coverage(self) -> Dict[str, Any]:
+    async def _measure_test_coverage(self) -> dict[str, Any]:
         """Measure test coverage for Policy Synthesis Enhancement components."""
         try:
             # Simulate coverage measurement
@@ -1227,7 +1227,7 @@ class PolicySynthesisDeploymentOrchestrator:
 
     async def generate_final_deployment_report(
         self, start_time: datetime, end_time: datetime, overall_success: bool
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate comprehensive final deployment report."""
 
         total_duration = end_time - start_time

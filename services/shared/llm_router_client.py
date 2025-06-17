@@ -6,12 +6,11 @@ Provides high-level interfaces for task-based and complexity-based routing.
 """
 
 import asyncio
-import json
-import logging
+from collections.abc import AsyncGenerator
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, AsyncGenerator, Dict, List, Optional, Union
+from typing import Any
 
 import aiohttp
 import backoff
@@ -48,21 +47,21 @@ class ChatMessage:
 
     role: str  # "user", "assistant", "system"
     content: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
 class RouterRequest:
     """LLM Router request structure"""
 
-    messages: List[ChatMessage]
-    task_type: Optional[TaskType] = None
-    complexity: Optional[ComplexityLevel] = None
-    model: Optional[str] = None
-    max_tokens: Optional[int] = None
-    temperature: Optional[float] = None
+    messages: list[ChatMessage]
+    task_type: TaskType | None = None
+    complexity: ComplexityLevel | None = None
+    model: str | None = None
+    max_tokens: int | None = None
+    temperature: float | None = None
     stream: bool = False
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -71,12 +70,12 @@ class RouterResponse:
 
     content: str
     model_used: str
-    task_type: Optional[str] = None
-    complexity_detected: Optional[str] = None
-    latency_ms: Optional[float] = None
-    tokens_used: Optional[int] = None
-    confidence_score: Optional[float] = None
-    metadata: Optional[Dict[str, Any]] = None
+    task_type: str | None = None
+    complexity_detected: str | None = None
+    latency_ms: float | None = None
+    tokens_used: int | None = None
+    confidence_score: float | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class LLMRouterError(Exception):
@@ -111,10 +110,10 @@ class LLMRouterClient:
 
     def __init__(
         self,
-        base_url: Optional[str] = None,
+        base_url: str | None = None,
         timeout: int = 30,
         max_retries: int = 3,
-        auth_token: Optional[str] = None,
+        auth_token: str | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -128,7 +127,7 @@ class LLMRouterClient:
         self.auth_token = auth_token
 
         # Session management
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession | None = None
         self._session_timeout = aiohttp.ClientTimeout(total=timeout)
 
         # Request tracking
@@ -159,7 +158,10 @@ class LLMRouterClient:
         """Ensure aiohttp session is created"""
         if self._session is None or self._session.closed:
             connector = aiohttp.TCPConnector(
-                limit=100, limit_per_host=20, keepalive_timeout=30, enable_cleanup_closed=True
+                limit=100,
+                limit_per_host=20,
+                keepalive_timeout=30,
+                enable_cleanup_closed=True,
             )
             self._session = aiohttp.ClientSession(
                 connector=connector,
@@ -177,15 +179,18 @@ class LLMRouterClient:
             self._session = None
 
     @backoff.on_exception(
-        backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_tries=3, max_time=60
+        backoff.expo,
+        (aiohttp.ClientError, asyncio.TimeoutError),
+        max_tries=3,
+        max_time=60,
     )
     async def _make_request(
         self,
         method: str,
         endpoint: str,
-        data: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
-    ) -> Dict[str, Any]:
+        data: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
         """Make HTTP request with retry logic"""
         await self._ensure_session()
 
@@ -226,7 +231,7 @@ class LLMRouterClient:
 
                 return await response.json()
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             self._error_count += 1
             raise LLMRouterTimeoutError("Request timeout")
         except aiohttp.ClientError as e:
@@ -235,14 +240,14 @@ class LLMRouterClient:
 
     async def chat_completion(
         self,
-        messages: List[Union[ChatMessage, Dict[str, str]]],
-        task_type: Optional[TaskType] = None,
-        complexity: Optional[ComplexityLevel] = None,
-        model: Optional[str] = None,
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
+        messages: list[ChatMessage | dict[str, str]],
+        task_type: TaskType | None = None,
+        complexity: ComplexityLevel | None = None,
+        model: str | None = None,
+        max_tokens: int | None = None,
+        temperature: float | None = None,
         stream: bool = False,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> RouterResponse:
         """
         Send chat completion request to LLM Router
@@ -266,14 +271,19 @@ class LLMRouterClient:
             if isinstance(msg, dict):
                 chat_messages.append(
                     ChatMessage(
-                        role=msg["role"], content=msg["content"], metadata=msg.get("metadata")
+                        role=msg["role"],
+                        content=msg["content"],
+                        metadata=msg.get("metadata"),
                     )
                 )
             else:
                 chat_messages.append(msg)
 
         # Prepare request
-        request_data = {"messages": [asdict(msg) for msg in chat_messages], "stream": stream}
+        request_data = {
+            "messages": [asdict(msg) for msg in chat_messages],
+            "stream": stream,
+        }
 
         # Add optional parameters
         if task_type:
@@ -313,8 +323,8 @@ class LLMRouterClient:
         self,
         content: str,
         analysis_type: str = "compliance_check",
-        constitutional_principles: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        constitutional_principles: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> RouterResponse:
         """
         Send constitutional analysis request with optimized routing
@@ -360,9 +370,9 @@ class LLMRouterClient:
     async def policy_synthesis_request(
         self,
         requirements: str,
-        context: Optional[str] = None,
-        stakeholders: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        context: str | None = None,
+        stakeholders: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> RouterResponse:
         """
         Send policy synthesis request with optimized routing
@@ -391,7 +401,10 @@ class LLMRouterClient:
             ChatMessage(
                 role="user",
                 content=user_content,
-                metadata={"stakeholders": stakeholders or [], "synthesis_type": "policy_creation"},
+                metadata={
+                    "stakeholders": stakeholders or [],
+                    "synthesis_type": "policy_creation",
+                },
             ),
         ]
 
@@ -400,10 +413,16 @@ class LLMRouterClient:
             task_type=TaskType.POLICY_SYNTHESIS,
             complexity=ComplexityLevel.HIGH,
             temperature=0.2,
-            metadata={"policy_synthesis": True, "stakeholders": stakeholders, **(metadata or {})},
+            metadata={
+                "policy_synthesis": True,
+                "stakeholders": stakeholders,
+                **(metadata or {}),
+            },
         )
 
-    async def _stream_completion(self, request_data: Dict[str, Any]) -> AsyncGenerator[str, None]:
+    async def _stream_completion(
+        self, request_data: dict[str, Any]
+    ) -> AsyncGenerator[str, None]:
         """Handle streaming completion (placeholder for future implementation)"""
         # For now, fall back to non-streaming
         request_data["stream"] = False
@@ -413,7 +432,7 @@ class LLMRouterClient:
         response = self._parse_response(response_data)
         yield response.content
 
-    def _parse_response(self, response_data: Dict[str, Any]) -> RouterResponse:
+    def _parse_response(self, response_data: dict[str, Any]) -> RouterResponse:
         """Parse API response into RouterResponse object"""
         # Handle OpenAI-compatible response format
         if "choices" in response_data:
@@ -433,15 +452,15 @@ class LLMRouterClient:
             metadata=response_data.get("metadata", {}),
         )
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check router service health"""
         return await self._make_request("GET", "/health")
 
-    async def get_models(self) -> List[Dict[str, Any]]:
+    async def get_models(self) -> list[dict[str, Any]]:
         """Get available models"""
         return await self._make_request("GET", "/v1/models")
 
-    async def get_metrics(self) -> Dict[str, Any]:
+    async def get_metrics(self) -> dict[str, Any]:
         """Get router metrics"""
         return await self._make_request("GET", "/metrics")
 
@@ -461,7 +480,7 @@ async def quick_policy_synthesis(requirements: str) -> str:
         return response.content
 
 
-async def quick_chat(message: str, task_type: Optional[TaskType] = None) -> str:
+async def quick_chat(message: str, task_type: TaskType | None = None) -> str:
     """Quick chat completion with default settings"""
     async with LLMRouterClient() as client:
         messages = [ChatMessage(role="user", content=message)]

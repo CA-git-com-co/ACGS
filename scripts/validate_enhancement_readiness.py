@@ -24,7 +24,6 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict
 
 # Configure logging
 logging.basicConfig(
@@ -61,7 +60,7 @@ class EnhancementReadinessValidator:
             "enhancement_plan_readiness": {},
         }
 
-    def validate_all(self) -> Dict:
+    def validate_all(self) -> dict:
         """Run comprehensive readiness validation."""
         logger.info("Starting ACGS-1 enhancement readiness validation...")
 
@@ -117,7 +116,7 @@ class EnhancementReadinessValidator:
 
         return self.validation_results
 
-    def _validate_quantumagi_deployment(self) -> Dict:
+    def _validate_quantumagi_deployment(self) -> dict:
         """Validate Quantumagi deployment status and functionality."""
         result = {"passed": False, "score": 0, "checks": {}, "issues": []}
 
@@ -183,7 +182,7 @@ class EnhancementReadinessValidator:
         result["passed"] = result["score"] >= 80
         return result
 
-    def _validate_codebase_structure(self) -> Dict:
+    def _validate_codebase_structure(self) -> dict:
         """Validate codebase structure and organization."""
         result = {"passed": False, "score": 0, "checks": {}, "issues": []}
 
@@ -229,7 +228,7 @@ class EnhancementReadinessValidator:
         result["passed"] = result["score"] >= 80
         return result
 
-    def _validate_dependencies(self) -> Dict:
+    def _validate_dependencies(self) -> dict:
         """Validate dependencies and environment setup."""
         result = {"passed": False, "score": 0, "checks": {}, "issues": []}
 
@@ -305,7 +304,7 @@ class EnhancementReadinessValidator:
         result["passed"] = result["score"] >= 80
         return result
 
-    def _validate_ci_cd_pipeline(self) -> Dict:
+    def _validate_ci_cd_pipeline(self) -> dict:
         """Validate CI/CD pipeline configuration."""
         result = {"passed": False, "score": 0, "checks": {}, "issues": []}
 
@@ -324,7 +323,7 @@ class EnhancementReadinessValidator:
                 result["score"] += 30
 
                 # Check workflow content
-                with open(ci_workflow, "r") as f:
+                with open(ci_workflow) as f:
                     content = f.read()
 
                     if "security_scan" in content:
@@ -360,7 +359,7 @@ class EnhancementReadinessValidator:
         result["passed"] = result["score"] >= 80
         return result
 
-    def _validate_test_infrastructure(self) -> Dict:
+    def _validate_test_infrastructure(self) -> dict:
         """Validate test infrastructure and coverage."""
         result = {"passed": False, "score": 0, "checks": {}, "issues": []}
 
@@ -549,7 +548,7 @@ class EnhancementReadinessValidator:
         print(f"🎯 Overall Readiness: {status} (Score: {score:.1f}/100)")
 
         # Individual validations
-        print(f"\n📊 Validation Results:")
+        print("\n📊 Validation Results:")
         for name, result in self.validation_results["validations"].items():
             score = result.get("score", 0)
             status = "✅ PASS" if result.get("passed", False) else "❌ FAIL"
@@ -565,7 +564,7 @@ class EnhancementReadinessValidator:
                 print(f"   ... and {len(issues) - 10} more issues")
 
         # Phase readiness
-        print(f"\n🚀 Enhancement Phase Readiness:")
+        print("\n🚀 Enhancement Phase Readiness:")
         for phase_num, readiness in self.validation_results[
             "enhancement_plan_readiness"
         ].items():
@@ -578,7 +577,7 @@ class EnhancementReadinessValidator:
         # Recommendations
         recommendations = self.validation_results["recommendations"]
         if recommendations:
-            print(f"\n💡 Recommendations:")
+            print("\n💡 Recommendations:")
             for i, rec in enumerate(recommendations, 1):
                 print(f"   {i}. {rec}")
 

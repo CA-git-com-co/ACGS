@@ -8,8 +8,8 @@ service URLs and enable flexible deployment configurations.
 import asyncio
 import logging
 import time
-from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 import httpx
 
@@ -18,7 +18,6 @@ from .common_types import (
     LoadBalancingStrategy,
     ServiceInstance,
     ServiceType,
-    ServiceWeight,
 )
 from .failover_circuit_breaker import FailoverConfig, FailoverManager
 from .governance_session_manager import GovernanceSessionManager, GovernanceWorkflowType
@@ -65,26 +64,26 @@ class ServiceDiscovery:
         self.registry = get_service_registry()
 
         # Service instances by type
-        self.instances: Dict[ServiceType, List[ServiceInstance]] = {}
+        self.instances: dict[ServiceType, list[ServiceInstance]] = {}
 
         # Load balancing components
         self.load_balancer = LoadBalancer(default_strategy)
         self.session_manager = SessionAffinityManager()
         self.failover_manager = FailoverManager()
         self.governance_session_manager = GovernanceSessionManager()
-        self.infrastructure_manager: Optional[InfrastructureIntegrationManager] = None
-        self.performance_monitor: Optional[PerformanceMonitor] = None
+        self.infrastructure_manager: InfrastructureIntegrationManager | None = None
+        self.performance_monitor: PerformanceMonitor | None = None
 
         # Health check state
-        self._health_check_task: Optional[asyncio.Task] = None
+        self._health_check_task: asyncio.Task | None = None
         self._running = False
 
         # Callbacks for service events
-        self._service_up_callbacks: List[Callable[[ServiceInstance], None]] = []
-        self._service_down_callbacks: List[Callable[[ServiceInstance], None]] = []
+        self._service_up_callbacks: list[Callable[[ServiceInstance], None]] = []
+        self._service_down_callbacks: list[Callable[[ServiceInstance], None]] = []
 
         # HTTP client for health checks
-        self._http_client: Optional[httpx.AsyncClient] = None
+        self._http_client: httpx.AsyncClient | None = None
 
     async def start(self):
         # requires: Valid input parameters
@@ -176,9 +175,13 @@ class ServiceDiscovery:
         for service_type, instances in self.instances.items():
             if instances:
                 # Register instances with failover manager
-                self.failover_manager.register_service_instances(service_type, instances)
+                self.failover_manager.register_service_instances(
+                    service_type, instances
+                )
 
-                logger.info(f"Initialized failover circuit breaker for {service_type.value}")
+                logger.info(
+                    f"Initialized failover circuit breaker for {service_type.value}"
+                )
 
     async def _health_check_loop(self):
         # requires: Valid input parameters
@@ -202,7 +205,7 @@ class ServiceDiscovery:
         """Perform health checks on all service instances."""
         tasks = []
 
-        for service_type, instances in self.instances.items():
+        for _service_type, instances in self.instances.items():
             for instance in instances:
                 task = asyncio.create_task(self._check_instance_health(instance))
                 tasks.append(task)
@@ -288,7 +291,9 @@ class ServiceDiscovery:
         error_rate = (failed_requests / max(total_requests, 1)) * 100
 
         # Calculate throughput (simplified)
-        current_connections = sum(inst.current_connections for inst in service_instances)
+        current_connections = sum(
+            inst.current_connections for inst in service_instances
+        )
 
         # Create performance metrics
         metrics = PerformanceMetrics(
@@ -342,14 +347,16 @@ class ServiceDiscovery:
         """Register callback for service up events."""
         self._service_up_callbacks.append(callback)
 
-    def register_service_down_callback(self, callback: Callable[[ServiceInstance], None]):
+    def register_service_down_callback(
+        self, callback: Callable[[ServiceInstance], None]
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Register callback for service down events."""
         self._service_down_callbacks.append(callback)
 
-    def get_healthy_instances(self, service_type: ServiceType) -> List[ServiceInstance]:
+    def get_healthy_instances(self, service_type: ServiceType) -> list[ServiceInstance]:
         """
         Get all healthy instances of a service type.
 
@@ -365,10 +372,10 @@ class ServiceDiscovery:
     def get_best_instance(
         self,
         service_type: ServiceType,
-        strategy: Optional[LoadBalancingStrategy] = None,
-        session_id: Optional[str] = None,
-        hash_key: Optional[str] = None,
-    ) -> Optional[ServiceInstance]:
+        strategy: LoadBalancingStrategy | None = None,
+        session_id: str | None = None,
+        hash_key: str | None = None,
+    ) -> ServiceInstance | None:
         """
         Get the best available instance using load balancing strategy.
 
@@ -393,12 +400,14 @@ class ServiceDiscovery:
 
         if selected and session_id:
             # Set session affinity for governance workflow continuity
-            self.session_manager.set_affinity(session_id, service_type, selected.instance_id)
+            self.session_manager.set_affinity(
+                session_id, service_type, selected.instance_id
+            )
             selected.increment_connections()
 
         return selected
 
-    def get_service_url(self, service_type: ServiceType) -> Optional[str]:
+    def get_service_url(self, service_type: ServiceType) -> str | None:
         """
         Get URL for the best available instance of a service.
 
@@ -423,7 +432,7 @@ class ServiceDiscovery:
         """
         return len(self.get_healthy_instances(service_type)) > 0
 
-    def get_service_status(self, service_type: ServiceType) -> Dict[str, any]:
+    def get_service_status(self, service_type: ServiceType) -> dict[str, any]:
         """
         Get status information for a service type.
 
@@ -450,7 +459,9 @@ class ServiceDiscovery:
             for instance in healthy_instances
             if instance.response_time is not None
         ]
-        avg_response_time = sum(response_times) / len(response_times) if response_times else None
+        avg_response_time = (
+            sum(response_times) / len(response_times) if response_times else None
+        )
 
         return {
             "service": service_type.value,
@@ -464,7 +475,7 @@ class ServiceDiscovery:
             ),
         }
 
-    def get_all_services_status(self) -> Dict[str, Dict[str, any]]:
+    def get_all_services_status(self) -> dict[str, dict[str, any]]:
         """
         Get status information for all services.
 
@@ -564,7 +575,7 @@ class ServiceDiscovery:
                 instance.record_failure()
                 break
 
-    def get_load_balancing_stats(self, service_type: ServiceType) -> Dict[str, any]:
+    def get_load_balancing_stats(self, service_type: ServiceType) -> dict[str, any]:
         """
         Get load balancing statistics for a service type.
 
@@ -584,11 +595,13 @@ class ServiceDiscovery:
         """Clean up expired session affinities."""
         self.session_manager.cleanup_expired_sessions()
 
-    def get_session_stats(self) -> Dict[str, any]:
+    def get_session_stats(self) -> dict[str, any]:
         """Get session affinity statistics."""
         return self.session_manager.get_session_stats()
 
-    def set_instance_weight(self, service_type: ServiceType, instance_id: str, weight: int):
+    def set_instance_weight(
+        self, service_type: ServiceType, instance_id: str, weight: int
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -611,7 +624,7 @@ class ServiceDiscovery:
         self,
         service_type: ServiceType,
         operation: Callable,
-        instance_id: Optional[str] = None,
+        instance_id: str | None = None,
         *args,
         **kwargs,
     ) -> Any:
@@ -635,18 +648,22 @@ class ServiceDiscovery:
         if not instance_id:
             instance = self.get_best_instance(service_type)
             if not instance:
-                raise ServiceUnavailableError(f"No healthy instances for {service_type.value}")
+                raise ServiceUnavailableError(
+                    f"No healthy instances for {service_type.value}"
+                )
             instance_id = instance.instance_id
 
         # Execute with failover protection
-        return await failover_breaker.execute_with_failover(operation, instance_id, *args, **kwargs)
+        return await failover_breaker.execute_with_failover(
+            operation, instance_id, *args, **kwargs
+        )
 
-    def get_failover_status(self, service_type: ServiceType) -> Dict[str, Any]:
+    def get_failover_status(self, service_type: ServiceType) -> dict[str, Any]:
         """Get failover status for a service type."""
         failover_breaker = self.failover_manager.get_failover_breaker(service_type)
         return failover_breaker.get_status()
 
-    def get_system_failover_status(self) -> Dict[str, Any]:
+    def get_system_failover_status(self) -> dict[str, Any]:
         """Get overall system failover status."""
         return self.failover_manager.get_system_status()
 
@@ -655,7 +672,9 @@ class ServiceDiscovery:
         # ensures: Correct function execution
         # sha256: func_hash
         """Configure failover settings for a service type."""
-        failover_breaker = self.failover_manager.get_failover_breaker(service_type, config)
+        failover_breaker = self.failover_manager.get_failover_breaker(
+            service_type, config
+        )
 
         # Re-register instances with new configuration
         instances = self.instances.get(service_type, [])
@@ -668,7 +687,7 @@ class ServiceDiscovery:
         session_id: str,
         workflow_type: GovernanceWorkflowType,
         user_id: str,
-    ) -> Optional[ServiceInstance]:
+    ) -> ServiceInstance | None:
         """
         Get service instance for governance workflow with session affinity.
 
@@ -682,8 +701,10 @@ class ServiceDiscovery:
             Service instance with session affinity
         """
         # Check if session already has affinity for this service
-        affinity_instance_id = await self.governance_session_manager.get_service_affinity(
-            session_id, service_type
+        affinity_instance_id = (
+            await self.governance_session_manager.get_service_affinity(
+                session_id, service_type
+            )
         )
 
         if affinity_instance_id:
@@ -713,7 +734,7 @@ class ServiceDiscovery:
         self,
         workflow_type: GovernanceWorkflowType,
         user_id: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> str:
         """
         Create a new governance session.
@@ -735,7 +756,7 @@ class ServiceDiscovery:
         self,
         session_id: str,
         step_name: str,
-        step_data: Optional[Dict[str, Any]] = None,
+        step_data: dict[str, Any] | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -764,13 +785,13 @@ class ServiceDiscovery:
         """
         await self.governance_session_manager.complete_session(session_id)
 
-    async def get_governance_session_stats(self) -> Dict[str, Any]:
+    async def get_governance_session_stats(self) -> dict[str, Any]:
         """Get governance session statistics."""
         return await self.governance_session_manager.get_session_stats()
 
 
 # Global service discovery instance
-_service_discovery: Optional[ServiceDiscovery] = None
+_service_discovery: ServiceDiscovery | None = None
 
 
 async def get_service_discovery() -> ServiceDiscovery:

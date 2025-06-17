@@ -5,7 +5,7 @@ Provides endpoints for experiment reproducibility validation and management.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -21,9 +21,9 @@ class ReproducibilityTestRequest(BaseModel):
     """Request model for reproducibility testing."""
 
     original_experiment_id: str = Field(..., min_length=1)
-    reproduction_config: Dict[str, Any] = Field(default_factory=dict)
-    tolerance_thresholds: Dict[str, float] = Field(default_factory=dict)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    reproduction_config: dict[str, Any] = Field(default_factory=dict)
+    tolerance_thresholds: dict[str, float] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ReproducibilityTestResponse(BaseModel):
@@ -34,24 +34,24 @@ class ReproducibilityTestResponse(BaseModel):
     reproduction_experiment_id: str
     reproducibility_score: float
     reproducible: bool
-    metric_comparisons: Dict[str, Any]
-    statistical_tests: Dict[str, Any]
-    differences: List[Dict[str, Any]]
-    potential_causes: List[str]
-    environment_differences: Dict[str, Any]
-    dependency_differences: Dict[str, Any]
-    reproduction_notes: Optional[str]
+    metric_comparisons: dict[str, Any]
+    statistical_tests: dict[str, Any]
+    differences: list[dict[str, Any]]
+    potential_causes: list[str]
+    environment_differences: dict[str, Any]
+    dependency_differences: dict[str, Any]
+    reproduction_notes: str | None
 
 
 class EnvironmentSnapshotRequest(BaseModel):
     """Request model for environment snapshots."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    description: Optional[str] = None
+    description: str | None = None
     include_dependencies: bool = Field(default=True)
     include_data: bool = Field(default=False)
     include_models: bool = Field(default=True)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class EnvironmentSnapshotResponse(BaseModel):
@@ -59,12 +59,12 @@ class EnvironmentSnapshotResponse(BaseModel):
 
     id: str
     name: str
-    description: Optional[str]
+    description: str | None
     snapshot_path: str
     size_bytes: int
     checksum: str
-    environment_info: Dict[str, Any]
-    dependencies: Dict[str, Any]
+    environment_info: dict[str, Any]
+    dependencies: dict[str, Any]
     created_at: str
 
 
@@ -116,10 +116,10 @@ async def run_reproducibility_test(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/tests", response_model=List[ReproducibilityTestResponse])
+@router.get("/tests", response_model=list[ReproducibilityTestResponse])
 async def list_reproducibility_tests(
     db: AsyncSession = Depends(get_db_session),
-    reproducible: Optional[bool] = None,
+    reproducible: bool | None = None,
     limit: int = 50,
     offset: int = 0,
 ):
@@ -134,7 +134,9 @@ async def list_reproducibility_tests(
 
 
 @router.get("/tests/{test_id}", response_model=ReproducibilityTestResponse)
-async def get_reproducibility_test(test_id: str, db: AsyncSession = Depends(get_db_session)):
+async def get_reproducibility_test(
+    test_id: str, db: AsyncSession = Depends(get_db_session)
+):
     """Get reproducibility test result by ID."""
     try:
         # Placeholder implementation
@@ -181,7 +183,7 @@ async def create_environment_snapshot(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/snapshots", response_model=List[EnvironmentSnapshotResponse])
+@router.get("/snapshots", response_model=list[EnvironmentSnapshotResponse])
 async def list_environment_snapshots(
     db: AsyncSession = Depends(get_db_session), limit: int = 50, offset: int = 0
 ):
@@ -244,7 +246,9 @@ async def validate_experiment_reproducibility(
 
 
 @router.get("/reports/reproducibility-summary")
-async def get_reproducibility_summary(db: AsyncSession = Depends(get_db_session), days: int = 30):
+async def get_reproducibility_summary(
+    db: AsyncSession = Depends(get_db_session), days: int = 30
+):
     """Get reproducibility summary report."""
     try:
         # Placeholder implementation
@@ -272,7 +276,7 @@ async def get_reproducibility_summary(db: AsyncSession = Depends(get_db_session)
 
 @router.post("/continuous-validation/enable")
 async def enable_continuous_validation(
-    experiment_ids: List[str],
+    experiment_ids: list[str],
     validation_frequency: str = "daily",
     db: AsyncSession = Depends(get_db_session),
 ):

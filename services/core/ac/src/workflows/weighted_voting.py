@@ -15,16 +15,13 @@ Key Features:
 - Real-time voting status and progress tracking
 """
 
-import asyncio
-import hashlib
-import json
 import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 # Prometheus metrics
 try:
@@ -48,13 +45,19 @@ logger = logging.getLogger(__name__)
 
 # Prometheus metrics for weighted voting
 if PROMETHEUS_AVAILABLE:
-    VOTING_SESSIONS_TOTAL = Counter("ac_voting_sessions_total", "Total voting sessions created")
+    VOTING_SESSIONS_TOTAL = Counter(
+        "ac_voting_sessions_total", "Total voting sessions created"
+    )
     VOTES_CAST_TOTAL = Counter("ac_votes_cast_total", "Total votes cast", ["vote_type"])
     QUORUM_ACHIEVEMENT_RATE = Gauge(
         "ac_quorum_achievement_rate", "Percentage of sessions achieving quorum"
     )
-    VOTING_PARTICIPATION_RATE = Gauge("ac_voting_participation_rate", "Average participation rate")
-    VOTE_PROCESSING_TIME = Histogram("ac_vote_processing_time_seconds", "Vote processing time")
+    VOTING_PARTICIPATION_RATE = Gauge(
+        "ac_voting_participation_rate", "Average participation rate"
+    )
+    VOTE_PROCESSING_TIME = Histogram(
+        "ac_vote_processing_time_seconds", "Vote processing time"
+    )
 
 
 class VoteType(Enum):
@@ -96,9 +99,9 @@ class Stakeholder:
     stakeholder_type: StakeholderType
     voting_weight: float  # 0.0-1.0, represents voting power
     is_active: bool = True
-    delegation_target: Optional[str] = None  # ID of delegate
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    last_active: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    delegation_target: str | None = None  # ID of delegate
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_active: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 @dataclass
@@ -109,10 +112,10 @@ class Vote:
     stakeholder_id: str
     vote_type: VoteType
     voting_weight: float
-    reasoning: Optional[str] = None
-    cast_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    reasoning: str | None = None
+    cast_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     is_delegated: bool = False
-    original_voter_id: Optional[str] = None  # For delegated votes
+    original_voter_id: str | None = None  # For delegated votes
 
 
 @dataclass
@@ -141,8 +144,8 @@ class VotingResults:
     abstain_weight: float
     approval_rate: float
     final_result: VotingSessionStatus
-    vote_breakdown: Dict[VoteType, int]
-    stakeholder_participation: Dict[StakeholderType, float]
+    vote_breakdown: dict[VoteType, int]
+    stakeholder_participation: dict[StakeholderType, float]
 
 
 @dataclass
@@ -154,14 +157,14 @@ class VotingSession:
     title: str
     description: str
     configuration: VotingConfiguration
-    stakeholders: Dict[str, Stakeholder]
-    votes: Dict[str, Vote]  # stakeholder_id -> Vote
+    stakeholders: dict[str, Stakeholder]
+    votes: dict[str, Vote]  # stakeholder_id -> Vote
     status: VotingSessionStatus
     created_at: datetime
     voting_starts_at: datetime
     voting_ends_at: datetime
-    results: Optional[VotingResults] = None
-    constitutional_compliance_score: Optional[float] = None
+    results: VotingResults | None = None
+    constitutional_compliance_score: float | None = None
 
 
 class WeightedVotingSystem:
@@ -178,7 +181,7 @@ class WeightedVotingSystem:
 
     def __init__(
         self,
-        default_config: Optional[VotingConfiguration] = None,
+        default_config: VotingConfiguration | None = None,
         constitutional_hash: str = "cdd01ef066bc6cf2",
     ):
         # requires: Valid input parameters
@@ -188,10 +191,10 @@ class WeightedVotingSystem:
         self.constitutional_hash = constitutional_hash
 
         # Active voting sessions
-        self.active_sessions: Dict[str, VotingSession] = {}
+        self.active_sessions: dict[str, VotingSession] = {}
 
         # Stakeholder registry
-        self.stakeholders: Dict[str, Stakeholder] = {}
+        self.stakeholders: dict[str, Stakeholder] = {}
 
         # Performance tracking
         self.voting_stats = {
@@ -235,7 +238,9 @@ class WeightedVotingSystem:
         try:
             # Validate voting weight
             if not 0.0 <= voting_weight <= 1.0:
-                raise ValueError(f"Voting weight must be between 0.0 and 1.0, got {voting_weight}")
+                raise ValueError(
+                    f"Voting weight must be between 0.0 and 1.0, got {voting_weight}"
+                )
 
             # Check if stakeholder already exists
             if stakeholder_id in self.stakeholders:
@@ -265,10 +270,10 @@ class WeightedVotingSystem:
         proposal_id: str,
         title: str,
         description: str,
-        eligible_stakeholder_ids: List[str],
-        configuration: Optional[VotingConfiguration] = None,
+        eligible_stakeholder_ids: list[str],
+        configuration: VotingConfiguration | None = None,
         start_delay_hours: int = 0,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Create a new voting session."""
         start_time = time.time()
 
@@ -293,13 +298,14 @@ class WeightedVotingSystem:
 
             # Check constitutional compliance if required
             constitutional_score = None
-            if config.constitutional_compliance_required and self.constitutional_validator:
+            if (
+                config.constitutional_compliance_required
+                and self.constitutional_validator
+            ):
                 try:
-                    compliance_result = (
-                        await self.constitutional_validator.validate_constitutional_compliance(
-                            f"Proposal: {title}\n\nDescription: {description}",
-                            {"proposal_id": proposal_id, "voting_session": True},
-                        )
+                    compliance_result = await self.constitutional_validator.validate_constitutional_compliance(
+                        f"Proposal: {title}\n\nDescription: {description}",
+                        {"proposal_id": proposal_id, "voting_session": True},
                     )
                     constitutional_score = compliance_result.consensus_confidence
 
@@ -314,9 +320,11 @@ class WeightedVotingSystem:
 
             # Create voting session
             session_id = str(uuid.uuid4())
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
             voting_starts_at = current_time + timedelta(hours=start_delay_hours)
-            voting_ends_at = voting_starts_at + timedelta(hours=config.voting_period_hours)
+            voting_ends_at = voting_starts_at + timedelta(
+                hours=config.voting_period_hours
+            )
 
             session = VotingSession(
                 session_id=session_id,
@@ -364,8 +372,8 @@ class WeightedVotingSystem:
         session_id: str,
         stakeholder_id: str,
         vote_type: VoteType,
-        reasoning: Optional[str] = None,
-        delegate_to: Optional[str] = None,
+        reasoning: str | None = None,
+        delegate_to: str | None = None,
     ) -> bool:
         """Cast a vote in a voting session."""
         start_time = time.time()
@@ -386,14 +394,19 @@ class WeightedVotingSystem:
                 return False
 
             # Check voting period
-            current_time = datetime.now(timezone.utc)
-            if current_time < session.voting_starts_at or current_time > session.voting_ends_at:
+            current_time = datetime.now(UTC)
+            if (
+                current_time < session.voting_starts_at
+                or current_time > session.voting_ends_at
+            ):
                 logger.error(f"Voting session {session_id} is outside voting period")
                 return False
 
             # Validate stakeholder
             if stakeholder_id not in session.stakeholders:
-                logger.error(f"Stakeholder {stakeholder_id} not eligible for session {session_id}")
+                logger.error(
+                    f"Stakeholder {stakeholder_id} not eligible for session {session_id}"
+                )
                 return False
 
             stakeholder = session.stakeholders[stakeholder_id]
@@ -410,12 +423,19 @@ class WeightedVotingSystem:
 
                 # Update stakeholder delegation
                 stakeholder.delegation_target = delegate_to
-                logger.info(f"Stakeholder {stakeholder_id} delegated vote to {delegate_to}")
+                logger.info(
+                    f"Stakeholder {stakeholder_id} delegated vote to {delegate_to}"
+                )
                 return True
 
             # Check if vote change is allowed
-            if stakeholder_id in session.votes and not session.configuration.allow_vote_changes:
-                logger.error(f"Vote changes not allowed for stakeholder {stakeholder_id}")
+            if (
+                stakeholder_id in session.votes
+                and not session.configuration.allow_vote_changes
+            ):
+                logger.error(
+                    f"Vote changes not allowed for stakeholder {stakeholder_id}"
+                )
                 return False
 
             # Validate reasoning requirement
@@ -448,14 +468,18 @@ class WeightedVotingSystem:
                 processing_time = (time.time() - start_time) * 1000
                 VOTE_PROCESSING_TIME.observe(processing_time / 1000.0)
 
-            logger.info(f"Vote cast by {stakeholder_id} in session {session_id}: {vote_type.value}")
+            logger.info(
+                f"Vote cast by {stakeholder_id} in session {session_id}: {vote_type.value}"
+            )
             return True
 
         except Exception as e:
             logger.error(f"Failed to cast vote: {e}")
             return False
 
-    async def close_voting_session(self, session_id: str, force_close: bool = False) -> bool:
+    async def close_voting_session(
+        self, session_id: str, force_close: bool = False
+    ) -> bool:
         """Close a voting session and finalize results."""
         try:
             if session_id not in self.active_sessions:
@@ -465,7 +489,7 @@ class WeightedVotingSystem:
             session = self.active_sessions[session_id]
 
             # Check if session can be closed
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
             if not force_close and current_time < session.voting_ends_at:
                 logger.error(f"Voting session {session_id} has not reached end time")
                 return False
@@ -501,7 +525,9 @@ class WeightedVotingSystem:
             logger.error(f"Failed to close voting session {session_id}: {e}")
             return False
 
-    async def calculate_voting_results(self, session_id: str) -> Optional[VotingResults]:
+    async def calculate_voting_results(
+        self, session_id: str
+    ) -> VotingResults | None:
         """Calculate comprehensive voting results for a session."""
         try:
             if session_id not in self.active_sessions:
@@ -510,7 +536,9 @@ class WeightedVotingSystem:
             session = self.active_sessions[session_id]
 
             # Calculate total eligible voting weight
-            total_eligible_weight = sum(s.voting_weight for s in session.stakeholders.values())
+            total_eligible_weight = sum(
+                s.voting_weight for s in session.stakeholders.values()
+            )
 
             # Calculate vote weights by type
             approve_weight = 0.0
@@ -523,8 +551,8 @@ class WeightedVotingSystem:
                 VoteType.REJECT: 0,
                 VoteType.ABSTAIN: 0,
             }
-            stakeholder_participation = {st: 0.0 for st in StakeholderType}
-            stakeholder_counts = {st: 0 for st in StakeholderType}
+            stakeholder_participation = dict.fromkeys(StakeholderType, 0.0)
+            stakeholder_counts = dict.fromkeys(StakeholderType, 0)
 
             # Count stakeholders by type
             for stakeholder in session.stakeholders.values():
@@ -563,7 +591,9 @@ class WeightedVotingSystem:
                 if total_eligible_weight > 0
                 else 0.0
             )
-            quorum_achieved = participation_rate >= session.configuration.quorum_threshold
+            quorum_achieved = (
+                participation_rate >= session.configuration.quorum_threshold
+            )
 
             # Calculate approval rate (excluding abstentions from denominator)
             voting_weight_for_decision = approve_weight + reject_weight
@@ -600,12 +630,16 @@ class WeightedVotingSystem:
             logger.error(f"Failed to calculate voting results: {e}")
             return None
 
-    def get_system_performance_metrics(self) -> Dict[str, Any]:
+    def get_system_performance_metrics(self) -> dict[str, Any]:
         """Get comprehensive system performance metrics."""
         try:
             # Calculate active session statistics
             active_sessions_count = len(
-                [s for s in self.active_sessions.values() if s.status == VotingSessionStatus.ACTIVE]
+                [
+                    s
+                    for s in self.active_sessions.values()
+                    if s.status == VotingSessionStatus.ACTIVE
+                ]
             )
 
             pending_sessions_count = len(
@@ -620,23 +654,27 @@ class WeightedVotingSystem:
             completed_sessions = [
                 s
                 for s in self.active_sessions.values()
-                if s.status in [VotingSessionStatus.APPROVED, VotingSessionStatus.REJECTED]
+                if s.status
+                in [VotingSessionStatus.APPROVED, VotingSessionStatus.REJECTED]
             ]
 
-            avg_session_duration_hours = 0.0
             if completed_sessions:
                 durations = [
                     (s.voting_ends_at - s.voting_starts_at).total_seconds() / 3600
                     for s in completed_sessions
                 ]
-                avg_session_duration_hours = sum(durations) / len(durations)
+                sum(durations) / len(durations)
 
             return {
                 "system_statistics": {
                     "total_sessions": self.voting_stats["total_sessions"],
                     "total_votes_cast": self.voting_stats["total_votes_cast"],
-                    "avg_participation_rate": self.voting_stats["avg_participation_rate"],
-                    "quorum_achievement_rate": self.voting_stats["quorum_achievement_rate"],
+                    "avg_participation_rate": self.voting_stats[
+                        "avg_participation_rate"
+                    ],
+                    "quorum_achievement_rate": self.voting_stats[
+                        "quorum_achievement_rate"
+                    ],
                 },
                 "current_state": {
                     "active_sessions": active_sessions_count,
@@ -654,12 +692,18 @@ class WeightedVotingSystem:
                 "stakeholder_analytics": {
                     "stakeholder_type_distribution": {
                         st.value: len(
-                            [s for s in self.stakeholders.values() if s.stakeholder_type == st]
+                            [
+                                s
+                                for s in self.stakeholders.values()
+                                if s.stakeholder_type == st
+                            ]
                         )
                         for st in StakeholderType
                     },
                     "total_voting_weight": sum(
-                        s.voting_weight for s in self.stakeholders.values() if s.is_active
+                        s.voting_weight
+                        for s in self.stakeholders.values()
+                        if s.is_active
                     ),
                 },
             }
@@ -670,11 +714,11 @@ class WeightedVotingSystem:
 
 
 # Global weighted voting system instance
-_weighted_voting_system: Optional[WeightedVotingSystem] = None
+_weighted_voting_system: WeightedVotingSystem | None = None
 
 
 async def get_weighted_voting_system(
-    default_config: Optional[VotingConfiguration] = None,
+    default_config: VotingConfiguration | None = None,
 ) -> WeightedVotingSystem:
     """Get or create global weighted voting system instance."""
     global _weighted_voting_system

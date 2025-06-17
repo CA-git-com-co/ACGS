@@ -129,8 +129,8 @@ langgraph_redis:
 ### Next Testing Steps
 1. **Service Health Validation**:
    ```bash
-   docker-compose up langgraph_redis postgres_db
-   docker-compose up ac_service
+   docker-compose -f infrastructure/docker/docker-compose.yml up langgraph_redis postgres_db
+   docker-compose -f infrastructure/docker/docker-compose.yml up ac_service
    curl http://localhost:8001/api/v1/workflows/capabilities
    ```
 

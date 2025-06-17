@@ -8,7 +8,7 @@ workflow-specific settings based on the Gemini-LangGraph patterns.
 
 import os
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -35,7 +35,7 @@ class LangGraphConfiguration(BaseModel):
     """
 
     # Multi-model LLM configuration
-    models: Dict[ModelRole, str] = Field(
+    models: dict[ModelRole, str] = Field(
         default={
             ModelRole.CONSTITUTIONAL_PROMPTING: "qwen/qwen3-235b-a22b:free",
             ModelRole.POLICY_SYNTHESIS: "deepseek/deepseek-chat-v3-0324:free",
@@ -48,7 +48,7 @@ class LangGraphConfiguration(BaseModel):
         }
     )
 
-    fallback_models: Dict[ModelRole, str] = Field(
+    fallback_models: dict[ModelRole, str] = Field(
         default={
             ModelRole.CONSTITUTIONAL_PROMPTING: "deepseek/deepseek-r1-0528:free",
             ModelRole.POLICY_SYNTHESIS: "qwen/qwen3-32b",
@@ -62,9 +62,11 @@ class LangGraphConfiguration(BaseModel):
     )
 
     # Model performance settings
-    max_retries: int = Field(default=3, description="Maximum retry attempts for model calls")
+    max_retries: int = Field(
+        default=3, description="Maximum retry attempts for model calls"
+    )
     timeout_seconds: int = Field(default=30, description="Timeout for model API calls")
-    temperature_settings: Dict[ModelRole, float] = Field(
+    temperature_settings: dict[ModelRole, float] = Field(
         default={
             ModelRole.CONSTITUTIONAL_PROMPTING: 0.1,  # Low temperature for consistency
             ModelRole.POLICY_SYNTHESIS: 0.3,  # Moderate creativity
@@ -93,24 +95,24 @@ class LangGraphConfiguration(BaseModel):
     redis_ttl_seconds: int = Field(default=86400)  # 24 hours
 
     # PostgreSQL configuration for workflow persistence
-    postgres_url: Optional[str] = Field(default=None)
+    postgres_url: str | None = Field(default=None)
     workflow_table_name: str = Field(default="langgraph_workflows")
 
     # API keys and authentication
-    gemini_api_key: Optional[str] = Field(default=None)
-    openai_api_key: Optional[str] = Field(default=None)
-    groq_api_key: Optional[str] = Field(default=None)
-    xai_api_key: Optional[str] = Field(default=None)
-    nvidia_api_key: Optional[str] = Field(default=None)
-    openrouter_api_key: Optional[str] = Field(default=None)
-    cerebras_api_key: Optional[str] = Field(default=None)
-    ollama_api_key: Optional[str] = Field(default=None)
+    gemini_api_key: str | None = Field(default=None)
+    openai_api_key: str | None = Field(default=None)
+    groq_api_key: str | None = Field(default=None)
+    xai_api_key: str | None = Field(default=None)
+    nvidia_api_key: str | None = Field(default=None)
+    openrouter_api_key: str | None = Field(default=None)
+    cerebras_api_key: str | None = Field(default=None)
+    ollama_api_key: str | None = Field(default=None)
     ollama_base_url: str = Field(default="http://127.0.0.1:11434")
 
     # Monitoring and alerting
     enable_performance_monitoring: bool = Field(default=True)
     enable_constitutional_alerts: bool = Field(default=True)
-    alert_webhook_url: Optional[str] = Field(default=None)
+    alert_webhook_url: str | None = Field(default=None)
 
     # Development and debugging
     debug_mode: bool = Field(default=False)
@@ -166,7 +168,9 @@ class LangGraphConfiguration(BaseModel):
         # Get debug settings
         debug_mode = os.getenv("LANGGRAPH_DEBUG_MODE", "false").lower() == "true"
         log_level = os.getenv("LANGGRAPH_LOG_LEVEL", "INFO")
-        enable_workflow_tracing = os.getenv("ENABLE_WORKFLOW_TRACING", "true").lower() == "true"
+        enable_workflow_tracing = (
+            os.getenv("ENABLE_WORKFLOW_TRACING", "true").lower() == "true"
+        )
 
         return cls(
             gemini_api_key=gemini_api_key,
@@ -206,7 +210,7 @@ class LangGraphConfiguration(BaseModel):
         """Get the temperature setting for a specific role."""
         return self.temperature_settings.get(role, 0.3)
 
-    def validate_api_keys(self) -> Dict[str, bool]:
+    def validate_api_keys(self) -> dict[str, bool]:
         """
         Validate that required API keys are available.
 
@@ -224,7 +228,7 @@ class LangGraphConfiguration(BaseModel):
             "ollama": True,  # Ollama typically doesn't require API key for local deployment
         }
 
-    def get_openrouter_config(self) -> Dict[str, Any]:
+    def get_openrouter_config(self) -> dict[str, Any]:
         """
         Get OpenRouter-specific configuration for enhanced Phase 2 integration.
 
@@ -251,7 +255,7 @@ class LangGraphConfiguration(BaseModel):
             ],
         }
 
-    def validate_openrouter_setup(self) -> Dict[str, Any]:
+    def validate_openrouter_setup(self) -> dict[str, Any]:
         """
         Validate OpenRouter API setup and connectivity.
 
@@ -304,7 +308,9 @@ class LangGraphConfiguration(BaseModel):
         else:
             return "unknown"
 
-    def get_model_config_for_provider(self, model_id: str, role: ModelRole) -> Dict[str, Any]:
+    def get_model_config_for_provider(
+        self, model_id: str, role: ModelRole
+    ) -> dict[str, Any]:
         """
         Get model configuration for specific provider integration.
 
@@ -369,7 +375,7 @@ class LangGraphConfiguration(BaseModel):
 
         return base_config
 
-    def get_fallback_chain(self, role: ModelRole) -> List[Dict[str, Any]]:
+    def get_fallback_chain(self, role: ModelRole) -> list[dict[str, Any]]:
         """
         Get fallback chain for a specific role with provider configurations.
 
@@ -417,14 +423,16 @@ class ConstitutionalCouncilConfig(BaseModel):
     """Specific configuration for Constitutional Council workflows."""
 
     # Amendment processing settings
-    amendment_review_period_hours: int = Field(default=72, description="Hours for amendment review")
+    amendment_review_period_hours: int = Field(
+        default=72, description="Hours for amendment review"
+    )
     voting_period_hours: int = Field(default=48, description="Hours for voting period")
     quorum_percentage: float = Field(
         default=0.6, ge=0.0, le=1.0, description="Required quorum for voting"
     )
 
     # Stakeholder engagement
-    required_stakeholder_roles: List[str] = Field(
+    required_stakeholder_roles: list[str] = Field(
         default=[
             "constitutional_expert",
             "policy_administrator",
@@ -432,7 +440,7 @@ class ConstitutionalCouncilConfig(BaseModel):
             "public_representative",
         ]
     )
-    notification_channels: List[str] = Field(default=["email", "dashboard", "webhook"])
+    notification_channels: list[str] = Field(default=["email", "dashboard", "webhook"])
 
     # Analysis thresholds
     constitutional_compliance_threshold: float = Field(default=0.90, ge=0.0, le=1.0)
@@ -449,7 +457,9 @@ class PolicySynthesisConfig(BaseModel):
 
     # Synthesis parameters
     target_policy_count: int = Field(default=5, ge=1, le=20)
-    policy_complexity_level: str = Field(default="moderate", pattern="^(simple|moderate|complex)$")
+    policy_complexity_level: str = Field(
+        default="moderate", pattern="^(simple|moderate|complex)$"
+    )
 
     # Quality assurance
     enable_multi_model_validation: bool = Field(default=True)
@@ -463,7 +473,7 @@ class PolicySynthesisConfig(BaseModel):
 
 
 # Global configuration instance
-_global_config: Optional[LangGraphConfiguration] = None
+_global_config: LangGraphConfiguration | None = None
 
 
 def get_langgraph_config() -> LangGraphConfiguration:

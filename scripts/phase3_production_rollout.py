@@ -12,7 +12,6 @@ import subprocess
 import sys
 import time
 from datetime import datetime
-from typing import Dict
 
 import psutil
 import requests
@@ -70,7 +69,7 @@ class ProductionRollout:
         """Log warning message"""
         self.log(message, "WARNING")
 
-    async def check_service_health(self) -> Dict[str, bool]:
+    async def check_service_health(self) -> dict[str, bool]:
         """Check health of all services"""
         health_status = {}
 
@@ -91,7 +90,7 @@ class ProductionRollout:
 
         return health_status
 
-    async def measure_performance_metrics(self) -> Dict[str, float]:
+    async def measure_performance_metrics(self) -> dict[str, float]:
         """Measure current performance metrics"""
         metrics = {
             "avg_response_time_ms": 0,
@@ -176,7 +175,7 @@ upstream acgs_backend {{
 server {{
     listen 80;
     server_name _;
-    
+
     location / {{
         proxy_pass http://acgs_backend;
         proxy_set_header Host $host;
@@ -184,7 +183,7 @@ server {{
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }}
-    
+
     location /health {{
         access_log off;
         return 200 "healthy\\n";

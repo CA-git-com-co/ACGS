@@ -38,8 +38,10 @@ diagnose_model = "o1-2024-12-17"
 
 
 def diagnose_problem(
-    entry, commit, root_dir, out_dir, patch_files=[], max_attempts=3, polyglot=False
+    entry, commit, root_dir, out_dir, patch_files=None, max_attempts=3, polyglot=False
 ):
+    if patch_files is None:
+        patch_files = []
     client = create_client(diagnose_model)
     if polyglot:
         diagnose_sys_message, diagnose_prompt = get_diagnose_prompt_polyglot(
@@ -97,7 +99,7 @@ def diagnose_improvement(
     model_patch_file,
     out_dir,
     run_id,
-    patch_files=[],
+    patch_files=None,
     max_attempts=3,
 ):
     """
@@ -116,6 +118,8 @@ def diagnose_improvement(
     Returns:
         dict: The improvement diagnosis.
     """
+    if patch_files is None:
+        patch_files = []
     client = create_client(diagnose_model)
     diagnose_sys_message, diagnose_prompt = get_diagnose_improvement_prompt(
         entry,
@@ -487,7 +491,7 @@ def self_improve(
         # Check if patch file exists and is not empty
         if not os.path.exists(model_patch_file):
             raise Exception("Model patch file is empty or does not exist")
-        with open(model_patch_file, "r") as f:
+        with open(model_patch_file) as f:
             patch_content = f.read()
             if not patch_content.strip():
                 raise Exception("Model patch file is empty")
@@ -624,7 +628,7 @@ def main():
             f"Failed to copy initial directory to {args.output_dir}: {e}"
         )
 
-    metadata = self_improve(
+    self_improve(
         parent_commit=args.parent_commit,
         output_dir=args.output_dir,
         force_rebuild=args.force_rebuild,

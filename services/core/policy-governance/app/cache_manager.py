@@ -7,7 +7,7 @@ import hashlib
 import json
 import os
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 import structlog
 
@@ -30,7 +30,7 @@ class PGCCacheManager:
         # ensures: Correct function execution
         # sha256: func_hash
         self.service_name = "pgc_service"
-        self.redis_client: Optional[AdvancedRedisClient] = None
+        self.redis_client: AdvancedRedisClient | None = None
         self._initialized = False
 
     async def initialize(self):
@@ -60,7 +60,7 @@ class PGCCacheManager:
             raise
 
     async def cache_compliance_check(
-        self, policy_id: str, compliance_data: Dict[str, Any], ttl: Optional[int] = None
+        self, policy_id: str, compliance_data: dict[str, Any], ttl: int | None = None
     ) -> bool:
         """Cache compliance check results."""
         if not self.redis_client:
@@ -76,7 +76,7 @@ class PGCCacheManager:
             cache_key, compliance_data, ttl=compliance_ttl, prefix="compliance"
         )
 
-    async def get_compliance_check(self, policy_id: str) -> Optional[Dict[str, Any]]:
+    async def get_compliance_check(self, policy_id: str) -> dict[str, Any] | None:
         """Get cached compliance check results."""
         if not self.redis_client:
             await self.initialize()
@@ -93,7 +93,7 @@ class PGCCacheManager:
         return await self.redis_client.delete(cache_key, prefix="compliance")
 
     async def cache_policy_rules(
-        self, policy_id: str, rules_data: Dict[str, Any], ttl: Optional[int] = None
+        self, policy_id: str, rules_data: dict[str, Any], ttl: int | None = None
     ) -> bool:
         """Cache policy rules."""
         if not self.redis_client:
@@ -102,9 +102,11 @@ class PGCCacheManager:
         cache_key = f"policy_rules:{policy_id}"
         rules_ttl = ttl or CACHE_TTL_POLICIES["governance_rules"]
 
-        return await self.redis_client.set(cache_key, rules_data, ttl=rules_ttl, prefix="rules")
+        return await self.redis_client.set(
+            cache_key, rules_data, ttl=rules_ttl, prefix="rules"
+        )
 
-    async def get_policy_rules(self, policy_id: str) -> Optional[Dict[str, Any]]:
+    async def get_policy_rules(self, policy_id: str) -> dict[str, Any] | None:
         """Get cached policy rules."""
         if not self.redis_client:
             await self.initialize()
@@ -113,7 +115,7 @@ class PGCCacheManager:
         return await self.redis_client.get(cache_key, prefix="rules")
 
     async def cache_governance_framework(
-        self, framework_data: Dict[str, Any], ttl: Optional[int] = None
+        self, framework_data: dict[str, Any], ttl: int | None = None
     ) -> bool:
         """Cache governance framework configuration."""
         if not self.redis_client:
@@ -126,7 +128,7 @@ class PGCCacheManager:
             cache_key, framework_data, ttl=framework_ttl, prefix="framework"
         )
 
-    async def get_governance_framework(self) -> Optional[Dict[str, Any]]:
+    async def get_governance_framework(self) -> dict[str, Any] | None:
         """Get cached governance framework configuration."""
         if not self.redis_client:
             await self.initialize()
@@ -135,7 +137,7 @@ class PGCCacheManager:
         return await self.redis_client.get(cache_key, prefix="framework")
 
     async def cache_policy_decision(
-        self, decision_id: str, decision_data: Dict[str, Any], ttl: Optional[int] = None
+        self, decision_id: str, decision_data: dict[str, Any], ttl: int | None = None
     ) -> bool:
         """Cache policy decision results."""
         if not self.redis_client:
@@ -152,7 +154,7 @@ class PGCCacheManager:
             cache_key, decision_data, ttl=decision_ttl, prefix="decisions"
         )
 
-    async def get_policy_decision(self, decision_id: str) -> Optional[Dict[str, Any]]:
+    async def get_policy_decision(self, decision_id: str) -> dict[str, Any] | None:
         """Get cached policy decision results."""
         if not self.redis_client:
             await self.initialize()
@@ -161,7 +163,7 @@ class PGCCacheManager:
         return await self.redis_client.get(cache_key, prefix="decisions")
 
     async def cache_opa_policy(
-        self, policy_name: str, policy_content: str, ttl: Optional[int] = None
+        self, policy_name: str, policy_content: str, ttl: int | None = None
     ) -> bool:
         """Cache OPA policy content."""
         if not self.redis_client:
@@ -176,9 +178,11 @@ class PGCCacheManager:
             "policy_name": policy_name,
         }
 
-        return await self.redis_client.set(cache_key, policy_data, ttl=opa_ttl, prefix="opa")
+        return await self.redis_client.set(
+            cache_key, policy_data, ttl=opa_ttl, prefix="opa"
+        )
 
-    async def get_opa_policy(self, policy_name: str) -> Optional[Dict[str, Any]]:
+    async def get_opa_policy(self, policy_name: str) -> dict[str, Any] | None:
         """Get cached OPA policy content."""
         if not self.redis_client:
             await self.initialize()
@@ -251,7 +255,7 @@ class PGCCacheManager:
         except Exception as e:
             logger.error("PGC cache warming failed", error=str(e))
 
-    async def get_cache_metrics(self) -> Dict[str, Any]:
+    async def get_cache_metrics(self) -> dict[str, Any]:
         """Get cache performance metrics."""
         if not self.redis_client:
             await self.initialize()
@@ -279,7 +283,7 @@ class PGCCacheManager:
 
 
 # Global cache manager instance
-_pgc_cache_manager: Optional[PGCCacheManager] = None
+_pgc_cache_manager: PGCCacheManager | None = None
 
 
 async def get_pgc_cache_manager() -> PGCCacheManager:
@@ -292,7 +296,7 @@ async def get_pgc_cache_manager() -> PGCCacheManager:
 
 
 # Cache decorators for PGC service
-def cache_pgc_result(ttl: Optional[int] = None, cache_type: str = "compliance_checks"):
+def cache_pgc_result(ttl: int | None = None, cache_type: str = "compliance_checks"):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -302,12 +306,16 @@ def cache_pgc_result(ttl: Optional[int] = None, cache_type: str = "compliance_ch
     )
 
 
-def generate_compliance_cache_key(policy_id: str, validation_params: Dict[str, Any]) -> str:
+def generate_compliance_cache_key(
+    policy_id: str, validation_params: dict[str, Any]
+) -> str:
     """Generate cache key for compliance checks."""
     key_data = {
         "policy_id": policy_id,
         "validation_params": validation_params,
-        "timestamp": datetime.utcnow().strftime("%Y-%m-%d-%H"),  # Hour-level granularity
+        "timestamp": datetime.utcnow().strftime(
+            "%Y-%m-%d-%H"
+        ),  # Hour-level granularity
     }
 
     key_str = json.dumps(key_data, sort_keys=True)

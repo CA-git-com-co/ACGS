@@ -10,7 +10,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from .types import EventStatus, EventType
 
@@ -39,14 +39,14 @@ class EventStore(ABC):
     @abstractmethod
     async def get_events(
         self,
-        event_type: Optional[EventType] = None,
-        since: Optional[datetime] = None,
+        event_type: EventType | None = None,
+        since: datetime | None = None,
         limit: int = 100,
-    ) -> List["Event"]:
+    ) -> list["Event"]:
         """Get events with optional filtering."""
 
     @abstractmethod
-    async def get_pending_events(self, limit: int = 100) -> List["Event"]:
+    async def get_pending_events(self, limit: int = 100) -> list["Event"]:
         """Get pending events for processing."""
 
     @abstractmethod
@@ -66,9 +66,9 @@ class InMemoryEventStore(EventStore):
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize in-memory event store."""
-        self.events: Dict[str, "Event"] = {}
-        self.events_by_type: Dict[EventType, List[str]] = {}
-        self.events_by_status: Dict[EventStatus, List[str]] = {}
+        self.events: dict[str, Event] = {}
+        self.events_by_type: dict[EventType, list[str]] = {}
+        self.events_by_status: dict[EventStatus, list[str]] = {}
         self._lock = asyncio.Lock()
 
     async def initialize(self) -> None:
@@ -116,10 +116,10 @@ class InMemoryEventStore(EventStore):
 
     async def get_events(
         self,
-        event_type: Optional[EventType] = None,
-        since: Optional[datetime] = None,
+        event_type: EventType | None = None,
+        since: datetime | None = None,
         limit: int = 100,
-    ) -> List["Event"]:
+    ) -> list["Event"]:
         """Get events with optional filtering."""
         async with self._lock:
             events = []
@@ -134,7 +134,9 @@ class InMemoryEventStore(EventStore):
 
             # Filter by timestamp
             if since:
-                events = [event for event in events if event.metadata.created_at >= since]
+                events = [
+                    event for event in events if event.metadata.created_at >= since
+                ]
 
             # Sort by creation time (newest first)
             events.sort(key=lambda e: e.metadata.created_at, reverse=True)
@@ -142,14 +144,16 @@ class InMemoryEventStore(EventStore):
             # Apply limit
             return events[:limit]
 
-    async def get_pending_events(self, limit: int = 100) -> List["Event"]:
+    async def get_pending_events(self, limit: int = 100) -> list["Event"]:
         """Get pending events for processing."""
         async with self._lock:
             pending_ids = self.events_by_status.get(EventStatus.PENDING, [])
             events = [self.events[event_id] for event_id in pending_ids]
 
             # Sort by priority and creation time
-            events.sort(key=lambda e: (e.metadata.priority.value, e.metadata.created_at))
+            events.sort(
+                key=lambda e: (e.metadata.priority.value, e.metadata.created_at)
+            )
 
             return events[:limit]
 
@@ -225,7 +229,7 @@ class InMemoryEventStore(EventStore):
                 logger.error(f"Failed to delete event: {e}")
                 return False
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get event store statistics."""
         return {
             "total_events": len(self.events),
@@ -234,7 +238,8 @@ class InMemoryEventStore(EventStore):
                 for event_type, event_ids in self.events_by_type.items()
             },
             "events_by_status": {
-                status.value: len(event_ids) for status, event_ids in self.events_by_status.items()
+                status.value: len(event_ids)
+                for status, event_ids in self.events_by_status.items()
             },
         }
 
@@ -269,7 +274,7 @@ class DatabaseEventStore(EventStore):
         """Store an event in the database."""
         try:
             # This would execute SQL INSERT in production
-            event_data = {
+            {
                 "event_id": event.metadata.event_id,
                 "event_type": event.metadata.event_type.value,
                 "priority": event.metadata.priority.value,
@@ -298,19 +303,19 @@ class DatabaseEventStore(EventStore):
 
     async def get_events(
         self,
-        event_type: Optional[EventType] = None,
-        since: Optional[datetime] = None,
+        event_type: EventType | None = None,
+        since: datetime | None = None,
         limit: int = 100,
-    ) -> List["Event"]:
+    ) -> list["Event"]:
         """Get events from the database with filtering."""
         # This would execute SQL SELECT with WHERE clauses in production
-        logger.debug(f"Would retrieve events from database with filters")
+        logger.debug("Would retrieve events from database with filters")
         return []
 
-    async def get_pending_events(self, limit: int = 100) -> List["Event"]:
+    async def get_pending_events(self, limit: int = 100) -> list["Event"]:
         """Get pending events from the database."""
         # This would execute SQL SELECT for pending events in production
-        logger.debug(f"Would retrieve pending events from database")
+        logger.debug("Would retrieve pending events from database")
         return []
 
     async def update_event(self, event: "Event") -> bool:

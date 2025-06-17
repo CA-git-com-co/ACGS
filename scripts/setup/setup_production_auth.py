@@ -95,7 +95,7 @@ class ProductionAuthSetup:
         """Generate authentication tokens for all users"""
         print("\n🎫 Generating Authentication Tokens...")
 
-        for username, user_data in self.users.items():
+        for username, _user_data in self.users.items():
             try:
                 # Get password for login
                 passwords = {
@@ -198,7 +198,7 @@ class ProductionAuthSetup:
 
                 # Test AC Service
                 response = requests.get(
-                    f"http://localhost:8001/api/v1/principles/",
+                    "http://localhost:8001/api/v1/principles/",
                     headers=headers,
                     timeout=5,
                 )

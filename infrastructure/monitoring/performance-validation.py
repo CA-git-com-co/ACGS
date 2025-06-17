@@ -19,9 +19,9 @@ import statistics
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 import psutil
@@ -61,7 +61,7 @@ class MonitoringPerformanceConfig:
     haproxy_exporter_url: str = "http://localhost:9101"
 
     # ACGS services for monitoring validation
-    acgs_services: Dict[str, int] = field(
+    acgs_services: dict[str, int] = field(
         default_factory=lambda: {
             "auth_service": 8000,
             "ac_service": 8001,
@@ -78,13 +78,13 @@ class MonitoringPerformanceConfig:
 class PerformanceMetrics:
     """Container for performance test results."""
 
-    response_times: List[float] = field(default_factory=list)
+    response_times: list[float] = field(default_factory=list)
     success_count: int = 0
     error_count: int = 0
     start_time: float = 0
     end_time: float = 0
-    cpu_usage_samples: List[float] = field(default_factory=list)
-    memory_usage_samples: List[float] = field(default_factory=list)
+    cpu_usage_samples: list[float] = field(default_factory=list)
+    memory_usage_samples: list[float] = field(default_factory=list)
 
     @property
     def total_requests(self) -> int:
@@ -114,10 +114,10 @@ class MonitoringPerformanceValidator:
 
     def __init__(self, config: MonitoringPerformanceConfig):
         self.config = config
-        self.results: Dict[str, PerformanceMetrics] = {}
-        self.system_metrics: Dict[str, Any] = {}
-        self.alert_test_results: Dict[str, Any] = {}
-        self.dashboard_performance: Dict[str, Any] = {}
+        self.results: dict[str, PerformanceMetrics] = {}
+        self.system_metrics: dict[str, Any] = {}
+        self.alert_test_results: dict[str, Any] = {}
+        self.dashboard_performance: dict[str, Any] = {}
 
     async def validate_monitoring_infrastructure(self) -> bool:
         """Execute comprehensive monitoring infrastructure validation."""
@@ -380,7 +380,7 @@ class MonitoringPerformanceValidator:
         ]
 
         # Add ACGS service metrics endpoints
-        for service, port in self.config.acgs_services.items():
+        for _service, port in self.config.acgs_services.items():
             metrics_endpoints.append(f"http://localhost:{port}/metrics")
 
         async with aiohttp.ClientSession() as session:
@@ -867,7 +867,7 @@ class MonitoringPerformanceValidator:
 
         # Evaluate response time criteria
         all_response_times = []
-        for worker_id, metrics in self.results.items():
+        for _worker_id, metrics in self.results.items():
             all_response_times.extend(metrics.response_times)
 
         if all_response_times:
@@ -957,7 +957,7 @@ class MonitoringPerformanceValidator:
 
         report = {
             "test_metadata": {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "test_duration_seconds": self.config.test_duration_seconds,
                 "concurrent_users": self.config.concurrent_users,
                 "test_type": "monitoring_infrastructure_performance_validation",
@@ -1001,7 +1001,7 @@ class MonitoringPerformanceValidator:
         # Print summary
         self.print_performance_summary(report)
 
-    def print_performance_summary(self, report: Dict[str, Any]):
+    def print_performance_summary(self, report: dict[str, Any]):
         """Print performance validation summary."""
         logger.info("\n" + "=" * 80)
         logger.info("🎯 ACGS-1 MONITORING PERFORMANCE VALIDATION SUMMARY")

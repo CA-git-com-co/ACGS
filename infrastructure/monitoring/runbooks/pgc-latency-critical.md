@@ -153,10 +153,10 @@ curl -X POST http://localhost:8005/admin/cache/warmup
 **Solution**:
 ```bash
 # Scale PGC service instances
-docker-compose up --scale pgc-service=3
+docker-compose -f infrastructure/docker/docker-compose.yml up --scale pgc-service=3
 
 # Increase resource limits
-# Edit docker-compose.yml or systemd service file
+# Edit infrastructure/docker/docker-compose.yml or systemd service file
 systemctl edit acgs-pgc-service
 ```
 

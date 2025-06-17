@@ -8,9 +8,9 @@ duplicate error handling logic across services.
 import json
 import logging
 import traceback
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -49,11 +49,11 @@ class ACGSException(Exception):
         self,
         message: str,
         error_code: str,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
         category: ErrorCategory = ErrorCategory.UNKNOWN,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
-        user_message: Optional[str] = None,
-        suggestions: Optional[List[str]] = None,
+        user_message: str | None = None,
+        suggestions: list[str] | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -65,11 +65,11 @@ class ACGSException(Exception):
         self.severity = severity
         self.user_message = user_message or message
         self.suggestions = suggestions or []
-        self.timestamp = datetime.now(timezone.utc)
+        self.timestamp = datetime.now(UTC)
 
         super().__init__(message)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert exception to dictionary for API responses."""
         return {
             "error": {
@@ -266,7 +266,7 @@ def handle_service_error(
     error: Exception,
     service_name: str,
     operation: str,
-    context: Optional[Dict[str, Any]] = None,
+    context: dict[str, Any] | None = None,
 ) -> ACGSException:
     """
     Handle and convert service errors to standardized ACGS exceptions.
@@ -284,7 +284,9 @@ def handle_service_error(
 
     # If already an ACGS exception, add context and return
     if isinstance(error, ACGSException):
-        error.details.update({"service": service_name, "operation": operation, **context})
+        error.details.update(
+            {"service": service_name, "operation": operation, **context}
+        )
         return error
 
     # Convert common exception types
@@ -329,9 +331,9 @@ def log_error(
     error: Exception,
     service_name: str,
     operation: str,
-    user_id: Optional[str] = None,
-    request_id: Optional[str] = None,
-    extra_context: Optional[Dict[str, Any]] = None,
+    user_id: str | None = None,
+    request_id: str | None = None,
+    extra_context: dict[str, Any] | None = None,
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -351,7 +353,7 @@ def log_error(
         "service": service_name,
         "operation": operation,
         "error_type": type(error).__name__,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
     if user_id:
@@ -383,7 +385,9 @@ def log_error(
         logger.error(f"Unhandled error: {str(error)}", extra=context, exc_info=True)
 
 
-def create_error_response(error: Exception, include_traceback: bool = False) -> Dict[str, Any]:
+def create_error_response(
+    error: Exception, include_traceback: bool = False
+) -> dict[str, Any]:
     """
     Create standardized error response for API endpoints.
 
@@ -396,7 +400,9 @@ def create_error_response(error: Exception, include_traceback: bool = False) -> 
     """
     if isinstance(error, ACGSException):
         response = error.to_dict()
-        if not include_traceback and "traceback" in response["error"].get("details", {}):
+        if not include_traceback and "traceback" in response["error"].get(
+            "details", {}
+        ):
             del response["error"]["details"]["traceback"]
         return response
 
@@ -408,6 +414,6 @@ def create_error_response(error: Exception, include_traceback: bool = False) -> 
             "category": ErrorCategory.UNKNOWN.value,
             "severity": ErrorSeverity.HIGH.value,
             "user_message": "An unexpected error occurred. Please try again.",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
     }

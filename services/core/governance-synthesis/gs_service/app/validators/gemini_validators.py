@@ -20,11 +20,15 @@ import json
 import logging
 import os
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aiohttp
 
-from ..core.heterogeneous_validator import BaseValidator, GovernanceContext, ValidationResult
+from ..core.heterogeneous_validator import (
+    BaseValidator,
+    GovernanceContext,
+    ValidationResult,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,16 +44,18 @@ class GeminiProValidator(BaseValidator):
     def __init__(self):
         super().__init__("gemini_pro", weight=0.1)
         self.api_key = os.getenv("GEMINI_API_KEY")
-        self.base_url = (
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
-        )
+        self.base_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
         self.max_retries = 3
         self.retry_delay = 1.0
 
         if not self.api_key:
-            logger.warning("GEMINI_API_KEY not set - GeminiProValidator will be disabled")
+            logger.warning(
+                "GEMINI_API_KEY not set - GeminiProValidator will be disabled"
+            )
 
-    async def validate(self, policy_data: Dict, context: GovernanceContext) -> ValidationResult:
+    async def validate(
+        self, policy_data: dict, context: GovernanceContext
+    ) -> ValidationResult:
         """
         Validate policy data against constitutional governance requirements.
 
@@ -85,7 +91,9 @@ class GeminiProValidator(BaseValidator):
             latency_ms = (time.time() - start_time) * 1000
             self._update_metrics(latency_ms, success=True)
 
-            logger.info(f"GeminiProValidator completed validation in {latency_ms:.2f}ms")
+            logger.info(
+                f"GeminiProValidator completed validation in {latency_ms:.2f}ms"
+            )
             return result
 
         except Exception as e:
@@ -99,25 +107,27 @@ class GeminiProValidator(BaseValidator):
                 error_message=f"Validation failed: {str(e)}",
             )
 
-    def _create_validation_prompt(self, policy_data: Dict, context: GovernanceContext) -> str:
+    def _create_validation_prompt(
+        self, policy_data: dict, context: GovernanceContext
+    ) -> str:
         """Create structured prompt for constitutional compliance validation."""
         return f"""
         Analyze the following policy for constitutional compliance and governance quality:
-        
+
         CONSTITUTIONAL CONTEXT:
         - Constitutional Hash: {context.constitutional_hash}
         - Policy Type: {context.policy_type}
         - Compliance Requirements: {json.dumps(context.compliance_requirements, indent=2)}
-        
+
         POLICY DATA:
         {json.dumps(policy_data, indent=2)}
-        
+
         EVALUATION CRITERIA:
         1. Constitutional Compliance (40%): Does the policy align with constitutional principles?
         2. Legal Consistency (25%): Is the policy internally consistent and legally sound?
         3. Implementation Feasibility (20%): Can this policy be effectively implemented?
         4. Stakeholder Impact (15%): What are the potential impacts on stakeholders?
-        
+
         Provide your analysis in the following JSON format:
         {{
             "overall_score": <float 0.0-1.0>,
@@ -132,7 +142,7 @@ class GeminiProValidator(BaseValidator):
         }}
         """
 
-    async def _call_gemini_api(self, prompt: str) -> Dict[str, Any]:
+    async def _call_gemini_api(self, prompt: str) -> dict[str, Any]:
         """Call Gemini Pro API with exponential backoff retry logic."""
         headers = {
             "Content-Type": "application/json",
@@ -152,7 +162,9 @@ class GeminiProValidator(BaseValidator):
             try:
                 async with aiohttp.ClientSession() as session:
                     url = f"{self.base_url}?key={self.api_key}"
-                    async with session.post(url, headers=headers, json=payload) as response:
+                    async with session.post(
+                        url, headers=headers, json=payload
+                    ) as response:
                         if response.status == 200:
                             return await response.json()
                         elif response.status == 429:  # Rate limit
@@ -176,7 +188,7 @@ class GeminiProValidator(BaseValidator):
 
         raise Exception("Max retries exceeded for Gemini API call")
 
-    def _parse_validation_response(self, response: Dict[str, Any]) -> ValidationResult:
+    def _parse_validation_response(self, response: dict[str, Any]) -> ValidationResult:
         """Parse Gemini API response into ValidationResult."""
         try:
             # Extract text from Gemini response format
@@ -196,9 +208,13 @@ class GeminiProValidator(BaseValidator):
                     score=float(analysis.get("overall_score", 0.0)),
                     confidence=float(analysis.get("confidence", 0.0)),
                     details={
-                        "constitutional_compliance": analysis.get("constitutional_compliance"),
+                        "constitutional_compliance": analysis.get(
+                            "constitutional_compliance"
+                        ),
                         "legal_consistency": analysis.get("legal_consistency"),
-                        "implementation_feasibility": analysis.get("implementation_feasibility"),
+                        "implementation_feasibility": analysis.get(
+                            "implementation_feasibility"
+                        ),
                         "stakeholder_impact": analysis.get("stakeholder_impact"),
                         "detailed_analysis": analysis.get("detailed_analysis"),
                         "recommendations": analysis.get("recommendations", []),
@@ -233,7 +249,9 @@ class GeminiProValidator(BaseValidator):
         # Update average latency
         total = self.metrics["total_validations"]
         current_avg = self.metrics["average_latency_ms"]
-        self.metrics["average_latency_ms"] = ((current_avg * (total - 1)) + latency_ms) / total
+        self.metrics["average_latency_ms"] = (
+            (current_avg * (total - 1)) + latency_ms
+        ) / total
 
         # Update error rate
         if not success:
@@ -258,9 +276,13 @@ class GeminiFlashValidator(BaseValidator):
         self.retry_delay = 0.5
 
         if not self.api_key:
-            logger.warning("GEMINI_API_KEY not set - GeminiFlashValidator will be disabled")
+            logger.warning(
+                "GEMINI_API_KEY not set - GeminiFlashValidator will be disabled"
+            )
 
-    async def validate(self, policy_data: Dict, context: GovernanceContext) -> ValidationResult:
+    async def validate(
+        self, policy_data: dict, context: GovernanceContext
+    ) -> ValidationResult:
         """
         Rapid screening validation for policy candidates.
 
@@ -296,7 +318,9 @@ class GeminiFlashValidator(BaseValidator):
             latency_ms = (time.time() - start_time) * 1000
             self._update_metrics(latency_ms, success=True)
 
-            logger.debug(f"GeminiFlashValidator completed screening in {latency_ms:.2f}ms")
+            logger.debug(
+                f"GeminiFlashValidator completed screening in {latency_ms:.2f}ms"
+            )
             return result
 
         except Exception as e:
@@ -310,25 +334,27 @@ class GeminiFlashValidator(BaseValidator):
                 error_message=f"Screening failed: {str(e)}",
             )
 
-    def _create_screening_prompt(self, policy_data: Dict, context: GovernanceContext) -> str:
+    def _create_screening_prompt(
+        self, policy_data: dict, context: GovernanceContext
+    ) -> str:
         """Create lightweight prompt for rapid policy screening."""
         policy_text = str(policy_data.get("content", ""))[:500]  # Truncate for speed
 
         return f"""
         Rapid screening assessment for policy proposal:
-        
+
         Policy Type: {context.policy_type}
         Policy Content (first 500 chars): {policy_text}
-        
+
         Provide a quick assessment (1-3 sentences) and score (0.0-1.0):
         - Is this policy fundamentally sound?
         - Are there any obvious constitutional violations?
         - Should this proceed to detailed review?
-        
+
         Format: SCORE: <0.0-1.0> | ASSESSMENT: <brief assessment>
         """
 
-    async def _call_gemini_flash_api(self, prompt: str) -> Dict[str, Any]:
+    async def _call_gemini_flash_api(self, prompt: str) -> dict[str, Any]:
         """Call Gemini Flash API optimized for speed."""
         headers = {
             "Content-Type": "application/json",
@@ -344,9 +370,13 @@ class GeminiFlashValidator(BaseValidator):
 
         for attempt in range(self.max_retries):
             try:
-                async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as session:
+                async with aiohttp.ClientSession(
+                    timeout=aiohttp.ClientTimeout(total=5)
+                ) as session:
                     url = f"{self.base_url}?key={self.api_key}"
-                    async with session.post(url, headers=headers, json=payload) as response:
+                    async with session.post(
+                        url, headers=headers, json=payload
+                    ) as response:
                         if response.status == 200:
                             return await response.json()
                         elif response.status == 429 and attempt < self.max_retries - 1:
@@ -355,7 +385,7 @@ class GeminiFlashValidator(BaseValidator):
 
                         response.raise_for_status()
 
-            except Exception as e:
+            except Exception:
                 if attempt < self.max_retries - 1:
                     await asyncio.sleep(self.retry_delay)
                 else:
@@ -363,7 +393,7 @@ class GeminiFlashValidator(BaseValidator):
 
         raise Exception("Max retries exceeded for Gemini Flash API call")
 
-    def _parse_screening_response(self, response: Dict[str, Any]) -> ValidationResult:
+    def _parse_screening_response(self, response: dict[str, Any]) -> ValidationResult:
         """Parse Gemini Flash response for rapid screening."""
         try:
             content = response.get("candidates", [{}])[0].get("content", {})
@@ -383,7 +413,9 @@ class GeminiFlashValidator(BaseValidator):
                         pass
 
                     if "|" in parts[1]:
-                        assessment = parts[1].split("|", 1)[1].replace("ASSESSMENT:", "").strip()
+                        assessment = (
+                            parts[1].split("|", 1)[1].replace("ASSESSMENT:", "").strip()
+                        )
 
             return ValidationResult(
                 score=max(0.0, min(1.0, score)),  # Clamp to valid range
@@ -408,7 +440,9 @@ class GeminiFlashValidator(BaseValidator):
         """Update validator performance metrics."""
         total = self.metrics["total_validations"]
         current_avg = self.metrics["average_latency_ms"]
-        self.metrics["average_latency_ms"] = ((current_avg * (total - 1)) + latency_ms) / total
+        self.metrics["average_latency_ms"] = (
+            (current_avg * (total - 1)) + latency_ms
+        ) / total
 
         if not success:
             errors = self.metrics.get("total_errors", 0) + 1

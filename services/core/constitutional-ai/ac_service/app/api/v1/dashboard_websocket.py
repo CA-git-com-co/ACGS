@@ -8,11 +8,8 @@ enabling live updates for amendment workflows, stakeholder engagement, and votin
 import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
-from app.services.constitutional_council_dashboard import (
-    get_constitutional_council_dashboard,
-)
 from fastapi import (
     APIRouter,
     Depends,
@@ -23,6 +20,9 @@ from fastapi import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.services.constitutional_council_dashboard import (
+    get_constitutional_council_dashboard,
+)
 from services.shared.auth import User
 from services.shared.database import get_async_db
 
@@ -58,7 +58,7 @@ router = APIRouter(prefix="/dashboard", tags=["dashboard-websocket"])
 async def constitutional_council_dashboard_websocket(
     websocket: WebSocket,
     db: AsyncSession = Depends(get_async_db),
-    token: Optional[str] = Query(None),
+    token: str | None = Query(None),
 ):
     """
     WebSocket endpoint for Constitutional Council real-time dashboard.
@@ -101,7 +101,9 @@ async def constitutional_council_dashboard_websocket(
             try:
                 # Wait for incoming messages (for potential client commands)
                 message = await websocket.receive_text()
-                await handle_websocket_message(dashboard, connection_id, message, user_id)
+                await handle_websocket_message(
+                    dashboard, connection_id, message, user_id
+                )
 
             except WebSocketDisconnect:
                 logger.info(f"WebSocket connection {connection_id} disconnected")
@@ -132,7 +134,7 @@ async def constitutional_council_dashboard_websocket(
 
 
 async def handle_websocket_message(
-    dashboard, connection_id: str, message: str, user_id: Optional[int]
+    dashboard, connection_id: str, message: str, user_id: int | None
 ) -> None:
     """Handle incoming WebSocket messages from clients."""
     try:
@@ -152,7 +154,9 @@ async def handle_websocket_message(
             if amendment_id:
                 # Add amendment to active tracking
                 dashboard.active_amendments.add(amendment_id)
-                logger.info(f"Connection {connection_id} subscribed to amendment {amendment_id}")
+                logger.info(
+                    f"Connection {connection_id} subscribed to amendment {amendment_id}"
+                )
 
         elif message_type == "unsubscribe_amendment":
             # Unsubscribe from specific amendment updates
@@ -175,7 +179,9 @@ async def handle_websocket_message(
                 amendment_id = data.get("amendment_id")
                 if amendment_id:
                     # Get detailed amendment data (would implement this method)
-                    amendment_details = await get_amendment_details(dashboard.db, amendment_id)
+                    amendment_details = await get_amendment_details(
+                        dashboard.db, amendment_id
+                    )
                     response = {
                         "type": "amendment_details",
                         "amendment_id": amendment_id,
@@ -202,7 +208,7 @@ async def handle_websocket_message(
         logger.error(f"Error handling WebSocket message: {e}")
 
 
-async def get_amendment_details(db: AsyncSession, amendment_id: int) -> Dict[str, Any]:
+async def get_amendment_details(db: AsyncSession, amendment_id: int) -> dict[str, Any]:
     """Get detailed amendment information for dashboard."""
     try:
         from app import crud
@@ -237,7 +243,9 @@ async def get_amendment_details(db: AsyncSession, amendment_id: int) -> Dict[str
                 "created_at": amendment.created_at.isoformat(),
                 "updated_at": amendment.updated_at.isoformat(),
                 "voting_deadline": (
-                    amendment.voting_deadline.isoformat() if amendment.voting_deadline else None
+                    amendment.voting_deadline.isoformat()
+                    if amendment.voting_deadline
+                    else None
                 ),
             },
             "voting_metrics": {

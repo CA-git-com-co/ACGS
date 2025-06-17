@@ -7,10 +7,11 @@ and improve system resilience in microservices architecture.
 
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +32,8 @@ class CircuitBreakerMetrics:
     successful_requests: int = 0
     failed_requests: int = 0
     state_changes: int = 0
-    last_failure_time: Optional[float] = None
-    last_success_time: Optional[float] = None
+    last_failure_time: float | None = None
+    last_success_time: float | None = None
     time_in_open_state: float = 0.0
 
     @property
@@ -87,7 +88,7 @@ class CircuitBreaker:
         self.half_open_start_time = 0.0
 
         self.metrics = CircuitBreakerMetrics()
-        self._state_change_callbacks: Dict[CircuitBreakerState, list] = {
+        self._state_change_callbacks: dict[CircuitBreakerState, list] = {
             state: [] for state in CircuitBreakerState
         }
 
@@ -238,7 +239,9 @@ class CircuitBreaker:
 
             self._notify_state_change(old_state, CircuitBreakerState.CLOSED)
 
-    def _notify_state_change(self, old_state: CircuitBreakerState, new_state: CircuitBreakerState):
+    def _notify_state_change(
+        self, old_state: CircuitBreakerState, new_state: CircuitBreakerState
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -294,7 +297,7 @@ class CircuitBreaker:
 
         logger.info("Circuit breaker reset to initial state")
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """
         Get current circuit breaker status.
 
@@ -310,7 +313,9 @@ class CircuitBreaker:
             "timeout": self.timeout,
             "last_failure_time": self.last_failure_time,
             "time_since_last_failure": (
-                current_time - self.last_failure_time if self.last_failure_time > 0 else None
+                current_time - self.last_failure_time
+                if self.last_failure_time > 0
+                else None
             ),
             "time_in_current_state": current_time - self.last_state_change,
             "metrics": {
@@ -322,7 +327,7 @@ class CircuitBreaker:
                 "state_changes": self.metrics.state_changes,
                 "time_in_open_state": self.metrics.time_in_open_state,
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     def is_healthy(self) -> bool:
@@ -350,7 +355,7 @@ class CircuitBreakerManager:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.circuit_breakers: Dict[str, CircuitBreaker] = {}
+        self.circuit_breakers: dict[str, CircuitBreaker] = {}
 
     def get_circuit_breaker(
         self,
@@ -383,14 +388,17 @@ class CircuitBreakerManager:
 
         return self.circuit_breakers[name]
 
-    def get_all_status(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_status(self) -> dict[str, dict[str, Any]]:
         """
         Get status of all circuit breakers.
 
         Returns:
             Status information for all circuit breakers
         """
-        return {name: breaker.get_status() for name, breaker in self.circuit_breakers.items()}
+        return {
+            name: breaker.get_status()
+            for name, breaker in self.circuit_breakers.items()
+        }
 
     def reset_all(self):
         # requires: Valid input parameters
@@ -400,18 +408,22 @@ class CircuitBreakerManager:
         for breaker in self.circuit_breakers.values():
             breaker.reset()
 
-    def get_unhealthy_services(self) -> List[str]:
+    def get_unhealthy_services(self) -> list[str]:
         """
         Get list of services with unhealthy circuit breakers.
 
         Returns:
             List of service names with unhealthy circuit breakers
         """
-        return [name for name, breaker in self.circuit_breakers.items() if not breaker.is_healthy()]
+        return [
+            name
+            for name, breaker in self.circuit_breakers.items()
+            if not breaker.is_healthy()
+        ]
 
 
 # Global circuit breaker manager
-_circuit_breaker_manager: Optional[CircuitBreakerManager] = None
+_circuit_breaker_manager: CircuitBreakerManager | None = None
 
 
 def get_circuit_breaker_manager() -> CircuitBreakerManager:

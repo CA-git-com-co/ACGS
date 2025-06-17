@@ -15,7 +15,6 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 # Configure logging
 logging.basicConfig(
@@ -47,7 +46,7 @@ class TestCoverageExpander:
         }
         self.test_categories = ["unit", "integration", "e2e", "anchor"]
 
-    async def execute_priority2_test_expansion(self) -> Dict:
+    async def execute_priority2_test_expansion(self) -> dict:
         """Execute comprehensive test coverage expansion."""
         logger.info("🧪 Starting ACGS-1 Priority 2 Test Coverage Expansion")
         start_time = time.time()
@@ -128,7 +127,7 @@ class TestCoverageExpander:
             results["success"] = False
             return results
 
-    async def fix_test_import_issues(self) -> Dict:
+    async def fix_test_import_issues(self) -> dict:
         """Fix critical test import path issues."""
         logger.info("🔧 Fixing test import issues...")
 
@@ -172,7 +171,7 @@ class TestCoverageExpander:
             "total_fixes": len(fixes_applied),
         }
 
-    async def fix_duplicate_test_names(self) -> List[str]:
+    async def fix_duplicate_test_names(self) -> list[str]:
         """Fix duplicate test file names causing import conflicts."""
         fixes = []
 
@@ -198,7 +197,7 @@ class TestCoverageExpander:
 
         return fixes
 
-    async def fix_missing_imports(self) -> List[str]:
+    async def fix_missing_imports(self) -> list[str]:
         """Fix missing module import issues."""
         fixes = []
 
@@ -220,7 +219,7 @@ class TestCoverageExpander:
 
         return fixes
 
-    async def clean_test_structure(self) -> Dict:
+    async def clean_test_structure(self) -> dict:
         """Clean and reorganize test structure."""
         logger.info("🧹 Cleaning test structure...")
 
@@ -245,7 +244,7 @@ class TestCoverageExpander:
             "total_quarantined": len(quarantined),
         }
 
-    async def expand_unit_tests(self) -> Dict:
+    async def expand_unit_tests(self) -> dict:
         """Expand unit test coverage for core services."""
         logger.info("🔬 Expanding unit tests...")
 
@@ -277,7 +276,7 @@ class TestCoverageExpander:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def enhance_integration_tests(self) -> Dict:
+    async def enhance_integration_tests(self) -> dict:
         """Enhance integration test coverage."""
         logger.info("🔗 Enhancing integration tests...")
 
@@ -308,7 +307,7 @@ class TestCoverageExpander:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def add_governance_workflow_tests(self) -> Dict:
+    async def add_governance_workflow_tests(self) -> dict:
         """Add comprehensive governance workflow tests."""
         logger.info("🏛️ Adding governance workflow tests...")
 
@@ -355,7 +354,7 @@ class TestCoverageExpander:
             ),
         }
 
-    async def expand_anchor_tests(self) -> Dict:
+    async def expand_anchor_tests(self) -> dict:
         """Expand Anchor program test coverage."""
         logger.info("⚓ Expanding Anchor tests...")
 
@@ -381,7 +380,7 @@ class TestCoverageExpander:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def validate_final_coverage(self) -> Dict:
+    async def validate_final_coverage(self) -> dict:
         """Validate final test coverage against target."""
         logger.info("📊 Validating final coverage...")
 
@@ -429,7 +428,7 @@ class TestCoverageExpander:
         except Exception as e:
             return {"success": False, "error": str(e), "final_coverage": 0}
 
-    async def save_coverage_report(self, results: Dict) -> None:
+    async def save_coverage_report(self, results: dict) -> None:
         """Save comprehensive coverage expansion report."""
         report_file = f"priority2_test_coverage_report_{int(time.time())}.json"
         report_path = self.project_root / "logs" / report_file
@@ -449,7 +448,7 @@ async def main():
     results = await expander.execute_priority2_test_expansion()
 
     if results.get("success", False):
-        print(f"✅ Test coverage expansion completed successfully!")
+        print("✅ Test coverage expansion completed successfully!")
         print(
             f"📈 Coverage improved from {results['initial_coverage']}% to {results['final_coverage']}%"
         )
@@ -457,7 +456,7 @@ async def main():
             print(f"🎯 Target coverage of {results['target_coverage']}% achieved!")
         else:
             print(
-                f"⚠️ Target coverage not yet achieved. Continue with additional test development."
+                "⚠️ Target coverage not yet achieved. Continue with additional test development."
             )
     else:
         print(

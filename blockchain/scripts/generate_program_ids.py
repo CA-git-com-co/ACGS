@@ -12,7 +12,7 @@ import base58
 def generate_program_id(program_name: str) -> str:
     """Generate a valid Solana program ID from a program name"""
     # Create a deterministic seed from the program name
-    seed = f"quantumagi_{program_name}".encode("utf-8")
+    seed = f"quantumagi_{program_name}".encode()
     hash_obj = hashlib.sha256(seed)
 
     # Take first 32 bytes and ensure it's a valid program ID
@@ -39,7 +39,7 @@ def main():
     # Update Anchor.toml
     anchor_toml_path = os.path.join(os.path.dirname(__file__), "..", "Anchor.toml")
 
-    with open(anchor_toml_path, "r") as f:
+    with open(anchor_toml_path) as f:
         content = f.read()
 
     # Replace program IDs in both localnet and devnet sections
@@ -67,7 +67,7 @@ def main():
     for program, file_path in program_files.items():
         full_path = os.path.join(os.path.dirname(__file__), file_path)
         if os.path.exists(full_path):
-            with open(full_path, "r") as f:
+            with open(full_path) as f:
                 content = f.read()
 
             # Replace declare_id! statements

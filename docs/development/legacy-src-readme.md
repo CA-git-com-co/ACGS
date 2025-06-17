@@ -42,14 +42,14 @@ Contains all backend microservices and shared modules:
   - Common utilities and middleware
   - Security components
 
-### `frontend/`
+### `applications/governance-dashboard/`
 React-based web application providing:
 - User interface for policy management
 - Constitutional Council dashboard
 - Governance workflow visualization
 - Administrative tools
 
-### `alphaevolve_gs_engine/`
+### `integrations/alphaevolve-engine/`
 AlphaEvolve integration engine for:
 - Evolutionary computation governance
 - Adaptive policy evolution

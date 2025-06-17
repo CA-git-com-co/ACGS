@@ -23,7 +23,7 @@ This comprehensive guide provides instructions and best practices for developers
     ```bash
     # Copy environment templates
     cp config/env/.env.example .env
-    cd src/frontend && cp .env.example .env && cd ../..
+    cd applications/legacy-frontend && cp .env.example .env && cd ../..
 
     # Configure critical variables in .env
     # - DATABASE_URL: PostgreSQL connection string
@@ -43,13 +43,13 @@ This comprehensive guide provides instructions and best practices for developers
     pip install -r tools/requirements.txt
 
     # Frontend dependencies
-    cd src/frontend && npm install && cd ../..
+    cd applications/legacy-frontend && npm install && cd ../..
     ```
 
 4.  **Start Development Environment:**
     ```bash
     # Build and start all services
-    docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
+    docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up --build -d
 
     # Load constitutional test data
     python scripts/load_test_data.py
@@ -98,7 +98,7 @@ A thorough understanding of the core data models is essential for developing new
     *   Apply migrations:
         ```bash
         docker-compose exec alembic-runner alembic upgrade head
-        # Or on service startup if `command` in docker-compose.yml for alembic-runner is set to upgrade head.
+        # Or on service startup if `command` in infrastructure/docker/docker-compose.yml for alembic-runner is set to upgrade head.
         ```
     *   Ensure `alembic/env.py` correctly imports `Base` from `shared.database` and target metadata from your models (e.g., `from shared.models import Base` and ensure all models are imported where `Base` is defined or are accessible) for autogenerate to work.
 
@@ -115,9 +115,9 @@ A thorough understanding of the core data models is essential for developing new
 
 ### Frontend Service Development (React)
 
-*   **Directory Structure (`frontend/src/`):**
+*   **Directory Structure (`applications/governance-dashboard/src/`):**
     *   `api/`: API client (Axios) and endpoint definitions.
-    *   `components/`: Reusable UI components (currently empty, to be populated). The `frontend/src/components/` directory is for reusable UI components, which are actively being developed. Detailed documentation for these components will be provided as they are finalized and stabilized.
+    *   `components/`: Reusable UI components (currently empty, to be populated). The `applications/governance-dashboard/src/components/` directory is for reusable UI components, which are actively being developed. Detailed documentation for these components will be provided as they are finalized and stabilized.
     *   `pages/`: Page-level components.
     *   `App.js`: Main router and layout structure.
     *   `index.js`: Application entry point.
@@ -140,7 +140,7 @@ A thorough understanding of the core data models is essential for developing new
 *   **Testing:**
     *   Use Jest and React Testing Library.
     *   Place tests alongside components (e.g., `MyComponent.test.js`).
-    *   Run tests: `cd frontend && npm test`.
+    *   Run tests: `cd applications/governance-dashboard && npm test`.
 
 ## 3. Contribution Workflow
 
@@ -182,7 +182,7 @@ Contributing to ACGS-PGP involves a structured workflow to ensure code quality, 
 **e. Testing Locally:**
 *   Before submitting your changes, run all relevant tests locally to ensure they pass:
     *   Backend: `python -m pytest backend/<service_name>/app/tests/` (or run all tests).
-    *   Frontend: `cd frontend && npm test`.
+    *   Frontend: `cd applications/governance-dashboard && npm test`.
 *   Confirm that linters and formatters (via pre-commit hooks) are clean.
 
 **f. Committing Changes:**
@@ -267,7 +267,7 @@ Developing features often requires one backend service to call another. Understa
 Inter-service communication within the ACGS-PGP system is primarily synchronous, using RESTful APIs over HTTP/JSON. Each service exposes endpoints that others can call to request data or trigger actions.
 
 **b. Service Addressing:**
-*   **Local Development (Docker Compose):** Services are typically addressed via the Nginx API Gateway defined in `docker-compose.yml`. The base URL is usually `http://nginx:<port>/api/<service-prefix>/` from within the Docker network (where `<port>` is Nginx's internal port, often 80), or `http://localhost:8000/api/<service-prefix>/` when accessed from the host machine. The Nginx gateway routes requests to the appropriate backend service based on the path prefix (e.g., `/api/auth` to `auth_service`, `/api/pgc` to `pgc_service`).
+*   **Local Development (Docker Compose):** Services are typically addressed via the Nginx API Gateway defined in `infrastructure/docker/docker-compose.yml`. The base URL is usually `http://nginx:<port>/api/<service-prefix>/` from within the Docker network (where `<port>` is Nginx's internal port, often 80), or `http://localhost:8000/api/<service-prefix>/` when accessed from the host machine. The Nginx gateway routes requests to the appropriate backend service based on the path prefix (e.g., `/api/auth` to `auth_service`, `/api/pgc` to `pgc_service`).
 *   **Kubernetes Deployment:** In Kubernetes, services are typically addressed via their Kubernetes service names (e.g., `http://auth-service.namespace.svc.cluster.local/api/auth/`) for direct internal calls, or through an Ingress controller which acts as the API gateway for external and potentially internal traffic.
 
 **c. Request/Response Conventions:**
@@ -357,10 +357,10 @@ This section provides practical advice for debugging common issues encountered d
 **b. Docker Compose Specific Issues:**
 
 *   **Service Connectivity:**
-    *   Ensure environment variables for service connections (e.g., `DATABASE_URL` in a backend service's `.env` or its Docker environment block in `docker-compose.yml`) use the correct Docker Compose service names (e.g., `postgres`, `auth_service`) as hostnames, not `localhost` or `127.0.0.1`. Refer to `docker-compose.yml` for defined service names.
+    *   Ensure environment variables for service connections (e.g., `DATABASE_URL` in a backend service's `.env` or its Docker environment block in `infrastructure/docker/docker-compose.yml`) use the correct Docker Compose service names (e.g., `postgres`, `auth_service`) as hostnames, not `localhost` or `127.0.0.1`. Refer to `infrastructure/docker/docker-compose.yml` for defined service names.
     *   See also `docs/deployment.md` "Troubleshooting" for more on `DATABASE_URL`.
-*   **Port Conflicts:** If a service fails to start, check if the host ports it's trying to use (e.g., `8000:8000` for Nginx, `3000:3000` for frontend) are already in use by another application on your machine. Change the host port in `docker-compose.yml` if necessary (e.g., `8001:8000`).
-*   **Volume Issues:** Ensure volume mounts in `docker-compose.yml` are correctly configured, especially paths to shared code or configuration files. Incorrect paths can lead to "file not found" errors or outdated code running in containers.
+*   **Port Conflicts:** If a service fails to start, check if the host ports it's trying to use (e.g., `8000:8000` for Nginx, `3000:3000` for frontend) are already in use by another application on your machine. Change the host port in `infrastructure/docker/docker-compose.yml` if necessary (e.g., `8001:8000`).
+*   **Volume Issues:** Ensure volume mounts in `infrastructure/docker/docker-compose.yml` are correctly configured, especially paths to shared code or configuration files. Incorrect paths can lead to "file not found" errors or outdated code running in containers.
 *   **Service Status:** Check the status of all services:
     ```bash
     docker-compose ps
@@ -368,14 +368,14 @@ This section provides practical advice for debugging common issues encountered d
     Ensure all essential services (like `postgres`, `nginx`, and the service you're working on) are `Up` or `Running`.
 *   **Rebuilding Images:** If you've made changes to a `Dockerfile` or files copied during the image build, they might not be reflected unless you rebuild the image.
     ```bash
-    docker-compose up --build -d <service_name> # Rebuild specific service
-    docker-compose up --build -d                # Rebuild all services
+    docker-compose -f infrastructure/docker/docker-compose.yml up --build -d <service_name> # Rebuild specific service
+    docker-compose -f infrastructure/docker/docker-compose.yml up --build -d                # Rebuild all services
     ```
 *   **Resource Limits:** Docker Desktop (or other Docker environments) may have resource limits (CPU, memory). If services are slow or crashing unexpectedly, check these settings.
 
 **c. Kubernetes Specific Issues (Brief Overview):**
 
-For detailed Kubernetes troubleshooting, always refer to `k8s/README.md` and the "Troubleshooting" section in `docs/deployment.md`.
+For detailed Kubernetes troubleshooting, always refer to `infrastructure/kubernetes/README.md` and the "Troubleshooting" section in `docs/deployment.md`.
 
 *   **Pod Startup Errors:** Use `kubectl describe pod <pod_name>` to get detailed information about a pod's state, including events that might indicate why it's not starting (e.g., image pull errors, readiness/liveness probe failures, ConfigMap/Secret mounting issues).
 *   **Cluster Events:** Check for cluster-level issues or events related to your application:
@@ -397,7 +397,7 @@ For detailed Kubernetes troubleshooting, always refer to `k8s/README.md` and the
         ```bash
         docker-compose exec alembic-runner alembic revision -m "your_migration_message" --autogenerate
         ```
-    *   **Migrations Not Applied:** Ensure migrations are applied when services start (as configured for `alembic-runner` in `docker-compose.yml`) or by running manually:
+    *   **Migrations Not Applied:** Ensure migrations are applied when services start (as configured for `alembic-runner` in `infrastructure/docker/docker-compose.yml`) or by running manually:
         ```bash
         docker-compose exec alembic-runner alembic upgrade head
         ```
@@ -407,7 +407,7 @@ For detailed Kubernetes troubleshooting, always refer to `k8s/README.md` and the
 **e. Frontend Service Issues (React):**
 
 *   **API Connectivity:**
-    *   Verify `REACT_APP_API_BASE_URL` in `frontend/.env` is correctly set to point to your API gateway (e.g., `http://localhost:8000/api` for local Docker Compose setup).
+    *   Verify `REACT_APP_API_BASE_URL` in `applications/governance-dashboard/.env` is correctly set to point to your API gateway (e.g., `http://localhost:8000/api` for local Docker Compose setup).
     *   Use the browser's Network tab to inspect failed API calls. Check the request URL, headers, payload, and response status code and body.
     *   If using Nginx as a proxy (common in Docker Compose), check Nginx logs for errors: `docker-compose logs nginx`.
 *   **JavaScript Errors:** Open the browser's JavaScript console to check for runtime errors, unhandled promise rejections, etc.

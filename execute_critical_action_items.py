@@ -21,9 +21,9 @@ import json
 import logging
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Import our custom modules
 sys.path.append(str(Path(__file__).parent))
@@ -50,8 +50,8 @@ class ACGSCriticalExecutor:
         self.dry_run = dry_run
         self.project_root = Path(__file__).parent
         self.execution_report = {
-            "execution_id": f"acgs_critical_master_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
-            "start_time": datetime.now(timezone.utc).isoformat(),
+            "execution_id": f"acgs_critical_master_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}",
+            "start_time": datetime.now(UTC).isoformat(),
             "dry_run": dry_run,
             "phases_executed": {},
             "overall_metrics": {
@@ -66,7 +66,7 @@ class ACGSCriticalExecutor:
             "overall_success_rate": 0.0,
         }
 
-    async def execute_all_phases(self) -> Dict[str, Any]:
+    async def execute_all_phases(self) -> dict[str, Any]:
         """Execute all critical action item phases."""
         logger.info("🚀 ACGS-1 Critical Action Items - Master Execution Starting")
         logger.info(f"Execution ID: {self.execution_report['execution_id']}")
@@ -108,7 +108,7 @@ class ACGSCriticalExecutor:
                     ),
                     "duration_seconds": phase_duration,
                     "details": phase_result,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
 
                 if phase_result.get("success", False):
@@ -128,7 +128,7 @@ class ACGSCriticalExecutor:
                     "status": "CRASHED",
                     "duration_seconds": time.time() - phase_start,
                     "error": str(e),
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
 
         # Calculate overall success metrics
@@ -139,7 +139,7 @@ class ACGSCriticalExecutor:
 
         return self.execution_report
 
-    async def execute_phase1(self) -> Dict[str, Any]:
+    async def execute_phase1(self) -> dict[str, Any]:
         """Execute Phase 1: Critical Infrastructure Fixes."""
         coordinator = CriticalActionItemsCoordinator()
         result = await coordinator.phase1_infrastructure_fixes()
@@ -152,7 +152,7 @@ class ACGSCriticalExecutor:
 
         return result
 
-    async def execute_phase2(self) -> Dict[str, Any]:
+    async def execute_phase2(self) -> dict[str, Any]:
         """Execute Phase 2: Enhanced Testing Infrastructure."""
         testing_infra = EnhancedTestingInfrastructure()
         result = await testing_infra.run_comprehensive_testing()
@@ -168,7 +168,7 @@ class ACGSCriticalExecutor:
 
         return {"success": True, "details": result}
 
-    async def execute_phase3(self) -> Dict[str, Any]:
+    async def execute_phase3(self) -> dict[str, Any]:
         """Execute Phase 3: Performance Optimization."""
         optimizer = PerformanceOptimizer()
         result = await optimizer.run_all_optimizations()
@@ -185,7 +185,7 @@ class ACGSCriticalExecutor:
 
         return {"success": True, "details": result}
 
-    async def execute_phase4(self) -> Dict[str, Any]:
+    async def execute_phase4(self) -> dict[str, Any]:
         """Execute Phase 4: Security Hardening."""
         coordinator = CriticalActionItemsCoordinator()
         result = await coordinator.phase4_security_hardening()
@@ -196,13 +196,13 @@ class ACGSCriticalExecutor:
 
         return result
 
-    async def execute_phase5(self) -> Dict[str, Any]:
+    async def execute_phase5(self) -> dict[str, Any]:
         """Execute Phase 5: Final Validation & Documentation."""
         coordinator = CriticalActionItemsCoordinator()
         result = await coordinator.phase5_documentation_validation()
         return result
 
-    async def simulate_phase(self, phase_num: int, phase_name: str) -> Dict[str, Any]:
+    async def simulate_phase(self, phase_num: int, phase_name: str) -> dict[str, Any]:
         """Simulate phase execution for dry run mode."""
         logger.info(f"🔍 SIMULATING: {phase_name}")
 
@@ -245,7 +245,7 @@ class ACGSCriticalExecutor:
         }
 
         criteria_met = 0
-        for criterion, values in criteria.items():
+        for _criterion, values in criteria.items():
             if values.get("lower_is_better", False):
                 # For metrics where lower is better (cost, response time)
                 if values["achieved"] <= values["threshold"]:
@@ -266,7 +266,7 @@ class ACGSCriticalExecutor:
 
     async def generate_final_report(self) -> None:
         """Generate comprehensive final execution report."""
-        self.execution_report["end_time"] = datetime.now(timezone.utc).isoformat()
+        self.execution_report["end_time"] = datetime.now(UTC).isoformat()
 
         # Save detailed report
         report_path = (

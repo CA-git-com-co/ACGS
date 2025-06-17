@@ -193,7 +193,7 @@ class ACGSReorganizer:
         for compose_file in compose_files:
             file_path = self.project_root / compose_file
             if file_path.exists():
-                with open(file_path, "r") as f:
+                with open(file_path) as f:
                     content = f.read()
 
                 # Update build contexts and volume mounts
@@ -211,7 +211,7 @@ class ACGSReorganizer:
 
         # Find all Python files
         python_files = []
-        for root, dirs, files in os.walk(self.project_root):
+        for root, _dirs, files in os.walk(self.project_root):
             # Skip backup and build directories
             if any(
                 skip in root
@@ -225,7 +225,7 @@ class ACGSReorganizer:
 
         for py_file in python_files:
             try:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     content = f.read()
 
                 original_content = content
@@ -262,7 +262,7 @@ class ACGSReorganizer:
 
         # Find all Dockerfiles
         dockerfiles = []
-        for root, dirs, files in os.walk(self.project_root):
+        for root, _dirs, files in os.walk(self.project_root):
             if any(skip in root for skip in ["backup", "target", "node_modules"]):
                 continue
             for file in files:
@@ -271,7 +271,7 @@ class ACGSReorganizer:
 
         for dockerfile in dockerfiles:
             try:
-                with open(dockerfile, "r") as f:
+                with open(dockerfile) as f:
                     content = f.read()
 
                 original_content = content

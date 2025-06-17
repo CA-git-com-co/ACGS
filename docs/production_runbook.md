@@ -80,7 +80,7 @@ df -h
 docker exec acgs_postgres_db pg_isready -U acgs_user
 
 # 4. Full system restart if necessary
-docker-compose down && docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml down && docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 #### Scenario 2: High Response Times
@@ -108,7 +108,7 @@ docker stats
 **Mitigation Actions:**
 ```bash
 # 1. Scale up if resource constrained
-docker-compose up -d --scale auth_service=2
+docker-compose -f infrastructure/docker/docker-compose.yml up -d --scale auth_service=2
 
 # 2. Clear connection pools
 docker-compose restart auth_service ac_service
@@ -220,8 +220,8 @@ docker exec acgs_postgres_db pg_dump -U acgs_user acgs_pgp_db > backup_$(date +%
 
 # 3. Update service
 git pull origin main
-docker-compose build service_name
-docker-compose up -d service_name
+docker-compose -f infrastructure/docker/docker-compose.yml build service_name
+docker-compose -f infrastructure/docker/docker-compose.yml up -d service_name
 
 # 4. Verify deployment
 ./scripts/validate_production_deployment.sh
@@ -250,7 +250,7 @@ docker exec acgs_postgres_db psql -U acgs_user -d acgs_pgp_db -c "SELECT scheman
 #### Complete System Recovery
 ```bash
 # 1. Stop all services
-docker-compose down
+docker-compose -f infrastructure/docker/docker-compose.yml down
 
 # 2. Check system resources
 df -h
@@ -264,7 +264,7 @@ docker system prune -f
 docker exec acgs_postgres_db psql -U acgs_user -d acgs_pgp_db < backup_latest.sql
 
 # 5. Start services
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # 6. Validate deployment
 ./scripts/validate_production_deployment.sh
@@ -287,7 +287,7 @@ docker exec acgs_postgres_db psql -U acgs_user -d acgs_pgp_db < backup_known_goo
 docker-compose run --rm alembic-runner alembic upgrade head
 
 # 5. Restart services
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 ## Performance Optimization
@@ -320,7 +320,7 @@ docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
 curl -s "http://localhost:9090/api/v1/query?query=increase(container_memory_usage_bytes{name=~'acgs_.*'}[1h])"
 
 # 3. Optimize connection pools
-# Edit docker-compose.yml to adjust pool sizes
+# Edit infrastructure/docker/docker-compose.yml to adjust pool sizes
 DATABASE_POOL_SIZE=30
 DATABASE_MAX_OVERFLOW=50
 

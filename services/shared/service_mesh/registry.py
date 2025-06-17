@@ -9,7 +9,6 @@ import logging
 import os
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +50,9 @@ class ServiceConfig:
     retry_attempts: int = 3
     circuit_breaker_threshold: int = 5
     circuit_breaker_timeout: float = 60.0
-    rate_limit: Optional[int] = None
+    rate_limit: int | None = None
     authentication_required: bool = True
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
     @property
     def api_base_url(self) -> str:
@@ -79,7 +78,7 @@ class ServiceRegistry:
         # ensures: Correct function execution
         # sha256: func_hash
         self.environment = environment
-        self._services: Dict[ServiceType, ServiceConfig] = {}
+        self._services: dict[ServiceType, ServiceConfig] = {}
         self._load_default_configurations()
         self._load_environment_overrides()
 
@@ -179,9 +178,13 @@ class ServiceRegistry:
                         self._services[service_type].port = port
                         # Update base_url if using localhost
                         if "localhost" in self._services[service_type].base_url:
-                            self._services[service_type].base_url = f"http://localhost:{port}"
+                            self._services[service_type].base_url = (
+                                f"http://localhost:{port}"
+                            )
                 except ValueError:
-                    logger.warning(f"Invalid port value for {port_key}: {os.environ[port_key]}")
+                    logger.warning(
+                        f"Invalid port value for {port_key}: {os.environ[port_key]}"
+                    )
 
     def register_service(self, service_type: ServiceType, config: ServiceConfig):
         # requires: Valid input parameters
@@ -197,7 +200,7 @@ class ServiceRegistry:
         self._services[service_type] = config
         logger.info(f"Registered service {service_type.value}: {config.base_url}")
 
-    def get_service_config(self, service_type: ServiceType) -> Optional[ServiceConfig]:
+    def get_service_config(self, service_type: ServiceType) -> ServiceConfig | None:
         """
         Get configuration for a specific service.
 
@@ -209,7 +212,7 @@ class ServiceRegistry:
         """
         return self._services.get(service_type)
 
-    def get_service_url(self, service_type: ServiceType) -> Optional[str]:
+    def get_service_url(self, service_type: ServiceType) -> str | None:
         """
         Get base URL for a specific service.
 
@@ -222,7 +225,7 @@ class ServiceRegistry:
         config = self.get_service_config(service_type)
         return config.base_url if config else None
 
-    def get_api_url(self, service_type: ServiceType) -> Optional[str]:
+    def get_api_url(self, service_type: ServiceType) -> str | None:
         """
         Get API base URL for a specific service.
 
@@ -235,7 +238,7 @@ class ServiceRegistry:
         config = self.get_service_config(service_type)
         return config.api_base_url if config else None
 
-    def list_services(self, tags: Optional[List[str]] = None) -> List[ServiceConfig]:
+    def list_services(self, tags: list[str] | None = None) -> list[ServiceConfig]:
         """
         List all registered services, optionally filtered by tags.
 
@@ -256,7 +259,7 @@ class ServiceRegistry:
 
         return services
 
-    def get_services_by_tag(self, tag: str) -> List[ServiceConfig]:
+    def get_services_by_tag(self, tag: str) -> list[ServiceConfig]:
         """
         Get all services with a specific tag.
 
@@ -302,7 +305,7 @@ class ServiceRegistry:
 
         return True
 
-    def get_environment_info(self) -> Dict[str, any]:
+    def get_environment_info(self) -> dict[str, any]:
         """
         Get information about the current environment configuration.
 
@@ -324,10 +327,10 @@ class ServiceRegistry:
 
 
 # Global service registry instance
-_registry: Optional[ServiceRegistry] = None
+_registry: ServiceRegistry | None = None
 
 
-def get_service_registry(environment: Optional[Environment] = None) -> ServiceRegistry:
+def get_service_registry(environment: Environment | None = None) -> ServiceRegistry:
     """
     Get the global service registry instance.
 

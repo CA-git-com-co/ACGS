@@ -10,8 +10,9 @@ import json
 import logging
 import time
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Callable, Dict
+from collections.abc import Callable
+from datetime import UTC, datetime
+from typing import Any
 
 from fastapi import HTTPException, Request, Response
 from fastapi.responses import JSONResponse
@@ -79,7 +80,7 @@ class PerformanceMonitoringMiddleware(BaseHTTPMiddleware):
         # Add performance headers
         response.headers["X-Response-Time"] = f"{response_time_ms:.2f}ms"
         response.headers["X-Service"] = self.service_name
-        response.headers["X-Timestamp"] = datetime.now(timezone.utc).isoformat()
+        response.headers["X-Timestamp"] = datetime.now(UTC).isoformat()
 
         # Log performance metrics
         logger.info(
@@ -136,7 +137,9 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
 
         api_response = APIResponse(
             status=APIStatus.ERROR,
-            error=APIError(code=error_code, message=exc.detail, correlation_id=correlation_id),
+            error=APIError(
+                code=error_code, message=exc.detail, correlation_id=correlation_id
+            ),
             metadata=APIMetadata(
                 service_name=self.service_name,
                 correlation_id=correlation_id,
@@ -210,7 +213,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             "query_params": str(request.query_params),
             "client_ip": request.client.host if request.client else "unknown",
             "user_agent": request.headers.get("user-agent", "unknown"),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         logger.info(f"API Request: {json.dumps(request_data)}")
@@ -224,7 +227,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             "correlation_id": correlation_id,
             "status_code": response.status_code,
             "response_time_ms": getattr(request.state, "response_time_ms", None),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         logger.info(f"API Response: {json.dumps(response_data)}")
@@ -282,7 +285,7 @@ def add_production_middleware(app, service_name: str):
     logger.info(f"Production middleware added to {service_name}")
 
 
-def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
+def create_exception_handlers(service_name: str) -> dict[Any, Callable]:
     """
     Create standardized exception handlers for FastAPI applications.
 
@@ -315,7 +318,9 @@ def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
 
         api_response = APIResponse(
             status=APIStatus.ERROR,
-            error=APIError(code=error_code, message=exc.detail, correlation_id=correlation_id),
+            error=APIError(
+                code=error_code, message=exc.detail, correlation_id=correlation_id
+            ),
             metadata=APIMetadata(
                 service_name=service_name,
                 correlation_id=correlation_id,
@@ -342,10 +347,14 @@ def create_exception_handlers(service_name: str) -> Dict[Any, Callable]:
                 details={"validation_errors": exc.errors()},
                 correlation_id=correlation_id,
             ),
-            metadata=APIMetadata(service_name=service_name, correlation_id=correlation_id),
+            metadata=APIMetadata(
+                service_name=service_name, correlation_id=correlation_id
+            ),
         )
 
-        return JSONResponse(status_code=422, content=serialize_api_response(api_response))
+        return JSONResponse(
+            status_code=422, content=serialize_api_response(api_response)
+        )
 
     return {
         HTTPException: http_exception_handler,

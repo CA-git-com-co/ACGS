@@ -8,8 +8,7 @@ vulnerabilities in the ACGS-PGP governance synthesis engine.
 import json
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Dict, List
+from datetime import UTC, datetime
 
 import aiohttp
 
@@ -76,8 +75,8 @@ class PolicyPoisoningDetector:
         }
 
     async def run_tests(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run policy synthesis poisoning detection tests."""
         vulnerabilities = []
 
@@ -109,9 +108,9 @@ class PolicyPoisoningDetector:
         self,
         vector: str,
         gs_endpoint: str,
-        available_services: List[str],
-        service_endpoints: Dict[str, str],
-    ) -> List[VulnerabilityResult]:
+        available_services: list[str],
+        service_endpoints: dict[str, str],
+    ) -> list[VulnerabilityResult]:
         """Test a specific policy poisoning vector."""
 
         if vector == "malicious_policy_injection":
@@ -135,7 +134,7 @@ class PolicyPoisoningDetector:
 
     async def _test_malicious_policy_injection(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test malicious policy injection attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -204,7 +203,7 @@ class PolicyPoisoningDetector:
                                                 else 7.0
                                             ),
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(timezone.utc),
+                                            timestamp=datetime.now(UTC),
                                         )
                                     )
 
@@ -215,7 +214,7 @@ class PolicyPoisoningDetector:
 
     async def _test_synthesis_process_manipulation(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test synthesis process manipulation attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -292,7 +291,7 @@ class PolicyPoisoningDetector:
                                         ],
                                         cvss_score=7.5,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(timezone.utc),
+                                        timestamp=datetime.now(UTC),
                                     )
                                 )
 
@@ -303,7 +302,7 @@ class PolicyPoisoningDetector:
 
     async def _test_llm_prompt_poisoning(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test LLM prompt poisoning attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -362,7 +361,7 @@ class PolicyPoisoningDetector:
                                         ],
                                         cvss_score=8.0,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(timezone.utc),
+                                        timestamp=datetime.now(UTC),
                                     )
                                 )
 
@@ -373,7 +372,7 @@ class PolicyPoisoningDetector:
 
     async def _test_policy_template_corruption(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test policy template corruption attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -443,7 +442,7 @@ class PolicyPoisoningDetector:
                                         ],
                                         cvss_score=7.5,
                                         execution_time_ms=execution_time,
-                                        timestamp=datetime.now(timezone.utc),
+                                        timestamp=datetime.now(UTC),
                                     )
                                 )
 
@@ -452,7 +451,7 @@ class PolicyPoisoningDetector:
 
         return vulnerabilities
 
-    def _contains_malicious_content(self, response_data: Dict, payload: str) -> bool:
+    def _contains_malicious_content(self, response_data: dict, payload: str) -> bool:
         """Check if response contains malicious content."""
         response_str = json.dumps(response_data).lower()
         payload_lower = payload.lower()
@@ -478,7 +477,7 @@ class PolicyPoisoningDetector:
 
         return any(pattern in response_str for pattern in malicious_patterns)
 
-    def _detect_process_manipulation(self, response_data: Dict, payload: Dict) -> bool:
+    def _detect_process_manipulation(self, response_data: dict, payload: dict) -> bool:
         """Detect if synthesis process was manipulated."""
         # Check if response indicates parameter manipulation was successful
         response_str = json.dumps(response_data).lower()
@@ -496,7 +495,7 @@ class PolicyPoisoningDetector:
         return any(indicator in response_str for indicator in manipulation_indicators)
 
     def _detect_prompt_injection_success(
-        self, response_data: Dict, injection: str
+        self, response_data: dict, injection: str
     ) -> bool:
         """Detect if prompt injection was successful."""
         response_str = json.dumps(response_data).lower()
@@ -514,7 +513,7 @@ class PolicyPoisoningDetector:
 
         return any(indicator in response_str for indicator in success_indicators)
 
-    def _detect_template_corruption(self, response_data: Dict, payload: Dict) -> bool:
+    def _detect_template_corruption(self, response_data: dict, payload: dict) -> bool:
         """Detect if template corruption was successful."""
         response_str = json.dumps(response_data).lower()
 
@@ -532,28 +531,28 @@ class PolicyPoisoningDetector:
 
     async def _test_context_injection_attack(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test context injection attacks."""
         # Implementation for context injection testing
         return []
 
     async def _test_rule_logic_manipulation(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test rule logic manipulation attacks."""
         # Implementation for rule logic manipulation testing
         return []
 
     async def _test_output_format_corruption(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test output format corruption attacks."""
         # Implementation for output format corruption testing
         return []
 
     async def _test_semantic_drift_injection(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test semantic drift injection attacks."""
         # Implementation for semantic drift injection testing
         return []

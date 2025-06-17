@@ -10,16 +10,12 @@ import asyncio
 import inspect
 import logging
 import weakref
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import (
     Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Type,
     TypeVar,
     Union,
     get_args,
@@ -45,12 +41,12 @@ class Scope(Enum):
 class ServiceRegistration:
     """Service registration information."""
 
-    interface: Type
-    implementation: Type
+    interface: type
+    implementation: type
     scope: Scope
-    factory: Optional[Callable] = None
-    instance: Optional[Any] = None
-    dependencies: List[Type] = field(default_factory=list)
+    factory: Callable | None = None
+    instance: Any | None = None
+    dependencies: list[type] = field(default_factory=list)
     initialized: bool = False
 
 
@@ -61,8 +57,8 @@ class LifecycleManager:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self._startup_callbacks: List[Callable] = []
-        self._shutdown_callbacks: List[Callable] = []
+        self._startup_callbacks: list[Callable] = []
+        self._shutdown_callbacks: list[Callable] = []
         self._instances: weakref.WeakSet = weakref.WeakSet()
 
     def add_startup_callback(self, callback: Callable):
@@ -117,7 +113,9 @@ class LifecycleManager:
 
         # Cleanup instances
         for instance in list(self._instances):
-            if hasattr(instance, "close") and asyncio.iscoroutinefunction(instance.close):
+            if hasattr(instance, "close") and asyncio.iscoroutinefunction(
+                instance.close
+            ):
                 try:
                     await instance.close()
                 except Exception as e:
@@ -136,19 +134,19 @@ class DIContainer:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self._services: Dict[Type, ServiceRegistration] = {}
-        self._instances: Dict[Type, Any] = {}
-        self._scoped_instances: Dict[str, Dict[Type, Any]] = {}
+        self._services: dict[type, ServiceRegistration] = {}
+        self._instances: dict[type, Any] = {}
+        self._scoped_instances: dict[str, dict[type, Any]] = {}
         self._lifecycle_manager = LifecycleManager()
-        self._current_scope: Optional[str] = None
+        self._current_scope: str | None = None
         self._resolving: set = set()  # Circular dependency detection
 
     def register(
         self,
-        interface: Type[T],
-        implementation: Optional[Type[T]] = None,
+        interface: type[T],
+        implementation: type[T] | None = None,
         scope: Scope = Scope.TRANSIENT,
-        factory: Optional[Callable[[], T]] = None,
+        factory: Callable[[], T] | None = None,
     ) -> "DIContainer":
         """
         Register a service with the container.
@@ -182,36 +180,40 @@ class DIContainer:
         )
 
         self._services[interface] = registration
-        logger.debug(f"Registered {interface} -> {implementation or factory} ({scope.value})")
+        logger.debug(
+            f"Registered {interface} -> {implementation or factory} ({scope.value})"
+        )
 
         return self
 
     def register_singleton(
-        self, interface: Type[T], implementation: Type[T] = None
+        self, interface: type[T], implementation: type[T] = None
     ) -> "DIContainer":
         """Register a singleton service."""
         return self.register(interface, implementation, Scope.SINGLETON)
 
     def register_transient(
-        self, interface: Type[T], implementation: Type[T] = None
+        self, interface: type[T], implementation: type[T] = None
     ) -> "DIContainer":
         """Register a transient service."""
         return self.register(interface, implementation, Scope.TRANSIENT)
 
-    def register_scoped(self, interface: Type[T], implementation: Type[T] = None) -> "DIContainer":
+    def register_scoped(
+        self, interface: type[T], implementation: type[T] = None
+    ) -> "DIContainer":
         """Register a scoped service."""
         return self.register(interface, implementation, Scope.SCOPED)
 
     def register_factory(
         self,
-        interface: Type[T],
+        interface: type[T],
         factory: Callable[[], T],
         scope: Scope = Scope.TRANSIENT,
     ) -> "DIContainer":
         """Register a factory function."""
         return self.register(interface, None, scope, factory)
 
-    def register_instance(self, interface: Type[T], instance: T) -> "DIContainer":
+    def register_instance(self, interface: type[T], instance: T) -> "DIContainer":
         """Register a pre-created instance."""
         registration = ServiceRegistration(
             interface=interface,
@@ -228,7 +230,7 @@ class DIContainer:
         logger.debug(f"Registered instance {interface} -> {instance}")
         return self
 
-    def _analyze_dependencies(self, implementation: Type) -> List[Type]:
+    def _analyze_dependencies(self, implementation: type) -> list[type]:
         """Analyze constructor dependencies."""
         dependencies = []
 
@@ -260,7 +262,7 @@ class DIContainer:
 
         return dependencies
 
-    def resolve(self, interface: Type[T]) -> T:
+    def resolve(self, interface: type[T]) -> T:
         """
         Resolve a service instance.
 
@@ -330,7 +332,9 @@ class DIContainer:
             instance = registration.implementation(*dependencies)
 
             # Call initialization if available
-            if hasattr(instance, "initialize") and asyncio.iscoroutinefunction(instance.initialize):
+            if hasattr(instance, "initialize") and asyncio.iscoroutinefunction(
+                instance.initialize
+            ):
                 # Schedule async initialization
                 asyncio.create_task(instance.initialize())
             elif hasattr(instance, "initialize"):
@@ -340,7 +344,7 @@ class DIContainer:
 
         raise ValueError(f"Cannot create instance for {registration.interface}")
 
-    def try_resolve(self, interface: Type[T]) -> Optional[T]:
+    def try_resolve(self, interface: type[T]) -> T | None:
         """
         Try to resolve a service, returning None if not registered.
 
@@ -355,11 +359,11 @@ class DIContainer:
         except ValueError:
             return None
 
-    def is_registered(self, interface: Type) -> bool:
+    def is_registered(self, interface: type) -> bool:
         """Check if a service is registered."""
         return interface in self._services
 
-    def get_registrations(self) -> Dict[Type, ServiceRegistration]:
+    def get_registrations(self) -> dict[type, ServiceRegistration]:
         """Get all service registrations."""
         return self._services.copy()
 
@@ -384,7 +388,9 @@ class DIContainer:
             if scope_name in self._scoped_instances:
                 scoped_instances = self._scoped_instances[scope_name]
                 for instance in scoped_instances.values():
-                    if hasattr(instance, "close") and asyncio.iscoroutinefunction(instance.close):
+                    if hasattr(instance, "close") and asyncio.iscoroutinefunction(
+                        instance.close
+                    ):
                         try:
                             await instance.close()
                         except Exception as e:
@@ -415,7 +421,7 @@ class DIContainer:
 
         logger.info("DI Container shutdown")
 
-    def validate_registrations(self) -> List[str]:
+    def validate_registrations(self) -> list[str]:
         """
         Validate all service registrations for missing dependencies.
 
@@ -427,11 +433,13 @@ class DIContainer:
         for interface, registration in self._services.items():
             for dep_type in registration.dependencies:
                 if not self.is_registered(dep_type):
-                    errors.append(f"Service {interface} depends on unregistered {dep_type}")
+                    errors.append(
+                        f"Service {interface} depends on unregistered {dep_type}"
+                    )
 
         return errors
 
-    def get_dependency_graph(self) -> Dict[Type, List[Type]]:
+    def get_dependency_graph(self) -> dict[type, list[type]]:
         """
         Get the dependency graph for all registered services.
 
@@ -445,7 +453,7 @@ class DIContainer:
 
 
 # Global DI container instance
-_container: Optional[DIContainer] = None
+_container: DIContainer | None = None
 
 
 def get_container() -> DIContainer:

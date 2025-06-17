@@ -359,7 +359,7 @@ class ResearchInfrastructureSetup:
         print(f"  • Research Service API: {self.research_service_url}")
         print(f"  • API Documentation: {self.research_service_url}/docs")
         print(f"  • Health Check: {self.research_service_url}/health")
-        print(f"  • Via Nginx Gateway: http://localhost:8000/api/research/")
+        print("  • Via Nginx Gateway: http://localhost:8000/api/research/")
         print("\n📊 Automated Pipelines:")
         print("  • Constitutional Compliance: Daily at 2 AM")
         print("  • LLM Reliability Testing: Weekly on Monday at 6 AM")

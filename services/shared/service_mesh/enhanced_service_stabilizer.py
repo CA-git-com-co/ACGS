@@ -13,21 +13,21 @@ Targets: >99.5% availability, <2s response times, zero-downtime deployments
 """
 
 import asyncio
-import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any
 
 import httpx
 
-from .common_types import ServiceInstance, ServiceType
+from .common_types import ServiceType
 from .discovery import ServiceDiscovery
 from .failover_circuit_breaker import FailoverConfig, FailoverManager, FailoverStrategy
 from .performance_monitor import PerformanceMonitor, get_performance_monitor
-from .registry import ServiceRegistry, get_service_registry
+from .registry import get_service_registry
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class StabilizationConfig:
     failover_enabled: bool = True
     load_balancing: bool = True
     metrics_retention_hours: int = 24
-    alert_thresholds: Dict[str, float] = field(
+    alert_thresholds: dict[str, float] = field(
         default_factory=lambda: {
             "response_time_ms": 2000,
             "error_rate_percent": 1.0,
@@ -76,10 +76,10 @@ class ServiceHealth:
     error_rate_percent: float
     last_check: datetime
     consecutive_failures: int
-    performance_metrics: Dict[str, Any]
+    performance_metrics: dict[str, Any]
     dependencies_healthy: bool
     predicted_failure_risk: float  # 0.0 to 1.0
-    recommendations: List[str]
+    recommendations: list[str]
 
 
 class EnhancedServiceStabilizer:
@@ -90,7 +90,7 @@ class EnhancedServiceStabilizer:
     failure detection, intelligent failover, and performance optimization.
     """
 
-    def __init__(self, config: Optional[StabilizationConfig] = None):
+    def __init__(self, config: StabilizationConfig | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -101,17 +101,17 @@ class EnhancedServiceStabilizer:
         self.service_discovery = ServiceDiscovery()
 
         # Service health tracking
-        self.service_health: Dict[ServiceType, ServiceHealth] = {}
-        self.health_history: Dict[ServiceType, List[ServiceHealth]] = {}
+        self.service_health: dict[ServiceType, ServiceHealth] = {}
+        self.health_history: dict[ServiceType, list[ServiceHealth]] = {}
 
         # Monitoring and alerting
-        self.performance_monitor: Optional[PerformanceMonitor] = None
-        self.alert_callbacks: List[Callable[[str, Dict[str, Any]], None]] = []
+        self.performance_monitor: PerformanceMonitor | None = None
+        self.alert_callbacks: list[Callable[[str, dict[str, Any]], None]] = []
 
         # Stabilization state
         self.running = False
-        self.stabilization_tasks: List[asyncio.Task] = []
-        self.http_client: Optional[httpx.AsyncClient] = None
+        self.stabilization_tasks: list[asyncio.Task] = []
+        self.http_client: httpx.AsyncClient | None = None
 
         # Metrics
         self.stabilization_metrics = {
@@ -251,7 +251,9 @@ class EnhancedServiceStabilizer:
 
         try:
             # Perform health check
-            response = await self.http_client.get(config.health_url, timeout=config.timeout)
+            response = await self.http_client.get(
+                config.health_url, timeout=config.timeout
+            )
 
             response_time = (time.time() - start_time) * 1000
 
@@ -265,7 +267,9 @@ class EnhancedServiceStabilizer:
                 # Parse health details if available
                 try:
                     health_data = response.json()
-                    health.performance_metrics = health_data.get("performance_metrics", {})
+                    health.performance_metrics = health_data.get(
+                        "performance_metrics", {}
+                    )
                     health.dependencies_healthy = self._check_dependencies(health_data)
                 except:
                     pass
@@ -296,14 +300,16 @@ class EnhancedServiceStabilizer:
         # Store in history
         self.health_history[service_type].append(health)
         if len(self.health_history[service_type]) > 1000:
-            self.health_history[service_type] = self.health_history[service_type][-1000:]
+            self.health_history[service_type] = self.health_history[service_type][
+                -1000:
+            ]
 
         # Check alert conditions
         await self._check_alert_conditions(service_type, health)
 
         return health
 
-    def _check_dependencies(self, health_data: Dict[str, Any]) -> bool:
+    def _check_dependencies(self, health_data: dict[str, Any]) -> bool:
         """Check if service dependencies are healthy."""
         dependencies = health_data.get("dependencies", {})
         if not dependencies:
@@ -314,7 +320,9 @@ class EnhancedServiceStabilizer:
             for status in dependencies.values()
         )
 
-    async def _update_service_metrics(self, service_type: ServiceType, health: ServiceHealth):
+    async def _update_service_metrics(
+        self, service_type: ServiceType, health: ServiceHealth
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -341,7 +349,7 @@ class EnhancedServiceStabilizer:
 
         try:
             # Get failover circuit breaker
-            breaker = self.failover_manager.get_failover_breaker(
+            self.failover_manager.get_failover_breaker(
                 service_type, FailoverConfig(strategy=FailoverStrategy.GRACEFUL)
             )
 
@@ -359,7 +367,9 @@ class EnhancedServiceStabilizer:
                 {
                     "service": service_type.value,
                     "timestamp": datetime.utcnow().isoformat(),
-                    "consecutive_failures": self.service_health[service_type].consecutive_failures,
+                    "consecutive_failures": self.service_health[
+                        service_type
+                    ].consecutive_failures,
                 },
             )
 
@@ -463,7 +473,7 @@ class EnhancedServiceStabilizer:
                     },
                 )
 
-    def _calculate_trend(self, values: List[float]) -> float:
+    def _calculate_trend(self, values: list[float]) -> float:
         """Calculate simple trend (positive = increasing, negative = decreasing)."""
         if len(values) < 2:
             return 0.0
@@ -481,7 +491,7 @@ class EnhancedServiceStabilizer:
         slope = (n * xy_sum - x_sum * y_sum) / (n * x2_sum - x_sum * x_sum)
         return slope
 
-    def _generate_recommendations(self, health: ServiceHealth) -> List[str]:
+    def _generate_recommendations(self, health: ServiceHealth) -> list[str]:
         """Generate recommendations based on service health."""
         recommendations = []
 
@@ -489,11 +499,17 @@ class EnhancedServiceStabilizer:
             recommendations.append("Consider scaling up service instances")
             recommendations.append("Review database query performance")
 
-        if health.error_rate_percent > self.config.alert_thresholds["error_rate_percent"]:
+        if (
+            health.error_rate_percent
+            > self.config.alert_thresholds["error_rate_percent"]
+        ):
             recommendations.append("Investigate error logs for root cause")
             recommendations.append("Consider circuit breaker activation")
 
-        if health.availability_percent < self.config.alert_thresholds["availability_percent"]:
+        if (
+            health.availability_percent
+            < self.config.alert_thresholds["availability_percent"]
+        ):
             recommendations.append("Enable auto-failover mechanisms")
             recommendations.append("Add redundant service instances")
 
@@ -537,7 +553,10 @@ class EnhancedServiceStabilizer:
 
                     await self._send_alert(
                         "service_recovered",
-                        {"service": service_type.value, "timestamp": datetime.utcnow().isoformat()},
+                        {
+                            "service": service_type.value,
+                            "timestamp": datetime.utcnow().isoformat(),
+                        },
                     )
 
     async def _metrics_cleanup_loop(self):
@@ -560,13 +579,19 @@ class EnhancedServiceStabilizer:
         # ensures: Correct function execution
         # sha256: func_hash
         """Clean up metrics older than retention period."""
-        cutoff_time = datetime.utcnow() - timedelta(hours=self.config.metrics_retention_hours)
+        cutoff_time = datetime.utcnow() - timedelta(
+            hours=self.config.metrics_retention_hours
+        )
 
         for service_type in self.health_history.keys():
             history = self.health_history[service_type]
-            self.health_history[service_type] = [h for h in history if h.last_check > cutoff_time]
+            self.health_history[service_type] = [
+                h for h in history if h.last_check > cutoff_time
+            ]
 
-    async def _check_alert_conditions(self, service_type: ServiceType, health: ServiceHealth):
+    async def _check_alert_conditions(
+        self, service_type: ServiceType, health: ServiceHealth
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -585,7 +610,10 @@ class EnhancedServiceStabilizer:
             )
 
         # Error rate alert
-        if health.error_rate_percent > self.config.alert_thresholds["error_rate_percent"]:
+        if (
+            health.error_rate_percent
+            > self.config.alert_thresholds["error_rate_percent"]
+        ):
             alerts.append(
                 {
                     "type": "error_rate",
@@ -596,7 +624,10 @@ class EnhancedServiceStabilizer:
             )
 
         # Availability alert
-        if health.availability_percent < self.config.alert_thresholds["availability_percent"]:
+        if (
+            health.availability_percent
+            < self.config.alert_thresholds["availability_percent"]
+        ):
             alerts.append(
                 {
                     "type": "availability",
@@ -610,7 +641,7 @@ class EnhancedServiceStabilizer:
         for alert in alerts:
             await self._send_alert(alert["type"], alert)
 
-    async def _send_alert(self, alert_type: str, alert_data: Dict[str, Any]):
+    async def _send_alert(self, alert_type: str, alert_data: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -621,14 +652,16 @@ class EnhancedServiceStabilizer:
             except Exception as e:
                 logger.error(f"Alert callback error: {e}")
 
-    def register_alert_callback(self, callback: Callable[[str, Dict[str, Any]], None]):
+    def register_alert_callback(self, callback: Callable[[str, dict[str, Any]], None]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Register an alert callback."""
         self.alert_callbacks.append(callback)
 
-    def get_service_health(self, service_type: Optional[ServiceType] = None) -> Dict[str, Any]:
+    def get_service_health(
+        self, service_type: ServiceType | None = None
+    ) -> dict[str, Any]:
         """Get service health information."""
         if service_type:
             health = self.service_health.get(service_type)
@@ -661,19 +694,23 @@ class EnhancedServiceStabilizer:
             for service_type, health in self.service_health.items()
         }
 
-    def get_system_status(self) -> Dict[str, Any]:
+    def get_system_status(self) -> dict[str, Any]:
         """Get overall system status."""
         if not self.service_health:
             return {"status": "unknown", "message": "No services monitored"}
 
-        healthy_services = sum(1 for h in self.service_health.values() if h.status == "healthy")
+        healthy_services = sum(
+            1 for h in self.service_health.values() if h.status == "healthy"
+        )
         total_services = len(self.service_health)
 
         avg_response_time = (
-            sum(h.response_time_ms for h in self.service_health.values()) / total_services
+            sum(h.response_time_ms for h in self.service_health.values())
+            / total_services
         )
         avg_availability = (
-            sum(h.availability_percent for h in self.service_health.values()) / total_services
+            sum(h.availability_percent for h in self.service_health.values())
+            / total_services
         )
 
         # Determine overall status
@@ -696,11 +733,11 @@ class EnhancedServiceStabilizer:
 
 
 # Global stabilizer instance
-_stabilizer: Optional[EnhancedServiceStabilizer] = None
+_stabilizer: EnhancedServiceStabilizer | None = None
 
 
 async def get_service_stabilizer(
-    config: Optional[StabilizationConfig] = None,
+    config: StabilizationConfig | None = None,
 ) -> EnhancedServiceStabilizer:
     """Get the global service stabilizer instance."""
     global _stabilizer

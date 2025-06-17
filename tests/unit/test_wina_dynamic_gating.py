@@ -236,8 +236,8 @@ class TestEnhancedDynamicGating:
         layer_name = "adaptive_layer"
 
         # Simulate multiple gating decisions to build history
-        for i in range(5):
-            decision = runtime_gating.make_gating_decision(
+        for _i in range(5):
+            runtime_gating.make_gating_decision(
                 layer_name, sample_wina_scores
             )
 
@@ -303,7 +303,7 @@ class TestEnhancedDynamicGating:
         layer_name = "metrics_layer"
 
         # Make multiple gating decisions
-        for i in range(3):
+        for _i in range(3):
             runtime_gating.make_gating_decision(layer_name, sample_wina_scores)
 
         # Get performance metrics

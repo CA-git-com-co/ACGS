@@ -13,13 +13,11 @@ Key Features:
 - Performance monitoring and metrics
 """
 
-import asyncio
-import json
 import logging
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -58,8 +56,8 @@ class CerebrasResponse:
     finish_reason: str
     constitutional_compliance_score: float = 0.0
     confidence_score: float = 0.0
-    metadata: Dict[str, Any] = None
-    error: Optional[str] = None
+    metadata: dict[str, Any] = None
+    error: str | None = None
 
 
 class CerebrasClient:
@@ -94,7 +92,9 @@ class CerebrasClient:
         self.total_response_time = 0.0
         self.error_count = 0
 
-        logger.info(f"Initialized Cerebras client with base URL: {self.config.base_url}")
+        logger.info(
+            f"Initialized Cerebras client with base URL: {self.config.base_url}"
+        )
 
     async def __aenter__(self):
         # requires: Valid input parameters
@@ -117,13 +117,15 @@ class CerebrasClient:
         """Close HTTP client."""
         await self.client.aclose()
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
+    )
     async def generate_constitutional_analysis(
         self,
         prompt: str,
         model: CerebrasModel = None,
-        context: Optional[Dict[str, Any]] = None,
-        constitution_hash: Optional[str] = None,
+        context: dict[str, Any] | None = None,
+        constitution_hash: str | None = None,
         **kwargs,
     ) -> CerebrasResponse:
         """
@@ -197,7 +199,9 @@ class CerebrasClient:
                     },
                 )
             else:
-                error_msg = f"Cerebras API error: {response.status_code} - {response.text}"
+                error_msg = (
+                    f"Cerebras API error: {response.status_code} - {response.text}"
+                )
                 logger.error(error_msg)
                 self.error_count += 1
 
@@ -228,8 +232,8 @@ class CerebrasClient:
     async def generate_fast_synthesis(
         self,
         prompt: str,
-        policies: List[str] = None,
-        principles: List[str] = None,
+        policies: list[str] = None,
+        principles: list[str] = None,
         **kwargs,
     ) -> CerebrasResponse:
         """
@@ -258,7 +262,7 @@ class CerebrasClient:
         self,
         prompt: str,
         constitution_hash: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
         **kwargs,
     ) -> CerebrasResponse:
         """
@@ -284,8 +288,8 @@ class CerebrasClient:
     def _construct_constitutional_prompt(
         self,
         prompt: str,
-        context: Optional[Dict[str, Any]],
-        constitution_hash: Optional[str],
+        context: dict[str, Any] | None,
+        constitution_hash: str | None,
     ) -> str:
         """Construct constitutional analysis prompt."""
         constitutional_prompt = f"""
@@ -382,13 +386,17 @@ Please provide your analysis:
 
         return min(1.0, base_confidence)
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get client performance metrics."""
         avg_response_time = (
-            self.total_response_time / self.request_count if self.request_count > 0 else 0.0
+            self.total_response_time / self.request_count
+            if self.request_count > 0
+            else 0.0
         )
 
-        error_rate = self.error_count / self.request_count if self.request_count > 0 else 0.0
+        error_rate = (
+            self.error_count / self.request_count if self.request_count > 0 else 0.0
+        )
 
         return {
             "total_requests": self.request_count,
@@ -400,12 +408,12 @@ Please provide your analysis:
 
 
 # Global Cerebras client instance
-_cerebras_client: Optional[CerebrasClient] = None
+_cerebras_client: CerebrasClient | None = None
 
 
 async def get_cerebras_client(
-    api_key: Optional[str] = None,
-) -> Optional[CerebrasClient]:
+    api_key: str | None = None,
+) -> CerebrasClient | None:
     """
     Get global Cerebras client instance.
 

@@ -104,7 +104,7 @@ class Priority1ServiceRestoration:
                 )
 
         # Kill any existing uvicorn processes
-        for service_name, config in self.services.items():
+        for _service_name, config in self.services.items():
             port = config["port"]
             try:
                 subprocess.run(

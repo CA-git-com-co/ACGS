@@ -4,15 +4,18 @@ Production-grade authentication and authorization for inter-service communicatio
 """
 
 import os
-from typing import Dict, List
 from enum import Enum
 
-from .enhanced_auth import ServiceAuthManager, ConstitutionalPermission, ServicePermission
+from .enhanced_auth import (
+    ConstitutionalPermission,
+    ServiceAuthManager,
+    ServicePermission,
+)
 
 
 class ACGSService(Enum):
     """ACGS service identifiers."""
-    
+
     AUTH_SERVICE = "auth_service"
     AC_SERVICE = "ac_service"
     INTEGRITY_SERVICE = "integrity_service"
@@ -133,32 +136,31 @@ SERVICE_ENDPOINTS = {
 
 class ServiceAuthConfig:
     """Configuration manager for service authentication."""
-    
+
     @staticmethod
     def get_service_token(service: ACGSService) -> str:
         """Get authentication token for a service."""
         permissions = [perm.value for perm in SERVICE_PERMISSIONS.get(service, [])]
         return ServiceAuthManager.create_service_token(
-            service_name=service.value,
-            permissions=permissions
+            service_name=service.value, permissions=permissions
         )
-    
+
     @staticmethod
-    def get_service_endpoint(service: ACGSService) -> Dict[str, any]:
+    def get_service_endpoint(service: ACGSService) -> dict[str, any]:
         """Get endpoint configuration for a service."""
         return SERVICE_ENDPOINTS.get(service, {})
-    
+
     @staticmethod
-    def get_auth_headers(service: ACGSService) -> Dict[str, str]:
+    def get_auth_headers(service: ACGSService) -> dict[str, str]:
         """Get authentication headers for service-to-service calls."""
         endpoint_config = SERVICE_ENDPOINTS.get(service, {})
-        
+
         if not endpoint_config.get("auth_required", True):
             return {}
-            
+
         token = ServiceAuthConfig.get_service_token(service)
         return {"Authorization": f"Bearer {token}"}
-    
+
     @staticmethod
     def is_service_healthy(service: ACGSService) -> bool:
         """Check if a service is healthy (placeholder for health check logic)."""
@@ -198,7 +200,9 @@ GOVERNANCE_WORKFLOW_PERMISSIONS = {
 }
 
 
-def get_workflow_permissions(workflow_name: str) -> List[ConstitutionalPermission | ServicePermission]:
+def get_workflow_permissions(
+    workflow_name: str,
+) -> list[ConstitutionalPermission | ServicePermission]:
     """Get required permissions for a governance workflow."""
     return GOVERNANCE_WORKFLOW_PERMISSIONS.get(workflow_name, [])
 

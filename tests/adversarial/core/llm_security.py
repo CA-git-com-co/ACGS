@@ -8,8 +8,7 @@ including prompt injection, jailbreaking, and manipulation attacks.
 import json
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Dict, List
+from datetime import UTC, datetime
 
 import aiohttp
 
@@ -112,8 +111,8 @@ class LLMSecurityTester:
         }
 
     async def run_tests(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run LLM security tests."""
         vulnerabilities = []
 
@@ -145,9 +144,9 @@ class LLMSecurityTester:
         self,
         vector: str,
         gs_endpoint: str,
-        available_services: List[str],
-        service_endpoints: Dict[str, str],
-    ) -> List[VulnerabilityResult]:
+        available_services: list[str],
+        service_endpoints: dict[str, str],
+    ) -> list[VulnerabilityResult]:
         """Test a specific LLM security attack vector."""
 
         if vector == "prompt_injection_attack":
@@ -171,7 +170,7 @@ class LLMSecurityTester:
 
     async def _test_prompt_injection_attack(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test prompt injection attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -239,7 +238,7 @@ class LLMSecurityTester:
                                                 payload_category
                                             ),
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(timezone.utc),
+                                            timestamp=datetime.now(UTC),
                                         )
                                     )
 
@@ -250,7 +249,7 @@ class LLMSecurityTester:
 
     async def _test_jailbreaking_attempt(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test jailbreaking attempts."""
         vulnerabilities = []
         start_time = time.time()
@@ -293,7 +292,7 @@ class LLMSecurityTester:
                                             severity=VulnerabilitySeverity.HIGH,
                                             service_target="gs_service",
                                             vulnerability_description=f"LLM jailbreak successful: {technique_category}",
-                                            attack_vector=f"Jailbreak technique bypassed constitutional constraints",
+                                            attack_vector="Jailbreak technique bypassed constitutional constraints",
                                             impact_assessment="Attacker can jailbreak LLM to ignore governance rules",
                                             proof_of_concept=json.dumps(
                                                 {
@@ -309,7 +308,7 @@ class LLMSecurityTester:
                                             ],
                                             cvss_score=8.5,
                                             execution_time_ms=execution_time,
-                                            timestamp=datetime.now(timezone.utc),
+                                            timestamp=datetime.now(UTC),
                                         )
                                     )
 
@@ -319,7 +318,7 @@ class LLMSecurityTester:
         return vulnerabilities
 
     def _detect_injection_success(
-        self, response_data: Dict, payload: str, category: str
+        self, response_data: dict, payload: str, category: str
     ) -> bool:
         """Detect if prompt injection was successful."""
         response_str = json.dumps(response_data).lower()
@@ -342,7 +341,7 @@ class LLMSecurityTester:
         return any(indicator in response_str for indicator in success_indicators)
 
     def _detect_jailbreak_success(
-        self, response_data: Dict, technique: str, category: str
+        self, response_data: dict, technique: str, category: str
     ) -> bool:
         """Detect if jailbreak attempt was successful."""
         response_str = json.dumps(response_data).lower()
@@ -391,42 +390,42 @@ class LLMSecurityTester:
 
     async def _test_context_manipulation(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test context manipulation attacks."""
         # Implementation for context manipulation testing
         return []
 
     async def _test_output_manipulation(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test output manipulation attacks."""
         # Implementation for output manipulation testing
         return []
 
     async def _test_system_prompt_override(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test system prompt override attacks."""
         # Implementation for system prompt override testing
         return []
 
     async def _test_role_confusion_attack(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test role confusion attacks."""
         # Implementation for role confusion testing
         return []
 
     async def _test_instruction_hijacking(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test instruction hijacking attacks."""
         # Implementation for instruction hijacking testing
         return []
 
     async def _test_constitutional_bypass(
         self, gs_endpoint: str
-    ) -> List[VulnerabilityResult]:
+    ) -> list[VulnerabilityResult]:
         """Test constitutional bypass attacks."""
         # Implementation for constitutional bypass testing
         return []

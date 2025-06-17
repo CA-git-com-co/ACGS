@@ -13,15 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
-from typing import Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from src.api.db import get_db
-from src.api.job_service import cancel_job, delete_job, get_job_details
-from src.api.models import FlywheelRun
-from src.api.schemas import (
+from services.core.api.db import get_db
+from services.core.api.job_service import cancel_job, delete_job, get_job_details
+from services.core.api.models import FlywheelRun
+from services.core.api.schemas import (
     FlywheelRunStatus,
     JobCancelResponse,
     JobDeleteResponse,
@@ -31,12 +30,14 @@ from src.api.schemas import (
     JobResponse,
     JobsListResponse,
 )
-from src.log_utils import setup_logging
-from src.tasks.tasks import run_nim_workflow_dag
+from services.core.constitutional.acgs_integration import ACGSServiceIntegration
 
 # ACGS-1 Constitutional Governance Integration
-from src.constitutional.compliance_validator import ConstitutionalComplianceValidator
-from src.constitutional.acgs_integration import ACGSServiceIntegration
+from services.core.constitutional.compliance_validator import (
+    ConstitutionalComplianceValidator,
+)
+from services.core.log_utils import setup_logging
+from services.core.tasks.tasks import run_nim_workflow_dag
 
 logger = setup_logging("data_flywheel.api.endpoints")
 
@@ -53,9 +54,9 @@ class ConstitutionalJobRequest(BaseModel):
 
     workload_id: str
     client_id: str = "acgs_governance"
-    constitutional_requirements: Optional[Dict] = None
-    governance_context: Optional[Dict] = None
-    data_split_config: Optional[Dict] = None
+    constitutional_requirements: dict | None = None
+    governance_context: dict | None = None
+    data_split_config: dict | None = None
 
 
 class ConstitutionalComplianceResponse(BaseModel):
@@ -64,8 +65,8 @@ class ConstitutionalComplianceResponse(BaseModel):
     job_id: str
     overall_compliance_score: float
     compliant: bool
-    principle_scores: Dict[str, float]
-    recommendations: List[str]
+    principle_scores: dict[str, float]
+    recommendations: list[str]
     validation_timestamp: str
 
 
@@ -73,7 +74,7 @@ class ACGSHealthResponse(BaseModel):
     """ACGS-1 services health status response"""
 
     overall_status: str
-    services: Dict[str, bool]
+    services: dict[str, bool]
     constitutional_validation_available: bool
     governance_workflows_operational: bool
 
@@ -333,7 +334,7 @@ async def get_governance_workloads():
 @router.post("/constitutional/traffic/collect")
 async def collect_governance_traffic(
     hours: int = Query(24, description="Hours of traffic to collect"),
-    workload_filter: Optional[List[str]] = Query(
+    workload_filter: list[str] | None = Query(
         None, description="Filter by workload IDs"
     ),
 ):
@@ -389,7 +390,7 @@ async def get_constitutional_metrics(job_id: str):
 
 @router.post("/constitutional/validate")
 async def validate_constitutional_compliance(
-    model_output: str, expected_output: str, governance_context: Dict, workload_id: str
+    model_output: str, expected_output: str, governance_context: dict, workload_id: str
 ):
     """
     Manually validate constitutional compliance for model outputs.

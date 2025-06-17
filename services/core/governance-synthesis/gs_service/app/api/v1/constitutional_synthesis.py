@@ -6,7 +6,6 @@ the constitutional prompting methodology.
 """
 
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -40,11 +39,15 @@ async def constitutional_synthesis_endpoint(
     3. Generates constitutionally compliant policies
     4. Returns detailed compliance information
     """
-    logger.info(f"Constitutional synthesis requested for context: {synthesis_request.context}")
+    logger.info(
+        f"Constitutional synthesis requested for context: {synthesis_request.context}"
+    )
 
     try:
         # Perform constitutional synthesis
-        synthesis_result = await query_llm_for_constitutional_synthesis(synthesis_request)
+        synthesis_result = await query_llm_for_constitutional_synthesis(
+            synthesis_request
+        )
 
         # Add contextual analysis in background
         background_tasks.add_task(
@@ -68,7 +71,7 @@ async def constitutional_synthesis_endpoint(
 
 @router.post("/analyze-context")
 async def analyze_constitutional_context_endpoint(
-    context: str, category: Optional[str] = None, auth_token: Optional[str] = None
+    context: str, category: str | None = None, auth_token: str | None = None
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -83,8 +86,10 @@ async def analyze_constitutional_context_endpoint(
     try:
         from ...core.constitutional_prompting import constitutional_prompt_builder
 
-        constitutional_context = await constitutional_prompt_builder.build_constitutional_context(
-            context=context, category=category, auth_token=auth_token
+        constitutional_context = (
+            await constitutional_prompt_builder.build_constitutional_context(
+                context=context, category=category, auth_token=auth_token
+            )
         )
 
         if "error" in constitutional_context:
@@ -109,7 +114,9 @@ async def analyze_constitutional_context_endpoint(
 
 
 @router.get("/constitutional-context/{context}")
-async def get_constitutional_context_endpoint(context: str, category: Optional[str] = None):
+async def get_constitutional_context_endpoint(
+    context: str, category: str | None = None
+):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -144,7 +151,7 @@ async def add_environmental_factor_endpoint(
     factor_id: str,
     factor_type: str,
     value: str,
-    source: Optional[str] = None,
+    source: str | None = None,
     confidence: float = 1.0,
 ):
     # requires: Valid input parameters

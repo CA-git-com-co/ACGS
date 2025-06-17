@@ -15,8 +15,8 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import UTC, datetime
+from typing import Any
 
 import numpy as np
 import torch
@@ -41,8 +41,10 @@ class ModelWeightInfo:
     weight_matrix: torch.Tensor
     layer_type: str  # 'attention', 'mlp', 'embedding', etc.
     matrix_type: str  # 'W_k', 'W_gate', 'W_q', 'W_v', etc.
-    original_shape: Tuple[int, ...]
-    extraction_timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    original_shape: tuple[int, ...]
+    extraction_timestamp: datetime = field(
+        default_factory=lambda: datetime.now(UTC)
+    )
 
 
 @dataclass
@@ -51,8 +53,8 @@ class WINAOptimizationResult:
 
     model_id: str
     optimization_timestamp: datetime
-    transformed_layers: Dict[str, SVDTransformationResult]
-    performance_metrics: Dict[str, float]
+    transformed_layers: dict[str, SVDTransformationResult]
+    performance_metrics: dict[str, float]
     constitutional_compliance: bool
     gflops_reduction: float
     accuracy_preservation: float
@@ -64,8 +66,8 @@ class ModelWeightExtractor(ABC):
 
     @abstractmethod
     async def extract_weights(
-        self, model_identifier: str, target_layers: Optional[List[str]] = None
-    ) -> List[ModelWeightInfo]:
+        self, model_identifier: str, target_layers: list[str] | None = None
+    ) -> list[ModelWeightInfo]:
         """
         Extract weights from the specified model.
 
@@ -78,7 +80,7 @@ class ModelWeightExtractor(ABC):
         """
 
     @abstractmethod
-    def get_supported_models(self) -> List[str]:
+    def get_supported_models(self) -> list[str]:
         """Get list of supported model identifiers."""
 
 
@@ -100,8 +102,8 @@ class MockModelWeightExtractor(ModelWeightExtractor):
         ]
 
     async def extract_weights(
-        self, model_identifier: str, target_layers: Optional[List[str]] = None
-    ) -> List[ModelWeightInfo]:
+        self, model_identifier: str, target_layers: list[str] | None = None
+    ) -> list[ModelWeightInfo]:
         """Extract mock weights for testing."""
         logger.info(f"Extracting mock weights for model: {model_identifier}")
 
@@ -157,10 +159,12 @@ class MockModelWeightExtractor(ModelWeightExtractor):
             )
             weight_infos.append(weight_info)
 
-        logger.info(f"Extracted {len(weight_infos)} weight matrices for {model_identifier}")
+        logger.info(
+            f"Extracted {len(weight_infos)} weight matrices for {model_identifier}"
+        )
         return weight_infos
 
-    def get_supported_models(self) -> List[str]:
+    def get_supported_models(self) -> list[str]:
         """Get list of supported mock models."""
         return self.supported_models.copy()
 
@@ -168,7 +172,7 @@ class MockModelWeightExtractor(ModelWeightExtractor):
 class OpenAIModelWeightExtractor(ModelWeightExtractor):
     """Weight extractor for OpenAI models (placeholder implementation)."""
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -179,8 +183,8 @@ class OpenAIModelWeightExtractor(ModelWeightExtractor):
         )
 
     async def extract_weights(
-        self, model_identifier: str, target_layers: Optional[List[str]] = None
-    ) -> List[ModelWeightInfo]:
+        self, model_identifier: str, target_layers: list[str] | None = None
+    ) -> list[ModelWeightInfo]:
         """
         OpenAI models don't expose weights via API.
         This is a placeholder that falls back to mock implementation.
@@ -191,7 +195,7 @@ class OpenAIModelWeightExtractor(ModelWeightExtractor):
         mock_extractor = MockModelWeightExtractor()
         return await mock_extractor.extract_weights(model_identifier, target_layers)
 
-    def get_supported_models(self) -> List[str]:
+    def get_supported_models(self) -> list[str]:
         """Get list of supported OpenAI models."""
         return self.supported_models.copy()
 
@@ -199,7 +203,7 @@ class OpenAIModelWeightExtractor(ModelWeightExtractor):
 class GroqModelWeightExtractor(ModelWeightExtractor):
     """Weight extractor for Groq models (placeholder implementation)."""
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -214,8 +218,8 @@ class GroqModelWeightExtractor(ModelWeightExtractor):
         )
 
     async def extract_weights(
-        self, model_identifier: str, target_layers: Optional[List[str]] = None
-    ) -> List[ModelWeightInfo]:
+        self, model_identifier: str, target_layers: list[str] | None = None
+    ) -> list[ModelWeightInfo]:
         """
         Groq models don't expose weights via API.
         This is a placeholder that falls back to mock implementation.
@@ -226,7 +230,7 @@ class GroqModelWeightExtractor(ModelWeightExtractor):
         mock_extractor = MockModelWeightExtractor()
         return await mock_extractor.extract_weights(model_identifier, target_layers)
 
-    def get_supported_models(self) -> List[str]:
+    def get_supported_models(self) -> list[str]:
         """Get list of supported Groq models."""
         return self.supported_models.copy()
 
@@ -261,15 +265,15 @@ class WINAModelIntegrator:
         self.performance_monitor = PerformanceMonitor(config)
 
         # Initialize weight extractors
-        self.weight_extractors: Dict[str, ModelWeightExtractor] = {
+        self.weight_extractors: dict[str, ModelWeightExtractor] = {
             "mock": MockModelWeightExtractor(),
             "openai": OpenAIModelWeightExtractor(),
             "groq": GroqModelWeightExtractor(),
         }
 
         # Cache for transformed weights
-        self._transformation_cache: Dict[str, WINAOptimizationResult] = {}
-        self._optimization_history: List[WINAOptimizationResult] = []
+        self._transformation_cache: dict[str, WINAOptimizationResult] = {}
+        self._optimization_history: list[WINAOptimizationResult] = []
 
         logger.info("WINA Model Integrator initialized")
 
@@ -277,7 +281,7 @@ class WINAModelIntegrator:
         self,
         model_identifier: str,
         model_type: str = "mock",
-        target_layers: Optional[List[str]] = None,
+        target_layers: list[str] | None = None,
         force_recompute: bool = False,
     ) -> WINAOptimizationResult:
         """
@@ -300,7 +304,9 @@ class WINAModelIntegrator:
             )
 
             # Check cache first
-            cache_key = f"{model_identifier}_{model_type}_{hash(tuple(target_layers or []))}"
+            cache_key = (
+                f"{model_identifier}_{model_type}_{hash(tuple(target_layers or []))}"
+            )
             if not force_recompute and cache_key in self._transformation_cache:
                 logger.info(f"Using cached WINA optimization for {model_identifier}")
                 return self._transformation_cache[cache_key]
@@ -310,7 +316,9 @@ class WINAModelIntegrator:
             if not extractor:
                 raise WINAError(f"Unsupported model type: {model_type}")
 
-            weight_infos = await extractor.extract_weights(model_identifier, target_layers)
+            weight_infos = await extractor.extract_weights(
+                model_identifier, target_layers
+            )
             logger.info(f"Extracted {len(weight_infos)} weight matrices")
 
             # Apply SVD transformations
@@ -366,7 +374,7 @@ class WINAModelIntegrator:
             # Create optimization result
             result = WINAOptimizationResult(
                 model_id=model_identifier,
-                optimization_timestamp=datetime.now(timezone.utc),
+                optimization_timestamp=datetime.now(UTC),
                 transformed_layers=transformed_layers,
                 performance_metrics={
                     "original_gflops": total_gflops_original,
@@ -425,7 +433,7 @@ class WINAModelIntegrator:
     async def _verify_constitutional_compliance(
         self,
         model_identifier: str,
-        transformed_layers: Dict[str, SVDTransformationResult],
+        transformed_layers: dict[str, SVDTransformationResult],
     ) -> bool:
         """
         Verify that WINA optimization maintains constitutional compliance.
@@ -472,7 +480,7 @@ class WINAModelIntegrator:
     async def _estimate_accuracy_preservation(
         self,
         model_identifier: str,
-        transformed_layers: Dict[str, SVDTransformationResult],
+        transformed_layers: dict[str, SVDTransformationResult],
     ) -> float:
         """
         Estimate accuracy preservation after WINA optimization.
@@ -492,7 +500,7 @@ class WINAModelIntegrator:
             total_weight = 0
             weighted_preservation = 0
 
-            for layer_name, result in transformed_layers.items():
+            for _layer_name, result in transformed_layers.items():
                 # Higher compression typically means lower accuracy preservation
                 layer_preservation = 1.0 - (1.0 - result.compression_ratio) * 0.1
                 layer_preservation = max(
@@ -542,7 +550,9 @@ class WINAModelIntegrator:
                         "wina_gflops_reduction": result.gflops_reduction,
                         "wina_accuracy_preservation": result.accuracy_preservation,
                         "wina_optimization_time": result.optimization_time,
-                        "wina_layers_optimized": result.performance_metrics["layers_optimized"],
+                        "wina_layers_optimized": result.performance_metrics[
+                            "layers_optimized"
+                        ],
                         "wina_constitutional_compliance": (
                             1.0 if result.constitutional_compliance else 0.0
                         ),
@@ -555,8 +565,8 @@ class WINAModelIntegrator:
             logger.error(f"Failed to update performance metrics: {e}")
 
     async def verify_computational_invariance(
-        self, model_identifier: str, test_inputs: List[Any], tolerance: float = 1e-6
-    ) -> Dict[str, Any]:
+        self, model_identifier: str, test_inputs: list[Any], tolerance: float = 1e-6
+    ) -> dict[str, Any]:
         """
         Verify computational invariance for policy synthesis workloads.
 
@@ -572,7 +582,7 @@ class WINAModelIntegrator:
             logger.info(f"Verifying computational invariance for {model_identifier}")
 
             # Get optimization result
-            cache_key = f"{model_identifier}_mock_{hash(tuple([]))}"
+            cache_key = f"{model_identifier}_mock_{hash(())}"
             if cache_key not in self._transformation_cache:
                 logger.warning(f"No optimization result found for {model_identifier}")
                 return {
@@ -608,7 +618,7 @@ class WINAModelIntegrator:
                 "layer_results": invariance_results,
                 "tolerance": tolerance,
                 "test_inputs_count": len(test_inputs),
-                "verification_timestamp": datetime.now(timezone.utc).isoformat(),
+                "verification_timestamp": datetime.now(UTC).isoformat(),
             }
 
             logger.info(
@@ -623,10 +633,10 @@ class WINAModelIntegrator:
             return {
                 "invariance_maintained": False,
                 "error": str(e),
-                "verification_timestamp": datetime.now(timezone.utc).isoformat(),
+                "verification_timestamp": datetime.now(UTC).isoformat(),
             }
 
-    def get_optimization_history(self) -> List[WINAOptimizationResult]:
+    def get_optimization_history(self) -> list[WINAOptimizationResult]:
         """Get history of optimization results."""
         return self._optimization_history.copy()
 
@@ -636,13 +646,15 @@ class WINAModelIntegrator:
         self.svd_transformer.clear_cache()
         logger.info("WINA model integration cache cleared")
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get performance summary of all optimizations."""
         if not self._optimization_history:
             return {"message": "No optimizations performed yet"}
 
         gflops_reductions = [r.gflops_reduction for r in self._optimization_history]
-        accuracy_preservations = [r.accuracy_preservation for r in self._optimization_history]
+        accuracy_preservations = [
+            r.accuracy_preservation for r in self._optimization_history
+        ]
         optimization_times = [r.optimization_time for r in self._optimization_history]
 
         return {

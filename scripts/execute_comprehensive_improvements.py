@@ -23,7 +23,6 @@ import time
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
 
 # Configure logging
 logging.basicConfig(
@@ -41,8 +40,8 @@ class ImprovementTask:
     priority: int  # 1 = highest priority
     script_path: str
     estimated_duration_minutes: int
-    dependencies: List[str]
-    validation_command: Optional[str] = None
+    dependencies: list[str]
+    validation_command: str | None = None
 
 
 @dataclass
@@ -53,7 +52,7 @@ class ImprovementResult:
     success: bool
     duration_seconds: float
     output: str
-    error_message: Optional[str] = None
+    error_message: str | None = None
     validation_passed: bool = False
 
 
@@ -62,7 +61,7 @@ class ComprehensiveImprovementExecutor:
 
     def __init__(self, project_root: str):
         self.project_root = Path(project_root)
-        self.results: List[ImprovementResult] = []
+        self.results: list[ImprovementResult] = []
         self.start_time = datetime.now()
 
         # Define improvement tasks in priority order
@@ -245,11 +244,11 @@ logger = logging.getLogger(__name__)
 def main():
     project_root = sys.argv[1] if len(sys.argv) > 1 else "/mnt/persist/workspace"
     logger.info(f"Executing {task.name} for project at {{project_root}}")
-    
+
     # Placeholder implementation
     logger.info("Task {task.name} - placeholder implementation executed")
     logger.info("This task needs actual implementation")
-    
+
     print(f"{{task.name}} completed (placeholder)")
 
 if __name__ == "__main__":
@@ -428,7 +427,7 @@ def main():
     duration = (datetime.now() - executor.start_time).total_seconds()
 
     print(f"\n{'='*80}")
-    print(f"COMPREHENSIVE CODEBASE IMPROVEMENT EXECUTION COMPLETE")
+    print("COMPREHENSIVE CODEBASE IMPROVEMENT EXECUTION COMPLETE")
     print(f"{'='*80}")
     print(f"Total Tasks: {total}")
     print(f"Successful: {successful}")

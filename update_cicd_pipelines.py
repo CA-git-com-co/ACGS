@@ -86,7 +86,7 @@ class CICDUpdater:
             logger.warning("ci.yml not found")
             return False
 
-        with open(ci_file, "r") as f:
+        with open(ci_file) as f:
             content = f.read()
 
         # Update path references
@@ -129,7 +129,7 @@ class CICDUpdater:
             logger.warning("image-build.yml not found")
             return False
 
-        with open(image_build_file, "r") as f:
+        with open(image_build_file) as f:
             content = f.read()
 
         # Replace the entire matrix section with new service structure
@@ -182,7 +182,7 @@ class CICDUpdater:
             logger.warning("solana-anchor.yml not found")
             return False
 
-        with open(solana_file, "r") as f:
+        with open(solana_file) as f:
             content = f.read()
 
         # Remove quantumagi_core references since it's now consolidated into blockchain/
@@ -214,7 +214,7 @@ class CICDUpdater:
             logger.warning("production-deploy.yml not found")
             return False
 
-        with open(deploy_file, "r") as f:
+        with open(deploy_file) as f:
             content = f.read()
 
         # Update script paths
@@ -290,7 +290,7 @@ class CICDUpdater:
 
         for workflow_file in workflow_files:
             try:
-                with open(workflow_file, "r") as f:
+                with open(workflow_file) as f:
                     yaml.safe_load(f)
                 valid_files.append(workflow_file.name)
             except yaml.YAMLError as e:

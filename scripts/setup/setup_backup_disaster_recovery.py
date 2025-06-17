@@ -5,10 +5,7 @@ Implements comprehensive backup strategies and disaster recovery procedures
 """
 
 import os
-import json
-import yaml
-from datetime import datetime, timedelta
-from typing import Dict, List, Any
+from datetime import datetime
 
 
 class BackupDisasterRecovery:
@@ -42,9 +39,9 @@ This document outlines the backup and disaster recovery procedures for the ACGS-
 ### 1. Database Backups
 - **Frequency**: Daily at 2:00 AM UTC
 - **Type**: Full PostgreSQL dump with compression
-- **Retention**: 
+- **Retention**:
   - Daily: {self.backup_config['retention']['daily']} days
-  - Weekly: {self.backup_config['retention']['weekly']} weeks  
+  - Weekly: {self.backup_config['retention']['weekly']} weeks
   - Monthly: {self.backup_config['retention']['monthly']} months
 - **Storage**: Local + S3 with encryption
 
@@ -422,13 +419,13 @@ echo "============================="
 echo "1. Local Backup Status:"
 if [ -d "$BACKUP_DIR" ]; then
     LATEST_BACKUP=$(find $BACKUP_DIR -name "acgs_pgp_db_*.gz*" -type f -printf '%T@ %p\\n' | sort -n | tail -1 | cut -d' ' -f2-)
-    
+
     if [ -n "$LATEST_BACKUP" ]; then
         BACKUP_AGE=$(( ($(date +%s) - $(stat -c %Y "$LATEST_BACKUP")) / 3600 ))
         echo "  📁 Latest backup: $(basename $LATEST_BACKUP)"
         echo "  🕐 Age: $BACKUP_AGE hours"
         echo "  📊 Size: $(du -h $LATEST_BACKUP | cut -f1)"
-        
+
         if [ $BACKUP_AGE -gt $MAX_AGE_HOURS ]; then
             echo "  ⚠️  WARNING: Backup is older than $MAX_AGE_HOURS hours"
         else

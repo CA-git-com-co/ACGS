@@ -152,7 +152,7 @@ class TestLipschitzConstantResolution:
         if result.bounded_evolution_compliant:
             assert result.estimated_constant <= result.theoretical_bound * 1.1
 
-        print(f"✅ Lipschitz constant resolution test passed")
+        print("✅ Lipschitz constant resolution test passed")
         print(f"   Theoretical bound: {result.theoretical_bound}")
         print(f"   Empirical bound: {result.empirical_bound}")
         print(f"   Discrepancy ratio: {result.discrepancy_ratio:.3f}")
@@ -180,7 +180,7 @@ class TestLipschitzConstantResolution:
         assert hasattr(result, "bounded_evolution_compliant")
         assert hasattr(result, "validation_passed")
 
-        print(f"✅ Bounded evolution constraints test passed")
+        print("✅ Bounded evolution constraints test passed")
         print(f"   Bounded evolution compliant: {result.bounded_evolution_compliant}")
         print(f"   Validation passed: {result.validation_passed}")
 
@@ -235,7 +235,7 @@ class TestLLMReliabilityEnhancements:
         assert hasattr(metrics, "bias_detection_rate")
         assert hasattr(metrics, "semantic_faithfulness_score")
 
-        print(f"✅ Multi-model validation test passed")
+        print("✅ Multi-model validation test passed")
         print(f"   Success rate: {metrics.success_rate:.3f}")
         print(f"   Consensus rate: {metrics.consensus_rate:.3f}")
         print(f"   Confidence score: {metrics.confidence_score:.3f}")
@@ -287,7 +287,7 @@ class TestLLMReliabilityEnhancements:
         mitigated_output = await bias_detector.mitigate_bias(biased_output)
         assert mitigated_output.raw_llm_response != biased_output.raw_llm_response
 
-        print(f"✅ Bias mitigation test passed")
+        print("✅ Bias mitigation test passed")
         print(f"   Bias score: {bias_analysis['bias_score']:.3f}")
         print(f"   Bias level: {bias_analysis['bias_level']}")
 
@@ -315,7 +315,7 @@ class TestLLMReliabilityEnhancements:
         assert "validation_passed" in faithfulness
         assert faithfulness["faithfulness_score"] >= 0.0
 
-        print(f"✅ Semantic faithfulness validation test passed")
+        print("✅ Semantic faithfulness validation test passed")
         print(f"   Faithfulness score: {faithfulness['faithfulness_score']:.3f}")
         print(f"   Validation passed: {faithfulness['validation_passed']}")
 
@@ -401,12 +401,12 @@ class TestConstitutionalCouncilScalability:
         )
 
         # Verify rapid processing
-        assert result["success"] == True
+        assert result["success"]
         assert "amendment_id" in result
         assert "voting_window_hours" in result
         assert result["voting_window_hours"] == 24
 
-        print(f"✅ Rapid co-evolution handling test passed")
+        print("✅ Rapid co-evolution handling test passed")
         print(f"   Processing time: {result['processing_time']:.3f}s")
         print(f"   Voting window: {result['voting_window_hours']} hours")
 
@@ -457,7 +457,7 @@ class TestConstitutionalCouncilScalability:
         assert hasattr(metrics, "scalability_score")
         assert hasattr(metrics, "bottleneck_indicators")
 
-        print(f"✅ Scalability metrics test passed")
+        print("✅ Scalability metrics test passed")
         print(f"   Scalability score: {metrics.scalability_score:.3f}")
         print(f"   Bottlenecks: {len(metrics.bottleneck_indicators)}")
 
@@ -519,7 +519,7 @@ class TestAdversarialRobustnessTesting:
         assert hasattr(report, "overall_robustness_score")
         assert hasattr(report, "recommendations")
 
-        print(f"✅ Adversarial robustness testing passed")
+        print("✅ Adversarial robustness testing passed")
         print(f"   Total tests: {report.total_tests}")
         print(f"   Robustness score: {report.overall_robustness_score:.3f}")
         print(f"   Recommendations: {len(report.recommendations)}")
@@ -569,7 +569,7 @@ class TestProactiveFairPolicyGeneration:
         assert isinstance(assessment.bias_indicators, list)
         assert isinstance(assessment.improvement_suggestions, list)
 
-        print(f"✅ Proactive fairness generation test passed")
+        print("✅ Proactive fairness generation test passed")
         print(f"   Fairness score: {assessment.overall_fairness_score:.3f}")
         print(f"   Bias indicators: {len(assessment.bias_indicators)}")
         print(f"   Improvements suggested: {len(assessment.improvement_suggestions)}")
@@ -603,7 +603,7 @@ class TestProactiveFairPolicyGeneration:
         assert "drift_indicators" in drift_analysis
         assert "recommendation" in drift_analysis
 
-        print(f"✅ Fairness drift monitoring test passed")
+        print("✅ Fairness drift monitoring test passed")
         print(f"   Drift detected: {drift_analysis['drift_detected']}")
         print(f"   Drift score: {drift_analysis['drift_score']:.3f}")
 
@@ -654,7 +654,7 @@ class TestCrossServiceIntegration:
             reliability_framework.config.target_reliability
             == ReliabilityLevel.SAFETY_CRITICAL
         )
-        assert council_framework.config.async_voting_enabled == True
+        assert council_framework.config.async_voting_enabled
         assert robustness_tester.config.num_test_cases == 10
         assert fairness_generator.config.fairness_optimization_iterations == 5
 

@@ -25,6 +25,7 @@ try:
         BiasMetric,
         PolicyRule,
     )
+
     BIAS_DETECTOR_AVAILABLE = True
 except ImportError:
     # Mock implementations for testing when module is not available
@@ -40,12 +41,27 @@ except ImportError:
                     rule_lower = rule_content.lower()
 
                     # High bias indicators
-                    if any(word in rule_lower for word in ["gender", "race", "ethnicity", "minority", "exclude", "deny"]):
+                    if any(
+                        word in rule_lower
+                        for word in [
+                            "gender",
+                            "race",
+                            "ethnicity",
+                            "minority",
+                            "exclude",
+                            "deny",
+                        ]
+                    ):
                         self.bias_detected = True
                         self.bias_score = 0.6  # High bias score
-                        self.explanation = "Detected potential bias based on protected attributes"
+                        self.explanation = (
+                            "Detected potential bias based on protected attributes"
+                        )
                     # Fair rule indicators
-                    elif any(word in rule_lower for word in ["qualifications", "merit", "skills", "experience"]):
+                    elif any(
+                        word in rule_lower
+                        for word in ["qualifications", "merit", "skills", "experience"]
+                    ):
                         self.bias_detected = False
                         self.bias_score = 0.1  # Low bias score
                         self.explanation = "Rule appears to be based on merit criteria"
@@ -57,12 +73,15 @@ except ImportError:
             class MockResponse:
                 def __init__(self, results):
                     self.results = results
-                    self.recommendations = ["Review policy for potential bias", "Consider merit-based criteria"]
+                    self.recommendations = [
+                        "Review policy for potential bias",
+                        "Consider merit-based criteria",
+                    ]
                     self.human_review_required = any(r.bias_detected for r in results)
 
             # Create results for each metric
             results = []
-            for metric in request.bias_metrics:
+            for _metric in request.bias_metrics:
                 rule_content = policy_rules[0].rule_content if policy_rules else ""
                 results.append(MockResult(rule_content))
 
@@ -83,6 +102,7 @@ except ImportError:
             for key, value in kwargs.items():
                 setattr(self, key, value)
 
+
 # Import the enhanced bias detector
 
 # sys.path.append('src/backend/fv_service')  # Removed during reorganization
@@ -101,7 +121,7 @@ class TestEnhancedBiasDetection:
         """Load test fixtures with known bias characteristics."""
         fixtures_path = Path("data/test_bias_detection_fixtures.json")
         if fixtures_path.exists():
-            with open(fixtures_path, "r") as f:
+            with open(fixtures_path) as f:
                 return json.load(f)
         else:
             # Fallback minimal fixtures if file doesn't exist
@@ -133,12 +153,16 @@ class TestEnhancedBiasDetection:
                         "protected_attributes": ["gender"],
                         "dataset": [
                             {"user_id": 1, "gender": "male", "qualifications": "high"},
-                            {"user_id": 2, "gender": "female", "qualifications": "high"},
+                            {
+                                "user_id": 2,
+                                "gender": "female",
+                                "qualifications": "high",
+                            },
                         ],
                         "expected_bias_detected": False,
                         "expected_bias_score_range": [0.0, 0.2],
                         "bias_type": "none",
-                    }
+                    },
                 ],
                 "bias_metrics": [
                     {

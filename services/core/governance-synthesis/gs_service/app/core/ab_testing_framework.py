@@ -7,9 +7,9 @@ and A/B test result tracking for prompt template optimization.
 
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 import scipy.stats as stats
@@ -60,14 +60,14 @@ class ABTestVariant:
     # Performance metrics
     sample_count: int = 0
     total_reward: float = 0.0
-    rewards: List[float] = field(default_factory=list)
+    rewards: list[float] = field(default_factory=list)
     success_count: int = 0
 
     # Calculated metrics
     mean_reward: float = 0.0
     std_reward: float = 0.0
     success_rate: float = 0.0
-    confidence_interval: Tuple[float, float] = (0.0, 1.0)
+    confidence_interval: tuple[float, float] = (0.0, 1.0)
 
 
 @dataclass
@@ -77,16 +77,16 @@ class ABTestResult:
     test_id: str
     status: ABTestStatus
     start_time: datetime
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
 
     # Statistical results
     p_value: float = 1.0
     effect_size: float = 0.0
-    confidence_interval: Tuple[float, float] = (0.0, 0.0)
+    confidence_interval: tuple[float, float] = (0.0, 0.0)
     significance: StatisticalSignificance = StatisticalSignificance.NOT_SIGNIFICANT
 
     # Winner information
-    winning_variant_id: Optional[str] = None
+    winning_variant_id: str | None = None
     improvement_percentage: float = 0.0
 
     # Test metadata
@@ -95,8 +95,8 @@ class ABTestResult:
     early_stopped: bool = False
 
     # Detailed results
-    variants: Dict[str, ABTestVariant] = field(default_factory=dict)
-    statistical_details: Dict[str, Any] = field(default_factory=dict)
+    variants: dict[str, ABTestVariant] = field(default_factory=dict)
+    statistical_details: dict[str, Any] = field(default_factory=dict)
 
 
 class ABTestingFramework:
@@ -107,15 +107,17 @@ class ABTestingFramework:
         # ensures: Correct function execution
         # sha256: func_hash
         self.config = config or ABTestConfig()
-        self.active_tests: Dict[str, ABTestResult] = {}
-        self.completed_tests: Dict[str, ABTestResult] = {}
+        self.active_tests: dict[str, ABTestResult] = {}
+        self.completed_tests: dict[str, ABTestResult] = {}
 
         logger.info("Initialized A/B Testing Framework")
 
     def create_ab_test(
         self,
         test_id: str,
-        template_variants: List[Tuple[str, str, float]],  # (template_id, name, allocation)
+        template_variants: list[
+            tuple[str, str, float]
+        ],  # (template_id, name, allocation)
         test_config: ABTestConfig = None,
     ) -> ABTestResult:
         """Create a new A/B test."""
@@ -124,13 +126,15 @@ class ABTestingFramework:
         # Validate allocations sum to 1.0
         total_allocation = sum(allocation for _, _, allocation in template_variants)
         if abs(total_allocation - 1.0) > 0.01:
-            raise ValueError(f"Allocation percentages must sum to 1.0, got {total_allocation}")
+            raise ValueError(
+                f"Allocation percentages must sum to 1.0, got {total_allocation}"
+            )
 
         # Create test result
         test_result = ABTestResult(
             test_id=test_id,
             status=ABTestStatus.RUNNING,
-            start_time=datetime.now(timezone.utc),
+            start_time=datetime.now(UTC),
         )
 
         # Create variants
@@ -145,10 +149,12 @@ class ABTestingFramework:
 
         self.active_tests[test_id] = test_result
 
-        logger.info(f"Created A/B test '{test_id}' with {len(template_variants)} variants")
+        logger.info(
+            f"Created A/B test '{test_id}' with {len(template_variants)} variants"
+        )
         return test_result
 
-    def select_variant(self, test_id: str) -> Optional[str]:
+    def select_variant(self, test_id: str) -> str | None:
         """Select a variant for the A/B test based on allocation."""
         if test_id not in self.active_tests:
             return None
@@ -175,7 +181,7 @@ class ABTestingFramework:
         template_id: str,
         reward: float,
         success: bool,
-        context: Dict[str, Any] = None,
+        context: dict[str, Any] = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -197,7 +203,9 @@ class ABTestingFramework:
                 break
 
         if not variant:
-            logger.warning(f"Variant for template {template_id} not found in test {test_id}")
+            logger.warning(
+                f"Variant for template {template_id} not found in test {test_id}"
+            )
             return
 
         # Update variant metrics
@@ -209,14 +217,19 @@ class ABTestingFramework:
 
         # Recalculate metrics
         variant.mean_reward = variant.total_reward / variant.sample_count
-        variant.std_reward = np.std(variant.rewards) if len(variant.rewards) > 1 else 0.0
+        variant.std_reward = (
+            np.std(variant.rewards) if len(variant.rewards) > 1 else 0.0
+        )
         variant.success_rate = variant.success_count / variant.sample_count
 
         # Calculate confidence interval
         if variant.sample_count >= 2:
             sem = variant.std_reward / np.sqrt(variant.sample_count)
             margin = (
-                stats.t.ppf((1 + self.config.confidence_level) / 2, variant.sample_count - 1) * sem
+                stats.t.ppf(
+                    (1 + self.config.confidence_level) / 2, variant.sample_count - 1
+                )
+                * sem
             )
             variant.confidence_interval = (
                 max(0.0, variant.mean_reward - margin),
@@ -244,7 +257,7 @@ class ABTestingFramework:
 
         # Check maximum duration
         duration_hours = (
-            datetime.now(timezone.utc) - test_result.start_time
+            datetime.now(UTC) - test_result.start_time
         ).total_seconds() / 3600
         max_duration_reached = duration_hours >= self.config.maximum_duration_hours
 
@@ -255,7 +268,8 @@ class ABTestingFramework:
         should_stop = False
         if self.config.early_stopping_enabled:
             should_stop = (
-                analysis_result["significance"] == StatisticalSignificance.HIGHLY_SIGNIFICANT
+                analysis_result["significance"]
+                == StatisticalSignificance.HIGHLY_SIGNIFICANT
                 and analysis_result["effect_size"] >= self.config.effect_size_threshold
             )
 
@@ -263,7 +277,7 @@ class ABTestingFramework:
         if max_duration_reached or should_stop:
             await self._complete_test(test_id, early_stopped=should_stop)
 
-    async def _perform_statistical_analysis(self, test_id: str) -> Dict[str, Any]:
+    async def _perform_statistical_analysis(self, test_id: str) -> dict[str, Any]:
         """Perform statistical analysis of A/B test results."""
         test_result = self.active_tests[test_id]
         variants = list(test_result.variants.values())
@@ -329,7 +343,7 @@ class ABTestingFramework:
         """Complete an A/B test and determine the winner."""
         test_result = self.active_tests[test_id]
         test_result.status = ABTestStatus.COMPLETED
-        test_result.end_time = datetime.now(timezone.utc)
+        test_result.end_time = datetime.now(UTC)
         test_result.early_stopped = early_stopped
 
         # Calculate test duration
@@ -361,7 +375,9 @@ class ABTestingFramework:
                 )
 
         # Calculate total samples
-        test_result.total_samples = sum(v.sample_count for v in test_result.variants.values())
+        test_result.total_samples = sum(
+            v.sample_count for v in test_result.variants.values()
+        )
 
         # Move to completed tests
         self.completed_tests[test_id] = test_result
@@ -373,7 +389,7 @@ class ABTestingFramework:
             f"significance={test_result.significance.value}"
         )
 
-    def get_test_results(self, test_id: str) -> Optional[ABTestResult]:
+    def get_test_results(self, test_id: str) -> ABTestResult | None:
         """Get results for a specific test."""
         if test_id in self.active_tests:
             return self.active_tests[test_id]
@@ -381,11 +397,11 @@ class ABTestingFramework:
             return self.completed_tests[test_id]
         return None
 
-    def get_active_tests(self) -> Dict[str, ABTestResult]:
+    def get_active_tests(self) -> dict[str, ABTestResult]:
         """Get all active tests."""
         return self.active_tests.copy()
 
-    def get_completed_tests(self) -> Dict[str, ABTestResult]:
+    def get_completed_tests(self) -> dict[str, ABTestResult]:
         """Get all completed tests."""
         return self.completed_tests.copy()
 
@@ -397,7 +413,7 @@ class ABTestingFramework:
         if test_id in self.active_tests:
             test_result = self.active_tests[test_id]
             test_result.status = ABTestStatus.STOPPED
-            test_result.end_time = datetime.now(timezone.utc)
+            test_result.end_time = datetime.now(UTC)
 
             # Move to completed tests
             self.completed_tests[test_id] = test_result
@@ -416,7 +432,7 @@ class ABTestingFramework:
         n = 2 * ((z_alpha + z_beta) / effect_size) ** 2
         return int(np.ceil(n))
 
-    def export_test_results(self, test_id: str) -> Dict[str, Any]:
+    def export_test_results(self, test_id: str) -> dict[str, Any]:
         """Export test results in a structured format."""
         test_result = self.get_test_results(test_id)
         if not test_result:
@@ -426,7 +442,9 @@ class ABTestingFramework:
             "test_id": test_result.test_id,
             "status": test_result.status.value,
             "start_time": test_result.start_time.isoformat(),
-            "end_time": (test_result.end_time.isoformat() if test_result.end_time else None),
+            "end_time": (
+                test_result.end_time.isoformat() if test_result.end_time else None
+            ),
             "duration_hours": test_result.test_duration_hours,
             "total_samples": test_result.total_samples,
             "statistical_results": {

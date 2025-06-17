@@ -112,7 +112,9 @@ app.add_middleware(metrics_middleware)
 
 # Include API routers
 app.include_router(federated_router, prefix="/api/v1/federated", tags=["federated"])
-app.include_router(aggregation_router, prefix="/api/v1/aggregation", tags=["aggregation"])
+app.include_router(
+    aggregation_router, prefix="/api/v1/aggregation", tags=["aggregation"]
+)
 app.include_router(privacy_router, prefix="/api/v1/privacy", tags=["privacy"])
 
 # Add metrics endpoint
@@ -155,4 +157,6 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8006, reload=True, log_level="info")
+    uvicorn.run(
+        "app.main:app", host="0.0.0.0", port=8006, reload=True, log_level="info"
+    )

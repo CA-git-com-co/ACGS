@@ -13,6 +13,7 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi import HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials
+
 from services.core.governance_synthesis.app.services.security_compliance import (
     AuditLogger,
     InputValidator,
@@ -412,7 +413,9 @@ class TestAuditLogging:
         failed_events = audit_logger.get_events(hours=1, severity="high")
         assert len(failed_events) == 2
 
-        auth_events = audit_logger.get_events(hours=1, event_type="authentication_failed")
+        auth_events = audit_logger.get_events(
+            hours=1, event_type="authentication_failed"
+        )
         assert len(auth_events) == 1
         assert auth_events[0].user_id is None
         assert not auth_events[0].success
@@ -451,7 +454,9 @@ class TestSecurityComplianceIntegration:
         # sha256: func_hash
         """Test complete request validation flow."""
         # Should pass validation for normal request
-        result = security_service.validate_request(mock_request, max_requests=100, window_minutes=1)
+        result = security_service.validate_request(
+            mock_request, max_requests=100, window_minutes=1
+        )
         assert result is True
 
     @pytest.mark.security
@@ -561,7 +566,9 @@ class TestSecurityPerformance:
         end_time = time.time()
 
         avg_time_ms = ((end_time - start_time) / 1000) * 1000
-        assert avg_time_ms < 1.0, f"Input validation too slow: {avg_time_ms:.2f}ms per validation"
+        assert (
+            avg_time_ms < 1.0
+        ), f"Input validation too slow: {avg_time_ms:.2f}ms per validation"
 
     @pytest.mark.security
     @pytest.mark.performance
@@ -575,8 +582,12 @@ class TestSecurityPerformance:
         # Measure rate limit checking time
         start_time = time.time()
         for i in range(10000):
-            rate_limiter.is_allowed(f"client_{i % 100}", max_requests=100, window_minutes=1)
+            rate_limiter.is_allowed(
+                f"client_{i % 100}", max_requests=100, window_minutes=1
+            )
         end_time = time.time()
 
         avg_time_ms = ((end_time - start_time) / 10000) * 1000
-        assert avg_time_ms < 0.1, f"Rate limiting too slow: {avg_time_ms:.4f}ms per check"
+        assert (
+            avg_time_ms < 0.1
+        ), f"Rate limiting too slow: {avg_time_ms:.4f}ms per check"

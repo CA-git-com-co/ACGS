@@ -6,7 +6,7 @@ for policy enforcement and WINA optimization insights.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 from shared import get_config
@@ -38,10 +38,10 @@ class PGCServiceClient:
 
     async def evaluate_policy_compliance(
         self,
-        proposal: Dict[str, Any],
-        policies: List[Dict[str, Any]],
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        proposal: dict[str, Any],
+        policies: list[dict[str, Any]],
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Evaluate policy compliance for EC proposal.
 
@@ -61,7 +61,9 @@ class PGCServiceClient:
                 "source": "ec_service",
             }
 
-            response = await self.client.post("/api/v1/enforcement/evaluate", json=request_data)
+            response = await self.client.post(
+                "/api/v1/enforcement/evaluate", json=request_data
+            )
             response.raise_for_status()
 
             return response.json()
@@ -73,7 +75,7 @@ class PGCServiceClient:
             logger.error(f"Unexpected error in policy evaluation: {e}")
             raise
 
-    async def get_wina_enforcement_metrics(self) -> Dict[str, Any]:
+    async def get_wina_enforcement_metrics(self) -> dict[str, Any]:
         """
         Get WINA enforcement optimization metrics.
 
@@ -94,8 +96,8 @@ class PGCServiceClient:
             raise
 
     async def enforce_alphaevolve_policies(
-        self, proposals: List[Dict[str, Any]], enforcement_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, proposals: list[dict[str, Any]], enforcement_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Enforce AlphaEvolve policies with WINA optimization.
 
@@ -114,7 +116,9 @@ class PGCServiceClient:
                 "source": "ec_service",
             }
 
-            response = await self.client.post("/api/v1/alphaevolve/enforce", json=request_data)
+            response = await self.client.post(
+                "/api/v1/alphaevolve/enforce", json=request_data
+            )
             response.raise_for_status()
 
             return response.json()
@@ -127,8 +131,8 @@ class PGCServiceClient:
             raise
 
     async def get_enforcement_strategies(
-        self, context: str, optimization_hints: Optional[Dict[str, Any]] = None
-    ) -> List[Dict[str, Any]]:
+        self, context: str, optimization_hints: dict[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
         """
         Get available enforcement strategies for context.
 
@@ -144,7 +148,9 @@ class PGCServiceClient:
             if optimization_hints:
                 params["optimization_hints"] = optimization_hints
 
-            response = await self.client.get("/api/v1/enforcement/strategies", params=params)
+            response = await self.client.get(
+                "/api/v1/enforcement/strategies", params=params
+            )
             response.raise_for_status()
 
             return response.json()

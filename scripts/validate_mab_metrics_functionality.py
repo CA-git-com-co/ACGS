@@ -13,7 +13,7 @@ import asyncio
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
@@ -177,7 +177,7 @@ async def validate_mab_metrics_format():
 
         # Test JSON serialization
         combined_response = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "metrics": metrics,
             "status": status,
         }
@@ -199,7 +199,7 @@ async def validate_mab_metrics_format():
             f"mab_overall_success_rate {metrics['overall_success_rate']}"
         )
 
-        prometheus_output = "\n".join(prometheus_metrics)
+        "\n".join(prometheus_metrics)
         print(f"✅ Prometheus format valid ({len(prometheus_metrics)} metrics)")
 
         return True

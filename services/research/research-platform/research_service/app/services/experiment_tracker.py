@@ -11,10 +11,10 @@ import logging
 import pickle
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -66,11 +66,11 @@ class ExperimentConfig:
     description: str
     hypothesis: str
     methodology: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     expected_duration_hours: float
-    success_criteria: Dict[str, Any]
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    success_criteria: dict[str, Any]
+    tags: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -80,12 +80,12 @@ class ExperimentResult:
     experiment_id: str
     run_id: str
     status: ExperimentStatus
-    metrics: Dict[str, float]
-    artifacts: List[str]
+    metrics: dict[str, float]
+    artifacts: list[str]
     summary: str
-    conclusions: List[str]
-    recommendations: List[str]
-    statistical_significance: Optional[Dict[str, Any]] = None
+    conclusions: list[str]
+    recommendations: list[str]
+    statistical_significance: dict[str, Any] | None = None
 
 
 class ExperimentTracker:
@@ -95,7 +95,7 @@ class ExperimentTracker:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.active_experiments: Dict[str, Experiment] = {}
+        self.active_experiments: dict[str, Experiment] = {}
         self.data_path = Path(settings.RESEARCH_DATA_PATH)
         self.artifacts_path = Path(settings.EXPERIMENT_ARTIFACTS_PATH)
 
@@ -104,7 +104,7 @@ class ExperimentTracker:
         self.artifacts_path.mkdir(parents=True, exist_ok=True)
 
     async def create_experiment(
-        self, db: AsyncSession, config: ExperimentConfig, user_id: Optional[int] = None
+        self, db: AsyncSession, config: ExperimentConfig, user_id: int | None = None
     ) -> Experiment:
         """Create a new experiment."""
         try:
@@ -123,7 +123,7 @@ class ExperimentTracker:
                 metadata=config.metadata,
                 status=ExperimentStatus.CREATED.value,
                 created_by=user_id,
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
 
             db.add(experiment)
@@ -144,12 +144,14 @@ class ExperimentTracker:
         self,
         db: AsyncSession,
         experiment_id: str,
-        run_config: Optional[Dict[str, Any]] = None,
+        run_config: dict[str, Any] | None = None,
     ) -> ExperimentRun:
         """Start a new experiment run."""
         try:
             # Get experiment
-            result = await db.execute(select(Experiment).where(Experiment.id == experiment_id))
+            result = await db.execute(
+                select(Experiment).where(Experiment.id == experiment_id)
+            )
             experiment = result.scalar_one_or_none()
 
             if not experiment:
@@ -163,14 +165,14 @@ class ExperimentTracker:
                 run_number=await self._get_next_run_number(db, experiment_id),
                 config=run_config or {},
                 status=ExperimentStatus.RUNNING.value,
-                started_at=datetime.now(timezone.utc),
+                started_at=datetime.now(UTC),
             )
 
             db.add(experiment_run)
 
             # Update experiment status
             experiment.status = ExperimentStatus.RUNNING.value
-            experiment.updated_at = datetime.now(timezone.utc)
+            experiment.updated_at = datetime.now(UTC)
 
             await db.commit()
             await db.refresh(experiment_run)
@@ -189,9 +191,9 @@ class ExperimentTracker:
         run_id: str,
         metric_name: str,
         value: float,
-        step: Optional[int] = None,
-        timestamp: Optional[datetime] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        step: int | None = None,
+        timestamp: datetime | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ExperimentMetric:
         """Log a metric for an experiment run."""
         try:
@@ -201,7 +203,7 @@ class ExperimentTracker:
                 metric_name=metric_name,
                 value=value,
                 step=step,
-                timestamp=timestamp or datetime.now(timezone.utc),
+                timestamp=timestamp or datetime.now(UTC),
                 metadata=metadata or {},
             )
 
@@ -221,16 +223,18 @@ class ExperimentTracker:
         db: AsyncSession,
         run_id: str,
         artifact_name: str,
-        artifact_data: Union[str, bytes, Dict[str, Any]],
+        artifact_data: str | bytes | dict[str, Any],
         artifact_type: str = "json",
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ExperimentArtifact:
         """Save an experiment artifact."""
         try:
             artifact_id = str(uuid.uuid4())
 
             # Save artifact to filesystem
-            artifact_path = self.artifacts_path / run_id / f"{artifact_name}_{artifact_id}"
+            artifact_path = (
+                self.artifacts_path / run_id / f"{artifact_name}_{artifact_id}"
+            )
             artifact_path.parent.mkdir(parents=True, exist_ok=True)
 
             if artifact_type == "json":
@@ -258,7 +262,7 @@ class ExperimentTracker:
                 size_bytes=artifact_path.stat().st_size,
                 checksum=self._calculate_checksum(artifact_path),
                 metadata=metadata or {},
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
 
             db.add(artifact)
@@ -278,14 +282,16 @@ class ExperimentTracker:
         db: AsyncSession,
         run_id: str,
         status: ExperimentStatus = ExperimentStatus.COMPLETED,
-        summary: Optional[str] = None,
-        conclusions: Optional[List[str]] = None,
-        recommendations: Optional[List[str]] = None,
+        summary: str | None = None,
+        conclusions: list[str] | None = None,
+        recommendations: list[str] | None = None,
     ) -> ExperimentRun:
         """Complete an experiment run."""
         try:
             # Get experiment run
-            result = await db.execute(select(ExperimentRun).where(ExperimentRun.id == run_id))
+            result = await db.execute(
+                select(ExperimentRun).where(ExperimentRun.id == run_id)
+            )
             experiment_run = result.scalar_one_or_none()
 
             if not experiment_run:
@@ -293,7 +299,7 @@ class ExperimentTracker:
 
             # Update run
             experiment_run.status = status.value
-            experiment_run.completed_at = datetime.now(timezone.utc)
+            experiment_run.completed_at = datetime.now(UTC)
             experiment_run.summary = summary
             experiment_run.conclusions = conclusions or []
             experiment_run.recommendations = recommendations or []

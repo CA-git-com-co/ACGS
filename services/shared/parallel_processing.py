@@ -7,11 +7,12 @@ import asyncio
 import hashlib
 import logging
 import time
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 try:
     import networkx as nx
@@ -56,16 +57,16 @@ class ParallelTask:
     """Represents a task in the parallel validation pipeline."""
 
     task_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     task_id: str = ""
-    dependencies: List[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
     priority: TaskPriority = TaskPriority.MEDIUM
     status: TaskStatus = TaskStatus.PENDING
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    result: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    result: dict[str, Any] | None = None
+    error: str | None = None
     retry_count: int = 0
     max_retries: int = 3
     timeout_seconds: float = 30.0
@@ -83,7 +84,7 @@ class ParallelTask:
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
     @property
-    def execution_time_ms(self) -> Optional[float]:
+    def execution_time_ms(self) -> float | None:
         """Calculate execution time in milliseconds."""
         if self.started_at and self.completed_at:
             return (self.completed_at - self.started_at).total_seconds() * 1000
@@ -105,9 +106,9 @@ class ValidationBatch:
     """Represents a batch of validation tasks for parallel processing."""
 
     batch_id: str
-    tasks: List[ParallelTask]
+    tasks: list[ParallelTask]
     batch_type: str = "validation"
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     max_concurrent: int = 10
     timeout_seconds: float = 120.0
 
@@ -148,7 +149,7 @@ class DependencyGraphAnalyzer:
             self.graph = nx.DiGraph()
         else:
             self.graph = None
-        self.task_registry: Dict[str, ParallelTask] = {}
+        self.task_registry: dict[str, ParallelTask] = {}
 
     def add_task(self, task: ParallelTask) -> None:
         """Add task to dependency graph."""
@@ -162,7 +163,7 @@ class DependencyGraphAnalyzer:
                 if dep_id in self.task_registry:
                     self.graph.add_edge(dep_id, task.task_id)
 
-    def get_execution_order(self) -> List[List[str]]:
+    def get_execution_order(self) -> list[list[str]]:
         """Get optimal execution order using topological sort."""
         if not NETWORKX_AVAILABLE or self.graph is None:
             # Fallback to sequential execution when NetworkX not available
@@ -191,7 +192,9 @@ class DependencyGraphAnalyzer:
 
                 if not ready_tasks:
                     # This shouldn't happen with a valid DAG
-                    raise ValueError("Unable to find ready tasks - possible graph corruption")
+                    raise ValueError(
+                        "Unable to find ready tasks - possible graph corruption"
+                    )
 
                 levels.append(ready_tasks)
                 remaining_tasks -= set(ready_tasks)
@@ -203,7 +206,7 @@ class DependencyGraphAnalyzer:
             # Fallback to sequential execution
             return [[task_id] for task_id in self.task_registry.keys()]
 
-    def get_critical_path(self) -> List[str]:
+    def get_critical_path(self) -> list[str]:
         """Calculate critical path for optimization."""
         if not NETWORKX_AVAILABLE or self.graph is None:
             # Fallback: return all tasks in order
@@ -225,7 +228,7 @@ class DependencyGraphAnalyzer:
             logger.error(f"Failed to calculate critical path: {e}")
             return []
 
-    def get_task_statistics(self) -> Dict[str, Any]:
+    def get_task_statistics(self) -> dict[str, Any]:
         """Get dependency graph statistics."""
         if not NETWORKX_AVAILABLE or self.graph is None:
             return {
@@ -241,7 +244,9 @@ class DependencyGraphAnalyzer:
             "total_tasks": len(self.task_registry),
             "total_edges": self.graph.number_of_edges(),
             "is_dag": nx.is_directed_acyclic_graph(self.graph),
-            "max_depth": (len(nx.dag_longest_path(self.graph)) if self.graph.nodes() else 0),
+            "max_depth": (
+                len(nx.dag_longest_path(self.graph)) if self.graph.nodes() else 0
+            ),
             "parallelization_factor": (
                 len(self.task_registry) / max(len(nx.dag_longest_path(self.graph)), 1)
                 if self.graph.nodes()
@@ -260,7 +265,7 @@ class TaskPartitioner:
         # sha256: func_hash
         self.max_batch_size = max_batch_size
 
-    def partition_tasks(self, tasks: List[ParallelTask]) -> List[ValidationBatch]:
+    def partition_tasks(self, tasks: list[ParallelTask]) -> list[ValidationBatch]:
         """Partition tasks into optimal batches."""
         if not tasks:
             return []
@@ -324,7 +329,7 @@ class ParallelExecutor:
         # sha256: func_hash
         self.max_concurrent = max_concurrent
         self.thread_pool = ThreadPoolExecutor(max_workers=thread_pool_size)
-        self.active_tasks: Dict[str, asyncio.Task] = {}
+        self.active_tasks: dict[str, asyncio.Task] = {}
         self.semaphore = asyncio.Semaphore(max_concurrent)
 
     async def execute_task(
@@ -333,28 +338,30 @@ class ParallelExecutor:
         """Execute a single task with timeout and error handling."""
         async with self.semaphore:
             task.status = TaskStatus.RUNNING
-            task.started_at = datetime.now(timezone.utc)
+            task.started_at = datetime.now(UTC)
 
             try:
                 # Execute task with timeout
                 result = await asyncio.wait_for(
-                    asyncio.get_event_loop().run_in_executor(self.thread_pool, executor_func, task),
+                    asyncio.get_event_loop().run_in_executor(
+                        self.thread_pool, executor_func, task
+                    ),
                     timeout=task.timeout_seconds,
                 )
 
                 task.result = result
                 task.status = TaskStatus.COMPLETED
-                task.completed_at = datetime.now(timezone.utc)
+                task.completed_at = datetime.now(UTC)
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 task.error = f"Task timed out after {task.timeout_seconds} seconds"
                 task.status = TaskStatus.FAILED
-                task.completed_at = datetime.now(timezone.utc)
+                task.completed_at = datetime.now(UTC)
 
             except Exception as e:
                 task.error = str(e)
                 task.status = TaskStatus.FAILED
-                task.completed_at = datetime.now(timezone.utc)
+                task.completed_at = datetime.now(UTC)
 
             return task
 
@@ -362,7 +369,7 @@ class ParallelExecutor:
         self,
         batch: ValidationBatch,
         executor_func: Callable[[ParallelTask], Any],
-        progress_callback: Optional[Callable[[float], None]] = None,
+        progress_callback: Callable[[float], None] | None = None,
     ) -> ValidationBatch:
         """Execute a batch of tasks in parallel."""
         logger.info(f"Executing batch {batch.batch_id} with {batch.total_tasks} tasks")

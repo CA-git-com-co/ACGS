@@ -6,7 +6,6 @@ integrating with the Constitutional Council StateGraph workflows.
 """
 
 import logging
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
@@ -32,7 +31,6 @@ from app.services.stakeholder_engagement import (
     StakeholderEngagementStatus,
     get_stakeholder_engagement_service,
 )
-
 from services.shared.langgraph_config import ConstitutionalCouncilConfig
 
 logger = logging.getLogger(__name__)
@@ -57,9 +55,9 @@ class NotificationResponse(BaseModel):
     amendment_id: int
     channel: str
     status: str
-    sent_at: Optional[str] = None
-    delivered_at: Optional[str] = None
-    read_at: Optional[str] = None
+    sent_at: str | None = None
+    delivered_at: str | None = None
+    read_at: str | None = None
     content: dict
 
 
@@ -74,7 +72,7 @@ class FeedbackResponse(BaseModel):
     feedback_type: str
     status: str
     submitted_at: str
-    reviewed_at: Optional[str] = None
+    reviewed_at: str | None = None
 
 
 @router.post("/initiate", response_model=StakeholderEngagementStatus)
@@ -90,7 +88,7 @@ async def initiate_stakeholder_engagement(
     """
     try:
         # Check permissions (admin or constitutional council member)
-        if not (current_user.role in ["admin", "constitutional_expert", "policy_administrator"]):
+        if current_user.role not in ["admin", "constitutional_expert", "policy_administrator"]:
             raise HTTPException(
                 status_code=403,
                 detail="Insufficient permissions to initiate stakeholder engagement",
@@ -191,7 +189,9 @@ async def submit_stakeholder_feedback(
             status=feedback_record.status.value,
             submitted_at=feedback_record.submitted_at.isoformat(),
             reviewed_at=(
-                feedback_record.reviewed_at.isoformat() if feedback_record.reviewed_at else None
+                feedback_record.reviewed_at.isoformat()
+                if feedback_record.reviewed_at
+                else None
             ),
         )
 
@@ -208,9 +208,9 @@ async def submit_stakeholder_feedback(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/notifications", response_model=List[NotificationResponse])
+@router.get("/notifications", response_model=list[NotificationResponse])
 async def get_stakeholder_notifications(
-    amendment_id: Optional[int] = None,
+    amendment_id: int | None = None,
     current_user: User = Depends(get_current_active_user_placeholder),
     db: AsyncSession = Depends(get_async_db),
 ):
@@ -234,11 +234,17 @@ async def get_stakeholder_notifications(
                 amendment_id=notification.amendment_id,
                 channel=notification.channel.value,
                 status=notification.status.value,
-                sent_at=(notification.sent_at.isoformat() if notification.sent_at else None),
-                delivered_at=(
-                    notification.delivered_at.isoformat() if notification.delivered_at else None
+                sent_at=(
+                    notification.sent_at.isoformat() if notification.sent_at else None
                 ),
-                read_at=(notification.read_at.isoformat() if notification.read_at else None),
+                delivered_at=(
+                    notification.delivered_at.isoformat()
+                    if notification.delivered_at
+                    else None
+                ),
+                read_at=(
+                    notification.read_at.isoformat() if notification.read_at else None
+                ),
                 content=notification.content,
             )
             notification_responses.append(notification_response)
@@ -250,7 +256,7 @@ async def get_stakeholder_notifications(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/feedback/{amendment_id}", response_model=List[FeedbackResponse])
+@router.get("/feedback/{amendment_id}", response_model=list[FeedbackResponse])
 async def get_amendment_feedback(
     amendment_id: int,
     current_user: User = Depends(get_current_active_user_placeholder),
@@ -259,7 +265,7 @@ async def get_amendment_feedback(
     """Get all feedback for an amendment (admin/council members only)."""
     try:
         # Check permissions
-        if not (current_user.role in ["admin", "constitutional_expert", "policy_administrator"]):
+        if current_user.role not in ["admin", "constitutional_expert", "policy_administrator"]:
             raise HTTPException(
                 status_code=403, detail="Insufficient permissions to view all feedback"
             )
@@ -284,7 +290,9 @@ async def get_amendment_feedback(
                 feedback_type=feedback.feedback_type,
                 status=feedback.status.value,
                 submitted_at=feedback.submitted_at.isoformat(),
-                reviewed_at=(feedback.reviewed_at.isoformat() if feedback.reviewed_at else None),
+                reviewed_at=(
+                    feedback.reviewed_at.isoformat() if feedback.reviewed_at else None
+                ),
             )
             feedback_responses.append(feedback_response)
 
@@ -319,7 +327,9 @@ async def websocket_engagement_updates(websocket: WebSocket, amendment_id: int):
 
         async for db in get_async_db():
             config = ConstitutionalCouncilConfig()
-            engagement_service = get_stakeholder_engagement_service(db=db, config=config)
+            engagement_service = get_stakeholder_engagement_service(
+                db=db, config=config
+            )
             break
 
         await engagement_service.add_websocket_connection(amendment_id, websocket)

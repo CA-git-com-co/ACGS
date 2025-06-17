@@ -12,7 +12,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -55,7 +55,7 @@ class MemoryFrameworkOptimizer:
             else None
         )
 
-    def get_system_memory_info(self) -> Dict[str, Any]:
+    def get_system_memory_info(self) -> dict[str, Any]:
         """Get system memory information using fallback methods."""
         try:
             # Try psutil first
@@ -75,7 +75,7 @@ class MemoryFrameworkOptimizer:
 
             # Fallback to /proc/meminfo on Linux
             if os.path.exists("/proc/meminfo"):
-                with open("/proc/meminfo", "r") as f:
+                with open("/proc/meminfo") as f:
                     meminfo = {}
                     for line in f:
                         key, value = line.split(":")
@@ -117,7 +117,7 @@ class MemoryFrameworkOptimizer:
                 "method": "error_fallback",
             }
 
-    async def perform_aggressive_gc(self) -> Dict[str, Any]:
+    async def perform_aggressive_gc(self) -> dict[str, Any]:
         """Perform aggressive garbage collection."""
         logger.info("🧹 Performing aggressive garbage collection")
 
@@ -136,7 +136,7 @@ class MemoryFrameworkOptimizer:
 
             # Perform multiple GC passes
             total_collected = 0
-            for i in range(5):
+            for _i in range(5):
                 collected = gc.collect()
                 total_collected += collected
                 gc_results["collections_performed"] += 1
@@ -161,7 +161,7 @@ class MemoryFrameworkOptimizer:
 
         return gc_results
 
-    async def optimize_python_memory_settings(self) -> Dict[str, Any]:
+    async def optimize_python_memory_settings(self) -> dict[str, Any]:
         """Optimize Python memory settings."""
         logger.info("⚙️ Optimizing Python memory settings")
 
@@ -199,7 +199,7 @@ class MemoryFrameworkOptimizer:
 
         return optimization_results
 
-    async def implement_memory_monitoring(self) -> Dict[str, Any]:
+    async def implement_memory_monitoring(self) -> dict[str, Any]:
         """Implement memory monitoring for ACGS services."""
         logger.info("📊 Implementing memory monitoring")
 
@@ -244,7 +244,7 @@ class MemoryFrameworkOptimizer:
 
         return monitoring_results
 
-    async def validate_memory_targets(self) -> Dict[str, Any]:
+    async def validate_memory_targets(self) -> dict[str, Any]:
         """Validate that memory usage meets targets."""
         logger.info("🎯 Validating memory usage targets")
 
@@ -312,7 +312,7 @@ class MemoryFrameworkOptimizer:
 
         return validation_results
 
-    async def optimize_complete_framework(self) -> Dict[str, Any]:
+    async def optimize_complete_framework(self) -> dict[str, Any]:
         """Optimize the complete memory framework."""
         logger.info("🚀 Starting memory framework optimization")
         logger.info("=" * 60)

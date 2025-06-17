@@ -18,9 +18,9 @@ Key Features:
 import logging
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import numpy as np
@@ -65,7 +65,7 @@ class ConstitutionalTopic:
     title: str
     description: str
     constitutional_context: str
-    related_principles: List[str]
+    related_principles: list[str]
     urgency_level: str = "medium"
     expected_duration: timedelta = field(default_factory=lambda: timedelta(days=30))
 
@@ -80,7 +80,7 @@ class StakeholderGroup:
     participant_count: int
     role: ParticipantRole
     weight: float = 1.0
-    contact_methods: List[str] = field(default_factory=list)
+    contact_methods: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -92,7 +92,7 @@ class DemocraticMetrics:
     consensus_level: float
     polarization_index: float
     engagement_rate: float
-    bias_indicators: Dict[BiasCategory, float]
+    bias_indicators: dict[BiasCategory, float]
     legitimacy_score: float
 
 
@@ -102,7 +102,9 @@ class PolisIntegration:
     in constitutional governance decisions.
     """
 
-    def __init__(self, api_key: Optional[str] = None, base_url: str = "https://pol.is/api/v3"):
+    def __init__(
+        self, api_key: str | None = None, base_url: str = "https://pol.is/api/v3"
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -111,8 +113,8 @@ class PolisIntegration:
         self.metrics = get_metrics("polis_integration")
 
         # Active conversations and stakeholder groups
-        self.active_conversations: Dict[str, PolisConversation] = {}
-        self.stakeholder_groups: Dict[str, StakeholderGroup] = {}
+        self.active_conversations: dict[str, PolisConversation] = {}
+        self.stakeholder_groups: dict[str, StakeholderGroup] = {}
 
         # Configuration
         self.max_participants_per_conversation = 10000
@@ -131,8 +133,8 @@ class PolisIntegration:
     async def create_democratic_conversation(
         self,
         topic: ConstitutionalTopic,
-        stakeholder_groups: List[StakeholderGroup],
-        moderation_settings: Optional[Dict[str, Any]] = None,
+        stakeholder_groups: list[StakeholderGroup],
+        moderation_settings: dict[str, Any] | None = None,
     ) -> PolisConversation:
         """
         Create structured democratic conversation on Polis platform.
@@ -185,8 +187,12 @@ class PolisIntegration:
                     ) as response:
                         if response.status == 201:
                             data = await response.json()
-                            conversation_id = data.get("conversation_id", conversation_id)
-                            logger.info(f"Created Polis conversation: {conversation_id}")
+                            conversation_id = data.get(
+                                "conversation_id", conversation_id
+                            )
+                            logger.info(
+                                f"Created Polis conversation: {conversation_id}"
+                            )
                         else:
                             logger.warning(
                                 f"Failed to create Polis conversation: {response.status}"
@@ -200,8 +206,10 @@ class PolisIntegration:
             conversation_id=conversation_id,
             topic=topic.title,
             description=topic.description,
-            created_at=datetime.now(timezone.utc),
-            participant_count=sum(group.participant_count for group in stakeholder_groups),
+            created_at=datetime.now(UTC),
+            participant_count=sum(
+                group.participant_count for group in stakeholder_groups
+            ),
             status="active",
         )
 
@@ -214,7 +222,9 @@ class PolisIntegration:
         self.performance_metrics["conversations_created"] += 1
         self.performance_metrics["total_participants"] += conversation.participant_count
         self.metrics.increment("conversations_created")
-        self.metrics.record_value("participants_engaged", conversation.participant_count)
+        self.metrics.record_value(
+            "participants_engaged", conversation.participant_count
+        )
 
         logger.info(
             f"Democratic conversation created: {conversation_id} with {len(stakeholder_groups)} stakeholder groups"
@@ -222,7 +232,9 @@ class PolisIntegration:
 
         return conversation
 
-    async def monitor_democratic_participation(self, conversation_id: str) -> DemocraticMetrics:
+    async def monitor_democratic_participation(
+        self, conversation_id: str
+    ) -> DemocraticMetrics:
         """
         Monitor democratic participation metrics for a conversation.
 
@@ -265,7 +277,9 @@ class PolisIntegration:
         for bias_category, bias_score in metrics.bias_indicators.items():
             if bias_score > self.bias_detection_threshold:
                 self.performance_metrics["bias_incidents_detected"] += 1
-                await self._handle_bias_incident(conversation_id, bias_category, bias_score)
+                await self._handle_bias_incident(
+                    conversation_id, bias_category, bias_score
+                )
 
         # Check for consensus achievement
         if metrics.consensus_level >= self.consensus_threshold:
@@ -278,7 +292,7 @@ class PolisIntegration:
 
     async def extract_democratic_consensus(
         self, conversation_id: str, min_consensus: float = 0.7
-    ) -> List[CollectiveInput]:
+    ) -> list[CollectiveInput]:
         """
         Extract democratic consensus from Polis conversation.
 
@@ -312,8 +326,12 @@ class PolisIntegration:
                                     input_id=str(uuid.uuid4()),
                                     source="polis",
                                     content=statement.get("text", ""),
-                                    participant_id=statement.get("participant_id", "consensus"),
-                                    timestamp=datetime.fromisoformat(statement.get("created_at")),
+                                    participant_id=statement.get(
+                                        "participant_id", "consensus"
+                                    ),
+                                    timestamp=datetime.fromisoformat(
+                                        statement.get("created_at")
+                                    ),
                                     weight=statement.get("consensus_score", 0.0),
                                     validated=True,
                                 )
@@ -336,7 +354,7 @@ class PolisIntegration:
                     source="mock_polis",
                     content=content,
                     participant_id=f"consensus_participant_{i}",
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                     weight=min_consensus + (i * 0.05),
                     validated=True,
                 )
@@ -346,7 +364,9 @@ class PolisIntegration:
         conversation = self.active_conversations[conversation_id]
         conversation.consensus_statements = [ci.content for ci in collective_inputs]
 
-        self.metrics.record_value("consensus_statements_extracted", len(collective_inputs))
+        self.metrics.record_value(
+            "consensus_statements_extracted", len(collective_inputs)
+        )
 
         logger.info(
             f"Extracted {len(collective_inputs)} consensus statements from {conversation_id}"
@@ -356,7 +376,7 @@ class PolisIntegration:
 
     async def close_conversation(
         self, conversation_id: str, final_report: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Close a democratic conversation and generate final report.
 
@@ -382,12 +402,17 @@ class PolisIntegration:
         final_report_data = {
             "conversation_id": conversation_id,
             "topic": conversation.topic,
-            "duration": (datetime.now(timezone.utc) - conversation.created_at).total_seconds(),
+            "duration": (
+                datetime.now(UTC) - conversation.created_at
+            ).total_seconds(),
             "final_metrics": final_metrics.__dict__,
             "consensus_statements": [ci.content for ci in consensus_inputs],
             "total_participants": final_metrics.total_participants,
-            "consensus_achieved": final_metrics.consensus_level >= self.consensus_threshold,
-            "legitimacy_level": self._determine_legitimacy_level(final_metrics.legitimacy_score),
+            "consensus_achieved": final_metrics.consensus_level
+            >= self.consensus_threshold,
+            "legitimacy_level": self._determine_legitimacy_level(
+                final_metrics.legitimacy_score
+            ),
             "bias_incidents": self.performance_metrics["bias_incidents_detected"],
             "recommendations": await self._generate_recommendations(final_metrics),
         }
@@ -404,7 +429,9 @@ class PolisIntegration:
                         if response.status == 200:
                             logger.info(f"Closed Polis conversation: {conversation_id}")
                         else:
-                            logger.warning(f"Failed to close Polis conversation: {response.status}")
+                            logger.warning(
+                                f"Failed to close Polis conversation: {response.status}"
+                            )
 
             except Exception as e:
                 logger.error(f"Error closing Polis conversation: {e}")
@@ -417,7 +444,7 @@ class PolisIntegration:
         return final_report_data
 
     # Helper methods
-    def _group_to_polis_format(self, group: StakeholderGroup) -> Dict[str, Any]:
+    def _group_to_polis_format(self, group: StakeholderGroup) -> dict[str, Any]:
         """Convert stakeholder group to Polis format."""
         return {
             "group_id": group.group_id,
@@ -429,7 +456,7 @@ class PolisIntegration:
             "contact_methods": group.contact_methods,
         }
 
-    async def _fetch_participation_data(self, conversation_id: str) -> Dict[str, Any]:
+    async def _fetch_participation_data(self, conversation_id: str) -> dict[str, Any]:
         """Fetch participation data from Polis API."""
         # Mock data for testing when API is not available
         return {
@@ -445,7 +472,7 @@ class PolisIntegration:
             },
         }
 
-    def _calculate_legitimacy_score(self, participation_data: Dict[str, Any]) -> float:
+    def _calculate_legitimacy_score(self, participation_data: dict[str, Any]) -> float:
         """Calculate democratic legitimacy score."""
         consensus = participation_data.get("consensus_level", 0.0)
         engagement = participation_data.get("engagement_rate", 0.0)
@@ -459,7 +486,9 @@ class PolisIntegration:
 
         return min(max(legitimacy_score, 0.0), 1.0)
 
-    def _determine_legitimacy_level(self, legitimacy_score: float) -> DemocraticLegitimacyLevel:
+    def _determine_legitimacy_level(
+        self, legitimacy_score: float
+    ) -> DemocraticLegitimacyLevel:
         """Determine democratic legitimacy level from score."""
         if legitimacy_score >= 0.8:
             return DemocraticLegitimacyLevel.CONSENSUS
@@ -482,25 +511,35 @@ class PolisIntegration:
         )
         # Implement bias mitigation strategies
 
-    async def _handle_consensus_achievement(self, conversation_id: str, metrics: DemocraticMetrics):
+    async def _handle_consensus_achievement(
+        self, conversation_id: str, metrics: DemocraticMetrics
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Handle consensus achievement."""
-        logger.info(f"Consensus achieved in {conversation_id}: {metrics.consensus_level}")
+        logger.info(
+            f"Consensus achieved in {conversation_id}: {metrics.consensus_level}"
+        )
         # Implement consensus handling logic
 
-    async def _generate_recommendations(self, metrics: DemocraticMetrics) -> List[str]:
+    async def _generate_recommendations(self, metrics: DemocraticMetrics) -> list[str]:
         """Generate recommendations based on participation metrics."""
         recommendations = []
 
         if metrics.consensus_level < 0.6:
-            recommendations.append("Consider extending deliberation period to build consensus")
+            recommendations.append(
+                "Consider extending deliberation period to build consensus"
+            )
 
         if metrics.engagement_rate < 0.5:
-            recommendations.append("Implement engagement strategies to increase participation")
+            recommendations.append(
+                "Implement engagement strategies to increase participation"
+            )
 
         if metrics.polarization_index > 0.7:
-            recommendations.append("Apply conflict resolution techniques to reduce polarization")
+            recommendations.append(
+                "Apply conflict resolution techniques to reduce polarization"
+            )
 
         return recommendations

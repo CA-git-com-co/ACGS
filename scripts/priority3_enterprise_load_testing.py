@@ -7,15 +7,14 @@ for >1000 concurrent governance actions with >99.9% availability targets.
 """
 
 import asyncio
-import aiohttp
 import json
 import logging
+import statistics
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
-import concurrent.futures
-import statistics
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(
@@ -68,7 +67,7 @@ class EnterpriseLoadTester:
             "/api/v1/governance/audit-transparency",
         ]
 
-    async def execute_enterprise_load_testing(self) -> Dict:
+    async def execute_enterprise_load_testing(self) -> dict:
         """Execute comprehensive enterprise load testing."""
         logger.info("🚀 Starting ACGS-1 Enterprise Load Testing")
         start_time = time.time()
@@ -131,7 +130,7 @@ class EnterpriseLoadTester:
             results["overall_success"] = False
             return results
 
-    async def validate_baseline_performance(self) -> Dict:
+    async def validate_baseline_performance(self) -> dict:
         """Validate baseline performance before load testing."""
         logger.info("📊 Validating baseline performance...")
 
@@ -203,7 +202,7 @@ class EnterpriseLoadTester:
             "service_baselines": baseline_results,
         }
 
-    async def progressive_load_testing(self) -> Dict:
+    async def progressive_load_testing(self) -> dict:
         """Progressive load testing with increasing concurrent users."""
         logger.info("📈 Running progressive load testing...")
 
@@ -292,7 +291,7 @@ class EnterpriseLoadTester:
 
         # Find maximum supported concurrent users
         max_supported_users = 0
-        for level_key, result in progressive_results.items():
+        for _level_key, result in progressive_results.items():
             if result.get("meets_targets", False):
                 users = result.get("concurrent_users", 0)
                 max_supported_users = max(max_supported_users, users)
@@ -308,7 +307,7 @@ class EnterpriseLoadTester:
 
     async def make_load_test_request(
         self, session: aiohttp.ClientSession, url: str
-    ) -> Dict:
+    ) -> dict:
         """Make a single load test request."""
         try:
             start = time.time()
@@ -324,7 +323,7 @@ class EnterpriseLoadTester:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def governance_workflow_load_testing(self) -> Dict:
+    async def governance_workflow_load_testing(self) -> dict:
         """Test governance workflow endpoints under load."""
         logger.info("🏛️ Testing governance workflows under load...")
 
@@ -390,7 +389,7 @@ class EnterpriseLoadTester:
             "workflow_results": workflow_results,
         }
 
-    async def stress_testing(self) -> Dict:
+    async def stress_testing(self) -> dict:
         """Stress testing to find system breaking point."""
         logger.info("💥 Running stress testing...")
 
@@ -453,7 +452,7 @@ class EnterpriseLoadTester:
 
         return {"success": len(stress_results) > 0, "stress_results": stress_results}
 
-    async def availability_testing(self) -> Dict:
+    async def availability_testing(self) -> dict:
         """Test system availability over time."""
         logger.info("🔄 Testing system availability...")
 
@@ -529,7 +528,7 @@ class EnterpriseLoadTester:
             "availability_samples": len(availability_results),
         }
 
-    def evaluate_load_test_success(self, results: Dict) -> bool:
+    def evaluate_load_test_success(self, results: dict) -> bool:
         """Evaluate overall load test success."""
         phases = results.get("test_phases", {})
 
@@ -543,7 +542,7 @@ class EnterpriseLoadTester:
         # Require at least baseline and one other test to pass
         return baseline_success and (progressive_success or availability_success)
 
-    def generate_performance_summary(self, results: Dict) -> Dict:
+    def generate_performance_summary(self, results: dict) -> dict:
         """Generate performance summary from test results."""
         phases = results.get("test_phases", {})
 
@@ -571,7 +570,7 @@ class EnterpriseLoadTester:
             ),
         }
 
-    async def save_load_test_report(self, results: Dict) -> None:
+    async def save_load_test_report(self, results: dict) -> None:
         """Save comprehensive load test report."""
         report_file = f"priority3_enterprise_load_test_{int(time.time())}.json"
         report_path = self.project_root / "logs" / report_file
@@ -594,7 +593,7 @@ async def main():
         print("✅ Enterprise load testing completed successfully!")
 
         summary = results.get("performance_summary", {})
-        print(f"📊 Performance Summary:")
+        print("📊 Performance Summary:")
         print(f"  • Max Concurrent Users: {summary.get('max_concurrent_users', 0)}")
         print(
             f"  • Average Availability: {summary.get('avg_availability_percent', 0):.1f}%"

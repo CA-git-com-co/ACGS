@@ -6,7 +6,7 @@ Implements digital signatures, hash functions, Merkle trees, and RFC 3161 timest
 import hashlib
 import json
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 # Cryptography library imports
 try:
@@ -54,7 +54,7 @@ class CryptographicIntegrityService:
         logger.debug(f"Generated SHA3-256 hash: {digest[:16]}...")
         return digest
 
-    def generate_content_hash(self, content: Dict[str, Any]) -> str:
+    def generate_content_hash(self, content: dict[str, Any]) -> str:
         """
         Generate deterministic hash of structured content
 
@@ -68,7 +68,7 @@ class CryptographicIntegrityService:
         json_str = json.dumps(content, sort_keys=True, separators=(",", ":"))
         return self.generate_sha3_hash(json_str)
 
-    def generate_key_pair(self, key_size: int = 2048) -> Tuple[str, str, str]:
+    def generate_key_pair(self, key_size: int = 2048) -> tuple[str, str, str]:
         """
         Generate RSA key pair for digital signatures
 
@@ -129,14 +129,18 @@ class CryptographicIntegrityService:
         # Sign data
         signature = private_key.sign(
             data.encode("utf-8"),
-            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
+            ),
             hashes.SHA256(),
         )
 
         logger.debug(f"Created signature for data: {data[:50]}...")
         return signature
 
-    def verify_signature(self, data: str, signature: bytes, public_key_pem: str) -> bool:
+    def verify_signature(
+        self, data: str, signature: bytes, public_key_pem: str
+    ) -> bool:
         """
         Verify digital signature using RSA-PSS
 
@@ -190,7 +194,7 @@ class MerkleTreeService:
         # sha256: func_hash
         self.crypto_service = CryptographicIntegrityService()
 
-    def build_merkle_tree(self, data_hashes: List[str]) -> Dict[str, Any]:
+    def build_merkle_tree(self, data_hashes: list[str]) -> dict[str, Any]:
         """
         Build Merkle tree from list of data hashes
 
@@ -217,7 +221,9 @@ class MerkleTreeService:
             # Process pairs of nodes
             for i in range(0, len(current_level), 2):
                 left_hash = current_level[i]
-                right_hash = current_level[i + 1] if i + 1 < len(current_level) else left_hash
+                right_hash = (
+                    current_level[i + 1] if i + 1 < len(current_level) else left_hash
+                )
 
                 # Combine hashes
                 combined = left_hash + right_hash
@@ -229,7 +235,9 @@ class MerkleTreeService:
 
         root_hash = current_level[0] if current_level else ""
 
-        logger.info(f"Built Merkle tree with root: {root_hash[:16]}... ({len(data_hashes)} leaves)")
+        logger.info(
+            f"Built Merkle tree with root: {root_hash[:16]}... ({len(data_hashes)} leaves)"
+        )
 
         return {
             "root_hash": root_hash,
@@ -238,8 +246,8 @@ class MerkleTreeService:
         }
 
     def generate_merkle_proof(
-        self, data_hash: str, tree_levels: List[List[str]]
-    ) -> List[Dict[str, str]]:
+        self, data_hash: str, tree_levels: list[list[str]]
+    ) -> list[dict[str, str]]:
         """
         Generate Merkle proof for a specific data hash
 
@@ -278,7 +286,7 @@ class MerkleTreeService:
         return proof
 
     def verify_merkle_proof(
-        self, data_hash: str, proof: List[Dict[str, str]], root_hash: str
+        self, data_hash: str, proof: list[dict[str, str]], root_hash: str
     ) -> bool:
         """
         Verify Merkle proof for a data hash

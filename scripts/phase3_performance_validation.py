@@ -18,8 +18,7 @@ import logging
 import statistics
 import sys
 import time
-from datetime import datetime, timezone
-from typing import Dict
+from datetime import UTC, datetime
 
 import aiohttp
 import psutil
@@ -56,7 +55,7 @@ class ACGSPerformanceValidator:
         }
 
         self.results = {
-            "test_start": datetime.now(timezone.utc).isoformat(),
+            "test_start": datetime.now(UTC).isoformat(),
             "services_tested": [],
             "performance_metrics": {},
             "load_test_results": {},
@@ -104,7 +103,7 @@ class ACGSPerformanceValidator:
         )
         return all_healthy
 
-    async def measure_baseline_performance(self) -> Dict:
+    async def measure_baseline_performance(self) -> dict:
         """Measure baseline performance for each service."""
         logger.info("📊 Measuring baseline performance...")
 
@@ -151,7 +150,7 @@ class ACGSPerformanceValidator:
 
     async def run_load_test(
         self, concurrent_users: int = 100, duration_minutes: int = 10
-    ) -> Dict:
+    ) -> dict:
         """Run comprehensive load test with specified concurrent users."""
         logger.info(
             f"🚀 Starting load test: {concurrent_users} concurrent users for {duration_minutes} minutes..."
@@ -163,10 +162,10 @@ class ACGSPerformanceValidator:
 
         # Track metrics during load test
         response_times = {service_id: [] for service_id in self.services.keys()}
-        error_counts = {service_id: 0 for service_id in self.services.keys()}
-        success_counts = {service_id: 0 for service_id in self.services.keys()}
+        error_counts = dict.fromkeys(self.services.keys(), 0)
+        success_counts = dict.fromkeys(self.services.keys(), 0)
 
-        async def worker(session: aiohttp.ClientSession, service_id: str, config: Dict):
+        async def worker(session: aiohttp.ClientSession, service_id: str, config: dict):
             """Worker function for load testing a specific service."""
             while time.time() < end_time:
                 try:
@@ -254,7 +253,7 @@ class ACGSPerformanceValidator:
             memory_info = psutil.virtual_memory()
             self.results["memory_monitoring"].append(
                 {
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "memory_percent": memory_info.percent,
                     "memory_used_gb": memory_info.used / (1024**3),
                     "memory_available_gb": memory_info.available / (1024**3),
@@ -379,7 +378,7 @@ class ACGSPerformanceValidator:
 
     def generate_final_report(self):
         """Generate comprehensive performance validation report."""
-        self.results["test_end"] = datetime.now(timezone.utc).isoformat()
+        self.results["test_end"] = datetime.now(UTC).isoformat()
 
         # Save detailed results to file
         report_file = f"logs/phase3_performance_validation_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"

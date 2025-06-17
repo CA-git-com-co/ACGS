@@ -13,7 +13,7 @@ import logging
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..config.opa_config import get_opa_config
 from ..core.opa_integration import (
@@ -50,9 +50,9 @@ class PolicyValidationRequest:
 
     policy_content: str
     policy_type: PolicyType
-    constitutional_principles: List[Dict[str, Any]]
-    existing_policies: List[Dict[str, Any]]
-    context_data: Dict[str, Any]
+    constitutional_principles: list[dict[str, Any]]
+    existing_policies: list[dict[str, Any]]
+    context_data: dict[str, Any]
     validation_level: ValidationLevel = ValidationLevel.STANDARD
     check_conflicts: bool = True
     check_compliance: bool = True
@@ -65,11 +65,11 @@ class ConflictDetectionResult:
     """Result of policy conflict detection."""
 
     has_conflicts: bool
-    logical_conflicts: List[Dict[str, Any]]
-    semantic_conflicts: List[Dict[str, Any]]
-    priority_conflicts: List[Dict[str, Any]]
-    scope_conflicts: List[Dict[str, Any]]
-    conflict_resolution_suggestions: List[str]
+    logical_conflicts: list[dict[str, Any]]
+    semantic_conflicts: list[dict[str, Any]]
+    priority_conflicts: list[dict[str, Any]]
+    scope_conflicts: list[dict[str, Any]]
+    conflict_resolution_suggestions: list[str]
 
 
 @dataclass
@@ -78,9 +78,9 @@ class ComplianceCheckResult:
 
     is_compliant: bool
     compliance_score: float
-    category_scores: Dict[str, float]
-    violations: List[Dict[str, Any]]
-    recommendations: List[str]
+    category_scores: dict[str, float]
+    violations: list[dict[str, Any]]
+    recommendations: list[str]
     requires_review: bool
 
 
@@ -90,9 +90,9 @@ class ConstitutionalValidationResult:
 
     is_constitutional: bool
     compliance_score: float
-    principle_scores: Dict[str, float]
-    violations: List[str]
-    recommendations: List[str]
+    principle_scores: dict[str, float]
+    violations: list[str]
+    recommendations: list[str]
 
 
 @dataclass
@@ -105,14 +105,14 @@ class PolicyValidationResponse:
 
     # Detailed results
     syntax_validation: PolicyValidationResult
-    constitutional_validation: Optional[ConstitutionalValidationResult]
-    compliance_check: Optional[ComplianceCheckResult]
-    conflict_detection: Optional[ConflictDetectionResult]
+    constitutional_validation: ConstitutionalValidationResult | None
+    compliance_check: ComplianceCheckResult | None
+    conflict_detection: ConflictDetectionResult | None
 
     # Summary
-    errors: List[str]
-    warnings: List[str]
-    recommendations: List[str]
+    errors: list[str]
+    warnings: list[str]
+    recommendations: list[str]
 
     # Performance metrics
     decision_latency_ms: float
@@ -164,7 +164,9 @@ class PolicyValidationEngine:
             logger.error(f"Failed to initialize policy validation engine: {e}")
             raise
 
-    async def validate_policy(self, request: PolicyValidationRequest) -> PolicyValidationResponse:
+    async def validate_policy(
+        self, request: PolicyValidationRequest
+    ) -> PolicyValidationResponse:
         """
         Validate policy with comprehensive checks and performance optimization.
 
@@ -196,7 +198,10 @@ class PolicyValidationEngine:
             constitutional_result = None
             if request.check_constitutional and syntax_result.is_valid:
                 constitutional_result = await self._validate_constitutional(request)
-                if constitutional_result and not constitutional_result.is_constitutional:
+                if (
+                    constitutional_result
+                    and not constitutional_result.is_constitutional
+                ):
                     errors.extend(constitutional_result.violations)
                     recommendations.extend(constitutional_result.recommendations)
 
@@ -213,7 +218,9 @@ class PolicyValidationEngine:
                 conflict_result = await self._detect_conflicts(request)
                 if conflict_result and conflict_result.has_conflicts:
                     warnings.append("Policy conflicts detected")
-                    recommendations.extend(conflict_result.conflict_resolution_suggestions)
+                    recommendations.extend(
+                        conflict_result.conflict_resolution_suggestions
+                    )
 
             # Calculate overall validation result
             is_valid = self._calculate_overall_validity(
@@ -230,7 +237,10 @@ class PolicyValidationEngine:
             self._update_metrics(validation_time_ms, len(errors) == 0)
 
             # Check performance threshold
-            if validation_time_ms > self.config.performance.max_policy_decision_latency_ms:
+            if (
+                validation_time_ms
+                > self.config.performance.max_policy_decision_latency_ms
+            ):
                 warnings.append(
                     f"Validation exceeded latency threshold: {validation_time_ms:.2f}ms"
                 )
@@ -256,7 +266,9 @@ class PolicyValidationEngine:
             logger.error(f"Policy validation failed: {e}")
             raise OPAIntegrationError(f"Policy validation failed: {e}")
 
-    async def _validate_syntax(self, request: PolicyValidationRequest) -> PolicyValidationResult:
+    async def _validate_syntax(
+        self, request: PolicyValidationRequest
+    ) -> PolicyValidationResult:
         """Validate policy syntax using OPA."""
         try:
             return await self.opa_client.validate_policy(
@@ -293,7 +305,9 @@ class PolicyValidationEngine:
             response = await self.opa_client.evaluate_policy(decision_request)
 
             if response.error:
-                raise OPAIntegrationError(f"Constitutional validation failed: {response.error}")
+                raise OPAIntegrationError(
+                    f"Constitutional validation failed: {response.error}"
+                )
 
             result = response.result
             return ConstitutionalValidationResult(
@@ -314,15 +328,21 @@ class PolicyValidationEngine:
                 recommendations=["Fix constitutional validation errors"],
             )
 
-    async def _check_compliance(self, request: PolicyValidationRequest) -> ComplianceCheckResult:
+    async def _check_compliance(
+        self, request: PolicyValidationRequest
+    ) -> ComplianceCheckResult:
         """Check policy compliance against regulatory requirements."""
         try:
             decision_request = PolicyDecisionRequest(
                 input_data={
                     "policy_content": request.policy_content,
                     "compliance_context": {
-                        "category": request.context_data.get("compliance_category", "operational"),
-                        "jurisdiction": request.context_data.get("jurisdiction", "default"),
+                        "category": request.context_data.get(
+                            "compliance_category", "operational"
+                        ),
+                        "jurisdiction": request.context_data.get(
+                            "jurisdiction", "default"
+                        ),
                         "requires_transparency": request.context_data.get(
                             "requires_transparency", False
                         ),
@@ -331,7 +351,9 @@ class PolicyValidationEngine:
                         ),
                     },
                     "governance_context": {
-                        "system_type": request.context_data.get("target_system", "governance"),
+                        "system_type": request.context_data.get(
+                            "target_system", "governance"
+                        ),
                         "risk_level": request.context_data.get("risk_level", "medium"),
                         "handles_sensitive_data": request.context_data.get(
                             "handles_sensitive_data", False
@@ -371,7 +393,9 @@ class PolicyValidationEngine:
                 requires_review=True,
             )
 
-    async def _detect_conflicts(self, request: PolicyValidationRequest) -> ConflictDetectionResult:
+    async def _detect_conflicts(
+        self, request: PolicyValidationRequest
+    ) -> ConflictDetectionResult:
         """Detect conflicts with existing policies."""
         try:
             decision_request = PolicyDecisionRequest(
@@ -391,17 +415,27 @@ class PolicyValidationEngine:
             response = await self.opa_client.evaluate_policy(decision_request)
 
             if response.error:
-                raise OPAIntegrationError(f"Conflict detection failed: {response.error}")
+                raise OPAIntegrationError(
+                    f"Conflict detection failed: {response.error}"
+                )
 
             result = response.result
             conflict_details = result.get("conflict_details", {})
 
             return ConflictDetectionResult(
                 has_conflicts=result.get("has_conflicts", False),
-                logical_conflicts=self._extract_conflicts(conflict_details, "logical_conflicts"),
-                semantic_conflicts=self._extract_conflicts(conflict_details, "semantic_conflicts"),
-                priority_conflicts=self._extract_conflicts(conflict_details, "priority_conflicts"),
-                scope_conflicts=self._extract_conflicts(conflict_details, "scope_conflicts"),
+                logical_conflicts=self._extract_conflicts(
+                    conflict_details, "logical_conflicts"
+                ),
+                semantic_conflicts=self._extract_conflicts(
+                    conflict_details, "semantic_conflicts"
+                ),
+                priority_conflicts=self._extract_conflicts(
+                    conflict_details, "priority_conflicts"
+                ),
+                scope_conflicts=self._extract_conflicts(
+                    conflict_details, "scope_conflicts"
+                ),
                 conflict_resolution_suggestions=result.get("recommendations", []),
             )
 
@@ -417,8 +451,8 @@ class PolicyValidationEngine:
             )
 
     def _extract_conflicts(
-        self, conflict_details: Dict[str, Any], conflict_type: str
-    ) -> List[Dict[str, Any]]:
+        self, conflict_details: dict[str, Any], conflict_type: str
+    ) -> list[dict[str, Any]]:
         """Extract specific type of conflicts from conflict details."""
         if conflict_details.get(conflict_type, False):
             return [{"type": conflict_type, "detected": True}]
@@ -427,9 +461,9 @@ class PolicyValidationEngine:
     def _calculate_overall_validity(
         self,
         syntax_result: PolicyValidationResult,
-        constitutional_result: Optional[ConstitutionalValidationResult],
-        compliance_result: Optional[ComplianceCheckResult],
-        conflict_result: Optional[ConflictDetectionResult],
+        constitutional_result: ConstitutionalValidationResult | None,
+        compliance_result: ComplianceCheckResult | None,
+        conflict_result: ConflictDetectionResult | None,
     ) -> bool:
         """Calculate overall policy validity."""
         # Syntax must be valid
@@ -456,9 +490,9 @@ class PolicyValidationEngine:
     def _calculate_overall_score(
         self,
         syntax_result: PolicyValidationResult,
-        constitutional_result: Optional[ConstitutionalValidationResult],
-        compliance_result: Optional[ComplianceCheckResult],
-        conflict_result: Optional[ConflictDetectionResult],
+        constitutional_result: ConstitutionalValidationResult | None,
+        compliance_result: ComplianceCheckResult | None,
+        conflict_result: ConflictDetectionResult | None,
     ) -> float:
         """Calculate overall policy quality score."""
         scores = []
@@ -489,7 +523,9 @@ class PolicyValidationEngine:
 
         # Calculate weighted average
         if sum(weights) > 0:
-            return sum(score * weight for score, weight in zip(scores, weights)) / sum(weights)
+            return sum(score * weight for score, weight in zip(scores, weights, strict=False)) / sum(
+                weights
+            )
         return 0.0
 
     def _update_metrics(self, latency_ms: float, success: bool):
@@ -502,7 +538,9 @@ class PolicyValidationEngine:
         # Update average latency
         total = self.metrics["total_validations"]
         current_avg = self.metrics["average_latency_ms"]
-        self.metrics["average_latency_ms"] = ((current_avg * (total - 1)) + latency_ms) / total
+        self.metrics["average_latency_ms"] = (
+            (current_avg * (total - 1)) + latency_ms
+        ) / total
 
         # Update max latency
         if latency_ms > self.metrics["max_latency_ms"]:
@@ -517,8 +555,8 @@ class PolicyValidationEngine:
             self.metrics["error_rate"] = error_count / total
 
     async def batch_validate(
-        self, requests: List[PolicyValidationRequest]
-    ) -> List[PolicyValidationResponse]:
+        self, requests: list[PolicyValidationRequest]
+    ) -> list[PolicyValidationResponse]:
         """Validate multiple policies in batch for improved performance."""
         if not requests:
             return []
@@ -544,13 +582,13 @@ class PolicyValidationEngine:
                 results.append(result)
             return results
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get performance metrics."""
         return self.metrics.copy()
 
 
 # Global policy validation engine instance
-_policy_validator: Optional[PolicyValidationEngine] = None
+_policy_validator: PolicyValidationEngine | None = None
 
 
 async def get_policy_validator() -> PolicyValidationEngine:

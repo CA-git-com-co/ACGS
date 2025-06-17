@@ -7,8 +7,8 @@ import base64
 import logging
 import os
 import secrets
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -46,7 +46,9 @@ class KeyManagementService:
 
         # Generate random key for development
         key = secrets.token_bytes(32)
-        logger.warning("Using randomly generated master key - not suitable for production")
+        logger.warning(
+            "Using randomly generated master key - not suitable for production"
+        )
         return key
 
     def _encrypt_private_key(self, private_key_pem: str) -> bytes:
@@ -65,7 +67,7 @@ class KeyManagementService:
             a ^ b
             for a, b in zip(
                 key_bytes,
-                (self.encryption_key * ((len(key_bytes) // 32) + 1))[: len(key_bytes)],
+                (self.encryption_key * ((len(key_bytes) // 32) + 1))[: len(key_bytes)], strict=False,
             )
         )
         return encrypted
@@ -85,7 +87,9 @@ class KeyManagementService:
             a ^ b
             for a, b in zip(
                 encrypted_key,
-                (self.encryption_key * ((len(encrypted_key) // 32) + 1))[: len(encrypted_key)],
+                (self.encryption_key * ((len(encrypted_key) // 32) + 1))[
+                    : len(encrypted_key)
+                ], strict=False,
             )
         )
         return decrypted.decode("utf-8")
@@ -96,7 +100,7 @@ class KeyManagementService:
         purpose: str = "signing",
         key_size: int = None,
         expires_days: int = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate new signing key pair
 
@@ -120,7 +124,7 @@ class KeyManagementService:
             encrypted_private = self._encrypt_private_key(private_pem)
 
             # Calculate expiration
-            expires_at = datetime.now(timezone.utc) + timedelta(days=expires_days)
+            expires_at = datetime.now(UTC) + timedelta(days=expires_days)
 
             # Create database record
             crypto_key = CryptoKey(
@@ -157,7 +161,7 @@ class KeyManagementService:
 
     async def get_active_signing_key(
         self, db: AsyncSession, purpose: str = "signing"
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Get active signing key for specified purpose
 
@@ -174,10 +178,10 @@ class KeyManagementService:
                 select(CryptoKey)
                 .where(
                     CryptoKey.key_purpose == purpose,
-                    CryptoKey.is_active == True,
+                    CryptoKey.is_active,
                     (
                         CryptoKey.expires_at.is_(None)
-                        | (CryptoKey.expires_at > datetime.now(timezone.utc))
+                        | (CryptoKey.expires_at > datetime.now(UTC))
                     ),
                 )
                 .order_by(CryptoKey.created_at.desc())
@@ -207,7 +211,7 @@ class KeyManagementService:
             logger.error(f"Error getting active signing key: {e}")
             return None
 
-    async def get_public_key(self, db: AsyncSession, key_id: str) -> Optional[str]:
+    async def get_public_key(self, db: AsyncSession, key_id: str) -> str | None:
         """
         Get public key by key ID
 
@@ -233,7 +237,7 @@ class KeyManagementService:
 
     async def rotate_key(
         self, db: AsyncSession, old_key_id: str, reason: str = "scheduled_rotation"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Rotate cryptographic key
 
@@ -271,7 +275,7 @@ class KeyManagementService:
             stmt = (
                 update(CryptoKey)
                 .where(CryptoKey.key_id == old_key_id)
-                .values(is_active=False, revoked_at=datetime.now(timezone.utc))
+                .values(is_active=False, revoked_at=datetime.now(UTC))
             )
             await db.execute(stmt)
 
@@ -306,7 +310,7 @@ class KeyManagementService:
                 .where(CryptoKey.key_id == key_id)
                 .values(
                     is_active=False,
-                    revoked_at=datetime.now(timezone.utc),
+                    revoked_at=datetime.now(UTC),
                     rotation_reason=reason,
                 )
             )
@@ -328,7 +332,7 @@ class KeyManagementService:
 
     async def list_keys(
         self, db: AsyncSession, purpose: str = None, active_only: bool = False
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         List cryptographic keys
 
@@ -348,10 +352,10 @@ class KeyManagementService:
 
             if active_only:
                 stmt = stmt.where(
-                    CryptoKey.is_active == True,
+                    CryptoKey.is_active,
                     (
                         CryptoKey.expires_at.is_(None)
-                        | (CryptoKey.expires_at > datetime.now(timezone.utc))
+                        | (CryptoKey.expires_at > datetime.now(UTC))
                     ),
                 )
 

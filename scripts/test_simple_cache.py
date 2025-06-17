@@ -281,7 +281,7 @@ def main():
         ) as f:
             json.dump(results, f, indent=2)
         print(
-            f"\n📊 Test results saved to: /home/dislove/ACGS-1/logs/caching/simple_performance_test_results.json"
+            "\n📊 Test results saved to: /home/dislove/ACGS-1/logs/caching/simple_performance_test_results.json"
         )
     except Exception as e:
         print(f"⚠️  Could not save results: {e}")

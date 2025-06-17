@@ -10,13 +10,12 @@ sha256: e7f6c5b4a3d2e1f8c7b6a5d4e3f2c1b8a7d6e5f4c3b2a1d8e7f6c5b4a3d2e1f8
 """
 
 import asyncio
-import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import structlog
 
@@ -64,15 +63,15 @@ class ActionContext:
     action_type: ActionType
     user_id: str
     resource_id: str
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     # Action details
-    action_data: Dict[str, Any] = field(default_factory=dict)
-    environment: Dict[str, Any] = field(default_factory=dict)
+    action_data: dict[str, Any] = field(default_factory=dict)
+    environment: dict[str, Any] = field(default_factory=dict)
 
     # Compliance requirements
     required_compliance_level: ComplianceLevel = ComplianceLevel.STANDARD
-    constitutional_principles: List[str] = field(default_factory=list)
+    constitutional_principles: list[str] = field(default_factory=list)
 
     # Performance tracking
     start_time: float = field(default_factory=time.time)
@@ -94,16 +93,16 @@ class ComplianceResult:
 
     # Compliance details
     compliance_score: float
-    violations: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    violations: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
     # Audit information
-    rules_applied: List[str] = field(default_factory=list)
-    constitutional_analysis: Optional[Dict[str, Any]] = None
-    audit_trail: List[Dict[str, Any]] = field(default_factory=list)
+    rules_applied: list[str] = field(default_factory=list)
+    constitutional_analysis: dict[str, Any] | None = None
+    audit_trail: list[dict[str, Any]] = field(default_factory=list)
 
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 class RealTimeComplianceEngine:
@@ -114,7 +113,7 @@ class RealTimeComplianceEngine:
     performance targets of <200ms validation latency for standard compliance.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -143,7 +142,7 @@ class RealTimeComplianceEngine:
 
         # Concurrency control
         self.validation_semaphore = asyncio.Semaphore(self.max_concurrent_validations)
-        self.active_validations: Set[str] = set()
+        self.active_validations: set[str] = set()
 
         logger.info(
             f"Real-time compliance engine initialized with {self.target_latency_ms}ms target latency"
@@ -164,8 +163,12 @@ class RealTimeComplianceEngine:
         # Check for concurrent validation limit
         async with self.validation_semaphore:
             if context.action_id in self.active_validations:
-                logger.warning(f"Duplicate validation request for action {context.action_id}")
-                return self._create_error_result(context.action_id, "Duplicate validation")
+                logger.warning(
+                    f"Duplicate validation request for action {context.action_id}"
+                )
+                return self._create_error_result(
+                    context.action_id, "Duplicate validation"
+                )
 
             self.active_validations.add(context.action_id)
 
@@ -180,7 +183,9 @@ class RealTimeComplianceEngine:
                 applicable_rules = await self._load_applicable_rules(context)
 
                 # Step 3: Execute rule evaluation based on compliance level
-                compliance_result = await self._execute_rule_evaluation(context, applicable_rules)
+                compliance_result = await self._execute_rule_evaluation(
+                    context, applicable_rules
+                )
 
                 # Step 4: Determine enforcement action
                 enforcement_action = await self._determine_enforcement_action(
@@ -202,7 +207,9 @@ class RealTimeComplianceEngine:
                     warnings=compliance_result["warnings"],
                     recommendations=compliance_result["recommendations"],
                     rules_applied=[rule["id"] for rule in applicable_rules],
-                    constitutional_analysis=compliance_result.get("constitutional_analysis"),
+                    constitutional_analysis=compliance_result.get(
+                        "constitutional_analysis"
+                    ),
                     audit_trail=compliance_result["audit_trail"],
                 )
 
@@ -233,7 +240,7 @@ class RealTimeComplianceEngine:
     async def intercept_action(
         self,
         action_type: ActionType,
-        action_data: Dict[str, Any],
+        action_data: dict[str, Any],
         user_id: str,
         resource_id: str = "unknown",
     ) -> ComplianceResult:
@@ -253,11 +260,15 @@ class RealTimeComplianceEngine:
             environment={"intercepted": True, "timestamp": time.time()},
         )
 
-        logger.info(f"Intercepting {action_type.value} action {action_id} by user {user_id}")
+        logger.info(
+            f"Intercepting {action_type.value} action {action_id} by user {user_id}"
+        )
 
         return await self.validate_action(context)
 
-    async def _check_validation_cache(self, context: ActionContext) -> Optional[ComplianceResult]:
+    async def _check_validation_cache(
+        self, context: ActionContext
+    ) -> ComplianceResult | None:
         """Check if validation result is cached."""
         cache_key = self._generate_cache_key(context)
 
@@ -275,7 +286,9 @@ class RealTimeComplianceEngine:
 
         return None
 
-    async def _load_applicable_rules(self, context: ActionContext) -> List[Dict[str, Any]]:
+    async def _load_applicable_rules(
+        self, context: ActionContext
+    ) -> list[dict[str, Any]]:
         """Load rules applicable to the action context."""
         # This would integrate with the rule engine in production
         # For now, return mock rules based on action type
@@ -312,8 +325,8 @@ class RealTimeComplianceEngine:
         return base_rules
 
     async def _execute_rule_evaluation(
-        self, context: ActionContext, rules: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, context: ActionContext, rules: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Execute rule evaluation based on compliance level."""
 
         evaluation_start = time.time()
@@ -368,7 +381,9 @@ class RealTimeComplianceEngine:
             ComplianceLevel.THOROUGH,
             ComplianceLevel.CRITICAL,
         ]:
-            constitutional_analysis = await self._perform_constitutional_analysis(context)
+            constitutional_analysis = await self._perform_constitutional_analysis(
+                context
+            )
 
         evaluation_time = (time.time() - evaluation_start) * 1000
 
@@ -385,8 +400,8 @@ class RealTimeComplianceEngine:
         }
 
     async def _fast_rule_evaluation(
-        self, context: ActionContext, rules: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, context: ActionContext, rules: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Ultra-fast rule evaluation for <50ms target."""
 
         # Only check critical rules for fast evaluation
@@ -398,7 +413,9 @@ class RealTimeComplianceEngine:
 
         # Basic action type validation
         if context.action_type == ActionType.CONSTITUTIONAL_AMENDMENT:
-            critical_violations.append("Constitutional amendments require thorough validation")
+            critical_violations.append(
+                "Constitutional amendments require thorough validation"
+            )
 
         return {
             "compliant": len(critical_violations) == 0,
@@ -406,7 +423,9 @@ class RealTimeComplianceEngine:
             "confidence": 0.8,  # Lower confidence for fast evaluation
             "violations": critical_violations,
             "warnings": [],
-            "recommendations": ["Consider using standard compliance level for better validation"],
+            "recommendations": [
+                "Consider using standard compliance level for better validation"
+            ],
             "audit_trail": [
                 {"rule_type": "fast_evaluation", "violations": len(critical_violations)}
             ],
@@ -415,8 +434,8 @@ class RealTimeComplianceEngine:
         }
 
     async def _evaluate_single_rule(
-        self, context: ActionContext, rule: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, context: ActionContext, rule: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate a single rule against the action context."""
 
         # Mock rule evaluation - in production this would use a proper rule engine
@@ -438,8 +457,8 @@ class RealTimeComplianceEngine:
             }
 
     async def _evaluate_constitutional_rule(
-        self, context: ActionContext, rule: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, context: ActionContext, rule: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate constitutional compliance rule."""
 
         # Check if action respects constitutional principles
@@ -461,8 +480,8 @@ class RealTimeComplianceEngine:
         }
 
     async def _evaluate_authorization_rule(
-        self, context: ActionContext, rule: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, context: ActionContext, rule: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate user authorization rule."""
 
         # Basic authorization check
@@ -479,12 +498,15 @@ class RealTimeComplianceEngine:
             "violation": f"User {context.user_id} not authorized for {context.action_type.value}",
             "penalty": 0.3,
             "recommendation": "Obtain proper authorization before proceeding",
-            "details": {"user_id": context.user_id, "action_type": context.action_type.value},
+            "details": {
+                "user_id": context.user_id,
+                "action_type": context.action_type.value,
+            },
         }
 
     async def _evaluate_governance_rule(
-        self, context: ActionContext, rule: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, context: ActionContext, rule: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate governance-specific rule."""
 
         # Mock governance rule evaluation
@@ -505,7 +527,9 @@ class RealTimeComplianceEngine:
             "details": {"governance_check": "passed"},
         }
 
-    async def _perform_constitutional_analysis(self, context: ActionContext) -> Dict[str, Any]:
+    async def _perform_constitutional_analysis(
+        self, context: ActionContext
+    ) -> dict[str, Any]:
         """Perform deep constitutional analysis for thorough compliance."""
 
         # This would integrate with the AC service for constitutional analysis
@@ -518,7 +542,7 @@ class RealTimeComplianceEngine:
         }
 
     async def _determine_enforcement_action(
-        self, context: ActionContext, compliance_result: Dict[str, Any]
+        self, context: ActionContext, compliance_result: dict[str, Any]
     ) -> EnforcementAction:
         """Determine the appropriate enforcement action based on compliance result."""
 
@@ -560,19 +584,22 @@ class RealTimeComplianceEngine:
         if len(self.validation_cache) >= self.cache_size:
             # Remove oldest entry
             oldest_key = min(
-                self.validation_cache.keys(), key=lambda k: self.validation_cache[k].timestamp
+                self.validation_cache.keys(),
+                key=lambda k: self.validation_cache[k].timestamp,
             )
             del self.validation_cache[oldest_key]
 
         self.validation_cache[cache_key] = result
 
-    async def _log_audit_trail(self, context: ActionContext, result: ComplianceResult) -> None:
+    async def _log_audit_trail(
+        self, context: ActionContext, result: ComplianceResult
+    ) -> None:
         """Log comprehensive audit trail for compliance validation."""
 
         audit_entry = {
             "audit_id": str(uuid.uuid4()),
             "action_id": context.action_id,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "action_type": context.action_type.value,
             "user_id": context.user_id,
             "resource_id": context.resource_id,
@@ -617,7 +644,9 @@ class RealTimeComplianceEngine:
             self.performance_metrics["enforcement_actions"][action_key] = 0
         self.performance_metrics["enforcement_actions"][action_key] += 1
 
-    def _create_error_result(self, action_id: str, error_message: str) -> ComplianceResult:
+    def _create_error_result(
+        self, action_id: str, error_message: str
+    ) -> ComplianceResult:
         """Create error result for failed validations."""
 
         return ComplianceResult(
@@ -634,7 +663,7 @@ class RealTimeComplianceEngine:
             recommendations=["Retry validation or contact system administrator"],
         )
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get current performance metrics."""
 
         return {
@@ -652,7 +681,7 @@ class RealTimeComplianceEngine:
             "audit_entries": len(self.audit_log),
         }
 
-    def get_audit_log(self, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_audit_log(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get recent audit log entries."""
 
         return self.audit_log[-limit:] if self.audit_log else []

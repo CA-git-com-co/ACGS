@@ -6,10 +6,7 @@ optimized through the Data Flywheel process, ensuring all governance
 models maintain adherence to constitutional principles.
 """
 
-import asyncio
-import json
 import logging
-from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
@@ -50,7 +47,7 @@ class ComplianceResult:
     score: float
     level: ComplianceLevel
     explanation: str
-    recommendations: List[str]
+    recommendations: list[str]
     timestamp: str
 
 
@@ -58,7 +55,7 @@ class GovernanceWorkflow(BaseModel):
     """Governance workflow definition"""
 
     name: str
-    steps: List[str]
+    steps: list[str]
     compliance_required: bool
     validation_threshold: float
 
@@ -87,10 +84,10 @@ class ConstitutionalComplianceValidator:
         self.gs_service_url = f"{self.acgs_base_url}:8004"
         self.pgc_service_url = f"{self.acgs_base_url}:8005"
 
-    def _load_config(self, config_path: str) -> Dict:
+    def _load_config(self, config_path: str) -> dict:
         """Load ACGS-1 configuration"""
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return yaml.safe_load(f)
         except Exception as e:
             self.logger.error(f"Failed to load config from {config_path}: {e}")
@@ -100,9 +97,9 @@ class ConstitutionalComplianceValidator:
         self,
         model_output: str,
         expected_output: str,
-        governance_context: Dict,
+        governance_context: dict,
         workload_id: str,
-    ) -> List[ComplianceResult]:
+    ) -> list[ComplianceResult]:
         """
         Validate model output against constitutional principles
 
@@ -155,7 +152,7 @@ class ConstitutionalComplianceValidator:
         principle: ConstitutionalPrinciple,
         model_output: str,
         expected_output: str,
-        governance_context: Dict,
+        governance_context: dict,
     ) -> ComplianceResult:
         """Validate a specific constitutional principle"""
 
@@ -203,7 +200,7 @@ class ConstitutionalComplianceValidator:
         principle: ConstitutionalPrinciple,
         model_output: str,
         expected_output: str,
-        governance_context: Dict,
+        governance_context: dict,
     ) -> ComplianceResult:
         """Local fallback validation for constitutional principles"""
 
@@ -270,8 +267,8 @@ class ConstitutionalComplianceValidator:
         )
 
     async def validate_governance_workflow(
-        self, workflow_name: str, model_outputs: List[str], workflow_context: Dict
-    ) -> Dict[str, float]:
+        self, workflow_name: str, model_outputs: list[str], workflow_context: dict
+    ) -> dict[str, float]:
         """
         Validate model outputs against governance workflow requirements
 
@@ -297,7 +294,7 @@ class ConstitutionalComplianceValidator:
         validation_scores = {}
         workflow_steps = workflow_config.get("validation_steps", [])
 
-        for i, (step, output) in enumerate(zip(workflow_steps, model_outputs)):
+        for _i, (step, output) in enumerate(zip(workflow_steps, model_outputs, strict=False)):
             try:
                 # Use PGC Service for workflow validation
                 async with httpx.AsyncClient() as client:
@@ -327,7 +324,7 @@ class ConstitutionalComplianceValidator:
 
         return validation_scores
 
-    async def check_acgs_service_health(self) -> Dict[str, bool]:
+    async def check_acgs_service_health(self) -> dict[str, bool]:
         """Check health of ACGS-1 services required for validation"""
         services = self.config.get("acgs_config", {}).get("services", {})
         health_status = {}
@@ -351,8 +348,8 @@ class ConstitutionalComplianceValidator:
         return health_status
 
     def get_compliance_summary(
-        self, compliance_results: List[ComplianceResult]
-    ) -> Dict:
+        self, compliance_results: list[ComplianceResult]
+    ) -> dict:
         """Generate a summary of constitutional compliance results"""
         if not compliance_results:
             return {"overall_score": 0.0, "compliant": False, "summary": "No results"}

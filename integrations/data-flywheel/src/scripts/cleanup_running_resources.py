@@ -30,9 +30,9 @@ project_root = script_dir.parent.parent
 sys.path.insert(0, str(project_root))
 
 # Import basic modules that don't require database connection
-from src.api.models import FlywheelRunStatus, NIMRunStatus  # noqa: E402
-from src.api.schemas import DeploymentStatus  # noqa: E402
-from src.log_utils import setup_logging  # noqa: E402
+from services.core.api.models import FlywheelRunStatus, NIMRunStatus  # noqa: E402
+from services.core.api.schemas import DeploymentStatus  # noqa: E402
+from services.core.log_utils import setup_logging  # noqa: E402
 
 logger = setup_logging("cleanup_script")
 
@@ -56,22 +56,22 @@ class CleanupManager:
     def _import_dependencies(self):
         """Import modules that require database connection."""
         if self.settings is None:
-            from src.config import settings
+            from services.core.config import settings
 
             self.settings = settings
 
         if self._dms_client_class is None:
-            from src.lib.nemo.dms_client import DMSClient
+            from services.core.lib.nemo.dms_client import DMSClient
 
             self._dms_client_class = DMSClient
 
         if self._evaluator_class is None:
-            from src.lib.nemo.evaluator import Evaluator
+            from services.core.lib.nemo.evaluator import Evaluator
 
             self._evaluator_class = Evaluator
 
         if self._customizer_class is None:
-            from src.lib.nemo.customizer import Customizer
+            from services.core.lib.nemo.customizer import Customizer
 
             self._customizer_class = Customizer
 

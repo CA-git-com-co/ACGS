@@ -22,10 +22,10 @@ import hashlib
 import json
 import logging
 import time
-from contextlib import asynccontextmanager
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 try:
     import structlog
@@ -87,7 +87,7 @@ class PerformanceMetrics:
     memory_usage_mb: float = 0.0
 
     # Response time tracking
-    response_times: List[float] = field(default_factory=list)
+    response_times: list[float] = field(default_factory=list)
 
     @property
     def cache_hit_rate_percent(self) -> float:
@@ -123,7 +123,8 @@ class PerformanceMetrics:
         """Check if current metrics meet service-level performance targets."""
         return (
             self.p95_response_time_ms < 50.0
-            and self.success_rate_percent >= 99.5  # <50ms for 95% of requests  # 99.5% uptime
+            and self.success_rate_percent
+            >= 99.5  # <50ms for 95% of requests  # 99.5% uptime
         )
 
     def meets_consensus_targets(self) -> bool:
@@ -131,7 +132,8 @@ class PerformanceMetrics:
         return (
             self.p95_response_time_ms < 2000
             and self.avg_response_time_ms < 1500  # <2s for 95% of requests
-            and self.cache_hit_rate_percent > 70.0  # <1.5s average  # >70% cache hit rate
+            and self.cache_hit_rate_percent
+            > 70.0  # <1.5s average  # >70% cache hit rate
         )
 
 
@@ -188,10 +190,10 @@ class FallbackCache:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.cache: Dict[str, Tuple[Any, float]] = {}
+        self.cache: dict[str, tuple[Any, float]] = {}
         self.stats = {"hits": 0, "misses": 0, "invalidations": 0}
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get cached value."""
         if key in self.cache:
             value, expires_at = self.cache[key]
@@ -226,7 +228,7 @@ class AsyncBatchProcessor:
         # sha256: func_hash
         self.batch_size = batch_size
         self.max_wait_time = max_wait_time
-        self.pending_operations: List[Dict[str, Any]] = []
+        self.pending_operations: list[dict[str, Any]] = []
         self.batch_lock = asyncio.Lock()
 
     async def add_operation(self, operation: Callable, *args, **kwargs) -> Any:
@@ -247,7 +249,8 @@ class AsyncBatchProcessor:
             # Process batch if size threshold reached or timeout exceeded
             if len(self.pending_operations) >= self.batch_size or (
                 self.pending_operations
-                and time.time() - self.pending_operations[0]["timestamp"] > self.max_wait_time
+                and time.time() - self.pending_operations[0]["timestamp"]
+                > self.max_wait_time
             ):
                 await self._process_batch()
 
@@ -280,7 +283,9 @@ class AsyncBatchProcessor:
             except Exception as e:
                 future.set_exception(e)
 
-    async def _execute_operation(self, operation: Callable, args: tuple, kwargs: dict) -> Any:
+    async def _execute_operation(
+        self, operation: Callable, args: tuple, kwargs: dict
+    ) -> Any:
         """Execute individual operation."""
         if asyncio.iscoroutinefunction(operation):
             return await operation(*args, **kwargs)
@@ -303,15 +308,19 @@ class IntelligentCache:
         else:
             self.cache_backend = cache_backend or FallbackCache()
 
-        self.local_cache: Dict[str, Dict[str, Any]] = {}
+        self.local_cache: dict[str, dict[str, Any]] = {}
         self.cache_stats = {"hits": 0, "misses": 0, "invalidations": 0}
 
-    def _generate_cache_key(self, service: str, operation: str, params: Dict[str, Any]) -> str:
+    def _generate_cache_key(
+        self, service: str, operation: str, params: dict[str, Any]
+    ) -> str:
         """Generate consistent cache key."""
         key_data = f"{service}:{operation}:{json.dumps(params, sort_keys=True)}"
         return hashlib.sha256(key_data.encode()).hexdigest()[:16]
 
-    async def get(self, service: str, operation: str, params: Dict[str, Any]) -> Optional[Any]:
+    async def get(
+        self, service: str, operation: str, params: dict[str, Any]
+    ) -> Any | None:
         """Get cached result."""
         cache_key = self._generate_cache_key(service, operation, params)
 
@@ -345,7 +354,7 @@ class IntelligentCache:
         self,
         service: str,
         operation: str,
-        params: Dict[str, Any],
+        params: dict[str, Any],
         data: Any,
         ttl: int = 300,
     ) -> None:
@@ -386,7 +395,7 @@ class PerformanceOptimizer:
     - Multi-model targets: <2s response times, >95% accuracy
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -406,7 +415,7 @@ class PerformanceOptimizer:
         # Initialize components
         self.intelligent_cache = IntelligentCache()
         self.batch_processor = AsyncBatchProcessor()
-        self.circuit_breakers: Dict[str, CircuitBreakerState] = {}
+        self.circuit_breakers: dict[str, CircuitBreakerState] = {}
         self.metrics = PerformanceMetrics()
 
         # Service mesh integration (if available)
@@ -440,7 +449,7 @@ class PerformanceOptimizer:
 
 
 # Global performance optimizer instance
-_performance_optimizer: Optional[PerformanceOptimizer] = None
+_performance_optimizer: PerformanceOptimizer | None = None
 
 
 def get_performance_optimizer() -> PerformanceOptimizer:

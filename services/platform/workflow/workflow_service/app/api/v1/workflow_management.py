@@ -5,7 +5,7 @@ Provides comprehensive workflow orchestration, monitoring, and management
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 
@@ -40,7 +40,7 @@ async def create_workflow(
     workflow_type: WorkflowType,
     name: str,
     description: str,
-    input_data: Dict[str, Any],
+    input_data: dict[str, Any],
     background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_active_user),
     db=Depends(get_async_db),
@@ -121,7 +121,9 @@ async def get_workflow_status(
     status_info = workflow_engine.get_workflow_status(workflow_id)
 
     if not status_info:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Workflow not found"
+        )
 
     # Add recovery information
     recovery_status = recovery_manager.get_recovery_status(workflow_id)
@@ -132,7 +134,7 @@ async def get_workflow_status(
 
 @router.get("/workflows")
 async def list_workflows(
-    status_filter: Optional[WorkflowStatus] = None,
+    status_filter: WorkflowStatus | None = None,
     limit: int = 50,
     offset: int = 0,
     current_user: User = Depends(get_current_active_user),
@@ -149,7 +151,9 @@ async def list_workflows(
 
 
 @router.post("/workflows/{workflow_id}/pause")
-async def pause_workflow(workflow_id: str, current_user: User = Depends(get_current_active_user)):
+async def pause_workflow(
+    workflow_id: str, current_user: User = Depends(get_current_active_user)
+):
     """Pause workflow execution"""
 
     success = await workflow_engine.pause_workflow(workflow_id)
@@ -167,7 +171,9 @@ async def pause_workflow(workflow_id: str, current_user: User = Depends(get_curr
 
 
 @router.post("/workflows/{workflow_id}/resume")
-async def resume_workflow(workflow_id: str, current_user: User = Depends(get_current_active_user)):
+async def resume_workflow(
+    workflow_id: str, current_user: User = Depends(get_current_active_user)
+):
     """Resume paused workflow"""
 
     success = await workflow_engine.resume_workflow(workflow_id)
@@ -218,8 +224,8 @@ async def get_metrics(
 
 @router.get("/monitoring/alerts")
 async def get_alerts(
-    severity: Optional[AlertSeverity] = None,
-    resolved: Optional[bool] = None,
+    severity: AlertSeverity | None = None,
+    resolved: bool | None = None,
     limit: int = 50,
     current_user: User = Depends(get_current_active_user),
 ):
@@ -235,13 +241,17 @@ async def get_alerts(
 
 
 @router.post("/monitoring/alerts/{alert_id}/resolve")
-async def resolve_alert(alert_id: str, current_user: User = Depends(get_current_active_user)):
+async def resolve_alert(
+    alert_id: str, current_user: User = Depends(get_current_active_user)
+):
     """Mark an alert as resolved"""
 
     success = workflow_monitor.resolve_alert(alert_id)
 
     if not success:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alert not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Alert not found"
+        )
 
     return {
         "alert_id": alert_id,
@@ -257,10 +267,10 @@ async def resolve_alert(alert_id: str, current_user: User = Depends(get_current_
 @router.post("/recovery/checkpoints")
 async def create_checkpoint(
     workflow_id: str,
-    step_id: Optional[str] = None,
+    step_id: str | None = None,
     checkpoint_type: CheckpointType = CheckpointType.USER_DEFINED,
-    state_data: Dict[str, Any] = None,
-    metadata: Dict[str, Any] = None,
+    state_data: dict[str, Any] = None,
+    metadata: dict[str, Any] = None,
     current_user: User = Depends(get_current_active_user),
 ):
     """Create a workflow checkpoint"""
@@ -359,14 +369,16 @@ async def execute_recovery_plan(
 async def run_test_suite(
     suite_id: str,
     background_tasks: BackgroundTasks,
-    context: Dict[str, Any] = None,
+    context: dict[str, Any] = None,
     current_user: User = Depends(get_current_active_user),
 ):
     """Run a test suite"""
 
     try:
         # Run test suite in background
-        background_tasks.add_task(automated_validator.run_test_suite, suite_id, context or {})
+        background_tasks.add_task(
+            automated_validator.run_test_suite, suite_id, context or {}
+        )
 
         return {
             "suite_id": suite_id,
@@ -383,13 +395,17 @@ async def run_test_suite(
 
 
 @router.get("/testing/suites/{suite_id}/results")
-async def get_test_results(suite_id: str, current_user: User = Depends(get_current_active_user)):
+async def get_test_results(
+    suite_id: str, current_user: User = Depends(get_current_active_user)
+):
     """Get test results for a suite"""
 
     results = automated_validator.get_test_results(suite_id)
 
     if results is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Test results not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Test results not found"
+        )
 
     return {"suite_id": suite_id, "results": results}
 

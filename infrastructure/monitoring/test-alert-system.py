@@ -13,9 +13,9 @@ import logging
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -44,7 +44,7 @@ class AlertTestConfig:
     alertmanager_url: str = "http://localhost:9093"
 
     # Expected alert rules
-    expected_alert_rules: List[str] = field(
+    expected_alert_rules: list[str] = field(
         default_factory=lambda: [
             "ServiceDown",
             "HighResponseTime",
@@ -66,9 +66,9 @@ class AlertTestResult:
     success: bool = False
     response_time_ms: float = 0.0
     error_message: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+        default_factory=lambda: datetime.now(UTC).isoformat()
     )
 
 
@@ -77,7 +77,7 @@ class AlertSystemTester:
 
     def __init__(self, config: AlertTestConfig):
         self.config = config
-        self.test_results: List[AlertTestResult] = []
+        self.test_results: list[AlertTestResult] = []
 
     async def run_alert_system_tests(self) -> bool:
         """Execute comprehensive alert system tests."""
@@ -582,7 +582,7 @@ class AlertSystemTester:
         total_tests = len(self.test_results)
         success_rate = (successful_tests / total_tests * 100) if total_tests > 0 else 0
 
-        logger.info(f"📊 Alert System Test Results:")
+        logger.info("📊 Alert System Test Results:")
         logger.info(f"  Successful Tests: {successful_tests}/{total_tests}")
         logger.info(f"  Success Rate: {success_rate:.2f}%")
 
@@ -602,7 +602,7 @@ class AlertSystemTester:
 
         report = {
             "test_metadata": {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "test_duration_seconds": self.config.test_duration_seconds,
                 "test_type": "alert_system_performance_validation",
             },

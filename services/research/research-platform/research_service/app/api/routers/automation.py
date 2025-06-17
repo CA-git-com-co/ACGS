@@ -5,7 +5,7 @@ Provides endpoints for automated research workflows and pipeline management.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -22,12 +22,14 @@ class AutomationRuleRequest(BaseModel):
     """Request model for automation rules."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    description: Optional[str] = None
-    trigger_type: str = Field(..., pattern="^(scheduled|event_driven|threshold_based|manual)$")
-    conditions: Dict[str, Any] = Field(default_factory=dict)
-    actions: List[Dict[str, Any]] = Field(default_factory=list)
+    description: str | None = None
+    trigger_type: str = Field(
+        ..., pattern="^(scheduled|event_driven|threshold_based|manual)$"
+    )
+    conditions: dict[str, Any] = Field(default_factory=dict)
+    actions: list[dict[str, Any]] = Field(default_factory=list)
     enabled: bool = Field(default=True)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class AutomationRuleResponse(BaseModel):
@@ -35,28 +37,28 @@ class AutomationRuleResponse(BaseModel):
 
     id: str
     name: str
-    description: Optional[str]
+    description: str | None
     trigger_type: str
-    conditions: Dict[str, Any]
-    actions: List[Dict[str, Any]]
+    conditions: dict[str, Any]
+    actions: list[dict[str, Any]]
     enabled: bool
-    last_executed: Optional[str]
+    last_executed: str | None
     execution_count: int
     success_count: int
     failure_count: int
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class PipelineRequest(BaseModel):
     """Request model for research pipelines."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    description: Optional[str] = None
-    stages: List[Dict[str, Any]] = Field(..., min_items=1)
-    dependencies: List[str] = Field(default_factory=list)
-    schedule: Optional[str] = None  # Cron expression
+    description: str | None = None
+    stages: list[dict[str, Any]] = Field(..., min_items=1)
+    dependencies: list[str] = Field(default_factory=list)
+    schedule: str | None = None  # Cron expression
     enabled: bool = Field(default=True)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class PipelineResponse(BaseModel):
@@ -64,23 +66,23 @@ class PipelineResponse(BaseModel):
 
     id: str
     name: str
-    description: Optional[str]
-    stages: List[Dict[str, Any]]
-    dependencies: List[str]
-    schedule: Optional[str]
+    description: str | None
+    stages: list[dict[str, Any]]
+    dependencies: list[str]
+    schedule: str | None
     enabled: bool
-    last_executed: Optional[str]
+    last_executed: str | None
     execution_count: int
     success_count: int
     failure_count: int
-    average_duration_seconds: Optional[float]
-    metadata: Dict[str, Any]
+    average_duration_seconds: float | None
+    metadata: dict[str, Any]
 
 
 class PipelineTriggerRequest(BaseModel):
     """Request model for triggering pipelines."""
 
-    parameters: Dict[str, Any] = Field(default_factory=dict)
+    parameters: dict[str, Any] = Field(default_factory=dict)
 
 
 # Initialize automation service (this would be injected in production)
@@ -114,9 +116,9 @@ async def create_automation_rule(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/rules", response_model=List[AutomationRuleResponse])
+@router.get("/rules", response_model=list[AutomationRuleResponse])
 async def list_automation_rules(
-    db: AsyncSession = Depends(get_db_session), enabled: Optional[bool] = None
+    db: AsyncSession = Depends(get_db_session), enabled: bool | None = None
 ):
     """List automation rules."""
     try:
@@ -129,7 +131,9 @@ async def list_automation_rules(
 
 
 @router.post("/pipelines", response_model=PipelineResponse)
-async def create_pipeline(request: PipelineRequest, db: AsyncSession = Depends(get_db_session)):
+async def create_pipeline(
+    request: PipelineRequest, db: AsyncSession = Depends(get_db_session)
+):
     """Create a new research pipeline."""
     try:
         # Placeholder implementation
@@ -154,9 +158,9 @@ async def create_pipeline(request: PipelineRequest, db: AsyncSession = Depends(g
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/pipelines", response_model=List[PipelineResponse])
+@router.get("/pipelines", response_model=list[PipelineResponse])
 async def list_pipelines(
-    db: AsyncSession = Depends(get_db_session), enabled: Optional[bool] = None
+    db: AsyncSession = Depends(get_db_session), enabled: bool | None = None
 ):
     """List research pipelines."""
     try:
@@ -216,7 +220,9 @@ async def create_constitutional_compliance_pipeline(
 ):
     """Create automated constitutional compliance testing pipeline."""
     try:
-        pipeline_id = await automation_service.create_constitutional_compliance_pipeline()
+        pipeline_id = (
+            await automation_service.create_constitutional_compliance_pipeline()
+        )
 
         return {
             "pipeline_id": pipeline_id,

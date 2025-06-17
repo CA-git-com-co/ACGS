@@ -6,8 +6,8 @@ Implements trusted timestamping for audit logs and policy rules
 import base64
 import hashlib
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 import requests
 
@@ -19,7 +19,9 @@ class RFC3161TimestampService:
     RFC 3161 Timestamp Authority (TSA) client implementation
     """
 
-    def __init__(self, tsa_url: str = "http://timestamp.digicert.com", timeout: int = 30):
+    def __init__(
+        self, tsa_url: str = "http://timestamp.digicert.com", timeout: int = 30
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -34,7 +36,9 @@ class RFC3161TimestampService:
         self.timeout = timeout
         self.hash_algorithm = "SHA3-256"
 
-    def create_timestamp_request(self, message_hash: bytes, nonce: Optional[int] = None) -> bytes:
+    def create_timestamp_request(
+        self, message_hash: bytes, nonce: int | None = None
+    ) -> bytes:
         """
         Create RFC 3161 timestamp request (TSRequest)
 
@@ -66,7 +70,7 @@ class RFC3161TimestampService:
         request_json = str(request_data).encode("utf-8")
         return request_json
 
-    def send_timestamp_request(self, message_hash: bytes) -> Optional[Dict[str, Any]]:
+    def send_timestamp_request(self, message_hash: bytes) -> dict[str, Any] | None:
         """
         Send timestamp request to TSA and get response
 
@@ -95,7 +99,7 @@ class RFC3161TimestampService:
                 timestamp_token = response.content
 
                 # Extract timestamp value (simplified - real implementation needs ASN.1 parsing)
-                timestamp_value = datetime.now(timezone.utc)
+                timestamp_value = datetime.now(UTC)
 
                 result = {
                     "timestamp_token": timestamp_token,
@@ -119,7 +123,9 @@ class RFC3161TimestampService:
             logger.error(f"Unexpected error in timestamp request: {e}")
             return None
 
-    def verify_timestamp_token(self, timestamp_token: bytes, message_hash: bytes) -> bool:
+    def verify_timestamp_token(
+        self, timestamp_token: bytes, message_hash: bytes
+    ) -> bool:
         """
         Verify RFC 3161 timestamp token
 
@@ -151,7 +157,7 @@ class RFC3161TimestampService:
             logger.error(f"Timestamp verification error: {e}")
             return False
 
-    def extract_timestamp_value(self, timestamp_token: bytes) -> Optional[datetime]:
+    def extract_timestamp_value(self, timestamp_token: bytes) -> datetime | None:
         """
         Extract timestamp value from RFC 3161 token
 
@@ -164,7 +170,7 @@ class RFC3161TimestampService:
         try:
             # Simplified extraction - real implementation needs ASN.1 parsing
             # For now, return current time as placeholder
-            return datetime.now(timezone.utc)
+            return datetime.now(UTC)
 
         except Exception as e:
             logger.error(f"Timestamp extraction error: {e}")
@@ -182,13 +188,13 @@ class MockTimestampService(RFC3161TimestampService):
         # sha256: func_hash
         super().__init__(tsa_url="mock://localhost")
 
-    def send_timestamp_request(self, message_hash: bytes) -> Optional[Dict[str, Any]]:
+    def send_timestamp_request(self, message_hash: bytes) -> dict[str, Any] | None:
         """
         Mock timestamp request that always succeeds
         """
         try:
             # Create mock timestamp token
-            timestamp_value = datetime.now(timezone.utc)
+            timestamp_value = datetime.now(UTC)
             mock_token = f"MOCK_TIMESTAMP_{timestamp_value.isoformat()}_{base64.b64encode(message_hash).decode()}"
             timestamp_token = mock_token.encode("utf-8")
 
@@ -209,7 +215,9 @@ class MockTimestampService(RFC3161TimestampService):
             logger.error(f"Mock timestamp error: {e}")
             return None
 
-    def verify_timestamp_token(self, timestamp_token: bytes, message_hash: bytes) -> bool:
+    def verify_timestamp_token(
+        self, timestamp_token: bytes, message_hash: bytes
+    ) -> bool:
         """
         Mock timestamp verification
         """
@@ -243,7 +251,7 @@ class TimestampManager:
 
         self.use_mock = use_mock
 
-    def timestamp_data(self, data: str) -> Optional[Dict[str, Any]]:
+    def timestamp_data(self, data: str) -> dict[str, Any] | None:
         """
         Create timestamp for arbitrary data
 
@@ -264,7 +272,9 @@ class TimestampManager:
 
         return result
 
-    def timestamp_audit_log(self, log_entry: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def timestamp_audit_log(
+        self, log_entry: dict[str, Any]
+    ) -> dict[str, Any] | None:
         """
         Create timestamp for audit log entry
 
@@ -282,8 +292,8 @@ class TimestampManager:
         return self.timestamp_data(log_json)
 
     def timestamp_policy_rule(
-        self, rule_content: str, metadata: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+        self, rule_content: str, metadata: dict[str, Any]
+    ) -> dict[str, Any] | None:
         """
         Create timestamp for policy rule
 
@@ -318,7 +328,9 @@ class TimestampManager:
         message_hash = hashlib.sha3_256(original_data.encode("utf-8")).digest()
 
         # Verify timestamp
-        return self.timestamp_service.verify_timestamp_token(timestamp_token, message_hash)
+        return self.timestamp_service.verify_timestamp_token(
+            timestamp_token, message_hash
+        )
 
 
 # Global timestamp manager instance

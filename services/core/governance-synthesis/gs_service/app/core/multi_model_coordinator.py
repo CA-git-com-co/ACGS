@@ -18,7 +18,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -52,9 +52,9 @@ class EnsembleResult:
 
     synthesized_policy: str
     confidence_score: float
-    contributing_models: List[str]
+    contributing_models: list[str]
     ensemble_strategy_used: EnsembleStrategy
-    performance_metrics: Dict[str, Any]
+    performance_metrics: dict[str, Any]
     constitutional_fidelity: float
     wina_optimization_applied: bool
     synthesis_time_ms: float
@@ -68,7 +68,7 @@ class MultiModelCoordinator:
     constitutional compliance monitoring, and adaptive performance optimization.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -87,12 +87,14 @@ class MultiModelCoordinator:
         self.wina_optimization_enabled = config.get("wina_optimization_enabled", True)
 
         # Model performance tracking
-        self.model_metrics: Dict[str, ModelPerformanceMetrics] = {}
-        self.ensemble_history: List[EnsembleResult] = []
+        self.model_metrics: dict[str, ModelPerformanceMetrics] = {}
+        self.ensemble_history: list[EnsembleResult] = []
 
         # Performance targets
         self.target_reliability = config.get("target_reliability", 0.999)
-        self.target_constitutional_compliance = config.get("target_constitutional_compliance", 0.85)
+        self.target_constitutional_compliance = config.get(
+            "target_constitutional_compliance", 0.85
+        )
         self.target_response_time_ms = config.get("target_response_time_ms", 200)
 
         # Coordination state
@@ -123,14 +125,16 @@ class MultiModelCoordinator:
                 self.active_models.add(model_id)
 
             self._initialized = True
-            logger.info(f"Multi-model coordinator initialized with {len(all_models)} models")
+            logger.info(
+                f"Multi-model coordinator initialized with {len(all_models)} models"
+            )
 
         except Exception as e:
             logger.error(f"Failed to initialize multi-model coordinator: {e}")
             raise
 
     async def coordinate_synthesis(
-        self, synthesis_request: Dict[str, Any], enable_wina: bool = True
+        self, synthesis_request: dict[str, Any], enable_wina: bool = True
     ) -> EnsembleResult:
         """
         Coordinate multi-model policy synthesis with ensemble strategies.
@@ -161,7 +165,9 @@ class MultiModelCoordinator:
             )
 
             # Apply ensemble strategy to combine results
-            ensemble_result = await self._apply_ensemble_strategy(model_results, synthesis_request)
+            ensemble_result = await self._apply_ensemble_strategy(
+                model_results, synthesis_request
+            )
 
             # Update performance metrics
             await self._update_model_metrics(model_results, ensemble_result)
@@ -196,7 +202,7 @@ class MultiModelCoordinator:
                 synthesis_time_ms=(time.time() - start_time) * 1000,
             )
 
-    async def _select_models_for_synthesis(self, request: Dict[str, Any]) -> List[str]:
+    async def _select_models_for_synthesis(self, request: dict[str, Any]) -> list[str]:
         """Select optimal models for synthesis based on performance and strategy."""
         if self.ensemble_strategy == EnsembleStrategy.WEIGHTED_VOTING:
             # Select top performing models
@@ -230,8 +236,8 @@ class MultiModelCoordinator:
             return [self.primary_model, self.fallback_models[0]]
 
     async def _execute_parallel_synthesis(
-        self, request: Dict[str, Any], models: List[str], enable_wina: bool
-    ) -> Dict[str, Dict[str, Any]]:
+        self, request: dict[str, Any], models: list[str], enable_wina: bool
+    ) -> dict[str, dict[str, Any]]:
         """Execute synthesis in parallel across selected models."""
         tasks = []
         for model_id in models:
@@ -253,8 +259,8 @@ class MultiModelCoordinator:
         return model_results
 
     async def _synthesize_with_model(
-        self, request: Dict[str, Any], model_id: str, enable_wina: bool
-    ) -> Dict[str, Any]:
+        self, request: dict[str, Any], model_id: str, enable_wina: bool
+    ) -> dict[str, Any]:
         """Synthesize policy using a specific model."""
         start_time = time.time()
 
@@ -269,15 +275,15 @@ class MultiModelCoordinator:
             if model_id == "gemini-2.5-pro":
                 policy_content = f"""
                 package acgs.governance.{model_id.replace('-', '_')}
-                
+
                 # High-quality policy synthesis from {model_id}
                 default allow := false
-                
+
                 allow if {{
                     constitutional_compliance
                     governance_requirements_met
                 }}
-                
+
                 constitutional_compliance if {{
                     input.constitutional_principles_verified == true
                     input.stakeholder_consensus >= 0.8
@@ -288,10 +294,10 @@ class MultiModelCoordinator:
             else:
                 policy_content = f"""
                 package acgs.governance.fallback
-                
+
                 # Fallback policy from {model_id}
                 default allow := false
-                
+
                 allow if {{
                     basic_governance_check
                 }}
@@ -314,7 +320,7 @@ class MultiModelCoordinator:
             raise
 
     async def _apply_ensemble_strategy(
-        self, model_results: Dict[str, Dict[str, Any]], request: Dict[str, Any]
+        self, model_results: dict[str, dict[str, Any]], request: dict[str, Any]
     ) -> EnsembleResult:
         """Apply ensemble strategy to combine model results."""
         valid_results = {k: v for k, v in model_results.items() if "error" not in v}
@@ -328,7 +334,9 @@ class MultiModelCoordinator:
             return await self._constitutional_priority_ensemble(valid_results)
         else:
             # Default: select best performing result
-            best_model = max(valid_results.items(), key=lambda x: x[1].get("accuracy", 0))
+            best_model = max(
+                valid_results.items(), key=lambda x: x[1].get("accuracy", 0)
+            )
             result = best_model[1]
 
             return EnsembleResult(
@@ -338,11 +346,15 @@ class MultiModelCoordinator:
                 ensemble_strategy_used=self.ensemble_strategy,
                 performance_metrics=result,
                 constitutional_fidelity=result.get("constitutional_compliance", 0.0),
-                wina_optimization_applied=result.get("wina_optimization_applied", False),
+                wina_optimization_applied=result.get(
+                    "wina_optimization_applied", False
+                ),
                 synthesis_time_ms=0.0,  # Will be set by caller
             )
 
-    async def _weighted_voting_ensemble(self, results: Dict[str, Dict[str, Any]]) -> EnsembleResult:
+    async def _weighted_voting_ensemble(
+        self, results: dict[str, dict[str, Any]]
+    ) -> EnsembleResult:
         """Apply weighted voting ensemble strategy."""
         # Calculate weights based on model performance
         total_weight = 0
@@ -361,7 +373,9 @@ class MultiModelCoordinator:
 
             return EnsembleResult(
                 synthesized_policy=best_policy[0],
-                confidence_score=(best_policy[1] / total_weight if total_weight > 0 else 0.0),
+                confidence_score=(
+                    best_policy[1] / total_weight if total_weight > 0 else 0.0
+                ),
                 contributing_models=[p[2] for p in weighted_policies],
                 ensemble_strategy_used=EnsembleStrategy.WEIGHTED_VOTING,
                 performance_metrics={
@@ -382,11 +396,13 @@ class MultiModelCoordinator:
         return await self._constitutional_priority_ensemble(results)
 
     async def _constitutional_priority_ensemble(
-        self, results: Dict[str, Dict[str, Any]]
+        self, results: dict[str, dict[str, Any]]
     ) -> EnsembleResult:
         """Apply constitutional priority ensemble strategy."""
         # Select result with highest constitutional compliance
-        best_result = max(results.items(), key=lambda x: x[1].get("constitutional_compliance", 0))
+        best_result = max(
+            results.items(), key=lambda x: x[1].get("constitutional_compliance", 0)
+        )
         result = best_result[1]
 
         return EnsembleResult(
@@ -401,7 +417,7 @@ class MultiModelCoordinator:
         )
 
     async def _update_model_metrics(
-        self, model_results: Dict[str, Dict[str, Any]], ensemble_result: EnsembleResult
+        self, model_results: dict[str, dict[str, Any]], ensemble_result: EnsembleResult
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -423,7 +439,9 @@ class MultiModelCoordinator:
                 )
                 metrics.response_time_ms = (
                     1 - alpha
-                ) * metrics.response_time_ms + alpha * result.get("synthesis_time_ms", 0)
+                ) * metrics.response_time_ms + alpha * result.get(
+                    "synthesis_time_ms", 0
+                )
                 metrics.gflops_usage = (1 - alpha) * metrics.gflops_usage + alpha * (
                     1.0 - result.get("gflops_reduction", 0)
                 )
@@ -432,13 +450,18 @@ class MultiModelCoordinator:
                 metrics.reliability_score = (
                     metrics.synthesis_accuracy * 0.4
                     + metrics.constitutional_compliance * 0.4
-                    + (1.0 - min(metrics.response_time_ms / self.target_response_time_ms, 1.0))
+                    + (
+                        1.0
+                        - min(
+                            metrics.response_time_ms / self.target_response_time_ms, 1.0
+                        )
+                    )
                     * 0.2
                 )
 
                 metrics.last_updated = datetime.now()
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get comprehensive performance summary."""
         if not self.ensemble_history:
             return {"status": "no_data"}
@@ -449,11 +472,15 @@ class MultiModelCoordinator:
             "total_syntheses": len(self.ensemble_history),
             "recent_average_confidence": sum(r.confidence_score for r in recent_results)
             / len(recent_results),
-            "recent_average_fidelity": sum(r.constitutional_fidelity for r in recent_results)
+            "recent_average_fidelity": sum(
+                r.constitutional_fidelity for r in recent_results
+            )
             / len(recent_results),
             "recent_average_time_ms": sum(r.synthesis_time_ms for r in recent_results)
             / len(recent_results),
-            "wina_optimization_rate": sum(1 for r in recent_results if r.wina_optimization_applied)
+            "wina_optimization_rate": sum(
+                1 for r in recent_results if r.wina_optimization_applied
+            )
             / len(recent_results),
             "model_metrics": {
                 model_id: {

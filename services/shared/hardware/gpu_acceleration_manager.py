@@ -18,9 +18,9 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 try:
     import torch
@@ -102,8 +102,8 @@ class AcceleratedResult:
     memory_used_gb: float
     constitutional_compliance: float
     success: bool
-    error_message: Optional[str] = None
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    error_message: str | None = None
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 class GPUAccelerationManager:
@@ -196,13 +196,15 @@ class GPUAccelerationManager:
             return
 
         # Initialize GPU states
-        for gpu_id in range(min(self.gpu_config["device_count"], torch.cuda.device_count())):
+        for gpu_id in range(
+            min(self.gpu_config["device_count"], torch.cuda.device_count())
+        ):
             self.gpu_states[gpu_id] = {
                 "available_memory_gb": self.gpu_config["memory_per_device_gb"]
                 - self.gpu_config["memory_reserve_gb"],
                 "current_utilization": 0.0,
                 "active_tasks": [],
-                "last_updated": datetime.now(timezone.utc),
+                "last_updated": datetime.now(UTC),
             }
 
         if NVML_AVAILABLE:
@@ -235,7 +237,9 @@ class GPUAccelerationManager:
                 return await self._fallback_cpu_processing(processing_task)
 
             # 3. Load model on appropriate GPU(s)
-            model_handle = await self._load_model_on_gpu(processing_task.model_id, gpu_allocation)
+            model_handle = await self._load_model_on_gpu(
+                processing_task.model_id, gpu_allocation
+            )
 
             # 4. Execute accelerated processing
             result = await self._execute_accelerated_task(
@@ -265,7 +269,9 @@ class GPUAccelerationManager:
             return result
 
         except Exception as e:
-            logger.error(f"GPU acceleration failed for {processing_task.task_id}: {str(e)}")
+            logger.error(
+                f"GPU acceleration failed for {processing_task.task_id}: {str(e)}"
+            )
             return await self._fallback_cpu_processing(processing_task, str(e))
 
     async def _optimize_gpu_allocation(self, task: ConstitutionalTask) -> GPUAllocation:
@@ -305,7 +311,8 @@ class GPUAccelerationManager:
         allocation = GPUAllocation(
             device_id=device_id,
             memory_allocated_gb=memory_allocated,
-            compute_allocation=1.0 / (len(self.gpu_states[device_id]["active_tasks"]) + 1),
+            compute_allocation=1.0
+            / (len(self.gpu_states[device_id]["active_tasks"]) + 1),
             allocation_strategy=strategy,
             estimated_latency_ms=estimated_latency,
             task_id=task.task_id,
@@ -330,8 +337,13 @@ class GPUAccelerationManager:
             return False
 
         # Check utilization limits
-        if gpu_state["current_utilization"] > self.performance_targets["max_memory_usage"]:
-            logger.warning(f"GPU utilization too high: {gpu_state['current_utilization']}")
+        if (
+            gpu_state["current_utilization"]
+            > self.performance_targets["max_memory_usage"]
+        ):
+            logger.warning(
+                f"GPU utilization too high: {gpu_state['current_utilization']}"
+            )
             return False
 
         return True
@@ -352,11 +364,13 @@ class GPUAccelerationManager:
                 "model_id": model_id,
                 "device_id": device_id,
                 "memory_allocated": allocation.memory_allocated_gb,
-                "loaded_at": datetime.now(timezone.utc),
+                "loaded_at": datetime.now(UTC),
             }
 
             # Update GPU state
-            self.gpu_states[device_id]["available_memory_gb"] -= allocation.memory_allocated_gb
+            self.gpu_states[device_id][
+                "available_memory_gb"
+            ] -= allocation.memory_allocated_gb
             self.gpu_states[device_id]["active_tasks"].append(allocation.task_id)
 
             logger.debug(f"Model {model_id} loaded on GPU {device_id}")
@@ -364,7 +378,9 @@ class GPUAccelerationManager:
             return model_handle
 
         except Exception as e:
-            logger.error(f"Failed to load model {model_id} on GPU {device_id}: {str(e)}")
+            logger.error(
+                f"Failed to load model {model_id} on GPU {device_id}: {str(e)}"
+            )
             raise
 
     async def _execute_accelerated_task(
@@ -376,15 +392,13 @@ class GPUAccelerationManager:
         try:
             # Mock GPU processing - in production, this would run actual models
             if TORCH_AVAILABLE and torch.cuda.is_available():
-                device = torch.device(f"cuda:{allocation.device_id}")
+                torch.device(f"cuda:{allocation.device_id}")
 
                 # Simulate GPU computation
                 await asyncio.sleep(0.01)  # Simulate processing time
 
                 # Mock constitutional processing result
-                result_content = (
-                    f"GPU-accelerated constitutional analysis for {task.task_type.value}"
-                )
+                result_content = f"GPU-accelerated constitutional analysis for {task.task_type.value}"
                 constitutional_compliance = 0.95  # Mock compliance score
 
                 # Get GPU utilization
@@ -393,7 +407,9 @@ class GPUAccelerationManager:
 
             else:
                 # CPU fallback
-                result_content = f"CPU fallback constitutional analysis for {task.task_type.value}"
+                result_content = (
+                    f"CPU fallback constitutional analysis for {task.task_type.value}"
+                )
                 constitutional_compliance = 0.90
                 gpu_utilization = 0.0
                 memory_used = 0.0
@@ -449,7 +465,9 @@ class GPUAccelerationManager:
 
         return result
 
-    async def _cleanup_gpu_resources(self, allocation: GPUAllocation, model_handle: Any):
+    async def _cleanup_gpu_resources(
+        self, allocation: GPUAllocation, model_handle: Any
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -459,9 +477,13 @@ class GPUAccelerationManager:
 
             # Update GPU state
             if device_id in self.gpu_states:
-                self.gpu_states[device_id]["available_memory_gb"] += allocation.memory_allocated_gb
+                self.gpu_states[device_id][
+                    "available_memory_gb"
+                ] += allocation.memory_allocated_gb
                 if allocation.task_id in self.gpu_states[device_id]["active_tasks"]:
-                    self.gpu_states[device_id]["active_tasks"].remove(allocation.task_id)
+                    self.gpu_states[device_id]["active_tasks"].remove(
+                        allocation.task_id
+                    )
 
             # Clear CUDA cache if available
             if TORCH_AVAILABLE and torch.cuda.is_available():
@@ -481,7 +503,8 @@ class GPUAccelerationManager:
         gpu_state = self.gpu_states[gpu_id]
         return (
             gpu_state["available_memory_gb"] >= task.memory_requirement_gb
-            and gpu_state["current_utilization"] < self.performance_targets["max_memory_usage"]
+            and gpu_state["current_utilization"]
+            < self.performance_targets["max_memory_usage"]
         )
 
     async def _find_best_gpu(self, task: ConstitutionalTask) -> int:
@@ -506,10 +529,14 @@ class GPUAccelerationManager:
     async def _select_distributed_allocation(self, task: ConstitutionalTask) -> int:
         """Select GPU for distributed processing."""
         # For distributed tasks, use round-robin allocation
-        active_task_counts = [len(state["active_tasks"]) for state in self.gpu_states.values()]
+        active_task_counts = [
+            len(state["active_tasks"]) for state in self.gpu_states.values()
+        ]
         return active_task_counts.index(min(active_task_counts))
 
-    async def _estimate_task_latency(self, task: ConstitutionalTask, device_id: int) -> float:
+    async def _estimate_task_latency(
+        self, task: ConstitutionalTask, device_id: int
+    ) -> float:
         """Estimate task latency based on complexity and GPU load."""
         base_latency = {
             TaskType.CONSTITUTIONAL_SYNTHESIS: 15.0,
@@ -543,7 +570,9 @@ class GPUAccelerationManager:
         # Mock utilization for testing
         return 0.75
 
-    async def _update_performance_metrics(self, result: AcceleratedResult, latency_ms: float):
+    async def _update_performance_metrics(
+        self, result: AcceleratedResult, latency_ms: float
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -556,7 +585,8 @@ class GPUAccelerationManager:
         # Update running averages
         total_tasks = self.performance_metrics["total_tasks"]
         self.performance_metrics["average_latency_ms"] = (
-            self.performance_metrics["average_latency_ms"] * (total_tasks - 1) + latency_ms
+            self.performance_metrics["average_latency_ms"] * (total_tasks - 1)
+            + latency_ms
         ) / total_tasks
 
         self.performance_metrics["average_gpu_utilization"] = (
@@ -567,9 +597,11 @@ class GPUAccelerationManager:
         # Record metrics
         self.metrics.record_timing("gpu_task_latency", latency_ms / 1000.0)
         self.metrics.record_value("gpu_utilization", result.gpu_utilization)
-        self.metrics.record_value("constitutional_compliance", result.constitutional_compliance)
+        self.metrics.record_value(
+            "constitutional_compliance", result.constitutional_compliance
+        )
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get performance summary for monitoring."""
         return {
             "gpu_config": self.gpu_config,
@@ -578,7 +610,9 @@ class GPUAccelerationManager:
             "performance_targets": self.performance_targets,
             "torch_available": TORCH_AVAILABLE,
             "cuda_available": (
-                TORCH_AVAILABLE and torch.cuda.is_available() if TORCH_AVAILABLE else False
+                TORCH_AVAILABLE and torch.cuda.is_available()
+                if TORCH_AVAILABLE
+                else False
             ),
             "nvml_available": NVML_AVAILABLE,
         }

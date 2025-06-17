@@ -110,10 +110,10 @@ cd blockchain && cargo fmt
 ### Docker Environment
 ```bash
 # Build and start the Docker development environment
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # Build and start specific services
-docker-compose up -d pgc_service ac_service
+docker-compose -f infrastructure/docker/docker-compose.yml up -d pgc_service ac_service
 
 # View logs for all services
 docker-compose logs -f
@@ -122,10 +122,10 @@ docker-compose logs -f
 docker-compose logs -f pgc_service
 
 # Rebuild services after changes
-docker-compose up -d --build
+docker-compose -f infrastructure/docker/docker-compose.yml up -d --build
 
 # Stop all services
-docker-compose down
+docker-compose -f infrastructure/docker/docker-compose.yml down
 ```
 
 ### Kubernetes Deployment

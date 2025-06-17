@@ -20,7 +20,7 @@ Found a security vulnerability? Please report it responsibly:
 ```
 blockchain/
 ├── programs/                    # Anchor programs (smart contracts)
-│   ├── quantumagi-core/        # Main governance program
+│   ├── blockchain/        # Main governance program
 │   ├── appeals/                # Appeals handling program
 │   └── logging/                # Event logging program
 ├── client/                     # TypeScript client libraries
@@ -33,7 +33,7 @@ blockchain/
 
 ## Programs
 
-### Quantumagi Core Program (`programs/quantumagi-core/`)
+### Quantumagi Core Program (`programs/blockchain/`)
 **Purpose**: Main constitutional governance enforcement
 - Constitutional principle storage and validation
 - Policy proposal and voting mechanisms

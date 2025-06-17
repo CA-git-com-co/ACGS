@@ -6,7 +6,7 @@ for AlphaEvolve integration and constitutional governance operations.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 from shared import get_config
@@ -38,10 +38,10 @@ class GSServiceClient:
 
     async def evaluate_ec_governance(
         self,
-        proposals: List[Dict[str, Any]],
+        proposals: list[dict[str, Any]],
         context: str,
-        optimization_hints: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        optimization_hints: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Evaluate EC proposals for constitutional compliance.
 
@@ -78,9 +78,9 @@ class GSServiceClient:
         self,
         ec_context: str,
         optimization_objective: str,
-        constitutional_constraints: List[str],
+        constitutional_constraints: list[str],
         target_format: str = "rego",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Synthesize governance rules for EC systems.
 
@@ -115,7 +115,7 @@ class GSServiceClient:
             logger.error(f"Unexpected error in rule synthesis: {e}")
             raise
 
-    async def get_wina_synthesis_metrics(self) -> Dict[str, Any]:
+    async def get_wina_synthesis_metrics(self) -> dict[str, Any]:
         """
         Get WINA synthesis performance metrics.
 

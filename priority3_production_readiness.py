@@ -86,10 +86,6 @@ class Priority3ProductionReadiness:
                 # Step 2: Constitutional Compliance Validation
                 start_time = time.time()
                 try:
-                    compliance_request = {
-                        "policy": "test_policy",
-                        "constitutional_rules": ["rule1", "rule2"],
-                    }
                     # Test AC Service
                     response = await client.get("http://localhost:8001/api/v1/status")
                     if response.status_code == 200:
@@ -115,10 +111,6 @@ class Priority3ProductionReadiness:
                 # Step 3: Oversight Coordination
                 start_time = time.time()
                 try:
-                    oversight_request = {
-                        "governance_action": "policy_validation",
-                        "coordination_type": "batch_processing",
-                    }
                     response = await client.get("http://localhost:8006/api/v1/status")
                     if response.status_code == 200:
                         oversight_time = time.time() - start_time
@@ -162,12 +154,6 @@ class Priority3ProductionReadiness:
                 # Test 5: WINA Oversight Operations
                 self.log_action("Testing WINA oversight operations", "INFO")
                 try:
-                    wina_test = {
-                        "governance_actions": [
-                            {"action": "policy_synthesis", "priority": "high"},
-                            {"action": "compliance_validation", "priority": "medium"},
-                        ]
-                    }
                     response = await client.get("http://localhost:8006/health")
                     if response.status_code == 200:
                         results["wina_oversight_operations"] = True

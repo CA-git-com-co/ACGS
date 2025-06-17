@@ -289,7 +289,7 @@ class Phase3PGPAssuranceTestRunner:
             if response.status_code == 201:
                 result = response.json()
                 self.timestamp_token = result["timestamp_token"]
-                self.log_test_result(test_name, True, f"Timestamp created")
+                self.log_test_result(test_name, True, "Timestamp created")
                 return True
             else:
                 self.log_test_result(

@@ -28,7 +28,6 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict
 
 # Configure logging
 logging.basicConfig(
@@ -55,7 +54,7 @@ class ACGSCleanupOrchestrator:
             "errors": [],
         }
 
-    def execute_phase_1_backup_cleanup(self) -> Dict:
+    def execute_phase_1_backup_cleanup(self) -> dict:
         """Phase 1: Remove backup directories and duplicate files."""
         logger.info("🧹 Phase 1: Backup and Duplicate File Cleanup")
 
@@ -112,7 +111,7 @@ class ACGSCleanupOrchestrator:
         self.cleanup_report["phases_completed"].append("backup_cleanup")
         return phase_results
 
-    def execute_phase_2_security_remediation(self) -> Dict:
+    def execute_phase_2_security_remediation(self) -> dict:
         """Phase 2: Security vulnerability remediation."""
         logger.info("🔒 Phase 2: Security Vulnerability Remediation")
 
@@ -162,7 +161,7 @@ class ACGSCleanupOrchestrator:
         self.cleanup_report["phases_completed"].append("security_remediation")
         return phase_results
 
-    def execute_phase_3_code_quality(self) -> Dict:
+    def execute_phase_3_code_quality(self) -> dict:
         """Phase 3: Code quality and standards enforcement."""
         logger.info("📝 Phase 3: Code Quality and Standards")
 
@@ -197,7 +196,7 @@ class ACGSCleanupOrchestrator:
         self.cleanup_report["phases_completed"].append("code_quality")
         return phase_results
 
-    def execute_phase_4_dependency_management(self) -> Dict:
+    def execute_phase_4_dependency_management(self) -> dict:
         """Phase 4: Dependency management and consolidation."""
         logger.info("📦 Phase 4: Dependency Management")
 
@@ -222,7 +221,7 @@ class ACGSCleanupOrchestrator:
         """Calculate directory size in bytes."""
         total_size = 0
         try:
-            for dirpath, dirnames, filenames in os.walk(directory):
+            for dirpath, _dirnames, filenames in os.walk(directory):
                 for filename in filenames:
                     filepath = os.path.join(dirpath, filename)
                     if os.path.exists(filepath):
@@ -256,7 +255,7 @@ class ACGSCleanupOrchestrator:
         if bandit_config.exists():
             logger.info("Security configuration already exists")
 
-    def _remove_unused_imports(self, phase_results: Dict):
+    def _remove_unused_imports(self, phase_results: dict):
         """Remove unused imports from Python files."""
         try:
             subprocess.run(
@@ -287,10 +286,10 @@ class ACGSCleanupOrchestrator:
         except Exception as e:
             logger.error(f"Error removing unused imports: {e}")
 
-    def _clean_requirements_file(self, req_file: Path, phase_results: Dict):
+    def _clean_requirements_file(self, req_file: Path, phase_results: dict):
         """Clean and consolidate requirements file."""
         try:
-            with open(req_file, "r") as f:
+            with open(req_file) as f:
                 lines = f.readlines()
 
             # Remove duplicates and clean up

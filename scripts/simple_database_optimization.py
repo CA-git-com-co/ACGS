@@ -57,11 +57,11 @@ class SimpleDatabaseOptimizer:
             # Connection statistics
             conn_stats = await self.connection.fetch(
                 """
-                SELECT 
+                SELECT
                     count(*) as total_connections,
                     count(*) FILTER (WHERE state = 'active') as active_connections,
                     count(*) FILTER (WHERE state = 'idle') as idle_connections
-                FROM pg_stat_activity 
+                FROM pg_stat_activity
                 WHERE datname = current_database()
             """
             )
@@ -69,7 +69,7 @@ class SimpleDatabaseOptimizer:
             # Database size
             db_size = await self.connection.fetchrow(
                 """
-                SELECT 
+                SELECT
                     pg_size_pretty(pg_database_size(current_database())) as database_size,
                     pg_database_size(current_database()) as database_size_bytes
             """
@@ -78,12 +78,12 @@ class SimpleDatabaseOptimizer:
             # Table statistics
             table_stats = await self.connection.fetch(
                 """
-                SELECT 
+                SELECT
                     schemaname,
                     tablename,
                     n_live_tup,
                     n_dead_tup
-                FROM pg_stat_user_tables 
+                FROM pg_stat_user_tables
                 ORDER BY n_live_tup DESC
                 LIMIT 10
             """
@@ -167,7 +167,7 @@ class SimpleDatabaseOptimizer:
                 table_exists = await self.connection.fetchval(
                     """
                     SELECT EXISTS (
-                        SELECT FROM information_schema.tables 
+                        SELECT FROM information_schema.tables
                         WHERE table_name = $1
                     )
                 """,
@@ -214,8 +214,8 @@ class SimpleDatabaseOptimizer:
             # Get list of user tables
             tables = await self.connection.fetch(
                 """
-                SELECT tablename 
-                FROM pg_tables 
+                SELECT tablename
+                FROM pg_tables
                 WHERE schemaname = 'public'
             """
             )
@@ -262,11 +262,11 @@ class SimpleDatabaseOptimizer:
             # Get current settings
             settings = await self.connection.fetch(
                 """
-                SELECT name, setting, unit, context 
-                FROM pg_settings 
+                SELECT name, setting, unit, context
+                FROM pg_settings
                 WHERE name IN (
                     'max_connections',
-                    'shared_buffers', 
+                    'shared_buffers',
                     'effective_cache_size',
                     'work_mem',
                     'maintenance_work_mem'
@@ -334,7 +334,7 @@ class SimpleDatabaseOptimizer:
             start_time = time.time()
             connections = []
             try:
-                for i in range(5):
+                for _i in range(5):
                     conn = await asyncpg.connect(self.database_url)
                     connections.append(conn)
 

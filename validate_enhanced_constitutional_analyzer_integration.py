@@ -15,18 +15,16 @@ Validation Steps:
 """
 
 import asyncio
-import aiohttp
+import json
 import logging
 import time
-import json
-import sys
-from typing import Dict, List, Any
-from pathlib import Path
+from typing import Any
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -67,35 +65,39 @@ class EnhancedConstitutionalAnalyzerValidator:
             "recommendations": [],
         }
 
-    async def run_validation(self) -> Dict[str, Any]:
+    async def run_validation(self) -> dict[str, Any]:
         """Run comprehensive validation of Enhanced Constitutional Analyzer integration."""
-        logger.info("🚀 Starting Enhanced Constitutional Analyzer Integration Validation")
+        logger.info(
+            "🚀 Starting Enhanced Constitutional Analyzer Integration Validation"
+        )
         logger.info("=" * 80)
-        
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30)) as session:
+
+        async with aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=30)
+        ) as session:
             self.session = session
-            
+
             try:
                 # Step 1: Validate ACGS-1 service health
                 await self.validate_service_health()
-                
+
                 # Step 2: Test governance workflow endpoints
                 await self.validate_governance_workflows()
-                
+
                 # Step 3: Test PGC service integration
                 await self.validate_pgc_integration()
-                
+
                 # Step 4: Validate Constitution Hash consistency
                 await self.validate_constitution_hash()
-                
+
                 # Step 5: Performance benchmarking
                 await self.validate_performance()
-                
+
                 # Generate final assessment
                 self.generate_final_assessment()
-                
+
                 return self.validation_results
-                
+
             except Exception as e:
                 logger.error(f"Critical error during validation: {e}")
                 self.validation_results["overall_status"] = "CRITICAL_ERROR"
@@ -105,17 +107,17 @@ class EnhancedConstitutionalAnalyzerValidator:
     async def validate_service_health(self):
         """Validate health of all ACGS-1 services."""
         logger.info("🔍 Validating ACGS-1 Service Health...")
-        
+
         service_health = {}
         healthy_services = 0
-        
+
         for service_name, config in ACGS_SERVICES.items():
             try:
                 start_time = time.time()
-                
+
                 async with self.session.get(f"{config['url']}/health") as response:
                     response_time = (time.time() - start_time) * 1000
-                    
+
                     if response.status == 200:
                         health_data = await response.json()
                         service_health[service_name] = {
@@ -124,57 +126,71 @@ class EnhancedConstitutionalAnalyzerValidator:
                             "details": health_data,
                         }
                         healthy_services += 1
-                        logger.info(f"✅ {service_name}: Healthy ({response_time:.1f}ms)")
+                        logger.info(
+                            f"✅ {service_name}: Healthy ({response_time:.1f}ms)"
+                        )
                     else:
                         service_health[service_name] = {
                             "status": "unhealthy",
                             "response_time_ms": round(response_time, 2),
                             "error": f"HTTP {response.status}",
                         }
-                        logger.warning(f"❌ {service_name}: Unhealthy (HTTP {response.status})")
-                        
+                        logger.warning(
+                            f"❌ {service_name}: Unhealthy (HTTP {response.status})"
+                        )
+
             except Exception as e:
                 service_health[service_name] = {
                     "status": "unreachable",
                     "error": str(e),
                 }
                 logger.error(f"❌ {service_name}: Unreachable - {e}")
-        
+
         self.validation_results["service_health"] = {
             "services": service_health,
             "healthy_count": healthy_services,
             "total_count": len(ACGS_SERVICES),
             "health_percentage": (healthy_services / len(ACGS_SERVICES)) * 100,
         }
-        
-        logger.info(f"📊 Service Health: {healthy_services}/{len(ACGS_SERVICES)} services healthy")
+
+        logger.info(
+            f"📊 Service Health: {healthy_services}/{len(ACGS_SERVICES)} services healthy"
+        )
 
     async def validate_governance_workflows(self):
         """Validate governance workflow endpoints."""
         logger.info("🔍 Validating Governance Workflow Integration...")
-        
+
         workflow_tests = {}
-        
+
         # Test Policy Creation workflow
         workflow_tests["policy_creation"] = await self.test_policy_creation_workflow()
-        
+
         # Test Constitutional Compliance workflow
-        workflow_tests["constitutional_compliance"] = await self.test_constitutional_compliance_workflow()
-        
+        workflow_tests["constitutional_compliance"] = (
+            await self.test_constitutional_compliance_workflow()
+        )
+
         # Test WINA Oversight workflow
         workflow_tests["wina_oversight"] = await self.test_wina_oversight_workflow()
-        
-        self.validation_results["integration_tests"]["governance_workflows"] = workflow_tests
-        
-        # Summary
-        successful_workflows = sum(1 for result in workflow_tests.values() if result.get("success", False))
-        logger.info(f"📊 Governance Workflows: {successful_workflows}/{len(workflow_tests)} workflows operational")
 
-    async def test_policy_creation_workflow(self) -> Dict[str, Any]:
+        self.validation_results["integration_tests"][
+            "governance_workflows"
+        ] = workflow_tests
+
+        # Summary
+        successful_workflows = sum(
+            1 for result in workflow_tests.values() if result.get("success", False)
+        )
+        logger.info(
+            f"📊 Governance Workflows: {successful_workflows}/{len(workflow_tests)} workflows operational"
+        )
+
+    async def test_policy_creation_workflow(self) -> dict[str, Any]:
         """Test Policy Creation workflow endpoint."""
         try:
             start_time = time.time()
-            
+
             # Test PGC service policy creation endpoint
             test_data = {
                 "policy_id": "TEST-POL-001",
@@ -183,16 +199,16 @@ class EnhancedConstitutionalAnalyzerValidator:
                 "policy_type": "governance",
                 "enforcement_level": "mandatory",
             }
-            
+
             async with self.session.post(
                 f"{ACGS_SERVICES['pgc_service']['url']}/api/v1/governance-workflows/policy-creation",
-                json=test_data
+                json=test_data,
             ) as response:
                 response_time = (time.time() - start_time) * 1000
-                
+
                 if response.status == 200:
                     result_data = await response.json()
-                    
+
                     return {
                         "success": True,
                         "response_time_ms": round(response_time, 2),
@@ -207,7 +223,7 @@ class EnhancedConstitutionalAnalyzerValidator:
                         "error": f"HTTP {response.status}",
                         "details": await response.text(),
                     }
-                    
+
         except Exception as e:
             return {
                 "success": False,
@@ -215,11 +231,11 @@ class EnhancedConstitutionalAnalyzerValidator:
                 "details": "Exception during policy creation workflow test",
             }
 
-    async def test_constitutional_compliance_workflow(self) -> Dict[str, Any]:
+    async def test_constitutional_compliance_workflow(self) -> dict[str, Any]:
         """Test Constitutional Compliance workflow endpoint."""
         try:
             start_time = time.time()
-            
+
             # Test PGC service constitutional compliance endpoint
             test_data = {
                 "policy_id": "TEST-COMPLIANCE-001",
@@ -227,19 +243,19 @@ class EnhancedConstitutionalAnalyzerValidator:
                 "constitutional_principles": [
                     "Human safety and wellbeing priority",
                     "Transparency and accountability",
-                    "Fairness and non-discrimination"
-                ]
+                    "Fairness and non-discrimination",
+                ],
             }
-            
+
             async with self.session.post(
                 f"{ACGS_SERVICES['pgc_service']['url']}/api/v1/governance-workflows/constitutional-compliance",
-                json=test_data
+                json=test_data,
             ) as response:
                 response_time = (time.time() - start_time) * 1000
-                
+
                 if response.status == 200:
                     result_data = await response.json()
-                    
+
                     return {
                         "success": True,
                         "response_time_ms": round(response_time, 2),
@@ -255,7 +271,7 @@ class EnhancedConstitutionalAnalyzerValidator:
                         "error": f"HTTP {response.status}",
                         "details": await response.text(),
                     }
-                    
+
         except Exception as e:
             return {
                 "success": False,
@@ -263,28 +279,31 @@ class EnhancedConstitutionalAnalyzerValidator:
                 "details": "Exception during constitutional compliance workflow test",
             }
 
-    async def test_wina_oversight_workflow(self) -> Dict[str, Any]:
+    async def test_wina_oversight_workflow(self) -> dict[str, Any]:
         """Test WINA Oversight workflow endpoint."""
         try:
             start_time = time.time()
-            
+
             # Test EC service WINA oversight endpoint
             test_data = {
                 "operation_type": "governance_validation",
                 "policy_id": "TEST-WINA-001",
-                "compliance_requirements": ["constitutional_adherence", "stakeholder_approval"],
-                "stakeholders": ["governance_committee", "technical_review_board"]
+                "compliance_requirements": [
+                    "constitutional_adherence",
+                    "stakeholder_approval",
+                ],
+                "stakeholders": ["governance_committee", "technical_review_board"],
             }
-            
+
             async with self.session.post(
                 f"{ACGS_SERVICES['ec_service']['url']}/api/v1/wina-oversight/pgc-integration/execute",
-                json=test_data
+                json=test_data,
             ) as response:
                 response_time = (time.time() - start_time) * 1000
-                
+
                 if response.status == 200:
                     result_data = await response.json()
-                    
+
                     return {
                         "success": True,
                         "response_time_ms": round(response_time, 2),
@@ -300,7 +319,7 @@ class EnhancedConstitutionalAnalyzerValidator:
                         "error": f"HTTP {response.status}",
                         "details": await response.text(),
                     }
-                    
+
         except Exception as e:
             return {
                 "success": False,
@@ -322,13 +341,13 @@ class EnhancedConstitutionalAnalyzerValidator:
                 "enforcement_context": {
                     "risk_level": "medium",
                     "stakeholders": ["safety_committee", "governance_board"],
-                    "constitutional_requirements": ["human_safety", "transparency"]
-                }
+                    "constitutional_requirements": ["human_safety", "transparency"],
+                },
             }
 
             async with self.session.post(
                 f"{ACGS_SERVICES['pgc_service']['url']}/api/v1/real-time-enforcement",
-                json=test_data
+                json=test_data,
             ) as response:
                 response_time = (time.time() - start_time) * 1000
 
@@ -341,11 +360,15 @@ class EnhancedConstitutionalAnalyzerValidator:
                         "enforcement_action": result_data.get("enforcement_action"),
                         "compliance_score": result_data.get("compliance_score"),
                         "constitutional_hash": result_data.get("constitutional_hash"),
-                        "enhanced_analyzer_used": result_data.get("enhanced_analyzer_used", False),
+                        "enhanced_analyzer_used": result_data.get(
+                            "enhanced_analyzer_used", False
+                        ),
                         "details": result_data,
                     }
 
-                    logger.info(f"✅ PGC Integration: {result_data.get('enforcement_action', 'unknown')} ({response_time:.1f}ms)")
+                    logger.info(
+                        f"✅ PGC Integration: {result_data.get('enforcement_action', 'unknown')} ({response_time:.1f}ms)"
+                    )
 
                 else:
                     pgc_result = {
@@ -355,7 +378,9 @@ class EnhancedConstitutionalAnalyzerValidator:
                         "details": await response.text(),
                     }
 
-                    logger.warning(f"❌ PGC Integration: Failed (HTTP {response.status})")
+                    logger.warning(
+                        f"❌ PGC Integration: Failed (HTTP {response.status})"
+                    )
 
         except Exception as e:
             pgc_result = {
@@ -380,7 +405,9 @@ class EnhancedConstitutionalAnalyzerValidator:
 
         # Check constitution hash from AC service
         try:
-            async with self.session.get(f"{ACGS_SERVICES['ac_service']['url']}/api/v1/constitution/hash") as response:
+            async with self.session.get(
+                f"{ACGS_SERVICES['ac_service']['url']}/api/v1/constitution/hash"
+            ) as response:
                 if response.status == 200:
                     data = await response.json()
                     ac_hash = data.get("constitution_hash")
@@ -388,14 +415,18 @@ class EnhancedConstitutionalAnalyzerValidator:
 
                     if ac_hash != PERFORMANCE_TARGETS["constitution_hash"]:
                         constitution_validation["consistent"] = False
-                        constitution_validation["inconsistent_services"].append("ac_service")
+                        constitution_validation["inconsistent_services"].append(
+                            "ac_service"
+                        )
 
         except Exception as e:
             constitution_validation["service_hashes"]["ac_service"] = f"Error: {e}"
 
         # Check constitution hash from PGC service
         try:
-            async with self.session.get(f"{ACGS_SERVICES['pgc_service']['url']}/api/v1/constitution/hash") as response:
+            async with self.session.get(
+                f"{ACGS_SERVICES['pgc_service']['url']}/api/v1/constitution/hash"
+            ) as response:
                 if response.status == 200:
                     data = await response.json()
                     pgc_hash = data.get("constitution_hash")
@@ -403,7 +434,9 @@ class EnhancedConstitutionalAnalyzerValidator:
 
                     if pgc_hash != PERFORMANCE_TARGETS["constitution_hash"]:
                         constitution_validation["consistent"] = False
-                        constitution_validation["inconsistent_services"].append("pgc_service")
+                        constitution_validation["inconsistent_services"].append(
+                            "pgc_service"
+                        )
 
         except Exception as e:
             constitution_validation["service_hashes"]["pgc_service"] = f"Error: {e}"
@@ -411,9 +444,13 @@ class EnhancedConstitutionalAnalyzerValidator:
         self.validation_results["constitution_validation"] = constitution_validation
 
         if constitution_validation["consistent"]:
-            logger.info(f"✅ Constitution Hash: Consistent ({PERFORMANCE_TARGETS['constitution_hash']})")
+            logger.info(
+                f"✅ Constitution Hash: Consistent ({PERFORMANCE_TARGETS['constitution_hash']})"
+            )
         else:
-            logger.warning(f"❌ Constitution Hash: Inconsistent services: {constitution_validation['inconsistent_services']}")
+            logger.warning(
+                f"❌ Constitution Hash: Inconsistent services: {constitution_validation['inconsistent_services']}"
+            )
 
     async def validate_performance(self):
         """Validate performance against ACGS-1 targets."""
@@ -437,7 +474,9 @@ class EnhancedConstitutionalAnalyzerValidator:
                 start_time = time.time()
 
                 # Test PGC service health endpoint for performance
-                async with self.session.get(f"{ACGS_SERVICES['pgc_service']['url']}/health") as response:
+                async with self.session.get(
+                    f"{ACGS_SERVICES['pgc_service']['url']}/health"
+                ):
                     response_time = (time.time() - start_time) * 1000
                     performance_metrics["response_times"].append(response_time)
 
@@ -451,16 +490,27 @@ class EnhancedConstitutionalAnalyzerValidator:
 
         # Calculate metrics
         if performance_metrics["response_times"]:
-            performance_metrics["average_response_time_ms"] = sum(performance_metrics["response_times"]) / len(performance_metrics["response_times"])
-            performance_metrics["max_response_time_ms"] = max(performance_metrics["response_times"])
-            performance_metrics["target_met_percentage"] = (performance_metrics["target_met_count"] / performance_metrics["total_requests"]) * 100
+            performance_metrics["average_response_time_ms"] = sum(
+                performance_metrics["response_times"]
+            ) / len(performance_metrics["response_times"])
+            performance_metrics["max_response_time_ms"] = max(
+                performance_metrics["response_times"]
+            )
+            performance_metrics["target_met_percentage"] = (
+                performance_metrics["target_met_count"]
+                / performance_metrics["total_requests"]
+            ) * 100
 
             # Check if meets targets (95% of requests should be under target)
-            performance_metrics["meets_targets"] = performance_metrics["target_met_percentage"] >= 95.0
+            performance_metrics["meets_targets"] = (
+                performance_metrics["target_met_percentage"] >= 95.0
+            )
 
         self.validation_results["performance_metrics"] = performance_metrics
 
-        logger.info(f"📊 Performance: {performance_metrics['average_response_time_ms']:.1f}ms avg, {performance_metrics['target_met_percentage']:.1f}% meet target")
+        logger.info(
+            f"📊 Performance: {performance_metrics['average_response_time_ms']:.1f}ms avg, {performance_metrics['target_met_percentage']:.1f}% meet target"
+        )
 
     def generate_final_assessment(self):
         """Generate final assessment and recommendations."""
@@ -473,7 +523,11 @@ class EnhancedConstitutionalAnalyzerValidator:
         # Assess integration tests
         integration_tests = self.validation_results["integration_tests"]
         governance_workflows = integration_tests.get("governance_workflows", {})
-        successful_workflows = sum(1 for result in governance_workflows.values() if result.get("success", False))
+        successful_workflows = sum(
+            1
+            for result in governance_workflows.values()
+            if result.get("success", False)
+        )
         total_workflows = len(governance_workflows)
 
         pgc_integration = integration_tests.get("pgc_service", {})
@@ -491,48 +545,87 @@ class EnhancedConstitutionalAnalyzerValidator:
         recommendations = []
 
         if health_percentage < 80:
-            recommendations.append("🚨 CRITICAL: Less than 80% of ACGS-1 services are healthy")
-            recommendations.append("🔧 Restart unhealthy services and check system dependencies")
+            recommendations.append(
+                "🚨 CRITICAL: Less than 80% of ACGS-1 services are healthy"
+            )
+            recommendations.append(
+                "🔧 Restart unhealthy services and check system dependencies"
+            )
 
         if successful_workflows < total_workflows:
-            failed_workflows = [wf for wf, result in governance_workflows.items() if not result.get("success", False)]
-            recommendations.append(f"⚠️ Fix governance workflow integration: {', '.join(failed_workflows)}")
+            failed_workflows = [
+                wf
+                for wf, result in governance_workflows.items()
+                if not result.get("success", False)
+            ]
+            recommendations.append(
+                f"⚠️ Fix governance workflow integration: {', '.join(failed_workflows)}"
+            )
 
         if not pgc_success:
             recommendations.append("🚨 CRITICAL: PGC service integration failed")
-            recommendations.append("🔧 Verify Enhanced Constitutional Analyzer integration with PGC service")
+            recommendations.append(
+                "🔧 Verify Enhanced Constitutional Analyzer integration with PGC service"
+            )
 
         if not constitution_consistent:
             recommendations.append("⚠️ Constitution Hash inconsistency detected")
-            recommendations.append("🔧 Synchronize constitution hash across all services")
+            recommendations.append(
+                "🔧 Synchronize constitution hash across all services"
+            )
 
         if not performance_meets_targets:
             recommendations.append("⚠️ Performance targets not met")
-            recommendations.append("🔧 Optimize service response times and system resources")
+            recommendations.append(
+                "🔧 Optimize service response times and system resources"
+            )
 
         # Determine overall status
-        if health_percentage >= 80 and pgc_success and constitution_consistent and performance_meets_targets:
+        if (
+            health_percentage >= 80
+            and pgc_success
+            and constitution_consistent
+            and performance_meets_targets
+        ):
             overall_status = "READY_FOR_PRODUCTION"
             if not recommendations:
-                recommendations.append("✅ All validations passed - Enhanced Constitutional Analyzer ready for production deployment")
+                recommendations.append(
+                    "✅ All validations passed - Enhanced Constitutional Analyzer ready for production deployment"
+                )
         elif health_percentage >= 60 and (pgc_success or constitution_consistent):
             overall_status = "NEEDS_OPTIMIZATION"
-            recommendations.append("🔧 System functional but requires optimization before production deployment")
+            recommendations.append(
+                "🔧 System functional but requires optimization before production deployment"
+            )
         else:
             overall_status = "CRITICAL_ISSUES"
-            recommendations.append("🚨 CRITICAL: System has major issues - do not deploy to production")
+            recommendations.append(
+                "🚨 CRITICAL: System has major issues - do not deploy to production"
+            )
 
         self.validation_results["overall_status"] = overall_status
         self.validation_results["recommendations"] = recommendations
 
         # Log final assessment
         logger.info("=" * 80)
-        logger.info("🏁 Enhanced Constitutional Analyzer Integration Validation Complete")
-        logger.info(f"📊 Service Health: {health_percentage:.1f}% ({service_health['healthy_count']}/{service_health['total_count']})")
-        logger.info(f"📊 Governance Workflows: {successful_workflows}/{total_workflows} operational")
-        logger.info(f"📊 PGC Integration: {'✅ Success' if pgc_success else '❌ Failed'}")
-        logger.info(f"📊 Constitution Hash: {'✅ Consistent' if constitution_consistent else '❌ Inconsistent'}")
-        logger.info(f"📊 Performance: {'✅ Meets targets' if performance_meets_targets else '❌ Below targets'}")
+        logger.info(
+            "🏁 Enhanced Constitutional Analyzer Integration Validation Complete"
+        )
+        logger.info(
+            f"📊 Service Health: {health_percentage:.1f}% ({service_health['healthy_count']}/{service_health['total_count']})"
+        )
+        logger.info(
+            f"📊 Governance Workflows: {successful_workflows}/{total_workflows} operational"
+        )
+        logger.info(
+            f"📊 PGC Integration: {'✅ Success' if pgc_success else '❌ Failed'}"
+        )
+        logger.info(
+            f"📊 Constitution Hash: {'✅ Consistent' if constitution_consistent else '❌ Inconsistent'}"
+        )
+        logger.info(
+            f"📊 Performance: {'✅ Meets targets' if performance_meets_targets else '❌ Below targets'}"
+        )
         logger.info(f"🎯 Overall Status: {overall_status}")
         logger.info("=" * 80)
 
@@ -558,7 +651,7 @@ async def main():
     timestamp = int(time.time())
     results_filename = f"enhanced_constitutional_analyzer_validation_{timestamp}.json"
 
-    with open(results_filename, 'w') as f:
+    with open(results_filename, "w") as f:
         json.dump(results, f, indent=2)
 
     print(f"📄 Validation results saved to: {results_filename}")

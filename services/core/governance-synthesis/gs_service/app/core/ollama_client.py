@@ -9,12 +9,10 @@ Implements async/await patterns and follows ACGS-PGP reliability standards
 with circuit breaker patterns and fallback mechanisms.
 """
 
-import asyncio
 import json
 import logging
 import os
 from dataclasses import dataclass
-from typing import Dict, List, Optional
 
 import aiohttp
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -34,7 +32,7 @@ class OllamaConfig:
     """Configuration for Ollama client."""
 
     base_url: str = "http://127.0.0.1:11434"
-    api_key: Optional[str] = None
+    api_key: str | None = None
     default_model: str = "hf.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF:Q8_K_XL"
     timeout_seconds: int = 60
     max_retries: int = 3
@@ -50,7 +48,7 @@ class OllamaLLMClient:
     and policy synthesis using local models like DeepSeek-R1.
     """
 
-    def __init__(self, config: Optional[OllamaConfig] = None):
+    def __init__(self, config: OllamaConfig | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -61,10 +59,12 @@ class OllamaLLMClient:
             config: Ollama configuration. If None, loads from environment.
         """
         self.config = config or self._load_config_from_env()
-        self.session: Optional[aiohttp.ClientSession] = None
-        self._available_models: Optional[List[str]] = None
+        self.session: aiohttp.ClientSession | None = None
+        self._available_models: list[str] | None = None
 
-        logger.info(f"Initialized OllamaLLMClient with base URL: {self.config.base_url}")
+        logger.info(
+            f"Initialized OllamaLLMClient with base URL: {self.config.base_url}"
+        )
 
     @classmethod
     def _load_config_from_env(cls) -> OllamaConfig:
@@ -132,7 +132,9 @@ class OllamaLLMClient:
             async with self.session.get(f"{self.config.base_url}/api/tags") as response:
                 if response.status == 200:
                     data = await response.json()
-                    self._available_models = [model["name"] for model in data.get("models", [])]
+                    self._available_models = [
+                        model["name"] for model in data.get("models", [])
+                    ]
                     logger.info(
                         f"Ollama server healthy. Available models: {len(self._available_models)}"
                     )
@@ -145,7 +147,7 @@ class OllamaLLMClient:
             logger.error(f"Ollama health check failed: {e}")
             return False
 
-    async def get_available_models(self) -> List[str]:
+    async def get_available_models(self) -> list[str]:
         """
         Get list of available models from Ollama server.
 
@@ -157,13 +159,15 @@ class OllamaLLMClient:
 
         return self._available_models or []
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
+    )
     async def generate_text(
         self,
         prompt: str,
-        model: Optional[str] = None,
-        temperature: Optional[float] = None,
-        max_tokens: Optional[int] = None,
+        model: str | None = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
         **kwargs,
     ) -> str:
         """
@@ -202,7 +206,9 @@ class OllamaLLMClient:
             "options": {"temperature": temp, "num_predict": max_tok, **kwargs},
         }
 
-        logger.debug(f"Sending request to Ollama: model={model_name}, prompt_length={len(prompt)}")
+        logger.debug(
+            f"Sending request to Ollama: model={model_name}, prompt_length={len(prompt)}"
+        )
 
         try:
             async with self.session.post(
@@ -219,9 +225,11 @@ class OllamaLLMClient:
                 logger.info(f"Ollama generated {len(generated_text)} characters")
                 return generated_text
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error(f"Ollama generation timed out for model {model_name}")
-            raise Exception(f"Ollama generation timed out after {self.config.timeout_seconds}s")
+            raise Exception(
+                f"Ollama generation timed out after {self.config.timeout_seconds}s"
+            )
         except aiohttp.ClientError as e:
             logger.error(f"Ollama client error for model {model_name}: {e}")
             raise Exception(f"Ollama client error: {e}")
@@ -229,11 +237,13 @@ class OllamaLLMClient:
             logger.error(f"Ollama generation failed for model {model_name}: {e}")
             raise
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
+    )
     async def get_structured_interpretation(
         self,
         query: LLMInterpretationInput,
-        wina_gating_mask: Optional[Dict[str, bool]] = None,
+        wina_gating_mask: dict[str, bool] | None = None,
     ) -> LLMStructuredOutput:
         """
         Get structured interpretation using Ollama model.
@@ -285,7 +295,7 @@ class OllamaLLMClient:
     def _construct_constitutional_prompt(
         self,
         query: LLMInterpretationInput,
-        wina_gating_mask: Optional[Dict[str, bool]] = None,
+        wina_gating_mask: dict[str, bool] | None = None,
     ) -> str:
         """Construct constitutional prompting prompt for Ollama."""
         prompt = f"""You are an AI assistant specialized in constitutional governance and policy synthesis.
@@ -312,7 +322,7 @@ Response:"""
 
     def _parse_constitutional_response(
         self, response_text: str, query: LLMInterpretationInput
-    ) -> List[LLMSuggestedRule]:
+    ) -> list[LLMSuggestedRule]:
         """Parse Ollama response into structured interpretations."""
         # Simple parsing - in production, this could be more sophisticated
         # Create a basic rule structure from the response
@@ -339,7 +349,7 @@ Response:"""
 
 
 # Global Ollama client instance
-_ollama_client: Optional[OllamaLLMClient] = None
+_ollama_client: OllamaLLMClient | None = None
 
 
 async def get_ollama_client() -> OllamaLLMClient:
@@ -355,7 +365,9 @@ async def get_ollama_client() -> OllamaLLMClient:
 
         # Verify server availability
         if not await _ollama_client.health_check():
-            logger.warning("Ollama server not available. Client created but may not function.")
+            logger.warning(
+                "Ollama server not available. Client created but may not function."
+            )
 
     return _ollama_client
 

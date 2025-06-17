@@ -73,8 +73,8 @@ ACGS-master/
 │   └── e2e/            # End-to-end tests
 ├── docs/                # Documentation
 ├── scripts/             # Utility scripts
-├── k8s/                 # Kubernetes configurations
-├── frontend/            # Frontend application
+├── infrastructure/kubernetes/                 # Kubernetes configurations
+├── applications/governance-dashboard/            # Frontend application
 └── deployment/          # Deployment configurations
 ```
 

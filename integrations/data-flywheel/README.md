@@ -82,7 +82,7 @@ cp .env.example .env
 
 3. **Deploy Services**
 ```bash
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 4. **Verify Installation**

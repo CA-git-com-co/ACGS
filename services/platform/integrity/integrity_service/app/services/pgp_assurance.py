@@ -8,9 +8,9 @@ import json
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 # Try to import cryptography library
 try:
@@ -52,7 +52,7 @@ class DigitalSignature:
     algorithm: SignatureAlgorithm
     public_key_pem: bytes
     timestamp: datetime
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -62,7 +62,7 @@ class MerkleNode:
     hash_value: str
     left_child: Optional["MerkleNode"] = None
     right_child: Optional["MerkleNode"] = None
-    data: Optional[str] = None
+    data: str | None = None
 
 
 @dataclass
@@ -86,19 +86,21 @@ class PGPAssuranceService:
         # ensures: Correct function execution
         # sha256: func_hash
         if not CRYPTOGRAPHY_AVAILABLE:
-            logger.warning("Cryptography library not available. Some features will be disabled.")
+            logger.warning(
+                "Cryptography library not available. Some features will be disabled."
+            )
 
-        self.private_keys: Dict[str, Any] = {}
-        self.public_keys: Dict[str, Any] = {}
-        self.merkle_trees: Dict[str, MerkleNode] = {}
-        self.signatures: Dict[str, DigitalSignature] = {}
-        self.timestamps: Dict[str, TimestampToken] = {}
+        self.private_keys: dict[str, Any] = {}
+        self.public_keys: dict[str, Any] = {}
+        self.merkle_trees: dict[str, MerkleNode] = {}
+        self.signatures: dict[str, DigitalSignature] = {}
+        self.timestamps: dict[str, TimestampToken] = {}
 
     # Digital Signatures Implementation
 
     def generate_key_pair(
         self, algorithm: SignatureAlgorithm = SignatureAlgorithm.ECDSA_P256
-    ) -> Tuple[bytes, bytes]:
+    ) -> tuple[bytes, bytes]:
         """Generate a new key pair for digital signatures"""
         if not CRYPTOGRAPHY_AVAILABLE:
             raise RuntimeError("Cryptography library not available")
@@ -107,7 +109,9 @@ class PGPAssuranceService:
             if algorithm == SignatureAlgorithm.ECDSA_P256:
                 private_key = ec.generate_private_key(ec.SECP256R1())
             elif algorithm == SignatureAlgorithm.RSA_PSS:
-                private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+                private_key = rsa.generate_private_key(
+                    public_exponent=65537, key_size=2048
+                )
             else:
                 raise ValueError(f"Unsupported algorithm: {algorithm}")
 
@@ -173,9 +177,11 @@ class PGPAssuranceService:
                 signature=signature,
                 algorithm=algorithm,
                 public_key_pem=public_pem,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 metadata={
-                    "data_hash": self.compute_hash(ac_version_data, HashAlgorithm.SHA256),
+                    "data_hash": self.compute_hash(
+                        ac_version_data, HashAlgorithm.SHA256
+                    ),
                     "data_length": len(ac_version_data),
                 },
             )
@@ -200,7 +206,9 @@ class PGPAssuranceService:
             data_bytes = data.encode("utf-8")
 
             if signature.algorithm == SignatureAlgorithm.ECDSA_P256:
-                public_key.verify(signature.signature, data_bytes, ec.ECDSA(hashes.SHA256()))
+                public_key.verify(
+                    signature.signature, data_bytes, ec.ECDSA(hashes.SHA256())
+                )
             elif signature.algorithm == SignatureAlgorithm.RSA_PSS:
                 public_key.verify(
                     signature.signature,
@@ -226,7 +234,9 @@ class PGPAssuranceService:
 
     # Hash Functions Implementation
 
-    def compute_hash(self, data: str, algorithm: HashAlgorithm = HashAlgorithm.SHA3_256) -> str:
+    def compute_hash(
+        self, data: str, algorithm: HashAlgorithm = HashAlgorithm.SHA3_256
+    ) -> str:
         """Compute cryptographic hash of data"""
         try:
             data_bytes = data.encode("utf-8")
@@ -262,7 +272,7 @@ class PGPAssuranceService:
 
     # Merkle Trees Implementation
 
-    def build_merkle_tree(self, data_list: List[str], tree_id: str) -> str:
+    def build_merkle_tree(self, data_list: list[str], tree_id: str) -> str:
         """Build a Merkle tree from a list of data items"""
         try:
             if not data_list:
@@ -282,11 +292,15 @@ class PGPAssuranceService:
                 # Process pairs of nodes
                 for i in range(0, len(nodes), 2):
                     left = nodes[i]
-                    right = nodes[i + 1] if i + 1 < len(nodes) else nodes[i]  # Duplicate if odd
+                    right = (
+                        nodes[i + 1] if i + 1 < len(nodes) else nodes[i]
+                    )  # Duplicate if odd
 
                     # Combine hashes
                     combined_data = left.hash_value + right.hash_value
-                    combined_hash = self.compute_hash(combined_data, HashAlgorithm.SHA3_256)
+                    combined_hash = self.compute_hash(
+                        combined_data, HashAlgorithm.SHA3_256
+                    )
 
                     parent = MerkleNode(
                         hash_value=combined_hash,
@@ -309,7 +323,7 @@ class PGPAssuranceService:
             raise
 
     def verify_merkle_proof(
-        self, tree_id: str, data: str, proof_path: List[Tuple[str, str]]
+        self, tree_id: str, data: str, proof_path: list[tuple[str, str]]
     ) -> bool:
         """Verify a Merkle proof for data inclusion"""
         try:
@@ -336,7 +350,7 @@ class PGPAssuranceService:
             logger.error(f"Error verifying Merkle proof: {e}")
             return False
 
-    def get_merkle_root(self, tree_id: str) -> Optional[str]:
+    def get_merkle_root(self, tree_id: str) -> str | None:
         """Get the root hash of a Merkle tree"""
         if tree_id in self.merkle_trees:
             return self.merkle_trees[tree_id].hash_value
@@ -344,7 +358,9 @@ class PGPAssuranceService:
 
     # Key Management Implementation
 
-    def store_key_pair(self, key_id: str, private_key_pem: bytes, public_key_pem: bytes):
+    def store_key_pair(
+        self, key_id: str, private_key_pem: bytes, public_key_pem: bytes
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -360,11 +376,11 @@ class PGPAssuranceService:
             logger.error(f"Error storing key pair: {e}")
             raise
 
-    def get_public_key(self, key_id: str) -> Optional[bytes]:
+    def get_public_key(self, key_id: str) -> bytes | None:
         """Retrieve a public key"""
         return self.public_keys.get(key_id)
 
-    def get_private_key(self, key_id: str) -> Optional[bytes]:
+    def get_private_key(self, key_id: str) -> bytes | None:
         """Retrieve a private key (HSM integration point)"""
         # In production, this should interface with HSM
         return self.private_keys.get(key_id)
@@ -405,7 +421,7 @@ class PGPAssuranceService:
             # In production, this would make an actual RFC 3161 request to a TSA
             # For now, we create a mock timestamp token
 
-            timestamp = datetime.now(timezone.utc)
+            timestamp = datetime.now(UTC)
 
             # Create timestamp token data (simplified)
             token_data = {
@@ -457,7 +473,7 @@ class PGPAssuranceService:
                 return False
 
             # Verify timestamp is reasonable (not in future, not too old)
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             if timestamp_token.timestamp > now:
                 logger.warning("Timestamp is in the future")
                 return False
@@ -478,7 +494,7 @@ class PGPAssuranceService:
             logger.error(f"Error verifying timestamp: {e}")
             return False
 
-    def get_timestamp_info(self, timestamp_token: TimestampToken) -> Dict[str, Any]:
+    def get_timestamp_info(self, timestamp_token: TimestampToken) -> dict[str, Any]:
         """Get detailed information about a timestamp token"""
         try:
             token_data = json.loads(timestamp_token.token_data.decode("utf-8"))
@@ -501,7 +517,7 @@ class PGPAssuranceService:
 
     def create_integrity_package(
         self, data: str, key_id: str, include_timestamp: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create a comprehensive integrity package with signature, hash, and timestamp"""
         try:
             # Compute hash
@@ -531,9 +547,11 @@ class PGPAssuranceService:
                     "metadata": signature.metadata,
                 },
                 "timestamp": (
-                    self.get_timestamp_info(timestamp_token) if timestamp_token else None
+                    self.get_timestamp_info(timestamp_token)
+                    if timestamp_token
+                    else None
                 ),
-                "created_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(UTC).isoformat(),
                 "key_id": key_id,
             }
 
@@ -544,7 +562,7 @@ class PGPAssuranceService:
             logger.error(f"Error creating integrity package: {e}")
             raise
 
-    def verify_integrity_package(self, data: str, package: Dict[str, Any]) -> bool:
+    def verify_integrity_package(self, data: str, package: dict[str, Any]) -> bool:
         """Verify a comprehensive integrity package"""
         try:
             # Verify hash

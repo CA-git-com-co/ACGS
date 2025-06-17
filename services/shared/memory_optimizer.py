@@ -10,10 +10,11 @@ import logging
 import time
 import tracemalloc
 import weakref
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 # Graceful psutil import with fallback
 try:
@@ -32,14 +33,18 @@ except ImportError:
             # sha256: func_hash
             # Fallback using /proc/meminfo on Linux
             try:
-                with open("/proc/meminfo", "r") as f:
+                with open("/proc/meminfo") as f:
                     meminfo = {}
                     for line in f:
                         key, value = line.split(":")
-                        meminfo[key.strip()] = int(value.split()[0]) * 1024  # Convert KB to bytes
+                        meminfo[key.strip()] = (
+                            int(value.split()[0]) * 1024
+                        )  # Convert KB to bytes
 
                     total = meminfo.get("MemTotal", 8 * 1024**3)  # Default 8GB
-                    available = meminfo.get("MemAvailable", meminfo.get("MemFree", total // 2))
+                    available = meminfo.get(
+                        "MemAvailable", meminfo.get("MemFree", total // 2)
+                    )
                     used = total - available
                     percent = (used / total) * 100
 
@@ -133,7 +138,7 @@ class MemoryMetrics:
     available_memory_gb: float
     memory_percent: float
     process_memory_mb: float
-    gc_collections: Dict[int, int]
+    gc_collections: dict[int, int]
     memory_leaks_detected: int
     timestamp: datetime
 
@@ -162,7 +167,9 @@ class MemoryOptimizer:
     - Process restart recommendations
     """
 
-    def __init__(self, service_name: str, thresholds: Optional[MemoryThresholds] = None):
+    def __init__(
+        self, service_name: str, thresholds: MemoryThresholds | None = None
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -170,11 +177,11 @@ class MemoryOptimizer:
         self.thresholds = thresholds or MemoryThresholds()
         self.process = psutil.Process()
         self.monitoring_active = False
-        self.monitoring_task: Optional[asyncio.Task] = None
+        self.monitoring_task: asyncio.Task | None = None
         self.psutil_available = PSUTIL_AVAILABLE
 
         # Memory tracking
-        self.memory_history: List[MemoryMetrics] = []
+        self.memory_history: list[MemoryMetrics] = []
         self.max_history_size = 100
         self.last_gc_time = time.time()
         self.gc_interval = 30  # seconds
@@ -189,7 +196,7 @@ class MemoryOptimizer:
         self.request_memory_tracking = {}
 
         # Optimization callbacks
-        self.optimization_callbacks: List[Callable] = []
+        self.optimization_callbacks: list[Callable] = []
 
     async def initialize(self):
         # requires: Valid input parameters
@@ -199,7 +206,9 @@ class MemoryOptimizer:
         try:
             # Log psutil availability
             if not self.psutil_available:
-                logger.warning("psutil not available - using fallback memory monitoring")
+                logger.warning(
+                    "psutil not available - using fallback memory monitoring"
+                )
             else:
                 logger.info("psutil available - using full memory monitoring")
 
@@ -212,7 +221,9 @@ class MemoryOptimizer:
             # Get baseline memory usage
             self.baseline_memory = self.get_current_memory_usage()
             logger.info(f"Memory optimizer initialized for {self.service_name}")
-            logger.info(f"Baseline memory: {self.baseline_memory.process_memory_mb:.1f} MB")
+            logger.info(
+                f"Baseline memory: {self.baseline_memory.process_memory_mb:.1f} MB"
+            )
 
         except Exception as e:
             logger.error(f"Failed to initialize memory optimizer: {e}")
@@ -365,7 +376,7 @@ class MemoryOptimizer:
         logger.info("Performing aggressive memory cleanup")
 
         # Multiple garbage collection passes
-        for i in range(3):
+        for _i in range(3):
             await self._trigger_garbage_collection()
             await asyncio.sleep(0.1)
 
@@ -421,7 +432,8 @@ class MemoryOptimizer:
                 # Check for significant memory growth
                 for stat in top_stats[:5]:  # Top 5 memory growth areas
                     if (
-                        stat.size_diff > self.thresholds.leak_detection_threshold * 1024 * 1024
+                        stat.size_diff
+                        > self.thresholds.leak_detection_threshold * 1024 * 1024
                     ):  # Convert MB to bytes
                         logger.warning(
                             f"Potential memory leak detected: {stat.traceback.format()[-1]} "
@@ -444,7 +456,7 @@ class MemoryOptimizer:
         self.optimization_callbacks.append(callback)
 
     async def _trigger_optimization_callbacks(
-        self, event_type: str, metrics: Optional[MemoryMetrics]
+        self, event_type: str, metrics: MemoryMetrics | None
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -489,13 +501,16 @@ class MemoryOptimizer:
                     }
                 )
 
-    def get_memory_stats(self) -> Dict[str, Any]:
+    def get_memory_stats(self) -> dict[str, Any]:
         """Get comprehensive memory statistics."""
         # Get current memory usage even if no history
         current = self.get_current_memory_usage()
 
         # Add to history if not already there
-        if not self.memory_history or self.memory_history[-1].timestamp != current.timestamp:
+        if (
+            not self.memory_history
+            or self.memory_history[-1].timestamp != current.timestamp
+        ):
             self.memory_history.append(current)
             # Trim history
             if len(self.memory_history) > self.max_history_size:
@@ -537,13 +552,14 @@ class MemoryOptimizer:
                 < self.thresholds.critical_threshold,
                 "within_warning_threshold": current.memory_percent
                 < self.thresholds.warning_threshold,
-                "production_ready": current.memory_percent < self.thresholds.critical_threshold,
+                "production_ready": current.memory_percent
+                < self.thresholds.critical_threshold,
             },
         }
 
 
 # Global memory optimizer instance
-_memory_optimizer: Optional[MemoryOptimizer] = None
+_memory_optimizer: MemoryOptimizer | None = None
 
 
 def get_memory_optimizer(service_name: str) -> MemoryOptimizer:

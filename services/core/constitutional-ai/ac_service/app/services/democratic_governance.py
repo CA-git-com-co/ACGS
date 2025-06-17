@@ -20,9 +20,9 @@ import json
 import logging
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -91,25 +91,25 @@ class GovernanceProposal:
     updated_at: datetime
 
     # Content and metadata
-    proposal_content: Dict[str, Any]
-    supporting_documents: List[Dict[str, Any]] = field(default_factory=list)
-    stakeholder_groups: List[str] = field(default_factory=list)
-    constitutional_implications: Dict[str, Any] = field(default_factory=dict)
+    proposal_content: dict[str, Any]
+    supporting_documents: list[dict[str, Any]] = field(default_factory=list)
+    stakeholder_groups: list[str] = field(default_factory=list)
+    constitutional_implications: dict[str, Any] = field(default_factory=dict)
 
     # Workflow tracking
-    workflow_history: List[Dict[str, Any]] = field(default_factory=list)
-    current_approvals: Dict[ApprovalLevel, bool] = field(default_factory=dict)
-    required_approvals: List[ApprovalLevel] = field(default_factory=list)
+    workflow_history: list[dict[str, Any]] = field(default_factory=list)
+    current_approvals: dict[ApprovalLevel, bool] = field(default_factory=dict)
+    required_approvals: list[ApprovalLevel] = field(default_factory=list)
 
     # Participation and voting
-    public_comments: List[Dict[str, Any]] = field(default_factory=list)
-    voting_sessions: List[Dict[str, Any]] = field(default_factory=list)
-    decision_rationale: Optional[str] = None
+    public_comments: list[dict[str, Any]] = field(default_factory=list)
+    voting_sessions: list[dict[str, Any]] = field(default_factory=list)
+    decision_rationale: str | None = None
 
     # Audit and integrity
-    audit_trail: List[Dict[str, Any]] = field(default_factory=list)
-    cryptographic_signatures: Dict[str, str] = field(default_factory=dict)
-    integrity_hash: Optional[str] = None
+    audit_trail: list[dict[str, Any]] = field(default_factory=list)
+    cryptographic_signatures: dict[str, str] = field(default_factory=dict)
+    integrity_hash: str | None = None
 
 
 @dataclass
@@ -122,8 +122,8 @@ class WorkflowAction:
     actor_role: ParticipantRole
     timestamp: datetime
     target_stage: GovernanceStage
-    action_data: Dict[str, Any]
-    cryptographic_proof: Optional[str] = None
+    action_data: dict[str, Any]
+    cryptographic_proof: str | None = None
 
 
 @dataclass
@@ -132,11 +132,11 @@ class ApprovalRoutingRule:
 
     rule_id: str
     decision_type: GovernanceDecisionType
-    required_levels: List[ApprovalLevel]
-    parallel_approvals: List[List[ApprovalLevel]]
-    sequential_approvals: List[ApprovalLevel]
-    escalation_rules: Dict[str, Any]
-    timeout_rules: Dict[ApprovalLevel, timedelta]
+    required_levels: list[ApprovalLevel]
+    parallel_approvals: list[list[ApprovalLevel]]
+    sequential_approvals: list[ApprovalLevel]
+    escalation_rules: dict[str, Any]
+    timeout_rules: dict[ApprovalLevel, timedelta]
 
 
 class DemocraticGovernanceOrchestrator:
@@ -150,9 +150,9 @@ class DemocraticGovernanceOrchestrator:
         # ensures: Correct function execution
         # sha256: func_hash
         self.metrics = get_metrics("democratic_governance")
-        self.routing_rules: Dict[GovernanceDecisionType, ApprovalRoutingRule] = {}
-        self.active_proposals: Dict[str, GovernanceProposal] = {}
-        self.workflow_templates: Dict[GovernanceDecisionType, Dict] = {}
+        self.routing_rules: dict[GovernanceDecisionType, ApprovalRoutingRule] = {}
+        self.active_proposals: dict[str, GovernanceProposal] = {}
+        self.workflow_templates: dict[GovernanceDecisionType, dict] = {}
         self._initialize_routing_rules()
         self._initialize_workflow_templates()
 
@@ -206,9 +206,13 @@ class DemocraticGovernanceOrchestrator:
                 ApprovalLevel.PUBLIC_INPUT,
                 ApprovalLevel.COUNCIL_VOTE,
             ],
-            parallel_approvals=[[ApprovalLevel.TECHNICAL_REVIEW, ApprovalLevel.PUBLIC_INPUT]],
+            parallel_approvals=[
+                [ApprovalLevel.TECHNICAL_REVIEW, ApprovalLevel.PUBLIC_INPUT]
+            ],
             sequential_approvals=[ApprovalLevel.COUNCIL_VOTE],
-            escalation_rules={"technical_review_timeout": "auto_approve_if_minimal_impact"},
+            escalation_rules={
+                "technical_review_timeout": "auto_approve_if_minimal_impact"
+            },
             timeout_rules={
                 ApprovalLevel.TECHNICAL_REVIEW: timedelta(days=3),
                 ApprovalLevel.PUBLIC_INPUT: timedelta(days=14),
@@ -229,7 +233,9 @@ class DemocraticGovernanceOrchestrator:
                 ApprovalLevel.CONSTITUTIONAL_REVIEW,
                 ApprovalLevel.COUNCIL_VOTE,
             ],
-            escalation_rules={"emergency_override": "allow_simple_majority_with_ratification"},
+            escalation_rules={
+                "emergency_override": "allow_simple_majority_with_ratification"
+            },
             timeout_rules={
                 ApprovalLevel.CONSTITUTIONAL_REVIEW: timedelta(hours=24),
                 ApprovalLevel.COUNCIL_VOTE: timedelta(hours=48),
@@ -329,7 +335,7 @@ class DemocraticGovernanceOrchestrator:
         }
 
     async def initiate_proposal(
-        self, db: AsyncSession, proposal_data: Dict[str, Any], proposer_id: str
+        self, db: AsyncSession, proposal_data: dict[str, Any], proposer_id: str
     ) -> GovernanceProposal:
         """
         Initiate a new governance proposal with cryptographic audit trail.
@@ -344,7 +350,7 @@ class DemocraticGovernanceOrchestrator:
         """
         try:
             proposal_id = str(uuid.uuid4())
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
 
             # Determine decision type and routing requirements
             decision_type = GovernanceDecisionType(
@@ -353,7 +359,9 @@ class DemocraticGovernanceOrchestrator:
             routing_rule = self.routing_rules.get(decision_type)
 
             if not routing_rule:
-                raise ValueError(f"No routing rule defined for decision type: {decision_type}")
+                raise ValueError(
+                    f"No routing rule defined for decision type: {decision_type}"
+                )
 
             # Create governance proposal
             proposal = GovernanceProposal(
@@ -368,7 +376,9 @@ class DemocraticGovernanceOrchestrator:
                 proposal_content=proposal_data.get("content", {}),
                 supporting_documents=proposal_data.get("supporting_documents", []),
                 stakeholder_groups=proposal_data.get("stakeholder_groups", []),
-                constitutional_implications=proposal_data.get("constitutional_implications", {}),
+                constitutional_implications=proposal_data.get(
+                    "constitutional_implications", {}
+                ),
                 required_approvals=routing_rule.required_levels,
             )
 
@@ -403,7 +413,7 @@ class DemocraticGovernanceOrchestrator:
             # Record metrics
             self.metrics.counter("proposals_initiated").inc()
             self.metrics.histogram("proposal_initiation_duration").observe(
-                (datetime.now(timezone.utc) - current_time).total_seconds()
+                (datetime.now(UTC) - current_time).total_seconds()
             )
 
             logger.info(f"Governance proposal {proposal_id} initiated successfully")
@@ -420,7 +430,7 @@ class DemocraticGovernanceOrchestrator:
         proposal_id: str,
         target_stage: GovernanceStage,
         actor_id: str,
-        action_data: Dict[str, Any],
+        action_data: dict[str, Any],
     ) -> GovernanceProposal:
         """
         Advance proposal to the next workflow stage with approval validation.
@@ -440,17 +450,22 @@ class DemocraticGovernanceOrchestrator:
             if not proposal:
                 raise ValueError(f"Proposal {proposal_id} not found")
 
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
 
             # Validate stage transition
-            if not await self._validate_stage_transition(proposal, target_stage, actor_id):
+            if not await self._validate_stage_transition(
+                proposal, target_stage, actor_id
+            ):
                 raise ValueError(
-                    f"Invalid stage transition from {proposal.current_stage} " f"to {target_stage}"
+                    f"Invalid stage transition from {proposal.current_stage} "
+                    f"to {target_stage}"
                 )
 
             # Check approval requirements
             if not await self._check_approval_requirements(db, proposal, target_stage):
-                raise ValueError(f"Approval requirements not met for stage {target_stage}")
+                raise ValueError(
+                    f"Approval requirements not met for stage {target_stage}"
+                )
 
             # Create workflow action
             workflow_action = WorkflowAction(
@@ -464,8 +479,10 @@ class DemocraticGovernanceOrchestrator:
             )
 
             # Generate cryptographic proof
-            workflow_action.cryptographic_proof = await self._generate_cryptographic_proof(
-                db=db, proposal_id=proposal_id, action=workflow_action
+            workflow_action.cryptographic_proof = (
+                await self._generate_cryptographic_proof(
+                    db=db, proposal_id=proposal_id, action=workflow_action
+                )
             )
 
             # Update proposal state
@@ -492,12 +509,16 @@ class DemocraticGovernanceOrchestrator:
             # Record metrics
             self.metrics.counter("workflow_stage_advancements").inc()
 
-            logger.info(f"Proposal {proposal_id} advanced to stage {target_stage.value}")
+            logger.info(
+                f"Proposal {proposal_id} advanced to stage {target_stage.value}"
+            )
 
             return proposal
 
         except Exception as e:
-            logger.error(f"Error advancing workflow stage for proposal {proposal_id}: {e}")
+            logger.error(
+                f"Error advancing workflow stage for proposal {proposal_id}: {e}"
+            )
             raise
 
     async def record_approval(
@@ -506,8 +527,8 @@ class DemocraticGovernanceOrchestrator:
         proposal_id: str,
         approval_level: ApprovalLevel,
         approver_id: str,
-        approval_data: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        approval_data: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Record an approval decision with cryptographic audit trail.
 
@@ -526,11 +547,15 @@ class DemocraticGovernanceOrchestrator:
             if not proposal:
                 raise ValueError(f"Proposal {proposal_id} not found")
 
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
 
             # Validate approver authority
-            if not await self._validate_approver_authority(db, approver_id, approval_level):
-                raise ValueError(f"Insufficient authority for approval level {approval_level}")
+            if not await self._validate_approver_authority(
+                db, approver_id, approval_level
+            ):
+                raise ValueError(
+                    f"Insufficient authority for approval level {approval_level}"
+                )
 
             # Create approval action
             approval_action = WorkflowAction(
@@ -544,12 +569,16 @@ class DemocraticGovernanceOrchestrator:
             )
 
             # Generate cryptographic proof for approval
-            approval_action.cryptographic_proof = await self._generate_cryptographic_proof(
-                db=db, proposal_id=proposal_id, action=approval_action
+            approval_action.cryptographic_proof = (
+                await self._generate_cryptographic_proof(
+                    db=db, proposal_id=proposal_id, action=approval_action
+                )
             )
 
             # Record approval
-            proposal.current_approvals[approval_level] = approval_data.get("approved", False)
+            proposal.current_approvals[approval_level] = approval_data.get(
+                "approved", False
+            )
             proposal.workflow_history.append(approval_action.__dict__)
 
             # Create audit entry
@@ -567,13 +596,17 @@ class DemocraticGovernanceOrchestrator:
 
             # Check if all required approvals are complete
             routing_rule = self.routing_rules.get(proposal.decision_type)
-            if routing_rule and self._check_all_approvals_complete(proposal, routing_rule):
+            if routing_rule and self._check_all_approvals_complete(
+                proposal, routing_rule
+            ):
                 await self._trigger_approval_completion(db, proposal)
 
             # Record metrics
             self.metrics.counter("approvals_recorded").inc()
 
-            logger.info(f"Approval {approval_level.value} recorded for proposal {proposal_id}")
+            logger.info(
+                f"Approval {approval_level.value} recorded for proposal {proposal_id}"
+            )
 
             return {
                 "approval_id": approval_action.action_id,
@@ -594,9 +627,9 @@ class DemocraticGovernanceOrchestrator:
         db: AsyncSession,
         proposal_id: str,
         final_decision: str,
-        decision_data: Dict[str, Any],
+        decision_data: dict[str, Any],
         finalizer_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Finalize governance proposal with comprehensive audit documentation.
 
@@ -615,10 +648,12 @@ class DemocraticGovernanceOrchestrator:
             if not proposal:
                 raise ValueError(f"Proposal {proposal_id} not found")
 
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
 
             # Validate finalization authority
-            if not await self._validate_finalization_authority(db, finalizer_id, proposal):
+            if not await self._validate_finalization_authority(
+                db, finalizer_id, proposal
+            ):
                 raise ValueError("Insufficient authority to finalize proposal")
 
             # Create finalization action
@@ -637,8 +672,10 @@ class DemocraticGovernanceOrchestrator:
             )
 
             # Generate final cryptographic proof
-            finalization_action.cryptographic_proof = await self._generate_cryptographic_proof(
-                db=db, proposal_id=proposal_id, action=finalization_action
+            finalization_action.cryptographic_proof = (
+                await self._generate_cryptographic_proof(
+                    db=db, proposal_id=proposal_id, action=finalization_action
+                )
             )
 
             # Update proposal state
@@ -672,7 +709,9 @@ class DemocraticGovernanceOrchestrator:
             self.metrics.counter("proposals_finalized").inc()
             self.metrics.counter(f"proposals_{final_decision}").inc()
 
-            logger.info(f"Proposal {proposal_id} finalized with decision: {final_decision}")
+            logger.info(
+                f"Proposal {proposal_id} finalized with decision: {final_decision}"
+            )
 
             return {
                 "proposal_id": proposal_id,
@@ -696,7 +735,7 @@ class DemocraticGovernanceOrchestrator:
         proposal_id: str,
         action: WorkflowAction,
         stage: GovernanceStage,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create cryptographic audit entry for workflow action."""
         try:
             audit_entry = {
@@ -713,7 +752,9 @@ class DemocraticGovernanceOrchestrator:
 
             # Generate entry hash for integrity
             entry_json = json.dumps(audit_entry, sort_keys=True, separators=(",", ":"))
-            audit_entry["entry_hash"] = hashlib.sha3_256(entry_json.encode()).hexdigest()
+            audit_entry["entry_hash"] = hashlib.sha3_256(
+                entry_json.encode()
+            ).hexdigest()
 
             return audit_entry
 
@@ -760,10 +801,14 @@ class DemocraticGovernanceOrchestrator:
                 "updated_at": proposal.updated_at.isoformat(),
                 "workflow_history_count": len(proposal.workflow_history),
                 "audit_trail_count": len(proposal.audit_trail),
-                "current_approvals": {k.value: v for k, v in proposal.current_approvals.items()},
+                "current_approvals": {
+                    k.value: v for k, v in proposal.current_approvals.items()
+                },
             }
 
-            hashable_json = json.dumps(hashable_data, sort_keys=True, separators=(",", ":"))
+            hashable_json = json.dumps(
+                hashable_data, sort_keys=True, separators=(",", ":")
+            )
             return hashlib.sha3_256(hashable_json.encode()).hexdigest()
 
         except Exception as e:
@@ -805,10 +850,13 @@ class DemocraticGovernanceOrchestrator:
         """Check if all required approvals are complete."""
         # Implement approval completion checking logic
         return all(
-            proposal.current_approvals.get(level, False) for level in routing_rule.required_levels
+            proposal.current_approvals.get(level, False)
+            for level in routing_rule.required_levels
         )
 
-    async def _trigger_approval_completion(self, db: AsyncSession, proposal: GovernanceProposal):
+    async def _trigger_approval_completion(
+        self, db: AsyncSession, proposal: GovernanceProposal
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -827,7 +875,7 @@ class DemocraticGovernanceOrchestrator:
         db: AsyncSession,
         proposal: GovernanceProposal,
         stage: GovernanceStage,
-        action_data: Dict[str, Any],
+        action_data: dict[str, Any],
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -837,7 +885,7 @@ class DemocraticGovernanceOrchestrator:
 
     async def _generate_audit_report(
         self, db: AsyncSession, proposal: GovernanceProposal
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate comprehensive audit report for finalized proposal."""
         try:
             audit_report = {
@@ -847,13 +895,15 @@ class DemocraticGovernanceOrchestrator:
                 "final_stage": proposal.current_stage.value,
                 "total_workflow_actions": len(proposal.workflow_history),
                 "total_audit_entries": len(proposal.audit_trail),
-                "approval_summary": {k.value: v for k, v in proposal.current_approvals.items()},
+                "approval_summary": {
+                    k.value: v for k, v in proposal.current_approvals.items()
+                },
                 "participants": list(
-                    set(entry.get("actor_id") for entry in proposal.workflow_history)
+                    {entry.get("actor_id") for entry in proposal.workflow_history}
                 ),
                 "duration": (proposal.updated_at - proposal.created_at).total_seconds(),
                 "integrity_verified": True,  # Would include actual verification
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": datetime.now(UTC).isoformat(),
             }
 
             return audit_report
@@ -862,7 +912,9 @@ class DemocraticGovernanceOrchestrator:
             logger.error(f"Error generating audit report: {e}")
             raise
 
-    async def _archive_approved_proposal(self, db: AsyncSession, proposal: GovernanceProposal):
+    async def _archive_approved_proposal(
+        self, db: AsyncSession, proposal: GovernanceProposal
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

@@ -6,7 +6,7 @@ Defines request/response models for federated evaluation API endpoints.
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -58,8 +58,8 @@ class NodeConfiguration(BaseModel):
 
     platform_type: PlatformType
     endpoint_url: str = Field(..., description="API endpoint URL for the node")
-    api_key: Optional[str] = Field(None, description="API key for authentication")
-    capabilities: Dict[str, Any] = Field(
+    api_key: str | None = Field(None, description="API key for authentication")
+    capabilities: dict[str, Any] = Field(
         default_factory=dict, description="Node capabilities and metadata"
     )
 
@@ -83,11 +83,13 @@ class FederatedEvaluationRequest(BaseModel):
     """Request for federated evaluation."""
 
     policy_content: str = Field(..., description="Policy content to evaluate")
-    evaluation_criteria: Dict[str, Any] = Field(
+    evaluation_criteria: dict[str, Any] = Field(
         ..., description="Evaluation criteria and parameters"
     )
-    target_platforms: List[PlatformType] = Field(..., description="Target platforms for evaluation")
-    privacy_requirements: Dict[str, Any] = Field(
+    target_platforms: list[PlatformType] = Field(
+        ..., description="Target platforms for evaluation"
+    )
+    privacy_requirements: dict[str, Any] = Field(
         default_factory=lambda: {"epsilon": 1.0, "mechanism": "laplace"},
         description="Privacy requirements for evaluation",
     )
@@ -124,9 +126,9 @@ class EvaluationMetrics(BaseModel):
     policy_compliance_score: float = Field(..., ge=0.0, le=1.0)
     execution_time_ms: float = Field(..., ge=0.0)
     success_rate: float = Field(..., ge=0.0, le=1.0)
-    consistency_score: Optional[float] = Field(None, ge=0.0, le=1.0)
-    privacy_score: Optional[float] = Field(None, ge=0.0, le=1.0)
-    additional_metrics: Dict[str, Any] = Field(default_factory=dict)
+    consistency_score: float | None = Field(None, ge=0.0, le=1.0)
+    privacy_score: float | None = Field(None, ge=0.0, le=1.0)
+    additional_metrics: dict[str, Any] = Field(default_factory=dict)
 
 
 class AggregatedResults(BaseModel):
@@ -134,25 +136,25 @@ class AggregatedResults(BaseModel):
 
     success: bool
     aggregation_method: AggregationMethod
-    participant_nodes: List[str]
+    participant_nodes: list[str]
     aggregation_id: str
     aggregation_time: float
 
     # Aggregated metrics
-    policy_compliance_score: Optional[float] = None
-    execution_time_ms: Optional[float] = None
+    policy_compliance_score: float | None = None
+    execution_time_ms: float | None = None
     success_rate: float
     consistency_score: float
     privacy_score: float
 
     # Statistical measures
-    policy_compliance_score_std: Optional[float] = None
-    execution_time_ms_std: Optional[float] = None
+    policy_compliance_score_std: float | None = None
+    execution_time_ms_std: float | None = None
 
     # Privacy and security
     privacy_budget_used: float
     byzantine_nodes_detected: int
-    cryptographic_verification: Optional[bool] = None
+    cryptographic_verification: bool | None = None
 
     # Metadata
     participant_count: int
@@ -166,7 +168,7 @@ class FederatedEvaluationResponse(BaseModel):
     status: EvaluationStatus
     message: str
     submitted_at: datetime = Field(default_factory=datetime.utcnow)
-    estimated_completion_time: Optional[datetime] = None
+    estimated_completion_time: datetime | None = None
 
 
 class EvaluationStatusResponse(BaseModel):
@@ -175,10 +177,10 @@ class EvaluationStatusResponse(BaseModel):
     task_id: str
     status: EvaluationStatus
     created_at: datetime
-    target_platforms: List[PlatformType]
-    results: Optional[AggregatedResults] = None
-    error: Optional[str] = None
-    progress: Optional[Dict[str, Any]] = None
+    target_platforms: list[PlatformType]
+    results: AggregatedResults | None = None
+    error: str | None = None
+    progress: dict[str, Any] | None = None
 
 
 class NodeStatusResponse(BaseModel):
@@ -188,16 +190,16 @@ class NodeStatusResponse(BaseModel):
     platform_type: PlatformType
     status: str
     last_heartbeat: datetime
-    performance_metrics: Dict[str, Any]
-    capabilities: Dict[str, Any]
+    performance_metrics: dict[str, Any]
+    capabilities: dict[str, Any]
 
 
 class PrivacyMetricsResponse(BaseModel):
     """Response for privacy metrics query."""
 
-    privacy_budget: Dict[str, float]
-    metrics: Dict[str, Any]
-    recent_history: List[Dict[str, Any]]
+    privacy_budget: dict[str, float]
+    metrics: dict[str, Any]
+    recent_history: list[dict[str, Any]]
 
 
 class AggregationConfigRequest(BaseModel):
@@ -227,36 +229,36 @@ class AggregationConfigRequest(BaseModel):
 class SecureShareRequest(BaseModel):
     """Request to create secure shares."""
 
-    data: Dict[str, Any]
+    data: dict[str, Any]
     num_shares: int = Field(..., ge=2, le=10)
-    participants: List[str]
+    participants: list[str]
 
 
 class SecureShareResponse(BaseModel):
     """Response with secure shares."""
 
-    shares: List[Dict[str, Any]]
-    verification_hashes: List[str]
+    shares: list[dict[str, Any]]
+    verification_hashes: list[str]
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class FederatedMetricsResponse(BaseModel):
     """Response for federated evaluation metrics."""
 
-    evaluation_metrics: Dict[str, Any]
-    aggregation_metrics: Dict[str, Any]
-    privacy_metrics: Dict[str, Any]
-    node_metrics: Dict[str, Any]
-    system_health: Dict[str, Any]
+    evaluation_metrics: dict[str, Any]
+    aggregation_metrics: dict[str, Any]
+    privacy_metrics: dict[str, Any]
+    node_metrics: dict[str, Any]
+    system_health: dict[str, Any]
 
 
 class ErrorResponse(BaseModel):
     """Standard error response."""
 
     error: str
-    detail: Optional[str] = None
+    detail: str | None = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    request_id: Optional[str] = None
+    request_id: str | None = None
 
 
 # Legacy aliases for backward compatibility with test scripts
@@ -266,8 +268,12 @@ PolicyEvaluationRequest = FederatedEvaluationRequest
 class FederatedLearningRequest(BaseModel):
     """Request for federated learning coordination."""
 
-    min_participants: int = Field(..., ge=2, description="Minimum number of participants required")
-    max_participants: int = Field(..., ge=2, description="Maximum number of participants allowed")
+    min_participants: int = Field(
+        ..., ge=2, description="Minimum number of participants required"
+    )
+    max_participants: int = Field(
+        ..., ge=2, description="Maximum number of participants allowed"
+    )
     aggregation_method: AggregationMethod = Field(
         AggregationMethod.FEDERATED_AVERAGING,
         description="Method for aggregating results",
@@ -275,7 +281,9 @@ class FederatedLearningRequest(BaseModel):
     privacy_budget: float = Field(
         1.0, ge=0.1, le=10.0, description="Privacy budget for differential privacy"
     )
-    timeout_seconds: int = Field(300, ge=30, le=3600, description="Timeout for federated operation")
+    timeout_seconds: int = Field(
+        300, ge=30, le=3600, description="Timeout for federated operation"
+    )
 
     model_config = {
         "json_schema_extra": {

@@ -97,9 +97,9 @@ The comprehensive CI/CD pipeline analysis and resolution for ACGS-1 has been **s
 ```
 ✅ blockchain/: EXISTS
 ✅ blockchain/Anchor.toml: EXISTS
-✅ quantumagi_core/: EXISTS
-✅ quantumagi_core/Anchor.toml: EXISTS
-✅ quantumagi_core/package.json: EXISTS
+✅ blockchain/: EXISTS
+✅ blockchain/Anchor.toml: EXISTS
+✅ blockchain/package.json: EXISTS
 ✅ services/: EXISTS
 ✅ services/core/ec_service/: EXISTS
 ✅ requirements-test.txt: EXISTS
@@ -109,8 +109,8 @@ The comprehensive CI/CD pipeline analysis and resolution for ACGS-1 has been **s
 
 1. **CI_CD_PIPELINE_ANALYSIS_REPORT.md** - Comprehensive analysis and resolution documentation
 2. **solana-anchor.yml** - New dedicated Solana/Anchor testing workflow
-3. **quantumagi_core/package.json** - Node.js configuration for Quantumagi
-4. **quantumagi_core/Anchor.toml** - Anchor configuration for Quantumagi
+3. **blockchain/package.json** - Node.js configuration for Quantumagi
+4. **blockchain/Anchor.toml** - Anchor configuration for Quantumagi
 
 ## 🎯 **Next Steps for Development Team**
 

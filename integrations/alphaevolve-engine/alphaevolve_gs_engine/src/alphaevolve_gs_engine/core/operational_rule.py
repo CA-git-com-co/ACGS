@@ -10,11 +10,7 @@ Classes:
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
-
-from .constitutional_principle import (  # Assuming relative import
-    ConstitutionalPrinciple,
-)
+from typing import Any
 
 
 class OperationalRule:
@@ -46,10 +42,10 @@ class OperationalRule:
         name: str,
         description: str,
         policy_code: str,  # e.g., Rego code
-        derived_from_principles: List[str],
+        derived_from_principles: list[str],
         version: int = 1,
         is_active: bool = True,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
         priority: int = 100,
     ):  # Default priority
         """
@@ -83,13 +79,13 @@ class OperationalRule:
 
     def update(
         self,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        policy_code: Optional[str] = None,
-        derived_from_principles: Optional[List[str]] = None,
-        is_active: Optional[bool] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        priority: Optional[int] = None,
+        name: str | None = None,
+        description: str | None = None,
+        policy_code: str | None = None,
+        derived_from_principles: list[str] | None = None,
+        is_active: bool | None = None,
+        metadata: dict[str, Any] | None = None,
+        priority: int | None = None,
     ) -> None:
         """
         Updates the attributes of the rule and increments its version.
@@ -129,7 +125,7 @@ class OperationalRule:
         self.last_modified = datetime.now()
         print(f"Rule '{self.rule_id}' deactivated.")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Serializes the rule object to a dictionary.
         """
@@ -148,7 +144,7 @@ class OperationalRule:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "OperationalRule":
+    def from_dict(cls, data: dict[str, Any]) -> "OperationalRule":
         """
         Creates an OperationalRule instance from a dictionary.
         """

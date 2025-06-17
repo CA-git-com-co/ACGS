@@ -7,10 +7,11 @@ import asyncio
 import logging
 import time
 from collections import defaultdict, deque
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -35,12 +36,12 @@ class Alert:
     severity: AlertSeverity
     title: str
     description: str
-    workflow_id: Optional[str]
-    service: Optional[str]
+    workflow_id: str | None
+    service: str | None
     timestamp: datetime
     resolved: bool = False
-    resolved_at: Optional[datetime] = None
-    metadata: Dict[str, Any] = None
+    resolved_at: datetime | None = None
+    metadata: dict[str, Any] = None
 
 
 @dataclass
@@ -49,7 +50,7 @@ class Metric:
     type: MetricType
     value: float
     timestamp: datetime
-    labels: Dict[str, str] = None
+    labels: dict[str, str] = None
 
     def __post_init__(self):
         # requires: Valid input parameters
@@ -68,11 +69,11 @@ class WorkflowMonitor:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.metrics: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
-        self.alerts: Dict[str, Alert] = {}
-        self.alert_handlers: List[Callable] = []
-        self.thresholds: Dict[str, Dict[str, Any]] = {}
-        self.monitoring_tasks: Dict[str, asyncio.Task] = {}
+        self.metrics: dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
+        self.alerts: dict[str, Alert] = {}
+        self.alert_handlers: list[Callable] = []
+        self.thresholds: dict[str, dict[str, Any]] = {}
+        self.monitoring_tasks: dict[str, asyncio.Task] = {}
         self._initialize_thresholds()
 
     def _initialize_thresholds(self):
@@ -105,7 +106,7 @@ class WorkflowMonitor:
         name: str,
         value: float,
         metric_type: MetricType,
-        labels: Dict[str, str] = None,
+        labels: dict[str, str] = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -125,7 +126,7 @@ class WorkflowMonitor:
         # Check for threshold violations
         self._check_thresholds(name, value, labels)
 
-    def _check_thresholds(self, metric_name: str, value: float, labels: Dict[str, str]):
+    def _check_thresholds(self, metric_name: str, value: float, labels: dict[str, str]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -171,7 +172,7 @@ class WorkflowMonitor:
         description: str,
         workflow_id: str = None,
         service: str = None,
-        metadata: Dict[str, Any] = None,
+        metadata: dict[str, Any] = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -334,7 +335,9 @@ class WorkflowMonitor:
         """Start monitoring a workflow"""
 
         if workflow_id not in self.monitoring_tasks:
-            task = asyncio.create_task(self.monitor_workflow(workflow_id, workflow_engine))
+            task = asyncio.create_task(
+                self.monitor_workflow(workflow_id, workflow_engine)
+            )
             self.monitoring_tasks[workflow_id] = task
 
     def stop_workflow_monitoring(self, workflow_id: str):
@@ -347,7 +350,9 @@ class WorkflowMonitor:
             self.monitoring_tasks[workflow_id].cancel()
             del self.monitoring_tasks[workflow_id]
 
-    def get_metrics(self, metric_name: str, time_range: timedelta = None) -> List[Dict[str, Any]]:
+    def get_metrics(
+        self, metric_name: str, time_range: timedelta = None
+    ) -> list[dict[str, Any]]:
         """Get metrics for a specific name and time range"""
 
         if metric_name not in self.metrics:
@@ -363,7 +368,7 @@ class WorkflowMonitor:
 
     def get_alerts(
         self, severity: AlertSeverity = None, resolved: bool = None
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get alerts with optional filtering"""
 
         alerts = list(self.alerts.values())
@@ -374,7 +379,9 @@ class WorkflowMonitor:
         if resolved is not None:
             alerts = [a for a in alerts if a.resolved == resolved]
 
-        return [asdict(a) for a in sorted(alerts, key=lambda x: x.timestamp, reverse=True)]
+        return [
+            asdict(a) for a in sorted(alerts, key=lambda x: x.timestamp, reverse=True)
+        ]
 
     def resolve_alert(self, alert_id: str) -> bool:
         """Mark an alert as resolved"""
@@ -386,12 +393,12 @@ class WorkflowMonitor:
 
         return False
 
-    def get_dashboard_data(self) -> Dict[str, Any]:
+    def get_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive dashboard data"""
 
         now = datetime.utcnow()
         last_hour = now - timedelta(hours=1)
-        last_day = now - timedelta(days=1)
+        now - timedelta(days=1)
 
         # Active alerts
         active_alerts = [a for a in self.alerts.values() if not a.resolved]
@@ -412,11 +419,17 @@ class WorkflowMonitor:
             "timestamp": now.isoformat(),
             "alerts": {
                 "active": len(active_alerts),
-                "critical": len([a for a in active_alerts if a.severity == AlertSeverity.CRITICAL]),
-                "high": len([a for a in active_alerts if a.severity == AlertSeverity.HIGH]),
+                "critical": len(
+                    [a for a in active_alerts if a.severity == AlertSeverity.CRITICAL]
+                ),
+                "high": len(
+                    [a for a in active_alerts if a.severity == AlertSeverity.HIGH]
+                ),
                 "recent": [
                     asdict(a)
-                    for a in sorted(active_alerts, key=lambda x: x.timestamp, reverse=True)[:10]
+                    for a in sorted(
+                        active_alerts, key=lambda x: x.timestamp, reverse=True
+                    )[:10]
                 ],
             },
             "metrics": recent_metrics,

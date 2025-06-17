@@ -8,7 +8,7 @@ Tests connectivity to NVIDIA API and validates model availability.
 import asyncio
 import os
 import sys
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -29,7 +29,9 @@ async def test_nvidia_api_connectivity(api_key: str, base_url: str) -> bool:
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"{base_url}/models", headers=headers, timeout=aiohttp.ClientTimeout(total=10)
+                f"{base_url}/models",
+                headers=headers,
+                timeout=aiohttp.ClientTimeout(total=10),
             ) as response:
                 if response.status == 200:
                     return True
@@ -41,7 +43,9 @@ async def test_nvidia_api_connectivity(api_key: str, base_url: str) -> bool:
         return False
 
 
-async def test_model_availability(api_key: str, base_url: str, model_name: str) -> Dict[str, Any]:
+async def test_model_availability(
+    api_key: str, base_url: str, model_name: str
+) -> dict[str, Any]:
     """
     Test availability of a specific model
 
@@ -92,7 +96,7 @@ async def test_model_availability(api_key: str, base_url: str, model_name: str) 
                         "error_message": error_text,
                         "latency_ms": round(latency_ms, 2),
                     }
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return {"status": "timeout", "error_message": "Request timed out"}
     except Exception as e:
         return {"status": "error", "error_message": str(e)}
@@ -150,7 +154,7 @@ async def main():
         if result["status"] == "available":
             print(f"   ✅ Available (latency: {result['latency_ms']}ms)")
         elif result["status"] == "timeout":
-            print(f"   ⏰ Timeout")
+            print("   ⏰ Timeout")
         else:
             print(f"   ❌ Error: {result.get('error_message', 'Unknown error')}")
 

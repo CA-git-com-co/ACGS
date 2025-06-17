@@ -57,7 +57,7 @@ ACGS-PGP_Framework/
 - Use `PascalCase` for class files
 
 ### Configuration Files
-- Use lowercase with hyphens: `docker-compose.yml`
+- Use lowercase with hyphens: `infrastructure/docker/docker-compose.yml`
 - Use underscores for environment-specific configs: `config_production.yaml`
 
 ## CI/CD Considerations

@@ -15,7 +15,11 @@ Task 18: GS Engine Multi-Model Enhancement
 import logging
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 from app.workflows.multi_model_manager import get_multi_model_manager
 from app.workflows.policy_synthesis_workflow import get_policy_synthesis_workflow
@@ -25,9 +29,6 @@ from app.workflows.structured_output_models import (
     PolicySynthesisResponse,
     PolicyType,
 )
-from fastapi import APIRouter, BackgroundTasks, HTTPException
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -36,7 +37,7 @@ router = APIRouter()
 class SynthesisRequestAPI(BaseModel):
     """API request model for policy synthesis."""
 
-    principle_ids: List[int] = Field(..., description="Constitutional principle IDs")
+    principle_ids: list[int] = Field(..., description="Constitutional principle IDs")
     context: str = Field(..., description="Policy context or scenario")
     policy_type: PolicyType = Field(default=PolicyType.REGO)
 
@@ -50,24 +51,24 @@ class SynthesisRequestAPI(BaseModel):
     max_violations: int = Field(default=0, ge=0)
 
     # Optional metadata
-    requester: Optional[str] = Field(default="api_user")
+    requester: str | None = Field(default="api_user")
 
 
 class ModelPerformanceResponse(BaseModel):
     """Response model for model performance metrics."""
 
-    model_metrics: Dict[str, Any]
-    overall_metrics: Dict[str, Any]
-    recommendations: Dict[str, str]
+    model_metrics: dict[str, Any]
+    overall_metrics: dict[str, Any]
+    recommendations: dict[str, str]
     timestamp: datetime
 
 
 class ModelHealthResponse(BaseModel):
     """Response model for model health status."""
 
-    healthy_models: List[str]
-    unhealthy_models: List[str]
-    circuit_breaker_status: Dict[str, str]
+    healthy_models: list[str]
+    unhealthy_models: list[str]
+    circuit_breaker_status: dict[str, str]
     overall_health_score: float
     reliability_target_met: bool
 
@@ -91,7 +92,9 @@ async def synthesize_policy(
     """
     try:
         # Generate unique request ID
-        request_id = f"synthesis_{uuid.uuid4().hex[:8]}_{int(datetime.utcnow().timestamp())}"
+        request_id = (
+            f"synthesis_{uuid.uuid4().hex[:8]}_{int(datetime.utcnow().timestamp())}"
+        )
 
         # Convert API request to internal request format
         synthesis_request = PolicySynthesisRequest(
@@ -124,12 +127,16 @@ async def synthesize_policy(
             ),
         )
 
-        logger.info(f"Policy synthesis completed: {request_id}, success: {response.success}")
+        logger.info(
+            f"Policy synthesis completed: {request_id}, success: {response.success}"
+        )
         return response
 
     except Exception as e:
         logger.error(f"Policy synthesis failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Policy synthesis failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Policy synthesis failed: {str(e)}"
+        )
 
 
 @router.get("/performance", response_model=ModelPerformanceResponse)
@@ -161,7 +168,9 @@ async def get_model_performance() -> ModelPerformanceResponse:
 
     except Exception as e:
         logger.error(f"Failed to get model performance: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get model performance: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get model performance: {str(e)}"
+        )
 
 
 @router.get("/health", response_model=ModelHealthResponse)
@@ -190,7 +199,9 @@ async def get_model_health() -> ModelHealthResponse:
             success_rate = model_metrics.get("success_rate", 0.0)
             circuit_breaker_open = model_metrics.get("circuit_breaker_open", False)
 
-            circuit_breaker_status[model_name] = "open" if circuit_breaker_open else "closed"
+            circuit_breaker_status[model_name] = (
+                "open" if circuit_breaker_open else "closed"
+            )
 
             if success_rate >= 0.8 and not circuit_breaker_open:
                 healthy_models.append(model_name)
@@ -199,7 +210,9 @@ async def get_model_health() -> ModelHealthResponse:
 
         # Calculate overall health score
         total_models = len(healthy_models) + len(unhealthy_models)
-        overall_health_score = len(healthy_models) / total_models if total_models > 0 else 0.0
+        overall_health_score = (
+            len(healthy_models) / total_models if total_models > 0 else 0.0
+        )
 
         # Check if reliability targets are met
         overall_metrics = metrics.get("overall", {})
@@ -215,7 +228,9 @@ async def get_model_health() -> ModelHealthResponse:
 
     except Exception as e:
         logger.error(f"Failed to get model health: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get model health: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get model health: {str(e)}"
+        )
 
 
 @router.get("/models/config", response_model=ModelSpecializationConfig)
@@ -235,7 +250,9 @@ async def get_model_configuration() -> ModelSpecializationConfig:
 
     except Exception as e:
         logger.error(f"Failed to get model configuration: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get model configuration: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get model configuration: {str(e)}"
+        )
 
 
 @router.post("/models/reset-circuit-breakers")
@@ -268,7 +285,9 @@ async def reset_circuit_breakers() -> JSONResponse:
 
     except Exception as e:
         logger.error(f"Failed to reset circuit breakers: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to reset circuit breakers: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to reset circuit breakers: {str(e)}"
+        )
 
 
 async def _log_synthesis_metrics(
@@ -304,7 +323,11 @@ async def get_synthesis_status() -> JSONResponse:
 
         status = {
             "service": "multi_model_synthesis",
-            "status": ("healthy" if (langgraph_available and models_initialized) else "degraded"),
+            "status": (
+                "healthy"
+                if (langgraph_available and models_initialized)
+                else "degraded"
+            ),
             "langgraph_available": langgraph_available,
             "models_initialized": models_initialized,
             "model_count": len(manager.model_clients),

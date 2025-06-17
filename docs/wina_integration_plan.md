@@ -33,7 +33,7 @@ echo "wina-optimization>=1.0.0" >> requirements.txt
 
 #### 1.2 GS Engine Integration Points
 ```python
-# src/alphaevolve_gs_engine/src/alphaevolve_gs_engine/core/wina_optimizer.py
+# integrations/alphaevolve-engine/integrations/alphaevolve-engine/core/wina_optimizer.py
 from wina import WINAOptimizer, SVDTransformation
 from typing import Dict, Any, Optional
 import torch
@@ -127,7 +127,7 @@ WINA_EFFICIENCY_PRINCIPLE = {
 
 #### 2.1 Enhanced GS Engine with WINA
 ```python
-# src/alphaevolve_gs_engine/src/alphaevolve_gs_engine/services/wina_enhanced_gs_engine.py
+# integrations/alphaevolve-engine/integrations/alphaevolve-engine/services/wina_enhanced_gs_engine.py
 from .governance_synthesis_engine import GovernanceSynthesisEngine
 from .wina_optimizer import AlphaEvolveWINAOptimizer
 from ..core.constitutional_principle import ConstitutionalPrinciple

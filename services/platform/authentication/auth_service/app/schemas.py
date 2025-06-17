@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -13,8 +12,8 @@ class Token(BaseModel):
 
 # Schema for data embedded in the token
 class TokenData(BaseModel):
-    username: Optional[str] = None
-    jti: Optional[str] = None  # JWT ID claim
+    username: str | None = None
+    jti: str | None = None  # JWT ID claim
     # Add 'type' to distinguish access vs refresh if needed, but often handled by different expiries and usage
     # token_type: Optional[str] = "access"
 
@@ -50,7 +49,7 @@ class UserCreate(UserBase):
 # Schema for user response (excluding sensitive data like password)
 class UserResponse(UserBase):
     id: int
-    full_name: Optional[str] = None
+    full_name: str | None = None
     role: str
     is_active: bool
     created_at: datetime
@@ -64,7 +63,7 @@ class UserResponse(UserBase):
 class UserInDB(UserBase):
     id: int
     hashed_password: str
-    full_name: Optional[str] = None
+    full_name: str | None = None
     role: str
     is_active: bool
     created_at: datetime

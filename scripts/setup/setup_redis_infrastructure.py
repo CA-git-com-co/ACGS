@@ -7,7 +7,6 @@ and distributed task queues for the ACGS-1 system.
 """
 
 import logging
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -21,18 +20,20 @@ logger = logging.getLogger(__name__)
 # Define project root
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
+
 def setup_redis_infrastructure():
     """Set up Redis infrastructure for ACGS-1."""
     logger.info("Setting up Redis infrastructure...")
-    
+
     # Create Redis configuration directory
     redis_config_dir = PROJECT_ROOT / "infrastructure" / "redis"
     redis_config_dir.mkdir(exist_ok=True)
-    
+
     # Create Redis configuration file
     redis_conf = redis_config_dir / "redis.conf"
     with open(redis_conf, "w") as f:
-        f.write("""# ACGS-1 Redis Configuration
+        f.write(
+            """# ACGS-1 Redis Configuration
 bind 127.0.0.1
 protected-mode yes
 port 6379
@@ -97,12 +98,14 @@ hz 10
 dynamic-hz yes
 aof-rewrite-incremental-fsync yes
 rdb-save-incremental-fsync yes
-""")
-    
+"""
+        )
+
     # Create Docker Compose file for Redis
     redis_docker_compose = redis_config_dir / "docker-compose.yml"
     with open(redis_docker_compose, "w") as f:
-        f.write("""version: '3.8'
+        f.write(
+            """version: '3.8'
 
 services:
   redis:
@@ -135,22 +138,25 @@ services:
 
 volumes:
   redis_data:
-""")
-    
+"""
+        )
+
     # Update service dependencies to include Redis
     logger.info("Updating service dependencies to include Redis...")
     for service_dir in (PROJECT_ROOT / "services" / "core").glob("*"):
         if service_dir.is_dir():
             requirements_file = service_dir / "requirements.txt"
             if requirements_file.exists():
-                with open(requirements_file, "r") as f:
+                with open(requirements_file) as f:
                     content = f.read()
-                
+
                 if "redis" not in content:
                     with open(requirements_file, "a") as f:
-                        f.write("\n# Redis client for caching and session management\nredis[hiredis]>=5.0.0\n")
+                        f.write(
+                            "\n# Redis client for caching and session management\nredis[hiredis]>=5.0.0\n"
+                        )
                     logger.info(f"Added Redis dependency to {service_dir.name}")
-    
+
     # Start Redis services
     logger.info("Starting Redis services...")
     try:
@@ -162,9 +168,10 @@ volumes:
     except subprocess.CalledProcessError as e:
         logger.error(f"❌ Failed to start Redis services: {e}")
         return False
-    
+
     logger.info("✅ Redis infrastructure setup completed successfully")
     return True
+
 
 if __name__ == "__main__":
     success = setup_redis_infrastructure()

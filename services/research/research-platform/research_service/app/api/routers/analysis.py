@@ -5,7 +5,7 @@ Provides endpoints for statistical analysis and research insights.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -21,11 +21,11 @@ class AnalysisRequest(BaseModel):
     """Request model for statistical analysis."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    description: Optional[str] = None
+    description: str | None = None
     analysis_type: str = Field(..., min_length=1)
-    input_datasets: List[str] = Field(..., min_items=1)
-    parameters: Dict[str, Any] = Field(default_factory=dict)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    input_datasets: list[str] = Field(..., min_items=1)
+    parameters: dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class AnalysisResponse(BaseModel):
@@ -33,23 +33,25 @@ class AnalysisResponse(BaseModel):
 
     id: str
     name: str
-    description: Optional[str]
+    description: str | None
     analysis_type: str
     status: str
-    results: Dict[str, Any]
-    summary: Optional[str]
-    conclusions: List[str]
-    recommendations: List[str]
-    p_value: Optional[float]
-    effect_size: Optional[float]
-    confidence_interval: Optional[Dict[str, float]]
-    sample_size: Optional[int]
-    reliability_score: Optional[float]
-    validity_score: Optional[float]
+    results: dict[str, Any]
+    summary: str | None
+    conclusions: list[str]
+    recommendations: list[str]
+    p_value: float | None
+    effect_size: float | None
+    confidence_interval: dict[str, float] | None
+    sample_size: int | None
+    reliability_score: float | None
+    validity_score: float | None
 
 
 @router.post("/", response_model=AnalysisResponse)
-async def run_analysis(request: AnalysisRequest, db: AsyncSession = Depends(get_db_session)):
+async def run_analysis(
+    request: AnalysisRequest, db: AsyncSession = Depends(get_db_session)
+):
     """Run statistical analysis on datasets."""
     try:
         # Placeholder implementation
@@ -76,10 +78,10 @@ async def run_analysis(request: AnalysisRequest, db: AsyncSession = Depends(get_
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/", response_model=List[AnalysisResponse])
+@router.get("/", response_model=list[AnalysisResponse])
 async def list_analyses(
     db: AsyncSession = Depends(get_db_session),
-    analysis_type: Optional[str] = Query(None),
+    analysis_type: str | None = Query(None),
     limit: int = Query(50, le=100),
     offset: int = Query(0, ge=0),
 ):
@@ -109,7 +111,7 @@ async def get_analysis(analysis_id: str, db: AsyncSession = Depends(get_db_sessi
 
 @router.post("/constitutional-compliance")
 async def analyze_constitutional_compliance(
-    dataset_ids: List[str], db: AsyncSession = Depends(get_db_session)
+    dataset_ids: list[str], db: AsyncSession = Depends(get_db_session)
 ):
     """Analyze constitutional compliance across datasets."""
     try:
@@ -138,7 +140,7 @@ async def analyze_constitutional_compliance(
 
 @router.post("/llm-reliability")
 async def analyze_llm_reliability(
-    dataset_ids: List[str],
+    dataset_ids: list[str],
     target_reliability: float = Query(0.999, ge=0.0, le=1.0),
     db: AsyncSession = Depends(get_db_session),
 ):
@@ -173,8 +175,8 @@ async def analyze_llm_reliability(
 
 @router.post("/performance-analysis")
 async def analyze_performance(
-    dataset_ids: List[str],
-    metrics: List[str] = Query(["response_time", "throughput", "error_rate"]),
+    dataset_ids: list[str],
+    metrics: list[str] = Query(["response_time", "throughput", "error_rate"]),
     db: AsyncSession = Depends(get_db_session),
 ):
     """Analyze system performance metrics."""
@@ -216,8 +218,8 @@ async def analyze_performance(
 
 @router.post("/bias-detection")
 async def analyze_bias(
-    dataset_ids: List[str],
-    protected_attributes: List[str] = Query(["gender", "race", "age"]),
+    dataset_ids: list[str],
+    protected_attributes: list[str] = Query(["gender", "race", "age"]),
     db: AsyncSession = Depends(get_db_session),
 ):
     """Analyze bias in datasets and model outputs."""
@@ -258,8 +260,8 @@ async def analyze_bias(
 @router.post("/comparative-analysis")
 async def run_comparative_analysis(
     baseline_dataset_id: str,
-    comparison_dataset_ids: List[str],
-    metrics: List[str] = Query(["accuracy", "precision", "recall", "f1_score"]),
+    comparison_dataset_ids: list[str],
+    metrics: list[str] = Query(["accuracy", "precision", "recall", "f1_score"]),
     db: AsyncSession = Depends(get_db_session),
 ):
     """Run comparative analysis between datasets."""

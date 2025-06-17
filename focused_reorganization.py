@@ -134,7 +134,7 @@ class FocusedReorganizer:
         for compose_file in compose_files:
             file_path = self.project_root / compose_file
             if file_path.exists():
-                with open(file_path, "r") as f:
+                with open(file_path) as f:
                     content = f.read()
 
                 original_content = content
@@ -153,7 +153,7 @@ class FocusedReorganizer:
         # Update services/shared/Dockerfile.alembic
         alembic_dockerfile = self.project_root / "services/shared/Dockerfile.alembic"
         if alembic_dockerfile.exists():
-            with open(alembic_dockerfile, "r") as f:
+            with open(alembic_dockerfile) as f:
                 content = f.read()
 
             # Update paths to use services/shared instead of src/backend/shared
@@ -184,7 +184,7 @@ class FocusedReorganizer:
             full_path = self.project_root / file_path
             if full_path.exists():
                 try:
-                    with open(full_path, "r", encoding="utf-8") as f:
+                    with open(full_path, encoding="utf-8") as f:
                         content = f.read()
 
                     original_content = content

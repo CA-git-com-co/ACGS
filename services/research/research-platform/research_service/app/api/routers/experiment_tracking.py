@@ -6,7 +6,7 @@ Provides endpoints for experiment management, tracking, and analysis.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -28,14 +28,14 @@ class ExperimentCreateRequest(BaseModel):
     """Request model for creating experiments."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    description: Optional[str] = None
+    description: str | None = None
     hypothesis: str = Field(..., min_length=1)
     methodology: str = Field(..., min_length=1)
-    parameters: Dict[str, Any] = Field(default_factory=dict)
+    parameters: dict[str, Any] = Field(default_factory=dict)
     expected_duration_hours: float = Field(..., gt=0, le=168)  # Max 1 week
-    success_criteria: Dict[str, Any] = Field(default_factory=dict)
-    tags: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    success_criteria: dict[str, Any] = Field(default_factory=dict)
+    tags: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ExperimentResponse(BaseModel):
@@ -43,23 +43,23 @@ class ExperimentResponse(BaseModel):
 
     id: str
     name: str
-    description: Optional[str]
+    description: str | None
     hypothesis: str
     methodology: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     expected_duration_hours: float
-    success_criteria: Dict[str, Any]
-    tags: List[str]
-    metadata: Dict[str, Any]
+    success_criteria: dict[str, Any]
+    tags: list[str]
+    metadata: dict[str, Any]
     status: str
     created_at: datetime
-    updated_at: Optional[datetime]
+    updated_at: datetime | None
 
 
 class ExperimentRunCreateRequest(BaseModel):
     """Request model for creating experiment runs."""
 
-    config: Dict[str, Any] = Field(default_factory=dict)
+    config: dict[str, Any] = Field(default_factory=dict)
 
 
 class ExperimentRunResponse(BaseModel):
@@ -68,14 +68,14 @@ class ExperimentRunResponse(BaseModel):
     id: str
     experiment_id: str
     run_number: int
-    config: Dict[str, Any]
+    config: dict[str, Any]
     status: str
-    started_at: Optional[datetime]
-    completed_at: Optional[datetime]
-    duration_seconds: Optional[float]
-    summary: Optional[str]
-    conclusions: List[str]
-    recommendations: List[str]
+    started_at: datetime | None
+    completed_at: datetime | None
+    duration_seconds: float | None
+    summary: str | None
+    conclusions: list[str]
+    recommendations: list[str]
 
 
 class MetricLogRequest(BaseModel):
@@ -83,9 +83,9 @@ class MetricLogRequest(BaseModel):
 
     metric_name: str = Field(..., min_length=1, max_length=255)
     value: float
-    step: Optional[int] = None
-    timestamp: Optional[datetime] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    step: int | None = None
+    timestamp: datetime | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class MetricResponse(BaseModel):
@@ -95,9 +95,9 @@ class MetricResponse(BaseModel):
     run_id: str
     metric_name: str
     value: float
-    step: Optional[int]
+    step: int | None
     timestamp: datetime
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class ArtifactSaveRequest(BaseModel):
@@ -106,16 +106,16 @@ class ArtifactSaveRequest(BaseModel):
     artifact_name: str = Field(..., min_length=1, max_length=255)
     artifact_data: Any
     artifact_type: str = Field(default="json")
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ExperimentCompleteRequest(BaseModel):
     """Request model for completing experiments."""
 
     status: str = Field(default="completed")
-    summary: Optional[str] = None
-    conclusions: List[str] = Field(default_factory=list)
-    recommendations: List[str] = Field(default_factory=list)
+    summary: str | None = None
+    conclusions: list[str] = Field(default_factory=list)
+    recommendations: list[str] = Field(default_factory=list)
 
 
 # Initialize experiment tracker
@@ -126,7 +126,7 @@ experiment_tracker = ExperimentTracker()
 async def create_experiment(
     request: ExperimentCreateRequest,
     db: AsyncSession = Depends(get_db_session),
-    user_id: Optional[int] = None,
+    user_id: int | None = None,
 ):
     """Create a new experiment."""
     try:
@@ -165,10 +165,10 @@ async def create_experiment(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/", response_model=List[ExperimentResponse])
+@router.get("/", response_model=list[ExperimentResponse])
 async def list_experiments(
     db: AsyncSession = Depends(get_db_session),
-    status: Optional[str] = Query(None),
+    status: str | None = Query(None),
     limit: int = Query(50, le=100),
     offset: int = Query(0, ge=0),
 ):
@@ -184,7 +184,9 @@ async def list_experiments(
 
 
 @router.get("/{experiment_id}", response_model=ExperimentResponse)
-async def get_experiment(experiment_id: str, db: AsyncSession = Depends(get_db_session)):
+async def get_experiment(
+    experiment_id: str, db: AsyncSession = Depends(get_db_session)
+):
     """Get experiment by ID."""
     try:
         # This would be implemented with proper database queries
@@ -295,7 +297,9 @@ async def save_artifact(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/{experiment_id}/runs/{run_id}/complete", response_model=ExperimentRunResponse)
+@router.put(
+    "/{experiment_id}/runs/{run_id}/complete", response_model=ExperimentRunResponse
+)
 async def complete_experiment_run(
     experiment_id: str,
     run_id: str,

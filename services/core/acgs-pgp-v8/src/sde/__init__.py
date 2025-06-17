@@ -7,16 +7,16 @@ and integration with ACGS-1 analytics engine.
 
 from .engine import SyndromeDiagnosticEngine
 from .models import (
+    DiagnosticMetrics,
     DiagnosticResult,
     ErrorClassification,
     RecoveryRecommendation,
-    DiagnosticMetrics
 )
 
 __all__ = [
     "SyndromeDiagnosticEngine",
     "DiagnosticResult",
-    "ErrorClassification", 
+    "ErrorClassification",
     "RecoveryRecommendation",
     "DiagnosticMetrics",
 ]

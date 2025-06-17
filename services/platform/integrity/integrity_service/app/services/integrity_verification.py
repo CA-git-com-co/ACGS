@@ -6,8 +6,8 @@ Orchestrates digital signatures, Merkle trees, timestamps, and chain integrity
 import base64
 import json
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,7 +34,7 @@ class IntegrityVerificationService:
         self.key_manager = key_manager
         self.timestamp_manager = timestamp_manager
 
-    async def sign_policy_rule(self, db: AsyncSession, rule_id: int) -> Dict[str, Any]:
+    async def sign_policy_rule(self, db: AsyncSession, rule_id: int) -> dict[str, Any]:
         """
         Sign a policy rule with digital signature and timestamp
 
@@ -61,13 +61,17 @@ class IntegrityVerificationService:
                 "source_principle_ids": policy_rule.source_principle_ids,
                 "verification_status": policy_rule.verification_status,
             }
-            content_json = json.dumps(content_data, sort_keys=True, separators=(",", ":"))
+            content_json = json.dumps(
+                content_data, sort_keys=True, separators=(",", ":")
+            )
 
             # Generate content hash
             content_hash = self.crypto_service.generate_sha3_hash(content_json)
 
             # Get signing key
-            key_info = await self.key_manager.get_active_signing_key(db=db, purpose="signing")
+            key_info = await self.key_manager.get_active_signing_key(
+                db=db, purpose="signing"
+            )
             if not key_info:
                 raise RuntimeError("No active signing key available")
 
@@ -84,7 +88,7 @@ class IntegrityVerificationService:
             policy_rule.digital_signature = signature_bytes
             policy_rule.signature_algorithm = "RSA-PSS-SHA256"
             policy_rule.signed_by_key_id = key_info["key_id"]
-            policy_rule.signed_at = datetime.now(timezone.utc)
+            policy_rule.signed_at = datetime.now(UTC)
             policy_rule.signature_verified = True
 
             if timestamp_result:
@@ -101,7 +105,9 @@ class IntegrityVerificationService:
                 "key_id": key_info["key_id"],
                 "signed_at": policy_rule.signed_at,
                 "timestamp_token": (
-                    base64.b64encode(timestamp_result["timestamp_token"]).decode("utf-8")
+                    base64.b64encode(timestamp_result["timestamp_token"]).decode(
+                        "utf-8"
+                    )
                     if timestamp_result
                     else None
                 ),
@@ -112,7 +118,7 @@ class IntegrityVerificationService:
             await db.rollback()
             raise
 
-    async def sign_audit_log(self, db: AsyncSession, log_id: int) -> Dict[str, Any]:
+    async def sign_audit_log(self, db: AsyncSession, log_id: int) -> dict[str, Any]:
         """
         Sign an audit log entry with digital signature, timestamp, and chain integrity
 
@@ -140,7 +146,9 @@ class IntegrityVerificationService:
                 "action": audit_log.action,
                 "details": audit_log.details,
             }
-            content_json = json.dumps(content_data, sort_keys=True, separators=(",", ":"))
+            content_json = json.dumps(
+                content_data, sort_keys=True, separators=(",", ":")
+            )
 
             # Generate entry hash
             entry_hash = self.crypto_service.generate_sha3_hash(content_json)
@@ -153,7 +161,9 @@ class IntegrityVerificationService:
             chained_hash = self.crypto_service.generate_sha3_hash(chained_content)
 
             # Get signing key
-            key_info = await self.key_manager.get_active_signing_key(db=db, purpose="signing")
+            key_info = await self.key_manager.get_active_signing_key(
+                db=db, purpose="signing"
+            )
             if not key_info:
                 raise RuntimeError("No active signing key available")
 
@@ -170,7 +180,7 @@ class IntegrityVerificationService:
             audit_log.digital_signature = signature_bytes
             audit_log.signature_algorithm = "RSA-PSS-SHA256"
             audit_log.signed_by_key_id = key_info["key_id"]
-            audit_log.signed_at = datetime.now(timezone.utc)
+            audit_log.signed_at = datetime.now(UTC)
             audit_log.signature_verified = True
             audit_log.previous_hash = previous_hash
 
@@ -190,7 +200,9 @@ class IntegrityVerificationService:
                 "signed_at": audit_log.signed_at,
                 "previous_hash": previous_hash,
                 "timestamp_token": (
-                    base64.b64encode(timestamp_result["timestamp_token"]).decode("utf-8")
+                    base64.b64encode(timestamp_result["timestamp_token"]).decode(
+                        "utf-8"
+                    )
                     if timestamp_result
                     else None
                 ),
@@ -201,7 +213,9 @@ class IntegrityVerificationService:
             await db.rollback()
             raise
 
-    async def verify_policy_rule_integrity(self, db: AsyncSession, rule_id: int) -> Dict[str, Any]:
+    async def verify_policy_rule_integrity(
+        self, db: AsyncSession, rule_id: int
+    ) -> dict[str, Any]:
         """
         Verify complete integrity of a policy rule
 
@@ -237,14 +251,20 @@ class IntegrityVerificationService:
                 "source_principle_ids": policy_rule.source_principle_ids,
                 "verification_status": policy_rule.verification_status,
             }
-            content_json = json.dumps(content_data, sort_keys=True, separators=(",", ":"))
+            content_json = json.dumps(
+                content_data, sort_keys=True, separators=(",", ":")
+            )
             computed_hash = self.crypto_service.generate_sha3_hash(content_json)
 
             verification_results["content_hash_verified"] = (
                 computed_hash == policy_rule.content_hash
             )
-            verification_results["verification_details"]["computed_hash"] = computed_hash
-            verification_results["verification_details"]["stored_hash"] = policy_rule.content_hash
+            verification_results["verification_details"][
+                "computed_hash"
+            ] = computed_hash
+            verification_results["verification_details"][
+                "stored_hash"
+            ] = policy_rule.content_hash
 
             # Verify digital signature
             if policy_rule.digital_signature and policy_rule.signed_by_key_id:
@@ -281,7 +301,7 @@ class IntegrityVerificationService:
                 and verification_results["timestamp_verified"]
             )
 
-            verification_results["verified_at"] = datetime.now(timezone.utc)
+            verification_results["verified_at"] = datetime.now(UTC)
 
             return verification_results
 
@@ -289,7 +309,9 @@ class IntegrityVerificationService:
             logger.error(f"Error verifying policy rule {rule_id}: {e}")
             raise
 
-    async def verify_audit_log_integrity(self, db: AsyncSession, log_id: int) -> Dict[str, Any]:
+    async def verify_audit_log_integrity(
+        self, db: AsyncSession, log_id: int
+    ) -> dict[str, Any]:
         """
         Verify complete integrity of an audit log entry including chain integrity
 
@@ -327,12 +349,20 @@ class IntegrityVerificationService:
                 "action": audit_log.action,
                 "details": audit_log.details,
             }
-            content_json = json.dumps(content_data, sort_keys=True, separators=(",", ":"))
+            content_json = json.dumps(
+                content_data, sort_keys=True, separators=(",", ":")
+            )
             computed_hash = self.crypto_service.generate_sha3_hash(content_json)
 
-            verification_results["entry_hash_verified"] = computed_hash == audit_log.entry_hash
-            verification_results["verification_details"]["computed_hash"] = computed_hash
-            verification_results["verification_details"]["stored_hash"] = audit_log.entry_hash
+            verification_results["entry_hash_verified"] = (
+                computed_hash == audit_log.entry_hash
+            )
+            verification_results["verification_details"][
+                "computed_hash"
+            ] = computed_hash
+            verification_results["verification_details"][
+                "stored_hash"
+            ] = audit_log.entry_hash
 
             # Verify chain integrity
             expected_previous_hash = await self._get_previous_log_hash(db, log_id)
@@ -382,7 +412,7 @@ class IntegrityVerificationService:
                 and verification_results["chain_integrity"]
             )
 
-            verification_results["verified_at"] = datetime.now(timezone.utc)
+            verification_results["verified_at"] = datetime.now(UTC)
 
             return verification_results
 
@@ -390,7 +420,9 @@ class IntegrityVerificationService:
             logger.error(f"Error verifying audit log {log_id}: {e}")
             raise
 
-    async def _get_previous_log_hash(self, db: AsyncSession, current_log_id: int) -> Optional[str]:
+    async def _get_previous_log_hash(
+        self, db: AsyncSession, current_log_id: int
+    ) -> str | None:
         """
         Get hash of previous audit log entry for chain integrity
 

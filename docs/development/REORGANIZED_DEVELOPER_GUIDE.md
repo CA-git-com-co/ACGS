@@ -60,7 +60,7 @@ cp config/environments/.env.example .env
 ACGS-1/
 ├── blockchain/                          # 🔗 Solana/Anchor Programs
 │   ├── programs/                        # Smart contracts
-│   │   ├── quantumagi-core/            # Main governance program
+│   │   ├── blockchain/            # Main governance program
 │   │   ├── appeals/                    # Appeals handling
 │   │   └── logging/                    # Event logging
 │   ├── client/                         # Blockchain client libraries
@@ -146,7 +146,7 @@ cd services/core/constitutional-ai
 python -m uvicorn app.main:app --reload --port 8001
 
 # Or start all services with Docker
-docker-compose -f infrastructure/docker/docker-compose.yml up -d
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up -d
 ```
 
 ### Frontend Applications Setup

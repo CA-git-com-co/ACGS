@@ -9,7 +9,6 @@ import secrets
 import subprocess
 import sys
 from datetime import datetime
-from typing import Dict
 
 
 class ProductionConfigManager:
@@ -57,7 +56,7 @@ class ProductionConfigManager:
         """Generate a cryptographically secure random key"""
         return secrets.token_urlsafe(length)
 
-    def check_environment_variables(self) -> Dict[str, str]:
+    def check_environment_variables(self) -> dict[str, str]:
         """Check and validate environment variables"""
         print("🔍 Checking Environment Variables...")
 
@@ -96,7 +95,7 @@ class ProductionConfigManager:
         return env_config
 
     def create_env_file(
-        self, config: Dict[str, str], filename: str = ".env.production"
+        self, config: dict[str, str], filename: str = ".env.production"
     ) -> None:
         """Create production environment file"""
         print(f"\n📝 Creating {filename}...")

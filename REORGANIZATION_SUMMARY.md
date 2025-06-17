@@ -10,7 +10,7 @@ The ACGS-1 codebase has been successfully reorganized to follow blockchain devel
 ACGS-1/
 ├── blockchain/                          # 🔗 Solana/Anchor Programs
 │   ├── programs/                        # On-chain programs
-│   │   ├── quantumagi-core/            # Main governance program
+│   │   ├── blockchain/            # Main governance program
 │   │   ├── appeals/                    # Appeals handling
 │   │   └── logging/                    # Event logging
 │   ├── client/                         # Blockchain client libraries

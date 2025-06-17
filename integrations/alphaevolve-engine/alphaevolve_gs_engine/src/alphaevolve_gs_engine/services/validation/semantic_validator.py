@@ -14,7 +14,7 @@ Classes:
 import os  # For file operations
 import subprocess  # For OPA eval if used
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
@@ -43,10 +43,10 @@ class SemanticTestCase:
         self,
         case_id: str,
         description: str,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         expected_outcome: Any,  # Could be boolean, string, dict, etc.
         policy_under_test_id: str,
-        metadata: Optional[Dict[str, str]] = None,
+        metadata: dict[str, str] | None = None,
     ):
         self.case_id = case_id
         self.description = description
@@ -72,10 +72,10 @@ class SemanticValidator(ABC):
         self,
         policy_code: str,  # The actual policy code (e.g. Rego)
         policy_id: str,  # ID of the policy
-        test_cases: List[SemanticTestCase],
+        test_cases: list[SemanticTestCase],
         policy_language: str = "rego",
-    ) -> List[
-        Tuple[str, bool, str, Any, Any]
+    ) -> list[
+        tuple[str, bool, str, Any, Any]
     ]:  # case_id, passed, message, actual_outcome, expected_outcome
         """
         Validates the semantics of a given policy using a set of test cases.
@@ -146,10 +146,10 @@ class ScenarioBasedSemanticValidator(SemanticValidator):
     def _evaluate_rego_policy(
         self,
         policy_code: str,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         query_path: str,
         policy_id_for_log: str,
-    ) -> Tuple[Optional[Any], Optional[str]]:
+    ) -> tuple[Any | None, str | None]:
         """
         Evaluates a Rego policy with given input using `opa eval`.
 
@@ -285,15 +285,15 @@ class ScenarioBasedSemanticValidator(SemanticValidator):
         self,
         policy_code: str,
         policy_id: str,
-        test_cases: List[SemanticTestCase],
+        test_cases: list[SemanticTestCase],
         policy_language: str = "rego",
-    ) -> List[Tuple[str, bool, str, Any, Any]]:
+    ) -> list[tuple[str, bool, str, Any, Any]]:
         if policy_language.lower() != "rego":
             raise NotImplementedError(
                 f"Semantic validation for '{policy_language}' is not implemented by ScenarioBasedSemanticValidator."
             )
 
-        results: List[Tuple[str, bool, str, Any, Any]] = []
+        results: list[tuple[str, bool, str, Any, Any]] = []
 
         # Filter test cases relevant to the current policy_id
         relevant_test_cases = [
@@ -470,7 +470,7 @@ if __name__ == "__main__":
     passed_count = 0
     failed_cases = []
     if validation_results:  # Check if any results were returned
-        for case_id, passed, message, actual, expected in validation_results:
+        for case_id, passed, message, _actual, _expected in validation_results:
             print(f"  Test Case ID: {case_id}")
             print(f"    Passed: {passed}")
             print(f"    Message: {message}")

@@ -8,7 +8,7 @@ Phase 3: Performance Optimization and Security Compliance
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import structlog
 from fastapi import APIRouter, HTTPException, Query, status
@@ -27,12 +27,12 @@ class PerformanceMetricsResponse(BaseModel):
     """Performance metrics response model."""
 
     timestamp: datetime
-    latency_profiles: List[Dict[str, Any]]
-    bottlenecks: List[Dict[str, Any]]
+    latency_profiles: list[dict[str, Any]]
+    bottlenecks: list[dict[str, Any]]
     active_requests: int
-    system_metrics: Dict[str, float]
-    cache_stats: Optional[Dict[str, Any]] = None
-    opa_metrics: Optional[Dict[str, Any]] = None
+    system_metrics: dict[str, float]
+    cache_stats: dict[str, Any] | None = None
+    opa_metrics: dict[str, Any] | None = None
 
 
 class SystemHealthResponse(BaseModel):
@@ -40,10 +40,10 @@ class SystemHealthResponse(BaseModel):
 
     status: str = Field(..., description="Overall system health status")
     timestamp: datetime
-    components: Dict[str, Dict[str, Any]]
-    performance_summary: Dict[str, Any]
-    security_summary: Dict[str, Any]
-    alerts: List[Dict[str, Any]]
+    components: dict[str, dict[str, Any]]
+    performance_summary: dict[str, Any]
+    security_summary: dict[str, Any]
+    alerts: list[dict[str, Any]]
 
 
 class AlertConfiguration(BaseModel):
@@ -85,7 +85,9 @@ async def get_performance_metrics(
         if include_cache:
             try:
                 # This would need to be implemented to get cache stats from the actual cache instance
-                response_data["cache_stats"] = {"message": "Cache stats integration pending"}
+                response_data["cache_stats"] = {
+                    "message": "Cache stats integration pending"
+                }
             except Exception as e:
                 logger.warning("Failed to get cache stats", error=str(e))
                 response_data["cache_stats"] = {"error": "Cache stats unavailable"}
@@ -140,7 +142,9 @@ async def get_system_health() -> SystemHealthResponse:
             opa_client = get_opa_client()
             opa_metrics = opa_client.get_metrics()
             components["opa_client"] = {
-                "status": ("healthy" if opa_metrics.get("error_count", 0) < 10 else "degraded"),
+                "status": (
+                    "healthy" if opa_metrics.get("error_count", 0) < 10 else "degraded"
+                ),
                 "last_check": datetime.now().isoformat(),
                 "metrics": opa_metrics,
             }
@@ -184,10 +188,10 @@ async def get_system_health() -> SystemHealthResponse:
 @security_required(required_roles=["admin", "monitor"])
 async def get_performance_bottlenecks(
     hours: int = Query(1, ge=1, le=24, description="Hours of bottlenecks to retrieve"),
-    severity: Optional[str] = Query(
+    severity: str | None = Query(
         None, pattern="^(low|medium|high|critical)$", description="Filter by severity"
     ),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get performance bottlenecks and optimization recommendations.
 
@@ -203,7 +207,9 @@ async def get_performance_bottlenecks(
 
         # Add optimization recommendations
         for bottleneck in bottlenecks:
-            bottleneck["recommendations"] = _get_optimization_recommendations(bottleneck)
+            bottleneck["recommendations"] = _get_optimization_recommendations(
+                bottleneck
+            )
 
         return {
             "timestamp": datetime.now().isoformat(),
@@ -223,8 +229,8 @@ async def get_performance_bottlenecks(
 @router.get("/latency-profile")
 @security_required(required_roles=["admin", "monitor"])
 async def get_latency_profile(
-    operation: Optional[str] = Query(None, description="Specific operation to profile")
-) -> Dict[str, Any]:
+    operation: str | None = Query(None, description="Specific operation to profile")
+) -> dict[str, Any]:
     """
     Get detailed latency profiling information.
 
@@ -249,9 +255,13 @@ async def get_latency_profile(
         target_latency_ms = 50.0  # 50ms target
         for profile in profiles:
             profile_dict = profile.__dict__ if hasattr(profile, "__dict__") else profile
-            profile_dict["meets_target"] = profile_dict.get("p95_latency_ms", 0) < target_latency_ms
+            profile_dict["meets_target"] = (
+                profile_dict.get("p95_latency_ms", 0) < target_latency_ms
+            )
             profile_dict["target_latency_ms"] = target_latency_ms
-            profile_dict["performance_grade"] = _calculate_performance_grade(profile_dict)
+            profile_dict["performance_grade"] = _calculate_performance_grade(
+                profile_dict
+            )
 
         return {
             "timestamp": datetime.now().isoformat(),
@@ -262,11 +272,15 @@ async def get_latency_profile(
                 "meeting_target": sum(
                     1
                     for p in profiles
-                    if (p.__dict__ if hasattr(p, "__dict__") else p).get("meets_target", False)
+                    if (p.__dict__ if hasattr(p, "__dict__") else p).get(
+                        "meets_target", False
+                    )
                 ),
                 "avg_p95_latency": (
                     sum(
-                        (p.__dict__ if hasattr(p, "__dict__") else p).get("p95_latency_ms", 0)
+                        (p.__dict__ if hasattr(p, "__dict__") else p).get(
+                            "p95_latency_ms", 0
+                        )
                         for p in profiles
                     )
                     / len(profiles)
@@ -288,7 +302,7 @@ async def get_latency_profile(
 
 @router.post("/alerts/configure")
 @security_required(required_roles=["admin"])
-async def configure_alert(alert_config: AlertConfiguration) -> Dict[str, Any]:
+async def configure_alert(alert_config: AlertConfiguration) -> dict[str, Any]:
     """
     Configure performance monitoring alerts.
 
@@ -343,8 +357,8 @@ async def get_prometheus_metrics() -> str:
 
 
 def _generate_health_alerts(
-    components: Dict[str, Dict[str, Any]],
-) -> List[Dict[str, Any]]:
+    components: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
     """Generate health alerts based on component status."""
     alerts = []
 
@@ -373,7 +387,7 @@ def _generate_health_alerts(
     return alerts
 
 
-def _get_optimization_recommendations(bottleneck: Dict[str, Any]) -> List[str]:
+def _get_optimization_recommendations(bottleneck: dict[str, Any]) -> list[str]:
     """Get optimization recommendations for a performance bottleneck."""
     recommendations = []
     operation = bottleneck.get("operation", "")
@@ -406,10 +420,12 @@ def _get_optimization_recommendations(bottleneck: Dict[str, Any]) -> List[str]:
             ]
         )
 
-    return recommendations or ["Review operation implementation for optimization opportunities"]
+    return recommendations or [
+        "Review operation implementation for optimization opportunities"
+    ]
 
 
-def _get_severity_distribution(bottlenecks: List[Dict[str, Any]]) -> Dict[str, int]:
+def _get_severity_distribution(bottlenecks: list[dict[str, Any]]) -> dict[str, int]:
     """Get severity distribution of bottlenecks."""
     distribution = {"low": 0, "medium": 0, "high": 0, "critical": 0}
 
@@ -420,7 +436,7 @@ def _get_severity_distribution(bottlenecks: List[Dict[str, Any]]) -> Dict[str, i
     return distribution
 
 
-def _calculate_performance_grade(profile: Dict[str, Any]) -> str:
+def _calculate_performance_grade(profile: dict[str, Any]) -> str:
     """Calculate performance grade based on latency metrics."""
     p95_latency = profile.get("p95_latency_ms", 0)
 

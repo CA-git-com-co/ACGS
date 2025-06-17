@@ -12,11 +12,12 @@ import statistics
 import threading
 import time
 from collections import defaultdict, deque
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 import psutil
 import redis
@@ -42,9 +43,13 @@ SYSTEM_RESOURCE_USAGE = Gauge(
     "system_resource_usage", "System resource usage metrics", ["resource_type"]
 )
 
-CONCURRENT_REQUESTS = Gauge("concurrent_requests", "Number of concurrent requests being processed")
+CONCURRENT_REQUESTS = Gauge(
+    "concurrent_requests", "Number of concurrent requests being processed"
+)
 
-ERROR_RATE = Counter("error_rate_total", "Total number of errors", ["error_type", "endpoint"])
+ERROR_RATE = Counter(
+    "error_rate_total", "Total number of errors", ["error_type", "endpoint"]
+)
 
 THROUGHPUT = Counter(
     "throughput_total", "Total number of requests processed", ["endpoint", "status"]
@@ -89,9 +94,11 @@ class PerformanceProfiler:
         # ensures: Correct function execution
         # sha256: func_hash
         self.max_samples = max_samples
-        self.latency_samples: Dict[str, deque] = defaultdict(lambda: deque(maxlen=max_samples))
-        self.operation_counts: Dict[str, int] = defaultdict(int)
-        self.bottlenecks: List[Dict[str, Any]] = []
+        self.latency_samples: dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=max_samples)
+        )
+        self.operation_counts: dict[str, int] = defaultdict(int)
+        self.bottlenecks: list[dict[str, Any]] = []
         self._lock = threading.Lock()
 
     def record_latency(self, operation: str, latency_ms: float):
@@ -133,7 +140,7 @@ class PerformanceProfiler:
             severity=bottleneck["severity"],
         )
 
-    def get_latency_profile(self, operation: str) -> Optional[LatencyProfile]:
+    def get_latency_profile(self, operation: str) -> LatencyProfile | None:
         """Get latency profile for a specific operation."""
         with self._lock:
             samples = self.latency_samples.get(operation, [])
@@ -161,7 +168,7 @@ class PerformanceProfiler:
                 timestamp=datetime.now(),
             )
 
-    def get_all_profiles(self) -> List[LatencyProfile]:
+    def get_all_profiles(self) -> list[LatencyProfile]:
         """Get latency profiles for all operations."""
         profiles = []
         for operation in self.latency_samples.keys():
@@ -170,7 +177,7 @@ class PerformanceProfiler:
                 profiles.append(profile)
         return profiles
 
-    def get_bottlenecks(self, hours: int = 1) -> List[Dict[str, Any]]:
+    def get_bottlenecks(self, hours: int = 1) -> list[dict[str, Any]]:
         """Get recent performance bottlenecks."""
         cutoff_time = datetime.now() - timedelta(hours=hours)
         return [b for b in self.bottlenecks if b["timestamp"] > cutoff_time]
@@ -185,7 +192,7 @@ class SystemResourceMonitor:
         # sha256: func_hash
         self.check_interval = check_interval
         self.monitoring = False
-        self.monitor_task: Optional[asyncio.Task] = None
+        self.monitor_task: asyncio.Task | None = None
         self.thresholds = {
             "cpu_percent": 80.0,
             "memory_percent": 85.0,
@@ -256,8 +263,12 @@ class SystemResourceMonitor:
 
         # Network I/O
         network = psutil.net_io_counters()
-        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_sent").set(network.bytes_sent)
-        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_recv").set(network.bytes_recv)
+        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_sent").set(
+            network.bytes_sent
+        )
+        SYSTEM_RESOURCE_USAGE.labels(resource_type="network_bytes_recv").set(
+            network.bytes_recv
+        )
 
         # Check thresholds and alert
         await self._check_thresholds(cpu_percent, memory.percent, disk_percent)
@@ -287,7 +298,7 @@ class SystemResourceMonitor:
 class PerformanceMonitor:
     """Main performance monitoring service."""
 
-    def __init__(self, redis_client: Optional[redis.Redis] = None):
+    def __init__(self, redis_client: redis.Redis | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -351,7 +362,7 @@ class PerformanceMonitor:
                 self.active_requests -= 1
                 CONCURRENT_REQUESTS.set(self.active_requests)
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get comprehensive performance summary."""
         profiles = self.profiler.get_all_profiles()
         bottlenecks = self.profiler.get_bottlenecks()
@@ -364,7 +375,7 @@ class PerformanceMonitor:
             "system_metrics": self._get_current_system_metrics(),
         }
 
-    def _get_current_system_metrics(self) -> Dict[str, float]:
+    def _get_current_system_metrics(self) -> dict[str, float]:
         """Get current system metrics."""
         memory = psutil.virtual_memory()
         return {
@@ -376,7 +387,7 @@ class PerformanceMonitor:
 
 
 # Global performance monitor instance
-_performance_monitor: Optional[PerformanceMonitor] = None
+_performance_monitor: PerformanceMonitor | None = None
 
 
 def get_performance_monitor() -> PerformanceMonitor:
@@ -421,10 +432,14 @@ def performance_monitor_decorator(endpoint: str, operation_type: str = "default"
                 try:
                     result = func(*args, **kwargs)
                     latency_ms = (time.time() - start_time) * 1000
-                    monitor.profiler.record_latency(f"{endpoint}:{operation_type}", latency_ms)
+                    monitor.profiler.record_latency(
+                        f"{endpoint}:{operation_type}", latency_ms
+                    )
                     return result
                 except Exception as e:
-                    ERROR_RATE.labels(error_type=type(e).__name__, endpoint=endpoint).inc()
+                    ERROR_RATE.labels(
+                        error_type=type(e).__name__, endpoint=endpoint
+                    ).inc()
                     raise
 
             return sync_wrapper

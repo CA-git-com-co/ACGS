@@ -11,7 +11,7 @@ Usage:
 
 import json
 import sys
-from typing import Any, Dict, List
+from typing import Any
 
 import requests
 
@@ -50,7 +50,7 @@ class ConflictResolutionTestClient:
 
             if response.status_code == 200:
                 conflicts = response.json()
-                print(f"✅ Conflict resolutions list endpoint working")
+                print("✅ Conflict resolutions list endpoint working")
                 print(f"   Found {len(conflicts)} existing conflict resolutions")
 
                 # Display existing conflicts if any
@@ -74,7 +74,7 @@ class ConflictResolutionTestClient:
             print(f"❌ Conflict resolutions list error: {e}")
             return False
 
-    def test_principles_for_conflict_testing(self) -> List[Dict[str, Any]]:
+    def test_principles_for_conflict_testing(self) -> list[dict[str, Any]]:
         """Get existing principles to use for conflict testing."""
         try:
             response = self.session.get(

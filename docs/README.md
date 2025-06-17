@@ -44,7 +44,7 @@ Welcome to the AI Compliance Governance System (ACGS-1) documentation - a compre
 ## Quick Navigation
 
 ### For Blockchain Developers
-- [Quantumagi Core Program](../blockchain/programs/quantumagi-core/)
+- [Quantumagi Core Program](../blockchain/programs/blockchain/)
 - [Anchor Development Guide](../blockchain/README.md)
 - [Solana Integration](../integrations/quantumagi-bridge/)
 
@@ -93,7 +93,7 @@ Welcome to the AI Compliance Governance System (ACGS-1) documentation - a compre
 - **research-platform**: [README](../services/research/research-platform/README.md)
 
 ### Blockchain Programs (`blockchain/programs/`)
-- **quantumagi-core**: [README](../blockchain/programs/quantumagi-core/README.md)
+- **quantumagi-core**: [README](../blockchain/programs/blockchain/README.md)
 - **appeals**: [README](../blockchain/programs/appeals/README.md)
 - **logging**: [README](../blockchain/programs/logging/README.md)
 

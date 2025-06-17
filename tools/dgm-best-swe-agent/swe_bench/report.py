@@ -15,9 +15,9 @@ def load_predictions(paths):
         elif path.is_dir():
             prediction_paths += list(path.glob("*.json"))
         else:
-            assert False, path
+            raise AssertionError(path)
 
-    predictions = dict()
+    predictions = {}
     for fname in prediction_paths:
         try:
             pred = json.loads(fname.read_text())
@@ -72,13 +72,13 @@ def preds_to_jsonl(dname, predictions):
     predictions_jsonl = str(dname / "all_preds.jsonl")
     model_name_or_path = list(predictions.values())[0]["model_name_or_path"]
     with open(predictions_jsonl, "w") as fh:
-        for inst, pred in predictions.items():
+        for _inst, pred in predictions.items():
             assert model_name_or_path == pred["model_name_or_path"]
-            minimal_pred = dict(
-                model_name_or_path=model_name_or_path,
-                model_patch=remove_patches_to_tests(pred["model_patch"]),
-                instance_id=pred["instance_id"],
-            )
+            minimal_pred = {
+                "model_name_or_path": model_name_or_path,
+                "model_patch": remove_patches_to_tests(pred["model_patch"]),
+                "instance_id": pred["instance_id"],
+            }
             fh.write(json.dumps(minimal_pred) + "\n")
     return predictions_jsonl
 

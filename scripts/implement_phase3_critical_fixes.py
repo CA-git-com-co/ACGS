@@ -72,7 +72,7 @@ class Phase3CriticalFixesImplementation:
             # Implementation 1: Aggressive garbage collection
             logger.info("1. Performing aggressive garbage collection...")
             collected_objects = 0
-            for i in range(5):  # Multiple GC passes
+            for _i in range(5):  # Multiple GC passes
                 collected = gc.collect()
                 collected_objects += collected
                 await asyncio.sleep(0.1)
@@ -139,7 +139,7 @@ class Phase3CriticalFixesImplementation:
                 ],
             }
 
-            logger.info(f"Memory optimization completed:")
+            logger.info("Memory optimization completed:")
             logger.info(f"  Before: {baseline_memory.percent:.1f}%")
             logger.info(f"  After: {final_memory.percent:.1f}%")
             logger.info(f"  Improvement: {memory_improvement:.1f}%")
@@ -252,7 +252,7 @@ class Phase3CriticalFixesImplementation:
                 ],
             }
 
-            logger.info(f"Cache performance optimization completed:")
+            logger.info("Cache performance optimization completed:")
             logger.info(f"  Hit rate: {hit_rate:.1f}%")
             logger.info(f"  Cache size: {len(cache_store)} items")
             logger.info(f"  Total requests: {cache_stats['total_requests']}")
@@ -359,7 +359,7 @@ class Phase3CriticalFixesImplementation:
                 "production_ready": overall_success,
             }
 
-            logger.info(f"Validation results:")
+            logger.info("Validation results:")
             logger.info(
                 f"  Memory optimization: {'✅ PASSED' if memory_compliant else '❌ FAILED'} ({current_memory.percent:.1f}% < 85%)"
             )
@@ -447,7 +447,7 @@ class Phase3CriticalFixesImplementation:
             json.dump(self.implementation_results, f, indent=2)
 
         logger.info(
-            f"\n📄 Detailed results saved to: phase3_critical_fixes_implementation_results.json"
+            "\n📄 Detailed results saved to: phase3_critical_fixes_implementation_results.json"
         )
 
 

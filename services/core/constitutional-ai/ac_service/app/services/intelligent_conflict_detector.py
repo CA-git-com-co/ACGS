@@ -16,7 +16,7 @@ Key Features:
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import numpy as np
 from sqlalchemy import select
@@ -57,13 +57,13 @@ class ConflictDetectionResult:
 
     conflict_type: ConflictType
     severity: ConflictSeverity
-    principle_ids: List[int]
+    principle_ids: list[int]
     confidence_score: float
     description: str
-    context: Optional[str]
+    context: str | None
     priority_score: float
-    detection_metadata: Dict[str, Any]
-    recommended_strategy: Optional[str]
+    detection_metadata: dict[str, Any]
+    recommended_strategy: str | None
 
 
 @dataclass
@@ -71,12 +71,12 @@ class PrincipleAnalysis:
     """Analysis of a constitutional principle for conflict detection."""
 
     principle_id: int
-    semantic_embedding: Optional[np.ndarray]
-    scope_keywords: Set[str]
+    semantic_embedding: np.ndarray | None
+    scope_keywords: set[str]
     priority_weight: float
-    stakeholder_impact: Dict[str, float]
-    temporal_constraints: Dict[str, Any]
-    normative_statements: List[str]
+    stakeholder_impact: dict[str, float]
+    temporal_constraints: dict[str, Any]
+    normative_statements: list[str]
 
 
 class IntelligentConflictDetector:
@@ -87,7 +87,7 @@ class IntelligentConflictDetector:
     policy decisions with high accuracy and intelligent prioritization.
     """
 
-    def __init__(self, qec_resolver: Optional[QECConflictResolver] = None):
+    def __init__(self, qec_resolver: QECConflictResolver | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -130,7 +130,7 @@ class IntelligentConflictDetector:
             logger.warning(f"Semantic analyzer initialization failed: {e}")
             self.semantic_analyzer_available = False
 
-    def _load_conflict_patterns(self) -> Dict[str, Any]:
+    def _load_conflict_patterns(self) -> dict[str, Any]:
         """Load known conflict patterns for pattern-based detection."""
         return {
             "privacy_vs_security": {
@@ -165,9 +165,9 @@ class IntelligentConflictDetector:
     async def detect_conflicts(
         self,
         db: AsyncSession,
-        principle_ids: Optional[List[int]] = None,
+        principle_ids: list[int] | None = None,
         real_time_monitoring: bool = False,
-    ) -> List[ConflictDetectionResult]:
+    ) -> list[ConflictDetectionResult]:
         """
         Detect conflicts among constitutional principles.
 
@@ -196,7 +196,9 @@ class IntelligentConflictDetector:
             conflicts = []
 
             # 1. Semantic conflict detection
-            semantic_conflicts = await self._detect_semantic_conflicts(principle_analyses)
+            semantic_conflicts = await self._detect_semantic_conflicts(
+                principle_analyses
+            )
             conflicts.extend(semantic_conflicts)
 
             # 2. Pattern-based conflict detection
@@ -204,7 +206,9 @@ class IntelligentConflictDetector:
             conflicts.extend(pattern_conflicts)
 
             # 3. Priority-based conflict detection
-            priority_conflicts = await self._detect_priority_conflicts(principle_analyses)
+            priority_conflicts = await self._detect_priority_conflicts(
+                principle_analyses
+            )
             conflicts.extend(priority_conflicts)
 
             # 4. Scope overlap detection
@@ -214,7 +218,9 @@ class IntelligentConflictDetector:
             # Remove duplicates and filter by confidence threshold
             unique_conflicts = self._deduplicate_conflicts(conflicts)
             filtered_conflicts = [
-                c for c in unique_conflicts if c.confidence_score >= self.detection_threshold
+                c
+                for c in unique_conflicts
+                if c.confidence_score >= self.detection_threshold
             ]
 
             # Calculate priority scores
@@ -239,10 +245,10 @@ class IntelligentConflictDetector:
             raise
 
     async def _get_principles_for_analysis(
-        self, db: AsyncSession, principle_ids: Optional[List[int]]
-    ) -> List[Principle]:
+        self, db: AsyncSession, principle_ids: list[int] | None
+    ) -> list[Principle]:
         """Get principles for conflict analysis."""
-        query = select(Principle).filter(Principle.is_active == True)
+        query = select(Principle).filter(Principle.is_active)
 
         if principle_ids:
             query = query.filter(Principle.id.in_(principle_ids))
@@ -250,7 +256,9 @@ class IntelligentConflictDetector:
         result = await db.execute(query)
         return result.scalars().all()
 
-    async def _analyze_principles(self, principles: List[Principle]) -> List[PrincipleAnalysis]:
+    async def _analyze_principles(
+        self, principles: list[Principle]
+    ) -> list[PrincipleAnalysis]:
         """Analyze principles to extract features for conflict detection."""
         analyses = []
 
@@ -268,7 +276,9 @@ class IntelligentConflictDetector:
 
         return analyses
 
-    async def _generate_semantic_embedding(self, principle: Principle) -> Optional[np.ndarray]:
+    async def _generate_semantic_embedding(
+        self, principle: Principle
+    ) -> np.ndarray | None:
         """Generate semantic embedding for principle text."""
         if not self.semantic_analyzer_available:
             return None
@@ -280,10 +290,12 @@ class IntelligentConflictDetector:
             # For now, return a random embedding as placeholder
             return np.random.rand(384)  # Typical sentence embedding size
         except Exception as e:
-            logger.warning(f"Failed to generate embedding for principle {principle.id}: {e}")
+            logger.warning(
+                f"Failed to generate embedding for principle {principle.id}: {e}"
+            )
             return None
 
-    def _extract_scope_keywords(self, principle: Principle) -> Set[str]:
+    def _extract_scope_keywords(self, principle: Principle) -> set[str]:
         """Extract scope-related keywords from principle."""
         text = f"{principle.title} {principle.description}".lower()
 
@@ -314,7 +326,7 @@ class IntelligentConflictDetector:
 
         return found_keywords
 
-    def _analyze_stakeholder_impact(self, principle: Principle) -> Dict[str, float]:
+    def _analyze_stakeholder_impact(self, principle: Principle) -> dict[str, float]:
         """Analyze potential stakeholder impact of principle."""
         # Simplified stakeholder impact analysis
         text = f"{principle.title} {principle.description}".lower()
@@ -334,7 +346,7 @@ class IntelligentConflictDetector:
 
         return impact_scores
 
-    def _extract_temporal_constraints(self, principle: Principle) -> Dict[str, Any]:
+    def _extract_temporal_constraints(self, principle: Principle) -> dict[str, Any]:
         """Extract temporal constraints from principle."""
         text = f"{principle.title} {principle.description}".lower()
 
@@ -351,7 +363,7 @@ class IntelligentConflictDetector:
 
         return constraints
 
-    def _extract_normative_statements(self, principle: Principle) -> List[str]:
+    def _extract_normative_statements(self, principle: Principle) -> list[str]:
         """Extract normative statements from principle."""
         text = principle.description
 
@@ -376,8 +388,8 @@ class IntelligentConflictDetector:
         return normative_statements
 
     async def _detect_semantic_conflicts(
-        self, analyses: List[PrincipleAnalysis]
-    ) -> List[ConflictDetectionResult]:
+        self, analyses: list[PrincipleAnalysis]
+    ) -> list[ConflictDetectionResult]:
         """Detect conflicts using semantic analysis."""
         conflicts = []
 
@@ -389,7 +401,10 @@ class IntelligentConflictDetector:
             for j in range(i + 1, len(analyses)):
                 analysis_a, analysis_b = analyses[i], analyses[j]
 
-                if analysis_a.semantic_embedding is None or analysis_b.semantic_embedding is None:
+                if (
+                    analysis_a.semantic_embedding is None
+                    or analysis_b.semantic_embedding is None
+                ):
                     continue
 
                 # Calculate semantic similarity
@@ -427,8 +442,8 @@ class IntelligentConflictDetector:
         return conflicts
 
     async def _detect_pattern_conflicts(
-        self, analyses: List[PrincipleAnalysis]
-    ) -> List[ConflictDetectionResult]:
+        self, analyses: list[PrincipleAnalysis]
+    ) -> list[ConflictDetectionResult]:
         """Detect conflicts using known conflict patterns."""
         conflicts = []
 
@@ -462,7 +477,9 @@ class IntelligentConflictDetector:
                             conflict = ConflictDetectionResult(
                                 conflict_type=ConflictType.PRACTICAL_INCOMPATIBILITY,
                                 severity=self._determine_severity(confidence),
-                                principle_ids=[p.principle_id for p in conflict_principles],
+                                principle_ids=[
+                                    p.principle_id for p in conflict_principles
+                                ],
                                 confidence_score=confidence,
                                 description=f"Pattern-based conflict detected: {typical_conflict}",
                                 context=f"pattern_{pattern_name}",
@@ -472,15 +489,17 @@ class IntelligentConflictDetector:
                                     "typical_conflict": typical_conflict,
                                     "method": "pattern_matching",
                                 },
-                                recommended_strategy=pattern_data["resolution_strategies"][0],
+                                recommended_strategy=pattern_data[
+                                    "resolution_strategies"
+                                ][0],
                             )
                             conflicts.append(conflict)
 
         return conflicts
 
     async def _detect_priority_conflicts(
-        self, analyses: List[PrincipleAnalysis]
-    ) -> List[ConflictDetectionResult]:
+        self, analyses: list[PrincipleAnalysis]
+    ) -> list[ConflictDetectionResult]:
         """Detect conflicts based on priority weights and precedence."""
         conflicts = []
 
@@ -492,10 +511,14 @@ class IntelligentConflictDetector:
                 # Check for scope overlap
                 scope_overlap = len(
                     analysis_a.scope_keywords.intersection(analysis_b.scope_keywords)
-                ) / max(len(analysis_a.scope_keywords), len(analysis_b.scope_keywords), 1)
+                ) / max(
+                    len(analysis_a.scope_keywords), len(analysis_b.scope_keywords), 1
+                )
 
                 if scope_overlap > 0.3:  # Significant scope overlap
-                    priority_diff = abs(analysis_a.priority_weight - analysis_b.priority_weight)
+                    priority_diff = abs(
+                        analysis_a.priority_weight - analysis_b.priority_weight
+                    )
 
                     if priority_diff > 0.5:  # Significant priority difference
                         confidence = min(scope_overlap + (priority_diff / 2), 1.0)
@@ -524,8 +547,8 @@ class IntelligentConflictDetector:
         return conflicts
 
     async def _detect_scope_conflicts(
-        self, analyses: List[PrincipleAnalysis]
-    ) -> List[ConflictDetectionResult]:
+        self, analyses: list[PrincipleAnalysis]
+    ) -> list[ConflictDetectionResult]:
         """Detect conflicts based on scope overlap and incompatibility."""
         conflicts = []
 
@@ -535,8 +558,12 @@ class IntelligentConflictDetector:
                 analysis_a, analysis_b = analyses[i], analyses[j]
 
                 # Calculate scope overlap
-                common_keywords = analysis_a.scope_keywords.intersection(analysis_b.scope_keywords)
-                total_keywords = analysis_a.scope_keywords.union(analysis_b.scope_keywords)
+                common_keywords = analysis_a.scope_keywords.intersection(
+                    analysis_b.scope_keywords
+                )
+                total_keywords = analysis_a.scope_keywords.union(
+                    analysis_b.scope_keywords
+                )
 
                 if len(total_keywords) == 0:
                     continue
@@ -597,7 +624,9 @@ class IntelligentConflictDetector:
             logger.warning(f"Failed to calculate semantic similarity: {e}")
             return 0.0
 
-    def _detect_contradiction(self, statements_a: List[str], statements_b: List[str]) -> float:
+    def _detect_contradiction(
+        self, statements_a: list[str], statements_b: list[str]
+    ) -> float:
         """Detect contradictions between normative statements."""
         if not statements_a or not statements_b:
             return 0.0
@@ -632,8 +661,8 @@ class IntelligentConflictDetector:
         return contradiction_score / max(total_comparisons, 1)
 
     def _find_conflicting_principles(
-        self, analyses: List[PrincipleAnalysis], conflict_pattern: str
-    ) -> List[PrincipleAnalysis]:
+        self, analyses: list[PrincipleAnalysis], conflict_pattern: str
+    ) -> list[PrincipleAnalysis]:
         """Find principles that match a specific conflict pattern."""
         conflicting = []
         pattern_keywords = conflict_pattern.lower().split()
@@ -648,7 +677,7 @@ class IntelligentConflictDetector:
         return conflicting
 
     def _calculate_pattern_confidence(
-        self, principles: List[PrincipleAnalysis], pattern_data: Dict[str, Any]
+        self, principles: list[PrincipleAnalysis], pattern_data: dict[str, Any]
     ) -> float:
         """Calculate confidence score for pattern-based conflict detection."""
         if len(principles) < 2:
@@ -671,7 +700,7 @@ class IntelligentConflictDetector:
         return (base_confidence + keyword_confidence) / 2
 
     def _detect_stakeholder_conflicts(
-        self, impact_a: Dict[str, float], impact_b: Dict[str, float]
+        self, impact_a: dict[str, float], impact_b: dict[str, float]
     ) -> float:
         """Detect conflicts in stakeholder impacts."""
         conflict_score = 0.0
@@ -703,8 +732,8 @@ class IntelligentConflictDetector:
             return ConflictSeverity.LOW
 
     def _deduplicate_conflicts(
-        self, conflicts: List[ConflictDetectionResult]
-    ) -> List[ConflictDetectionResult]:
+        self, conflicts: list[ConflictDetectionResult]
+    ) -> list[ConflictDetectionResult]:
         """Remove duplicate conflicts based on principle IDs."""
         seen_combinations = set()
         unique_conflicts = []
@@ -720,11 +749,13 @@ class IntelligentConflictDetector:
         return unique_conflicts
 
     async def _calculate_priority_score(
-        self, conflict: ConflictDetectionResult, analyses: List[PrincipleAnalysis]
+        self, conflict: ConflictDetectionResult, analyses: list[PrincipleAnalysis]
     ) -> float:
         """Calculate priority score for conflict resolution."""
         # Get analyses for conflicted principles
-        conflict_analyses = [a for a in analyses if a.principle_id in conflict.principle_ids]
+        conflict_analyses = [
+            a for a in analyses if a.principle_id in conflict.principle_ids
+        ]
 
         if not conflict_analyses:
             return 0.0
@@ -760,7 +791,9 @@ class IntelligentConflictDetector:
         }.get(conflict.severity, 0.5)
 
         # Scope breadth (number of principles involved)
-        scope_score = min(len(conflict.principle_ids) / 5, 1.0)  # Normalize to max 5 principles
+        scope_score = min(
+            len(conflict.principle_ids) / 5, 1.0
+        )  # Normalize to max 5 principles
 
         # Calculate weighted priority score
         priority_score = (
@@ -777,7 +810,7 @@ class IntelligentConflictDetector:
         self,
         db: AsyncSession,
         conflict: ConflictDetectionResult,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
     ) -> ACConflictResolution:
         """Create a conflict resolution entry in the database."""
         from ..crud import create_ac_conflict_resolution
@@ -809,14 +842,15 @@ class IntelligentConflictDetector:
         self.detection_stats["false_positives"] += false_positives
 
         total_detections = (
-            self.detection_stats["conflicts_detected"] + self.detection_stats["false_positives"]
+            self.detection_stats["conflicts_detected"]
+            + self.detection_stats["false_positives"]
         )
         if total_detections > 0:
             self.detection_stats["accuracy_rate"] = (
                 self.detection_stats["conflicts_detected"] / total_detections
             )
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get current performance metrics for the conflict detector."""
         return {
             "detection_stats": self.detection_stats.copy(),

@@ -12,7 +12,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 
@@ -35,8 +35,8 @@ class GSServiceDependencyFixer:
         }
 
     async def test_service_connectivity(
-        self, service_name: str, service_config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, service_name: str, service_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Test connectivity to a specific service."""
         url = service_config["url"]
         health_url = f"{url}/health"
@@ -64,7 +64,7 @@ class GSServiceDependencyFixer:
                 "reachable": False,
             }
 
-    async def test_all_services(self) -> Dict[str, Any]:
+    async def test_all_services(self) -> dict[str, Any]:
         """Test connectivity to all services."""
         print("🔍 Testing connectivity to all services...")
 
@@ -109,7 +109,7 @@ class GSServiceDependencyFixer:
         print("🔄 Service restart required for configuration changes")
         return False
 
-    async def verify_gs_service_health(self) -> Dict[str, Any]:
+    async def verify_gs_service_health(self) -> dict[str, Any]:
         """Verify GS Service health after configuration update."""
         print("🏥 Verifying GS Service health...")
 
@@ -224,7 +224,7 @@ echo "✅ GS Service restart complete"
         print(f"📝 Created service registry config: {config_path}")
         return config_path
 
-    async def run_comprehensive_fix(self) -> Dict[str, Any]:
+    async def run_comprehensive_fix(self) -> dict[str, Any]:
         """Run comprehensive fix for GS Service dependencies."""
         print("🚀 Starting GS Service Dependency Fix")
         print("=" * 50)

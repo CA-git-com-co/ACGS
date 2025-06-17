@@ -3,7 +3,6 @@ Configuration settings for Research Infrastructure Service
 """
 
 from functools import lru_cache
-from typing import List, Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings
@@ -27,20 +26,28 @@ class Settings(BaseSettings):
     REDIS_URL: str = Field(default="redis://localhost:6379/2", env="RESEARCH_REDIS_URL")
 
     # CORS settings
-    ALLOWED_ORIGINS: List[str] = Field(
+    ALLOWED_ORIGINS: list[str] = Field(
         default=["http://localhost:3000", "http://localhost:8000"],
         env="ALLOWED_ORIGINS",
     )
 
     # Research automation settings
-    EXPERIMENT_TRACKING_ENABLED: bool = Field(default=True, env="EXPERIMENT_TRACKING_ENABLED")
+    EXPERIMENT_TRACKING_ENABLED: bool = Field(
+        default=True, env="EXPERIMENT_TRACKING_ENABLED"
+    )
     AUTO_ANALYSIS_ENABLED: bool = Field(default=True, env="AUTO_ANALYSIS_ENABLED")
-    REPRODUCIBILITY_CHECKS_ENABLED: bool = Field(default=True, env="REPRODUCIBILITY_CHECKS_ENABLED")
+    REPRODUCIBILITY_CHECKS_ENABLED: bool = Field(
+        default=True, env="REPRODUCIBILITY_CHECKS_ENABLED"
+    )
 
     # Data collection settings
-    MAX_EXPERIMENT_DURATION_HOURS: int = Field(default=24, env="MAX_EXPERIMENT_DURATION_HOURS")
+    MAX_EXPERIMENT_DURATION_HOURS: int = Field(
+        default=24, env="MAX_EXPERIMENT_DURATION_HOURS"
+    )
     DATA_RETENTION_DAYS: int = Field(default=365, env="DATA_RETENTION_DAYS")
-    MAX_CONCURRENT_EXPERIMENTS: int = Field(default=10, env="MAX_CONCURRENT_EXPERIMENTS")
+    MAX_CONCURRENT_EXPERIMENTS: int = Field(
+        default=10, env="MAX_CONCURRENT_EXPERIMENTS"
+    )
 
     # Analysis settings
     STATISTICAL_SIGNIFICANCE_THRESHOLD: float = Field(
@@ -53,7 +60,9 @@ class Settings(BaseSettings):
     AC_SERVICE_URL: str = Field(default="http://localhost:8001", env="AC_SERVICE_URL")
     GS_SERVICE_URL: str = Field(default="http://localhost:8004", env="GS_SERVICE_URL")
     FV_SERVICE_URL: str = Field(default="http://localhost:8003", env="FV_SERVICE_URL")
-    INTEGRITY_SERVICE_URL: str = Field(default="http://localhost:8002", env="INTEGRITY_SERVICE_URL")
+    INTEGRITY_SERVICE_URL: str = Field(
+        default="http://localhost:8002", env="INTEGRITY_SERVICE_URL"
+    )
     PGC_SERVICE_URL: str = Field(default="http://localhost:8005", env="PGC_SERVICE_URL")
 
     # Research data storage
@@ -61,15 +70,23 @@ class Settings(BaseSettings):
     EXPERIMENT_ARTIFACTS_PATH: str = Field(
         default="./experiment_artifacts", env="EXPERIMENT_ARTIFACTS_PATH"
     )
-    ANALYSIS_RESULTS_PATH: str = Field(default="./analysis_results", env="ANALYSIS_RESULTS_PATH")
+    ANALYSIS_RESULTS_PATH: str = Field(
+        default="./analysis_results", env="ANALYSIS_RESULTS_PATH"
+    )
 
     # Notification settings
-    SLACK_WEBHOOK_URL: Optional[str] = Field(default=None, env="SLACK_WEBHOOK_URL")
-    EMAIL_NOTIFICATIONS_ENABLED: bool = Field(default=False, env="EMAIL_NOTIFICATIONS_ENABLED")
+    SLACK_WEBHOOK_URL: str | None = Field(default=None, env="SLACK_WEBHOOK_URL")
+    EMAIL_NOTIFICATIONS_ENABLED: bool = Field(
+        default=False, env="EMAIL_NOTIFICATIONS_ENABLED"
+    )
 
     # Security settings
-    SECRET_KEY: str = Field(default_factory=lambda: os.urandom(32).hex(), env="SECRET_KEY")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30, env="ACCESS_TOKEN_EXPIRE_MINUTES")
+    SECRET_KEY: str = Field(
+        default_factory=lambda: os.urandom(32).hex(), env="SECRET_KEY"
+    )
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(
+        default=30, env="ACCESS_TOKEN_EXPIRE_MINUTES"
+    )
 
     # Logging configuration
     LOG_LEVEL: str = Field(default="INFO", env="LOG_LEVEL")
@@ -86,7 +103,7 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> Settings:
     """Get cached settings instance."""
     return Settings()

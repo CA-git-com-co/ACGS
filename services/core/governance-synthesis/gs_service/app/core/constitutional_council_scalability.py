@@ -7,9 +7,9 @@ Constitutional Council workflows in the ACGS-PGP framework.
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +40,10 @@ class CoEvolutionContext:
 
     mode: CoEvolutionMode
     urgency_level: str
-    stakeholder_groups: List[str]
-    time_constraints: Dict[str, int]
+    stakeholder_groups: list[str]
+    time_constraints: dict[str, int]
     decision_threshold: float
-    escalation_triggers: Dict[str, Any]
+    escalation_triggers: dict[str, Any]
 
 
 @dataclass
@@ -52,9 +52,9 @@ class ScalabilityAssessment:
 
     current_load: int
     capacity_utilization: float
-    bottlenecks: List[str]
-    performance_metrics: Dict[ScalabilityMetric, float]
-    recommendations: List[str]
+    bottlenecks: list[str]
+    performance_metrics: dict[ScalabilityMetric, float]
+    recommendations: list[str]
     scaling_needed: bool
 
 
@@ -66,7 +66,7 @@ class ConstitutionalCouncilScalabilityFramework:
     for constitutional governance at scale.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -99,7 +99,9 @@ class ConstitutionalCouncilScalabilityFramework:
             # Calculate current metrics
             current_load = len(self.active_sessions)
             max_capacity = self.config.get("max_concurrent_sessions", 100)
-            capacity_utilization = current_load / max_capacity if max_capacity > 0 else 0
+            capacity_utilization = (
+                current_load / max_capacity if max_capacity > 0 else 0
+            )
 
             # Identify bottlenecks
             bottlenecks = []
@@ -145,7 +147,9 @@ class ConstitutionalCouncilScalabilityFramework:
                 scaling_needed=True,
             )
 
-    async def initiate_co_evolution(self, context: CoEvolutionContext) -> Dict[str, Any]:
+    async def initiate_co_evolution(
+        self, context: CoEvolutionContext
+    ) -> dict[str, Any]:
         """
         Initiate co-evolution process for Constitutional Council.
 
@@ -165,7 +169,7 @@ class ConstitutionalCouncilScalabilityFramework:
             session = {
                 "session_id": session_id,
                 "mode": context.mode.value,
-                "started_at": datetime.now(timezone.utc),
+                "started_at": datetime.now(UTC),
                 "context": context,
                 "config": mode_config,
                 "status": "active",
@@ -185,14 +189,16 @@ class ConstitutionalCouncilScalabilityFramework:
             elif context.mode == CoEvolutionMode.CONSENSUS:
                 await self._setup_consensus_co_evolution(session)
 
-            logger.info(f"Co-evolution session {session_id} initiated in {context.mode.value} mode")
+            logger.info(
+                f"Co-evolution session {session_id} initiated in {context.mode.value} mode"
+            )
             return session
 
         except Exception as e:
             logger.error(f"Error initiating co-evolution: {e}")
             return {"error": str(e), "session_id": None}
 
-    async def _setup_rapid_co_evolution(self, session: Dict[str, Any]):
+    async def _setup_rapid_co_evolution(self, session: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -206,7 +212,7 @@ class ConstitutionalCouncilScalabilityFramework:
             }
         )
 
-    async def _setup_emergency_co_evolution(self, session: Dict[str, Any]):
+    async def _setup_emergency_co_evolution(self, session: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -220,7 +226,7 @@ class ConstitutionalCouncilScalabilityFramework:
             }
         )
 
-    async def _setup_consensus_co_evolution(self, session: Dict[str, Any]):
+    async def _setup_consensus_co_evolution(self, session: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -242,7 +248,8 @@ class ConstitutionalCouncilScalabilityFramework:
                 [
                     h
                     for h in self.performance_history
-                    if h.get("timestamp", datetime.min) > datetime.now() - timedelta(hours=1)
+                    if h.get("timestamp", datetime.min)
+                    > datetime.now() - timedelta(hours=1)
                 ]
             )
             return float(recent_decisions)
@@ -255,7 +262,9 @@ class ConstitutionalCouncilScalabilityFramework:
             if not self.performance_history:
                 return 0.0
 
-            response_times = [h.get("response_time", 0) for h in self.performance_history[-10:]]
+            response_times = [
+                h.get("response_time", 0) for h in self.performance_history[-10:]
+            ]
             return sum(response_times) / len(response_times) if response_times else 0.0
         except Exception:
             return 0.0
@@ -267,7 +276,11 @@ class ConstitutionalCouncilScalabilityFramework:
                 return 0.0
 
             consensus_decisions = len(
-                [h for h in self.performance_history[-20:] if h.get("consensus_achieved", False)]
+                [
+                    h
+                    for h in self.performance_history[-20:]
+                    if h.get("consensus_achieved", False)
+                ]
             )
             total_decisions = len(self.performance_history[-20:])
             return consensus_decisions / total_decisions if total_decisions > 0 else 0.0
@@ -284,7 +297,9 @@ class ConstitutionalCouncilScalabilityFramework:
                 h.get("participation_rate", 0) for h in self.performance_history[-10:]
             ]
             return (
-                sum(participation_rates) / len(participation_rates) if participation_rates else 0.0
+                sum(participation_rates) / len(participation_rates)
+                if participation_rates
+                else 0.0
             )
         except Exception:
             return 0.0
@@ -295,7 +310,9 @@ class ConstitutionalCouncilScalabilityFramework:
             if not self.performance_history:
                 return 0.0
 
-            quality_scores = [h.get("quality_score", 0) for h in self.performance_history[-10:]]
+            quality_scores = [
+                h.get("quality_score", 0) for h in self.performance_history[-10:]
+            ]
             return sum(quality_scores) / len(quality_scores) if quality_scores else 0.0
         except Exception:
             return 0.0
@@ -303,9 +320,9 @@ class ConstitutionalCouncilScalabilityFramework:
     def _generate_scaling_recommendations(
         self,
         capacity_utilization: float,
-        bottlenecks: List[str],
-        performance_metrics: Dict[ScalabilityMetric, float],
-    ) -> List[str]:
+        bottlenecks: list[str],
+        performance_metrics: dict[ScalabilityMetric, float],
+    ) -> list[str]:
         """Generate scaling recommendations based on current state."""
         recommendations = []
 
@@ -318,15 +335,20 @@ class ConstitutionalCouncilScalabilityFramework:
         if performance_metrics.get(ScalabilityMetric.CONSENSUS_RATE, 0) < 0.6:
             recommendations.append("Improve consensus-building mechanisms")
 
-        if performance_metrics.get(ScalabilityMetric.STAKEHOLDER_PARTICIPATION, 0) < 0.7:
+        if (
+            performance_metrics.get(ScalabilityMetric.STAKEHOLDER_PARTICIPATION, 0)
+            < 0.7
+        ):
             recommendations.append("Enhance stakeholder engagement strategies")
 
         if not recommendations:
-            recommendations.append("Current performance is within acceptable parameters")
+            recommendations.append(
+                "Current performance is within acceptable parameters"
+            )
 
         return recommendations
 
-    def _initialize_co_evolution_modes(self) -> Dict[CoEvolutionMode, Dict[str, Any]]:
+    def _initialize_co_evolution_modes(self) -> dict[CoEvolutionMode, dict[str, Any]]:
         """Initialize co-evolution mode configurations."""
         return {
             CoEvolutionMode.NORMAL: {
@@ -361,7 +383,7 @@ class ConstitutionalCouncilScalabilityFramework:
             },
         }
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration for scalability framework."""
         return {
             "max_concurrent_sessions": 100,

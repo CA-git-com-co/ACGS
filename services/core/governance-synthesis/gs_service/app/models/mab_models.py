@@ -6,7 +6,7 @@ and optimization history in the ACGS-PGP database.
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import (
     JSON,
@@ -41,13 +41,17 @@ class PromptTemplateModel(Base):
 
     # Metadata
     metadata_json = Column(JSON, default={})
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
-    created_by_user_id = Column(Integer, nullable=True)  # Reference to user who created template
+    created_by_user_id = Column(
+        Integer, nullable=True
+    )  # Reference to user who created template
 
     # Performance tracking
     total_uses = Column(Integer, default=0)
@@ -100,10 +104,14 @@ class PromptPerformanceModel(Base):
 
     # LLM output metadata
     llm_response_length = Column(Integer, nullable=True)
-    llm_response_hash = Column(String(64), nullable=True)  # SHA-256 hash for deduplication
+    llm_response_hash = Column(
+        String(64), nullable=True
+    )  # SHA-256 hash for deduplication
 
     # Timing
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
     response_time_ms = Column(Integer, nullable=True)
 
     # Relationships
@@ -124,8 +132,12 @@ class OptimizationHistoryModel(Base):
     )
 
     # MAB algorithm details
-    algorithm_type = Column(String(50), nullable=False)  # thompson_sampling, ucb, epsilon_greedy
-    selection_reason = Column(String(255), nullable=True)  # Why this template was selected
+    algorithm_type = Column(
+        String(50), nullable=False
+    )  # thompson_sampling, ucb, epsilon_greedy
+    selection_reason = Column(
+        String(255), nullable=True
+    )  # Why this template was selected
 
     # Performance at time of selection
     composite_score = Column(Float, nullable=False)
@@ -141,11 +153,13 @@ class OptimizationHistoryModel(Base):
 
     # Timing
     timestamp = Column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), index=True
     )
 
     # Relationships
-    template = relationship("PromptTemplateModel", back_populates="optimization_history")
+    template = relationship(
+        "PromptTemplateModel", back_populates="optimization_history"
+    )
 
 
 class MABConfigurationModel(Base):
@@ -176,11 +190,13 @@ class MABConfigurationModel(Base):
 
     # Status and metadata
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
     created_by_user_id = Column(Integer, nullable=True)
 
@@ -194,11 +210,17 @@ class MABSessionModel(Base):
     __tablename__ = "mab_sessions"
 
     id = Column(Integer, primary_key=True, index=True)
-    session_id = Column(String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    session_id = Column(
+        String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4())
+    )
 
     # Session metadata
-    config_name = Column(String(255), ForeignKey("mab_configurations.config_name"), nullable=False)
-    start_time = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    config_name = Column(
+        String(255), ForeignKey("mab_configurations.config_name"), nullable=False
+    )
+    start_time = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
     end_time = Column(DateTime(timezone=True), nullable=True)
 
     # Session statistics
@@ -240,7 +262,9 @@ class PromptTemplateVersionModel(Base):
     a_b_test_results = Column(JSON, default={})
 
     # Metadata
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
     created_by_user_id = Column(Integer, nullable=True)
     is_current = Column(Boolean, default=False)
 
@@ -257,8 +281,12 @@ class RewardFunctionModel(Base):
     function_name = Column(String(255), unique=True, nullable=False)
 
     # Function definition
-    function_code = Column(Text, nullable=False)  # Python code for custom reward function
-    function_type = Column(String(50), default="composite")  # composite, semantic, quality, etc.
+    function_code = Column(
+        Text, nullable=False
+    )  # Python code for custom reward function
+    function_type = Column(
+        String(50), default="composite"
+    )  # composite, semantic, quality, etc.
 
     # Configuration
     weight_config = Column(JSON, default={})
@@ -270,11 +298,13 @@ class RewardFunctionModel(Base):
     validation_results = Column(JSON, default={})
 
     # Metadata
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
     updated_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
     created_by_user_id = Column(Integer, nullable=True)
     description = Column(Text, nullable=True)

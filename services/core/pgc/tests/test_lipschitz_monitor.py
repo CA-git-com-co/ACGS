@@ -11,15 +11,11 @@ Tests cover:
 - Recalibration mechanisms
 """
 
-import asyncio
 import os
 
 # Import the module under test
 import sys
-import time
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import UTC, datetime
 
 import numpy as np
 import pytest
@@ -120,7 +116,7 @@ class TestLipschitzSample:
         # sha256: func_hash
         """Test Lipschitz sample creation."""
         sample = LipschitzSample(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             lipschitz_constant=0.75,
             policy_distance=0.3,
             principle_distance=0.4,
@@ -145,7 +141,7 @@ class TestStabilityAlert:
         """Test stability alert creation."""
         alert = StabilityAlert(
             alert_id="WARN-123-0.750",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             severity=AlertSeverity.WARNING,
             lipschitz_value=0.75,
             threshold=0.7,
@@ -313,7 +309,9 @@ class TestLipschitzMonitor:
         # ensures: Correct function execution
         # sha256: func_hash
         """Test policy state update."""
-        result = await monitor.update_policy_state("POL-TEST", "Test policy content", version=2)
+        result = await monitor.update_policy_state(
+            "POL-TEST", "Test policy content", version=2
+        )
 
         assert result is True
         assert "POL-TEST" in monitor.policy_states
@@ -445,7 +443,9 @@ class TestLipschitzMonitor:
         """Test stability alert generation."""
         # Setup data
         for policy_state in sample_policy_states:
-            await monitor.update_policy_state(policy_state.policy_id, policy_state.content)
+            await monitor.update_policy_state(
+                policy_state.policy_id, policy_state.content
+            )
 
         for principle_state in sample_principle_states:
             await monitor.update_principle_state(
@@ -454,7 +454,7 @@ class TestLipschitzMonitor:
 
         # Create a sample that should trigger warning
         warning_sample = LipschitzSample(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             lipschitz_constant=0.75,  # Above warning threshold (0.7)
             policy_distance=0.3,
             principle_distance=0.4,
@@ -484,7 +484,9 @@ class TestLipschitzMonitor:
         """Test critical alert generation."""
         # Setup data
         for policy_state in sample_policy_states:
-            await monitor.update_policy_state(policy_state.policy_id, policy_state.content)
+            await monitor.update_policy_state(
+                policy_state.policy_id, policy_state.content
+            )
 
         for principle_state in sample_principle_states:
             await monitor.update_principle_state(
@@ -493,7 +495,7 @@ class TestLipschitzMonitor:
 
         # Create a sample that should trigger critical alert
         critical_sample = LipschitzSample(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             lipschitz_constant=0.85,  # Above critical threshold (0.8)
             policy_distance=0.5,
             principle_distance=0.6,
@@ -521,9 +523,9 @@ class TestLipschitzMonitor:
         # sha256: func_hash
         """Test automatic recalibration trigger."""
         # Add some samples to the window
-        for i in range(5):
+        for _i in range(5):
             sample = LipschitzSample(
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 lipschitz_constant=0.5,
                 policy_distance=0.3,
                 principle_distance=0.4,
@@ -536,7 +538,7 @@ class TestLipschitzMonitor:
 
         # Create sample that triggers recalibration
         recalibration_sample = LipschitzSample(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             lipschitz_constant=0.9,  # Above recalibration threshold (0.85)
             policy_distance=0.7,
             principle_distance=0.8,
@@ -548,7 +550,10 @@ class TestLipschitzMonitor:
         await monitor._trigger_recalibration(recalibration_sample)
 
         # Should have triggered recalibration
-        assert monitor.monitoring_stats["recalibration_count"] == initial_recalibration_count + 1
+        assert (
+            monitor.monitoring_stats["recalibration_count"]
+            == initial_recalibration_count + 1
+        )
         assert len(monitor.lipschitz_samples) == 0  # Window should be cleared
 
     def test_get_current_stability_status_no_data(self, monitor):
@@ -570,7 +575,7 @@ class TestLipschitzMonitor:
         """Test stability status with data."""
         # Add sample data
         sample = LipschitzSample(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             lipschitz_constant=0.65,
             policy_distance=0.3,
             principle_distance=0.4,
@@ -578,7 +583,9 @@ class TestLipschitzMonitor:
             stability_level=StabilityLevel.MODERATE,
         )
         monitor.lipschitz_samples.append(sample)
-        monitor.policy_states["POL-001"] = PolicyState("POL-001", "content", np.array([1, 2, 3]))
+        monitor.policy_states["POL-001"] = PolicyState(
+            "POL-001", "content", np.array([1, 2, 3])
+        )
         monitor.principle_states["PRIN-001"] = PrincipleState(
             "PRIN-001", "content", np.array([1, 2, 3])
         )
@@ -662,4 +669,6 @@ class TestLipschitzMonitorIntegration:
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-v", "--cov=lipschitz_monitor", "--cov-report=term-missing"])
+    pytest.main(
+        [__file__, "-v", "--cov=lipschitz_monitor", "--cov-report=term-missing"]
+    )

@@ -8,7 +8,7 @@ import asyncio
 import logging
 import sys
 import time
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 
@@ -30,7 +30,7 @@ class HttpxValidationSuite:
         }
         self.results = {}
 
-    async def validate_basic_connectivity(self) -> Dict[str, bool]:
+    async def validate_basic_connectivity(self) -> dict[str, bool]:
         """Test basic HTTP connectivity with new httpx version"""
         logger.info("🔍 Testing basic HTTP connectivity...")
 
@@ -53,7 +53,7 @@ class HttpxValidationSuite:
 
         return results
 
-    async def validate_ssl_configuration(self) -> Dict[str, Any]:
+    async def validate_ssl_configuration(self) -> dict[str, Any]:
         """Validate SSL/TLS configuration works correctly"""
         logger.info("🔒 Testing SSL/TLS configuration...")
 
@@ -78,7 +78,7 @@ class HttpxValidationSuite:
 
         return ssl_tests
 
-    async def validate_timeout_handling(self) -> Dict[str, Any]:
+    async def validate_timeout_handling(self) -> dict[str, Any]:
         """Test timeout configuration and handling"""
         logger.info("⏱️ Testing timeout handling...")
 
@@ -109,7 +109,7 @@ class HttpxValidationSuite:
 
         return timeout_tests
 
-    async def validate_connection_pooling(self) -> Dict[str, Any]:
+    async def validate_connection_pooling(self) -> dict[str, Any]:
         """Test connection pooling and limits"""
         logger.info("🔗 Testing connection pooling...")
 
@@ -122,7 +122,7 @@ class HttpxValidationSuite:
             async with httpx.AsyncClient(limits=limits) as client:
                 # Make multiple concurrent requests
                 tasks = []
-                for i in range(10):
+                for _i in range(10):
                     task = client.get("https://httpbin.org/get")
                     tasks.append(task)
 
@@ -149,7 +149,7 @@ class HttpxValidationSuite:
 
         return pool_tests
 
-    async def run_full_validation(self) -> Dict[str, Any]:
+    async def run_full_validation(self) -> dict[str, Any]:
         """Run complete validation suite"""
         logger.info("🚀 Starting httpx upgrade validation...")
 
@@ -181,9 +181,9 @@ class HttpxValidationSuite:
         total_tests = 0
         successful_tests = 0
 
-        for test_category, test_results in validation_results["tests"].items():
+        for _test_category, test_results in validation_results["tests"].items():
             if isinstance(test_results, dict):
-                for test_name, test_result in test_results.items():
+                for _test_name, test_result in test_results.items():
                     total_tests += 1
                     if (
                         isinstance(test_result, dict)

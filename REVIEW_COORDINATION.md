@@ -149,7 +149,7 @@ find applications/shared -name "*.tsx" -o -name "*.ts"
 ls -la applications/governance-dashboard/src/services/
 
 # Check legacy-frontend services
-ls -la applications/legacy-frontend/src/services/
+ls -la applications/legacy-applications/governance-dashboard/src/services/
 ```
 
 ## 📝 Review Submission Guidelines

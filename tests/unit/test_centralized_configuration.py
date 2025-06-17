@@ -250,7 +250,7 @@ OPENAI_API_KEY=test-openai-key
 
         # Should redact API keys
         if "ai_api_keys" in config_dict:
-            for provider, key in config_dict["ai_api_keys"].items():
+            for _provider, key in config_dict["ai_api_keys"].items():
                 if key is not None:
                     assert key == "***REDACTED***"
 

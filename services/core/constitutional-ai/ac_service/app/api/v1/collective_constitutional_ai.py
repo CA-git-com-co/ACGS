@@ -6,7 +6,7 @@ bias evaluation, and collective input aggregation using the CCAI methodology.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
@@ -31,14 +31,18 @@ class CreatePolisConversationRequest(BaseModel):
 
     topic: str = Field(..., description="Conversation topic")
     description: str = Field(..., description="Detailed description")
-    target_participants: int = Field(default=100, description="Target number of participants")
+    target_participants: int = Field(
+        default=100, description="Target number of participants"
+    )
 
 
 class BiasEvaluationRequest(BaseModel):
     """Request model for bias evaluation."""
 
-    principle_text: str = Field(..., description="Constitutional principle text to evaluate")
-    categories: Optional[List[BiasCategory]] = Field(
+    principle_text: str = Field(
+        ..., description="Constitutional principle text to evaluate"
+    )
+    categories: list[BiasCategory] | None = Field(
         default=None, description="Specific bias categories to evaluate"
     )
 
@@ -69,9 +73,9 @@ class BiasEvaluationResponse(BaseModel):
     category: str
     bias_score: float
     confidence: float
-    examples: List[str]
-    recommendations: List[str]
-    baseline_comparison: Optional[float] = None
+    examples: list[str]
+    recommendations: list[str]
+    baseline_comparison: float | None = None
 
 
 class DemocraticPrincipleResponse(BaseModel):
@@ -82,7 +86,7 @@ class DemocraticPrincipleResponse(BaseModel):
     description: str
     legitimacy_level: str
     stakeholder_agreement: float
-    bias_evaluation_summary: Dict[str, Any]
+    bias_evaluation_summary: dict[str, Any]
     input_count: int
     created_at: str
 
@@ -126,7 +130,7 @@ async def create_polis_conversation(
         )
 
 
-@router.post("/bias-evaluation", response_model=List[BiasEvaluationResponse])
+@router.post("/bias-evaluation", response_model=list[BiasEvaluationResponse])
 async def evaluate_bias(
     request: BiasEvaluationRequest,
     current_user_id: str = Depends(get_current_user_id),
@@ -226,7 +230,9 @@ async def synthesize_democratic_principle(
         )
 
 
-@router.get("/conversations/{conversation_id}", response_model=PolisConversationResponse)
+@router.get(
+    "/conversations/{conversation_id}", response_model=PolisConversationResponse
+)
 async def get_polis_conversation(
     conversation_id: str,
     current_user_id: str = Depends(get_current_user_id),

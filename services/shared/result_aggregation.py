@@ -9,9 +9,9 @@ import statistics
 import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from fastapi import WebSocket, WebSocketDisconnect
 
@@ -43,16 +43,20 @@ class ValidationResult:
 
     task_id: str
     validator_id: str
-    result: Dict[str, Any]
+    result: dict[str, Any]
     confidence_score: float
     execution_time_ms: float
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def is_valid(self) -> bool:
         """Check if result is valid."""
-        return self.confidence_score > 0.0 and self.result is not None and "status" in self.result
+        return (
+            self.confidence_score > 0.0
+            and self.result is not None
+            and "status" in self.result
+        )
 
 
 @dataclass
@@ -61,21 +65,21 @@ class AggregatedResult:
 
     task_id: str
     aggregation_strategy: AggregationStrategy
-    final_result: Dict[str, Any]
+    final_result: dict[str, Any]
     confidence_score: float
-    individual_results: List[ValidationResult]
+    individual_results: list[ValidationResult]
     consensus_level: float
-    conflicts_detected: List[str] = field(default_factory=list)
-    resolution_method: Optional[ConflictResolution] = None
+    conflicts_detected: list[str] = field(default_factory=list)
+    resolution_method: ConflictResolution | None = None
     aggregation_time_ms: float = 0.0
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     @property
     def total_validators(self) -> int:
         return len(self.individual_results)
 
     @property
-    def valid_results(self) -> List[ValidationResult]:
+    def valid_results(self) -> list[ValidationResult]:
         return [r for r in self.individual_results if r.is_valid]
 
     @property
@@ -103,7 +107,7 @@ class ByzantineFaultTolerantAggregator:
 
     def aggregate_results(
         self,
-        results: List[ValidationResult],
+        results: list[ValidationResult],
         strategy: AggregationStrategy = AggregationStrategy.BYZANTINE_FAULT_TOLERANT,
     ) -> AggregatedResult:
         """Aggregate multiple validation results."""
@@ -134,10 +138,14 @@ class ByzantineFaultTolerantAggregator:
         aggregated.aggregation_time_ms = (time.time() - start_time) * 1000
         return aggregated
 
-    def _majority_vote_aggregation(self, results: List[ValidationResult]) -> AggregatedResult:
+    def _majority_vote_aggregation(
+        self, results: list[ValidationResult]
+    ) -> AggregatedResult:
         """Aggregate using majority vote."""
         if not results:
-            return self._create_empty_result("no_results", AggregationStrategy.MAJORITY_VOTE)
+            return self._create_empty_result(
+                "no_results", AggregationStrategy.MAJORITY_VOTE
+            )
 
         # Count votes for each status
         status_votes = Counter()
@@ -175,30 +183,38 @@ class ByzantineFaultTolerantAggregator:
             consensus_level=consensus_level,
         )
 
-    def _weighted_average_aggregation(self, results: List[ValidationResult]) -> AggregatedResult:
+    def _weighted_average_aggregation(
+        self, results: list[ValidationResult]
+    ) -> AggregatedResult:
         """Aggregate using confidence-weighted average."""
         if not results:
-            return self._create_empty_result("no_results", AggregationStrategy.WEIGHTED_AVERAGE)
+            return self._create_empty_result(
+                "no_results", AggregationStrategy.WEIGHTED_AVERAGE
+            )
 
         # Calculate weighted averages for numeric fields
         total_weight = sum(r.confidence_score for r in results)
 
         if total_weight == 0:
-            return self._create_empty_result("zero_weight", AggregationStrategy.WEIGHTED_AVERAGE)
+            return self._create_empty_result(
+                "zero_weight", AggregationStrategy.WEIGHTED_AVERAGE
+            )
 
         # Aggregate numeric scores
         weighted_scores = {}
         for result in results:
             weight = result.confidence_score / total_weight
             for key, value in result.result.items():
-                if isinstance(value, (int, float)):
+                if isinstance(value, int | float):
                     if key not in weighted_scores:
                         weighted_scores[key] = 0.0
                     weighted_scores[key] += value * weight
 
         # Calculate consensus level based on confidence variance
         confidences = [r.confidence_score for r in results]
-        confidence_variance = statistics.variance(confidences) if len(confidences) > 1 else 0.0
+        confidence_variance = (
+            statistics.variance(confidences) if len(confidences) > 1 else 0.0
+        )
         consensus_level = max(0.0, 1.0 - confidence_variance)
 
         final_result = {
@@ -219,7 +235,7 @@ class ByzantineFaultTolerantAggregator:
         )
 
     def _byzantine_fault_tolerant_aggregation(
-        self, results: List[ValidationResult]
+        self, results: list[ValidationResult]
     ) -> AggregatedResult:
         """Byzantine fault-tolerant aggregation with outlier detection."""
         if not results:
@@ -270,13 +286,15 @@ class ByzantineFaultTolerantAggregator:
         return aggregated
 
     def _consensus_threshold_aggregation(
-        self, results: List[ValidationResult], threshold: float = 0.67
+        self, results: list[ValidationResult], threshold: float = 0.67
     ) -> AggregatedResult:
         """Aggregate requiring consensus threshold."""
         majority_result = self._majority_vote_aggregation(results)
 
         if majority_result.consensus_level >= threshold:
-            majority_result.aggregation_strategy = AggregationStrategy.CONSENSUS_THRESHOLD
+            majority_result.aggregation_strategy = (
+                AggregationStrategy.CONSENSUS_THRESHOLD
+            )
             return majority_result
         else:
             # Consensus not reached
@@ -297,10 +315,14 @@ class ByzantineFaultTolerantAggregator:
                 conflicts_detected=["consensus_threshold_not_met"],
             )
 
-    def _first_valid_aggregation(self, results: List[ValidationResult]) -> AggregatedResult:
+    def _first_valid_aggregation(
+        self, results: list[ValidationResult]
+    ) -> AggregatedResult:
         """Return first valid result (for fast response)."""
         if not results:
-            return self._create_empty_result("no_results", AggregationStrategy.FIRST_VALID)
+            return self._create_empty_result(
+                "no_results", AggregationStrategy.FIRST_VALID
+            )
 
         # Sort by timestamp to get truly first result
         sorted_results = sorted(results, key=lambda r: r.timestamp)
@@ -315,7 +337,9 @@ class ByzantineFaultTolerantAggregator:
             consensus_level=1.0 / len(results),  # Only one result used
         )
 
-    def _create_empty_result(self, reason: str, strategy: AggregationStrategy) -> AggregatedResult:
+    def _create_empty_result(
+        self, reason: str, strategy: AggregationStrategy
+    ) -> AggregatedResult:
         """Create empty result for error cases."""
         return AggregatedResult(
             task_id="unknown",
@@ -335,8 +359,8 @@ class WebSocketStreamer:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.active_connections: Set[WebSocket] = set()
-        self.connection_metadata: Dict[WebSocket, Dict[str, Any]] = {}
+        self.active_connections: set[WebSocket] = set()
+        self.connection_metadata: dict[WebSocket, dict[str, Any]] = {}
 
     async def connect(self, websocket: WebSocket, client_id: str = None) -> None:
         """Accept WebSocket connection."""
@@ -344,7 +368,7 @@ class WebSocketStreamer:
         self.active_connections.add(websocket)
         self.connection_metadata[websocket] = {
             "client_id": client_id or f"client_{int(time.time() * 1000)}",
-            "connected_at": datetime.now(timezone.utc),
+            "connected_at": datetime.now(UTC),
             "message_count": 0,
         }
         logger.info(f"WebSocket connected: {client_id}")
@@ -361,7 +385,7 @@ class WebSocketStreamer:
         task_id: str,
         progress: float,
         status: str,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Send progress update to all connected clients."""
         message = {
@@ -369,18 +393,18 @@ class WebSocketStreamer:
             "task_id": task_id,
             "progress": progress,
             "status": status,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "details": details or {},
         }
 
         await self._broadcast_message(message)
 
-    async def send_alert(self, alert_type: str, details: Dict[str, Any]) -> None:
+    async def send_alert(self, alert_type: str, details: dict[str, Any]) -> None:
         """Send alert message to all connected clients."""
         message = {
             "type": "alert",
             "alert_type": alert_type,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "details": details,
         }
 
@@ -418,12 +442,12 @@ class WebSocketStreamer:
             "failed_tasks": failed_tasks,
             "success_rate": completed_tasks / total_tasks if total_tasks > 0 else 0.0,
             "execution_time_ms": execution_time_ms,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         await self._broadcast_message(message)
 
-    async def _broadcast_message(self, message: Dict[str, Any]) -> None:
+    async def _broadcast_message(self, message: dict[str, Any]) -> None:
         """Broadcast message to all connected clients."""
         if not self.active_connections:
             return
@@ -445,10 +469,11 @@ class WebSocketStreamer:
         for websocket in disconnected:
             await self.disconnect(websocket)
 
-    async def get_connection_stats(self) -> Dict[str, Any]:
+    async def get_connection_stats(self) -> dict[str, Any]:
         """Get WebSocket connection statistics."""
         total_messages = sum(
-            metadata.get("message_count", 0) for metadata in self.connection_metadata.values()
+            metadata.get("message_count", 0)
+            for metadata in self.connection_metadata.values()
         )
 
         return {

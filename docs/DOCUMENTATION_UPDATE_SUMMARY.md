@@ -57,16 +57,16 @@ The project now follows a blockchain-first structure:
 
 The following path mappings have been updated throughout the documentation:
 
-- `src/backend/ac_service/` → `services/core/constitutional-ai/`
-- `src/backend/gs_service/` → `services/core/governance-synthesis/`
-- `src/backend/pgc_service/` → `services/core/policy-governance/`
-- `src/backend/fv_service/` → `services/core/formal-verification/`
-- `src/backend/auth_service/` → `services/platform/authentication/`
-- `src/backend/integrity_service/` → `services/platform/integrity/`
-- `src/backend/shared/` → `services/shared/`
-- `src/frontend/` → `applications/legacy-frontend/`
-- `quantumagi_core/` → `blockchain/`
-- `src/alphaevolve_gs_engine/` → `integrations/alphaevolve-engine/`
+- `services/core/constitutional-ai/ac_service/` → `services/core/constitutional-ai/`
+- `services/core/governance-synthesis/gs_service/` → `services/core/governance-synthesis/`
+- `services/platform/pgc/pgc_service/` → `services/core/policy-governance/`
+- `services/core/formal-verification/fv_service/` → `services/core/formal-verification/`
+- `services/core/auth/auth_service/` → `services/platform/authentication/`
+- `services/platform/integrity/integrity_service/` → `services/platform/integrity/`
+- `services/shared/` → `services/shared/`
+- `applications/legacy-applications/governance-dashboard/` → `applications/legacy-applications/governance-dashboard/`
+- `blockchain/` → `blockchain/`
+- `integrations/alphaevolve-engine/` → `integrations/alphaevolve-engine/`
 
 ## New Technology Integrations
 
@@ -80,7 +80,7 @@ The following path mappings have been updated throughout the documentation:
 
 **Quantumagi Core** (vProduction)
 - **Purpose**: Constitutional governance on-chain
-- **Location**: `blockchain/programs/quantumagi-core/`
+- **Location**: `blockchain/programs/blockchain/`
 
 **NVIDIA Data Flywheel** (vLatest)
 - **Purpose**: AI model optimization
@@ -103,7 +103,7 @@ The following path mappings have been updated throughout the documentation:
 
 ## Files Requiring Manual Review
 
-**docker-compose.yml** (Priority: Medium)
+**infrastructure/docker/docker-compose.yml** (Priority: Medium)
 - Service build contexts may need updating
 
 **.github/workflows/*.yml** (Priority: High)

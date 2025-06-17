@@ -8,8 +8,8 @@ with the existing Constitutional Council infrastructure.
 
 import logging
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 try:
     from langgraph.graph import END, START, StateGraph
@@ -51,18 +51,20 @@ class WorkflowManager:
         # sha256: func_hash
         self.config = get_langgraph_config()
         self.council_config = ConstitutionalCouncilConfig()
-        self.active_workflows: Dict[str, Dict[str, Any]] = {}
-        self.workflow_graphs: Dict[str, Any] = {}
+        self.active_workflows: dict[str, dict[str, Any]] = {}
+        self.workflow_graphs: dict[str, Any] = {}
 
         if not LANGGRAPH_AVAILABLE:
-            logger.warning("LangGraph not available. Workflow functionality will be limited.")
+            logger.warning(
+                "LangGraph not available. Workflow functionality will be limited."
+            )
 
     async def initialize_workflow(
         self,
         workflow_type: str,
-        initial_data: Dict[str, Any],
-        user_id: Optional[str] = None,
-        session_id: Optional[str] = None,
+        initial_data: dict[str, Any],
+        user_id: str | None = None,
+        session_id: str | None = None,
     ) -> str:
         """
         Initialize a new LangGraph workflow.
@@ -91,7 +93,9 @@ class WorkflowManager:
 
         # Initialize workflow state based on type
         if workflow_type == "constitutional_council":
-            initial_state = self._create_constitutional_council_state(initial_data, metadata)
+            initial_state = self._create_constitutional_council_state(
+                initial_data, metadata
+            )
         else:
             raise ValueError(f"Unknown workflow type: {workflow_type}")
 
@@ -100,7 +104,7 @@ class WorkflowManager:
             "type": workflow_type,
             "state": initial_state,
             "metadata": metadata,
-            "created_at": datetime.now(timezone.utc),
+            "created_at": datetime.now(UTC),
             "status": WorkflowStatus.PENDING,
         }
 
@@ -108,7 +112,7 @@ class WorkflowManager:
         return workflow_id
 
     def _create_constitutional_council_state(
-        self, initial_data: Dict[str, Any], metadata: Dict[str, Any]
+        self, initial_data: dict[str, Any], metadata: dict[str, Any]
     ) -> ConstitutionalCouncilState:
         """Create initial state for Constitutional Council workflow."""
         return ConstitutionalCouncilState(
@@ -144,7 +148,7 @@ class WorkflowManager:
             automated_processing=self.council_config.enable_automated_analysis,
         )
 
-    async def get_workflow_status(self, workflow_id: str) -> Optional[Dict[str, Any]]:
+    async def get_workflow_status(self, workflow_id: str) -> dict[str, Any] | None:
         """
         Get the current status of a workflow.
 
@@ -169,11 +173,15 @@ class WorkflowManager:
             "created_at": workflow["created_at"].isoformat(),
             "current_phase": workflow["state"].get("current_phase"),
             "refinement_iterations": workflow["state"].get("refinement_iterations", 0),
-            "requires_human_review": workflow["state"].get("escalation_required", False),
+            "requires_human_review": workflow["state"].get(
+                "escalation_required", False
+            ),
             "metadata": workflow["metadata"],
         }
 
-    async def update_workflow_state(self, workflow_id: str, state_updates: Dict[str, Any]) -> bool:
+    async def update_workflow_state(
+        self, workflow_id: str, state_updates: dict[str, Any]
+    ) -> bool:
         """
         Update the state of an active workflow.
 
@@ -195,7 +203,7 @@ class WorkflowManager:
             workflow["state"].update(state_updates)
 
             # Update metadata
-            workflow["metadata"]["updated_at"] = datetime.now(timezone.utc).isoformat()
+            workflow["metadata"]["updated_at"] = datetime.now(UTC).isoformat()
 
             # Update status if provided
             if "status" in state_updates:
@@ -209,8 +217,8 @@ class WorkflowManager:
             return False
 
     async def list_active_workflows(
-        self, workflow_type: Optional[str] = None, user_id: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
+        self, workflow_type: str | None = None, user_id: str | None = None
+    ) -> list[dict[str, Any]]:
         """
         List active workflows with optional filtering.
 
@@ -246,7 +254,7 @@ class WorkflowManager:
         Returns:
             Number of workflows cleaned up
         """
-        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=max_age_hours)
+        cutoff_time = datetime.now(UTC) - timedelta(hours=max_age_hours)
         cleaned_count = 0
 
         workflows_to_remove = []
@@ -269,7 +277,7 @@ class WorkflowManager:
 
         return cleaned_count
 
-    def get_workflow_capabilities(self) -> Dict[str, Any]:
+    def get_workflow_capabilities(self) -> dict[str, Any]:
         """
         Get information about workflow capabilities and configuration.
 
@@ -291,7 +299,7 @@ class WorkflowManager:
 
 
 # Global workflow manager instance
-_workflow_manager: Optional[WorkflowManager] = None
+_workflow_manager: WorkflowManager | None = None
 
 
 def get_workflow_manager() -> WorkflowManager:

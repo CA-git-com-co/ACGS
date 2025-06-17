@@ -11,7 +11,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .smt_solver_integration import verify_rules_against_obligations
 
@@ -24,8 +24,8 @@ class VerificationTestCase:
 
     name: str
     description: str
-    rules: List[str]
-    obligations: List[str]
+    rules: list[str]
+    obligations: list[str]
     expected_result: str  # "verified", "failed", "inconclusive"
     test_type: str  # "positive", "negative", "boundary"
     rationale: str
@@ -40,8 +40,8 @@ class CompletenessTestResult:
     actual_result: str
     passed: bool
     execution_time_ms: int
-    counter_example: Optional[str]
-    error_message: Optional[str]
+    counter_example: str | None
+    error_message: str | None
 
 
 class VerificationCompletenessTester:
@@ -53,7 +53,7 @@ class VerificationCompletenessTester:
         # sha256: func_hash
         self.test_cases = self._create_test_cases()
 
-    def _create_test_cases(self) -> List[VerificationTestCase]:
+    def _create_test_cases(self) -> list[VerificationTestCase]:
         """Create comprehensive test cases for verification completeness."""
         return [
             # Positive cases (should verify)
@@ -164,14 +164,16 @@ class VerificationCompletenessTester:
                     "condition_a(X) :- X > 0, X < 100.",
                     "condition_b(X) :- X % 2 = 0.",  # Even numbers
                 ],
-                obligations=["forall X: complex_rule(X) -> (X > 0 and X < 100 and X % 2 = 0)"],
+                obligations=[
+                    "forall X: complex_rule(X) -> (X > 0 and X < 100 and X % 2 = 0)"
+                ],
                 expected_result="verified",
                 test_type="boundary",
                 rationale="Complex logical dependencies should be properly verified",
             ),
         ]
 
-    async def run_completeness_tests(self) -> Dict[str, Any]:
+    async def run_completeness_tests(self) -> dict[str, Any]:
         """Run all completeness tests and return comprehensive results."""
         logger.info("Starting verification completeness testing")
         start_time = time.time()
@@ -212,21 +214,24 @@ class VerificationCompletenessTester:
             r
             for r in results
             if any(
-                tc.test_type == "positive" and tc.name == r.test_case_name for tc in self.test_cases
+                tc.test_type == "positive" and tc.name == r.test_case_name
+                for tc in self.test_cases
             )
         ]
         negative_tests = [
             r
             for r in results
             if any(
-                tc.test_type == "negative" and tc.name == r.test_case_name for tc in self.test_cases
+                tc.test_type == "negative" and tc.name == r.test_case_name
+                for tc in self.test_cases
             )
         ]
         boundary_tests = [
             r
             for r in results
             if any(
-                tc.test_type == "boundary" and tc.name == r.test_case_name for tc in self.test_cases
+                tc.test_type == "boundary" and tc.name == r.test_case_name
+                for tc in self.test_cases
             )
         ]
 
@@ -256,14 +261,20 @@ class VerificationCompletenessTester:
             "negative_case_pass_rate": negative_pass_rate,
             "boundary_case_pass_rate": boundary_pass_rate,
             "total_execution_time_seconds": total_time,
-            "verification_completeness_score": self._calculate_completeness_score(results),
+            "verification_completeness_score": self._calculate_completeness_score(
+                results
+            ),
             "detailed_results": [self._result_to_dict(r) for r in results],
         }
 
-        logger.info(f"Completeness testing completed: {passed_count}/{len(results)} tests passed")
+        logger.info(
+            f"Completeness testing completed: {passed_count}/{len(results)} tests passed"
+        )
         return summary
 
-    async def _run_single_test(self, test_case: VerificationTestCase) -> CompletenessTestResult:
+    async def _run_single_test(
+        self, test_case: VerificationTestCase
+    ) -> CompletenessTestResult:
         """Run a single verification test case."""
         logger.debug(f"Running test case: {test_case.name}")
         start_time = time.time()
@@ -311,7 +322,9 @@ class VerificationCompletenessTester:
                 error_message=str(e),
             )
 
-    def _calculate_completeness_score(self, results: List[CompletenessTestResult]) -> float:
+    def _calculate_completeness_score(
+        self, results: list[CompletenessTestResult]
+    ) -> float:
         """Calculate a completeness score based on test results."""
         if not results:
             return 0.0
@@ -361,7 +374,7 @@ class VerificationCompletenessTester:
 
         return completeness_score
 
-    def _result_to_dict(self, result: CompletenessTestResult) -> Dict[str, Any]:
+    def _result_to_dict(self, result: CompletenessTestResult) -> dict[str, Any]:
         """Convert result to dictionary for JSON serialization."""
         return {
             "test_case_name": result.test_case_name,
@@ -393,10 +406,14 @@ async def run_completeness_testing_example():
         )
 
     if results["positive_case_pass_rate"] < 0.8:
-        print("⚠️  WARNING: Low positive case pass rate - verification may be too strict")
+        print(
+            "⚠️  WARNING: Low positive case pass rate - verification may be too strict"
+        )
 
     if results["verification_completeness_score"] < 0.7:
-        print("❌ CRITICAL: Low verification completeness score - SMT encoding needs improvement")
+        print(
+            "❌ CRITICAL: Low verification completeness score - SMT encoding needs improvement"
+        )
     else:
         print("✅ Verification completeness score acceptable")
 

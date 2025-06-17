@@ -14,7 +14,6 @@ import asyncio
 import json
 import time
 from dataclasses import dataclass
-from typing import Dict, List, Optional
 
 import aiohttp
 
@@ -25,7 +24,7 @@ class PolicyPipelineTest:
 
     name: str
     description: str
-    test_data: Dict
+    test_data: dict
     expected_outcome: str
 
 
@@ -37,7 +36,7 @@ class TestResult:
     passed: bool
     details: str
     execution_time_ms: float
-    response_data: Optional[Dict] = None
+    response_data: dict | None = None
 
 
 class PolicyPipelineValidator:
@@ -52,7 +51,7 @@ class PolicyPipelineValidator:
             "pgc": "http://localhost:8005",
         }
 
-    async def test_service_health_with_security(self) -> List[TestResult]:
+    async def test_service_health_with_security(self) -> list[TestResult]:
         """Test that all services are healthy and security middleware is active."""
         results = []
 
@@ -95,7 +94,7 @@ class PolicyPipelineValidator:
                                     TestResult(
                                         test_name=f"{service_name.upper()} Service Health + Security",
                                         passed=True,
-                                        details=f"Service healthy with security headers present",
+                                        details="Service healthy with security headers present",
                                         execution_time_ms=execution_time,
                                         response_data=data,
                                     )
@@ -247,7 +246,7 @@ class PolicyPipelineValidator:
                 execution_time_ms=execution_time,
             )
 
-    async def run_all_tests(self) -> List[TestResult]:
+    async def run_all_tests(self) -> list[TestResult]:
         """Run all policy pipeline tests with security validation."""
         print("🔒 Starting ACGS-PGP Policy Pipeline + Security Tests...")
         print("Testing complete pipeline with security middleware active")
@@ -278,7 +277,7 @@ class PolicyPipelineValidator:
         return all_results
 
 
-def print_pipeline_report(results: List[TestResult]):
+def print_pipeline_report(results: list[TestResult]):
     """Print comprehensive pipeline test report."""
     print("\n" + "=" * 80)
     print("ACGS-PGP POLICY PIPELINE + SECURITY VALIDATION REPORT")

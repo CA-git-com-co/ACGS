@@ -12,7 +12,7 @@ Endpoints:
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
@@ -33,27 +33,33 @@ router = APIRouter(prefix="/wina-rego-synthesis", tags=["WINA Rego Synthesis"])
 class ConstitutionalPrincipleModel(BaseModel):
     """Constitutional principle model for API requests."""
 
-    id: Optional[str] = None
-    description: str = Field(..., description="Description of the constitutional principle")
-    type: Optional[str] = Field(default="governance_rule", description="Type of principle")
-    priority: Optional[float] = Field(default=1.0, description="Priority weight")
-    scope: Optional[str] = Field(default="general", description="Scope of application")
+    id: str | None = None
+    description: str = Field(
+        ..., description="Description of the constitutional principle"
+    )
+    type: str | None = Field(
+        default="governance_rule", description="Type of principle"
+    )
+    priority: float | None = Field(default=1.0, description="Priority weight")
+    scope: str | None = Field(default="general", description="Scope of application")
 
 
 class WINARegoSynthesisRequest(BaseModel):
     """Request model for WINA Rego policy synthesis."""
 
-    synthesis_goal: str = Field(..., description="Natural language description of policy goal")
-    constitutional_principles: List[ConstitutionalPrincipleModel] = Field(
+    synthesis_goal: str = Field(
+        ..., description="Natural language description of policy goal"
+    )
+    constitutional_principles: list[ConstitutionalPrincipleModel] = Field(
         default=[], description="Constitutional principles to incorporate"
     )
-    constraints: Optional[List[str]] = Field(
+    constraints: list[str] | None = Field(
         default=None, description="Optional constraints for the policy"
     )
-    context_data: Optional[Dict[str, Any]] = Field(
+    context_data: dict[str, Any] | None = Field(
         default=None, description="Additional context information"
     )
-    apply_wina: Optional[bool] = Field(
+    apply_wina: bool | None = Field(
         default=None, description="Override WINA application (None uses default)"
     )
 
@@ -78,29 +84,31 @@ class WINARegoSynthesisResponse(BaseModel):
     rego_content: str
     constitutional_compliance: bool
     synthesis_metrics: WINARegoSynthesisMetricsResponse
-    validation_result: Optional[Dict[str, Any]]
-    warnings: List[str]
-    policy_suggestion_confidence: Optional[float] = None
+    validation_result: dict[str, Any] | None
+    warnings: list[str]
+    policy_suggestion_confidence: float | None = None
     wina_optimization_applied: bool
 
 
 class BatchWINARegoSynthesisRequest(BaseModel):
     """Request model for batch WINA Rego synthesis."""
 
-    synthesis_requests: List[WINARegoSynthesisRequest] = Field(
+    synthesis_requests: list[WINARegoSynthesisRequest] = Field(
         ..., description="List of synthesis requests"
     )
-    enable_wina: bool = Field(default=True, description="Enable WINA optimization for batch")
+    enable_wina: bool = Field(
+        default=True, description="Enable WINA optimization for batch"
+    )
 
 
 class PerformanceSummaryResponse(BaseModel):
     """Response model for performance summary."""
 
-    performance_metrics: Dict[str, Any]
+    performance_metrics: dict[str, Any]
     synthesis_history_count: int
     wina_enabled: bool
-    recent_syntheses: List[Dict[str, Any]]
-    target_performance: Dict[str, str]
+    recent_syntheses: list[dict[str, Any]]
+    target_performance: dict[str, str]
 
 
 @router.post("/synthesize", response_model=WINARegoSynthesisResponse)
@@ -118,7 +126,9 @@ async def synthesize_rego_policy(request: WINARegoSynthesisRequest):
         WINARegoSynthesisResponse with synthesis results and metrics
     """
     try:
-        logger.info(f"Starting WINA Rego synthesis for goal: '{request.synthesis_goal}'")
+        logger.info(
+            f"Starting WINA Rego synthesis for goal: '{request.synthesis_goal}'"
+        )
 
         # Convert Pydantic models to dictionaries
         constitutional_principles = [
@@ -175,7 +185,7 @@ async def synthesize_rego_policy(request: WINARegoSynthesisRequest):
         )
 
 
-@router.post("/batch", response_model=List[WINARegoSynthesisResponse])
+@router.post("/batch", response_model=list[WINARegoSynthesisResponse])
 async def batch_synthesize_rego_policies(request: BatchWINARegoSynthesisRequest):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -340,7 +350,9 @@ async def health_check():
             "service": "WINA Rego Synthesis",
             "wina_enabled": summary["wina_enabled"],
             "total_syntheses": summary["performance_metrics"]["total_syntheses"],
-            "wina_optimized_syntheses": summary["performance_metrics"]["wina_optimized_syntheses"],
+            "wina_optimized_syntheses": summary["performance_metrics"][
+                "wina_optimized_syntheses"
+            ],
         }
 
     except Exception as e:

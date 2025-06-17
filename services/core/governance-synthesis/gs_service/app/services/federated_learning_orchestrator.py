@@ -21,9 +21,9 @@ import logging
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 from cryptography.fernet import Fernet
@@ -89,7 +89,7 @@ class ModelUpdate:
     update_id: str
     participant_id: str
     round_number: int
-    model_weights: Dict[str, Any]  # Encrypted or aggregated weights
+    model_weights: dict[str, Any]  # Encrypted or aggregated weights
     gradient_norm: float
     privacy_cost: float
     constitutional_compliance: float
@@ -104,15 +104,15 @@ class FederatedRound:
 
     round_id: str
     round_number: int
-    participants: List[str]
+    participants: list[str]
     global_model_version: str
-    updates_received: List[ModelUpdate]
-    aggregated_update: Optional[Dict[str, Any]]
+    updates_received: list[ModelUpdate]
+    aggregated_update: dict[str, Any] | None
     constitutional_validation_score: float
     privacy_budget_consumed: float
     convergence_metric: float
     started_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
     status: str = "active"
 
 
@@ -142,14 +142,16 @@ class FederatedLearningOrchestrator:
         self.multi_model_validator = get_enhanced_multi_model_validator()
 
         # Federated learning state
-        self.participants: Dict[str, FederatedParticipant] = {}
-        self.active_rounds: Dict[str, FederatedRound] = {}
-        self.constitutional_constraints: List[ConstitutionalConstraint] = []
-        self.global_model_versions: Dict[str, Dict[str, Any]] = {}
+        self.participants: dict[str, FederatedParticipant] = {}
+        self.active_rounds: dict[str, FederatedRound] = {}
+        self.constitutional_constraints: list[ConstitutionalConstraint] = []
+        self.global_model_versions: dict[str, dict[str, Any]] = {}
 
         # Privacy and security
         self.encryption_key = self._generate_encryption_key()
-        self.privacy_budgets: Dict[str, float] = defaultdict(lambda: 10.0)  # Default privacy budget
+        self.privacy_budgets: dict[str, float] = defaultdict(
+            lambda: 10.0
+        )  # Default privacy budget
 
         # Initialize constitutional constraints
         self._initialize_constitutional_constraints()
@@ -241,7 +243,7 @@ class FederatedLearningOrchestrator:
             privacy_budget=self.privacy_budgets[participant_id],
             constitutional_compliance_score=constitutional_compliance_score,
             public_key=public_key,
-            last_update=datetime.now(timezone.utc),
+            last_update=datetime.now(UTC),
             active=True,
             trust_score=1.0,
         )
@@ -260,7 +262,7 @@ class FederatedLearningOrchestrator:
         self,
         strategy: FederatedLearningStrategy,
         privacy_mechanism: PrivacyMechanism,
-        target_participants: Optional[List[str]] = None,
+        target_participants: list[str] | None = None,
         constitutional_weight: float = 0.3,
     ) -> FederatedRound:
         """
@@ -302,7 +304,7 @@ class FederatedLearningOrchestrator:
             constitutional_validation_score=0.0,
             privacy_budget_consumed=0.0,
             convergence_metric=0.0,
-            started_at=datetime.now(timezone.utc),
+            started_at=datetime.now(UTC),
             status="active",
         )
 
@@ -315,7 +317,9 @@ class FederatedLearningOrchestrator:
         self.metrics.increment("federated_rounds_started")
         self.metrics.record_value("round_participants", len(participants))
 
-        logger.info(f"Started federated round {round_id} with {len(participants)} participants")
+        logger.info(
+            f"Started federated round {round_id} with {len(participants)} participants"
+        )
 
         return federated_round
 
@@ -323,7 +327,7 @@ class FederatedLearningOrchestrator:
         self,
         round_id: str,
         participant_id: str,
-        model_weights: Dict[str, Any],
+        model_weights: dict[str, Any],
         privacy_mechanism: PrivacyMechanism,
     ) -> ModelUpdate:
         """
@@ -367,7 +371,7 @@ class FederatedLearningOrchestrator:
             gradient_norm=self._calculate_gradient_norm(model_weights),
             privacy_cost=privacy_cost,
             constitutional_compliance=constitutional_compliance,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             signature=self._sign_update(private_weights, participant.public_key),
             verified=True,
         )
@@ -382,7 +386,9 @@ class FederatedLearningOrchestrator:
         # Record metrics
         self.metrics.increment("model_updates_submitted")
         self.metrics.record_value("privacy_cost", privacy_cost)
-        self.metrics.record_value("constitutional_compliance", constitutional_compliance)
+        self.metrics.record_value(
+            "constitutional_compliance", constitutional_compliance
+        )
 
         logger.info(f"Model update submitted by {participant_id} for round {round_id}")
 
@@ -394,10 +400,10 @@ class FederatedLearningOrchestrator:
 
     async def _apply_privacy_mechanism(
         self,
-        model_weights: Dict[str, Any],
+        model_weights: dict[str, Any],
         privacy_mechanism: PrivacyMechanism,
         privacy_budget: float,
-    ) -> Tuple[Dict[str, Any], float]:
+    ) -> tuple[dict[str, Any], float]:
         """Apply privacy preservation mechanism to model weights."""
 
         if privacy_mechanism == PrivacyMechanism.DIFFERENTIAL_PRIVACY:
@@ -406,7 +412,7 @@ class FederatedLearningOrchestrator:
             private_weights = {}
 
             for layer_name, weights in model_weights.items():
-                if isinstance(weights, (list, np.ndarray)):
+                if isinstance(weights, list | np.ndarray):
                     weights_array = np.array(weights)
                     noise = np.random.laplace(0, noise_scale, weights_array.shape)
                     private_weights[layer_name] = (weights_array + noise).tolist()
@@ -426,7 +432,7 @@ class FederatedLearningOrchestrator:
             private_weights = {}
 
             for layer_name, weights in model_weights.items():
-                if isinstance(weights, (list, np.ndarray)):
+                if isinstance(weights, list | np.ndarray):
                     weights_array = np.array(weights)
                     mask = np.random.binomial(1, 1 - dropout_rate, weights_array.shape)
                     private_weights[layer_name] = (weights_array * mask).tolist()
@@ -443,7 +449,7 @@ class FederatedLearningOrchestrator:
         return private_weights, privacy_cost
 
     async def _validate_constitutional_compliance(
-        self, model_weights: Dict[str, Any], participant_id: str
+        self, model_weights: dict[str, Any], participant_id: str
     ) -> float:
         """Validate constitutional compliance of model update."""
 
@@ -457,7 +463,9 @@ class FederatedLearningOrchestrator:
             elif constraint.validation_function == "validate_transparency":
                 score = await self._validate_transparency(model_weights, participant_id)
             elif constraint.validation_function == "validate_accountability":
-                score = await self._validate_accountability(model_weights, participant_id)
+                score = await self._validate_accountability(
+                    model_weights, participant_id
+                )
             else:
                 score = 0.8  # Default score
 
@@ -467,14 +475,18 @@ class FederatedLearningOrchestrator:
         overall_compliance = np.mean(compliance_scores)
         return float(overall_compliance)
 
-    async def _validate_fairness(self, model_weights: Dict[str, Any], participant_id: str) -> float:
+    async def _validate_fairness(
+        self, model_weights: dict[str, Any], participant_id: str
+    ) -> float:
         """Validate fairness of model update."""
         # Simplified fairness validation
         # In production, this would analyze bias across protected groups
         await asyncio.sleep(0.01)
         return 0.85
 
-    async def _validate_privacy(self, model_weights: Dict[str, Any], participant_id: str) -> float:
+    async def _validate_privacy(
+        self, model_weights: dict[str, Any], participant_id: str
+    ) -> float:
         """Validate privacy preservation of model update."""
         # Simplified privacy validation
         # In production, this would check for privacy leakage
@@ -482,7 +494,7 @@ class FederatedLearningOrchestrator:
         return 0.90
 
     async def _validate_transparency(
-        self, model_weights: Dict[str, Any], participant_id: str
+        self, model_weights: dict[str, Any], participant_id: str
     ) -> float:
         """Validate transparency of model update."""
         # Simplified transparency validation
@@ -491,7 +503,7 @@ class FederatedLearningOrchestrator:
         return 0.75
 
     async def _validate_accountability(
-        self, model_weights: Dict[str, Any], participant_id: str
+        self, model_weights: dict[str, Any], participant_id: str
     ) -> float:
         """Validate accountability of model update."""
         # Simplified accountability validation
@@ -499,7 +511,7 @@ class FederatedLearningOrchestrator:
         await asyncio.sleep(0.01)
         return 0.80
 
-    def _encrypt_weights(self, model_weights: Dict[str, Any]) -> Dict[str, Any]:
+    def _encrypt_weights(self, model_weights: dict[str, Any]) -> dict[str, Any]:
         """Encrypt model weights for secure aggregation."""
         fernet = Fernet(self.encryption_key)
         encrypted_weights = {}
@@ -511,19 +523,19 @@ class FederatedLearningOrchestrator:
 
         return encrypted_weights
 
-    def _calculate_gradient_norm(self, model_weights: Dict[str, Any]) -> float:
+    def _calculate_gradient_norm(self, model_weights: dict[str, Any]) -> float:
         """Calculate gradient norm for model weights."""
         total_norm = 0.0
 
-        for layer_name, weights in model_weights.items():
-            if isinstance(weights, (list, np.ndarray)):
+        for _layer_name, weights in model_weights.items():
+            if isinstance(weights, list | np.ndarray):
                 weights_array = np.array(weights)
                 layer_norm = np.linalg.norm(weights_array)
                 total_norm += layer_norm**2
 
         return float(np.sqrt(total_norm))
 
-    def _sign_update(self, model_weights: Dict[str, Any], public_key: str) -> str:
+    def _sign_update(self, model_weights: dict[str, Any], public_key: str) -> str:
         """Sign model update for verification."""
         weights_json = json.dumps(model_weights, sort_keys=True, default=str)
         signature_data = f"{weights_json}:{public_key}"
@@ -541,7 +553,7 @@ class FederatedLearningOrchestrator:
         global_model = {
             "version": federated_round.global_model_version,
             "strategy": strategy.value,
-            "initialized_at": datetime.now(timezone.utc).isoformat(),
+            "initialized_at": datetime.now(UTC).isoformat(),
             "constitutional_constraints": [
                 c.constraint_id for c in self.constitutional_constraints
             ],
@@ -558,19 +570,23 @@ class FederatedLearningOrchestrator:
         federated_round = self.active_rounds[round_id]
 
         # Aggregate model updates
-        aggregated_update = await self._aggregate_model_updates(federated_round.updates_received)
+        aggregated_update = await self._aggregate_model_updates(
+            federated_round.updates_received
+        )
 
         # Validate aggregated update
         constitutional_score = await self._validate_aggregated_update(aggregated_update)
 
         # Calculate convergence metric
-        convergence_metric = self._calculate_convergence_metric(federated_round.updates_received)
+        convergence_metric = self._calculate_convergence_metric(
+            federated_round.updates_received
+        )
 
         # Update round
         federated_round.aggregated_update = aggregated_update
         federated_round.constitutional_validation_score = constitutional_score
         federated_round.convergence_metric = convergence_metric
-        federated_round.completed_at = datetime.now(timezone.utc)
+        federated_round.completed_at = datetime.now(UTC)
         federated_round.status = "completed"
 
         # Update global model
@@ -583,7 +599,9 @@ class FederatedLearningOrchestrator:
 
         logger.info(f"Completed federated round {round_id}")
 
-    async def _aggregate_model_updates(self, updates: List[ModelUpdate]) -> Dict[str, Any]:
+    async def _aggregate_model_updates(
+        self, updates: list[ModelUpdate]
+    ) -> dict[str, Any]:
         """Aggregate model updates using federated averaging."""
         if not updates:
             return {}
@@ -601,7 +619,7 @@ class FederatedLearningOrchestrator:
                 if layer_name not in aggregated_weights:
                     aggregated_weights[layer_name] = np.zeros_like(weights)
 
-                if isinstance(weights, (list, np.ndarray)):
+                if isinstance(weights, list | np.ndarray):
                     aggregated_weights[layer_name] += np.array(weights) * weight
 
         # Normalize by total weight
@@ -612,13 +630,17 @@ class FederatedLearningOrchestrator:
 
         return aggregated_weights
 
-    async def _validate_aggregated_update(self, aggregated_update: Dict[str, Any]) -> float:
+    async def _validate_aggregated_update(
+        self, aggregated_update: dict[str, Any]
+    ) -> float:
         """Validate constitutional compliance of aggregated update."""
         # Use multi-model validator for constitutional compliance
-        validation_context = {
+        {
             "query_type": "constitutional_validation",
             "complexity_score": 0.8,
-            "constitutional_requirements": [c.principle for c in self.constitutional_constraints],
+            "constitutional_requirements": [
+                c.principle for c in self.constitutional_constraints
+            ],
             "bias_sensitivity": 0.9,
             "uncertainty_tolerance": 0.2,
         }
@@ -627,7 +649,7 @@ class FederatedLearningOrchestrator:
         await asyncio.sleep(0.1)
         return 0.87  # Mock constitutional compliance score
 
-    def _calculate_convergence_metric(self, updates: List[ModelUpdate]) -> float:
+    def _calculate_convergence_metric(self, updates: list[ModelUpdate]) -> float:
         """Calculate convergence metric for the round."""
         if len(updates) < 2:
             return 0.0
@@ -657,10 +679,12 @@ class FederatedLearningOrchestrator:
 
         logger.debug(f"Updated global model {federated_round.global_model_version}")
 
-    async def get_federated_learning_metrics(self) -> Dict[str, Any]:
+    async def get_federated_learning_metrics(self) -> dict[str, Any]:
         """Get comprehensive federated learning metrics."""
         active_participants = len([p for p in self.participants.values() if p.active])
-        completed_rounds = len([r for r in self.active_rounds.values() if r.status == "completed"])
+        completed_rounds = len(
+            [r for r in self.active_rounds.values() if r.status == "completed"]
+        )
 
         # Calculate average metrics
         if completed_rounds > 0:
@@ -670,7 +694,9 @@ class FederatedLearningOrchestrator:
             avg_constitutional_score = np.mean(
                 [r.constitutional_validation_score for r in completed_round_list]
             )
-            avg_convergence = np.mean([r.convergence_metric for r in completed_round_list])
+            avg_convergence = np.mean(
+                [r.convergence_metric for r in completed_round_list]
+            )
             avg_privacy_cost = np.mean(
                 [
                     np.mean([u.privacy_cost for u in r.updates_received])
@@ -687,22 +713,26 @@ class FederatedLearningOrchestrator:
             "active_participants": active_participants,
             "total_participants": len(self.participants),
             "completed_rounds": completed_rounds,
-            "active_rounds": len([r for r in self.active_rounds.values() if r.status == "active"]),
+            "active_rounds": len(
+                [r for r in self.active_rounds.values() if r.status == "active"]
+            ),
             "average_constitutional_score": avg_constitutional_score,
             "average_convergence_metric": avg_convergence,
             "average_privacy_cost": avg_privacy_cost,
             "constitutional_constraints": len(self.constitutional_constraints),
-            "privacy_mechanisms_available": [mechanism.value for mechanism in PrivacyMechanism],
+            "privacy_mechanisms_available": [
+                mechanism.value for mechanism in PrivacyMechanism
+            ],
             "federated_strategies_available": [
                 strategy.value for strategy in FederatedLearningStrategy
             ],
             "global_model_versions": len(self.global_model_versions),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 
 # Global instance
-_federated_learning_orchestrator: Optional[FederatedLearningOrchestrator] = None
+_federated_learning_orchestrator: FederatedLearningOrchestrator | None = None
 
 
 def get_federated_learning_orchestrator() -> FederatedLearningOrchestrator:

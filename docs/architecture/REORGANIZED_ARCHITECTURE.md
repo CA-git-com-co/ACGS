@@ -8,7 +8,7 @@ The ACGS-1 system follows a blockchain-first architecture with clear separation 
 ACGS-1/
 ├── blockchain/                          # 🔗 Solana/Anchor Programs
 │   ├── programs/                        # On-chain smart contracts
-│   │   ├── quantumagi-core/            # Main governance program
+│   │   ├── blockchain/            # Main governance program
 │   │   ├── appeals/                    # Appeals handling program
 │   │   └── logging/                    # Event logging program
 │   ├── client/                         # Blockchain client libraries

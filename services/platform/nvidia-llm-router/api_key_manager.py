@@ -5,13 +5,11 @@ Secure management of NVIDIA API keys following ACGS-PGP security standards.
 Provides encryption, storage, rotation, and retrieval of API keys with audit logging.
 """
 
-import asyncio
 import base64
 import json
-import logging
 import os
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aioredis
 from cryptography.fernet import Fernet
@@ -41,12 +39,12 @@ class APIKeyRecord(Base):
     key_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     rotation_count: Mapped[int] = mapped_column(String(10), default="0", nullable=False)
-    last_used_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     usage_count: Mapped[int] = mapped_column(String(10), default="0", nullable=False)
-    metadata: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    metadata: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
 class APIKeyManager:
@@ -61,7 +59,9 @@ class APIKeyManager:
     - Environment variable fallbacks
     """
 
-    def __init__(self, encryption_key: Optional[str] = None, redis_url: Optional[str] = None):
+    def __init__(
+        self, encryption_key: str | None = None, redis_url: str | None = None
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -102,7 +102,10 @@ class APIKeyManager:
         """Get Redis connection pool"""
         if not self._redis_pool:
             self._redis_pool = aioredis.from_url(
-                self.redis_url, encoding="utf-8", decode_responses=True, max_connections=10
+                self.redis_url,
+                encoding="utf-8",
+                decode_responses=True,
+                max_connections=10,
             )
         return self._redis_pool
 
@@ -110,8 +113,8 @@ class APIKeyManager:
         self,
         key_name: str,
         api_key: str,
-        expires_in_days: Optional[int] = 30,
-        metadata: Optional[Dict[str, Any]] = None,
+        expires_in_days: int | None = 30,
+        metadata: dict[str, Any] | None = None,
     ) -> bool:
         """
         Store an encrypted API key in the database
@@ -192,7 +195,7 @@ class APIKeyManager:
             self.logger.error(f"Failed to store API key {key_name}: {str(e)}")
             return False
 
-    async def get_api_key(self, key_name: str) -> Optional[str]:
+    async def get_api_key(self, key_name: str) -> str | None:
         """
         Retrieve and decrypt an API key
 
@@ -217,7 +220,7 @@ class APIKeyManager:
                 result = await session.execute(
                     select(APIKeyRecord)
                     .where(APIKeyRecord.key_name == key_name)
-                    .where(APIKeyRecord.is_active == True)
+                    .where(APIKeyRecord.is_active)
                 )
                 record = result.scalar_one_or_none()
 
@@ -232,14 +235,17 @@ class APIKeyManager:
                     return None
 
                 # Decrypt the key
-                decrypted_key = self._fernet.decrypt(record.encrypted_key.encode()).decode()
+                decrypted_key = self._fernet.decrypt(
+                    record.encrypted_key.encode()
+                ).decode()
 
                 # Update usage statistics
                 await session.execute(
                     update(APIKeyRecord)
                     .where(APIKeyRecord.key_name == key_name)
                     .values(
-                        last_used_at=datetime.utcnow(), usage_count=str(int(record.usage_count) + 1)
+                        last_used_at=datetime.utcnow(),
+                        usage_count=str(int(record.usage_count) + 1),
                     )
                 )
                 await session.commit()
@@ -254,7 +260,9 @@ class APIKeyManager:
             self.logger.error(f"Failed to retrieve API key {key_name}: {str(e)}")
             return None
 
-    async def get_api_key_with_fallback(self, key_name: str, env_var_name: str) -> Optional[str]:
+    async def get_api_key_with_fallback(
+        self, key_name: str, env_var_name: str
+    ) -> str | None:
         """
         Get API key with environment variable fallback
 
@@ -331,7 +339,7 @@ class APIKeyManager:
             self.logger.error(f"Error rotating API key {key_name}: {str(e)}")
             return False
 
-    async def list_api_keys(self) -> List[Dict[str, Any]]:
+    async def list_api_keys(self) -> list[dict[str, Any]]:
         """
         List all API keys with metadata (excluding actual key values)
 
@@ -341,7 +349,7 @@ class APIKeyManager:
         try:
             async with get_async_session() as session:
                 result = await session.execute(
-                    select(APIKeyRecord).where(APIKeyRecord.is_active == True)
+                    select(APIKeyRecord).where(APIKeyRecord.is_active)
                 )
                 records = result.scalars().all()
 
@@ -357,12 +365,16 @@ class APIKeyManager:
                             "created_at": record.created_at.isoformat(),
                             "updated_at": record.updated_at.isoformat(),
                             "expires_at": (
-                                record.expires_at.isoformat() if record.expires_at else None
+                                record.expires_at.isoformat()
+                                if record.expires_at
+                                else None
                             ),
                             "rotation_count": int(record.rotation_count),
                             "usage_count": int(record.usage_count),
                             "last_used_at": (
-                                record.last_used_at.isoformat() if record.last_used_at else None
+                                record.last_used_at.isoformat()
+                                if record.last_used_at
+                                else None
                             ),
                             "metadata": metadata,
                         }
@@ -386,7 +398,9 @@ class APIKeyManager:
         """
         try:
             async with get_async_session() as session:
-                await session.execute(delete(APIKeyRecord).where(APIKeyRecord.key_name == key_name))
+                await session.execute(
+                    delete(APIKeyRecord).where(APIKeyRecord.key_name == key_name)
+                )
                 await session.commit()
 
                 # Clear cache

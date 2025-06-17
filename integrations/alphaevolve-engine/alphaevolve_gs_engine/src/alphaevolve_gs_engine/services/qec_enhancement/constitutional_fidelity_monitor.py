@@ -18,7 +18,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ...core.constitutional_principle import ConstitutionalPrinciple
 from .constitutional_distance_calculator import ConstitutionalDistanceCalculator
@@ -49,7 +49,7 @@ class FidelityComponents:
         float  # 0.0-1.0, inverse of appeal frequency (lower appeals = higher score)
     )
     composite_score: float  # 0.0-1.0, weighted composite fidelity score
-    calculation_metadata: Dict[str, Any]
+    calculation_metadata: dict[str, Any]
 
 
 @dataclass
@@ -60,9 +60,9 @@ class FidelityAlert:
     title: str
     description: str
     timestamp: datetime
-    components_affected: List[str]
-    recommended_actions: List[str]
-    metadata: Dict[str, Any]
+    components_affected: list[str]
+    recommended_actions: list[str]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -90,7 +90,7 @@ class ConstitutionalFidelityMonitor:
     through real-time fidelity calculation combining multiple system components.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         """
         Initialize the constitutional fidelity monitor.
 
@@ -114,12 +114,12 @@ class ConstitutionalFidelityMonitor:
         )
 
         # Historical data storage
-        self.fidelity_history: List[FidelityComponents] = []
-        self.active_alerts: Dict[str, FidelityAlert] = {}
-        self.alert_handlers: List[callable] = []
+        self.fidelity_history: list[FidelityComponents] = []
+        self.active_alerts: dict[str, FidelityAlert] = {}
+        self.alert_handlers: list[callable] = []
 
         # Monitoring state
-        self.last_calculation_time: Optional[datetime] = None
+        self.last_calculation_time: datetime | None = None
         self.monitoring_active = False
         self.calculation_interval = self.config.get(
             "calculation_interval_seconds", 300
@@ -150,8 +150,8 @@ class ConstitutionalFidelityMonitor:
 
     async def calculate_fidelity(
         self,
-        principles: List[ConstitutionalPrinciple],
-        system_metrics: Optional[Dict[str, Any]] = None,
+        principles: list[ConstitutionalPrinciple],
+        system_metrics: dict[str, Any] | None = None,
     ) -> FidelityComponents:
         """
         Calculate constitutional fidelity score.
@@ -239,11 +239,11 @@ class ConstitutionalFidelityMonitor:
             # Return fallback fidelity
             return await self._create_fallback_fidelity()
 
-    def get_current_fidelity(self) -> Optional[FidelityComponents]:
+    def get_current_fidelity(self) -> FidelityComponents | None:
         """Get the most recent fidelity calculation."""
         return self.fidelity_history[-1] if self.fidelity_history else None
 
-    def get_fidelity_history(self, days: int = 30) -> List[FidelityComponents]:
+    def get_fidelity_history(self, days: int = 30) -> list[FidelityComponents]:
         """
         Get fidelity history for the specified number of days.
 
@@ -265,7 +265,7 @@ class ConstitutionalFidelityMonitor:
         ]
 
     def get_fidelity_trend(
-        self, history: Optional[List[FidelityComponents]] = None
+        self, history: list[FidelityComponents] | None = None
     ) -> str:
         """
         Calculate fidelity trend from historical data.
@@ -309,7 +309,7 @@ class ConstitutionalFidelityMonitor:
         self.alert_handlers.append(handler)
         logger.info(f"Registered alert handler: {handler.__name__}")
 
-    def get_active_alerts(self) -> List[FidelityAlert]:
+    def get_active_alerts(self) -> list[FidelityAlert]:
         """Get list of currently active alerts."""
         return list(self.active_alerts.values())
 
@@ -332,7 +332,7 @@ class ConstitutionalFidelityMonitor:
                 await asyncio.sleep(60)  # Wait 1 minute before retrying
 
     async def _calc_principle_coverage(
-        self, principles: List[ConstitutionalPrinciple]
+        self, principles: list[ConstitutionalPrinciple]
     ) -> float:
         """Calculate principle coverage score."""
         if not principles:
@@ -348,7 +348,7 @@ class ConstitutionalFidelityMonitor:
         return min(total_score / len(principles), 1.0)
 
     async def _calc_synthesis_success(
-        self, system_metrics: Optional[Dict[str, Any]]
+        self, system_metrics: dict[str, Any] | None
     ) -> float:
         """Calculate synthesis success rate."""
         if not system_metrics:
@@ -358,7 +358,7 @@ class ConstitutionalFidelityMonitor:
         return system_metrics.get("synthesis_success_rate", 0.75)
 
     async def _calc_enforcement_reliability(
-        self, system_metrics: Optional[Dict[str, Any]]
+        self, system_metrics: dict[str, Any] | None
     ) -> float:
         """Calculate enforcement reliability score."""
         if not system_metrics:
@@ -368,7 +368,7 @@ class ConstitutionalFidelityMonitor:
         return system_metrics.get("enforcement_reliability", 0.90)
 
     async def _calc_adaptation_speed(
-        self, system_metrics: Optional[Dict[str, Any]]
+        self, system_metrics: dict[str, Any] | None
     ) -> float:
         """Calculate system adaptation speed score."""
         if not system_metrics:
@@ -378,7 +378,7 @@ class ConstitutionalFidelityMonitor:
         return system_metrics.get("adaptation_speed", 0.70)
 
     async def _calc_stakeholder_satisfaction(
-        self, system_metrics: Optional[Dict[str, Any]]
+        self, system_metrics: dict[str, Any] | None
     ) -> float:
         """Calculate stakeholder satisfaction score."""
         if not system_metrics:
@@ -388,7 +388,7 @@ class ConstitutionalFidelityMonitor:
         return system_metrics.get("stakeholder_satisfaction", 0.75)
 
     async def _calc_appeal_frequency(
-        self, system_metrics: Optional[Dict[str, Any]]
+        self, system_metrics: dict[str, Any] | None
     ) -> float:
         """Calculate appeal frequency score (inverse of appeal rate)."""
         if not system_metrics:
@@ -399,7 +399,7 @@ class ConstitutionalFidelityMonitor:
         return max(0.0, 1.0 - appeal_rate)
 
     async def _has_high_severity_appeals(
-        self, system_metrics: Optional[Dict[str, Any]]
+        self, system_metrics: dict[str, Any] | None
     ) -> bool:
         """Check if there are high-severity appeals that warrant penalties."""
         if not system_metrics:
@@ -473,7 +473,7 @@ class ConstitutionalFidelityMonitor:
             f"Constitutional fidelity alert (score: {fidelity.composite_score:.3f})",
         )
 
-    def _get_affected_components(self, fidelity: FidelityComponents) -> List[str]:
+    def _get_affected_components(self, fidelity: FidelityComponents) -> list[str]:
         """Identify components that are below acceptable thresholds."""
         affected = []
 
@@ -500,7 +500,7 @@ class ConstitutionalFidelityMonitor:
 
     def _get_recommended_actions(
         self, level: FidelityLevel, fidelity: FidelityComponents
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate recommended actions based on fidelity level and affected components."""
         actions = []
         affected = self._get_affected_components(fidelity)
@@ -542,7 +542,7 @@ class ConstitutionalFidelityMonitor:
             },
         )
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration for the fidelity monitor."""
         return {
             "calculation_interval_seconds": 300,  # 5 minutes

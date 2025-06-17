@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 
@@ -55,7 +55,7 @@ class Phase2ExecutionManager:
         if details:
             print(f"    {details}")
 
-    async def priority_1_service_restoration(self) -> Dict[str, Any]:
+    async def priority_1_service_restoration(self) -> dict[str, Any]:
         """Priority 1: Complete Service Restoration (0-2 hours)"""
         self.log_action("Starting Priority 1: Service Restoration", "INFO")
 
@@ -274,7 +274,7 @@ class Phase2ExecutionManager:
             self.log_action("Health validation failed", "ERROR", str(e))
             return False
 
-    async def execute_phase_2(self) -> Dict[str, Any]:
+    async def execute_phase_2(self) -> dict[str, Any]:
         """Execute complete Phase 2 workflow."""
         self.log_action("🚀 Starting ACGS-1 Phase 2 Systematic Remediation", "INFO")
 

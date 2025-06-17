@@ -10,7 +10,6 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -28,7 +27,7 @@ class RequirementsHashFixer:
         self.fixed_files = []
         self.failed_files = []
 
-    def find_requirements_files(self) -> List[Path]:
+    def find_requirements_files(self) -> list[Path]:
         """Find all requirements.txt files in the project."""
         requirements_files = []
 
@@ -45,7 +44,7 @@ class RequirementsHashFixer:
                     requirements_files.append(file_path)
 
         # Remove duplicates and sort
-        requirements_files = sorted(list(set(requirements_files)))
+        requirements_files = sorted(set(requirements_files))
 
         logger.info(f"Found {len(requirements_files)} requirements files:")
         for file_path in requirements_files:
@@ -181,7 +180,7 @@ class RequirementsHashFixer:
             )
             return False
 
-    def fix_all_requirements(self) -> Dict[str, List[Path]]:
+    def fix_all_requirements(self) -> dict[str, list[Path]]:
         """Fix all requirements files in the project."""
         logger.info("🔧 Starting requirements hash fixing process")
 

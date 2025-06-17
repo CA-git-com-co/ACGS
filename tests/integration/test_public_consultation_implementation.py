@@ -15,7 +15,6 @@ Usage:
 """
 
 import sys
-from typing import Optional
 
 import requests
 
@@ -87,7 +86,7 @@ class PublicConsultationTestClient:
             print(f"   ❌ Public proposals test failed: {e}")
             return False
 
-    def test_proposal_submission(self) -> Optional[int]:
+    def test_proposal_submission(self) -> int | None:
         """Test public proposal submission."""
         try:
             proposal_data = {
@@ -356,7 +355,7 @@ def main():
     passed_tests = sum(test_results)
     total_tests = len(test_results)
 
-    for i, (test_name, result) in enumerate(zip(test_names, test_results)):
+    for i, (test_name, result) in enumerate(zip(test_names, test_results, strict=False)):
         status = "✅ PASS" if result else "❌ FAIL"
         print(f"{i+1}. {test_name}: {status}")
 

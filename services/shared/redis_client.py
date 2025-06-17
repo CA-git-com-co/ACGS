@@ -7,7 +7,7 @@ import json
 import logging
 import os
 from contextlib import asynccontextmanager
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import redis.asyncio as redis
 from redis.asyncio import Redis
@@ -30,7 +30,7 @@ class ACGSRedisClient:
         # ensures: Correct function execution
         # sha256: func_hash
         self.service_name = service_name
-        self.redis_client: Optional[Redis] = None
+        self.redis_client: Redis | None = None
         self.connection_pool = None
 
     async def initialize(self):
@@ -55,7 +55,9 @@ class ACGSRedisClient:
             logger.info(f"Redis client initialized for service: {self.service_name}")
 
         except Exception as e:
-            logger.error(f"Failed to initialize Redis client for {self.service_name}: {e}")
+            logger.error(
+                f"Failed to initialize Redis client for {self.service_name}: {e}"
+            )
             raise
 
     async def close(self):
@@ -81,7 +83,7 @@ class ACGSRedisClient:
             logger.error(f"Redis operation failed: {e}")
             raise
 
-    async def set_json(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set_json(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Set JSON value in Redis with optional TTL."""
         try:
             async with self.get_client() as client:
@@ -94,7 +96,7 @@ class ACGSRedisClient:
             logger.error(f"Failed to set JSON key {key}: {e}")
             return False
 
-    async def get_json(self, key: str) -> Optional[Any]:
+    async def get_json(self, key: str) -> Any | None:
         """Get JSON value from Redis."""
         try:
             async with self.get_client() as client:
@@ -124,7 +126,7 @@ class ACGSRedisClient:
             logger.error(f"Failed to check existence of key {key}: {e}")
             return False
 
-    async def increment(self, key: str, amount: int = 1) -> Optional[int]:
+    async def increment(self, key: str, amount: int = 1) -> int | None:
         """Increment counter in Redis."""
         try:
             async with self.get_client() as client:
@@ -133,12 +135,16 @@ class ACGSRedisClient:
             logger.error(f"Failed to increment key {key}: {e}")
             return None
 
-    async def set_hash(self, key: str, mapping: Dict[str, Any], ttl: Optional[int] = None) -> bool:
+    async def set_hash(
+        self, key: str, mapping: dict[str, Any], ttl: int | None = None
+    ) -> bool:
         """Set hash in Redis with optional TTL."""
         try:
             async with self.get_client() as client:
                 # Convert values to strings for Redis
-                str_mapping = {k: json.dumps(v, default=str) for k, v in mapping.items()}
+                str_mapping = {
+                    k: json.dumps(v, default=str) for k, v in mapping.items()
+                }
                 result = await client.hset(key, mapping=str_mapping)
                 if ttl:
                     await client.expire(key, ttl)
@@ -147,7 +153,7 @@ class ACGSRedisClient:
             logger.error(f"Failed to set hash {key}: {e}")
             return False
 
-    async def get_hash(self, key: str) -> Optional[Dict[str, Any]]:
+    async def get_hash(self, key: str) -> dict[str, Any] | None:
         """Get hash from Redis."""
         try:
             async with self.get_client() as client:
@@ -159,7 +165,9 @@ class ACGSRedisClient:
             logger.error(f"Failed to get hash {key}: {e}")
             return None
 
-    async def add_to_list(self, key: str, value: Any, max_length: Optional[int] = None) -> bool:
+    async def add_to_list(
+        self, key: str, value: Any, max_length: int | None = None
+    ) -> bool:
         """Add value to Redis list with optional max length."""
         try:
             async with self.get_client() as client:
@@ -174,7 +182,7 @@ class ACGSRedisClient:
             logger.error(f"Failed to add to list {key}: {e}")
             return False
 
-    async def get_list(self, key: str, start: int = 0, end: int = -1) -> List[Any]:
+    async def get_list(self, key: str, start: int = 0, end: int = -1) -> list[Any]:
         """Get list from Redis."""
         try:
             async with self.get_client() as client:
@@ -206,7 +214,7 @@ class ACGSRedisClient:
 
 
 # Global Redis clients for each service
-_redis_clients: Dict[str, ACGSRedisClient] = {}
+_redis_clients: dict[str, ACGSRedisClient] = {}
 
 
 async def get_redis_client(service_name: str) -> ACGSRedisClient:

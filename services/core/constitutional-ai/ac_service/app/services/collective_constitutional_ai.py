@@ -17,9 +17,9 @@ import logging
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import numpy as np
@@ -65,8 +65,8 @@ class PolisConversation:
     created_at: datetime
     participant_count: int = 0
     statement_count: int = 0
-    consensus_statements: List[str] = field(default_factory=list)
-    polarizing_statements: List[str] = field(default_factory=list)
+    consensus_statements: list[str] = field(default_factory=list)
+    polarizing_statements: list[str] = field(default_factory=list)
     status: str = "active"
 
 
@@ -77,9 +77,9 @@ class BiasEvaluationResult:
     category: BiasCategory
     bias_score: float  # 0.0 = no bias, 1.0 = maximum bias
     confidence: float
-    examples: List[str]
-    recommendations: List[str]
-    baseline_comparison: Optional[float] = None
+    examples: list[str]
+    recommendations: list[str]
+    baseline_comparison: float | None = None
 
 
 @dataclass
@@ -102,9 +102,9 @@ class DemocraticPrinciple:
     principle_id: str
     title: str
     description: str
-    collective_inputs: List[CollectiveInput]
+    collective_inputs: list[CollectiveInput]
     legitimacy_level: DemocraticLegitimacyLevel
-    bias_evaluation: List[BiasEvaluationResult]
+    bias_evaluation: list[BiasEvaluationResult]
     stakeholder_agreement: float
     created_at: datetime
     last_updated: datetime
@@ -116,7 +116,7 @@ class CollectiveConstitutionalAI:
     principle sourcing and bias reduction.
     """
 
-    def __init__(self, polis_api_key: Optional[str] = None):
+    def __init__(self, polis_api_key: str | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -129,10 +129,10 @@ class CollectiveConstitutionalAI:
         self.bbq_templates = self._initialize_bbq_templates()
 
         # Active conversations and principles
-        self.active_conversations: Dict[str, PolisConversation] = {}
-        self.democratic_principles: Dict[str, DemocraticPrinciple] = {}
+        self.active_conversations: dict[str, PolisConversation] = {}
+        self.democratic_principles: dict[str, DemocraticPrinciple] = {}
 
-    def _initialize_bbq_templates(self) -> Dict[BiasCategory, List[str]]:
+    def _initialize_bbq_templates(self) -> dict[BiasCategory, list[str]]:
         """Initialize BBQ evaluation templates for bias detection."""
         return {
             BiasCategory.AGE: [
@@ -216,8 +216,12 @@ class CollectiveConstitutionalAI:
                     ) as response:
                         if response.status == 201:
                             data = await response.json()
-                            conversation_id = data.get("conversation_id", conversation_id)
-                            logger.info(f"Created Polis conversation: {conversation_id}")
+                            conversation_id = data.get(
+                                "conversation_id", conversation_id
+                            )
+                            logger.info(
+                                f"Created Polis conversation: {conversation_id}"
+                            )
                         else:
                             logger.warning(
                                 f"Failed to create Polis conversation: {response.status}"
@@ -230,7 +234,7 @@ class CollectiveConstitutionalAI:
             conversation_id=conversation_id,
             topic=topic,
             description=description,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
 
         self.active_conversations[conversation_id] = conversation
@@ -239,8 +243,8 @@ class CollectiveConstitutionalAI:
         return conversation
 
     async def evaluate_bias_bbq(
-        self, principle_text: str, categories: Optional[List[BiasCategory]] = None
-    ) -> List[BiasEvaluationResult]:
+        self, principle_text: str, categories: list[BiasCategory] | None = None
+    ) -> list[BiasEvaluationResult]:
         """
         Evaluate bias using BBQ (Bias Benchmark for QA) framework.
 
@@ -267,7 +271,9 @@ class CollectiveConstitutionalAI:
 
             for template in templates:
                 # Evaluate principle against template
-                bias_score = await self._evaluate_single_bias(principle_text, template, category)
+                bias_score = await self._evaluate_single_bias(
+                    principle_text, template, category
+                )
                 bias_scores.append(bias_score)
 
                 if bias_score > 0.5:  # Potential bias detected
@@ -300,7 +306,7 @@ class CollectiveConstitutionalAI:
             self.metrics.record_timing("bias_evaluation_duration", evaluation_time)
 
             logger.debug(
-                f"BBQ evaluation completed",
+                "BBQ evaluation completed",
                 category=category.value,
                 bias_score=overall_bias,
                 confidence=confidence,
@@ -394,8 +400,12 @@ class CollectiveConstitutionalAI:
         template_lower = template.lower()
 
         # Count bias-related keywords in both texts
-        principle_keyword_count = sum(1 for keyword in keywords if keyword in principle_lower)
-        template_keyword_count = sum(1 for keyword in keywords if keyword in template_lower)
+        principle_keyword_count = sum(
+            1 for keyword in keywords if keyword in principle_lower
+        )
+        template_keyword_count = sum(
+            1 for keyword in keywords if keyword in template_lower
+        )
 
         # Calculate bias score based on keyword overlap and context
         total_keywords = principle_keyword_count + template_keyword_count
@@ -416,7 +426,7 @@ class CollectiveConstitutionalAI:
 
     async def aggregate_collective_input(
         self, conversation_id: str, min_consensus: float = 0.6
-    ) -> List[CollectiveInput]:
+    ) -> list[CollectiveInput]:
         """
         Aggregate collective input from Polis conversation.
 
@@ -453,7 +463,9 @@ class CollectiveConstitutionalAI:
                                         input_id=str(uuid.uuid4()),
                                         source="polis",
                                         content=statement.get("text", ""),
-                                        participant_id=statement.get("participant_id", "anonymous"),
+                                        participant_id=statement.get(
+                                            "participant_id", "anonymous"
+                                        ),
                                         timestamp=datetime.fromisoformat(
                                             statement.get("created_at")
                                         ),
@@ -479,7 +491,7 @@ class CollectiveConstitutionalAI:
                     source="mock",
                     content=content,
                     participant_id=f"participant_{i}",
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                     weight=0.7 + (i * 0.1),  # Varying consensus levels
                     validated=True,
                 )
@@ -487,17 +499,21 @@ class CollectiveConstitutionalAI:
 
         # Update conversation with consensus statements
         conversation.consensus_statements = [ci.content for ci in collective_inputs]
-        conversation.participant_count = len(set(ci.participant_id for ci in collective_inputs))
+        conversation.participant_count = len(
+            {ci.participant_id for ci in collective_inputs}
+        )
 
-        self.metrics.record_value("collective_inputs_aggregated", len(collective_inputs))
+        self.metrics.record_value(
+            "collective_inputs_aggregated", len(collective_inputs)
+        )
 
         return collective_inputs
 
     async def synthesize_democratic_principle(
         self,
         topic: str,
-        collective_inputs: List[CollectiveInput],
-        existing_principle: Optional[ConstitutionalPrinciple] = None,
+        collective_inputs: list[CollectiveInput],
+        existing_principle: ConstitutionalPrinciple | None = None,
     ) -> DemocraticPrinciple:
         """
         Synthesize a democratic constitutional principle from collective input.
@@ -540,8 +556,8 @@ class CollectiveConstitutionalAI:
             legitimacy_level=legitimacy_level,
             bias_evaluation=bias_evaluation,
             stakeholder_agreement=stakeholder_agreement,
-            created_at=datetime.now(timezone.utc),
-            last_updated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_updated=datetime.now(UTC),
         )
 
         self.democratic_principles[principle_id] = democratic_principle
@@ -553,7 +569,7 @@ class CollectiveConstitutionalAI:
         )
 
         logger.info(
-            f"Synthesized democratic principle",
+            "Synthesized democratic principle",
             principle_id=principle_id,
             legitimacy_level=legitimacy_level.value,
             stakeholder_agreement=stakeholder_agreement,
@@ -562,7 +578,9 @@ class CollectiveConstitutionalAI:
 
         return democratic_principle
 
-    async def _synthesize_principle_text(self, collective_inputs: List[CollectiveInput]) -> str:
+    async def _synthesize_principle_text(
+        self, collective_inputs: list[CollectiveInput]
+    ) -> str:
         """
         Synthesize principle text from collective inputs.
 
@@ -585,7 +603,9 @@ class CollectiveConstitutionalAI:
         )
 
         for i, content in enumerate(high_consensus_content):
-            synthesized_text += f"({i+1}) {content[:100]}{'...' if len(content) > 100 else ''}; "
+            synthesized_text += (
+                f"({i+1}) {content[:100]}{'...' if len(content) > 100 else ''}; "
+            )
 
         synthesized_text += (
             f"This principle reflects a stakeholder agreement level of "
@@ -595,7 +615,9 @@ class CollectiveConstitutionalAI:
 
         return synthesized_text
 
-    def _calculate_bias_reduction(self, bias_evaluation: List[BiasEvaluationResult]) -> float:
+    def _calculate_bias_reduction(
+        self, bias_evaluation: list[BiasEvaluationResult]
+    ) -> float:
         """Calculate overall bias reduction achieved."""
         if not bias_evaluation:
             return 0.0
@@ -609,7 +631,7 @@ class CollectiveConstitutionalAI:
 
         return max(0.0, bias_reduction)
 
-    async def monitor_democratic_legitimacy(self) -> Dict[str, Any]:
+    async def monitor_democratic_legitimacy(self) -> dict[str, Any]:
         """
         Monitor democratic legitimacy metrics across all principles.
 
@@ -657,7 +679,9 @@ class CollectiveConstitutionalAI:
 
         # Calculate trend analysis
         recent_principles = [
-            p for p in principles if p.created_at > datetime.now(timezone.utc) - timedelta(days=30)
+            p
+            for p in principles
+            if p.created_at > datetime.now(UTC) - timedelta(days=30)
         ]
 
         metrics = {
@@ -672,8 +696,10 @@ class CollectiveConstitutionalAI:
             ),
             "bias_by_category": bias_by_category,
             "active_conversations": len(self.active_conversations),
-            "democratic_legitimacy_score": self._calculate_overall_legitimacy_score(principles),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "democratic_legitimacy_score": self._calculate_overall_legitimacy_score(
+                principles
+            ),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         # Record metrics for monitoring
@@ -686,7 +712,9 @@ class CollectiveConstitutionalAI:
 
         return metrics
 
-    def _calculate_overall_legitimacy_score(self, principles: List[DemocraticPrinciple]) -> float:
+    def _calculate_overall_legitimacy_score(
+        self, principles: list[DemocraticPrinciple]
+    ) -> float:
         """Calculate overall democratic legitimacy score."""
         if not principles:
             return 0.0
@@ -708,7 +736,7 @@ class CollectiveConstitutionalAI:
 
 
 # Global instance
-_collective_constitutional_ai: Optional[CollectiveConstitutionalAI] = None
+_collective_constitutional_ai: CollectiveConstitutionalAI | None = None
 
 
 def get_collective_constitutional_ai() -> CollectiveConstitutionalAI:

@@ -4,12 +4,13 @@ Handles digital signatures, key management, Merkle trees, and timestamping
 """
 
 import base64
-from datetime import datetime, timezone
-from typing import Any, Dict
+from datetime import UTC, datetime
+from typing import Any
 
-from app.database import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.database import get_async_db
 
 # from app.core.auth import require_internal_service, User
 
@@ -67,7 +68,7 @@ async def generate_crypto_key(
             purpose=key_request.key_purpose,
             key_size=key_request.key_size,
             expires_days=(
-                (key_request.expires_at - datetime.now(timezone.utc)).days
+                (key_request.expires_at - datetime.now(UTC)).days
                 if key_request.expires_at
                 else None
             ),
@@ -119,7 +120,9 @@ async def rotate_crypto_key(
 ):
     """Rotate cryptographic key"""
     try:
-        new_key_info = await key_manager.rotate_key(db=db, old_key_id=key_id, reason=reason)
+        new_key_info = await key_manager.rotate_key(
+            db=db, old_key_id=key_id, reason=reason
+        )
         return new_key_info
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -159,7 +162,9 @@ async def sign_data(
                 db=db, purpose=signature_request.purpose
             )
             if not key_info or key_info["key_id"] != signature_request.key_id:
-                raise HTTPException(status_code=404, detail="Specified key not found or inactive")
+                raise HTTPException(
+                    status_code=404, detail="Specified key not found or inactive"
+                )
         else:
             # Use active key for purpose
             key_info = await key_manager.get_active_signing_key(
@@ -183,7 +188,7 @@ async def sign_data(
             signature=signature_b64,
             key_id=key_info["key_id"],
             algorithm="RSA-PSS-SHA256",
-            signed_at=datetime.now(timezone.utc),
+            signed_at=datetime.now(UTC),
         )
 
     except HTTPException:
@@ -201,7 +206,9 @@ async def verify_signature(
     """Verify digital signature"""
     try:
         # Get public key
-        public_key_pem = await key_manager.get_public_key(db=db, key_id=verification_request.key_id)
+        public_key_pem = await key_manager.get_public_key(
+            db=db, key_id=verification_request.key_id
+        )
         if not public_key_pem:
             raise HTTPException(status_code=404, detail="Key not found")
 
@@ -218,13 +225,15 @@ async def verify_signature(
         return SignatureVerificationResult(
             is_valid=is_valid,
             key_id=verification_request.key_id,
-            verified_at=datetime.now(timezone.utc),
+            verified_at=datetime.now(UTC),
         )
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to verify signature: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to verify signature: {str(e)}"
+        )
 
 
 # --- Merkle Tree Endpoints ---
@@ -247,7 +256,9 @@ async def build_merkle_tree(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to build Merkle tree: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to build Merkle tree: {str(e)}"
+        )
 
 
 @router.post("/merkle/proof", response_model=MerkleProof)
@@ -268,7 +279,9 @@ async def generate_merkle_proof(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate Merkle proof: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to generate Merkle proof: {str(e)}"
+        )
 
 
 @router.post("/merkle/verify", response_model=MerkleProofResult)
@@ -291,7 +304,9 @@ async def verify_merkle_proof(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to verify Merkle proof: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to verify Merkle proof: {str(e)}"
+        )
 
 
 # --- Timestamp Endpoints ---
@@ -320,7 +335,9 @@ async def create_timestamp(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create timestamp: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to create timestamp: {str(e)}"
+        )
 
 
 @router.post("/timestamp/verify", response_model=TimestampVerificationResult)
@@ -349,7 +366,9 @@ async def verify_timestamp(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to verify timestamp: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to verify timestamp: {str(e)}"
+        )
 
 
 # --- Hash Utility Endpoints ---
@@ -357,7 +376,7 @@ async def verify_timestamp(
 
 @router.post("/hash")
 async def generate_hash(
-    data: Dict[str, Any], current_user: User = Depends(require_internal_service)
+    data: dict[str, Any], current_user: User = Depends(require_internal_service)
 ):
     """Generate SHA3-256 hash of data"""
     try:
@@ -371,8 +390,10 @@ async def generate_hash(
         return {
             "hash": hash_value,
             "algorithm": "SHA3-256",
-            "generated_at": datetime.now(timezone.utc),
+            "generated_at": datetime.now(UTC),
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate hash: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to generate hash: {str(e)}"
+        )

@@ -6,8 +6,8 @@ the overall federated evaluation lifecycle.
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict
+from datetime import UTC, datetime
+from typing import Any
 
 from .federated_evaluator import federated_evaluator
 from .privacy_metrics import differential_privacy_manager
@@ -59,7 +59,7 @@ class FederatedCoordinator:
             logger.error(f"Failed to initialize Federated Coordinator: {e}")
             raise
 
-    async def coordinate_evaluation(self, evaluation_request: Dict[str, Any]) -> str:
+    async def coordinate_evaluation(self, evaluation_request: dict[str, Any]) -> str:
         """
         Coordinate a federated evaluation across multiple nodes.
 
@@ -87,7 +87,7 @@ class FederatedCoordinator:
             logger.error(f"Failed to coordinate evaluation: {e}")
             raise
 
-    async def get_coordination_status(self) -> Dict[str, Any]:
+    async def get_coordination_status(self) -> dict[str, Any]:
         """Get the status of the federated coordinator."""
         return {
             "is_initialized": self.is_initialized,
@@ -96,12 +96,14 @@ class FederatedCoordinator:
                 "federated_evaluator": (
                     "initialized" if federated_evaluator else "not_initialized"
                 ),
-                "secure_aggregator": ("initialized" if secure_aggregator else "not_initialized"),
+                "secure_aggregator": (
+                    "initialized" if secure_aggregator else "not_initialized"
+                ),
                 "privacy_manager": (
                     "initialized" if differential_privacy_manager else "not_initialized"
                 ),
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     async def shutdown(self):

@@ -11,7 +11,7 @@ Comprehensive ACGS-PGP System Testing and Validation Script
 
 This script conducts systematic testing of all ACGS-PGP microservices in the following priority order:
 1. API Endpoint Testing
-2. Cross-Service Integration Testing  
+2. Cross-Service Integration Testing
 3. Phase-Specific Feature Validation
 4. Production Readiness Assessment
 
@@ -25,7 +25,7 @@ import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 import psutil
@@ -49,7 +49,7 @@ class TestResult:
     test_name: str
     status: str  # PASS, FAIL, SKIP
     response_time: float
-    details: Dict[str, Any]
+    details: dict[str, Any]
     timestamp: datetime
 
 
@@ -94,9 +94,9 @@ class ACGSTestSuite:
             "gs_constitutional": "/api/v1/constitutional/synthesize",
             "pgc_evaluate": "/api/v1/evaluate/",
         }
-        self.test_results: List[TestResult] = []
-        self.auth_token: Optional[str] = None
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.test_results: list[TestResult] = []
+        self.auth_token: str | None = None
+        self.session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
         """Async context manager entry"""
@@ -112,7 +112,7 @@ class ACGSTestSuite:
             await self.session.close()
 
     def log_test_result(
-        self, test_name: str, status: str, response_time: float, details: Dict[str, Any]
+        self, test_name: str, status: str, response_time: float, details: dict[str, Any]
     ):
         """Log test result"""
         result = TestResult(
@@ -714,7 +714,7 @@ class ACGSTestSuite:
             )
             return False
 
-    async def test_performance_metrics(self) -> Dict[str, Any]:
+    async def test_performance_metrics(self) -> dict[str, Any]:
         """Test system performance metrics"""
         start_time = time.time()
 
@@ -727,7 +727,7 @@ class ACGSTestSuite:
                 try:
                     async with self.session.get(
                         f"{service.base_url}{service.health_endpoint}"
-                    ) as response:
+                    ):
                         service_time = time.time() - service_start
                         response_times[service_name] = service_time
                 except Exception:
@@ -762,7 +762,7 @@ class ACGSTestSuite:
             )
             return {}
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive test report"""
         total_tests = len(self.test_results)
         passed_tests = len([r for r in self.test_results if r.status == "PASS"])
@@ -853,7 +853,7 @@ class ACGSTestSuite:
             json.dump(report, f, indent=2)
 
         # Print summary
-        logger.info(f"\n🎉 Testing Complete!")
+        logger.info("\n🎉 Testing Complete!")
         logger.info(f"Total Tests: {report['summary']['total_tests']}")
         logger.info(f"Passed: {report['summary']['passed']}")
         logger.info(f"Failed: {report['summary']['failed']}")
@@ -870,8 +870,8 @@ class ACGSTestSuite:
                 f"System Memory Usage: {performance_data.get('memory_usage_percent', 'N/A')}%"
             )
 
-        logger.info(f"\nDetailed report saved to: acgs_comprehensive_test_report.json")
-        logger.info(f"Detailed logs saved to: acgs_validation_results.log")
+        logger.info("\nDetailed report saved to: acgs_comprehensive_test_report.json")
+        logger.info("Detailed logs saved to: acgs_validation_results.log")
 
         return report
 
