@@ -1,6 +1,5 @@
 import logging
 import re
-from typing import List, Optional
 
 import z3
 
@@ -23,7 +22,9 @@ class Z3SMTSolverClient:
         self.solver = z3.Solver()
         self.context_vars = {}  # Store Z3 variables for reuse
 
-    async def check_satisfiability(self, solver_input: SMTSolverInput) -> SMTSolverOutput:
+    async def check_satisfiability(
+        self, solver_input: SMTSolverInput
+    ) -> SMTSolverOutput:
         """
         Uses Z3 SMT solver to check if (Datalog Rules AND NOT ProofObligation) is satisfiable.
         - If SAT, it means the obligation is NOT entailed (verification fails).
@@ -42,7 +43,9 @@ class Z3SMTSolverClient:
             rule_constraints = self._convert_datalog_to_z3(solver_input.datalog_rules)
 
             # Convert proof obligations to Z3 constraints
-            obligation_constraints = self._convert_obligations_to_z3(solver_input.proof_obligations)
+            obligation_constraints = self._convert_obligations_to_z3(
+                solver_input.proof_obligations
+            )
 
             # Add rule constraints to solver
             for constraint in rule_constraints:
@@ -50,7 +53,9 @@ class Z3SMTSolverClient:
 
             # Check if (Rules AND NOT Obligations) is satisfiable
             # If UNSAT, then Rules => Obligations (verification passes)
-            negated_obligations = [z3.Not(obligation) for obligation in obligation_constraints]
+            negated_obligations = [
+                z3.Not(obligation) for obligation in obligation_constraints
+            ]
             for neg_obligation in negated_obligations:
                 self.solver.add(neg_obligation)
 
@@ -88,7 +93,7 @@ class Z3SMTSolverClient:
                 error_message=f"Z3 solver error: {str(e)}",
             )
 
-    def _convert_datalog_to_z3(self, datalog_rules: List[str]) -> List[z3.BoolRef]:
+    def _convert_datalog_to_z3(self, datalog_rules: list[str]) -> list[z3.BoolRef]:
         """
         Convert Datalog rules to Z3 constraints.
         This is a simplified conversion for common patterns.
@@ -105,7 +110,7 @@ class Z3SMTSolverClient:
 
         return constraints
 
-    def _parse_datalog_rule(self, rule: str) -> Optional[z3.BoolRef]:
+    def _parse_datalog_rule(self, rule: str) -> z3.BoolRef | None:
         """
         Parse a single Datalog rule into Z3 constraint.
         Handles common patterns like:
@@ -137,7 +142,9 @@ class Z3SMTSolverClient:
 
             # Create implication: body => head
             if body_preds:
-                body_conjunction = z3.And(*body_preds) if len(body_preds) > 1 else body_preds[0]
+                body_conjunction = (
+                    z3.And(*body_preds) if len(body_preds) > 1 else body_preds[0]
+                )
                 return z3.Implies(body_conjunction, head_pred)
             else:
                 # Fact (no body)
@@ -146,7 +153,7 @@ class Z3SMTSolverClient:
             # Simple fact
             return self._parse_predicate(rule.rstrip("."))
 
-    def _parse_predicate(self, predicate: str) -> Optional[z3.BoolRef]:
+    def _parse_predicate(self, predicate: str) -> z3.BoolRef | None:
         """
         Parse a predicate like 'has_role(User, admin)' into Z3 boolean variable.
         """
@@ -176,7 +183,7 @@ class Z3SMTSolverClient:
                 self.context_vars[var_name] = z3.Bool(var_name)
             return self.context_vars[var_name]
 
-    def _convert_obligations_to_z3(self, obligations: List[str]) -> List[z3.BoolRef]:
+    def _convert_obligations_to_z3(self, obligations: list[str]) -> list[z3.BoolRef]:
         """
         Convert proof obligations to Z3 constraints.
         """
@@ -192,7 +199,7 @@ class Z3SMTSolverClient:
 
         return constraints
 
-    def _parse_obligation(self, obligation: str) -> Optional[z3.BoolRef]:
+    def _parse_obligation(self, obligation: str) -> z3.BoolRef | None:
         """
         Parse a proof obligation into Z3 constraint.
         Obligations are typically safety properties or invariants.
@@ -251,7 +258,9 @@ class MockSMTSolverClient:
     Fallback mock implementation for testing when Z3 is not available.
     """
 
-    async def check_satisfiability(self, solver_input: SMTSolverInput) -> SMTSolverOutput:
+    async def check_satisfiability(
+        self, solver_input: SMTSolverInput
+    ) -> SMTSolverOutput:
         """
         Mock implementation for backward compatibility.
         """
@@ -311,12 +320,14 @@ except Exception as e:
 
 
 async def verify_rules_against_obligations(
-    datalog_rules: List[str], proof_obligations: List[str]
+    datalog_rules: list[str], proof_obligations: list[str]
 ) -> SMTSolverOutput:
     """
     Helper function to prepare input and call the SMT solver (Z3 or mock).
     """
-    solver_input = SMTSolverInput(datalog_rules=datalog_rules, proof_obligations=proof_obligations)
+    solver_input = SMTSolverInput(
+        datalog_rules=datalog_rules, proof_obligations=proof_obligations
+    )
 
     # Use the available SMT solver (Z3 or mock)
     return await smt_solver_client.check_satisfiability(solver_input)
@@ -358,7 +369,9 @@ if __name__ == "__main__":
         rules3 = [
             "access_denied(User, Resource) :- true.",  # Always deny access
         ]
-        obligations3 = ["ensure_role_based_access_for_principle_1."]  # But we need access
+        obligations3 = [
+            "ensure_role_based_access_for_principle_1."
+        ]  # But we need access
 
         output3 = await verify_rules_against_obligations(rules3, obligations3)
         print(f"Test 3 (Contradiction): {output3.model_dump_json(indent=2)}\n")
@@ -372,18 +385,24 @@ if __name__ == "__main__":
         """Test mock SMT solver for backward compatibility."""
         print("=== Testing Mock SMT Solver ===")
 
-        rules1 = ["user_role_is(User, 'admin') :- has_attribute(User, 'role', 'admin')."]
+        rules1 = [
+            "user_role_is(User, 'admin') :- has_attribute(User, 'role', 'admin')."
+        ]
         obligations1 = ["ensure_role_based_access_for_principle_1."]
 
         # Force use of mock solver
         mock_client = MockSMTSolverClient()
-        solver_input = SMTSolverInput(datalog_rules=rules1, proof_obligations=obligations1)
+        solver_input = SMTSolverInput(
+            datalog_rules=rules1, proof_obligations=obligations1
+        )
         output1 = await mock_client.check_satisfiability(solver_input)
         print(f"Mock Test 1: {output1.model_dump_json(indent=2)}\n")
 
         # Test failure case
         obligations2 = ["fail_verification_for_obligation_2."]
-        solver_input2 = SMTSolverInput(datalog_rules=rules1, proof_obligations=obligations2)
+        solver_input2 = SMTSolverInput(
+            datalog_rules=rules1, proof_obligations=obligations2
+        )
         output2 = await mock_client.check_satisfiability(solver_input2)
         print(f"Mock Test 2 (Failure): {output2.model_dump_json(indent=2)}\n")
 

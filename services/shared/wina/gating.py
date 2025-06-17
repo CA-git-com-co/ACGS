@@ -8,9 +8,9 @@ as part of the WINA (Weight Informed Neuron Activation) system.
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 import torch
@@ -65,12 +65,12 @@ class GatingDecision:
     strategy_used: GatingStrategy
 
     # Enhanced tracking fields
-    constitutional_compliance: Optional[float] = None
-    performance_impact: Optional[float] = None
-    adaptation_factor: Optional[float] = None
-    confidence_score: Optional[float] = None
+    constitutional_compliance: float | None = None
+    performance_impact: float | None = None
+    adaptation_factor: float | None = None
+    confidence_score: float | None = None
     fallback_applied: bool = False
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -117,9 +117,9 @@ class NeuronGate:
         self.neuron_id = neuron_id
         self.layer_name = layer_name
         self.is_active = True
-        self.activation_history: List[bool] = []
-        self.score_history: List[float] = []
-        self.last_activation_time = datetime.now(timezone.utc)
+        self.activation_history: list[bool] = []
+        self.score_history: list[float] = []
+        self.last_activation_time = datetime.now(UTC)
 
     def update_activation(self, is_active: bool, score: float) -> None:
         """
@@ -132,14 +132,14 @@ class NeuronGate:
         self.is_active = is_active
         self.activation_history.append(is_active)
         self.score_history.append(score)
-        self.last_activation_time = datetime.now(timezone.utc)
+        self.last_activation_time = datetime.now(UTC)
 
         # Keep history limited to prevent memory growth
         if len(self.activation_history) > 1000:
             self.activation_history = self.activation_history[-500:]
             self.score_history = self.score_history[-500:]
 
-    def get_activation_statistics(self) -> Dict[str, float]:
+    def get_activation_statistics(self) -> dict[str, float]:
         """
         Get activation statistics for this neuron.
 
@@ -179,8 +179,8 @@ class RuntimeGating:
             config: WINA configuration
         """
         self.config = config
-        self.gates: Dict[str, Dict[int, NeuronGate]] = {}
-        self.gating_decisions: List[GatingDecision] = []
+        self.gates: dict[str, dict[int, NeuronGate]] = {}
+        self.gating_decisions: list[GatingDecision] = []
         self.performance_metrics = GatingPerformance(0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
         # Gating strategies
@@ -195,12 +195,14 @@ class RuntimeGating:
         }
 
         # Enhanced tracking for adaptive strategies
-        self.layer_performance_history: Dict[str, List[float]] = {}
-        self.constitutional_compliance_history: Dict[str, List[float]] = {}
+        self.layer_performance_history: dict[str, list[float]] = {}
+        self.constitutional_compliance_history: dict[str, list[float]] = {}
         self.adaptation_learning_rate = 0.1
         self.performance_window_size = 10
 
-        logger.info(f"Initialized runtime gating with threshold: {config.gating_threshold}")
+        logger.info(
+            f"Initialized runtime gating with threshold: {config.gating_threshold}"
+        )
 
     def initialize_layer_gates(self, layer_name: str, num_neurons: int) -> None:
         """
@@ -223,7 +225,7 @@ class RuntimeGating:
         self,
         layer_name: str,
         wina_scores: np.ndarray,
-        strategy: Optional[GatingStrategy] = None,
+        strategy: GatingStrategy | None = None,
     ) -> GatingDecision:
         """
         Make gating decision for a layer based on WINA scores.
@@ -255,7 +257,9 @@ class RuntimeGating:
             sparsity_achieved = len(inactive_neurons) / len(wina_scores)
 
             # Update neuron gates
-            self._update_neuron_gates(layer_name, active_neurons, inactive_neurons, wina_scores)
+            self._update_neuron_gates(
+                layer_name, active_neurons, inactive_neurons, wina_scores
+            )
 
             decision_time = time.time() - start_time
 
@@ -263,7 +267,9 @@ class RuntimeGating:
             constitutional_compliance = self._calculate_constitutional_compliance(
                 layer_name, wina_scores, active_neurons
             )
-            performance_impact = self._estimate_performance_impact(layer_name, sparsity_achieved)
+            performance_impact = self._estimate_performance_impact(
+                layer_name, sparsity_achieved
+            )
             confidence_score = self._calculate_confidence_score(
                 wina_scores, active_neurons, strategy
             )
@@ -350,10 +356,14 @@ class RuntimeGating:
             return masked_input
 
         except Exception as e:
-            logger.error(f"Failed to apply gating mask for {gating_decision.layer_name}: {e}")
+            logger.error(
+                f"Failed to apply gating mask for {gating_decision.layer_name}: {e}"
+            )
             raise WINAGatingError(f"Mask application failed: {e}")
 
-    def _select_strategy(self, layer_name: str, wina_scores: np.ndarray) -> GatingStrategy:
+    def _select_strategy(
+        self, layer_name: str, wina_scores: np.ndarray
+    ) -> GatingStrategy:
         """
         Select appropriate gating strategy based on layer and scores.
 
@@ -372,7 +382,9 @@ class RuntimeGating:
         else:
             return GatingStrategy.THRESHOLD_BASED
 
-    def _top_k_gating(self, layer_name: str, wina_scores: np.ndarray) -> Tuple[np.ndarray, float]:
+    def _top_k_gating(
+        self, layer_name: str, wina_scores: np.ndarray
+    ) -> tuple[np.ndarray, float]:
         """
         Top-K gating strategy.
 
@@ -400,7 +412,7 @@ class RuntimeGating:
 
     def _threshold_gating(
         self, layer_name: str, wina_scores: np.ndarray
-    ) -> Tuple[np.ndarray, float]:
+    ) -> tuple[np.ndarray, float]:
         """
         Threshold-based gating strategy.
 
@@ -427,7 +439,7 @@ class RuntimeGating:
 
     def _adaptive_gating(
         self, layer_name: str, wina_scores: np.ndarray
-    ) -> Tuple[np.ndarray, float]:
+    ) -> tuple[np.ndarray, float]:
         """
         Adaptive gating strategy that adjusts based on score distribution.
 
@@ -469,7 +481,7 @@ class RuntimeGating:
 
     def _probabilistic_gating(
         self, layer_name: str, wina_scores: np.ndarray
-    ) -> Tuple[np.ndarray, float]:
+    ) -> tuple[np.ndarray, float]:
         """
         Probabilistic gating strategy based on score probabilities.
 
@@ -501,13 +513,15 @@ class RuntimeGating:
             p=probabilities / np.sum(probabilities),
         )
 
-        threshold = wina_scores[active_indices].min() if len(active_indices) > 0 else 0.0
+        threshold = (
+            wina_scores[active_indices].min() if len(active_indices) > 0 else 0.0
+        )
 
         return active_indices, threshold
 
     def _constitutional_aware_gating(
         self, layer_name: str, wina_scores: np.ndarray
-    ) -> Tuple[np.ndarray, float]:
+    ) -> tuple[np.ndarray, float]:
         """
         Constitutional-aware gating strategy that considers constitutional compliance.
 
@@ -556,7 +570,7 @@ class RuntimeGating:
 
     def _performance_adaptive_gating(
         self, layer_name: str, wina_scores: np.ndarray
-    ) -> Tuple[np.ndarray, float]:
+    ) -> tuple[np.ndarray, float]:
         """
         Performance-adaptive gating strategy that learns from performance history.
 
@@ -600,7 +614,9 @@ class RuntimeGating:
         target_sparsity = self.config.layer_specific_sparsity.get(
             layer_name, self.config.target_sparsity
         )
-        min_active = max(1, int(len(wina_scores) * (1 - min(target_sparsity + 0.2, 0.9))))
+        min_active = max(
+            1, int(len(wina_scores) * (1 - min(target_sparsity + 0.2, 0.9)))
+        )
         max_active = int(len(wina_scores) * (1 - max(target_sparsity - 0.2, 0.1)))
 
         if len(active_indices) < min_active:
@@ -616,7 +632,7 @@ class RuntimeGating:
 
     def _hybrid_dynamic_gating(
         self, layer_name: str, wina_scores: np.ndarray
-    ) -> Tuple[np.ndarray, float]:
+    ) -> tuple[np.ndarray, float]:
         """
         Hybrid dynamic gating that combines multiple strategies based on context.
 
@@ -675,12 +691,16 @@ class RuntimeGating:
         # Update active neurons
         for neuron_id in active_neurons:
             if neuron_id in self.gates[layer_name]:
-                self.gates[layer_name][neuron_id].update_activation(True, wina_scores[neuron_id])
+                self.gates[layer_name][neuron_id].update_activation(
+                    True, wina_scores[neuron_id]
+                )
 
         # Update inactive neurons
         for neuron_id in inactive_neurons:
             if neuron_id in self.gates[layer_name]:
-                self.gates[layer_name][neuron_id].update_activation(False, wina_scores[neuron_id])
+                self.gates[layer_name][neuron_id].update_activation(
+                    False, wina_scores[neuron_id]
+                )
 
     def _update_performance_metrics(self, decision: GatingDecision) -> None:
         """
@@ -696,16 +716,20 @@ class RuntimeGating:
         # Update averages
         total = self.performance_metrics.total_decisions
         self.performance_metrics.average_decision_time = (
-            self.performance_metrics.average_decision_time * (total - 1) + decision.decision_time
+            self.performance_metrics.average_decision_time * (total - 1)
+            + decision.decision_time
         ) / total
         self.performance_metrics.average_sparsity = (
-            self.performance_metrics.average_sparsity * (total - 1) + decision.sparsity_achieved
+            self.performance_metrics.average_sparsity * (total - 1)
+            + decision.sparsity_achieved
         ) / total
 
         # Estimate GFLOPs reduction (simplified)
-        self.performance_metrics.gflops_reduction = self.performance_metrics.average_sparsity
+        self.performance_metrics.gflops_reduction = (
+            self.performance_metrics.average_sparsity
+        )
 
-    def get_layer_statistics(self, layer_name: str) -> Dict[str, Any]:
+    def get_layer_statistics(self, layer_name: str) -> dict[str, Any]:
         """
         Get statistics for a specific layer.
 
@@ -730,17 +754,25 @@ class RuntimeGating:
             average_scores.append(stats["average_score"])
 
         # Layer-specific decisions
-        layer_decisions = [d for d in self.gating_decisions if d.layer_name == layer_name]
+        layer_decisions = [
+            d for d in self.gating_decisions if d.layer_name == layer_name
+        ]
 
         return {
             "num_neurons": len(gates),
-            "average_activation_rate": (np.mean(activation_rates) if activation_rates else 0.0),
+            "average_activation_rate": (
+                np.mean(activation_rates) if activation_rates else 0.0
+            ),
             "average_score": np.mean(average_scores) if average_scores else 0.0,
             "total_decisions": len(layer_decisions),
             "average_sparsity": (
-                np.mean([d.sparsity_achieved for d in layer_decisions]) if layer_decisions else 0.0
+                np.mean([d.sparsity_achieved for d in layer_decisions])
+                if layer_decisions
+                else 0.0
             ),
-            "strategies_used": list(set([d.strategy_used.value for d in layer_decisions])),
+            "strategies_used": list(
+                {d.strategy_used.value for d in layer_decisions}
+            ),
         }
 
     def get_performance_metrics(self) -> GatingPerformance:
@@ -777,7 +809,9 @@ class RuntimeGating:
             actual_sparsity = 1.0 - (len(active_neurons) / len(wina_scores))
 
             # Compliance score based on how close we are to target
-            sparsity_compliance = 1.0 - abs(actual_sparsity - target_sparsity) / target_sparsity
+            sparsity_compliance = (
+                1.0 - abs(actual_sparsity - target_sparsity) / target_sparsity
+            )
 
             # Additional compliance factors
             score_distribution_compliance = self._assess_score_distribution_compliance(
@@ -785,7 +819,9 @@ class RuntimeGating:
             )
 
             # Combined compliance score
-            compliance_score = 0.7 * sparsity_compliance + 0.3 * score_distribution_compliance
+            compliance_score = (
+                0.7 * sparsity_compliance + 0.3 * score_distribution_compliance
+            )
 
             # Update compliance history
             if layer_name not in self.constitutional_compliance_history:
@@ -807,10 +843,14 @@ class RuntimeGating:
             return max(0.0, min(1.0, compliance_score))
 
         except Exception as e:
-            logger.warning(f"Constitutional compliance calculation failed for {layer_name}: {e}")
+            logger.warning(
+                f"Constitutional compliance calculation failed for {layer_name}: {e}"
+            )
             return 0.5  # Neutral score on error
 
-    def _estimate_performance_impact(self, layer_name: str, sparsity_achieved: float) -> float:
+    def _estimate_performance_impact(
+        self, layer_name: str, sparsity_achieved: float
+    ) -> float:
         """Estimate performance impact of gating decision."""
         try:
             # Base performance impact from sparsity
@@ -837,15 +877,22 @@ class RuntimeGating:
             self.layer_performance_history[layer_name].append(performance_impact)
 
             # Keep only recent history
-            if len(self.layer_performance_history[layer_name]) > self.performance_window_size:
-                self.layer_performance_history[layer_name] = self.layer_performance_history[
-                    layer_name
-                ][-self.performance_window_size :]
+            if (
+                len(self.layer_performance_history[layer_name])
+                > self.performance_window_size
+            ):
+                self.layer_performance_history[layer_name] = (
+                    self.layer_performance_history[layer_name][
+                        -self.performance_window_size :
+                    ]
+                )
 
             return max(0.0, min(1.0, performance_impact))
 
         except Exception as e:
-            logger.warning(f"Performance impact estimation failed for {layer_name}: {e}")
+            logger.warning(
+                f"Performance impact estimation failed for {layer_name}: {e}"
+            )
             return 0.5  # Neutral score on error
 
     def _calculate_confidence_score(
@@ -884,7 +931,9 @@ class RuntimeGating:
             logger.warning(f"Confidence score calculation failed: {e}")
             return 0.5  # Neutral score on error
 
-    def _get_adaptation_factor(self, layer_name: str, strategy: GatingStrategy) -> float:
+    def _get_adaptation_factor(
+        self, layer_name: str, strategy: GatingStrategy
+    ) -> float:
         """Get adaptation factor for the layer and strategy."""
         if strategy in [
             GatingStrategy.ADAPTIVE,
@@ -906,7 +955,11 @@ class RuntimeGating:
         layer_name_lower = layer_name.lower()
         if "attention" in layer_name_lower or "attn" in layer_name_lower:
             return "attention"
-        elif "feed" in layer_name_lower or "mlp" in layer_name_lower or "ffn" in layer_name_lower:
+        elif (
+            "feed" in layer_name_lower
+            or "mlp" in layer_name_lower
+            or "ffn" in layer_name_lower
+        ):
             return "feedforward"
         elif "embed" in layer_name_lower:
             return "embedding"

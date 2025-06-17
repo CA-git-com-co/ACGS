@@ -7,7 +7,6 @@ automatic resolution, semantic validation, and human escalation.
 """
 
 from datetime import datetime
-from typing import List
 
 import pytest
 
@@ -43,26 +42,29 @@ sys.path.insert(0, str(project_root / "src/backend"))
 
 # Import models and services
 try:
-    from services.core.governance_synthesis.gs_service.app.models.reliability_models import ConstitutionalPrinciple
+    from services.core.governance_synthesis.gs_service.app.models.reliability_models import (
+        ConstitutionalPrinciple,
+    )
     from services.shared.models import Policy
 except ImportError:
     # Mock ConstitutionalPrinciple for testing
     from dataclasses import dataclass
-    from typing import Any, Dict, Optional
+    from typing import Any
 
     @dataclass
     class ConstitutionalPrinciple:
         id: str
         text: str
-        version: Optional[str] = None
-        source: Optional[str] = None
-        metadata: Dict[str, Any] = None
+        version: str | None = None
+        source: str | None = None
+        metadata: dict[str, Any] = None
 
     # Mock Policy if needed
     @dataclass
     class Policy:
         id: str
         content: str
+
 
 # Import QEC error correction services
 try:
@@ -183,8 +185,8 @@ class TestQECErrorCorrectionService:
     async def test_conflict_detection_engine(
         self,
         qec_service: QECErrorCorrectionService,
-        test_principles: List[ConstitutionalPrinciple],
-        test_policies: List[Policy],
+        test_principles: list[ConstitutionalPrinciple],
+        test_policies: list[Policy],
     ):
         """Test conflict detection between principles and policies."""
         # Test conflict detection
@@ -213,8 +215,8 @@ class TestQECErrorCorrectionService:
     async def test_automatic_resolution_workflow(
         self,
         qec_service: QECErrorCorrectionService,
-        test_principles: List[ConstitutionalPrinciple],
-        test_policies: List[Policy],
+        test_principles: list[ConstitutionalPrinciple],
+        test_policies: list[Policy],
         db_session: AsyncSession,
     ):
         """Test automatic conflict resolution workflow."""
@@ -247,8 +249,8 @@ class TestQECErrorCorrectionService:
     async def test_semantic_validation_engine(
         self,
         qec_service: QECErrorCorrectionService,
-        test_principles: List[ConstitutionalPrinciple],
-        test_policies: List[Policy],
+        test_principles: list[ConstitutionalPrinciple],
+        test_policies: list[Policy],
     ):
         """Test semantic validation and correction."""
         principle = test_principles[0]
@@ -272,8 +274,8 @@ class TestQECErrorCorrectionService:
     async def test_policy_refinement_suggester(
         self,
         qec_service: QECErrorCorrectionService,
-        test_principles: List[ConstitutionalPrinciple],
-        test_policies: List[Policy],
+        test_principles: list[ConstitutionalPrinciple],
+        test_policies: list[Policy],
     ):
         """Test policy refinement suggestions."""
         policy = test_policies[0]
@@ -304,8 +306,8 @@ class TestQECErrorCorrectionService:
     async def test_conflict_complexity_scorer(
         self,
         qec_service: QECErrorCorrectionService,
-        test_principles: List[ConstitutionalPrinciple],
-        test_policies: List[Policy],
+        test_principles: list[ConstitutionalPrinciple],
+        test_policies: list[Policy],
     ):
         """Test conflict complexity scoring."""
         # First detect conflicts
@@ -333,8 +335,8 @@ class TestQECErrorCorrectionService:
     async def test_parallel_conflict_processor(
         self,
         qec_service: QECErrorCorrectionService,
-        test_principles: List[ConstitutionalPrinciple],
-        test_policies: List[Policy],
+        test_principles: list[ConstitutionalPrinciple],
+        test_policies: list[Policy],
         db_session: AsyncSession,
     ):
         """Test parallel conflict processing."""
@@ -363,8 +365,8 @@ class TestQECErrorCorrectionService:
     async def test_complete_error_correction_workflow(
         self,
         qec_service: QECErrorCorrectionService,
-        test_principles: List[ConstitutionalPrinciple],
-        test_policies: List[Policy],
+        test_principles: list[ConstitutionalPrinciple],
+        test_policies: list[Policy],
         db_session: AsyncSession,
     ):
         """Test complete error correction workflow."""
@@ -403,8 +405,8 @@ class TestQECErrorCorrectionService:
     async def test_performance_targets(
         self,
         qec_service: QECErrorCorrectionService,
-        test_principles: List[ConstitutionalPrinciple],
-        test_policies: List[Policy],
+        test_principles: list[ConstitutionalPrinciple],
+        test_policies: list[Policy],
         db_session: AsyncSession,
     ):
         """Test that performance targets are met."""

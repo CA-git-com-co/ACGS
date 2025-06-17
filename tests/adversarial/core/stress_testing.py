@@ -9,8 +9,7 @@ import asyncio
 import json
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from datetime import UTC, datetime
 
 import aiohttp
 import psutil
@@ -60,8 +59,8 @@ class StressTestingProtocol:
         }
 
     async def run_tests(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run stress testing protocols."""
         vulnerabilities = []
 
@@ -90,9 +89,9 @@ class StressTestingProtocol:
     async def _run_stress_vector(
         self,
         vector: str,
-        available_services: List[str],
-        service_endpoints: Dict[str, str],
-    ) -> List[VulnerabilityResult]:
+        available_services: list[str],
+        service_endpoints: dict[str, str],
+    ) -> list[VulnerabilityResult]:
         """Run a specific stress testing vector."""
 
         if vector == "high_load_stress_test":
@@ -131,8 +130,8 @@ class StressTestingProtocol:
             return []
 
     async def _run_high_load_stress_test(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run high-load stress testing."""
         vulnerabilities = []
         start_time = time.time()
@@ -211,15 +210,15 @@ class StressTestingProtocol:
                             failed_requests, len(results)
                         ),
                         execution_time_ms=(time.time() - start_time) * 1000,
-                        timestamp=datetime.now(timezone.utc),
+                        timestamp=datetime.now(UTC),
                     )
                 )
 
         return vulnerabilities
 
     async def _run_resource_exhaustion_attack(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run resource exhaustion attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -252,8 +251,8 @@ class StressTestingProtocol:
         return vulnerabilities
 
     async def _run_concurrent_request_flooding(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run concurrent request flooding attacks."""
         vulnerabilities = []
         start_time = time.time()
@@ -316,7 +315,7 @@ class StressTestingProtocol:
                         ],
                         cvss_score=7.5,
                         execution_time_ms=(time.time() - start_time) * 1000,
-                        timestamp=datetime.now(timezone.utc),
+                        timestamp=datetime.now(UTC),
                     )
                 )
 
@@ -324,7 +323,7 @@ class StressTestingProtocol:
 
     async def _stress_test_service(
         self, endpoint: str, service_name: str, request_id: int
-    ) -> Dict:
+    ) -> dict:
         """Perform stress test on a single service."""
         try:
             async with aiohttp.ClientSession() as session:
@@ -355,7 +354,7 @@ class StressTestingProtocol:
 
     async def _flooding_request(
         self, endpoint: str, service_name: str, request_id: int
-    ) -> Dict:
+    ) -> dict:
         """Perform flooding request."""
         try:
             async with aiohttp.ClientSession() as session:
@@ -385,7 +384,7 @@ class StressTestingProtocol:
 
     async def _test_memory_exhaustion(
         self, endpoint: str, service_name: str, start_time: float
-    ) -> Optional[VulnerabilityResult]:
+    ) -> VulnerabilityResult | None:
         """Test memory exhaustion vulnerability."""
         try:
             # Create large memory payload
@@ -425,7 +424,7 @@ class StressTestingProtocol:
                             ],
                             cvss_score=6.0,
                             execution_time_ms=(time.time() - start_time) * 1000,
-                            timestamp=datetime.now(timezone.utc),
+                            timestamp=datetime.now(UTC),
                         )
 
         except Exception as e:
@@ -435,14 +434,14 @@ class StressTestingProtocol:
 
     async def _test_cpu_exhaustion(
         self, endpoint: str, service_name: str, start_time: float
-    ) -> Optional[VulnerabilityResult]:
+    ) -> VulnerabilityResult | None:
         """Test CPU exhaustion vulnerability."""
         # Implementation for CPU exhaustion testing
         return None
 
     async def _test_connection_exhaustion(
         self, endpoint: str, service_name: str, start_time: float
-    ) -> Optional[VulnerabilityResult]:
+    ) -> VulnerabilityResult | None:
         """Test connection exhaustion vulnerability."""
         # Implementation for connection exhaustion testing
         return None
@@ -520,36 +519,36 @@ class StressTestingProtocol:
             return 3.0
 
     async def _run_memory_stress_test(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run memory stress testing."""
         # Implementation for memory stress testing
         return []
 
     async def _run_cpu_stress_test(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run CPU stress testing."""
         # Implementation for CPU stress testing
         return []
 
     async def _run_database_stress_test(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run database stress testing."""
         # Implementation for database stress testing
         return []
 
     async def _run_network_stress_test(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run network stress testing."""
         # Implementation for network stress testing
         return []
 
     async def _run_disk_io_stress_test(
-        self, available_services: List[str], service_endpoints: Dict[str, str]
-    ) -> List[VulnerabilityResult]:
+        self, available_services: list[str], service_endpoints: dict[str, str]
+    ) -> list[VulnerabilityResult]:
         """Run disk I/O stress testing."""
         # Implementation for disk I/O stress testing
         return []

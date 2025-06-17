@@ -46,15 +46,15 @@ ACGS-master/
 │   │   ├── integrity_service/    # Integrity & Verifiability Service
 │   │   ├── pgc_service/          # Protective Governance Controls Service
 │   │   └── shared/               # Shared backend modules
-│   ├── frontend/                 # React frontend
-│   └── alphaevolve_gs_engine/    # AlphaEvolve integration
+│   ├── applications/governance-dashboard/                 # React frontend
+│   └── integrations/alphaevolve-engine/    # AlphaEvolve integration
 ├── tests/                        # Centralized test directory
 │   ├── unit/                     # Unit tests by service
 │   ├── integration/              # Integration tests
 │   └── e2e/                      # End-to-end tests
 ├── config/                       # All configuration files
 │   ├── docker/                   # Docker configurations
-│   ├── k8s/                      # Kubernetes manifests
+│   ├── infrastructure/kubernetes/                      # Kubernetes manifests
 │   ├── env/                      # Environment files
 │   └── monitoring/               # Monitoring configurations
 ├── docs/                         # Documentation by type
@@ -81,10 +81,10 @@ cd ACGS-master
 cp config/env/.env.example .env
 
 # Start services
-docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up --build -d
 
 # Stop services
-docker-compose -f infrastructure/docker/docker-compose.yml down
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml down
 ```
 
 ### Testing
@@ -104,10 +104,10 @@ python3 scripts/validate_reorganization.py
 ### Database Migrations
 ```bash
 # Manual migration
-docker-compose -f infrastructure/docker/docker-compose.yml exec alembic-runner alembic upgrade head
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml exec alembic-runner alembic upgrade head
 
 # Create new migration
-docker-compose -f infrastructure/docker/docker-compose.yml exec alembic-runner alembic revision -m "message" --autogenerate
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml exec alembic-runner alembic revision -m "message" --autogenerate
 ```
 
 ## Benefits Achieved

@@ -2,7 +2,6 @@
 import base64
 import io
 import secrets
-from typing import List, Optional, Tuple
 
 import pyotp
 import qrcode
@@ -49,24 +48,26 @@ class MFAService:
         totp = pyotp.TOTP(secret)
         return totp.verify(code, valid_window=window)
 
-    def generate_backup_codes(self) -> List[str]:
+    def generate_backup_codes(self) -> list[str]:
         """Generate backup codes for MFA recovery."""
         codes = []
         for _ in range(self.backup_codes_count):
             # Generate 8-character alphanumeric codes
-            code = "".join(secrets.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") for _ in range(8))
+            code = "".join(
+                secrets.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") for _ in range(8)
+            )
             codes.append(code)
         return codes
 
-    def hash_backup_codes(self, codes: List[str]) -> List[str]:
+    def hash_backup_codes(self, codes: list[str]) -> list[str]:
         """Hash backup codes for secure storage."""
         from ..core.password import get_password_hash
 
         return [get_password_hash(code) for code in codes]
 
     def verify_backup_code(
-        self, hashed_codes: List[str], provided_code: str
-    ) -> Tuple[bool, Optional[int]]:
+        self, hashed_codes: list[str], provided_code: str
+    ) -> tuple[bool, int | None]:
         """Verify backup code and return index if valid."""
         from ..core.password import verify_password
 
@@ -124,7 +125,9 @@ class MFAService:
 
         return True
 
-    async def disable_mfa(self, db: AsyncSession, user_id: int, verification_code: str) -> bool:
+    async def disable_mfa(
+        self, db: AsyncSession, user_id: int, verification_code: str
+    ) -> bool:
         """Disable MFA after verification."""
         user = await crud_user.get_user(db, user_id=user_id)
         if not user:
@@ -135,7 +138,9 @@ class MFAService:
 
         # Verify with TOTP or backup code
         totp_valid = self.verify_totp_code(user.mfa_secret, verification_code)
-        backup_valid, _ = self.verify_backup_code(user.backup_codes or [], verification_code)
+        backup_valid, _ = self.verify_backup_code(
+            user.backup_codes or [], verification_code
+        )
 
         if not (totp_valid or backup_valid):
             raise HTTPException(status_code=400, detail="Invalid verification code")
@@ -159,7 +164,9 @@ class MFAService:
             return {"method": "totp", "valid": True}
 
         # Try backup code
-        backup_valid, backup_index = self.verify_backup_code(user.backup_codes or [], code)
+        backup_valid, backup_index = self.verify_backup_code(
+            user.backup_codes or [], code
+        )
         if backup_valid:
             # Remove used backup code
             backup_codes = user.backup_codes.copy()
@@ -177,7 +184,7 @@ class MFAService:
 
     async def regenerate_backup_codes(
         self, db: AsyncSession, user_id: int, totp_code: str
-    ) -> List[str]:
+    ) -> list[str]:
         """Regenerate backup codes after TOTP verification."""
         user = await crud_user.get_user(db, user_id=user_id)
         if not user or not user.mfa_enabled:

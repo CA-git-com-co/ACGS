@@ -9,7 +9,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 
@@ -30,9 +30,9 @@ class PolicyBundle:
     """Represents a policy bundle for OPA."""
 
     name: str
-    policies: Dict[str, str]
-    data: Dict[str, Any] = field(default_factory=dict)
-    manifest: Dict[str, Any] = field(default_factory=dict)
+    policies: dict[str, str]
+    data: dict[str, Any] = field(default_factory=dict)
+    manifest: dict[str, Any] = field(default_factory=dict)
     revision: str = ""
     etag: str = ""
 
@@ -41,9 +41,9 @@ class PolicyBundle:
 class PolicyEvaluationRequest:
     """Request for policy evaluation."""
 
-    input_data: Dict[str, Any]
+    input_data: dict[str, Any]
     query: str
-    unknowns: List[str] = field(default_factory=list)
+    unknowns: list[str] = field(default_factory=list)
     explain: str = "off"  # off, full, notes, fails
     metrics: bool = True
     instrument: bool = False
@@ -56,9 +56,9 @@ class PolicyEvaluationResponse:
 
     result: Any
     decision_id: str
-    metrics: Dict[str, Any] = field(default_factory=dict)
-    explanation: List[Dict[str, Any]] = field(default_factory=list)
-    provenance: Dict[str, Any] = field(default_factory=dict)
+    metrics: dict[str, Any] = field(default_factory=dict)
+    explanation: list[dict[str, Any]] = field(default_factory=list)
+    provenance: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -113,8 +113,8 @@ class OPAClient:
         )
 
         # State tracking for incremental compilation
-        self._policy_cache: Dict[str, str] = {}
-        self._policy_etags: Dict[str, str] = {}
+        self._policy_cache: dict[str, str] = {}
+        self._policy_etags: dict[str, str] = {}
         self._bundle_revision: str = ""
         self._last_compilation_time: float = 0
 
@@ -137,7 +137,7 @@ class OPAClient:
             logger.error(f"OPA health check failed: {e}")
             return False
 
-    async def get_server_info(self) -> Dict[str, Any]:
+    async def get_server_info(self) -> dict[str, Any]:
         """Get OPA server information and capabilities."""
         try:
             response = await self.client.get(f"{self.server_url}/")
@@ -147,7 +147,9 @@ class OPAClient:
             logger.error(f"Failed to get OPA server info: {e}")
             return {}
 
-    async def evaluate_policy(self, request: PolicyEvaluationRequest) -> PolicyEvaluationResponse:
+    async def evaluate_policy(
+        self, request: PolicyEvaluationRequest
+    ) -> PolicyEvaluationResponse:
         """
         Evaluate a policy query against the current policy set.
 
@@ -268,7 +270,7 @@ class OPAClient:
             logger.error(f"Failed to delete policy {policy_path}: {e}")
             return False
 
-    async def get_metrics(self) -> Dict[str, Any]:
+    async def get_metrics(self) -> dict[str, Any]:
         """Get OPA server metrics and client metrics."""
         try:
             # Get server metrics
@@ -293,7 +295,7 @@ class OPAClient:
             logger.error(f"Failed to get metrics: {e}")
             return {"client": self._metrics.copy()}
 
-    def _detect_policy_changes(self, bundle: PolicyBundle) -> Dict[str, str]:
+    def _detect_policy_changes(self, bundle: PolicyBundle) -> dict[str, str]:
         """Detect which policies have changed since last upload."""
         changed_policies = {}
 
@@ -310,7 +312,7 @@ class OPAClient:
 
         return changed_policies
 
-    async def _upload_incremental_policies(self, policies: Dict[str, str]) -> None:
+    async def _upload_incremental_policies(self, policies: dict[str, str]) -> None:
         """Upload only changed policies for incremental compilation."""
         try:
             for policy_name, policy_content in policies.items():
@@ -374,7 +376,7 @@ class OPAClient:
 
 
 # Global OPA client instance
-_opa_client: Optional[OPAClient] = None
+_opa_client: OPAClient | None = None
 
 
 async def get_opa_client() -> OPAClient:

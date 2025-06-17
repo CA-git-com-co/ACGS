@@ -7,9 +7,10 @@ connections and improve performance across all services.
 
 import logging
 import time
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any, AsyncGenerator, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -27,6 +28,7 @@ except ImportError:
             def __init__(self, message: str, operation: str = None):
                 super().__init__(message)
                 self.operation = operation
+
 
 # Import DatabaseInterface with try/except to avoid circular imports
 try:
@@ -128,7 +130,7 @@ class ConnectionPool:
     Database connection pool with monitoring and optimization.
     """
 
-    def __init__(self, database_url: str, config: Optional[PoolConfig] = None):
+    def __init__(self, database_url: str, config: PoolConfig | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -230,7 +232,9 @@ class ConnectionPool:
 
         except Exception as e:
             self.metrics.connection_errors += 1
-            raise DatabaseError(f"Database connection error: {str(e)}", operation="get_connection")
+            raise DatabaseError(
+                f"Database connection error: {str(e)}", operation="get_connection"
+            )
 
         finally:
             if connection:
@@ -263,7 +267,9 @@ class ConnectionPool:
             if session:
                 await session.rollback()
             self.metrics.connection_errors += 1
-            raise DatabaseError(f"Database session error: {str(e)}", operation="get_session")
+            raise DatabaseError(
+                f"Database session error: {str(e)}", operation="get_session"
+            )
 
         finally:
             if session:
@@ -276,8 +282,8 @@ class ConnectionPool:
             self.metrics.total_query_time += query_time
 
     async def execute_query(
-        self, query: str, params: Dict[str, Any] = None
-    ) -> List[Dict[str, Any]]:
+        self, query: str, params: dict[str, Any] = None
+    ) -> list[dict[str, Any]]:
         """
         Execute a query and return results.
 
@@ -292,7 +298,7 @@ class ConnectionPool:
             result = await conn.execute(text(query), params or {})
             return [dict(row) for row in result.fetchall()]
 
-    async def execute_command(self, command: str, params: Dict[str, Any] = None) -> int:
+    async def execute_command(self, command: str, params: dict[str, Any] = None) -> int:
         """
         Execute a command and return affected rows.
 
@@ -307,7 +313,7 @@ class ConnectionPool:
             result = await conn.execute(text(command), params or {})
             return result.rowcount
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get connection pool metrics."""
         pool = self.engine.pool
 
@@ -332,7 +338,7 @@ class ConnectionPool:
             "average_query_time": self.metrics.average_query_time,
         }
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check on the connection pool."""
         try:
             start_time = time.time()
@@ -369,7 +375,7 @@ class DatabasePoolManager:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize the pool manager."""
-        self.pools: Dict[str, ConnectionPool] = {}
+        self.pools: dict[str, ConnectionPool] = {}
         self.default_config = PoolConfig()
 
     def register_pool(
@@ -395,7 +401,7 @@ class DatabasePoolManager:
         logger.info(f"Registered database pool: {name}")
         return pool
 
-    def get_pool(self, name: str) -> Optional[ConnectionPool]:
+    def get_pool(self, name: str) -> ConnectionPool | None:
         """
         Get a database pool by name.
 
@@ -458,7 +464,9 @@ class DatabasePoolManager:
             yield conn
 
     @asynccontextmanager
-    async def get_session(self, pool_name: str = "default") -> AsyncGenerator[AsyncSession, None]:
+    async def get_session(
+        self, pool_name: str = "default"
+    ) -> AsyncGenerator[AsyncSession, None]:
         """
         Get a session from a specific pool.
 
@@ -470,14 +478,16 @@ class DatabasePoolManager:
         """
         pool = self.get_pool(pool_name)
         if not pool:
-            raise DatabaseError(f"Database pool '{pool_name}' not found", operation="get_session")
+            raise DatabaseError(
+                f"Database pool '{pool_name}' not found", operation="get_session"
+            )
 
         async with pool.get_session() as session:
             yield session
 
     async def execute_query(
-        self, query: str, params: Dict[str, Any] = None, pool_name: str = "default"
-    ) -> List[Dict[str, Any]]:
+        self, query: str, params: dict[str, Any] = None, pool_name: str = "default"
+    ) -> list[dict[str, Any]]:
         """
         Execute a query on a specific pool.
 
@@ -491,12 +501,14 @@ class DatabasePoolManager:
         """
         pool = self.get_pool(pool_name)
         if not pool:
-            raise DatabaseError(f"Database pool '{pool_name}' not found", operation="execute_query")
+            raise DatabaseError(
+                f"Database pool '{pool_name}' not found", operation="execute_query"
+            )
 
         return await pool.execute_query(query, params)
 
     async def execute_command(
-        self, command: str, params: Dict[str, Any] = None, pool_name: str = "default"
+        self, command: str, params: dict[str, Any] = None, pool_name: str = "default"
     ) -> int:
         """
         Execute a command on a specific pool.
@@ -517,11 +529,11 @@ class DatabasePoolManager:
 
         return await pool.execute_command(command, params)
 
-    def get_all_metrics(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_metrics(self) -> dict[str, dict[str, Any]]:
         """Get metrics from all pools."""
         return {name: pool.get_metrics() for name, pool in self.pools.items()}
 
-    async def health_check_all(self) -> Dict[str, Dict[str, Any]]:
+    async def health_check_all(self) -> dict[str, dict[str, Any]]:
         """Perform health check on all pools."""
         results = {}
 
@@ -532,7 +544,7 @@ class DatabasePoolManager:
 
 
 # Global pool manager instance
-_pool_manager: Optional[DatabasePoolManager] = None
+_pool_manager: DatabasePoolManager | None = None
 
 
 def get_pool_manager() -> DatabasePoolManager:

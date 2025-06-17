@@ -20,7 +20,6 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Set
 
 # Configure logging
 logging.basicConfig(
@@ -38,8 +37,8 @@ class TypeAnnotationResult:
     functions_annotated: int
     classes_analyzed: int
     classes_annotated: int
-    changes_made: List[str]
-    errors: List[str]
+    changes_made: list[str]
+    errors: list[str]
 
 
 class TypeAnnotationAnalyzer:
@@ -47,7 +46,7 @@ class TypeAnnotationAnalyzer:
 
     def __init__(self, project_root: str):
         self.project_root = Path(project_root)
-        self.results: List[TypeAnnotationResult] = []
+        self.results: list[TypeAnnotationResult] = []
 
         # Common type mappings for ACGS-PGP
         self.common_types = {
@@ -79,7 +78,7 @@ class TypeAnnotationAnalyzer:
             },
         }
 
-    def analyze_function_signature(self, node: ast.FunctionDef) -> Dict[str, str]:
+    def analyze_function_signature(self, node: ast.FunctionDef) -> dict[str, str]:
         """Analyze function signature and suggest type annotations."""
         suggestions = {}
 
@@ -132,7 +131,7 @@ class TypeAnnotationAnalyzer:
 
         return suggestions
 
-    def generate_import_statements(self, type_annotations: Set[str]) -> List[str]:
+    def generate_import_statements(self, type_annotations: set[str]) -> list[str]:
         """Generate necessary import statements for type annotations."""
         imports = []
 
@@ -173,7 +172,7 @@ class TypeAnnotationAnalyzer:
         )
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Parse the AST
@@ -324,13 +323,13 @@ def main():
     total_annotated = sum(r.functions_annotated for r in analyzer.results)
 
     print(f"\n{'='*60}")
-    print(f"TYPE ANNOTATION ANALYSIS SUMMARY")
+    print("TYPE ANNOTATION ANALYSIS SUMMARY")
     print(f"{'='*60}")
     print(f"Files Processed: {len(analyzer.results)}")
     print(f"Functions Analyzed: {total_functions}")
     print(f"Functions Needing Annotations: {total_functions - total_annotated}")
     print(f"Current Coverage: {(total_annotated / total_functions * 100):.1f}%")
-    print(f"Target Coverage: ≥90%")
+    print("Target Coverage: ≥90%")
     print(f"{'='*60}")
 
 

@@ -8,11 +8,10 @@ Enhanced with Qwen3 Embedding Integration for semantic constitutional analysis.
 """
 
 import asyncio
-import json
 import logging
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import uuid4
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
@@ -23,7 +22,13 @@ logger = logging.getLogger(__name__)
 
 # Import authentication dependencies
 try:
-    from services.shared.auth import get_current_user_from_token, get_current_active_user, User, require_admin
+    from services.shared.auth import (
+        User,
+        get_current_active_user,
+        get_current_user_from_token,
+        require_admin,
+    )
+
     AUTH_AVAILABLE = True
     logger.info("Authentication dependencies loaded successfully")
 except ImportError as e:
@@ -33,9 +38,9 @@ except ImportError as e:
     # Mock user for fallback
     class User:
         def __init__(self, **kwargs):
-            self.id = kwargs.get('id', 'mock_user')
-            self.username = kwargs.get('username', 'mock_user')
-            self.roles = kwargs.get('roles', [])
+            self.id = kwargs.get("id", "mock_user")
+            self.username = kwargs.get("username", "mock_user")
+            self.roles = kwargs.get("roles", [])
 
     async def get_current_user_from_token():
         return User(id="mock_user", username="mock_user", roles=["user"])
@@ -45,6 +50,7 @@ except ImportError as e:
 
     def require_admin():
         return User(id="mock_admin", username="mock_admin", roles=["admin"])
+
 
 # Enhanced Constitutional Analyzer Integration
 try:
@@ -62,6 +68,7 @@ try:
         get_enhanced_constitutional_analyzer,
         integrate_with_pgc_service,
     )
+
     # from multi_model_manager import ConsensusStrategy, get_multi_model_manager
     # Temporarily disabled due to import conflicts
 
@@ -75,21 +82,28 @@ try:
 
     async def get_multi_model_manager():
         """Fallback multi-model manager."""
+
         class FallbackMultiModelManager:
-            async def analyze_with_consensus(self, policy_content, analysis_type, consensus_strategy, context=None):
+            async def analyze_with_consensus(
+                self, policy_content, analysis_type, consensus_strategy, context=None
+            ):
                 # Fallback consensus result
                 class FallbackConsensusResult:
                     def __init__(self):
                         self.final_compliance_score = 0.85
                         self.final_confidence_score = 0.80
+
                         # Create a simple object with value attribute
                         class FallbackStrategy:
                             value = "weighted_average"
+
                         self.consensus_strategy = FallbackStrategy()
                         self.agreement_score = 0.90
                         self.processing_time_ms = 150.0
                         self.model_results = []
-                        self.recommendations = ["Fallback analysis - enhanced analyzer unavailable"]
+                        self.recommendations = [
+                            "Fallback analysis - enhanced analyzer unavailable"
+                        ]
 
                 return FallbackConsensusResult()
 
@@ -114,9 +128,11 @@ class PolicyCreationRequest(BaseModel):
 
     title: str = Field(..., description="Policy title")
     description: str = Field(..., description="Policy description")
-    stakeholders: List[str] = Field(default_factory=list, description="Stakeholders")
+    stakeholders: list[str] = Field(default_factory=list, description="Stakeholders")
     priority: str = Field(default="medium", description="Policy priority")
-    risk_strategy: str = Field(default="standard", description="Risk assessment strategy")
+    risk_strategy: str = Field(
+        default="standard", description="Risk assessment strategy"
+    )
 
 
 class WorkflowResponse(BaseModel):
@@ -126,7 +142,7 @@ class WorkflowResponse(BaseModel):
     workflow_type: str
     status: str
     created_at: str
-    estimated_completion: Optional[str] = None
+    estimated_completion: str | None = None
     current_stage: str
     progress_percent: int
 
@@ -136,7 +152,7 @@ class ComplianceValidationRequest(BaseModel):
 
     policy_id: str = Field(..., description="Policy ID to validate")
     validation_type: str = Field(default="full", description="Validation type")
-    constitutional_principles: List[str] = Field(default_factory=list)
+    constitutional_principles: list[str] = Field(default_factory=list)
 
 
 class ComplianceValidationResponse(BaseModel):
@@ -145,8 +161,8 @@ class ComplianceValidationResponse(BaseModel):
     validation_id: str
     policy_id: str
     compliance_score: float
-    validation_results: Dict[str, Any]
-    recommendations: List[str]
+    validation_results: dict[str, Any]
+    recommendations: list[str]
     timestamp: str
 
 
@@ -154,9 +170,15 @@ class EnhancedAnalysisRequest(BaseModel):
     """Request model for enhanced constitutional analysis."""
 
     policy_content: str = Field(..., description="Policy content to analyze")
-    analysis_type: str = Field(default="compliance_scoring", description="Type of analysis")
-    consensus_strategy: str = Field(default="weighted_average", description="Consensus strategy")
-    context: Optional[Dict[str, Any]] = Field(default=None, description="Additional context")
+    analysis_type: str = Field(
+        default="compliance_scoring", description="Type of analysis"
+    )
+    consensus_strategy: str = Field(
+        default="weighted_average", description="Consensus strategy"
+    )
+    context: dict[str, Any] | None = Field(
+        default=None, description="Additional context"
+    )
 
 
 class EnhancedAnalysisResponse(BaseModel):
@@ -168,8 +190,8 @@ class EnhancedAnalysisResponse(BaseModel):
     consensus_strategy: str
     agreement_score: float
     processing_time_ms: float
-    model_results: List[Dict[str, Any]]
-    recommendations: List[str]
+    model_results: list[dict[str, Any]]
+    recommendations: list[str]
     constitutional_hash: str
     timestamp: str
 
@@ -181,7 +203,7 @@ class EnhancedAnalysisResponse(BaseModel):
 async def initiate_policy_creation(
     request: PolicyCreationRequest,
     background_tasks: BackgroundTasks,
-    current_user: User = Depends(get_current_user_from_token)
+    current_user: User = Depends(get_current_user_from_token),
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -237,7 +259,7 @@ async def initiate_policy_creation(
 @router.post("/constitutional-compliance", response_model=ComplianceValidationResponse)
 async def validate_constitutional_compliance(
     request: ComplianceValidationRequest,
-    current_user: User = Depends(get_current_user_from_token)
+    current_user: User = Depends(get_current_user_from_token),
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -268,7 +290,7 @@ async def validate_constitutional_compliance(
 async def initiate_policy_enforcement(
     policy_id: str,
     enforcement_type: str = "standard",
-    current_user: User = Depends(get_current_user_from_token)
+    current_user: User = Depends(get_current_user_from_token),
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -278,7 +300,7 @@ async def initiate_policy_enforcement(
     """
     workflow_id = f"PE-{int(time.time())}-{str(uuid4())[:8]}"
 
-    enforcement_data = {
+    {
         "workflow_id": workflow_id,
         "policy_id": policy_id,
         "enforcement_type": enforcement_type,
@@ -299,8 +321,8 @@ async def initiate_policy_enforcement(
 @router.post("/wina-oversight")
 async def initiate_wina_oversight(
     oversight_type: str = "performance_monitoring",
-    target_metrics: List[str] = None,
-    current_user: User = Depends(get_current_user_from_token)
+    target_metrics: list[str] = None,
+    current_user: User = Depends(get_current_user_from_token),
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -310,7 +332,7 @@ async def initiate_wina_oversight(
     """
     workflow_id = f"WO-{int(time.time())}-{str(uuid4())[:8]}"
 
-    oversight_data = {
+    {
         "workflow_id": workflow_id,
         "oversight_type": oversight_type,
         "target_metrics": target_metrics or ["response_time", "accuracy", "compliance"],
@@ -331,7 +353,7 @@ async def initiate_wina_oversight(
 async def initiate_audit_transparency(
     audit_scope: str = "full_system",
     reporting_level: str = "public",
-    current_user: User = Depends(get_current_user_from_token)
+    current_user: User = Depends(get_current_user_from_token),
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -341,7 +363,7 @@ async def initiate_audit_transparency(
     """
     workflow_id = f"AT-{int(time.time())}-{str(uuid4())[:8]}"
 
-    audit_data = {
+    {
         "workflow_id": workflow_id,
         "audit_scope": audit_scope,
         "reporting_level": reporting_level,
@@ -362,7 +384,9 @@ async def initiate_audit_transparency(
 # Enhanced Constitutional Analysis Endpoints
 
 
-@router.post("/enhanced-constitutional-analysis", response_model=EnhancedAnalysisResponse)
+@router.post(
+    "/enhanced-constitutional-analysis", response_model=EnhancedAnalysisResponse
+)
 async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequest):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -377,7 +401,9 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
 
     if not ENHANCED_ANALYZER_AVAILABLE:
         # Fallback to basic compliance validation
-        validation_results = await perform_compliance_validation(analysis_id, "enhanced", [])
+        validation_results = await perform_compliance_validation(
+            analysis_id, "enhanced", []
+        )
 
         return EnhancedAnalysisResponse(
             analysis_id=analysis_id,
@@ -420,11 +446,13 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
         )
         consensus_strategy_enum = getattr(
             ConsensusStrategy,
-            consensus_strategy_mapping.get(request.consensus_strategy, "WEIGHTED_AVERAGE"),
+            consensus_strategy_mapping.get(
+                request.consensus_strategy, "WEIGHTED_AVERAGE"
+            ),
         )
 
         # Perform consensus analysis
-        start_time = time.time()
+        time.time()
         consensus_result = await multi_model_manager.analyze_with_consensus(
             policy_content=request.policy_content,
             analysis_type=analysis_type_enum,
@@ -470,7 +498,7 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
 async def pgc_enforcement_integration(
     policy_id: str,
     policy_content: str,
-    enforcement_context: Optional[Dict[str, Any]] = None,
+    enforcement_context: dict[str, Any] | None = None,
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -505,7 +533,9 @@ async def pgc_enforcement_integration(
 
     except Exception as e:
         logger.error(f"Error in PGC enforcement integration: {e}")
-        raise HTTPException(status_code=500, detail=f"PGC enforcement integration failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"PGC enforcement integration failed: {str(e)}"
+        )
 
 
 # Status and Management Endpoints
@@ -531,7 +561,9 @@ async def get_governance_status():
             enhanced_analyzer_status = health.get("status", "degraded")
 
             # Check embedding client status
-            embedding_status = health.get("components", {}).get("embedding_client", "unavailable")
+            embedding_status = health.get("components", {}).get(
+                "embedding_client", "unavailable"
+            )
 
             # Check multi-model manager status
             multi_model_manager = await get_multi_model_manager()
@@ -646,7 +678,7 @@ def select_risk_strategy(risk_level: str, requested_strategy: str) -> str:
     return strategy_hierarchy[max(risk_index, requested_index)]
 
 
-async def process_policy_creation_workflow(workflow_data: Dict):
+async def process_policy_creation_workflow(workflow_data: dict):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -672,8 +704,8 @@ async def process_policy_creation_workflow(workflow_data: Dict):
 
 
 async def perform_compliance_validation(
-    policy_id: str, validation_type: str, principles: List[str]
-) -> Dict[str, Any]:
+    policy_id: str, validation_type: str, principles: list[str]
+) -> dict[str, Any]:
     """
     Perform constitutional compliance validation.
 
@@ -722,7 +754,9 @@ async def perform_compliance_validation(
                 "compliance_score": result.compliance_score,
                 "detailed_results": {
                     "constitutional_alignment": (
-                        result.metadata.get("embedding_score", 0.95) if result.metadata else 0.95
+                        result.metadata.get("embedding_score", 0.95)
+                        if result.metadata
+                        else 0.95
                     ),
                     "procedural_compliance": 0.98,
                     "stakeholder_representation": 0.92,

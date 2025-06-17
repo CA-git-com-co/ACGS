@@ -5,7 +5,7 @@ This script validates the Phase 1 implementation of the Artificial Constitution 
 """
 
 import asyncio
-from typing import Any, Dict
+from typing import Any
 
 import aiohttp
 
@@ -32,8 +32,8 @@ class ACTestClient:
             await self.session.close()
 
     async def request(
-        self, method: str, endpoint: str, token: str = None, data: Dict[Any, Any] = None
-    ) -> Dict[Any, Any]:
+        self, method: str, endpoint: str, token: str = None, data: dict[Any, Any] = None
+    ) -> dict[Any, Any]:
         """Make an HTTP request to the AC service"""
         url = f"{self.base_url}{endpoint}"
         headers = {}
@@ -120,7 +120,7 @@ async def test_constitutional_council_implementation():
             meta_rule_data,
         )
         if result["status_code"] == 201:
-            print(f"✅ Meta-rule created successfully")
+            print("✅ Meta-rule created successfully")
         else:
             print(f"❌ Failed to create meta-rule: {result}")
 
@@ -189,7 +189,7 @@ async def test_constitutional_council_implementation():
             vote_data,
         )
         if result["status_code"] == 201:
-            print(f"✅ Vote cast successfully")
+            print("✅ Vote cast successfully")
         else:
             print(f"❌ Failed to cast vote: {result}")
 
@@ -208,7 +208,7 @@ async def test_constitutional_council_implementation():
             comment_data,
         )
         if result["status_code"] == 201:
-            print(f"✅ Comment added successfully")
+            print("✅ Comment added successfully")
         else:
             print(f"❌ Failed to add comment: {result}")
 
@@ -235,7 +235,7 @@ async def test_constitutional_council_implementation():
             conflict_data,
         )
         if result["status_code"] == 201:
-            print(f"✅ Conflict resolution created successfully")
+            print("✅ Conflict resolution created successfully")
         else:
             print(f"❌ Failed to create conflict resolution: {result}")
 

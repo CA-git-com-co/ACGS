@@ -10,7 +10,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ class CacheWarmingItem:
     key: str
     value: Any
     ttl: int
-    tags: List[str]
+    tags: list[str]
     priority: int = 1  # 1=high, 2=medium, 3=low
     category: str = "general"
 
@@ -75,26 +75,26 @@ class CacheWarmingService:
     - Performance metrics tracking
     """
 
-    def __init__(self, cache_client, config: Optional[CacheWarmingConfig] = None):
+    def __init__(self, cache_client, config: CacheWarmingConfig | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         self.cache_client = cache_client
         self.config = config or CacheWarmingConfig()
         self.warming_active = False
-        self.warming_task: Optional[asyncio.Task] = None
+        self.warming_task: asyncio.Task | None = None
 
         # Warming data sources
-        self.warming_sources: Dict[str, callable] = {}
-        self.usage_patterns: Dict[str, List[Tuple[str, datetime]]] = {}
+        self.warming_sources: dict[str, callable] = {}
+        self.usage_patterns: dict[str, list[tuple[str, datetime]]] = {}
 
         # Metrics
-        self.warming_metrics: List[WarmingMetrics] = []
-        self.last_warming_time: Optional[datetime] = None
+        self.warming_metrics: list[WarmingMetrics] = []
+        self.last_warming_time: datetime | None = None
 
         # Predictive warming
-        self.access_frequency: Dict[str, int] = {}
-        self.access_times: Dict[str, List[datetime]] = {}
+        self.access_frequency: dict[str, int] = {}
+        self.access_times: dict[str, list[datetime]] = {}
 
     async def initialize(self):
         # requires: Valid input parameters
@@ -130,7 +130,9 @@ class CacheWarmingService:
         # sha256: func_hash
         """Register default warming data sources."""
         # Constitutional principles
-        self.warming_sources["constitutional_principles"] = self._get_constitutional_principles
+        self.warming_sources["constitutional_principles"] = (
+            self._get_constitutional_principles
+        )
 
         # Governance rules
         self.warming_sources["governance_rules"] = self._get_governance_rules
@@ -237,7 +239,7 @@ class CacheWarmingService:
 
         return metrics
 
-    async def _collect_warming_items(self) -> List[CacheWarmingItem]:
+    async def _collect_warming_items(self) -> list[CacheWarmingItem]:
         """Collect items for cache warming."""
         warming_items = []
 
@@ -253,14 +255,14 @@ class CacheWarmingService:
         warming_items.sort(key=lambda x: x.priority)
         return warming_items[: self.config.max_warming_items]
 
-    async def _predict_warming_items(self) -> List[CacheWarmingItem]:
+    async def _predict_warming_items(self) -> list[CacheWarmingItem]:
         """Predict items to warm based on usage patterns."""
         predicted_items = []
 
         # Analyze access frequency
-        frequent_keys = sorted(self.access_frequency.items(), key=lambda x: x[1], reverse=True)[
-            : self.config.max_warming_items // 2
-        ]
+        frequent_keys = sorted(
+            self.access_frequency.items(), key=lambda x: x[1], reverse=True
+        )[: self.config.max_warming_items // 2]
 
         # Analyze access timing patterns
         time_based_keys = await self._analyze_time_patterns()
@@ -271,7 +273,7 @@ class CacheWarmingService:
         # Convert to warming items
         for key in all_predicted_keys:
             # Try to get value from warming sources
-            for source_name, source_func in self.warming_sources.items():
+            for _source_name, source_func in self.warming_sources.items():
                 try:
                     items = await source_func()
                     for item in items:
@@ -283,7 +285,7 @@ class CacheWarmingService:
 
         return predicted_items[: self.config.max_warming_items]
 
-    async def _analyze_time_patterns(self) -> List[str]:
+    async def _analyze_time_patterns(self) -> list[str]:
         """Analyze time-based access patterns."""
         current_hour = datetime.now().hour
         current_day = datetime.now().weekday()
@@ -295,7 +297,9 @@ class CacheWarmingService:
             recent_accesses = [
                 t
                 for t in access_times
-                if t > datetime.now() - timedelta(hours=self.config.usage_pattern_window_hours)
+                if t
+                > datetime.now()
+                - timedelta(hours=self.config.usage_pattern_window_hours)
             ]
 
             if not recent_accesses:
@@ -304,7 +308,9 @@ class CacheWarmingService:
             # Check if key is frequently accessed at this time
             same_hour_accesses = [t for t in recent_accesses if t.hour == current_hour]
 
-            same_day_accesses = [t for t in recent_accesses if t.weekday() == current_day]
+            same_day_accesses = [
+                t for t in recent_accesses if t.weekday() == current_day
+            ]
 
             # Predict if likely to be accessed soon
             if len(same_hour_accesses) >= 2 or len(same_day_accesses) >= 3:
@@ -312,7 +318,9 @@ class CacheWarmingService:
 
         return time_based_keys
 
-    async def _execute_warming(self, warming_items: List[CacheWarmingItem]) -> WarmingMetrics:
+    async def _execute_warming(
+        self, warming_items: list[CacheWarmingItem]
+    ) -> WarmingMetrics:
         """Execute cache warming for items."""
         total_items = len(warming_items)
         successful = 0
@@ -325,7 +333,9 @@ class CacheWarmingService:
             # Warm batch
             for item in batch:
                 try:
-                    await self.cache_client.put(item.key, item.value, item.ttl, item.tags)
+                    await self.cache_client.put(
+                        item.key, item.value, item.ttl, item.tags
+                    )
                     successful += 1
                 except Exception as e:
                     logger.error(f"Failed to warm cache item {item.key}: {e}")
@@ -362,7 +372,7 @@ class CacheWarmingService:
         if len(self.access_times[key]) > 100:
             self.access_times[key] = self.access_times[key][-50:]
 
-    async def _get_constitutional_principles(self) -> List[CacheWarmingItem]:
+    async def _get_constitutional_principles(self) -> list[CacheWarmingItem]:
         """Get constitutional principles for warming."""
         # This would typically query the database
         principles = [
@@ -401,7 +411,7 @@ class CacheWarmingService:
 
         return warming_items
 
-    async def _get_governance_rules(self) -> List[CacheWarmingItem]:
+    async def _get_governance_rules(self) -> list[CacheWarmingItem]:
         """Get governance rules for warming."""
         # Mock governance rules
         rules = [
@@ -434,7 +444,7 @@ class CacheWarmingService:
 
         return warming_items
 
-    async def _get_frequent_policy_decisions(self) -> List[CacheWarmingItem]:
+    async def _get_frequent_policy_decisions(self) -> list[CacheWarmingItem]:
         """Get frequent policy decisions for warming."""
         # Mock frequent decisions
         decisions = [
@@ -465,7 +475,7 @@ class CacheWarmingService:
 
         return warming_items
 
-    async def _get_active_user_sessions(self) -> List[CacheWarmingItem]:
+    async def _get_active_user_sessions(self) -> list[CacheWarmingItem]:
         """Get active user sessions for warming."""
         # Mock active sessions
         sessions = [
@@ -494,7 +504,7 @@ class CacheWarmingService:
 
         return warming_items
 
-    async def _get_static_configuration(self) -> List[CacheWarmingItem]:
+    async def _get_static_configuration(self) -> list[CacheWarmingItem]:
         """Get static configuration for warming."""
         config = {
             "app_settings": {"debug": False, "log_level": "INFO"},
@@ -516,7 +526,7 @@ class CacheWarmingService:
 
         return warming_items
 
-    def get_warming_stats(self) -> Dict[str, Any]:
+    def get_warming_stats(self) -> dict[str, Any]:
         """Get cache warming statistics."""
         if not self.warming_metrics:
             return {"error": "No warming data available"}
@@ -554,7 +564,7 @@ class CacheWarmingService:
 
 
 # Global cache warming service instance
-_cache_warming_service: Optional[CacheWarmingService] = None
+_cache_warming_service: CacheWarmingService | None = None
 
 
 def get_cache_warming_service(cache_client) -> CacheWarmingService:

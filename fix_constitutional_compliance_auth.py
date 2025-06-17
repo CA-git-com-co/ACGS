@@ -9,7 +9,7 @@ require authentication configuration to enable validation workflows.
 import asyncio
 import json
 import time
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 
@@ -41,7 +41,7 @@ class ConstitutionalComplianceAuthFixer:
 
     async def test_endpoint_access(
         self, service_name: str, base_url: str, endpoint: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test access to a specific endpoint."""
         full_url = f"{base_url}{endpoint}"
 
@@ -94,7 +94,7 @@ class ConstitutionalComplianceAuthFixer:
 
     async def test_post_endpoints(
         self, service_name: str, base_url: str, endpoint: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test POST access to compliance endpoints."""
         full_url = f"{base_url}{endpoint}"
 
@@ -154,7 +154,7 @@ class ConstitutionalComplianceAuthFixer:
 
     async def discover_available_endpoints(
         self, service_name: str, base_url: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Discover available endpoints by checking OpenAPI docs."""
 
         endpoints_found = []
@@ -188,7 +188,7 @@ class ConstitutionalComplianceAuthFixer:
             "total_found": len(set(endpoints_found)),
         }
 
-    async def create_auth_bypass_config(self) -> Dict[str, Any]:
+    async def create_auth_bypass_config(self) -> dict[str, Any]:
         """Create configuration to bypass authentication for testing."""
 
         auth_config = {
@@ -225,7 +225,7 @@ class ConstitutionalComplianceAuthFixer:
         print(f"📝 Created auth bypass config: {config_file}")
         return auth_config
 
-    async def test_constitutional_compliance_workflow(self) -> Dict[str, Any]:
+    async def test_constitutional_compliance_workflow(self) -> dict[str, Any]:
         """Test end-to-end constitutional compliance workflow."""
 
         workflow_results = {
@@ -291,7 +291,7 @@ class ConstitutionalComplianceAuthFixer:
 
         return workflow_results
 
-    async def run_comprehensive_fix(self) -> Dict[str, Any]:
+    async def run_comprehensive_fix(self) -> dict[str, Any]:
         """Run comprehensive constitutional compliance authentication fix."""
 
         print("🚀 Constitutional Compliance Authentication Fix")

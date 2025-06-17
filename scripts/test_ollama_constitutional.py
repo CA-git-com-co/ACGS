@@ -78,7 +78,7 @@ async def test_constitutional_prompting():
 
         response_times = []
         for i in range(3):
-            test_query = LLMInterpretationInput(
+            LLMInterpretationInput(
                 principle_id=i + 3,
                 principle_content=f"Test principle {i+1}: Ensure system reliability and security",
                 target_context="general",
@@ -138,11 +138,11 @@ async def test_policy_synthesis():
         # Test policy synthesis prompt
         policy_prompt = """
         Generate a data privacy policy rule based on the following constitutional principle:
-        
+
         Principle: "Personal data must be processed lawfully, fairly, and transparently"
-        
+
         Context: Healthcare data processing system
-        
+
         Please provide a structured policy rule that implements this principle.
         """
 

@@ -1,6 +1,6 @@
 import threading
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class FallbackCache:
@@ -10,7 +10,7 @@ class FallbackCache:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.cache: Dict[str, Dict[str, Any]] = {}
+        self.cache: dict[str, dict[str, Any]] = {}
         self.max_size = max_size
         self.lock = threading.RLock()
 
@@ -19,16 +19,16 @@ class FallbackCache:
         with self.lock:
             if len(self.cache) >= self.max_size:
                 # Remove oldest entries
-                oldest_keys = sorted(self.cache.keys(), key=lambda k: self.cache[k]["timestamp"])[
-                    :10
-                ]
+                oldest_keys = sorted(
+                    self.cache.keys(), key=lambda k: self.cache[k]["timestamp"]
+                )[:10]
                 for old_key in oldest_keys:
                     del self.cache[old_key]
 
             self.cache[key] = {"value": value, "timestamp": time.time(), "ttl": ttl}
             return True
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get a value if not expired."""
         with self.lock:
             if key not in self.cache:

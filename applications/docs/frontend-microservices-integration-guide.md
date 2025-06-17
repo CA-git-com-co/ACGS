@@ -571,7 +571,7 @@ CORS_ORIGINS = [
 ### Load Balancing and High Availability
 
 ```yaml
-# docker-compose.yml for production
+# infrastructure/docker/docker-compose.yml for production
 version: '3.8'
 services:
   frontend:

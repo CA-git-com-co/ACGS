@@ -65,7 +65,7 @@ anchor deploy
 cd ..
 
 # Start all services
-docker-compose -f infrastructure/docker/docker-compose.yml up -d
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up -d
 
 # Verify deployment
 ./scripts/validation/validate_deployment.py

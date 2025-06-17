@@ -17,7 +17,6 @@ import sys
 import threading
 import time
 from dataclasses import dataclass
-from typing import List
 
 import aiohttp
 import uvicorn
@@ -166,7 +165,7 @@ class SecurityMiddlewareDemo:
             async with aiohttp.ClientSession() as session:
                 # Send multiple rapid requests to trigger rate limiting
                 tasks = []
-                for i in range(15):  # Send 15 requests rapidly
+                for _i in range(15):  # Send 15 requests rapidly
                     task = session.get(f"{self.base_url}/health")
                     tasks.append(task)
 
@@ -266,7 +265,7 @@ class SecurityMiddlewareDemo:
                 execution_time_ms=execution_time,
             )
 
-    async def run_all_tests(self) -> List[SecurityTestResult]:
+    async def run_all_tests(self) -> list[SecurityTestResult]:
         """Run all security tests."""
         print("🔒 Starting ACGS-PGP Security Middleware Tests...")
         print(f"Testing service at: {self.base_url}")
@@ -282,7 +281,7 @@ class SecurityMiddlewareDemo:
         return results
 
 
-def print_security_report(results: List[SecurityTestResult]):
+def print_security_report(results: list[SecurityTestResult]):
     """Print comprehensive security report."""
     print("\n" + "=" * 80)
     print("ACGS-PGP SECURITY MIDDLEWARE VALIDATION REPORT")

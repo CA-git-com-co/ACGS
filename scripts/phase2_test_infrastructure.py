@@ -22,7 +22,6 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -55,7 +54,7 @@ class TestInfrastructureManager:
             "performance_metrics": {},
         }
 
-    def setup_anchor_test_infrastructure(self) -> Dict:
+    def setup_anchor_test_infrastructure(self) -> dict:
         """Setup and enhance Anchor program testing infrastructure."""
         logger.info("Setting up Anchor test infrastructure...")
 
@@ -102,7 +101,7 @@ class TestInfrastructureManager:
         except FileNotFoundError:
             return False
 
-    def _analyze_anchor_program(self, program_dir: Path) -> Dict:
+    def _analyze_anchor_program(self, program_dir: Path) -> dict:
         """Analyze an individual Anchor program for test coverage."""
         program_analysis = {
             "name": program_dir.name,
@@ -155,7 +154,7 @@ class TestInfrastructureManager:
         accounts = []
 
         try:
-            with open(src_file, "r") as f:
+            with open(src_file) as f:
                 content = f.read()
 
                 # Extract instruction functions (simplified regex)
@@ -423,7 +422,7 @@ describe("PROGRAM_NAME", () => {
                     src_dir = program_dir / "src"
                     if src_dir.exists():
                         for src_file in src_dir.glob("**/*.rs"):
-                            with open(src_file, "r") as f:
+                            with open(src_file) as f:
                                 content = f.read()
                                 import re
 
@@ -434,7 +433,7 @@ describe("PROGRAM_NAME", () => {
         tests_dir = self.blockchain_dir / "tests"
         if tests_dir.exists():
             for test_file in tests_dir.glob("**/*.ts"):
-                with open(test_file, "r") as f:
+                with open(test_file) as f:
                     content = f.read()
                     import re
 
@@ -447,7 +446,7 @@ describe("PROGRAM_NAME", () => {
         coverage = min((tested_functions / total_functions) * 100, 100.0)
         return round(coverage, 2)
 
-    def setup_e2e_testing(self) -> Dict:
+    def setup_e2e_testing(self) -> dict:
         """Setup end-to-end governance workflow testing."""
         logger.info("Setting up end-to-end testing infrastructure...")
 
@@ -504,7 +503,7 @@ describe("PROGRAM_NAME", () => {
         self.test_results["e2e_tests"] = e2e_results
         return e2e_results
 
-    def _generate_e2e_test(self, scenario: Dict):
+    def _generate_e2e_test(self, scenario: dict):
         """Generate end-to-end test file for a scenario."""
         scenario_name = scenario["name"]
         scenario_description = scenario["description"]
@@ -555,7 +554,7 @@ describe("E2E: {scenario_name}", () => {{
 
         logger.info(f"Generated E2E test: {test_file}")
 
-    def _generate_test_steps(self, steps: List[str]) -> str:
+    def _generate_test_steps(self, steps: list[str]) -> str:
         """Generate test step implementations."""
         step_implementations = {
             "deploy_constitution": """
@@ -659,7 +658,7 @@ describe("E2E: {scenario_name}", () => {{
 
         logger.info(f"Performance benchmark config created: {config_file}")
 
-    def setup_frontend_testing(self) -> Dict:
+    def setup_frontend_testing(self) -> dict:
         """Setup frontend testing infrastructure."""
         logger.info("Setting up frontend testing infrastructure...")
 
@@ -788,7 +787,7 @@ export const mockProgram = {
 
         logger.info(f"Anchor client test utilities created: {utils_file}")
 
-    def run_comprehensive_tests(self) -> Dict:
+    def run_comprehensive_tests(self) -> dict:
         """Run comprehensive test suite across all components."""
         logger.info("Running comprehensive test suite...")
 
@@ -826,7 +825,7 @@ export const mockProgram = {
 
         return results
 
-    def _generate_test_report(self, results: Dict):
+    def _generate_test_report(self, results: dict):
         """Generate comprehensive test infrastructure report."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         report_file = self.project_root / f"test_infrastructure_report_{timestamp}.json"
@@ -842,18 +841,18 @@ export const mockProgram = {
         print("=" * 60)
 
         anchor_data = results["anchor_tests"]
-        print(f"🔗 Anchor Tests:")
+        print("🔗 Anchor Tests:")
         print(
             f"   - Programs analyzed: {len(anchor_data.get('programs_analyzed', []))}"
         )
         print(f"   - Coverage: {anchor_data.get('coverage_percentage', 0)}%")
 
         e2e_data = results["e2e_tests"]
-        print(f"🔄 E2E Tests:")
+        print("🔄 E2E Tests:")
         print(f"   - Scenarios: {len(e2e_data.get('test_scenarios', []))}")
 
         frontend_data = results["frontend_tests"]
-        print(f"🖥️ Frontend Tests:")
+        print("🖥️ Frontend Tests:")
         print(f"   - Framework: {frontend_data.get('testing_framework', 'N/A')}")
         print(f"   - Target coverage: {frontend_data.get('coverage_target', 0)}%")
 

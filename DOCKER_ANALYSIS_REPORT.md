@@ -207,7 +207,7 @@ logs/
 
 ### **Phase 3: Production Deployment (1 hour)**
 1. Build optimized images
-2. Update docker-compose.yml
+2. Update infrastructure/docker/docker-compose.yml
 3. Deploy and validate services
 4. Monitor resource usage
 

@@ -10,7 +10,7 @@ requirements.
 import asyncio
 import logging
 import time
-from typing import Any, Dict
+from typing import Any
 
 from services.shared.database import PoolConfig, get_pool_manager
 
@@ -61,17 +61,17 @@ class Phase2Demo:
 
         # Define service interfaces
         class IAuthService:
-            async def authenticate(self, token: str) -> Dict[str, Any]:
+            async def authenticate(self, token: str) -> dict[str, Any]:
                 pass
 
         class IPolicyService:
-            async def evaluate_policy(self, context: Dict[str, Any]) -> Dict[str, Any]:
+            async def evaluate_policy(self, context: dict[str, Any]) -> dict[str, Any]:
                 pass
 
         # Implement services with dependency injection
         @injectable
         class AuthService:
-            async def authenticate(self, token: str) -> Dict[str, Any]:
+            async def authenticate(self, token: str) -> dict[str, Any]:
                 # Simulate authentication
                 await asyncio.sleep(0.005)  # 5ms processing
                 return {"user_id": "123", "valid": True}
@@ -81,7 +81,7 @@ class Phase2Demo:
             def __init__(self, auth_service: IAuthService):
                 self.auth_service = auth_service
 
-            async def evaluate_policy(self, context: Dict[str, Any]) -> Dict[str, Any]:
+            async def evaluate_policy(self, context: dict[str, Any]) -> dict[str, Any]:
                 # Authenticate first
                 auth_result = await self.auth_service.authenticate(
                     context.get("token", "")
@@ -111,7 +111,7 @@ class Phase2Demo:
         end_time = time.time()
         latency = (end_time - start_time) * 1000
 
-        print(f"\n   📊 Policy Decision Results:")
+        print("\n   📊 Policy Decision Results:")
         print(f"      Decision: {result['decision']}")
         print(f"      Confidence: {result['confidence']}")
         print(f"      Latency: {latency:.2f}ms")
@@ -120,13 +120,13 @@ class Phase2Demo:
         # Test singleton behavior
         auth_service1 = self.container.resolve(IAuthService)
         auth_service2 = self.container.resolve(IAuthService)
-        print(f"\n   🔄 Singleton Test:")
+        print("\n   🔄 Singleton Test:")
         print(f"      Same instance: {auth_service1 is auth_service2}")
 
         # Test transient behavior
         policy_service1 = self.container.resolve(IPolicyService)
         policy_service2 = self.container.resolve(IPolicyService)
-        print(f"\n   🔄 Transient Test:")
+        print("\n   🔄 Transient Test:")
         print(f"      Different instances: {policy_service1 is not policy_service2}")
 
         self.metrics["di_resolutions"] += 4
@@ -203,15 +203,15 @@ class Phase2Demo:
         end_time = time.time()
         event_latency = (end_time - start_time) * 1000
 
-        print(f"\n   📊 Event Processing Results:")
-        print(f"      Events Published: 3")
+        print("\n   📊 Event Processing Results:")
+        print("      Events Published: 3")
         print(f"      Events Processed: {len(processed_events)}")
         print(f"      Processing Latency: {event_latency:.2f}ms")
         print(f"      ✅ Async processing: {event_latency < 100}")
 
         # Get event bus metrics
         metrics = event_bus.get_metrics()
-        print(f"\n   📈 Event Bus Metrics:")
+        print("\n   📈 Event Bus Metrics:")
         print(f"      Total Published: {metrics['events_published']}")
         print(f"      Total Processed: {metrics['events_processed']}")
         print(f"      Active Handlers: {sum(metrics['handlers_by_type'].values())}")
@@ -248,7 +248,7 @@ class Phase2Demo:
         )
 
         # Simulate pool registration (would use real DB URL in production)
-        print(f"\n   🔧 Pool Configuration:")
+        print("\n   🔧 Pool Configuration:")
         print(f"      Min Connections: {config.min_connections}")
         print(f"      Max Connections: {config.max_connections}")
         print(f"      Pool Timeout: {config.pool_timeout}s")
@@ -266,7 +266,7 @@ class Phase2Demo:
             "SELECT COUNT(*) FROM votes WHERE principle_id = $1",
         ]
 
-        for i, operation in enumerate(operations):
+        for _i, operation in enumerate(operations):
             # Simulate query execution time
             await asyncio.sleep(0.002)  # 2ms per query
             print(f"   📊 Executed: {operation[:50]}...")
@@ -274,7 +274,7 @@ class Phase2Demo:
         end_time = time.time()
         db_latency = (end_time - start_time) * 1000
 
-        print(f"\n   📊 Database Performance Results:")
+        print("\n   📊 Database Performance Results:")
         print(f"      Operations Executed: {len(operations)}")
         print(f"      Total Latency: {db_latency:.2f}ms")
         print(f"      Average per Operation: {db_latency/len(operations):.2f}ms")
@@ -290,7 +290,7 @@ class Phase2Demo:
             "average_query_time": db_latency / len(operations),
         }
 
-        print(f"\n   📈 Connection Pool Metrics:")
+        print("\n   📈 Connection Pool Metrics:")
         print(f"      Total Connections: {mock_metrics['total_connections']}")
         print(f"      Active Connections: {mock_metrics['active_connections']}")
         print(f"      Pool Utilization: {mock_metrics['pool_utilization']:.1f}%")
@@ -319,8 +319,8 @@ class Phase2Demo:
                 self.event_bus = event_bus
 
             async def process_governance_request(
-                self, request: Dict[str, Any]
-            ) -> Dict[str, Any]:
+                self, request: dict[str, Any]
+            ) -> dict[str, Any]:
                 """Process a complete governance request using all systems."""
                 workflow_start = time.time()
 
@@ -394,13 +394,13 @@ class Phase2Demo:
         end_time = time.time()
         total_latency = (end_time - start_time) * 1000
 
-        print(f"\n   📊 Integrated Workflow Results:")
+        print("\n   📊 Integrated Workflow Results:")
         print(f"      Request ID: {result['request_id']}")
         print(f"      Status: {result['status']}")
         print(f"      Total Latency: {total_latency:.2f}ms")
         print(f"      ✅ Meets <50ms requirement: {total_latency < 50}")
 
-        print(f"\n   ⏱️  Performance Breakdown:")
+        print("\n   ⏱️  Performance Breakdown:")
         breakdown = result["breakdown"]
         print(f"      Authentication: {breakdown['auth_ms']:.2f}ms")
         print(f"      Policy Evaluation: {breakdown['policy_ms']:.2f}ms")
@@ -422,7 +422,7 @@ class Phase2Demo:
         print("PHASE 2 IMPLEMENTATION SUMMARY")
         print("=" * 60)
 
-        print(f"\n📊 Demonstration Metrics:")
+        print("\n📊 Demonstration Metrics:")
         print(f"   - Duration: {duration:.2f} seconds")
         print(f"   - DI Resolutions: {self.metrics['di_resolutions']}")
         print(f"   - Events Published: {self.metrics['events_published']}")
@@ -430,25 +430,25 @@ class Phase2Demo:
         print(f"   - DB Operations: {self.metrics['db_operations']}")
         print(f"   - Average Latency: {self.metrics['total_latency']/4:.2f}ms")
 
-        print(f"\n🎯 Phase 2 Achievements:")
-        print(f"   ✅ Dependency Injection Framework implemented")
-        print(f"   ✅ Event-Driven Architecture deployed")
-        print(f"   ✅ Database Connection Optimization completed")
-        print(f"   ✅ Performance requirements maintained (<50ms)")
-        print(f"   ✅ Test coverage ≥90% achieved")
+        print("\n🎯 Phase 2 Achievements:")
+        print("   ✅ Dependency Injection Framework implemented")
+        print("   ✅ Event-Driven Architecture deployed")
+        print("   ✅ Database Connection Optimization completed")
+        print("   ✅ Performance requirements maintained (<50ms)")
+        print("   ✅ Test coverage ≥90% achieved")
 
-        print(f"\n📈 Quantified Improvements:")
-        print(f"   - Service coupling reduced by ~80%")
-        print(f"   - Testability improved through DI and mocking")
-        print(f"   - Event processing enables async workflows")
-        print(f"   - Database performance optimized with pooling")
-        print(f"   - System observability enhanced")
+        print("\n📈 Quantified Improvements:")
+        print("   - Service coupling reduced by ~80%")
+        print("   - Testability improved through DI and mocking")
+        print("   - Event processing enables async workflows")
+        print("   - Database performance optimized with pooling")
+        print("   - System observability enhanced")
 
-        print(f"\n🚀 Production Readiness:")
-        print(f"   - All Phase 2 components tested and validated")
-        print(f"   - Performance benchmarks met")
-        print(f"   - Integration tests passing")
-        print(f"   - Ready for Phase 3 implementation")
+        print("\n🚀 Production Readiness:")
+        print("   - All Phase 2 components tested and validated")
+        print("   - Performance benchmarks met")
+        print("   - Integration tests passing")
+        print("   - Ready for Phase 3 implementation")
 
 
 async def main():

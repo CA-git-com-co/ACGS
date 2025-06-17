@@ -24,42 +24,38 @@ Quantumagi Compatibility:
 - Support constitutional amendments
 """
 
-import asyncio
 import logging
-import os
 import sys
 import time
 from contextlib import asynccontextmanager
-from typing import Dict, Any, Optional
+from typing import Any
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
-# Import core components
-from .core.evolution_engine import EvolutionEngine
-from .core.security_manager import SecurityManager
-from .core.policy_orchestrator import PolicyOrchestrator
-from .core.background_processor import BackgroundProcessor
-from .core.observability_framework import ObservabilityFramework
-
 # Import API routers
 from .api.v1.evolution import router as evolution_router
-from .api.v1.security import router as security_router
 from .api.v1.observability import router as observability_router
+from .api.v1.security import router as security_router
 
 # Import configuration and dependencies
 from .config import get_settings
+from .core.background_processor import BackgroundProcessor
+
+# Import core components
+from .core.evolution_engine import EvolutionEngine
+from .core.observability_framework import ObservabilityFramework
+from .core.policy_orchestrator import PolicyOrchestrator
+from .core.security_manager import SecurityManager
 from .dependencies import (
-    get_evolution_engine,
-    get_security_manager,
-    set_evolution_engine,
-    set_security_manager,
-    set_policy_orchestrator,
     set_background_processor,
+    set_evolution_engine,
     set_observability_framework,
+    set_policy_orchestrator,
+    set_security_manager,
 )
 
 # Configure logging
@@ -75,11 +71,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Global service instances
-evolution_engine: Optional[EvolutionEngine] = None
-security_manager: Optional[SecurityManager] = None
-policy_orchestrator: Optional[PolicyOrchestrator] = None
-background_processor: Optional[BackgroundProcessor] = None
-observability_framework: Optional[ObservabilityFramework] = None
+evolution_engine: EvolutionEngine | None = None
+security_manager: SecurityManager | None = None
+policy_orchestrator: PolicyOrchestrator | None = None
+background_processor: BackgroundProcessor | None = None
+observability_framework: ObservabilityFramework | None = None
 
 
 @asynccontextmanager
@@ -87,32 +83,34 @@ async def lifespan(app: FastAPI):
     """Application lifespan management."""
     global evolution_engine, security_manager, policy_orchestrator
     global background_processor, observability_framework
-    
+
     settings = get_settings()
-    
+
     try:
-        logger.info("🚀 Starting ACGS-1 Self-Evolving AI Architecture Foundation Service")
-        
+        logger.info(
+            "🚀 Starting ACGS-1 Self-Evolving AI Architecture Foundation Service"
+        )
+
         # Initialize observability framework first
         observability_framework = ObservabilityFramework(settings)
         await observability_framework.initialize()
         logger.info("✅ Observability framework initialized")
-        
+
         # Initialize security manager
         security_manager = SecurityManager(settings)
         await security_manager.initialize()
         logger.info("✅ Security manager initialized with 4-layer architecture")
-        
+
         # Initialize policy orchestrator
         policy_orchestrator = PolicyOrchestrator(settings)
         await policy_orchestrator.initialize()
         logger.info("✅ Policy orchestrator initialized with OPA integration")
-        
+
         # Initialize background processor
         background_processor = BackgroundProcessor(settings)
         await background_processor.initialize()
         logger.info("✅ Background processor initialized with Celery/Redis")
-        
+
         # Initialize evolution engine
         evolution_engine = EvolutionEngine(
             settings=settings,
@@ -130,28 +128,30 @@ async def lifespan(app: FastAPI):
         set_policy_orchestrator(policy_orchestrator)
         set_background_processor(background_processor)
         set_observability_framework(observability_framework)
-        
+
         # Perform system health check (temporarily disabled for debugging)
         # health_status = await perform_startup_health_check()
         # if not health_status["healthy"]:
         #     logger.error("❌ Startup health check failed")
         #     raise RuntimeError("Service startup health check failed")
         logger.info("⚠️ Startup health check temporarily disabled")
-        
+
         logger.info("🎯 Self-Evolving AI Architecture Foundation Service ready")
-        logger.info(f"📊 Performance targets: >1000 concurrent actions, >99.9% availability")
-        logger.info(f"🔒 Security: 4-layer architecture with human oversight")
-        logger.info(f"🏛️ Quantumagi compatibility: Constitution Hash cdd01ef066bc6cf2")
-        
+        logger.info(
+            "📊 Performance targets: >1000 concurrent actions, >99.9% availability"
+        )
+        logger.info("🔒 Security: 4-layer architecture with human oversight")
+        logger.info("🏛️ Quantumagi compatibility: Constitution Hash cdd01ef066bc6cf2")
+
         yield
-        
+
     except Exception as e:
         logger.error(f"❌ Service startup failed: {e}")
         raise
     finally:
         # Cleanup on shutdown
         logger.info("🛑 Shutting down Self-Evolving AI Architecture Foundation Service")
-        
+
         if evolution_engine:
             await evolution_engine.shutdown()
         if background_processor:
@@ -162,18 +162,18 @@ async def lifespan(app: FastAPI):
             await security_manager.shutdown()
         if observability_framework:
             await observability_framework.shutdown()
-        
+
         logger.info("✅ Service shutdown complete")
 
 
-async def perform_startup_health_check() -> Dict[str, Any]:
+async def perform_startup_health_check() -> dict[str, Any]:
     """Perform comprehensive startup health check."""
     health_status = {
         "healthy": True,
         "timestamp": time.time(),
         "checks": {},
     }
-    
+
     try:
         # Check evolution engine
         if evolution_engine:
@@ -181,37 +181,37 @@ async def perform_startup_health_check() -> Dict[str, Any]:
             health_status["checks"]["evolution_engine"] = engine_health
             if not engine_health.get("healthy", False):
                 health_status["healthy"] = False
-        
+
         # Check security manager
         if security_manager:
             security_health = await security_manager.health_check()
             health_status["checks"]["security_manager"] = security_health
             if not security_health.get("healthy", False):
                 health_status["healthy"] = False
-        
+
         # Check policy orchestrator
         if policy_orchestrator:
             policy_health = await policy_orchestrator.health_check()
             health_status["checks"]["policy_orchestrator"] = policy_health
             if not policy_health.get("healthy", False):
                 health_status["healthy"] = False
-        
+
         # Check background processor
         if background_processor:
             processor_health = await background_processor.health_check()
             health_status["checks"]["background_processor"] = processor_health
             if not processor_health.get("healthy", False):
                 health_status["healthy"] = False
-        
+
         # Check observability framework
         if observability_framework:
             observability_health = await observability_framework.health_check()
             health_status["checks"]["observability_framework"] = observability_health
             if not observability_health.get("healthy", False):
                 health_status["healthy"] = False
-        
+
         return health_status
-        
+
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         health_status["healthy"] = False
@@ -270,7 +270,7 @@ async def health_check():
     """Comprehensive health check endpoint."""
     try:
         health_status = await perform_startup_health_check()
-        
+
         if health_status["healthy"]:
             return JSONResponse(
                 status_code=200,
@@ -304,7 +304,7 @@ async def health_check():
                     "error": health_status.get("error"),
                 },
             )
-            
+
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         return JSONResponse(
@@ -355,7 +355,7 @@ async def root():
 if __name__ == "__main__":
     # Get configuration
     settings = get_settings()
-    
+
     # Run the application
     uvicorn.run(
         "app.main:app",

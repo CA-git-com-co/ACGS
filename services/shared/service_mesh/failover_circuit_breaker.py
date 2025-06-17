@@ -6,9 +6,10 @@ Provides intelligent failover capabilities with service degradation handling
 import asyncio
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 from .circuit_breaker import CircuitBreaker, CircuitBreakerState
 from .common_types import ServiceInstance, ServiceType
@@ -46,7 +47,9 @@ class FailoverCircuitBreaker:
     and service degradation for high availability.
     """
 
-    def __init__(self, service_type: ServiceType, config: Optional[FailoverConfig] = None):
+    def __init__(
+        self, service_type: ServiceType, config: FailoverConfig | None = None
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -61,23 +64,23 @@ class FailoverCircuitBreaker:
         self.config = config or FailoverConfig()
 
         # Circuit breaker for each instance
-        self.instance_breakers: Dict[str, CircuitBreaker] = {}
+        self.instance_breakers: dict[str, CircuitBreaker] = {}
 
         # Failover state
-        self.primary_instances: List[str] = []
-        self.backup_instances: List[str] = []
+        self.primary_instances: list[str] = []
+        self.backup_instances: list[str] = []
         self.degraded_mode: bool = False
 
         # Metrics
         self.failover_count: int = 0
-        self.last_failover: Optional[float] = None
+        self.last_failover: float | None = None
         self.recovery_attempts: int = 0
 
         # Callbacks
-        self.failover_callbacks: List[Callable[[str, str], None]] = []
-        self.recovery_callbacks: List[Callable[[str], None]] = []
+        self.failover_callbacks: list[Callable[[str, str], None]] = []
+        self.recovery_callbacks: list[Callable[[str], None]] = []
 
-    def register_instances(self, instances: List[ServiceInstance]):
+    def register_instances(self, instances: list[ServiceInstance]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -147,13 +150,21 @@ class FailoverCircuitBreaker:
 
             # Attempt failover based on strategy
             if self.config.strategy == FailoverStrategy.IMMEDIATE:
-                return await self._immediate_failover(operation, instance_id, *args, **kwargs)
+                return await self._immediate_failover(
+                    operation, instance_id, *args, **kwargs
+                )
             elif self.config.strategy == FailoverStrategy.GRACEFUL:
-                return await self._graceful_failover(operation, instance_id, *args, **kwargs)
+                return await self._graceful_failover(
+                    operation, instance_id, *args, **kwargs
+                )
             elif self.config.strategy == FailoverStrategy.CIRCUIT_BREAK:
-                return await self._circuit_break_failover(operation, instance_id, *args, **kwargs)
+                return await self._circuit_break_failover(
+                    operation, instance_id, *args, **kwargs
+                )
             elif self.config.strategy == FailoverStrategy.LOAD_SHED:
-                return await self._load_shed_failover(operation, instance_id, *args, **kwargs)
+                return await self._load_shed_failover(
+                    operation, instance_id, *args, **kwargs
+                )
             else:
                 raise e
 
@@ -164,7 +175,9 @@ class FailoverCircuitBreaker:
         backup_instances = self._get_available_backups(failed_instance)
 
         if not backup_instances:
-            raise Exception(f"No backup instances available for {self.service_type.value}")
+            raise Exception(
+                f"No backup instances available for {self.service_type.value}"
+            )
 
         # Try first available backup
         backup_id = backup_instances[0]
@@ -226,10 +239,14 @@ class FailoverCircuitBreaker:
 
         if breaker.state == CircuitBreakerState.OPEN:
             # Circuit is open, immediately try backup
-            return await self._immediate_failover(operation, failed_instance, *args, **kwargs)
+            return await self._immediate_failover(
+                operation, failed_instance, *args, **kwargs
+            )
         else:
             # Circuit is closed or half-open, allow normal retry logic
-            return await self._graceful_failover(operation, failed_instance, *args, **kwargs)
+            return await self._graceful_failover(
+                operation, failed_instance, *args, **kwargs
+            )
 
     async def _load_shed_failover(
         self, operation: Callable, failed_instance: str, *args, **kwargs
@@ -240,7 +257,9 @@ class FailoverCircuitBreaker:
             raise Exception("Request shed due to high system load")
 
         # Otherwise, proceed with graceful failover
-        return await self._graceful_failover(operation, failed_instance, *args, **kwargs)
+        return await self._graceful_failover(
+            operation, failed_instance, *args, **kwargs
+        )
 
     async def _degraded_operation(self, operation: Callable, *args, **kwargs) -> Any:
         """
@@ -254,7 +273,7 @@ class FailoverCircuitBreaker:
         logger.warning(f"Returning degraded response for {self.service_type.value}")
         return {"status": "degraded", "message": "Service operating in degraded mode"}
 
-    def _get_available_backups(self, failed_instance: str) -> List[str]:
+    def _get_available_backups(self, failed_instance: str) -> list[str]:
         """Get list of available backup instances."""
         available_backups = []
 
@@ -332,7 +351,7 @@ class FailoverCircuitBreaker:
         """Register callback for recovery events."""
         self.recovery_callbacks.append(callback)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get failover circuit breaker status."""
         return {
             "service_type": self.service_type.value,
@@ -362,11 +381,11 @@ class FailoverManager:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize failover manager."""
-        self.service_breakers: Dict[ServiceType, FailoverCircuitBreaker] = {}
+        self.service_breakers: dict[ServiceType, FailoverCircuitBreaker] = {}
         self.global_degraded_mode: bool = False
 
     def get_failover_breaker(
-        self, service_type: ServiceType, config: Optional[FailoverConfig] = None
+        self, service_type: ServiceType, config: FailoverConfig | None = None
     ) -> FailoverCircuitBreaker:
         """
         Get or create failover circuit breaker for a service.
@@ -379,12 +398,14 @@ class FailoverManager:
             Failover circuit breaker instance
         """
         if service_type not in self.service_breakers:
-            self.service_breakers[service_type] = FailoverCircuitBreaker(service_type, config)
+            self.service_breakers[service_type] = FailoverCircuitBreaker(
+                service_type, config
+            )
 
         return self.service_breakers[service_type]
 
     def register_service_instances(
-        self, service_type: ServiceType, instances: List[ServiceInstance]
+        self, service_type: ServiceType, instances: list[ServiceInstance]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -393,7 +414,7 @@ class FailoverManager:
         breaker = self.get_failover_breaker(service_type)
         breaker.register_instances(instances)
 
-    def get_system_status(self) -> Dict[str, Any]:
+    def get_system_status(self) -> dict[str, Any]:
         """Get overall system failover status."""
         service_statuses = {}
         total_degraded = 0
@@ -414,7 +435,7 @@ class FailoverManager:
 
 
 # Global failover manager
-_failover_manager: Optional[FailoverManager] = None
+_failover_manager: FailoverManager | None = None
 
 
 def get_failover_manager() -> FailoverManager:

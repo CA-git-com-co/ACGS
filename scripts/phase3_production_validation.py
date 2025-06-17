@@ -11,7 +11,6 @@ import subprocess
 import sys
 import time
 from datetime import datetime
-from typing import Dict
 
 import psutil
 import requests
@@ -264,7 +263,7 @@ class ProductionValidator:
         self.validation_results["performance_benchmarks"] = benchmark_results
         return benchmarks_passed
 
-    async def get_cache_metrics(self) -> Dict[str, float]:
+    async def get_cache_metrics(self) -> dict[str, float]:
         """Get Redis cache performance metrics"""
         try:
             result = subprocess.run(
@@ -427,7 +426,7 @@ class ProductionValidator:
         self.validation_results["monitoring_validation"] = monitoring_results
         return monitoring_healthy
 
-    async def evaluate_success_criteria(self) -> Dict[str, bool]:
+    async def evaluate_success_criteria(self) -> dict[str, bool]:
         """Evaluate all success criteria"""
         self.log("🎯 Evaluating production success criteria...")
 

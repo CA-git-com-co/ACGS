@@ -23,7 +23,6 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -108,7 +107,7 @@ class ACGSEnhancementExecutor:
             },
         }
 
-    def execute_all_phases(self) -> Dict:
+    def execute_all_phases(self) -> dict:
         """Execute all enhancement phases in optimal order."""
         logger.info("Starting ACGS-1 enhancement plan execution...")
 
@@ -176,7 +175,7 @@ class ACGSEnhancementExecutor:
         self.execution_results["end_time"] = datetime.now().isoformat()
         return self.execution_results
 
-    def execute_specific_phases(self, phase_numbers: List[int]) -> Dict:
+    def execute_specific_phases(self, phase_numbers: list[int]) -> dict:
         """Execute specific phases only."""
         logger.info(f"Executing specific phases: {phase_numbers}")
 
@@ -223,7 +222,7 @@ class ACGSEnhancementExecutor:
 
         return self.execution_results
 
-    def _calculate_execution_order(self) -> List[int]:
+    def _calculate_execution_order(self) -> list[int]:
         """Calculate optimal execution order based on dependencies and priorities."""
         # Simple topological sort with priority consideration
         remaining_phases = set(self.phases.keys())
@@ -260,7 +259,7 @@ class ACGSEnhancementExecutor:
 
         return execution_order
 
-    def _execute_phase(self, phase_num: int) -> Dict:
+    def _execute_phase(self, phase_num: int) -> dict:
         """Execute a specific phase."""
         phase_config = self.phases[phase_num]
         script_path = self.scripts_dir / phase_config["script"]
@@ -296,7 +295,7 @@ class ACGSEnhancementExecutor:
             "command": " ".join(cmd),
         }
 
-    def _simulate_phase_execution(self, phase_num: int) -> Dict:
+    def _simulate_phase_execution(self, phase_num: int) -> dict:
         """Simulate phase execution for dry run."""
         phase_config = self.phases[phase_num]
 
@@ -358,13 +357,13 @@ class ACGSEnhancementExecutor:
         print("ACGS-1 ENHANCEMENT PLAN EXECUTION SUMMARY")
         print("=" * 70)
 
-        print(f"📊 Execution Statistics:")
+        print("📊 Execution Statistics:")
         print(f"   - Total phases: {summary['total_phases']}")
         print(f"   - Executed phases: {summary['executed_phases']}")
         print(f"   - Successful phases: {summary['successful_phases']}")
         print(f"   - Success rate: {summary['success_rate']:.1f}%")
 
-        print(f"\n🎯 Phase Results:")
+        print("\n🎯 Phase Results:")
         for phase_num in sorted(self.execution_results["phase_results"].keys()):
             result = self.execution_results["phase_results"][phase_num]
             phase_name = self.phases[phase_num]["name"]
@@ -373,12 +372,12 @@ class ACGSEnhancementExecutor:
             print(f"   Phase {phase_num}: {phase_name} - {status} ({duration:.1f}s)")
 
         if self.execution_results["recommendations"]:
-            print(f"\n💡 Recommendations:")
+            print("\n💡 Recommendations:")
             for i, rec in enumerate(self.execution_results["recommendations"], 1):
                 print(f"   {i}. {rec}")
 
         if self.execution_results["next_steps"]:
-            print(f"\n🚀 Next Steps:")
+            print("\n🚀 Next Steps:")
             for i, step in enumerate(self.execution_results["next_steps"], 1):
                 print(f"   {i}. {step}")
 

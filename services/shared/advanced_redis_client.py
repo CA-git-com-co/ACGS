@@ -9,9 +9,10 @@ import json
 import pickle
 import threading
 import time
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
+from typing import Any, TypeVar
 
 import redis.asyncio as redis
 import structlog
@@ -70,21 +71,21 @@ class CacheConfig:
     retry_on_timeout: bool = True
     health_check_interval: int = 30
     enable_sentinel: bool = False
-    sentinel_hosts: Optional[List[Tuple[str, int]]] = None
+    sentinel_hosts: list[tuple[str, int]] | None = None
     master_name: str = "acgs-master"
 
 
 class AdvancedRedisClient:
     """Advanced Redis client with enterprise features."""
 
-    def __init__(self, service_name: str, config: Optional[CacheConfig] = None):
+    def __init__(self, service_name: str, config: CacheConfig | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         self.service_name = service_name
         self.config = config or CacheConfig()
-        self.redis_client: Optional[redis.Redis] = None
-        self.sentinel: Optional[Sentinel] = None
+        self.redis_client: redis.Redis | None = None
+        self.sentinel: Sentinel | None = None
         self.connection_pool = None
         self.metrics = CacheMetrics()
         self._lock = threading.Lock()
@@ -191,9 +192,13 @@ class AdvancedRedisClient:
                 with self._lock:
                     self.metrics.errors += 1
 
-                logger.warning("Redis health check failed", service=self.service_name, error=str(e))
+                logger.warning(
+                    "Redis health check failed", service=self.service_name, error=str(e)
+                )
 
-    def _generate_key(self, key: Union[str, Dict[str, Any]], prefix: Optional[str] = None) -> str:
+    def _generate_key(
+        self, key: str | dict[str, Any], prefix: str | None = None
+    ) -> str:
         """Generate cache key with service prefix."""
         if isinstance(key, str):
             cache_key = key
@@ -209,10 +214,10 @@ class AdvancedRedisClient:
 
     async def get(
         self,
-        key: Union[str, Dict[str, Any]],
-        prefix: Optional[str] = None,
+        key: str | dict[str, Any],
+        prefix: str | None = None,
         deserialize: bool = True,
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """Get value from cache with metrics tracking."""
         cache_key = self._generate_key(key, prefix)
         start_time = time.time()
@@ -266,10 +271,10 @@ class AdvancedRedisClient:
 
     async def set(
         self,
-        key: Union[str, Dict[str, Any]],
+        key: str | dict[str, Any],
         value: Any,
-        ttl: Optional[int] = None,
-        prefix: Optional[str] = None,
+        ttl: int | None = None,
+        prefix: str | None = None,
         serialize: bool = True,
     ) -> bool:
         """Set value in cache with TTL."""
@@ -290,7 +295,9 @@ class AdvancedRedisClient:
             else:
                 await self.redis_client.set(cache_key, data)
 
-            logger.debug("Cache set", service=self.service_name, key=cache_key[:50], ttl=ttl)
+            logger.debug(
+                "Cache set", service=self.service_name, key=cache_key[:50], ttl=ttl
+            )
             return True
 
         except (RedisError, ConnectionError, TimeoutError) as e:
@@ -305,7 +312,9 @@ class AdvancedRedisClient:
             )
             return False
 
-    async def delete(self, key: Union[str, Dict[str, Any]], prefix: Optional[str] = None) -> bool:
+    async def delete(
+        self, key: str | dict[str, Any], prefix: str | None = None
+    ) -> bool:
         """Delete key from cache."""
         cache_key = self._generate_key(key, prefix)
 
@@ -331,7 +340,9 @@ class AdvancedRedisClient:
             )
             return False
 
-    async def invalidate_pattern(self, pattern: str, prefix: Optional[str] = None) -> int:
+    async def invalidate_pattern(
+        self, pattern: str, prefix: str | None = None
+    ) -> int:
         """Invalidate keys matching pattern."""
         full_pattern = self._generate_key(pattern, prefix)
 
@@ -366,7 +377,9 @@ class AdvancedRedisClient:
         # sha256: func_hash
         """Update cache hit rate."""
         if self.metrics.total_requests > 0:
-            self.metrics.hit_rate = (self.metrics.cache_hits / self.metrics.total_requests) * 100
+            self.metrics.hit_rate = (
+                self.metrics.cache_hits / self.metrics.total_requests
+            ) * 100
 
     async def get_metrics(self) -> CacheMetrics:
         """Get current cache metrics."""
@@ -398,11 +411,11 @@ class AdvancedRedisClient:
 
 
 # Global Redis clients for each service
-_redis_clients: Dict[str, AdvancedRedisClient] = {}
+_redis_clients: dict[str, AdvancedRedisClient] = {}
 
 
 async def get_redis_client(
-    service_name: str, config: Optional[CacheConfig] = None
+    service_name: str, config: CacheConfig | None = None
 ) -> AdvancedRedisClient:
     """Get or create Redis client for service."""
     if service_name not in _redis_clients:
@@ -425,10 +438,10 @@ async def close_all_redis_clients():
 
 # Cache decorators for easy integration
 def cache_result(
-    ttl: Optional[int] = None,
-    key_prefix: Optional[str] = None,
+    ttl: int | None = None,
+    key_prefix: str | None = None,
     cache_type: str = "api_responses",
-    service_name: Optional[str] = None,
+    service_name: str | None = None,
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -486,7 +499,7 @@ def cache_result(
 
 
 @asynccontextmanager
-async def cache_context(service_name: str, config: Optional[CacheConfig] = None):
+async def cache_context(service_name: str, config: CacheConfig | None = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

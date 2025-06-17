@@ -7,9 +7,10 @@ import asyncio
 import logging
 import statistics
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,7 @@ class PerformanceAlert:
 
     alert_id: str
     service_type: str
-    instance_id: Optional[str]
+    instance_id: str | None
     metric_type: MetricType
     severity: AlertSeverity
     current_value: float
@@ -60,7 +61,7 @@ class PerformanceAlert:
     message: str
     timestamp: float
     resolved: bool = False
-    resolved_at: Optional[float] = None
+    resolved_at: float | None = None
 
 
 @dataclass
@@ -69,7 +70,7 @@ class PerformanceMetrics:
 
     timestamp: float
     service_type: str
-    instance_id: Optional[str]
+    instance_id: str | None
 
     # Core performance metrics
     response_time_ms: float
@@ -79,9 +80,9 @@ class PerformanceMetrics:
     concurrent_connections: int
 
     # Resource metrics
-    cpu_usage_percent: Optional[float] = None
-    memory_usage_percent: Optional[float] = None
-    disk_usage_percent: Optional[float] = None
+    cpu_usage_percent: float | None = None
+    memory_usage_percent: float | None = None
+    disk_usage_percent: float | None = None
 
     # Load balancing metrics
     active_instances: int = 0
@@ -111,18 +112,18 @@ class PerformanceMonitor:
         self.monitoring_interval = monitoring_interval
 
         # Performance data storage
-        self.metrics_history: Dict[str, List[PerformanceMetrics]] = {}
-        self.active_alerts: Dict[str, PerformanceAlert] = {}
-        self.alert_history: List[PerformanceAlert] = []
+        self.metrics_history: dict[str, list[PerformanceMetrics]] = {}
+        self.active_alerts: dict[str, PerformanceAlert] = {}
+        self.alert_history: list[PerformanceAlert] = []
 
         # Thresholds for ACGS-1 targets
         self.thresholds = self._initialize_thresholds()
 
         # Alert callbacks
-        self.alert_callbacks: List[Callable[[PerformanceAlert], None]] = []
+        self.alert_callbacks: list[Callable[[PerformanceAlert], None]] = []
 
         # Monitoring state
-        self._monitoring_task: Optional[asyncio.Task] = None
+        self._monitoring_task: asyncio.Task | None = None
         self._running = False
 
         # Performance targets
@@ -133,7 +134,7 @@ class PerformanceMonitor:
             "error_rate_percent": 1.0,
         }
 
-    def _initialize_thresholds(self) -> Dict[MetricType, PerformanceThreshold]:
+    def _initialize_thresholds(self) -> dict[MetricType, PerformanceThreshold]:
         """Initialize performance thresholds for ACGS-1."""
         return {
             MetricType.RESPONSE_TIME: PerformanceThreshold(
@@ -311,8 +312,8 @@ class PerformanceMonitor:
         metric_type: MetricType,
         value: float,
         service_type: str,
-        instance_id: Optional[str],
-        metric_name: Optional[str] = None,
+        instance_id: str | None,
+        metric_name: str | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -367,8 +368,8 @@ class PerformanceMonitor:
         current_value: float,
         threshold_value: float,
         service_type: str,
-        instance_id: Optional[str],
-        metric_name: Optional[str] = None,
+        instance_id: str | None,
+        metric_name: str | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -381,7 +382,9 @@ class PerformanceMonitor:
         if existing_alert_key in self.active_alerts:
             # Update existing alert if severity increased
             existing_alert = self.active_alerts[existing_alert_key]
-            if self._severity_level(severity) > self._severity_level(existing_alert.severity):
+            if self._severity_level(severity) > self._severity_level(
+                existing_alert.severity
+            ):
                 existing_alert.severity = severity
                 existing_alert.current_value = current_value
                 existing_alert.timestamp = time.time()
@@ -445,7 +448,7 @@ class PerformanceMonitor:
         """Register callback for alert notifications."""
         self.alert_callbacks.append(callback)
 
-    def get_current_performance_summary(self) -> Dict[str, Any]:
+    def get_current_performance_summary(self) -> dict[str, Any]:
         """Get current performance summary."""
         if not self.metrics_history:
             return {"status": "no_data"}
@@ -455,7 +458,9 @@ class PerformanceMonitor:
         cutoff_time = time.time() - 300  # Last 5 minutes
 
         for metrics_list in self.metrics_history.values():
-            recent_metrics.extend([m for m in metrics_list if m.timestamp > cutoff_time])
+            recent_metrics.extend(
+                [m for m in metrics_list if m.timestamp > cutoff_time]
+            )
 
         if not recent_metrics:
             return {"status": "no_recent_data"}
@@ -464,7 +469,9 @@ class PerformanceMonitor:
         avg_response_time = statistics.mean(
             [m.response_time_ms for m in recent_metrics if m.response_time_ms > 0]
         )
-        avg_availability = statistics.mean([m.availability_percent for m in recent_metrics])
+        avg_availability = statistics.mean(
+            [m.availability_percent for m in recent_metrics]
+        )
         avg_error_rate = statistics.mean([m.error_rate_percent for m in recent_metrics])
         total_connections = sum([m.concurrent_connections for m in recent_metrics])
 
@@ -498,7 +505,7 @@ class PerformanceMonitor:
             "timestamp": time.time(),
         }
 
-    def get_alert_summary(self) -> Dict[str, Any]:
+    def get_alert_summary(self) -> dict[str, Any]:
         """Get alert summary."""
         severity_counts = {severity.value: 0 for severity in AlertSeverity}
 
@@ -509,7 +516,9 @@ class PerformanceMonitor:
             "active_alerts": len(self.active_alerts),
             "severity_breakdown": severity_counts,
             "recent_alerts": len(
-                [a for a in self.alert_history if time.time() - a.timestamp < 3600]  # Last hour
+                [
+                    a for a in self.alert_history if time.time() - a.timestamp < 3600
+                ]  # Last hour
             ),
             "total_alerts_today": len(
                 [
@@ -522,7 +531,7 @@ class PerformanceMonitor:
 
 
 # Global performance monitor
-_performance_monitor: Optional[PerformanceMonitor] = None
+_performance_monitor: PerformanceMonitor | None = None
 
 
 class AlertingSystem:
@@ -538,9 +547,9 @@ class AlertingSystem:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize alerting system."""
-        self.notification_channels: List[Callable[[PerformanceAlert], None]] = []
-        self.escalation_rules: Dict[AlertSeverity, Dict[str, Any]] = {}
-        self.alert_suppression: Dict[str, float] = {}  # alert_key -> suppress_until
+        self.notification_channels: list[Callable[[PerformanceAlert], None]] = []
+        self.escalation_rules: dict[AlertSeverity, dict[str, Any]] = {}
+        self.alert_suppression: dict[str, float] = {}  # alert_key -> suppress_until
 
         # Default escalation rules
         self._setup_default_escalation()
@@ -580,7 +589,9 @@ class AlertingSystem:
         # ensures: Correct function execution
         # sha256: func_hash
         """Handle incoming alert."""
-        alert_key = f"{alert.service_type}:{alert.instance_id}:{alert.metric_type.value}"
+        alert_key = (
+            f"{alert.service_type}:{alert.instance_id}:{alert.metric_type.value}"
+        )
 
         # Check if alert is suppressed
         if self._is_alert_suppressed(alert_key):
@@ -641,7 +652,9 @@ def console_alert_handler(alert: PerformanceAlert):
     if alert.instance_id:
         print(f"Instance: {alert.instance_id}")
     print(f"Message: {alert.message}")
-    print(f"Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(alert.timestamp))}")
+    print(
+        f"Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(alert.timestamp))}"
+    )
     print("-" * 50)
 
 

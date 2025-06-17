@@ -6,7 +6,7 @@ capabilities, performance optimization, and comprehensive monitoring.
 
 Core Workflows:
 1. Policy Creation - Draft → Review → Voting → Implementation
-2. Constitutional Compliance - Validation → Assessment → Enforcement  
+2. Constitutional Compliance - Validation → Assessment → Enforcement
 3. Policy Enforcement - Monitoring → Violation Detection → Remediation
 4. WINA Oversight - Performance Monitoring → Optimization → Reporting
 5. Audit/Transparency - Data Collection → Analysis → Public Reporting
@@ -18,36 +18,34 @@ Performance Targets:
 - >95% constitutional compliance accuracy
 """
 
-import asyncio
 import logging
-import os
 import sys
 import time
 from contextlib import asynccontextmanager
-from typing import Dict, Any, Optional
+from typing import Any
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
-# Import core components
-from .core.workflow_orchestrator import WorkflowOrchestrator
-from .core.performance_monitor import PerformanceMonitor
-from .core.service_integrator import ServiceIntegrator
-from .core.metrics_collector import MetricsCollector
+from .api.v1.audit_transparency import router as audit_transparency_router
+from .api.v1.constitutional_compliance import router as constitutional_compliance_router
 
 # Import API routers
 from .api.v1.policy_creation import router as policy_creation_router
-from .api.v1.constitutional_compliance import router as constitutional_compliance_router
 from .api.v1.policy_enforcement import router as policy_enforcement_router
 from .api.v1.wina_oversight import router as wina_oversight_router
-from .api.v1.audit_transparency import router as audit_transparency_router
 
 # Import configuration
 from .config import get_settings
-from .dependencies import get_workflow_orchestrator, get_performance_monitor
+from .core.metrics_collector import MetricsCollector
+from .core.performance_monitor import PerformanceMonitor
+from .core.service_integrator import ServiceIntegrator
+
+# Import core components
+from .core.workflow_orchestrator import WorkflowOrchestrator
 
 # Configure logging
 logging.basicConfig(
@@ -62,37 +60,37 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Global service instances
-workflow_orchestrator: Optional[WorkflowOrchestrator] = None
-performance_monitor: Optional[PerformanceMonitor] = None
-service_integrator: Optional[ServiceIntegrator] = None
-metrics_collector: Optional[MetricsCollector] = None
+workflow_orchestrator: WorkflowOrchestrator | None = None
+performance_monitor: PerformanceMonitor | None = None
+service_integrator: ServiceIntegrator | None = None
+metrics_collector: MetricsCollector | None = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan management."""
     global workflow_orchestrator, performance_monitor, service_integrator, metrics_collector
-    
+
     settings = get_settings()
-    
+
     try:
         logger.info("🚀 Starting ACGS-1 Advanced Governance Workflows Service")
-        
+
         # Initialize performance monitor first
         performance_monitor = PerformanceMonitor(settings)
         await performance_monitor.initialize()
         logger.info("✅ Performance monitor initialized")
-        
+
         # Initialize service integrator
         service_integrator = ServiceIntegrator(settings)
         await service_integrator.initialize()
         logger.info("✅ Service integrator initialized")
-        
+
         # Initialize metrics collector
         metrics_collector = MetricsCollector(settings)
         await metrics_collector.initialize()
         logger.info("✅ Metrics collector initialized")
-        
+
         # Initialize workflow orchestrator
         workflow_orchestrator = WorkflowOrchestrator(
             settings=settings,
@@ -102,27 +100,29 @@ async def lifespan(app: FastAPI):
         )
         await workflow_orchestrator.initialize()
         logger.info("✅ Workflow orchestrator initialized")
-        
+
         # Perform system health check
         health_status = await perform_startup_health_check()
         if not health_status["healthy"]:
             logger.error("❌ Startup health check failed")
             raise RuntimeError("Service startup health check failed")
-        
+
         logger.info("🎯 Advanced Governance Workflows Service ready")
-        logger.info(f"📊 Performance targets: >1000 concurrent actions, >99.9% availability")
-        logger.info(f"🏛️ Quantumagi compatibility: Constitution Hash cdd01ef066bc6cf2")
-        logger.info(f"🔄 5 core workflows operational")
-        
+        logger.info(
+            "📊 Performance targets: >1000 concurrent actions, >99.9% availability"
+        )
+        logger.info("🏛️ Quantumagi compatibility: Constitution Hash cdd01ef066bc6cf2")
+        logger.info("🔄 5 core workflows operational")
+
         yield
-        
+
     except Exception as e:
         logger.error(f"❌ Service startup failed: {e}")
         raise
     finally:
         # Cleanup on shutdown
         logger.info("🛑 Shutting down Advanced Governance Workflows Service")
-        
+
         if workflow_orchestrator:
             await workflow_orchestrator.shutdown()
         if metrics_collector:
@@ -131,18 +131,18 @@ async def lifespan(app: FastAPI):
             await service_integrator.shutdown()
         if performance_monitor:
             await performance_monitor.shutdown()
-        
+
         logger.info("✅ Service shutdown complete")
 
 
-async def perform_startup_health_check() -> Dict[str, Any]:
+async def perform_startup_health_check() -> dict[str, Any]:
     """Perform comprehensive startup health check."""
     health_status = {
         "healthy": True,
         "timestamp": time.time(),
         "checks": {},
     }
-    
+
     try:
         # Check workflow orchestrator
         if workflow_orchestrator:
@@ -150,30 +150,30 @@ async def perform_startup_health_check() -> Dict[str, Any]:
             health_status["checks"]["workflow_orchestrator"] = orchestrator_health
             if not orchestrator_health.get("healthy", False):
                 health_status["healthy"] = False
-        
+
         # Check performance monitor
         if performance_monitor:
             monitor_health = await performance_monitor.health_check()
             health_status["checks"]["performance_monitor"] = monitor_health
             if not monitor_health.get("healthy", False):
                 health_status["healthy"] = False
-        
+
         # Check service integrator
         if service_integrator:
             integrator_health = await service_integrator.health_check()
             health_status["checks"]["service_integrator"] = integrator_health
             if not integrator_health.get("healthy", False):
                 health_status["healthy"] = False
-        
+
         # Check metrics collector
         if metrics_collector:
             collector_health = await metrics_collector.health_check()
             health_status["checks"]["metrics_collector"] = collector_health
             if not collector_health.get("healthy", False):
                 health_status["healthy"] = False
-        
+
         return health_status
-        
+
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         health_status["healthy"] = False
@@ -244,7 +244,7 @@ async def health_check():
     """Comprehensive health check endpoint."""
     try:
         health_status = await perform_startup_health_check()
-        
+
         if health_status["healthy"]:
             return JSONResponse(
                 status_code=200,
@@ -285,7 +285,7 @@ async def health_check():
                     "error": health_status.get("error"),
                 },
             )
-            
+
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         return JSONResponse(
@@ -338,7 +338,7 @@ async def root():
 if __name__ == "__main__":
     # Get configuration
     settings = get_settings()
-    
+
     # Run the application
     uvicorn.run(
         "app.main:app",

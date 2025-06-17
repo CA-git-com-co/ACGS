@@ -6,8 +6,8 @@ and integrates contextual data during policy generation.
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -20,21 +20,23 @@ class EnvironmentalFactor:
         factor_id: str,
         factor_type: str,
         value: Any,
-        timestamp: Optional[datetime] = None,
-        source: Optional[str] = None,
+        timestamp: datetime | None = None,
+        source: str | None = None,
         confidence: float = 1.0,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         self.factor_id = factor_id
-        self.factor_type = factor_type  # e.g., "regulatory", "operational", "technical", "social"
+        self.factor_type = (
+            factor_type  # e.g., "regulatory", "operational", "technical", "social"
+        )
         self.value = value
-        self.timestamp = timestamp or datetime.now(timezone.utc)
+        self.timestamp = timestamp or datetime.now(UTC)
         self.source = source
         self.confidence = confidence  # 0.0 to 1.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "factor_id": self.factor_id,
             "factor_type": self.factor_type,
@@ -60,16 +62,20 @@ class ContextualAnalyzer:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.environmental_factors: Dict[str, EnvironmentalFactor] = {}
-        self.context_history: List[Dict[str, Any]] = []
+        self.environmental_factors: dict[str, EnvironmentalFactor] = {}
+        self.context_history: list[dict[str, Any]] = []
         self.similarity_threshold = 0.7  # Threshold for context similarity matching
 
     def add_environmental_factor(self, factor: EnvironmentalFactor) -> None:
         """Add or update an environmental factor."""
         self.environmental_factors[factor.factor_id] = factor
-        logger.info(f"Added environmental factor: {factor.factor_id} ({factor.factor_type})")
+        logger.info(
+            f"Added environmental factor: {factor.factor_id} ({factor.factor_type})"
+        )
 
-    def get_environmental_factors_by_type(self, factor_type: str) -> List[EnvironmentalFactor]:
+    def get_environmental_factors_by_type(
+        self, factor_type: str
+    ) -> list[EnvironmentalFactor]:
         """Get all environmental factors of a specific type."""
         return [
             factor
@@ -78,8 +84,8 @@ class ContextualAnalyzer:
         ]
 
     def analyze_context(
-        self, context: str, additional_data: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, context: str, additional_data: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Analyze a given context and return contextual insights.
 
@@ -108,7 +114,7 @@ class ContextualAnalyzer:
 
         analysis_result = {
             "context": context,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "relevant_factors": [factor.to_dict() for factor in relevant_factors],
             "similar_contexts": similar_contexts,
             "environmental_changes": changes,
@@ -130,7 +136,7 @@ class ContextualAnalyzer:
         )
         return analysis_result
 
-    def _get_relevant_factors(self, context: str) -> List[EnvironmentalFactor]:
+    def _get_relevant_factors(self, context: str) -> list[EnvironmentalFactor]:
         """Get environmental factors relevant to the given context."""
         relevant_factors = []
 
@@ -148,7 +154,9 @@ class ContextualAnalyzer:
 
         return relevant_factors
 
-    def _is_factor_relevant(self, factor: EnvironmentalFactor, context_lower: str) -> bool:
+    def _is_factor_relevant(
+        self, factor: EnvironmentalFactor, context_lower: str
+    ) -> bool:
         """Determine if an environmental factor is relevant to the context."""
         # Basic keyword matching - could be enhanced with semantic analysis
         factor_keywords = {
@@ -178,7 +186,7 @@ class ContextualAnalyzer:
 
         return False
 
-    def _find_similar_contexts(self, context: str) -> List[Dict[str, Any]]:
+    def _find_similar_contexts(self, context: str) -> list[dict[str, Any]]:
         """Find historically similar contexts."""
         similar_contexts = []
 
@@ -193,7 +201,9 @@ class ContextualAnalyzer:
                         "context": historical_context["context"],
                         "similarity_score": similarity_score,
                         "timestamp": historical_context["timestamp"],
-                        "factor_count": historical_context["analysis_metadata"]["factor_count"],
+                        "factor_count": historical_context["analysis_metadata"][
+                            "factor_count"
+                        ],
                     }
                 )
 
@@ -216,12 +226,12 @@ class ContextualAnalyzer:
 
         return len(intersection) / len(union)
 
-    def _detect_environmental_changes(self, context: str) -> List[Dict[str, Any]]:
+    def _detect_environmental_changes(self, context: str) -> list[dict[str, Any]]:
         """Detect recent changes in environmental factors relevant to the context."""
         changes = []
 
         # Look for factors that have changed recently (within last hour for demo)
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(UTC)
 
         for factor in self.environmental_factors.values():
             if self._is_factor_relevant(factor, context.lower()):
@@ -243,9 +253,9 @@ class ContextualAnalyzer:
     def _generate_contextual_recommendations(
         self,
         context: str,
-        relevant_factors: List[EnvironmentalFactor],
-        changes: List[Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
+        relevant_factors: list[EnvironmentalFactor],
+        changes: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
         """Generate contextual recommendations for policy adaptation."""
         recommendations = []
 
@@ -273,7 +283,7 @@ class ContextualAnalyzer:
             )
 
         # Recommendation based on factor diversity
-        factor_types = set(f.factor_type for f in relevant_factors)
+        factor_types = {f.factor_type for f in relevant_factors}
         if len(factor_types) > 2:
             recommendations.append(
                 {
@@ -286,7 +296,7 @@ class ContextualAnalyzer:
 
         return recommendations
 
-    def get_context_adaptation_triggers(self, context: str) -> Dict[str, Any]:
+    def get_context_adaptation_triggers(self, context: str) -> dict[str, Any]:
         """
         Get triggers that indicate when policies should be adapted for the given context.
         """

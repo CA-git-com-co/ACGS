@@ -20,7 +20,7 @@ class SecurityRemediator:
     def fix_md5_usage(self, file_path, line_number):
         """Replace MD5 hash usage with SHA-256."""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             if line_number <= len(lines):
@@ -68,7 +68,7 @@ import secrets
 
 def add_security_middleware(app):
     """Add comprehensive security middleware to FastAPI app."""
-    
+
     # CORS Configuration
     app.add_middleware(
         CORSMiddleware,
@@ -78,13 +78,13 @@ def add_security_middleware(app):
         allow_headers=["*"],
         expose_headers=["X-Request-ID"]
     )
-    
+
     # Trusted Host Middleware
     app.add_middleware(
         TrustedHostMiddleware,
         allowed_hosts=["localhost", "127.0.0.1", "*.acgs.local"]
     )
-    
+
     # Session Middleware with secure settings
     app.add_middleware(
         SessionMiddleware,
@@ -93,12 +93,12 @@ def add_security_middleware(app):
         same_site="strict",
         https_only=True
     )
-    
+
     # Security Headers Middleware
     @app.middleware("http")
     async def add_security_headers(request, call_next):
         response = await call_next(request)
-        
+
         # Security headers
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
@@ -107,9 +107,9 @@ def add_security_middleware(app):
         response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
-        
+
         return response
-    
+
     return app
 '''
 
@@ -141,36 +141,36 @@ from fastapi import HTTPException
 
 class InputValidator:
     """Secure input validation utilities."""
-    
+
     @staticmethod
     def validate_string(value: str, max_length: int = 1000, allow_html: bool = False) -> str:
         """Validate and sanitize string input."""
         if not isinstance(value, str):
             raise HTTPException(status_code=400, detail="Invalid input type")
-        
+
         if len(value) > max_length:
             raise HTTPException(status_code=400, detail=f"Input too long (max {max_length})")
-        
+
         if not allow_html:
             # Remove potential HTML/script tags
             value = re.sub(r'<[^>]*>', '', value)
-        
+
         return value.strip()
-    
+
     @staticmethod
     def validate_policy_id(policy_id: str) -> str:
         """Validate policy ID format."""
-        if not re.match(r'^[A-Z]{2,3}-\d{3}$', policy_id):
+        if not re.match(r'^[A-Z]{2,3}-\\d{3}$', policy_id):
             raise HTTPException(status_code=400, detail="Invalid policy ID format")
         return policy_id
-    
+
     @staticmethod
     def validate_hash(hash_value: str) -> str:
         """Validate hash format (SHA-256)."""
         if not re.match(r'^[a-fA-F0-9]{64}$', hash_value):
             raise HTTPException(status_code=400, detail="Invalid hash format")
         return hash_value.lower()
-    
+
     @staticmethod
     def sanitize_filename(filename: str) -> str:
         """Sanitize filename to prevent path traversal."""
@@ -200,7 +200,7 @@ class InputValidator:
         """Process the remediation plan and apply fixes."""
 
         try:
-            with open(plan_file, "r") as f:
+            with open(plan_file) as f:
                 data = json.load(f)
         except FileNotFoundError:
             print(f"❌ Error: Remediation plan file {plan_file} not found")
@@ -223,9 +223,9 @@ class InputValidator:
                 print(f"  {i}. Fixing MD5 usage in {file_path}:{line_number}")
 
                 if self.fix_md5_usage(file_path, line_number):
-                    print(f"     ✅ Fixed MD5 → SHA-256")
+                    print("     ✅ Fixed MD5 → SHA-256")
                 else:
-                    print(f"     ❌ Failed to fix")
+                    print("     ❌ Failed to fix")
 
         return True
 
@@ -281,13 +281,13 @@ def main():
         json.dump(report, f, indent=2)
 
     # Print summary
-    print(f"\n📊 Remediation Summary:")
+    print("\n📊 Remediation Summary:")
     print(f"  ✅ Fixes Applied: {report['fixes_applied']}")
     print(f"  📁 Files Modified: {report['files_modified']}")
     print(f"  ❌ Errors: {report['errors']}")
 
     if report["errors"] > 0:
-        print(f"\n⚠️  Errors encountered:")
+        print("\n⚠️  Errors encountered:")
         for error in remediator.errors:
             print(f"    • {error['file']}:{error['line']} - {error['error']}")
 

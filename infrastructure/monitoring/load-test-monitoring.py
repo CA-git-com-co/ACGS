@@ -15,9 +15,8 @@ import statistics
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Dict, List
 
 import aiohttp
 
@@ -63,8 +62,8 @@ class LoadTestResult:
     total_requests: int = 0
     successful_requests: int = 0
     failed_requests: int = 0
-    response_times: List[float] = field(default_factory=list)
-    error_details: List[str] = field(default_factory=list)
+    response_times: list[float] = field(default_factory=list)
+    error_details: list[str] = field(default_factory=list)
     start_time: float = 0
     end_time: float = 0
 
@@ -97,7 +96,7 @@ class MonitoringLoadTester:
 
     def __init__(self, config: LoadTestConfig):
         self.config = config
-        self.results: Dict[str, LoadTestResult] = {}
+        self.results: dict[str, LoadTestResult] = {}
         self.active_sessions = 0
 
         # Prometheus test queries
@@ -126,9 +125,9 @@ class MonitoringLoadTester:
             "/api/user",
         ]
 
-    async def run_load_test(self) -> Dict[str, LoadTestResult]:
+    async def run_load_test(self) -> dict[str, LoadTestResult]:
         """Execute comprehensive load test on monitoring infrastructure."""
-        logger.info(f"🚀 Starting monitoring infrastructure load test")
+        logger.info("🚀 Starting monitoring infrastructure load test")
         logger.info(
             f"📊 Configuration: {self.config.concurrent_users} users, {self.config.test_duration_seconds}s duration"
         )
@@ -153,7 +152,7 @@ class MonitoringLoadTester:
             total_workers - prometheus_workers - grafana_workers - metrics_workers
         )
 
-        logger.info(f"📈 Worker distribution:")
+        logger.info("📈 Worker distribution:")
         logger.info(f"  Prometheus queries: {prometheus_workers} workers")
         logger.info(f"  Grafana dashboards: {grafana_workers} workers")
         logger.info(f"  Metrics scraping: {metrics_workers} workers")
@@ -417,13 +416,13 @@ class MonitoringLoadTester:
             (total_successful / total_requests * 100) if total_requests > 0 else 0
         )
 
-        logger.info(f"🎯 Overall Statistics:")
+        logger.info("🎯 Overall Statistics:")
         logger.info(f"  Total Requests: {total_requests:,}")
         logger.info(f"  Successful: {total_successful:,}")
         logger.info(f"  Failed: {total_failed:,}")
         logger.info(f"  Success Rate: {overall_success_rate:.2f}%")
 
-        logger.info(f"\n📈 Scenario Results:")
+        logger.info("\n📈 Scenario Results:")
 
         for scenario_name, result in self.results.items():
             if result.total_requests > 0:
@@ -455,7 +454,7 @@ class MonitoringLoadTester:
         """Save detailed load test results to file."""
         report = {
             "test_metadata": {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "test_duration_seconds": self.config.test_duration_seconds,
                 "concurrent_users": self.config.concurrent_users,
                 "ramp_up_seconds": self.config.ramp_up_seconds,
@@ -500,7 +499,7 @@ class MonitoringLoadTester:
         except Exception as e:
             logger.error(f"❌ Failed to save results: {str(e)}")
 
-    def summarize_errors(self, error_details: List[str]) -> Dict[str, int]:
+    def summarize_errors(self, error_details: list[str]) -> dict[str, int]:
         """Summarize error details for reporting."""
         error_summary = {}
         for error in error_details:

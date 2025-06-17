@@ -265,7 +265,7 @@ class TestQECStandaloneIntegration:
 
         # Validate component integration
         for result in results:
-            assert isinstance(result["constitutional_distance"], (int, float))
+            assert isinstance(result["constitutional_distance"], int | float)
             assert 0 <= result["constitutional_distance"] <= 1
             assert result["error_prediction"] is not None
             assert result["recovery_strategy"] is not None

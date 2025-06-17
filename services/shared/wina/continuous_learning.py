@@ -27,7 +27,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -102,11 +102,11 @@ class FeedbackSignal:
     component_type: WINAComponentType
     feedback_type: FeedbackType
     value: float
-    context: Dict[str, Any]
+    context: dict[str, Any]
     timestamp: datetime
     confidence: float = 1.0
     source: str = "system"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -115,7 +115,7 @@ class LearningAction:
 
     action_type: str
     component_target: WINAComponentType
-    parameter_adjustments: Dict[str, float]
+    parameter_adjustments: dict[str, float]
     expected_impact: float
     confidence: float
     rationale: str
@@ -131,9 +131,9 @@ class LearningState:
     exploration_rate: float
     learning_rate: float
     convergence_threshold: float
-    performance_trend: List[float]
+    performance_trend: list[float]
     last_significant_change: datetime
-    component_states: Dict[WINAComponentType, Dict[str, Any]]
+    component_states: dict[WINAComponentType, dict[str, Any]]
 
 
 @dataclass
@@ -141,9 +141,9 @@ class ComponentLearningProfile:
     """Learning profile for specific WINA component."""
 
     component_type: WINAComponentType
-    optimal_parameters: Dict[str, float]
-    parameter_bounds: Dict[str, Tuple[float, float]]
-    learning_history: List[Tuple[Dict[str, float], float]]  # (params, performance)
+    optimal_parameters: dict[str, float]
+    parameter_bounds: dict[str, tuple[float, float]]
+    learning_history: list[tuple[dict[str, float], float]]  # (params, performance)
     adaptation_rate: float
     stability_score: float
     last_update: datetime
@@ -154,13 +154,15 @@ class LearningAlgorithm(ABC):
     """Abstract base class for learning algorithms."""
 
     @abstractmethod
-    async def process_feedback(self, feedback: List[FeedbackSignal]) -> List[LearningAction]:
+    async def process_feedback(
+        self, feedback: list[FeedbackSignal]
+    ) -> list[LearningAction]:
         """Process feedback signals and generate learning actions."""
 
     @abstractmethod
     async def update_parameters(
-        self, component_type: WINAComponentType, current_params: Dict[str, float]
-    ) -> Dict[str, float]:
+        self, component_type: WINAComponentType, current_params: dict[str, float]
+    ) -> dict[str, float]:
         """Update parameters for specific component."""
 
 
@@ -173,10 +175,14 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
         # sha256: func_hash
         self.learning_rate = learning_rate
         self.exploration_rate = exploration_rate
-        self.q_table: Dict[str, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
+        self.q_table: dict[str, dict[str, float]] = defaultdict(
+            lambda: defaultdict(float)
+        )
         self.experience_replay: deque = deque(maxlen=10000)
 
-    async def process_feedback(self, feedback: List[FeedbackSignal]) -> List[LearningAction]:
+    async def process_feedback(
+        self, feedback: list[FeedbackSignal]
+    ) -> list[LearningAction]:
         """Process feedback using reinforcement learning."""
         actions = []
 
@@ -190,8 +196,12 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
 
             # Q-learning update
             current_q = self.q_table[state_key][action_key]
-            max_future_q = max(self.q_table[state_key].values()) if self.q_table[state_key] else 0
-            new_q = current_q + self.learning_rate * (reward + 0.9 * max_future_q - current_q)
+            max_future_q = (
+                max(self.q_table[state_key].values()) if self.q_table[state_key] else 0
+            )
+            new_q = current_q + self.learning_rate * (
+                reward + 0.9 * max_future_q - current_q
+            )
             self.q_table[state_key][action_key] = new_q
 
             # Generate learning action if improvement opportunity detected
@@ -215,17 +225,17 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
         else:
             return signal.value * signal.confidence
 
-    def _get_state_key(self, context: Dict[str, Any]) -> str:
+    def _get_state_key(self, context: dict[str, Any]) -> str:
         """Generate state key from context."""
         key_elements = []
         for key in sorted(context.keys()):
-            if isinstance(context[key], (int, float, str, bool)):
+            if isinstance(context[key], int | float | str | bool):
                 key_elements.append(f"{key}:{context[key]}")
         return "_".join(key_elements)
 
     async def _generate_learning_action(
         self, signal: FeedbackSignal, reward: float
-    ) -> Optional[LearningAction]:
+    ) -> LearningAction | None:
         """Generate learning action based on feedback signal."""
         try:
             # Determine parameter adjustments based on feedback
@@ -234,7 +244,10 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
             if signal.component_type == WINAComponentType.NEURON_ACTIVATION:
                 if signal.feedback_type == FeedbackType.EFFICIENCY_GAIN and reward > 0:
                     adjustments["activation_threshold"] = 0.05 * reward
-                elif signal.feedback_type == FeedbackType.ACCURACY_RETENTION and reward < 0:
+                elif (
+                    signal.feedback_type == FeedbackType.ACCURACY_RETENTION
+                    and reward < 0
+                ):
                     adjustments["activation_threshold"] = -0.02 * abs(reward)
 
             elif signal.component_type == WINAComponentType.DYNAMIC_GATING:
@@ -243,7 +256,10 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
                     adjustments["adaptive_rate"] = 0.01 * reward
 
             elif signal.component_type == WINAComponentType.SVD_TRANSFORMATION:
-                if signal.feedback_type == FeedbackType.ACCURACY_RETENTION and reward > 0:
+                if (
+                    signal.feedback_type == FeedbackType.ACCURACY_RETENTION
+                    and reward > 0
+                ):
                     adjustments["rank_threshold"] = 0.02 * reward
 
             if adjustments:
@@ -262,8 +278,8 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
         return None
 
     async def update_parameters(
-        self, component_type: WINAComponentType, current_params: Dict[str, float]
-    ) -> Dict[str, float]:
+        self, component_type: WINAComponentType, current_params: dict[str, float]
+    ) -> dict[str, float]:
         """Update parameters using reinforcement learning insights."""
         updated_params = current_params.copy()
 
@@ -290,10 +306,12 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
         # sha256: func_hash
         self.window_size = window_size
         self.similarity_threshold = similarity_threshold
-        self.pattern_database: List[Dict[str, Any]] = []
+        self.pattern_database: list[dict[str, Any]] = []
         self.feedback_history: deque = deque(maxlen=window_size)
 
-    async def process_feedback(self, feedback: List[FeedbackSignal]) -> List[LearningAction]:
+    async def process_feedback(
+        self, feedback: list[FeedbackSignal]
+    ) -> list[LearningAction]:
         """Process feedback using pattern recognition."""
         actions = []
 
@@ -310,7 +328,7 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
 
         return actions
 
-    async def _identify_patterns(self) -> List[Dict[str, Any]]:
+    async def _identify_patterns(self) -> list[dict[str, Any]]:
         """Identify patterns in feedback history."""
         patterns = []
 
@@ -353,7 +371,7 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
 
         return patterns
 
-    def _is_increasing_trend(self, values: List[float]) -> bool:
+    def _is_increasing_trend(self, values: list[float]) -> bool:
         """Check if values show increasing trend."""
         if len(values) < 3:
             return False
@@ -361,7 +379,7 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
         increases = sum(1 for i in range(1, len(values)) if values[i] > values[i - 1])
         return increases >= len(values) * 0.6
 
-    def _is_decreasing_trend(self, values: List[float]) -> bool:
+    def _is_decreasing_trend(self, values: list[float]) -> bool:
         """Check if values show decreasing trend."""
         if len(values) < 3:
             return False
@@ -369,14 +387,16 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
         decreases = sum(1 for i in range(1, len(values)) if values[i] < values[i - 1])
         return decreases >= len(values) * 0.6
 
-    def _calculate_trend_strength(self, values: List[float]) -> float:
+    def _calculate_trend_strength(self, values: list[float]) -> float:
         """Calculate strength of trend."""
         if len(values) < 2:
             return 0.0
 
         return abs((values[-1] - values[0]) / len(values))
 
-    async def _pattern_to_action(self, pattern: Dict[str, Any]) -> Optional[LearningAction]:
+    async def _pattern_to_action(
+        self, pattern: dict[str, Any]
+    ) -> LearningAction | None:
         """Convert identified pattern to learning action."""
         try:
             if pattern["type"] == "increasing_performance":
@@ -395,7 +415,9 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
                 return LearningAction(
                     action_type="reverse_trend",
                     component_target=pattern["component"],
-                    parameter_adjustments={"correction_factor": -0.1 * pattern["strength"]},
+                    parameter_adjustments={
+                        "correction_factor": -0.1 * pattern["strength"]
+                    },
                     expected_impact=pattern["strength"],
                     confidence=0.6,
                     rationale="Correcting declining performance pattern",
@@ -407,8 +429,8 @@ class PatternRecognitionAlgorithm(LearningAlgorithm):
         return None
 
     async def update_parameters(
-        self, component_type: WINAComponentType, current_params: Dict[str, float]
-    ) -> Dict[str, float]:
+        self, component_type: WINAComponentType, current_params: dict[str, float]
+    ) -> dict[str, float]:
         """Update parameters based on recognized patterns."""
         return current_params  # Pattern recognition primarily generates actions
 
@@ -421,7 +443,7 @@ class WINAContinuousLearningSystem:
     and implements adaptive optimization strategies.
     """
 
-    def __init__(self, config: Optional[WINAConfig] = None):
+    def __init__(self, config: WINAConfig | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -439,13 +461,13 @@ class WINAContinuousLearningSystem:
         )
 
         # Learning algorithms
-        self.algorithms: Dict[LearningStrategy, LearningAlgorithm] = {
+        self.algorithms: dict[LearningStrategy, LearningAlgorithm] = {
             LearningStrategy.REINFORCEMENT_LEARNING: ReinforcementLearningAlgorithm(),
             LearningStrategy.PATTERN_RECOGNITION: PatternRecognitionAlgorithm(),
         }
 
         # Component profiles
-        self.component_profiles: Dict[WINAComponentType, ComponentLearningProfile] = {}
+        self.component_profiles: dict[WINAComponentType, ComponentLearningProfile] = {}
 
         # Feedback processing
         self.feedback_queue: asyncio.Queue = asyncio.Queue()
@@ -453,7 +475,7 @@ class WINAContinuousLearningSystem:
         self.learning_actions_history: deque = deque(maxlen=1000)
 
         # Performance tracking
-        self.performance_collector: Optional[WINAPerformanceCollector] = None
+        self.performance_collector: WINAPerformanceCollector | None = None
 
         # Learning metrics
         self.learning_metrics = {
@@ -598,7 +620,7 @@ class WINAContinuousLearningSystem:
                         except asyncio.QueueEmpty:
                             break
 
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     continue  # No feedback to process
 
                 if feedback_batch:
@@ -612,7 +634,7 @@ class WINAContinuousLearningSystem:
                 logger.error(f"Feedback processing loop error: {e}")
                 await asyncio.sleep(1)  # Prevent tight error loop
 
-    async def _process_feedback_batch(self, feedback_batch: List[FeedbackSignal]):
+    async def _process_feedback_batch(self, feedback_batch: list[FeedbackSignal]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -648,7 +670,9 @@ class WINAContinuousLearningSystem:
         try:
             component_profile = self.component_profiles.get(action.component_target)
             if not component_profile:
-                logger.warning(f"No profile found for component {action.component_target}")
+                logger.warning(
+                    f"No profile found for component {action.component_target}"
+                )
                 return
 
             # Apply parameter adjustments within bounds
@@ -672,11 +696,15 @@ class WINAContinuousLearningSystem:
 
             # Record in learning history
             performance_estimate = action.expected_impact
-            component_profile.learning_history.append((updated_params.copy(), performance_estimate))
+            component_profile.learning_history.append(
+                (updated_params.copy(), performance_estimate)
+            )
 
             # Keep history manageable
             if len(component_profile.learning_history) > 100:
-                component_profile.learning_history = component_profile.learning_history[-50:]
+                component_profile.learning_history = component_profile.learning_history[
+                    -50:
+                ]
 
             logger.debug(
                 f"Learning action executed for {action.component_target.value}: {action.rationale}"
@@ -695,7 +723,9 @@ class WINAContinuousLearningSystem:
                     strategy_effectiveness=action.confidence,
                     feedback_quality=0.8,  # Placeholder
                 )
-                await self.performance_collector.record_learning_feedback_metrics(learning_metrics)
+                await self.performance_collector.record_learning_feedback_metrics(
+                    learning_metrics
+                )
 
             self.learning_metrics["successful_adaptations"] += 1
 
@@ -704,7 +734,7 @@ class WINAContinuousLearningSystem:
             self.learning_metrics["failed_adaptations"] += 1
 
     async def _update_learning_state(
-        self, feedback_batch: List[FeedbackSignal], actions: List[LearningAction]
+        self, feedback_batch: list[FeedbackSignal], actions: list[LearningAction]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -725,9 +755,9 @@ class WINAContinuousLearningSystem:
 
                 # Keep trend history manageable
                 if len(self.learning_state.performance_trend) > 100:
-                    self.learning_state.performance_trend = self.learning_state.performance_trend[
-                        -50:
-                    ]
+                    self.learning_state.performance_trend = (
+                        self.learning_state.performance_trend[-50:]
+                    )
 
                 # Update average performance improvement metric
                 if len(self.learning_state.performance_trend) > 1:
@@ -735,7 +765,9 @@ class WINAContinuousLearningSystem:
                         self.learning_state.performance_trend[-1]
                         - self.learning_state.performance_trend[0]
                     ) / len(self.learning_state.performance_trend)
-                    self.learning_metrics["average_performance_improvement"] = improvement
+                    self.learning_metrics["average_performance_improvement"] = (
+                        improvement
+                    )
 
             # Determine learning phase
             await self._update_learning_phase()
@@ -854,7 +886,9 @@ class WINAContinuousLearningSystem:
             recent_performance = [perf for _, perf in profile.learning_history[-10:]]
 
             if len(recent_performance) > 1:
-                trend = (recent_performance[-1] - recent_performance[0]) / len(recent_performance)
+                (recent_performance[-1] - recent_performance[0]) / len(
+                    recent_performance
+                )
 
                 # Update stability score
                 variance = np.var(recent_performance)
@@ -867,7 +901,9 @@ class WINAContinuousLearningSystem:
                     profile.adaptation_rate = min(0.2, profile.adaptation_rate + 0.02)
 
         except Exception as e:
-            logger.warning(f"Component performance analysis failed for {component_type}: {e}")
+            logger.warning(
+                f"Component performance analysis failed for {component_type}: {e}"
+            )
 
     async def _optimize_learning_strategy(self):
         # requires: Valid input parameters
@@ -993,7 +1029,7 @@ class WINAContinuousLearningSystem:
         except Exception as e:
             logger.warning(f"Performance feedback generation failed: {e}")
 
-    async def get_learning_status(self) -> Dict[str, Any]:
+    async def get_learning_status(self) -> dict[str, Any]:
         """Get current learning system status."""
         try:
             status = {
@@ -1027,7 +1063,7 @@ class WINAContinuousLearningSystem:
 
     async def get_component_recommendations(
         self, component_type: WINAComponentType
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get optimization recommendations for specific component."""
         try:
             profile = self.component_profiles.get(component_type)
@@ -1084,11 +1120,11 @@ class WINAContinuousLearningSystem:
 
 
 # Global learning system instance
-_wina_learning_system: Optional[WINAContinuousLearningSystem] = None
+_wina_learning_system: WINAContinuousLearningSystem | None = None
 
 
 async def get_wina_learning_system(
-    config: Optional[WINAConfig] = None,
+    config: WINAConfig | None = None,
 ) -> WINAContinuousLearningSystem:
     """Get or create the global WINA learning system instance."""
     global _wina_learning_system
@@ -1119,7 +1155,7 @@ async def close_wina_learning_system():
 async def process_efficiency_feedback(
     component_type: WINAComponentType,
     efficiency_value: float,
-    context: Optional[Dict[str, Any]] = None,
+    context: dict[str, Any] | None = None,
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -1141,7 +1177,7 @@ async def process_efficiency_feedback(
 async def process_accuracy_feedback(
     component_type: WINAComponentType,
     accuracy_value: float,
-    context: Optional[Dict[str, Any]] = None,
+    context: dict[str, Any] | None = None,
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -1161,7 +1197,7 @@ async def process_accuracy_feedback(
 
 
 async def process_constitutional_feedback(
-    compliance_score: float, context: Optional[Dict[str, Any]] = None
+    compliance_score: float, context: dict[str, Any] | None = None
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution

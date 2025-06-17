@@ -106,7 +106,7 @@ class MockTestClient:
 
         # Find user by username
         user = None
-        for email, user_data in mock_users_db.items():
+        for _email, user_data in mock_users_db.items():
             if user_data.get("username") == username:
                 user = user_data
                 break
@@ -125,7 +125,7 @@ class MockTestClient:
             return MockResponse(401, {"detail": "Access token missing or invalid"})
 
         # Find user associated with token (simplified)
-        for email, user_data in mock_users_db.items():
+        for _email, user_data in mock_users_db.items():
             if user_data.get("username"):  # Return first authenticated user
                 return MockResponse(
                     200,

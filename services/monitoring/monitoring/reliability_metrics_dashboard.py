@@ -15,7 +15,7 @@ import statistics
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 from fastapi import FastAPI, HTTPException, Query
@@ -34,7 +34,9 @@ try:
 except ImportError:
     # Fallback for development/testing
     logger = logging.getLogger(__name__)
-    logger.warning("Could not import QEC enhancement modules. Using mock implementations.")
+    logger.warning(
+        "Could not import QEC enhancement modules. Using mock implementations."
+    )
 
     class FidelityLevel(Enum):
         GREEN = "green"
@@ -51,7 +53,7 @@ except ImportError:
         stakeholder_satisfaction: float = 0.0
         appeal_frequency: float = 0.0
         composite_score: float = 0.0
-        calculation_metadata: Dict[str, Any] = None
+        calculation_metadata: dict[str, Any] = None
 
 
 logger = logging.getLogger(__name__)
@@ -80,7 +82,7 @@ class ReliabilityMetric:
     unit: str
     target_threshold: float
     alert_threshold: float
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
     @property
     def is_healthy(self) -> bool:
@@ -98,8 +100,8 @@ class ReliabilityTrend:
     """Historical trend analysis for reliability metrics."""
 
     metric_type: ReliabilityMetricType
-    values: List[float]
-    timestamps: List[datetime]
+    values: list[float]
+    timestamps: list[datetime]
     trend_direction: str  # "improving", "declining", "stable"
     trend_strength: float  # 0.0-1.0, strength of trend
     prediction_next_hour: float
@@ -120,7 +122,7 @@ class DashboardAlert:
     timestamp: datetime
     acknowledged: bool = False
     resolved: bool = False
-    resolution_notes: Optional[str] = None
+    resolution_notes: str | None = None
 
 
 class ReliabilityMetricsDashboard:
@@ -135,7 +137,7 @@ class ReliabilityMetricsDashboard:
     - Integration with existing monitoring infrastructure
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -153,10 +155,10 @@ class ReliabilityMetricsDashboard:
             logger.warning(f"Could not initialize monitoring components: {e}")
 
         # Data storage for metrics and alerts
-        self.current_metrics: Dict[ReliabilityMetricType, ReliabilityMetric] = {}
-        self.historical_data: Dict[ReliabilityMetricType, List[ReliabilityMetric]] = {}
-        self.active_alerts: List[DashboardAlert] = []
-        self.alert_history: List[DashboardAlert] = []
+        self.current_metrics: dict[ReliabilityMetricType, ReliabilityMetric] = {}
+        self.historical_data: dict[ReliabilityMetricType, list[ReliabilityMetric]] = {}
+        self.active_alerts: list[DashboardAlert] = []
+        self.alert_history: list[DashboardAlert] = []
 
         # Reliability targets (configurable)
         self.reliability_targets = self.config.get(
@@ -179,7 +181,7 @@ class ReliabilityMetricsDashboard:
         # Start background monitoring tasks
         self.monitoring_task = None
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration for the dashboard."""
         return {
             "update_interval_seconds": 30,
@@ -234,7 +236,9 @@ class ReliabilityMetricsDashboard:
 
                 historical = self.historical_data.get(metric_enum, [])
                 filtered_data = [
-                    asdict(metric) for metric in historical if metric.timestamp >= cutoff_time
+                    asdict(metric)
+                    for metric in historical
+                    if metric.timestamp >= cutoff_time
                 ]
 
                 trend = self._calculate_trend(metric_enum, hours)
@@ -246,7 +250,9 @@ class ReliabilityMetricsDashboard:
                     "summary": self._calculate_metric_summary(filtered_data),
                 }
             except ValueError:
-                raise HTTPException(status_code=400, detail=f"Invalid metric type: {metric_type}")
+                raise HTTPException(
+                    status_code=400, detail=f"Invalid metric type: {metric_type}"
+                )
 
         @self.app.get("/api/alerts/active")
         async def get_active_alerts():
@@ -312,7 +318,9 @@ class ReliabilityMetricsDashboard:
                     for metric_type, data in self.historical_data.items()
                 },
                 "configuration": {
-                    "targets": {k.value: v for k, v in self.reliability_targets.items()},
+                    "targets": {
+                        k.value: v for k, v in self.reliability_targets.items()
+                    },
                     "update_interval": self.config["update_interval_seconds"],
                 },
             }
@@ -527,9 +535,9 @@ class ReliabilityMetricsDashboard:
         # Maintain maximum historical data points
         max_points = self.config["max_metrics_per_type"]
         if len(self.historical_data[metric.metric_type]) > max_points:
-            self.historical_data[metric.metric_type] = self.historical_data[metric.metric_type][
-                -max_points:
-            ]
+            self.historical_data[metric.metric_type] = self.historical_data[
+                metric.metric_type
+            ][-max_points:]
 
     async def _get_fidelity_components(self) -> FidelityComponents:
         """Get current fidelity components from the monitor."""
@@ -609,7 +617,7 @@ class ReliabilityMetricsDashboard:
         """Analyze trends for all metrics and update predictions."""
         for metric_type in ReliabilityMetricType:
             if metric_type in self.historical_data:
-                trend = self._calculate_trend(
+                self._calculate_trend(
                     metric_type, self.config["trend_analysis_window_hours"]
                 )
                 # Store trend data for dashboard display
@@ -617,7 +625,7 @@ class ReliabilityMetricsDashboard:
 
     def _calculate_trend(
         self, metric_type: ReliabilityMetricType, hours: int
-    ) -> Optional[ReliabilityTrend]:
+    ) -> ReliabilityTrend | None:
         """Calculate trend analysis for a specific metric."""
         if metric_type not in self.historical_data:
             return None
@@ -707,7 +715,10 @@ class ReliabilityMetricsDashboard:
         for alert in self.active_alerts:
             if not alert.resolved:
                 current_metric = self.current_metrics.get(alert.metric_type)
-                if current_metric and current_metric.value >= current_metric.target_threshold:
+                if (
+                    current_metric
+                    and current_metric.value >= current_metric.target_threshold
+                ):
                     alert.resolved = True
                     alert.resolution_notes = "Metric returned to healthy threshold"
 
@@ -744,37 +755,43 @@ class ReliabilityMetricsDashboard:
         # Move resolved alerts to history
         resolved_alerts = [alert for alert in self.active_alerts if alert.resolved]
         self.alert_history.extend(resolved_alerts)
-        self.active_alerts = [alert for alert in self.active_alerts if not alert.resolved]
+        self.active_alerts = [
+            alert for alert in self.active_alerts if not alert.resolved
+        ]
 
         # Clean up old alert history
         self.alert_history = [
             alert for alert in self.alert_history if alert.timestamp >= cutoff_time
         ]
 
-    def _get_metrics_summary(self) -> Dict[str, Any]:
+    def _get_metrics_summary(self) -> dict[str, Any]:
         """Get summary of current metrics."""
-        healthy_count = sum(1 for metric in self.current_metrics.values() if metric.is_healthy)
+        healthy_count = sum(
+            1 for metric in self.current_metrics.values() if metric.is_healthy
+        )
         total_count = len(self.current_metrics)
 
         return {
             "total_metrics": total_count,
             "healthy_metrics": healthy_count,
             "unhealthy_metrics": total_count - healthy_count,
-            "health_percentage": ((healthy_count / total_count * 100) if total_count > 0 else 0),
+            "health_percentage": (
+                (healthy_count / total_count * 100) if total_count > 0 else 0
+            ),
             "last_update": max(
                 (metric.timestamp for metric in self.current_metrics.values()),
                 default=datetime.now(),
             ).isoformat(),
         }
 
-    def _get_alert_severity_breakdown(self) -> Dict[str, int]:
+    def _get_alert_severity_breakdown(self) -> dict[str, int]:
         """Get breakdown of active alerts by severity."""
         severity_counts = {"info": 0, "warning": 0, "error": 0, "critical": 0}
         for alert in self.active_alerts:
             severity_counts[alert.severity] = severity_counts.get(alert.severity, 0) + 1
         return severity_counts
 
-    def _get_trend_summary(self) -> Dict[str, str]:
+    def _get_trend_summary(self) -> dict[str, str]:
         """Get summary of metric trends."""
         trend_summary = {}
         for metric_type in ReliabilityMetricType:
@@ -783,7 +800,7 @@ class ReliabilityMetricsDashboard:
                 trend_summary[metric_type.value] = trend.trend_direction
         return trend_summary
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate actionable recommendations based on current system state."""
         recommendations = []
 
@@ -799,16 +816,20 @@ class ReliabilityMetricsDashboard:
                     f"Address {metric_type.value}: current {metric.value:.3f} < target {metric.target_threshold:.3f}"
                 )
 
-        critical_alerts = [alert for alert in self.active_alerts if alert.severity == "critical"]
+        critical_alerts = [
+            alert for alert in self.active_alerts if alert.severity == "critical"
+        ]
         if critical_alerts:
-            recommendations.append(f"Resolve {len(critical_alerts)} critical alert(s) immediately")
+            recommendations.append(
+                f"Resolve {len(critical_alerts)} critical alert(s) immediately"
+            )
 
         if not recommendations:
             recommendations.append("System is operating within all reliability targets")
 
         return recommendations
 
-    def _calculate_metric_summary(self, data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _calculate_metric_summary(self, data: list[dict[str, Any]]) -> dict[str, Any]:
         """Calculate summary statistics for metric data."""
         if not data:
             return {}

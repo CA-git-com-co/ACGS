@@ -13,7 +13,6 @@ from collections import defaultdict
 from json.decoder import JSONDecodeError
 from pathlib import Path
 from types import SimpleNamespace
-from typing import List, Optional
 
 import git
 import importlib_resources
@@ -95,7 +94,7 @@ def show_stats(dirnames, graphs, stats_languages=None):
 
     # return
 
-    seen = dict()
+    seen = {}
     rows = []
     for row in raw_rows:
         if not row:
@@ -159,7 +158,7 @@ def resolve_dirname(dirname, use_single_prior, make_new):
 
 @app.command()
 def main(
-    dirnames: Optional[List[str]] = typer.Argument(None, help="Directory names"),
+    dirnames: list[str] | None = typer.Argument(None, help="Directory names"),
     graphs: bool = typer.Option(False, "--graphs", help="Generate graphs"),
     model: str = typer.Option("gpt-3.5-turbo", "--model", "-m", help="Model name"),
     sleep: float = typer.Option(
@@ -227,7 +226,7 @@ def main(
     num_tests: int = typer.Option(
         -1, "--num-tests", "-n", help="Number of tests to run"
     ),
-    num_ctx: Optional[int] = typer.Option(
+    num_ctx: int | None = typer.Option(
         None, "--num-ctx", help="Override model context window size"
     ),
     read_model_settings: str = typer.Option(
@@ -287,7 +286,7 @@ def main(
 
         # Filter to requested languages if specified
         if languages:
-            requested = set(lang.strip().lower() for lang in languages.split(","))
+            requested = {lang.strip().lower() for lang in languages.split(",")}
             lang_dirs = [d for d in lang_dirs if d.name.lower() in requested]
             dump(lang_dirs)
             if not lang_dirs:
@@ -314,8 +313,8 @@ def main(
 
     if clean and dirname.exists():
         print("Cleaning up and replacing", dirname)
-        dir_files = set(fn.name for fn in dirname.glob("*"))
-        original_files = set(fn.name for fn in original_dname.glob("*"))
+        dir_files = {fn.name for fn in dirname.glob("*")}
+        original_files = {fn.name for fn in original_dname.glob("*")}
         if dir_files != original_files:
             print(
                 "ERROR: will not delete dir that does not look like original tests",
@@ -433,7 +432,7 @@ def main(
 def show_diffs(dirnames):
     dirnames = sorted(dirnames)
 
-    all_results = dict((dirname, load_results(dirname)) for dirname in dirnames)
+    all_results = {dirname: load_results(dirname) for dirname in dirnames}
     testcases = set()
     for results in all_results.values():
         testcases.update(result["testcase"] for result in results)
@@ -457,7 +456,7 @@ def show_diffs(dirnames):
 
         print()
         print(testcase)
-        for outcome, dirname in zip(all_outcomes, dirnames):
+        for outcome, dirname in zip(all_outcomes, dirnames, strict=False):
             print(outcome, f"{dirname}/{testcase}/.aider.chat.history.md")
 
     changed = set(testcases) - unchanged
@@ -573,7 +572,7 @@ def summarize_results(dirname, stats_languages=None):
         style = red if val else None
         console.print(f"  {stat}: {val}", style=style)
 
-    percents = dict()
+    percents = {}
     for i in range(tries):
         pass_rate = 100 * passed_tests[i] / res.completed_tests
         percents[i] = pass_rate
@@ -690,7 +689,7 @@ def run_test(original_dname, testdir, *args, **kwargs):
 
         testdir = Path(testdir)
         results_fname = testdir / ".aider.results.json"
-        results_fname.write_text(json.dumps(dict(exception=str(err))))
+        results_fname.write_text(json.dumps({"exception": str(err)}))
 
 
 def run_test_real(
@@ -744,12 +743,10 @@ def run_test_real(
     solution_files = set(config.get("files", {}).get("solution", []))
 
     # Forcibly ignore certain files not covered by test_files and example_files
-    ignore_files = set(
-        [
+    ignore_files = {
             "CMakeLists.txt",
             "Cargo.toml",
-        ]
-    )
+        }
 
     # Add all files under .meta and .docs directories
     ignore_files.update(str(p.relative_to(testdir)) for p in testdir.glob(".meta/**/*"))
@@ -853,7 +850,7 @@ def run_test_real(
 
     dur = 0
     test_outcomes = []
-    for i in range(tries):
+    for _i in range(tries):
         start = time.time()
 
         if no_aider:
@@ -949,30 +946,30 @@ def run_test_real(
             if verbose:
                 print(f"Failed to clean up Node.js node_modules directory: {e}")
 
-    results = dict(
-        testdir=str(testdir),
-        testcase=testdir.name,
-        model=main_model.name,
-        edit_format=edit_format,
-        tests_outcomes=test_outcomes,
-        cost=coder.total_cost,
-        duration=dur,
-        test_timeouts=timeouts,
-        commit_hash=commit_hash,
-        num_error_outputs=io.num_error_outputs,
-        num_user_asks=io.num_user_asks,
-        num_exhausted_context_windows=coder.num_exhausted_context_windows,
-        num_malformed_responses=coder.num_malformed_responses,
-        syntax_errors=syntax_errors,
-        indentation_errors=indentation_errors,
-        lazy_comments=lazy_comments,  # Add the count of pattern matches to the results
-        chat_hashes=list(
+    results = {
+        "testdir": str(testdir),
+        "testcase": testdir.name,
+        "model": main_model.name,
+        "edit_format": edit_format,
+        "tests_outcomes": test_outcomes,
+        "cost": coder.total_cost,
+        "duration": dur,
+        "test_timeouts": timeouts,
+        "commit_hash": commit_hash,
+        "num_error_outputs": io.num_error_outputs,
+        "num_user_asks": io.num_user_asks,
+        "num_exhausted_context_windows": coder.num_exhausted_context_windows,
+        "num_malformed_responses": coder.num_malformed_responses,
+        "syntax_errors": syntax_errors,
+        "indentation_errors": indentation_errors,
+        "lazy_comments": lazy_comments,  # Add the count of pattern matches to the results
+        "chat_hashes": list(
             zip(
                 coder.chat_completion_call_hashes,
-                coder.chat_completion_response_hashes,
+                coder.chat_completion_response_hashes, strict=False,
             )
         ),
-    )
+    }
 
     if edit_format == "architect":
         results["editor_model"] = (

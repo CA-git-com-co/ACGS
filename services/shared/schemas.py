@@ -1,6 +1,6 @@
 # ACGS/shared/schemas.py
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID  # For UUID validation if used in models
 
 from pydantic import BaseModel, EmailStr, Field
@@ -14,13 +14,17 @@ class BaseSchema(BaseModel):
 # Token Schemas (originally from auth_service/app/schemas/token.py)
 class Token(BaseSchema):
     access_token: str
-    refresh_token: Optional[str] = None  # Refresh token might not always be sent with access token
+    refresh_token: str | None = (
+        None  # Refresh token might not always be sent with access token
+    )
     token_type: str = "bearer"
 
 
-class TokenPayload(BaseModel):  # Not inheriting BaseSchema as it's for internal processing
-    sub: Optional[str] = None  # Subject (user identifier, e.g., username or user ID)
-    user_id: Optional[UUID] = None  # UUID for User.id
+class TokenPayload(
+    BaseModel
+):  # Not inheriting BaseSchema as it's for internal processing
+    sub: str | None = None  # Subject (user identifier, e.g., username or user ID)
+    user_id: UUID | None = None  # UUID for User.id
     # Add any other claims you expect in the token payload (e.g., roles, permissions)
     # exp: Optional[int] = None # Expiration time (handled by JWT library)
 
@@ -44,9 +48,9 @@ class RefreshTokenSchema(RefreshTokenCreate):
 class UserBase(BaseSchema):
     username: str = Field(..., min_length=3, max_length=100)
     email: EmailStr
-    full_name: Optional[str] = Field(None, max_length=255)
+    full_name: str | None = Field(None, max_length=255)
     role: str = Field("user", max_length=50)  # Default role
-    is_active: Optional[bool] = True
+    is_active: bool | None = True
 
 
 class UserCreate(UserBase):
@@ -54,12 +58,12 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
-    password: Optional[str] = Field(None, min_length=8)
-    username: Optional[str] = Field(None, min_length=3, max_length=100)
-    email: Optional[EmailStr] = None
-    full_name: Optional[str] = Field(None, max_length=255)
-    role: Optional[str] = Field(None, max_length=50)
-    is_active: Optional[bool] = None
+    password: str | None = Field(None, min_length=8)
+    username: str | None = Field(None, min_length=3, max_length=100)
+    email: EmailStr | None = None
+    full_name: str | None = Field(None, max_length=255)
+    role: str | None = Field(None, max_length=50)
+    is_active: bool | None = None
 
 
 class UserSchema(UserBase):  # For reading user data (doesn't include password)
@@ -70,17 +74,17 @@ class UserSchema(UserBase):  # For reading user data (doesn't include password)
 
 # Response model for user list, could include pagination later
 class UserListResponse(BaseSchema):
-    users: List[UserSchema]
+    users: list[UserSchema]
     total: int
 
 
 # Principle Schemas (for ac_service)
 class PrincipleBase(BaseSchema):
     name: str = Field(..., max_length=255)
-    description: Optional[str] = None
+    description: str | None = None
     content: str
-    version: Optional[int] = 1
-    status: Optional[str] = Field("draft", max_length=50)
+    version: int | None = 1
+    status: str | None = Field("draft", max_length=50)
 
 
 class PrincipleCreate(PrincipleBase):
@@ -88,47 +92,49 @@ class PrincipleCreate(PrincipleBase):
 
 
 class PrincipleUpdate(PrincipleBase):
-    name: Optional[str] = Field(None, max_length=255)
-    content: Optional[str] = None
-    version: Optional[int] = None
-    status: Optional[str] = Field(None, max_length=50)
+    name: str | None = Field(None, max_length=255)
+    content: str | None = None
+    version: int | None = None
+    status: str | None = Field(None, max_length=50)
 
 
 class PrincipleSchema(PrincipleBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    created_by_user_id: Optional[int] = None  # Or UUID
+    created_by_user_id: int | None = None  # Or UUID
 
 
 # PolicyRule Schemas (for integrity_service, gs_service, pgc_service)
 class PolicyRuleBase(BaseSchema):
-    rule_name: Optional[str] = Field(None, max_length=255)
+    rule_name: str | None = Field(None, max_length=255)
     datalog_content: str
-    version: Optional[int] = 1
-    policy_id: Optional[int] = None  # Link to parent Policy
-    source_principle_ids: Optional[List[int]] = None
-    status: Optional[str] = Field("pending_synthesis", max_length=50)
-    verification_status: Optional[str] = Field("not_verified", max_length=50)
-    verification_feedback: Optional[Dict[str, Any]] = None
+    version: int | None = 1
+    policy_id: int | None = None  # Link to parent Policy
+    source_principle_ids: list[int] | None = None
+    status: str | None = Field("pending_synthesis", max_length=50)
+    verification_status: str | None = Field("not_verified", max_length=50)
+    verification_feedback: dict[str, Any] | None = None
 
     # Enhanced fields for audit findings
-    framework: Optional[str] = Field(
+    framework: str | None = Field(
         "Datalog",
         max_length=50,
         description="Policy framework: Datalog, Rego, JSON, YAML",
     )
-    principle_text: Optional[str] = Field(None, description="Human-readable principle description")
-    pgp_signature: Optional[str] = Field(
+    principle_text: str | None = Field(
+        None, description="Human-readable principle description"
+    )
+    pgp_signature: str | None = Field(
         None, description="PGP signature for integrity verification"
     )
-    source_file: Optional[str] = Field(
+    source_file: str | None = Field(
         None, max_length=500, description="Source file path for provenance"
     )
-    content_hash: Optional[str] = Field(
+    content_hash: str | None = Field(
         None, max_length=128, description="SHA-256 hash of rule content"
     )
-    import_dependencies: Optional[List[str]] = Field(
+    import_dependencies: list[str] | None = Field(
         None, description="List of external modules/imports required"
     )
 
@@ -138,30 +144,30 @@ class PolicyRuleCreate(PolicyRuleBase):
 
 
 class PolicyRuleUpdate(PolicyRuleBase):
-    datalog_content: Optional[str] = None  # Allow partial updates
+    datalog_content: str | None = None  # Allow partial updates
     # Other fields can be updated as needed
 
 
 class PolicyRuleSchema(PolicyRuleBase):
     id: int
-    verified_at: Optional[datetime] = None
+    verified_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
-    synthesized_by_gs_run_id: Optional[str] = None
-    verified_by_fv_run_id: Optional[str] = None
+    synthesized_by_gs_run_id: str | None = None
+    verified_by_fv_run_id: str | None = None
 
 
 # AuditLog Schemas (for integrity_service)
 class AuditLogBase(BaseSchema):
     service_name: str = Field(..., max_length=100)
     event_type: str = Field(..., max_length=100)
-    actor_id: Optional[int] = None  # Or UUID
-    entity_type: Optional[str] = Field(None, max_length=100)
-    entity_id_int: Optional[int] = None
-    entity_id_uuid: Optional[UUID] = None
-    entity_id_str: Optional[str] = Field(None, max_length=255)
-    description: Optional[str] = None
-    details: Optional[Dict[str, Any]] = None
+    actor_id: int | None = None  # Or UUID
+    entity_type: str | None = Field(None, max_length=100)
+    entity_id_int: int | None = None
+    entity_id_uuid: UUID | None = None
+    entity_id_str: str | None = Field(None, max_length=255)
+    description: str | None = None
+    details: dict[str, Any] | None = None
 
 
 class AuditLogCreate(AuditLogBase):
@@ -176,11 +182,11 @@ class AuditLogSchema(AuditLogBase):
 # PolicyTemplate Schemas (for gs_service)
 class PolicyTemplateBase(BaseSchema):
     name: str = Field(..., max_length=255)
-    description: Optional[str] = None
+    description: str | None = None
     template_content: str
-    parameters_schema: Optional[Dict[str, Any]] = None  # JSON Schema for parameters
-    version: Optional[int] = 1
-    status: Optional[str] = Field("draft", max_length=50)
+    parameters_schema: dict[str, Any] | None = None  # JSON Schema for parameters
+    version: int | None = 1
+    status: str | None = Field("draft", max_length=50)
 
 
 class PolicyTemplateCreate(PolicyTemplateBase):
@@ -188,8 +194,8 @@ class PolicyTemplateCreate(PolicyTemplateBase):
 
 
 class PolicyTemplateUpdate(PolicyTemplateBase):
-    name: Optional[str] = Field(None, max_length=255)
-    template_content: Optional[str] = None
+    name: str | None = Field(None, max_length=255)
+    template_content: str | None = None
     # Allow other fields to be updatable
 
 
@@ -197,19 +203,19 @@ class PolicyTemplateSchema(PolicyTemplateBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    created_by_user_id: Optional[int] = None  # Or UUID
+    created_by_user_id: int | None = None  # Or UUID
 
 
 # Policy Schemas (for gs_service)
 class PolicyBase(BaseSchema):
     name: str = Field(..., max_length=255)
-    description: Optional[str] = None
-    high_level_content: Optional[str] = None
-    version: Optional[int] = 1
-    status: Optional[str] = Field("draft", max_length=50)
-    template_id: Optional[int] = None
-    customization_parameters: Optional[Dict[str, Any]] = None
-    source_principle_ids: Optional[List[int]] = None
+    description: str | None = None
+    high_level_content: str | None = None
+    version: int | None = 1
+    status: str | None = Field("draft", max_length=50)
+    template_id: int | None = None
+    customization_parameters: dict[str, Any] | None = None
+    source_principle_ids: list[int] | None = None
 
 
 class PolicyCreate(PolicyBase):
@@ -217,7 +223,7 @@ class PolicyCreate(PolicyBase):
 
 
 class PolicyUpdate(PolicyBase):
-    name: Optional[str] = Field(None, max_length=255)
+    name: str | None = Field(None, max_length=255)
     # Allow other fields to be updatable
 
 
@@ -225,8 +231,8 @@ class PolicySchema(PolicyBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    created_by_user_id: Optional[int] = None  # Or UUID
-    rules: Optional[List[PolicyRuleSchema]] = []  # Show associated rules
+    created_by_user_id: int | None = None  # Or UUID
+    rules: list[PolicyRuleSchema] | None = []  # Show associated rules
 
 
 # Generic message schema for responses

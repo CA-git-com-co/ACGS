@@ -9,7 +9,7 @@ Phase 2: Governance Synthesis Hardening with Rego/OPA Integration
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, status
 from pydantic import BaseModel, Field
@@ -30,45 +30,65 @@ router = APIRouter()
 class ConstitutionalPrincipleAPI(BaseModel):
     """Constitutional principle for API requests."""
 
-    description: str = Field(..., description="Description of the constitutional principle")
-    type: str = Field(..., description="Type of principle (e.g., fairness, transparency)")
-    category: Optional[str] = Field(None, description="Category of the principle")
-    weight: Optional[float] = Field(1.0, description="Weight/importance of the principle")
+    description: str = Field(
+        ..., description="Description of the constitutional principle"
+    )
+    type: str = Field(
+        ..., description="Type of principle (e.g., fairness, transparency)"
+    )
+    category: str | None = Field(None, description="Category of the principle")
+    weight: float | None = Field(
+        1.0, description="Weight/importance of the principle"
+    )
 
 
 class EnhancedSynthesisRequestAPI(BaseModel):
     """Enhanced synthesis request for API."""
 
     synthesis_goal: str = Field(..., description="Goal of the policy synthesis")
-    constitutional_principles: List[ConstitutionalPrincipleAPI] = Field(
+    constitutional_principles: list[ConstitutionalPrincipleAPI] = Field(
         ..., description="Constitutional principles to consider"
     )
-    constraints: Optional[List[str]] = Field(None, description="Additional constraints")
-    context_data: Optional[Dict[str, Any]] = Field(None, description="Context data for synthesis")
+    constraints: list[str] | None = Field(None, description="Additional constraints")
+    context_data: dict[str, Any] | None = Field(
+        None, description="Context data for synthesis"
+    )
     target_format: str = Field("rego", description="Target format for the policy")
-    policy_type: str = Field("governance_rule", description="Type of policy to synthesize")
+    policy_type: str = Field(
+        "governance_rule", description="Type of policy to synthesize"
+    )
 
     # Validation options
     validation_level: str = Field(
         "standard", description="Validation level (basic, standard, comprehensive)"
     )
     enable_opa_validation: bool = Field(True, description="Enable OPA-based validation")
-    enable_conflict_detection: bool = Field(True, description="Enable conflict detection")
-    enable_compliance_checking: bool = Field(True, description="Enable compliance checking")
+    enable_conflict_detection: bool = Field(
+        True, description="Enable conflict detection"
+    )
+    enable_compliance_checking: bool = Field(
+        True, description="Enable compliance checking"
+    )
     enable_constitutional_validation: bool = Field(
         True, description="Enable constitutional validation"
     )
 
     # Performance options
-    enable_parallel_validation: bool = Field(True, description="Enable parallel validation")
+    enable_parallel_validation: bool = Field(
+        True, description="Enable parallel validation"
+    )
     max_validation_latency_ms: int = Field(
         50, description="Maximum validation latency in milliseconds"
     )
 
     # Integration options
     enable_wina_optimization: bool = Field(True, description="Enable WINA optimization")
-    enable_alphaevolve_synthesis: bool = Field(True, description="Enable AlphaEvolve synthesis")
-    enable_langgraph_workflow: bool = Field(True, description="Enable LangGraph workflow")
+    enable_alphaevolve_synthesis: bool = Field(
+        True, description="Enable AlphaEvolve synthesis"
+    )
+    enable_langgraph_workflow: bool = Field(
+        True, description="Enable LangGraph workflow"
+    )
 
 
 class ValidationResultAPI(BaseModel):
@@ -77,9 +97,9 @@ class ValidationResultAPI(BaseModel):
     is_valid: bool
     overall_score: float
     validation_time_ms: float
-    errors: List[str]
-    warnings: List[str]
-    recommendations: List[str]
+    errors: list[str]
+    warnings: list[str]
+    recommendations: list[str]
     decision_latency_ms: float
     cache_hit: bool
 
@@ -90,25 +110,25 @@ class EnhancedSynthesisResponseAPI(BaseModel):
     synthesis_id: str
     synthesis_time_ms: float
     synthesized_policy: str
-    policy_metadata: Dict[str, Any]
-    validation_result: Optional[ValidationResultAPI]
+    policy_metadata: dict[str, Any]
+    validation_result: ValidationResultAPI | None
     is_valid: bool
     validation_score: float
     synthesis_latency_ms: float
     validation_latency_ms: float
     total_latency_ms: float
-    wina_metadata: Optional[Dict[str, Any]]
-    alphaevolve_metadata: Optional[Dict[str, Any]]
-    langgraph_metadata: Optional[Dict[str, Any]]
-    errors: List[str]
-    warnings: List[str]
-    recommendations: List[str]
+    wina_metadata: dict[str, Any] | None
+    alphaevolve_metadata: dict[str, Any] | None
+    langgraph_metadata: dict[str, Any] | None
+    errors: list[str]
+    warnings: list[str]
+    recommendations: list[str]
 
 
 class BatchSynthesisRequestAPI(BaseModel):
     """Batch synthesis request for API."""
 
-    requests: List[EnhancedSynthesisRequestAPI] = Field(
+    requests: list[EnhancedSynthesisRequestAPI] = Field(
         ..., description="List of synthesis requests"
     )
     enable_parallel_processing: bool = Field(
@@ -121,8 +141,8 @@ class HealthCheckResponseAPI(BaseModel):
 
     service: str
     status: str
-    components: Dict[str, Any]
-    service_metrics: Dict[str, Any]
+    components: dict[str, Any]
+    service_metrics: dict[str, Any]
     timestamp: str
 
 
@@ -202,7 +222,9 @@ async def synthesize_policy(
             validation_latency_ms=synthesis_response.validation_latency_ms,
             total_latency_ms=synthesis_response.total_latency_ms,
             wina_metadata=(
-                synthesis_response.wina_result.__dict__ if synthesis_response.wina_result else None
+                synthesis_response.wina_result.__dict__
+                if synthesis_response.wina_result
+                else None
             ),
             alphaevolve_metadata=synthesis_response.alphaevolve_metadata,
             langgraph_metadata=synthesis_response.langgraph_metadata,
@@ -228,10 +250,10 @@ async def synthesize_policy(
         )
 
 
-@router.post("/batch-synthesize", response_model=List[EnhancedSynthesisResponseAPI])
+@router.post("/batch-synthesize", response_model=list[EnhancedSynthesisResponseAPI])
 async def batch_synthesize_policies(
     request: BatchSynthesisRequestAPI, background_tasks: BackgroundTasks
-) -> List[EnhancedSynthesisResponseAPI]:
+) -> list[EnhancedSynthesisResponseAPI]:
     """
     Synthesize multiple governance policies in batch for improved performance.
 
@@ -397,10 +419,10 @@ async def health_check() -> HealthCheckResponseAPI:
         )
 
 
-@router.post("/multi-model-consensus", response_model=Dict[str, Any])
+@router.post("/multi-model-consensus", response_model=dict[str, Any])
 async def multi_model_consensus_synthesis(
     request: EnhancedSynthesisRequestAPI, background_tasks: BackgroundTasks
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Phase 2 Enhanced Multi-Model Consensus Synthesis with DeepSeek and Qwen Integration.
 
@@ -444,7 +466,9 @@ async def multi_model_consensus_synthesis(
         ]
 
         for i, principle in enumerate(request.constitutional_principles, 1):
-            prompt_parts.append(f"{i}. {principle.description} (Type: {principle.type})")
+            prompt_parts.append(
+                f"{i}. {principle.description} (Type: {principle.type})"
+            )
 
         if request.constraints:
             prompt_parts.extend(["", "CONSTRAINTS:"])
@@ -573,7 +597,7 @@ async def multi_model_consensus_synthesis(
 
 
 @router.get("/metrics")
-async def get_metrics() -> Dict[str, Any]:
+async def get_metrics() -> dict[str, Any]:
     """
     Get performance metrics for enhanced governance synthesis service.
 

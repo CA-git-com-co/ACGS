@@ -16,7 +16,6 @@ import logging
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional
 
 import aiohttp
 
@@ -60,8 +59,8 @@ class SecurityValidator:
             ServiceEndpoint("ec_service", "http://localhost", 8006),
             ServiceEndpoint("research_service", "http://localhost", 8007),
         ]
-        self.results: List[SecurityTestResult] = []
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.results: list[SecurityTestResult] = []
+        self.session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
         """Async context manager entry."""
@@ -74,8 +73,8 @@ class SecurityValidator:
             await self.session.close()
 
     async def validate_all_services(
-        self, service_filter: Optional[str] = None
-    ) -> Dict[str, List[SecurityTestResult]]:
+        self, service_filter: str | None = None
+    ) -> dict[str, list[SecurityTestResult]]:
         """Validate security for all services."""
         results = {}
 
@@ -92,7 +91,7 @@ class SecurityValidator:
 
     async def validate_service_security(
         self, service: ServiceEndpoint
-    ) -> List[SecurityTestResult]:
+    ) -> list[SecurityTestResult]:
         """Validate security for a specific service."""
         service_results = []
         base_url = f"{service.url}:{service.port}"
@@ -184,7 +183,7 @@ class SecurityValidator:
         try:
             # Send multiple rapid requests to trigger rate limiting
             tasks = []
-            for i in range(15):  # Send 15 requests rapidly
+            for _i in range(15):  # Send 15 requests rapidly
                 task = self.session.get(f"{base_url}/health")
                 tasks.append(task)
 
@@ -427,7 +426,7 @@ class SecurityValidator:
             )
 
 
-def print_security_report(results: Dict[str, List[SecurityTestResult]]):
+def print_security_report(results: dict[str, list[SecurityTestResult]]):
     """Print comprehensive security report."""
     print("\n" + "=" * 80)
     print("ACGS-PGP SECURITY VALIDATION REPORT")
@@ -515,7 +514,7 @@ async def main():
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         report_file = f"security_validation_report_{timestamp}.json"
 
-        with open(report_file, "w") as f:
+        with open(report_file, "w"):
             json.dump(
                 {
                     "timestamp": datetime.now().isoformat(),

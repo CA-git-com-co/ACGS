@@ -7,7 +7,7 @@ enabling uncertainty assessment, human oversight triggering, and feedback proces
 
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -105,16 +105,22 @@ async def assess_uncertainty(
             decision_id=assessment.decision_id,
             overall_uncertainty=assessment.overall_uncertainty,
             dimensional_uncertainties=UncertaintyMetrics(
-                constitutional=assessment.dimensional_uncertainties.get("constitutional", 0.0),
+                constitutional=assessment.dimensional_uncertainties.get(
+                    "constitutional", 0.0
+                ),
                 technical=assessment.dimensional_uncertainties.get("technical", 0.0),
-                stakeholder=assessment.dimensional_uncertainties.get("stakeholder", 0.0),
+                stakeholder=assessment.dimensional_uncertainties.get(
+                    "stakeholder", 0.0
+                ),
                 precedent=assessment.dimensional_uncertainties.get("precedent", 0.0),
                 complexity=assessment.dimensional_uncertainties.get("complexity", 0.0),
             ),
             confidence_score=assessment.confidence_score,
             requires_human_oversight=assessment.requires_human_oversight,
             recommended_oversight_level=assessment.recommended_oversight_level.value,
-            triggers_activated=[trigger.value for trigger in assessment.triggers_activated],
+            triggers_activated=[
+                trigger.value for trigger in assessment.triggers_activated
+            ],
             assessment_timestamp=assessment.timestamp,
             assessment_metadata=assessment.assessment_metadata,
             processing_time_ms=processing_time,
@@ -182,7 +188,9 @@ async def trigger_human_oversight(
             "escalation_request_id": (
                 escalation_request.request_id if escalation_request else None
             ),
-            "triggers_activated": [trigger.value for trigger in assessment.triggers_activated],
+            "triggers_activated": [
+                trigger.value for trigger in assessment.triggers_activated
+            ],
             "overall_uncertainty": assessment.overall_uncertainty,
             "confidence_score": assessment.confidence_score,
         }
@@ -215,7 +223,9 @@ async def submit_human_feedback(
                 "feedback_user_id": current_user.id,
                 "feedback_user_roles": current_user.roles,
                 "feedback_timestamp": time.time(),
-                "was_oversight_triggered": feedback.human_decision.get("oversight_needed", False),
+                "was_oversight_triggered": feedback.human_decision.get(
+                    "oversight_needed", False
+                ),
             }
         )
 
@@ -299,7 +309,8 @@ async def get_hitl_config(current_user: User = Depends(require_admin)):
             "false_positive_target": hitl_sampler.config.false_positive_target,
             "accuracy_target": hitl_sampler.config.accuracy_target,
             "dimensional_weights": {
-                dim.value: weight for dim, weight in hitl_sampler.config.dimensional_weights.items()
+                dim.value: weight
+                for dim, weight in hitl_sampler.config.dimensional_weights.items()
             },
             "learning_enabled": hitl_sampler.config.learning_enabled,
             "adaptation_rate": hitl_sampler.config.adaptation_rate,
@@ -320,7 +331,7 @@ async def get_hitl_config(current_user: User = Depends(require_admin)):
 
 @router.put("/config")
 async def update_hitl_config(
-    config_updates: Dict[str, Any], current_user: User = Depends(require_admin)
+    config_updates: dict[str, Any], current_user: User = Depends(require_admin)
 ):
     """
     Update HITL sampling configuration.
@@ -345,7 +356,9 @@ async def update_hitl_config(
                 raise ValueError("confidence_threshold must be between 0.0 and 1.0")
 
         if "learning_enabled" in config_updates:
-            hitl_sampler.config.learning_enabled = bool(config_updates["learning_enabled"])
+            hitl_sampler.config.learning_enabled = bool(
+                config_updates["learning_enabled"]
+            )
 
         if "adaptation_rate" in config_updates:
             rate = float(config_updates["adaptation_rate"])
@@ -380,7 +393,7 @@ async def update_hitl_config(
 @router.post("/assess-cross-service", response_model=HITLSamplingResult)
 async def assess_cross_service_uncertainty(
     request: HITLSamplingRequest,
-    include_services: Optional[List[str]] = None,
+    include_services: list[str] | None = None,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -440,16 +453,22 @@ async def assess_cross_service_uncertainty(
             decision_id=assessment.decision_id,
             overall_uncertainty=assessment.overall_uncertainty,
             dimensional_uncertainties=UncertaintyMetrics(
-                constitutional=assessment.dimensional_uncertainties.get("constitutional", 0.0),
+                constitutional=assessment.dimensional_uncertainties.get(
+                    "constitutional", 0.0
+                ),
                 technical=assessment.dimensional_uncertainties.get("technical", 0.0),
-                stakeholder=assessment.dimensional_uncertainties.get("stakeholder", 0.0),
+                stakeholder=assessment.dimensional_uncertainties.get(
+                    "stakeholder", 0.0
+                ),
                 precedent=assessment.dimensional_uncertainties.get("precedent", 0.0),
                 complexity=assessment.dimensional_uncertainties.get("complexity", 0.0),
             ),
             confidence_score=assessment.confidence_score,
             requires_human_oversight=assessment.requires_human_oversight,
             recommended_oversight_level=assessment.recommended_oversight_level.value,
-            triggers_activated=[trigger.value for trigger in assessment.triggers_activated],
+            triggers_activated=[
+                trigger.value for trigger in assessment.triggers_activated
+            ],
             assessment_timestamp=assessment.timestamp,
             assessment_metadata=enhanced_metadata,
             processing_time_ms=processing_time,
@@ -475,7 +494,7 @@ async def assess_cross_service_uncertainty(
 @router.post("/coordinate-oversight")
 async def coordinate_cross_service_oversight(
     request: HITLSamplingRequest,
-    include_services: Optional[List[str]] = None,
+    include_services: list[str] | None = None,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_policy_manager),
 ):
@@ -507,10 +526,12 @@ async def coordinate_cross_service_oversight(
         )
 
         # Coordinate oversight if required
-        coordination_result = await cross_service_integrator.coordinate_cross_service_oversight(
-            assessment=assessment,
-            confidence_metrics=confidence_metrics,
-            user_id=current_user.id,
+        coordination_result = (
+            await cross_service_integrator.coordinate_cross_service_oversight(
+                assessment=assessment,
+                confidence_metrics=confidence_metrics,
+                user_id=current_user.id,
+            )
         )
 
         return {
@@ -520,7 +541,9 @@ async def coordinate_cross_service_oversight(
                 "oversight_level": assessment.recommended_oversight_level.value,
                 "overall_uncertainty": assessment.overall_uncertainty,
                 "cross_service_confidence": confidence_metrics.get_average_confidence(),
-                "triggers_activated": [trigger.value for trigger in assessment.triggers_activated],
+                "triggers_activated": [
+                    trigger.value for trigger in assessment.triggers_activated
+                ],
             },
             "coordination_result": coordination_result,
             "service_confidence_breakdown": {
@@ -582,7 +605,9 @@ async def get_integration_metrics(current_user: User = Depends(require_policy_ma
                     )
                     / 2
                 ),
-                "avg_processing_time_ms": integration_metrics.get("avg_integration_time_ms", 0),
+                "avg_processing_time_ms": integration_metrics.get(
+                    "avg_integration_time_ms", 0
+                ),
             },
         }
 

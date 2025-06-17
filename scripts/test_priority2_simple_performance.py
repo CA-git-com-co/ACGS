@@ -13,7 +13,6 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -30,7 +29,7 @@ class SimplePerformanceTester:
         self.target_response_time = 500  # ms
         self.services = [8000, 8001, 8002, 8003, 8004, 8005, 8006]
 
-    def execute_performance_tests(self) -> Dict:
+    def execute_performance_tests(self) -> dict:
         """Execute performance tests."""
         logger.info("⚡ Starting ACGS-1 Simple Performance Tests")
         start_time = time.time()
@@ -84,7 +83,7 @@ class SimplePerformanceTester:
             results["overall_success"] = False
             return results
 
-    def test_service_response_times(self) -> Dict:
+    def test_service_response_times(self) -> dict:
         """Test response times for all services."""
         logger.info("📊 Testing service response times...")
 
@@ -142,7 +141,7 @@ class SimplePerformanceTester:
             "service_results": service_results,
         }
 
-    def test_governance_workflows(self) -> Dict:
+    def test_governance_workflows(self) -> dict:
         """Test governance workflow endpoints."""
         logger.info("🏛️ Testing governance workflows...")
 
@@ -210,7 +209,7 @@ class SimplePerformanceTester:
             "workflow_results": workflow_results,
         }
 
-    def test_concurrent_requests(self) -> Dict:
+    def test_concurrent_requests(self) -> dict:
         """Test concurrent request handling."""
         logger.info("🔄 Testing concurrent requests...")
 
@@ -262,7 +261,7 @@ class SimplePerformanceTester:
 
         # Find maximum supported concurrent level
         max_supported = 0
-        for level_key, result in concurrent_results.items():
+        for _level_key, result in concurrent_results.items():
             if result.get("meets_target", False):
                 level = result.get("concurrent_requests", 0)
                 max_supported = max(max_supported, level)
@@ -273,7 +272,7 @@ class SimplePerformanceTester:
             "concurrent_results": concurrent_results,
         }
 
-    def check_system_resources(self) -> Dict:
+    def check_system_resources(self) -> dict:
         """Check system resource usage."""
         logger.info("💾 Checking system resources...")
 
@@ -344,7 +343,7 @@ class SimplePerformanceTester:
             "resource_results": resource_results,
         }
 
-    def evaluate_overall_performance(self, results: Dict) -> bool:
+    def evaluate_overall_performance(self, results: dict) -> bool:
         """Evaluate overall performance success."""
         test_results = results.get("tests", {})
 
@@ -366,7 +365,7 @@ class SimplePerformanceTester:
         )
         return passed_tests >= 3
 
-    def generate_summary(self, results: Dict) -> Dict:
+    def generate_summary(self, results: dict) -> dict:
         """Generate performance summary."""
         test_results = results.get("tests", {})
 
@@ -394,7 +393,7 @@ class SimplePerformanceTester:
             "meets_concurrent_target": max_concurrent >= 10,
         }
 
-    def save_report(self, results: Dict) -> None:
+    def save_report(self, results: dict) -> None:
         """Save performance report."""
         report_file = f"priority2_performance_test_{int(time.time())}.json"
         report_path = self.project_root / "logs" / report_file
@@ -417,7 +416,7 @@ def main():
         print("✅ Performance testing completed successfully!")
 
         summary = results.get("summary", {})
-        print(f"📊 Performance Summary:")
+        print("📊 Performance Summary:")
         print(
             f"  • Average Response Time: {summary.get('avg_response_time_ms', 0):.1f}ms (target: <500ms)"
         )

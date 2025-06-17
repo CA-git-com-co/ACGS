@@ -11,7 +11,6 @@ import logging
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List
 
 # Setup logging
 logging.basicConfig(
@@ -29,12 +28,12 @@ class DevnetValidator:
         self.program_ids = self._load_program_ids()
         self.validation_results = {}
 
-    def _load_program_ids(self) -> Dict[str, str]:
+    def _load_program_ids(self) -> dict[str, str]:
         """Load deployed program IDs"""
         program_ids_file = self.project_root / "devnet_program_ids.json"
 
         if program_ids_file.exists():
-            with open(program_ids_file, "r") as f:
+            with open(program_ids_file) as f:
                 data = json.load(f)
                 return data.get("programs", {})
         else:
@@ -116,7 +115,7 @@ class DevnetValidator:
             result = {"status": "❌ Constitution data not found", "file_exists": False}
         else:
             try:
-                with open(constitution_file, "r") as f:
+                with open(constitution_file) as f:
                     constitution_data = json.load(f)
 
                 result = {
@@ -153,7 +152,7 @@ class DevnetValidator:
             result = {"status": "❌ Initial policies not found", "file_exists": False}
         else:
             try:
-                with open(policies_file, "r") as f:
+                with open(policies_file) as f:
                     policies_data = json.load(f)
 
                 policy_count = len(policies_data)
@@ -167,7 +166,7 @@ class DevnetValidator:
                     "total_policies": policy_count,
                     "active_policies": len(active_policies),
                     "policy_categories": list(
-                        set(p.get("category") for p in policies_data)
+                        {p.get("category") for p in policies_data}
                     ),
                 }
                 logger.info(
@@ -198,7 +197,7 @@ class DevnetValidator:
             }
         else:
             try:
-                with open(governance_file, "r") as f:
+                with open(governance_file) as f:
                     governance_data = json.load(f)
 
                 account_types = list(governance_data.keys())
@@ -291,12 +290,12 @@ class DevnetValidator:
 
         # Calculate overall status
         all_validations = []
-        for category, results in self.validation_results.items():
+        for _category, results in self.validation_results.items():
             if isinstance(results, dict) and "status" in results:
                 all_validations.append("✅" in results["status"])
             elif isinstance(results, dict):
                 # Handle nested results (like program deployment)
-                for item, item_results in results.items():
+                for _item, item_results in results.items():
                     if isinstance(item_results, dict) and "status" in item_results:
                         all_validations.append("✅" in item_results["status"])
 
@@ -338,7 +337,7 @@ class DevnetValidator:
         logger.info(f"Validation report saved to: {report_file}")
         return report
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate recommendations based on validation results"""
         recommendations = []
 

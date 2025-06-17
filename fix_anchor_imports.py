@@ -16,7 +16,7 @@ def fix_anchor_imports():
         print(f"Fixing imports in {test_file}")
 
         try:
-            with open(test_file, "r") as f:
+            with open(test_file) as f:
                 content = f.read()
 
             # Replace old import with new one

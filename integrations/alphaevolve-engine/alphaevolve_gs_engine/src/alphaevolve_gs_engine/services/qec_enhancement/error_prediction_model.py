@@ -16,7 +16,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ...core.constitutional_principle import ConstitutionalPrinciple
 
@@ -45,11 +45,11 @@ class SynthesisAttemptLog:
     timestamp: datetime
     llm_model: str
     prompt_template: str
-    failure_type: Optional[FailureType]
-    error_details: Dict[str, Any]
-    recovery_strategy: Optional[str]
+    failure_type: FailureType | None
+    error_details: dict[str, Any]
+    recovery_strategy: str | None
     final_outcome: str
-    prediction_accuracy: Optional[float] = None
+    prediction_accuracy: float | None = None
 
 
 @dataclass
@@ -57,11 +57,11 @@ class PredictionResult:
     """Result structure for error predictions."""
 
     principle_id: str
-    predicted_failures: Dict[FailureType, float]  # Failure type -> confidence
+    predicted_failures: dict[FailureType, float]  # Failure type -> confidence
     overall_risk_score: float  # 0.0-1.0, higher = more likely to fail
     recommended_strategy: str
     confidence: float
-    prediction_metadata: Dict[str, Any]
+    prediction_metadata: dict[str, Any]
 
 
 class ErrorPredictionModel:
@@ -72,7 +72,7 @@ class ErrorPredictionModel:
     and principle characteristics, enabling proactive mitigation and faster recovery.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         """
         Initialize the error prediction model.
 
@@ -82,8 +82,8 @@ class ErrorPredictionModel:
         self.config = config or self._get_default_config()
 
         # Historical data storage
-        self.attempt_logs: List[SynthesisAttemptLog] = []
-        self.failure_patterns: Dict[str, Dict[str, Any]] = {}
+        self.attempt_logs: list[SynthesisAttemptLog] = []
+        self.failure_patterns: dict[str, dict[str, Any]] = {}
 
         # Model state
         self.model_accuracy = 0.75  # Initial accuracy estimate
@@ -191,7 +191,7 @@ class ErrorPredictionModel:
 
         logger.debug(f"Logged synthesis attempt {log_entry.attempt_id}")
 
-    def diagnose_failure(self, log_entry: SynthesisAttemptLog) -> Dict[str, Any]:
+    def diagnose_failure(self, log_entry: SynthesisAttemptLog) -> dict[str, Any]:
         """
         Diagnose a synthesis failure and provide insights.
 
@@ -234,7 +234,7 @@ class ErrorPredictionModel:
 
         return diagnosis
 
-    def _extract_features(self, principle: ConstitutionalPrinciple) -> Dict[str, float]:
+    def _extract_features(self, principle: ConstitutionalPrinciple) -> dict[str, float]:
         """Extract features from a constitutional principle."""
         features = {}
 
@@ -273,7 +273,7 @@ class ErrorPredictionModel:
         return features
 
     def _predict_failure_probability(
-        self, features: Dict[str, float], failure_type: FailureType
+        self, features: dict[str, float], failure_type: FailureType
     ) -> float:
         """Predict probability of a specific failure type."""
         # Simple heuristic-based prediction (would be ML model in production)
@@ -309,7 +309,7 @@ class ErrorPredictionModel:
         return min(probability, 1.0)
 
     def _calculate_overall_risk(
-        self, failure_predictions: Dict[FailureType, float]
+        self, failure_predictions: dict[FailureType, float]
     ) -> float:
         """Calculate overall risk score from individual failure predictions."""
         # Weight different failure types by severity
@@ -334,7 +334,7 @@ class ErrorPredictionModel:
         return min(weighted_sum / total_weight, 1.0)
 
     def _recommend_strategy(
-        self, failure_predictions: Dict[FailureType, float], overall_risk: float
+        self, failure_predictions: dict[FailureType, float], overall_risk: float
     ) -> str:
         """Recommend synthesis strategy based on predictions."""
         if overall_risk < 0.3:
@@ -347,7 +347,7 @@ class ErrorPredictionModel:
             return "human_review_required"
 
     def _calculate_prediction_confidence(
-        self, features: Dict[str, float], predictions: Dict[FailureType, float]
+        self, features: dict[str, float], predictions: dict[FailureType, float]
     ) -> float:
         """Calculate confidence in the prediction."""
         # Base confidence on model accuracy and feature completeness
@@ -357,8 +357,8 @@ class ErrorPredictionModel:
         return self.model_accuracy * feature_completeness
 
     def _get_top_risks(
-        self, predictions: Dict[FailureType, float], count: int
-    ) -> List[Dict[str, Any]]:
+        self, predictions: dict[FailureType, float], count: int
+    ) -> list[dict[str, Any]]:
         """Get top risk factors from predictions."""
         sorted_risks = sorted(predictions.items(), key=lambda x: x[1], reverse=True)
 
@@ -399,7 +399,7 @@ class ErrorPredictionModel:
         """Get conservative fallback prediction."""
         return PredictionResult(
             principle_id=principle_id,
-            predicted_failures={failure_type: 0.5 for failure_type in FailureType},
+            predicted_failures=dict.fromkeys(FailureType, 0.5),
             overall_risk_score=0.5,
             recommended_strategy="enhanced_validation",
             confidence=0.3,
@@ -409,7 +409,7 @@ class ErrorPredictionModel:
             },
         )
 
-    def _initialize_feature_extractors(self) -> Dict[str, Any]:
+    def _initialize_feature_extractors(self) -> dict[str, Any]:
         """Initialize feature extraction components."""
         return {
             "text_analyzer": "simple_heuristic",
@@ -457,7 +457,7 @@ class ErrorPredictionModel:
 
     def _find_similar_failures(
         self, log_entry: SynthesisAttemptLog
-    ) -> List[SynthesisAttemptLog]:
+    ) -> list[SynthesisAttemptLog]:
         """Find similar failures in historical data."""
         similar_failures = []
 
@@ -472,7 +472,7 @@ class ErrorPredictionModel:
         similar_failures.sort(key=lambda x: x.timestamp, reverse=True)
         return similar_failures
 
-    def _get_failure_recommendations(self, failure_type: FailureType) -> List[str]:
+    def _get_failure_recommendations(self, failure_type: FailureType) -> list[str]:
         """Get recommendations for a specific failure type."""
         recommendations = {
             FailureType.SYNTAX_ERROR: [
@@ -499,7 +499,7 @@ class ErrorPredictionModel:
 
         return recommendations.get(failure_type, ["Apply standard recovery procedures"])
 
-    def _identify_failure_causes(self, log_entry: SynthesisAttemptLog) -> List[str]:
+    def _identify_failure_causes(self, log_entry: SynthesisAttemptLog) -> list[str]:
         """Identify likely causes of a synthesis failure."""
         causes = []
 
@@ -515,7 +515,7 @@ class ErrorPredictionModel:
 
         return causes
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration for the error prediction model."""
         return {
             "retrain_interval": 100,

@@ -15,9 +15,9 @@ Classes:
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -68,14 +68,14 @@ class ViolationDetectionResult:
     """Result of violation detection operation."""
 
     violation_detected: bool
-    violation_type: Optional[ViolationType]
-    severity: Optional[ViolationSeverity]
-    fidelity_score: Optional[float]
-    distance_score: Optional[float]
+    violation_type: ViolationType | None
+    severity: ViolationSeverity | None
+    fidelity_score: float | None
+    distance_score: float | None
     description: str
-    context_data: Dict[str, Any]
-    recommended_actions: List[str]
-    detection_metadata: Dict[str, Any]
+    context_data: dict[str, Any]
+    recommended_actions: list[str]
+    detection_metadata: dict[str, Any]
 
 
 @dataclass
@@ -84,9 +84,9 @@ class BatchViolationResult:
 
     total_analyzed: int
     violations_detected: int
-    violations_by_type: Dict[ViolationType, int]
-    violations_by_severity: Dict[ViolationSeverity, int]
-    detection_results: List[ViolationDetectionResult]
+    violations_by_type: dict[ViolationType, int]
+    violations_by_severity: dict[ViolationSeverity, int]
+    detection_results: list[ViolationDetectionResult]
     analysis_time_seconds: float
 
 
@@ -98,7 +98,7 @@ class ViolationDetectionService:
     with integration to QEC enhancement services and Constitutional Council workflows.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -117,21 +117,21 @@ class ViolationDetectionService:
 
         # Detection state
         self.detection_active = False
-        self.last_scan_time: Optional[datetime] = None
+        self.last_scan_time: datetime | None = None
         self.scan_interval = self.config.get("scan_interval_seconds", 30)
 
         # Thresholds cache
-        self.thresholds_cache: Dict[str, ViolationThreshold] = {}
-        self.cache_updated_at: Optional[datetime] = None
+        self.thresholds_cache: dict[str, ViolationThreshold] = {}
+        self.cache_updated_at: datetime | None = None
 
         logger.info("Violation Detection Service initialized")
 
     async def detect_violation(
         self,
-        principle: Optional[Principle] = None,
-        policy: Optional[Policy] = None,
-        fidelity_score: Optional[float] = None,
-        context_data: Optional[Dict[str, Any]] = None,
+        principle: Principle | None = None,
+        policy: Policy | None = None,
+        fidelity_score: float | None = None,
+        context_data: dict[str, Any] | None = None,
     ) -> ViolationDetectionResult:
         """
         Detect constitutional violations for a specific principle or policy.
@@ -174,7 +174,9 @@ class ViolationDetectionService:
 
             # 2. Policy-based violation detection
             if policy:
-                policy_violations = await self._detect_policy_violations(policy, context_data)
+                policy_violations = await self._detect_policy_violations(
+                    policy, context_data
+                )
                 violations.extend(policy_violations)
 
             # 3. Fidelity score threshold violations
@@ -194,7 +196,9 @@ class ViolationDetectionService:
             # Process detected violations
             if violations:
                 # Select the most severe violation
-                most_severe = max(violations, key=lambda v: self._get_severity_weight(v.severity))
+                most_severe = max(
+                    violations, key=lambda v: self._get_severity_weight(v.severity)
+                )
 
                 result.violation_detected = True
                 result.violation_type = most_severe.violation_type
@@ -205,15 +209,15 @@ class ViolationDetectionService:
 
                 # Calculate distance score if principle available
                 if principle:
-                    result.distance_score = await self.distance_calculator.calculate_distance(
-                        principle
+                    result.distance_score = (
+                        await self.distance_calculator.calculate_distance(principle)
                     )
 
             # Add detection metadata
             detection_time = time.time() - start_time
             result.detection_metadata.update(
                 {
-                    "detection_timestamp": datetime.now(timezone.utc).isoformat(),
+                    "detection_timestamp": datetime.now(UTC).isoformat(),
                     "detection_time_ms": round(detection_time * 1000, 2),
                     "violations_found": len(violations),
                     "detection_methods_used": self._get_detection_methods_used(
@@ -262,13 +266,15 @@ class ViolationDetectionService:
             )
             principles = principles_result.scalars().all()
 
-            policies_result = await db.execute(select(Policy).where(Policy.status == "active"))
+            policies_result = await db.execute(
+                select(Policy).where(Policy.status == "active")
+            )
             policies = policies_result.scalars().all()
 
             # Perform violation detection
             detection_results = []
-            violations_by_type = {vt: 0 for vt in ViolationType}
-            violations_by_severity = {vs: 0 for vs in ViolationSeverity}
+            violations_by_type = dict.fromkeys(ViolationType, 0)
+            violations_by_severity = dict.fromkeys(ViolationSeverity, 0)
 
             # Scan principles
             for principle in principles:
@@ -290,11 +296,13 @@ class ViolationDetectionService:
 
             # Calculate results
             total_analyzed = len(principles) + len(policies)
-            violations_detected = sum(1 for r in detection_results if r.violation_detected)
+            violations_detected = sum(
+                1 for r in detection_results if r.violation_detected
+            )
             analysis_time = time.time() - start_time
 
             # Update scan time
-            self.last_scan_time = datetime.now(timezone.utc)
+            self.last_scan_time = datetime.now(UTC)
 
             batch_result = BatchViolationResult(
                 total_analyzed=total_analyzed,
@@ -315,15 +323,15 @@ class ViolationDetectionService:
             return BatchViolationResult(
                 total_analyzed=0,
                 violations_detected=0,
-                violations_by_type={vt: 0 for vt in ViolationType},
-                violations_by_severity={vs: 0 for vs in ViolationSeverity},
+                violations_by_type=dict.fromkeys(ViolationType, 0),
+                violations_by_severity=dict.fromkeys(ViolationSeverity, 0),
                 detection_results=[],
                 analysis_time_seconds=time.time() - start_time,
             )
 
     async def _detect_principle_violations(
-        self, principle: Principle, context_data: Dict[str, Any]
-    ) -> List[ViolationDetectionResult]:
+        self, principle: Principle, context_data: dict[str, Any]
+    ) -> list[ViolationDetectionResult]:
         """Detect violations specific to constitutional principles."""
         violations = []
 
@@ -351,7 +359,9 @@ class ViolationDetectionService:
                 )
 
             # Check principle distance score
-            distance_score = await self.distance_calculator.calculate_distance(principle)
+            distance_score = await self.distance_calculator.calculate_distance(
+                principle
+            )
             if distance_score < 0.6:  # Low distance score indicates potential issues
                 violations.append(
                     ViolationDetectionResult(
@@ -376,8 +386,8 @@ class ViolationDetectionService:
         return violations
 
     async def _detect_policy_violations(
-        self, policy: Policy, context_data: Dict[str, Any]
-    ) -> List[ViolationDetectionResult]:
+        self, policy: Policy, context_data: dict[str, Any]
+    ) -> list[ViolationDetectionResult]:
         """Detect violations specific to policies."""
         violations = []
 
@@ -416,7 +426,9 @@ class ViolationDetectionService:
                             "Resolve policy conflicts",
                             "Review policy dependencies",
                         ],
-                        detection_metadata={"conflict_indicators": policy.conflict_indicators},
+                        detection_metadata={
+                            "conflict_indicators": policy.conflict_indicators
+                        },
                     )
                 )
 
@@ -426,8 +438,8 @@ class ViolationDetectionService:
         return violations
 
     async def _detect_threshold_violations(
-        self, fidelity_score: float, context_data: Dict[str, Any]
-    ) -> List[ViolationDetectionResult]:
+        self, fidelity_score: float, context_data: dict[str, Any]
+    ) -> list[ViolationDetectionResult]:
         """Detect threshold-based violations."""
         violations = []
 
@@ -486,8 +498,8 @@ class ViolationDetectionService:
         return violations
 
     async def _detect_consistency_violations(
-        self, principle: Principle, policy: Policy, context_data: Dict[str, Any]
-    ) -> List[ViolationDetectionResult]:
+        self, principle: Principle, policy: Policy, context_data: dict[str, Any]
+    ) -> list[ViolationDetectionResult]:
         """Detect consistency violations between principles and policies."""
         violations = []
 
@@ -532,17 +544,20 @@ class ViolationDetectionService:
             # Check if cache needs refresh (refresh every 5 minutes)
             if (
                 self.cache_updated_at is None
-                or (datetime.now(timezone.utc) - self.cache_updated_at).total_seconds() > 300
+                or (datetime.now(UTC) - self.cache_updated_at).total_seconds()
+                > 300
             ):
 
                 async for db in get_async_db():
                     result = await db.execute(
-                        select(ViolationThreshold).where(ViolationThreshold.enabled == True)
+                        select(ViolationThreshold).where(
+                            ViolationThreshold.enabled
+                        )
                     )
                     thresholds = result.scalars().all()
 
                     self.thresholds_cache = {t.threshold_name: t for t in thresholds}
-                    self.cache_updated_at = datetime.now(timezone.utc)
+                    self.cache_updated_at = datetime.now(UTC)
                     break
 
         except Exception as e:
@@ -560,14 +575,16 @@ class ViolationDetectionService:
 
     def _get_detection_methods_used(
         self,
-        principle: Optional[Principle],
-        policy: Optional[Policy],
-        fidelity_score: Optional[float],
-    ) -> List[str]:
+        principle: Principle | None,
+        policy: Policy | None,
+        fidelity_score: float | None,
+    ) -> list[str]:
         """Get list of detection methods used."""
         methods = []
         if principle:
-            methods.extend(["principle_analysis", "distance_calculation", "error_prediction"])
+            methods.extend(
+                ["principle_analysis", "distance_calculation", "error_prediction"]
+            )
         if policy:
             methods.extend(["policy_analysis", "quality_assessment"])
         if fidelity_score is not None:
@@ -576,7 +593,7 @@ class ViolationDetectionService:
             methods.append("consistency_analysis")
         return methods
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration for violation detection."""
         return {
             "scan_interval_seconds": 30,

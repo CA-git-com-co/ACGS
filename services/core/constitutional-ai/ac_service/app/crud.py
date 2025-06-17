@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List, Optional
 
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,7 +10,7 @@ from . import models, schemas
 
 
 async def create_principle(
-    db: AsyncSession, principle: schemas.PrincipleCreate, user_id: Optional[int] = None
+    db: AsyncSession, principle: schemas.PrincipleCreate, user_id: int | None = None
 ) -> models.Principle:
     db_principle = models.Principle(
         **principle.model_dump(),  # Use model_dump() for Pydantic v2+
@@ -25,12 +24,18 @@ async def create_principle(
     return db_principle
 
 
-async def get_principle(db: AsyncSession, principle_id: int) -> Optional[models.Principle]:
-    result = await db.execute(select(models.Principle).filter(models.Principle.id == principle_id))
+async def get_principle(
+    db: AsyncSession, principle_id: int
+) -> models.Principle | None:
+    result = await db.execute(
+        select(models.Principle).filter(models.Principle.id == principle_id)
+    )
     return result.scalars().first()
 
 
-async def get_principle_by_name(db: AsyncSession, name: str) -> Optional[models.Principle]:
+async def get_principle_by_name(
+    db: AsyncSession, name: str
+) -> models.Principle | None:
     # This simple version gets the first principle with this name.
     # For versioning, you might want the latest version or a specific one.
     result = await db.execute(
@@ -43,14 +48,14 @@ async def get_principle_by_name(db: AsyncSession, name: str) -> Optional[models.
 
 async def get_principles(
     db: AsyncSession, skip: int = 0, limit: int = 100
-) -> List[models.Principle]:
+) -> list[models.Principle]:
     result = await db.execute(select(models.Principle).offset(skip).limit(limit))
     return result.scalars().all()
 
 
 async def update_principle(
     db: AsyncSession, principle_id: int, principle_update: schemas.PrincipleUpdate
-) -> Optional[models.Principle]:
+) -> models.Principle | None:
     db_principle = await get_principle(db, principle_id)
     if db_principle:
         update_data = principle_update.model_dump(exclude_unset=True)  # Pydantic v2+
@@ -70,7 +75,9 @@ async def update_principle(
     return db_principle
 
 
-async def delete_principle(db: AsyncSession, principle_id: int) -> Optional[models.Principle]:
+async def delete_principle(
+    db: AsyncSession, principle_id: int
+) -> models.Principle | None:
     db_principle = await get_principle(db, principle_id)
     if db_principle:
         # Instead of deleting, we can mark as "deprecated" or "deleted"
@@ -93,7 +100,7 @@ async def count_principles(db: AsyncSession) -> int:
 
 async def get_principles_by_category(
     db: AsyncSession, category: str, skip: int = 0, limit: int = 100
-) -> List[models.Principle]:
+) -> list[models.Principle]:
     """Get principles filtered by category."""
     result = await db.execute(
         select(models.Principle)
@@ -107,7 +114,7 @@ async def get_principles_by_category(
 
 async def get_principles_by_scope(
     db: AsyncSession, scope_context: str, skip: int = 0, limit: int = 100
-) -> List[models.Principle]:
+) -> list[models.Principle]:
     """Get principles that apply to a specific scope context."""
     result = await db.execute(
         select(models.Principle)
@@ -125,7 +132,7 @@ async def get_principles_by_priority_range(
     max_priority: float = 1.0,
     skip: int = 0,
     limit: int = 100,
-) -> List[models.Principle]:
+) -> list[models.Principle]:
     """Get principles within a specific priority weight range."""
     result = await db.execute(
         select(models.Principle)
@@ -141,8 +148,8 @@ async def get_principles_by_priority_range(
 
 
 async def search_principles_by_keywords(
-    db: AsyncSession, keywords: List[str], skip: int = 0, limit: int = 100
-) -> List[models.Principle]:
+    db: AsyncSession, keywords: list[str], skip: int = 0, limit: int = 100
+) -> list[models.Principle]:
     """Search principles by keywords."""
     # Use PostgreSQL JSONB contains operator to find principles with any of the keywords
     result = await db.execute(
@@ -156,8 +163,8 @@ async def search_principles_by_keywords(
 
 
 async def get_active_principles_for_context(
-    db: AsyncSession, context: str, category: Optional[str] = None
-) -> List[models.Principle]:
+    db: AsyncSession, context: str, category: str | None = None
+) -> list[models.Principle]:
     """Get active principles applicable to a specific context, optionally filtered by category."""
     query = select(models.Principle).filter(
         models.Principle.status == "active", models.Principle.scope.contains([context])
@@ -177,7 +184,7 @@ async def get_active_principles_for_context(
 
 # AC Meta-Rules CRUD
 async def create_ac_meta_rule(
-    db: AsyncSession, meta_rule: schemas.ACMetaRuleCreate, user_id: Optional[int] = None
+    db: AsyncSession, meta_rule: schemas.ACMetaRuleCreate, user_id: int | None = None
 ) -> models.ACMetaRule:
     db_meta_rule = models.ACMetaRule(
         **meta_rule.model_dump(), created_by_user_id=user_id, status="active"
@@ -188,7 +195,9 @@ async def create_ac_meta_rule(
     return db_meta_rule
 
 
-async def get_ac_meta_rule(db: AsyncSession, meta_rule_id: int) -> Optional[models.ACMetaRule]:
+async def get_ac_meta_rule(
+    db: AsyncSession, meta_rule_id: int
+) -> models.ACMetaRule | None:
     result = await db.execute(
         select(models.ACMetaRule).filter(models.ACMetaRule.id == meta_rule_id)
     )
@@ -196,8 +205,8 @@ async def get_ac_meta_rule(db: AsyncSession, meta_rule_id: int) -> Optional[mode
 
 
 async def get_ac_meta_rules(
-    db: AsyncSession, rule_type: Optional[str] = None, skip: int = 0, limit: int = 100
-) -> List[models.ACMetaRule]:
+    db: AsyncSession, rule_type: str | None = None, skip: int = 0, limit: int = 100
+) -> list[models.ACMetaRule]:
     query = select(models.ACMetaRule)
     if rule_type:
         query = query.filter(models.ACMetaRule.rule_type == rule_type)
@@ -208,7 +217,7 @@ async def get_ac_meta_rules(
 
 async def update_ac_meta_rule(
     db: AsyncSession, meta_rule_id: int, meta_rule_update: schemas.ACMetaRuleUpdate
-) -> Optional[models.ACMetaRule]:
+) -> models.ACMetaRule | None:
     db_meta_rule = await get_ac_meta_rule(db, meta_rule_id)
     if db_meta_rule:
         update_data = meta_rule_update.model_dump(exclude_unset=True)
@@ -235,7 +244,9 @@ async def create_ac_amendment(
 
     # Determine urgency level
     urgency_level = (
-        CoEvolutionMode.RAPID if amendment.rapid_processing_requested else CoEvolutionMode.STANDARD
+        CoEvolutionMode.RAPID
+        if amendment.rapid_processing_requested
+        else CoEvolutionMode.STANDARD
     )
 
     # Initialize scalability handler if needed
@@ -272,7 +283,7 @@ async def create_ac_amendment(
     await db.refresh(db_amendment)
 
     # Initialize workflow
-    context = WorkflowContext(
+    WorkflowContext(
         amendment_id=db_amendment.id,
         user_id=user_id,
         urgency_level=amendment.urgency_level or "normal",
@@ -283,7 +294,9 @@ async def create_ac_amendment(
     return db_amendment
 
 
-async def get_ac_amendment(db: AsyncSession, amendment_id: int) -> Optional[models.ACAmendment]:
+async def get_ac_amendment(
+    db: AsyncSession, amendment_id: int
+) -> models.ACAmendment | None:
     result = await db.execute(
         select(models.ACAmendment).filter(models.ACAmendment.id == amendment_id)
     )
@@ -292,24 +305,26 @@ async def get_ac_amendment(db: AsyncSession, amendment_id: int) -> Optional[mode
 
 async def get_ac_amendments(
     db: AsyncSession,
-    status: Optional[str] = None,
-    principle_id: Optional[int] = None,
+    status: str | None = None,
+    principle_id: int | None = None,
     skip: int = 0,
     limit: int = 100,
-) -> List[models.ACAmendment]:
+) -> list[models.ACAmendment]:
     query = select(models.ACAmendment)
     if status:
         query = query.filter(models.ACAmendment.status == status)
     if principle_id:
         query = query.filter(models.ACAmendment.principle_id == principle_id)
-    query = query.offset(skip).limit(limit).order_by(models.ACAmendment.created_at.desc())
+    query = (
+        query.offset(skip).limit(limit).order_by(models.ACAmendment.created_at.desc())
+    )
     result = await db.execute(query)
     return result.scalars().all()
 
 
 async def update_ac_amendment(
     db: AsyncSession, amendment_id: int, amendment_update: schemas.ACAmendmentUpdate
-) -> Optional[models.ACAmendment]:
+) -> models.ACAmendment | None:
     db_amendment = await get_ac_amendment(db, amendment_id)
     if db_amendment:
         update_data = amendment_update.model_dump(exclude_unset=True)
@@ -354,9 +369,11 @@ async def create_ac_amendment_vote(
 
 async def get_ac_amendment_votes(
     db: AsyncSession, amendment_id: int
-) -> List[models.ACAmendmentVote]:
+) -> list[models.ACAmendmentVote]:
     result = await db.execute(
-        select(models.ACAmendmentVote).filter(models.ACAmendmentVote.amendment_id == amendment_id)
+        select(models.ACAmendmentVote).filter(
+            models.ACAmendmentVote.amendment_id == amendment_id
+        )
     )
     return result.scalars().all()
 
@@ -365,9 +382,11 @@ async def get_ac_amendment_votes(
 async def create_ac_amendment_comment(
     db: AsyncSession,
     comment: schemas.ACAmendmentCommentCreate,
-    commenter_id: Optional[int] = None,
+    commenter_id: int | None = None,
 ) -> models.ACAmendmentComment:
-    db_comment = models.ACAmendmentComment(**comment.model_dump(), commenter_id=commenter_id)
+    db_comment = models.ACAmendmentComment(
+        **comment.model_dump(), commenter_id=commenter_id
+    )
     db.add(db_comment)
     await db.commit()
     await db.refresh(db_comment)
@@ -376,12 +395,12 @@ async def create_ac_amendment_comment(
 
 async def get_ac_amendment_comments(
     db: AsyncSession, amendment_id: int, is_public: bool = True
-) -> List[models.ACAmendmentComment]:
+) -> list[models.ACAmendmentComment]:
     query = select(models.ACAmendmentComment).filter(
         models.ACAmendmentComment.amendment_id == amendment_id
     )
     if is_public:
-        query = query.filter(models.ACAmendmentComment.is_public == True)
+        query = query.filter(models.ACAmendmentComment.is_public)
     query = query.order_by(models.ACAmendmentComment.created_at.desc())
     result = await db.execute(query)
     return result.scalars().all()
@@ -391,7 +410,7 @@ async def get_ac_amendment_comments(
 async def create_ac_conflict_resolution(
     db: AsyncSession,
     conflict: schemas.ACConflictResolutionCreate,
-    user_id: Optional[int] = None,
+    user_id: int | None = None,
 ) -> models.ACConflictResolution:
     db_conflict = models.ACConflictResolution(
         **conflict.model_dump(), identified_by_user_id=user_id, status="identified"
@@ -404,26 +423,32 @@ async def create_ac_conflict_resolution(
 
 async def get_ac_conflict_resolution(
     db: AsyncSession, conflict_id: int
-) -> Optional[models.ACConflictResolution]:
+) -> models.ACConflictResolution | None:
     result = await db.execute(
-        select(models.ACConflictResolution).filter(models.ACConflictResolution.id == conflict_id)
+        select(models.ACConflictResolution).filter(
+            models.ACConflictResolution.id == conflict_id
+        )
     )
     return result.scalars().first()
 
 
 async def get_ac_conflict_resolutions(
     db: AsyncSession,
-    status: Optional[str] = None,
-    severity: Optional[str] = None,
+    status: str | None = None,
+    severity: str | None = None,
     skip: int = 0,
     limit: int = 100,
-) -> List[models.ACConflictResolution]:
+) -> list[models.ACConflictResolution]:
     query = select(models.ACConflictResolution)
     if status:
         query = query.filter(models.ACConflictResolution.status == status)
     if severity:
         query = query.filter(models.ACConflictResolution.severity == severity)
-    query = query.offset(skip).limit(limit).order_by(models.ACConflictResolution.created_at.desc())
+    query = (
+        query.offset(skip)
+        .limit(limit)
+        .order_by(models.ACConflictResolution.created_at.desc())
+    )
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -432,7 +457,7 @@ async def update_ac_conflict_resolution(
     db: AsyncSession,
     conflict_id: int,
     conflict_update: schemas.ACConflictResolutionUpdate,
-) -> Optional[models.ACConflictResolution]:
+) -> models.ACConflictResolution | None:
     db_conflict = await get_ac_conflict_resolution(db, conflict_id)
     if db_conflict:
         update_data = conflict_update.model_dump(exclude_unset=True)
@@ -454,8 +479,8 @@ async def delete_ac_conflict_resolution(db: AsyncSession, conflict_id: int) -> b
 
 
 async def get_ac_principles_by_ids(
-    db: AsyncSession, principle_ids: List[int]
-) -> List[models.Principle]:
+    db: AsyncSession, principle_ids: list[int]
+) -> list[models.Principle]:
     """Get multiple AC principles by their IDs."""
     result = await db.execute(
         select(models.Principle).filter(models.Principle.id.in_(principle_ids))

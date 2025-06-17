@@ -5,7 +5,6 @@ Tests load balancing scenarios, failover, and performance validation
 
 import asyncio
 import time
-from typing import List
 from unittest.mock import Mock, patch
 
 import pytest
@@ -38,7 +37,7 @@ async def service_discovery():
 
 
 @pytest.fixture
-def mock_service_instances() -> List[ServiceInstance]:
+def mock_service_instances() -> list[ServiceInstance]:
     """Create mock service instances for testing."""
     return [
         ServiceInstance(
@@ -245,7 +244,7 @@ class TestFailoverMechanisms:
         with patch.object(
             failover_breaker, "_immediate_failover", return_value="backup_success"
         ) as mock_failover:
-            result = await failover_breaker.execute_with_failover(
+            await failover_breaker.execute_with_failover(
                 failing_primary, "auth-1"
             )
 

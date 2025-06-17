@@ -12,12 +12,15 @@ from fastapi.testclient import TestClient
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 try:
-    from services.research.federated_evaluation.federated_service.app.core.federated_evaluator import (
-        FederatedEvaluator,
-        EvaluationTask,
-    )
-    from services.research.federated_evaluation.coordinator.main import app as coordinator_app
     from services.research.federated_evaluation.agent.main import serve_agent
+    from services.research.federated_evaluation.coordinator.main import (
+        app as coordinator_app,
+    )
+    from services.research.federated_evaluation.federated_service.app.core.federated_evaluator import (
+        EvaluationTask,
+        FederatedEvaluator,
+    )
+
     FEDERATED_AVAILABLE = True
 except ImportError:
     # Mock for testing when federated evaluation is not available

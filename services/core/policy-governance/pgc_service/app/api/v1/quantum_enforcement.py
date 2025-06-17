@@ -13,18 +13,17 @@ Formal Verification Comments:
 # sha256: opa_schrodinger_quantum_enforcement_api_v1.0
 """
 
-import asyncio
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 import grpc
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
+
 from app.core.config import settings
 from app.core.opa_client import get_opa_client
-from app.schemas.enforcement import EnforcementRequest, EnforcementResponse
-from app.services.qpe_client import CollapseReason, QPEClient, State
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
-from pydantic import BaseModel, Field
+from app.services.qpe_client import QPEClient
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +37,16 @@ class QuantumEnforcementRequest(BaseModel):
     """Request for quantum policy enforcement."""
 
     policy_id: str = Field(..., description="Policy identifier")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Evaluation context")
+    context: dict[str, Any] = Field(
+        default_factory=dict, description="Evaluation context"
+    )
     force_collapse: bool = Field(False, description="Force quantum state collapse")
-    observer_id: Optional[str] = Field(None, description="Observer identifier for observer effect")
-    uncertainty_lambda: Optional[float] = Field(None, description="Override uncertainty parameter")
+    observer_id: str | None = Field(
+        None, description="Observer identifier for observer effect"
+    )
+    uncertainty_lambda: float | None = Field(
+        None, description="Override uncertainty parameter"
+    )
 
 
 class QuantumEnforcementResponse(BaseModel):
@@ -59,16 +64,20 @@ class QuantumEnforcementResponse(BaseModel):
     heisenberg_constant: float
     uncertainty_lambda: float
     constitutional_compliance: bool
-    audit_trail: Dict[str, Any]
+    audit_trail: dict[str, Any]
 
 
 class QuantumPolicyRegistration(BaseModel):
     """Request to register a new policy in quantum superposition."""
 
     policy_id: str = Field(..., description="Unique policy identifier")
-    criticality: str = Field("MEDIUM", description="Policy criticality (HIGH, MEDIUM, LOW)")
+    criticality: str = Field(
+        "MEDIUM", description="Policy criticality (HIGH, MEDIUM, LOW)"
+    )
     deadline_hours: int = Field(24, description="Hours until automatic collapse")
-    deterministic_mode: bool = Field(False, description="Use hash-based deterministic collapse")
+    deterministic_mode: bool = Field(
+        False, description="Use hash-based deterministic collapse"
+    )
 
 
 class QuantumObservationRequest(BaseModel):
@@ -76,16 +85,20 @@ class QuantumObservationRequest(BaseModel):
 
     policy_id: str = Field(..., description="Policy to observe")
     observer_id: str = Field(..., description="Stakeholder identifier")
-    observation_reason: str = Field("stakeholder_review", description="Reason for observation")
+    observation_reason: str = Field(
+        "stakeholder_review", description="Reason for observation"
+    )
 
 
 class UncertaintyUpdateRequest(BaseModel):
     """Request to update uncertainty parameter."""
 
-    lambda_value: float = Field(..., ge=0.0, le=1.0, description="Uncertainty parameter λ ∈ [0,1]")
+    lambda_value: float = Field(
+        ..., ge=0.0, le=1.0, description="Uncertainty parameter λ ∈ [0,1]"
+    )
 
 
-@router.post("/quantum/register", response_model=Dict[str, Any])
+@router.post("/quantum/register", response_model=dict[str, Any])
 async def register_quantum_policy(request: QuantumPolicyRegistration):
     """
     Register a new policy in quantum superposition.
@@ -106,7 +119,9 @@ async def register_quantum_policy(request: QuantumPolicyRegistration):
 
         latency_ms = (time.time() - start_time) * 1000
 
-        logger.info(f"Quantum policy registered: {request.policy_id}, latency={latency_ms:.2f}ms")
+        logger.info(
+            f"Quantum policy registered: {request.policy_id}, latency={latency_ms:.2f}ms"
+        )
 
         return {
             "policy_id": response.policy_id,
@@ -145,12 +160,14 @@ async def quantum_policy_enforcement(request: QuantumEnforcementRequest):
 
         # Handle observer effect if observer specified
         if request.observer_id:
-            observe_response = await qpe_client.observe(
+            await qpe_client.observe(
                 policy_id=request.policy_id,
                 observer_id=request.observer_id,
                 observation_reason="enforcement_observation",
             )
-            logger.info(f"Observer effect triggered: {request.policy_id} by {request.observer_id}")
+            logger.info(
+                f"Observer effect triggered: {request.policy_id} by {request.observer_id}"
+            )
 
         # Measure quantum policy state (triggers collapse)
         qpe_start = time.time()
@@ -173,7 +190,9 @@ async def quantum_policy_enforcement(request: QuantumEnforcementRequest):
         else:  # PENDING
             # For pending state, use conservative approach
             allowed = False
-            logger.info(f"Policy {request.policy_id} in PENDING state, defaulting to deny")
+            logger.info(
+                f"Policy {request.policy_id} in PENDING state, defaulting to deny"
+            )
 
         total_latency = (time.time() - start_time) * 1000
 
@@ -220,7 +239,9 @@ async def quantum_policy_enforcement(request: QuantumEnforcementRequest):
         # Fallback to direct OPA evaluation if QPE is unavailable
         logger.warning(f"QPE service unavailable, falling back to direct OPA: {str(e)}")
 
-        fallback_result = await _fallback_opa_evaluation(request.policy_id, request.context)
+        fallback_result = await _fallback_opa_evaluation(
+            request.policy_id, request.context
+        )
 
         return QuantumEnforcementResponse(
             policy_id=request.policy_id,
@@ -243,7 +264,7 @@ async def quantum_policy_enforcement(request: QuantumEnforcementRequest):
         raise HTTPException(status_code=500, detail=f"Enforcement failed: {str(e)}")
 
 
-@router.post("/quantum/observe", response_model=Dict[str, Any])
+@router.post("/quantum/observe", response_model=dict[str, Any])
 async def trigger_observer_effect(request: QuantumObservationRequest):
     """
     Trigger observer effect to force quantum state collapse.
@@ -278,7 +299,7 @@ async def trigger_observer_effect(request: QuantumObservationRequest):
         raise HTTPException(status_code=500, detail=f"Observation failed: {str(e)}")
 
 
-@router.post("/quantum/uncertainty", response_model=Dict[str, Any])
+@router.post("/quantum/uncertainty", response_model=dict[str, Any])
 async def update_uncertainty_parameter(request: UncertaintyUpdateRequest):
     """
     Update uncertainty parameter (λ) for speed-accuracy trade-off.
@@ -293,7 +314,9 @@ async def update_uncertainty_parameter(request: UncertaintyUpdateRequest):
         if request.lambda_value > 0.7:
             effect = "High accuracy mode: prioritizing thorough validation over speed"
         elif request.lambda_value < 0.3:
-            effect = "High speed mode: prioritizing fast processing over exhaustive checks"
+            effect = (
+                "High speed mode: prioritizing fast processing over exhaustive checks"
+            )
         else:
             effect = "Balanced mode: moderate trade-off between accuracy and speed"
 
@@ -311,7 +334,7 @@ async def update_uncertainty_parameter(request: UncertaintyUpdateRequest):
         raise HTTPException(status_code=500, detail=f"Update failed: {str(e)}")
 
 
-@router.get("/quantum/state/{policy_id}", response_model=Dict[str, Any])
+@router.get("/quantum/state/{policy_id}", response_model=dict[str, Any])
 async def get_quantum_state(policy_id: str):
     """
     Get current quantum state without collapse (monitoring only).
@@ -341,7 +364,9 @@ async def get_quantum_state(policy_id: str):
                 "weight_pending": quantum_state.weight_pending,
                 "is_collapsed": quantum_state.is_collapsed,
                 "collapsed_state": (
-                    quantum_state.collapsed_state.name if quantum_state.is_collapsed else None
+                    quantum_state.collapsed_state.name
+                    if quantum_state.is_collapsed
+                    else None
                 ),
                 "superposition_entropy": entropy,
             },
@@ -360,7 +385,7 @@ async def get_quantum_state(policy_id: str):
         raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
 
 
-@router.get("/quantum/health", response_model=Dict[str, Any])
+@router.get("/quantum/health", response_model=dict[str, Any])
 async def quantum_health_check():
     """
     Check quantum policy evaluation system health.
@@ -401,12 +426,14 @@ def _verify_constitutional_compliance(entanglement_tag: bytes, policy_id: str) -
     import hashlib
     import hmac
 
-    expected = hmac.new(b"cdd01ef066bc6cf2", policy_id.encode(), hashlib.sha256).digest()
+    expected = hmac.new(
+        b"cdd01ef066bc6cf2", policy_id.encode(), hashlib.sha256
+    ).digest()
 
     return hmac.compare_digest(expected, entanglement_tag)
 
 
-async def _fallback_opa_evaluation(policy_id: str, context: Dict[str, Any]) -> bool:
+async def _fallback_opa_evaluation(policy_id: str, context: dict[str, Any]) -> bool:
     """Fallback to direct OPA evaluation when QPE is unavailable."""
     try:
         opa_client = await get_opa_client()
@@ -416,7 +443,11 @@ async def _fallback_opa_evaluation(policy_id: str, context: Dict[str, Any]) -> b
 
         request = PolicyEvaluationRequest(
             query="data.acgs.authz.allow",
-            input_data={"policy_id": policy_id, "context": context, "fallback_mode": True},
+            input_data={
+                "policy_id": policy_id,
+                "context": context,
+                "fallback_mode": True,
+            },
         )
 
         response = await opa_client.evaluate_policy(request)

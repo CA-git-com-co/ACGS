@@ -1,5 +1,4 @@
 # Enterprise API Key Management Endpoints
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
@@ -17,10 +16,10 @@ router = APIRouter()
 # Pydantic models for API key endpoints
 class ApiKeyCreateRequest(BaseModel):
     name: str
-    scopes: Optional[List[str]] = ["read"]
-    rate_limit_per_minute: Optional[int] = 1000
-    allowed_ips: Optional[List[str]] = None
-    expires_in_days: Optional[int] = None
+    scopes: list[str] | None = ["read"]
+    rate_limit_per_minute: int | None = 1000
+    allowed_ips: list[str] | None = None
+    expires_in_days: int | None = None
 
 
 class ApiKeyCreateResponse(BaseModel):
@@ -28,10 +27,10 @@ class ApiKeyCreateResponse(BaseModel):
     name: str
     api_key: str
     prefix: str
-    scopes: List[str]
+    scopes: list[str]
     rate_limit_per_minute: int
-    allowed_ips: List[str]
-    expires_at: Optional[str]
+    allowed_ips: list[str]
+    expires_at: str | None
     created_at: str
 
 
@@ -39,22 +38,22 @@ class ApiKeyResponse(BaseModel):
     id: int
     name: str
     prefix: str
-    scopes: List[str]
+    scopes: list[str]
     rate_limit_per_minute: int
-    allowed_ips: List[str]
+    allowed_ips: list[str]
     is_active: bool
-    expires_at: Optional[str]
-    last_used_at: Optional[str]
+    expires_at: str | None
+    last_used_at: str | None
     usage_count: int
     created_at: str
 
 
 class ApiKeyUpdateRequest(BaseModel):
-    name: Optional[str] = None
-    scopes: Optional[List[str]] = None
-    rate_limit_per_minute: Optional[int] = None
-    allowed_ips: Optional[List[str]] = None
-    is_active: Optional[bool] = None
+    name: str | None = None
+    scopes: list[str] | None = None
+    rate_limit_per_minute: int | None = None
+    allowed_ips: list[str] | None = None
+    is_active: bool | None = None
 
 
 class ApiKeyUsageResponse(BaseModel):
@@ -120,7 +119,7 @@ async def create_api_key(
         )
 
 
-@router.get("/", response_model=List[ApiKeyResponse])
+@router.get("/", response_model=list[ApiKeyResponse])
 async def get_api_keys(
     current_user: User = Depends(authorize_permissions(["api_key:read"])),
     db: AsyncSession = Depends(get_async_db),
@@ -152,7 +151,9 @@ async def get_api_key(
         api_key = await api_key_manager.get_api_key(db, key_id, current_user.id)
 
         if not api_key:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
+            )
 
         return ApiKeyResponse(**api_key)
 
@@ -189,7 +190,9 @@ async def update_api_key(
         )
 
         if not success:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
+            )
 
         # Log API key update
         await security_audit.log_event(
@@ -240,7 +243,9 @@ async def revoke_api_key(
         success = await api_key_manager.revoke_api_key(db, key_id, current_user.id)
 
         if not success:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
+            )
 
         # Log API key revocation
         await security_audit.log_event(
@@ -288,7 +293,9 @@ async def delete_api_key(
         success = await api_key_manager.delete_api_key(db, key_id, current_user.id)
 
         if not success:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="API key not found"
+            )
 
         # Log API key deletion
         await security_audit.log_event(

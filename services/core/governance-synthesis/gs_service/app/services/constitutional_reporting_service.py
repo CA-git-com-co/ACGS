@@ -10,9 +10,9 @@ Task 19.4: Performance Dashboard Integration - Automated Reporting System
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from email.mime.multipart import MimeMultipart
@@ -103,9 +103,9 @@ class ComplianceReport:
     period_start: datetime
     period_end: datetime
     metrics: ComplianceMetrics
-    trends: List[TrendAnalysis]
-    recommendations: List[str]
-    alerts: List[Dict[str, Any]]
+    trends: list[TrendAnalysis]
+    recommendations: list[str]
+    alerts: list[dict[str, Any]]
     summary: str
 
 
@@ -143,9 +143,9 @@ class ConstitutionalReportingService:
     async def generate_compliance_report(
         self,
         report_type: ReportType,
-        period_start: Optional[datetime] = None,
-        period_end: Optional[datetime] = None,
-        db: Optional[AsyncSession] = None,
+        period_start: datetime | None = None,
+        period_end: datetime | None = None,
+        db: AsyncSession | None = None,
     ) -> ComplianceReport:
         """
         Generate a comprehensive constitutional compliance report.
@@ -159,7 +159,7 @@ class ConstitutionalReportingService:
         Returns:
             Complete compliance report
         """
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
 
         try:
             # Calculate reporting period if not provided
@@ -170,10 +170,14 @@ class ConstitutionalReportingService:
             report_id = f"{report_type.value}_{int(start_time.timestamp())}"
 
             # Collect compliance metrics
-            metrics = await self._collect_compliance_metrics(period_start, period_end, db)
+            metrics = await self._collect_compliance_metrics(
+                period_start, period_end, db
+            )
 
             # Perform trend analysis
-            trends = await self._perform_trend_analysis(report_type, period_start, period_end, db)
+            trends = await self._perform_trend_analysis(
+                report_type, period_start, period_end, db
+            )
 
             # Generate recommendations
             recommendations = await self._generate_recommendations(metrics, trends)
@@ -199,7 +203,7 @@ class ConstitutionalReportingService:
             )
 
             # Record metrics
-            generation_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+            generation_time = (datetime.now(UTC) - start_time).total_seconds()
             self.metrics.record_custom_metric(
                 "constitutional_report_generation_time",
                 generation_time,
@@ -215,7 +219,7 @@ class ConstitutionalReportingService:
             raise
 
     async def _collect_compliance_metrics(
-        self, period_start: datetime, period_end: datetime, db: Optional[AsyncSession]
+        self, period_start: datetime, period_end: datetime, db: AsyncSession | None
     ) -> ComplianceMetrics:
         """Collect constitutional compliance metrics for the reporting period."""
         try:
@@ -268,9 +272,11 @@ class ConstitutionalReportingService:
             logger.error(f"Error collecting compliance metrics: {e}")
             raise
 
-    def _calculate_reporting_period(self, report_type: ReportType) -> tuple[datetime, datetime]:
+    def _calculate_reporting_period(
+        self, report_type: ReportType
+    ) -> tuple[datetime, datetime]:
         """Calculate the reporting period based on report type."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         if report_type == ReportType.DAILY:
             period_end = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -278,9 +284,9 @@ class ConstitutionalReportingService:
         elif report_type == ReportType.WEEKLY:
             # Start of current week (Monday)
             days_since_monday = now.weekday()
-            period_end = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(
-                days=days_since_monday
-            )
+            period_end = now.replace(
+                hour=0, minute=0, second=0, microsecond=0
+            ) - timedelta(days=days_since_monday)
             period_start = period_end - timedelta(weeks=1)
         elif report_type == ReportType.MONTHLY:
             # Start of current month
@@ -297,15 +303,17 @@ class ConstitutionalReportingService:
 
         return period_start, period_end
 
-    def _load_report_templates(self) -> Dict[str, Template]:
+    def _load_report_templates(self) -> dict[str, Template]:
         """Load report templates for different formats."""
         # Mock implementation - in production, load from files
         return {
             "html_summary": Template("<h1>Constitutional Compliance Report</h1>"),
-            "email_notification": Template("Alert: Constitutional compliance issue detected"),
+            "email_notification": Template(
+                "Alert: Constitutional compliance issue detected"
+            ),
         }
 
-    def _load_notification_config(self) -> Dict[str, Any]:
+    def _load_notification_config(self) -> dict[str, Any]:
         """Load notification configuration."""
         # Mock implementation - in production, load from config
         return {
@@ -327,8 +335,8 @@ class ConstitutionalReportingService:
         report_type: ReportType,
         period_start: datetime,
         period_end: datetime,
-        db: Optional[AsyncSession],
-    ) -> List[TrendAnalysis]:
+        db: AsyncSession | None,
+    ) -> list[TrendAnalysis]:
         """Perform trend analysis for constitutional compliance metrics."""
         try:
             trends = []
@@ -343,7 +351,9 @@ class ConstitutionalReportingService:
             ]
 
             for metric_name, current, previous, direction, significance in trend_data:
-                change_percentage = ((current - previous) / previous) * 100 if previous > 0 else 0
+                change_percentage = (
+                    ((current - previous) / previous) * 100 if previous > 0 else 0
+                )
 
                 trends.append(
                     TrendAnalysis(
@@ -363,8 +373,8 @@ class ConstitutionalReportingService:
             return []
 
     async def _generate_recommendations(
-        self, metrics: ComplianceMetrics, trends: List[TrendAnalysis]
-    ) -> List[str]:
+        self, metrics: ComplianceMetrics, trends: list[TrendAnalysis]
+    ) -> list[str]:
         """Generate recommendations based on metrics and trends."""
         recommendations = []
 
@@ -402,7 +412,9 @@ class ConstitutionalReportingService:
 
         return recommendations
 
-    async def _collect_active_alerts(self, db: Optional[AsyncSession]) -> List[Dict[str, Any]]:
+    async def _collect_active_alerts(
+        self, db: AsyncSession | None
+    ) -> list[dict[str, Any]]:
         """Collect currently active constitutional compliance alerts."""
         try:
             # Mock implementation - in production, query actual alerts
@@ -412,7 +424,7 @@ class ConstitutionalReportingService:
                     "type": "constitutional_violation",
                     "severity": "high",
                     "message": "Critical constitutional violation detected in policy synthesis",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "status": "active",
                 },
                 {
@@ -420,7 +432,9 @@ class ConstitutionalReportingService:
                     "type": "qec_performance",
                     "severity": "medium",
                     "message": "QEC response time exceeding 30 seconds",
-                    "timestamp": (datetime.now(timezone.utc) - timedelta(minutes=15)).isoformat(),
+                    "timestamp": (
+                        datetime.now(UTC) - timedelta(minutes=15)
+                    ).isoformat(),
                     "status": "acknowledged",
                 },
             ]
@@ -432,8 +446,8 @@ class ConstitutionalReportingService:
     async def _generate_report_summary(
         self,
         metrics: ComplianceMetrics,
-        trends: List[TrendAnalysis],
-        alerts: List[Dict[str, Any]],
+        trends: list[TrendAnalysis],
+        alerts: list[dict[str, Any]],
     ) -> str:
         """Generate executive summary for the compliance report."""
         try:
@@ -457,8 +471,12 @@ class ConstitutionalReportingService:
                 health_status = "Poor"
 
             # Count improving vs declining trends
-            improving_trends = sum(1 for t in trends if t.trend_direction == "improving")
-            declining_trends = sum(1 for t in trends if t.trend_direction == "declining")
+            improving_trends = sum(
+                1 for t in trends if t.trend_direction == "improving"
+            )
+            declining_trends = sum(
+                1 for t in trends if t.trend_direction == "declining"
+            )
 
             # Count active critical alerts
             critical_alerts = sum(1 for a in alerts if a.get("severity") == "high")
@@ -497,7 +515,7 @@ Key Achievements:
         self,
         report: ComplianceReport,
         notification_type: str = "email",
-        recipients: Optional[List[str]] = None,
+        recipients: list[str] | None = None,
     ) -> bool:
         """
         Send notification for compliance report or critical issues.
@@ -524,7 +542,7 @@ Key Achievements:
             return False
 
     async def _send_email_notification(
-        self, report: ComplianceReport, recipients: Optional[List[str]]
+        self, report: ComplianceReport, recipients: list[str] | None
     ) -> bool:
         """Send email notification for compliance report."""
         try:
@@ -537,7 +555,7 @@ Key Achievements:
             return False
 
     async def _send_webhook_notification(
-        self, report: ComplianceReport, recipients: Optional[List[str]]
+        self, report: ComplianceReport, recipients: list[str] | None
     ) -> bool:
         """Send webhook notification for compliance report."""
         try:

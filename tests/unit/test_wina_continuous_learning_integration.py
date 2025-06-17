@@ -636,7 +636,7 @@ class TestLearningAlgorithms:
         current_phase = learning_system.learning_state["current_phase"]
 
         # Phase may or may not change based on algorithm logic
-        assert current_phase in [phase for phase in LearningPhase]
+        assert current_phase in list(LearningPhase)
 
 
 class TestEndToEndLearningLoop:

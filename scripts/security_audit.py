@@ -19,9 +19,8 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Dict, List, Optional
 
 import aiohttp
 import jwt
@@ -52,17 +51,17 @@ class SecurityFinding:
     title: str
     description: str
     service: str
-    endpoint: Optional[str] = None
-    recommendation: Optional[str] = None
-    cve_reference: Optional[str] = None
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    endpoint: str | None = None
+    recommendation: str | None = None
+    cve_reference: str | None = None
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 @dataclass
 class SecurityAuditConfig:
     """Security audit configuration."""
 
-    services: Dict[str, int] = field(
+    services: dict[str, int] = field(
         default_factory=lambda: {
             "auth_service": 8000,
             "ac_service": 8001,
@@ -85,11 +84,11 @@ class SecurityAuditReport:
     config: SecurityAuditConfig
     start_time: datetime
     end_time: datetime
-    findings: List[SecurityFinding]
+    findings: list[SecurityFinding]
     security_score: float
     services_tested: int
     vulnerabilities_found: int
-    recommendations: List[str]
+    recommendations: list[str]
 
 
 class SecurityAuditor:
@@ -97,8 +96,8 @@ class SecurityAuditor:
 
     def __init__(self, config: SecurityAuditConfig):
         self.config = config
-        self.findings: List[SecurityFinding] = []
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.findings: list[SecurityFinding] = []
+        self.session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
         """Async context manager entry."""
@@ -114,7 +113,7 @@ class SecurityAuditor:
 
     async def test_csrf_protection(
         self, service: str, port: int
-    ) -> List[SecurityFinding]:
+    ) -> list[SecurityFinding]:
         """Test CSRF protection implementation."""
         findings = []
 
@@ -156,7 +155,7 @@ class SecurityAuditor:
 
     async def test_jwt_validation(
         self, service: str, port: int
-    ) -> List[SecurityFinding]:
+    ) -> list[SecurityFinding]:
         """Test JWT token validation security."""
         findings = []
 
@@ -232,7 +231,7 @@ class SecurityAuditor:
 
     async def test_rbac_implementation(
         self, service: str, port: int
-    ) -> List[SecurityFinding]:
+    ) -> list[SecurityFinding]:
         """Test Role-Based Access Control implementation."""
         findings = []
 
@@ -288,7 +287,7 @@ class SecurityAuditor:
 
         return findings
 
-    async def test_authentication_workflow(self) -> List[SecurityFinding]:
+    async def test_authentication_workflow(self) -> list[SecurityFinding]:
         """Test authentication workflow security."""
         findings = []
 
@@ -376,7 +375,7 @@ class SecurityAuditor:
 
         return findings
 
-    async def test_cryptographic_integrity(self) -> List[SecurityFinding]:
+    async def test_cryptographic_integrity(self) -> list[SecurityFinding]:
         """Test cryptographic integrity components."""
         findings = []
 
@@ -450,7 +449,7 @@ class SecurityAuditor:
 
         return findings
 
-    async def test_cross_service_security(self) -> List[SecurityFinding]:
+    async def test_cross_service_security(self) -> list[SecurityFinding]:
         """Test cross-service API communication security."""
         findings = []
 
@@ -530,7 +529,7 @@ class SecurityAuditor:
     async def run_security_audit(self) -> SecurityAuditReport:
         """Execute comprehensive security audit."""
         logger.info("🔒 Starting ACGS-PGP Security Audit")
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
 
         # Test each service
         for service, port in self.config.services.items():
@@ -563,7 +562,7 @@ class SecurityAuditor:
         cross_service_findings = await self.test_cross_service_security()
         self.findings.extend(cross_service_findings)
 
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
 
         # Calculate security score
         security_score = self.calculate_security_score()
@@ -588,7 +587,7 @@ class SecurityAuditor:
             recommendations=recommendations,
         )
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate security hardening recommendations."""
         recommendations = []
 
@@ -651,7 +650,7 @@ def print_security_audit_report(report: SecurityAuditReport):
     print("=" * 80)
 
     # Audit summary
-    print(f"📋 Audit Summary:")
+    print("📋 Audit Summary:")
     print(f"   Services Tested: {report.services_tested}")
     print(
         f"   Audit Duration: {(report.end_time - report.start_time).total_seconds():.1f}s"
@@ -667,7 +666,7 @@ def print_security_audit_report(report: SecurityAuditReport):
     print(f"   Overall Status: {score_status}")
 
     # Findings summary
-    print(f"\n🔍 Security Findings:")
+    print("\n🔍 Security Findings:")
     print(f"   Total Findings: {len(report.findings)}")
     print(
         f"   Critical Vulnerabilities: {len([f for f in report.findings if f.level == SecurityLevel.CRITICAL])}"
@@ -684,7 +683,7 @@ def print_security_audit_report(report: SecurityAuditReport):
 
     # Detailed findings
     if report.findings:
-        print(f"\n📝 Detailed Findings:")
+        print("\n📝 Detailed Findings:")
         for finding in sorted(report.findings, key=lambda x: x.level.value):
             level_icon = {
                 SecurityLevel.CRITICAL: "🚨",
@@ -704,7 +703,7 @@ def print_security_audit_report(report: SecurityAuditReport):
             print()
 
     # Recommendations
-    print(f"🛡️ Security Hardening Recommendations:")
+    print("🛡️ Security Hardening Recommendations:")
     for i, recommendation in enumerate(report.recommendations, 1):
         print(f"   {i}. {recommendation}")
 

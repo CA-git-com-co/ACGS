@@ -264,7 +264,7 @@ class TeardownProceduresTester:
         passed_tests = sum(all_tests)
         total_tests = len(all_tests)
 
-        print(f"\n📊 Test Results Summary:")
+        print("\n📊 Test Results Summary:")
         print(f"  Passed: {passed_tests}/{total_tests}")
         print(f"  Success Rate: {(passed_tests/total_tests)*100:.1f}%")
 
@@ -305,7 +305,7 @@ async def main():
                 indent=2,
             )
 
-        print(f"\n📄 Detailed results saved to: teardown_test_results.json")
+        print("\n📄 Detailed results saved to: teardown_test_results.json")
 
         if success:
             print("\n🎉 Test teardown procedures validation completed successfully!")

@@ -30,7 +30,7 @@
 **Symptoms**: All services down, infrastructure failure
 **Steps**:
 1. Provision new infrastructure
-2. Deploy ACGS-PGP: `docker-compose up -d`
+2. Deploy ACGS-PGP: `docker-compose -f infrastructure/docker/docker-compose.yml up -d`
 3. Restore database: `./restore_database.sh <latest_backup>`
 4. Restore configurations from backup
 5. Update DNS/load balancers

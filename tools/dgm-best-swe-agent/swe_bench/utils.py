@@ -3,7 +3,6 @@ import logging
 import tarfile
 import threading
 from pathlib import Path
-from typing import Optional, Union
 
 import docker
 
@@ -84,7 +83,7 @@ def remove_existing_container(client, container_name):
         raise
 
 
-def create_archive(path: Union[str, Path], data: Optional[bytes] = None) -> bytes:
+def create_archive(path: str | Path, data: bytes | None = None) -> bytes:
     """
     Create a tar archive containing either file data or a directory structure.
 
@@ -113,7 +112,7 @@ def create_archive(path: Union[str, Path], data: Optional[bytes] = None) -> byte
 
 
 def copy_to_container(
-    container, source_path: Union[str, Path], dest_path: Union[str, Path]
+    container, source_path: str | Path, dest_path: str | Path
 ) -> None:
     """
     Copy a file or directory from the local system to a Docker container.
@@ -163,7 +162,7 @@ def copy_to_container(
 
 
 def copy_from_container(
-    container, source_path: Union[str, Path], dest_path: Union[str, Path]
+    container, source_path: str | Path, dest_path: str | Path
 ) -> None:
     """
     Copy a file or directory from a Docker container to the local system.

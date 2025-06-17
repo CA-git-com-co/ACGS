@@ -17,9 +17,9 @@ import asyncio
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -37,14 +37,14 @@ class ImmediateTestingValidator:
         self.security_findings = {}
         self.api_validation_results = {}
 
-    async def run_comprehensive_validation(self) -> Dict[str, Any]:
+    async def run_comprehensive_validation(self) -> dict[str, Any]:
         """Run all immediate validation tests."""
         logger.info(
             "🚀 Starting Immediate Testing & Validation for AlphaEvolve-ACGS Enhancements"
         )
 
         validation_results = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "validation_phases": {},
             "overall_status": "unknown",
             "critical_issues": [],
@@ -91,7 +91,7 @@ class ImmediateTestingValidator:
 
         return validation_results
 
-    async def _run_integration_tests(self) -> Dict[str, Any]:
+    async def _run_integration_tests(self) -> dict[str, Any]:
         """Run integration tests across all enhanced components."""
         integration_tests = {
             "ccai_integration": await self._test_ccai_integration(),
@@ -116,7 +116,7 @@ class ImmediateTestingValidator:
             ],
         }
 
-    async def _test_ccai_integration(self) -> Dict[str, Any]:
+    async def _test_ccai_integration(self) -> dict[str, Any]:
         """Test Collective Constitutional AI integration."""
         try:
             # Test Polis conversation creation
@@ -144,7 +144,7 @@ class ImmediateTestingValidator:
         except Exception as e:
             return {"status": "failed", "error": str(e), "critical": True}
 
-    async def _test_multi_model_integration(self) -> Dict[str, Any]:
+    async def _test_multi_model_integration(self) -> dict[str, Any]:
         """Test Enhanced Multi-Model Validation integration."""
         try:
             # Test boosting majority vote
@@ -173,7 +173,7 @@ class ImmediateTestingValidator:
         except Exception as e:
             return {"status": "failed", "error": str(e), "critical": True}
 
-    async def _test_ultra_latency_integration(self) -> Dict[str, Any]:
+    async def _test_ultra_latency_integration(self) -> dict[str, Any]:
         """Test Ultra Low Latency Optimization integration."""
         try:
             # Test sub-25ms policy decisions
@@ -202,7 +202,7 @@ class ImmediateTestingValidator:
         except Exception as e:
             return {"status": "failed", "error": str(e), "critical": True}
 
-    async def _test_cross_service_integration(self) -> Dict[str, Any]:
+    async def _test_cross_service_integration(self) -> dict[str, Any]:
         """Test cross-service integration and communication."""
         try:
             # Test AC -> GS -> PGC workflow
@@ -229,7 +229,7 @@ class ImmediateTestingValidator:
         except Exception as e:
             return {"status": "failed", "error": str(e), "critical": True}
 
-    async def _test_end_to_end_workflow(self) -> Dict[str, Any]:
+    async def _test_end_to_end_workflow(self) -> dict[str, Any]:
         """Test complete end-to-end workflow."""
         try:
             # Test: Democratic input -> Principle synthesis -> Multi-model validation -> Policy enforcement
@@ -254,7 +254,7 @@ class ImmediateTestingValidator:
         except Exception as e:
             return {"status": "failed", "error": str(e), "critical": True}
 
-    async def _run_performance_validation(self) -> Dict[str, Any]:
+    async def _run_performance_validation(self) -> dict[str, Any]:
         """Validate performance against research targets."""
         performance_tests = {
             "latency_benchmarks": await self._benchmark_latency(),
@@ -275,7 +275,7 @@ class ImmediateTestingValidator:
             ),
         }
 
-    async def _benchmark_latency(self) -> Dict[str, Any]:
+    async def _benchmark_latency(self) -> dict[str, Any]:
         """Benchmark latency across all components."""
         await asyncio.sleep(0.1)
 
@@ -290,7 +290,7 @@ class ImmediateTestingValidator:
             "targets": {"ultra_latency_target_ms": 25.0, "target_met": True},
         }
 
-    async def _test_throughput(self) -> Dict[str, Any]:
+    async def _test_throughput(self) -> dict[str, Any]:
         """Test system throughput under load."""
         await asyncio.sleep(0.1)
 
@@ -304,7 +304,7 @@ class ImmediateTestingValidator:
             "targets": {"target_concurrent_requests": 100, "target_met": True},
         }
 
-    async def _test_scalability(self) -> Dict[str, Any]:
+    async def _test_scalability(self) -> dict[str, Any]:
         """Test system scalability characteristics."""
         await asyncio.sleep(0.1)
 
@@ -317,7 +317,7 @@ class ImmediateTestingValidator:
             },
         }
 
-    async def _test_resource_utilization(self) -> Dict[str, Any]:
+    async def _test_resource_utilization(self) -> dict[str, Any]:
         """Test resource utilization efficiency."""
         await asyncio.sleep(0.1)
 
@@ -331,7 +331,7 @@ class ImmediateTestingValidator:
             },
         }
 
-    async def _run_security_tests(self) -> Dict[str, Any]:
+    async def _run_security_tests(self) -> dict[str, Any]:
         """Run security testing and validation."""
         security_tests = {
             "authentication_testing": await self._test_authentication(),
@@ -351,7 +351,7 @@ class ImmediateTestingValidator:
             ),
         }
 
-    async def _test_authentication(self) -> Dict[str, Any]:
+    async def _test_authentication(self) -> dict[str, Any]:
         """Test authentication mechanisms."""
         await asyncio.sleep(0.05)
         return {
@@ -360,7 +360,7 @@ class ImmediateTestingValidator:
             "session_management": "passed",
         }
 
-    async def _test_authorization(self) -> Dict[str, Any]:
+    async def _test_authorization(self) -> dict[str, Any]:
         """Test authorization and access control."""
         await asyncio.sleep(0.05)
         return {
@@ -369,7 +369,7 @@ class ImmediateTestingValidator:
             "policy_authorization": "passed",
         }
 
-    async def _test_input_validation(self) -> Dict[str, Any]:
+    async def _test_input_validation(self) -> dict[str, Any]:
         """Test input validation and sanitization."""
         await asyncio.sleep(0.05)
         return {
@@ -378,7 +378,7 @@ class ImmediateTestingValidator:
             "xss_protection": "passed",
         }
 
-    async def _test_encryption(self) -> Dict[str, Any]:
+    async def _test_encryption(self) -> dict[str, Any]:
         """Test encryption and data protection."""
         await asyncio.sleep(0.05)
         return {
@@ -387,7 +387,7 @@ class ImmediateTestingValidator:
             "data_in_transit": "passed",
         }
 
-    async def _run_vulnerability_scan(self) -> Dict[str, Any]:
+    async def _run_vulnerability_scan(self) -> dict[str, Any]:
         """Run automated vulnerability scanning."""
         await asyncio.sleep(0.1)
         return {
@@ -396,7 +396,7 @@ class ImmediateTestingValidator:
             "high_vulnerabilities": 0,
         }
 
-    async def _run_api_validation(self) -> Dict[str, Any]:
+    async def _run_api_validation(self) -> dict[str, Any]:
         """Validate all API endpoints."""
         api_tests = {
             "ccai_endpoints": await self._test_ccai_endpoints(),
@@ -415,7 +415,7 @@ class ImmediateTestingValidator:
             ),
         }
 
-    async def _test_ccai_endpoints(self) -> Dict[str, Any]:
+    async def _test_ccai_endpoints(self) -> dict[str, Any]:
         """Test CCAI API endpoints."""
         await asyncio.sleep(0.05)
         return {
@@ -428,7 +428,7 @@ class ImmediateTestingValidator:
             ],
         }
 
-    async def _test_multi_model_endpoints(self) -> Dict[str, Any]:
+    async def _test_multi_model_endpoints(self) -> dict[str, Any]:
         """Test multi-model validation API endpoints."""
         await asyncio.sleep(0.05)
         return {
@@ -440,7 +440,7 @@ class ImmediateTestingValidator:
             ],
         }
 
-    async def _test_ultra_latency_endpoints(self) -> Dict[str, Any]:
+    async def _test_ultra_latency_endpoints(self) -> dict[str, Any]:
         """Test ultra low latency API endpoints."""
         await asyncio.sleep(0.05)
         return {
@@ -452,12 +452,12 @@ class ImmediateTestingValidator:
             ],
         }
 
-    async def _test_health_endpoints(self) -> Dict[str, Any]:
+    async def _test_health_endpoints(self) -> dict[str, Any]:
         """Test health check endpoints."""
         await asyncio.sleep(0.05)
         return {"status": "passed", "endpoints_tested": ["/health", "/metrics"]}
 
-    async def _run_error_handling_tests(self) -> Dict[str, Any]:
+    async def _run_error_handling_tests(self) -> dict[str, Any]:
         """Test error handling and edge cases."""
         error_tests = {
             "graceful_degradation": await self._test_graceful_degradation(),
@@ -476,7 +476,7 @@ class ImmediateTestingValidator:
             ),
         }
 
-    async def _test_graceful_degradation(self) -> Dict[str, Any]:
+    async def _test_graceful_degradation(self) -> dict[str, Any]:
         """Test graceful degradation under failure conditions."""
         await asyncio.sleep(0.05)
         return {
@@ -488,7 +488,7 @@ class ImmediateTestingValidator:
             ],
         }
 
-    async def _test_circuit_breakers(self) -> Dict[str, Any]:
+    async def _test_circuit_breakers(self) -> dict[str, Any]:
         """Test circuit breaker behavior."""
         await asyncio.sleep(0.05)
         return {
@@ -497,7 +497,7 @@ class ImmediateTestingValidator:
             "recovery_behavior": "passed",
         }
 
-    async def _test_timeout_handling(self) -> Dict[str, Any]:
+    async def _test_timeout_handling(self) -> dict[str, Any]:
         """Test timeout handling mechanisms."""
         await asyncio.sleep(0.05)
         return {
@@ -506,7 +506,7 @@ class ImmediateTestingValidator:
             "connection_timeouts": "passed",
         }
 
-    async def _test_resource_exhaustion(self) -> Dict[str, Any]:
+    async def _test_resource_exhaustion(self) -> dict[str, Any]:
         """Test behavior under resource exhaustion."""
         await asyncio.sleep(0.05)
         return {
@@ -515,7 +515,7 @@ class ImmediateTestingValidator:
             "cpu_saturation": "passed",
         }
 
-    def _determine_overall_status(self, validation_results: Dict[str, Any]) -> str:
+    def _determine_overall_status(self, validation_results: dict[str, Any]) -> str:
         """Determine overall validation status."""
         phases = validation_results["validation_phases"]
         failed_phases = [
@@ -530,8 +530,8 @@ class ImmediateTestingValidator:
             return "failed"
 
     def _identify_critical_issues(
-        self, validation_results: Dict[str, Any]
-    ) -> List[str]:
+        self, validation_results: dict[str, Any]
+    ) -> list[str]:
         """Identify critical issues requiring immediate attention."""
         critical_issues = []
 
@@ -552,8 +552,8 @@ class ImmediateTestingValidator:
         return critical_issues
 
     def _generate_recommendations(
-        self, validation_results: Dict[str, Any]
-    ) -> List[str]:
+        self, validation_results: dict[str, Any]
+    ) -> list[str]:
         """Generate actionable recommendations."""
         recommendations = []
 
@@ -579,8 +579,8 @@ class ImmediateTestingValidator:
         return recommendations
 
     def _check_performance_targets(
-        self, performance_tests: Dict[str, Any]
-    ) -> Dict[str, bool]:
+        self, performance_tests: dict[str, Any]
+    ) -> dict[str, bool]:
         """Check if performance targets are met."""
         return {
             "latency_target": True,  # <25ms achieved
@@ -589,21 +589,21 @@ class ImmediateTestingValidator:
             "cache_efficiency_target": True,  # >80% cache hit rate
         }
 
-    def _calculate_security_score(self, security_tests: Dict[str, Any]) -> float:
+    def _calculate_security_score(self, security_tests: dict[str, Any]) -> float:
         """Calculate overall security score."""
         passed_tests = sum(
             1 for test in security_tests.values() if test["status"] == "passed"
         )
         return passed_tests / len(security_tests)
 
-    def _calculate_endpoint_coverage(self, api_tests: Dict[str, Any]) -> float:
+    def _calculate_endpoint_coverage(self, api_tests: dict[str, Any]) -> float:
         """Calculate API endpoint test coverage."""
         total_endpoints = sum(
             len(test.get("endpoints_tested", [])) for test in api_tests.values()
         )
         return min(total_endpoints / 15, 1.0)  # Assuming 15 total endpoints
 
-    def _calculate_resilience_score(self, error_tests: Dict[str, Any]) -> float:
+    def _calculate_resilience_score(self, error_tests: dict[str, Any]) -> float:
         """Calculate system resilience score."""
         passed_tests = sum(
             1 for test in error_tests.values() if test["status"] == "passed"
@@ -626,7 +626,7 @@ async def main():
         print(f"\n📊 Overall Status: {results['overall_status'].upper()}")
         print(f"⏰ Validation Time: {results['timestamp']}")
 
-        print(f"\n📋 Phase Results:")
+        print("\n📋 Phase Results:")
         for phase_name, phase_results in results["validation_phases"].items():
             status_emoji = "✅" if phase_results["status"] == "passed" else "❌"
             print(
@@ -634,11 +634,11 @@ async def main():
             )
 
         if results["critical_issues"]:
-            print(f"\n🚨 Critical Issues:")
+            print("\n🚨 Critical Issues:")
             for issue in results["critical_issues"]:
                 print(f"   - {issue}")
 
-        print(f"\n💡 Recommendations:")
+        print("\n💡 Recommendations:")
         for rec in results["recommendations"]:
             print(f"   {rec}")
 

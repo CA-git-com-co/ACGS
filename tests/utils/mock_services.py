@@ -7,7 +7,7 @@ Provides comprehensive mocking for external dependencies and services.
 import json
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 
@@ -44,7 +44,7 @@ class MockServiceManager:
 
         self.call_history[service_name].append(call_record)
 
-    def get_call_history(self, service_name: str) -> List[Dict]:
+    def get_call_history(self, service_name: str) -> list[dict]:
         """Get call history for a service."""
         return self.call_history.get(service_name, [])
 
@@ -64,7 +64,7 @@ mock_manager = MockServiceManager()
 class EnhancedHTTPXMock:
     """Enhanced HTTPX client mock with realistic response simulation."""
 
-    def __init__(self, service_responses: Optional[Dict] = None):
+    def __init__(self, service_responses: dict | None = None):
         self.service_responses = service_responses or {}
         self.call_count = 0
         self.last_request = None
@@ -155,7 +155,7 @@ class EnhancedHTTPXMock:
         else:
             return "default"
 
-    def _get_response_data(self, service: str, endpoint: str, method: str) -> Dict:
+    def _get_response_data(self, service: str, endpoint: str, method: str) -> dict:
         """Get response data for service/endpoint combination."""
         service_responses = self.service_responses.get(service, {})
         endpoint_responses = service_responses.get(endpoint, {})
@@ -172,7 +172,7 @@ class EnhancedHTTPXMock:
         else:
             return self._get_default_response(service, endpoint)
 
-    def _get_default_response(self, service: str, endpoint: str) -> Dict:
+    def _get_default_response(self, service: str, endpoint: str) -> dict:
         """Get default response for unknown service/endpoint."""
         default_responses = {
             "health": {
@@ -196,7 +196,7 @@ class MockLLMService:
         self.embedding_count = 0
         self.call_history = []
 
-    async def generate_text(self, prompt: str, **kwargs) -> Dict[str, Any]:
+    async def generate_text(self, prompt: str, **kwargs) -> dict[str, Any]:
         """Mock text generation."""
         self.generation_count += 1
 
@@ -226,7 +226,7 @@ class MockLLMService:
             "generation_id": f"gen_{self.generation_count}",
         }
 
-    async def generate_embedding(self, text: str) -> List[float]:
+    async def generate_embedding(self, text: str) -> list[float]:
         """Mock embedding generation."""
         self.embedding_count += 1
 
@@ -251,7 +251,7 @@ class MockLLMService:
 
         return embedding
 
-    def get_generation_stats(self) -> Dict[str, int]:
+    def get_generation_stats(self) -> dict[str, int]:
         """Get generation statistics."""
         return {
             "total_generations": self.generation_count,
@@ -305,7 +305,7 @@ class MockZ3Solver:
         self.check_count = 0
         self.current_result_index = 0
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get solver statistics."""
         return {
             "constraints_added": len(self.constraints),
@@ -320,7 +320,7 @@ class MockZ3Solver:
 
 
 @asynccontextmanager
-async def mock_all_services(service_responses: Optional[Dict] = None):
+async def mock_all_services(service_responses: dict | None = None):
     """Context manager to mock all external services."""
 
     # Create enhanced mocks
@@ -436,8 +436,8 @@ async def mock_service_communication():
 
 def create_mock_response(
     status_code: int = 200,
-    json_data: Optional[Dict] = None,
-    headers: Optional[Dict] = None,
+    json_data: dict | None = None,
+    headers: dict | None = None,
 ) -> MagicMock:
     """Create a mock HTTP response."""
     mock_response = MagicMock()
@@ -458,7 +458,7 @@ def assert_service_called(service_name: str, method: str, min_calls: int = 1) ->
     return len(method_calls) >= min_calls
 
 
-def get_service_call_count(service_name: str, method: Optional[str] = None) -> int:
+def get_service_call_count(service_name: str, method: str | None = None) -> int:
     """Get the number of calls made to a service/method."""
     call_history = mock_manager.get_call_history(service_name)
 

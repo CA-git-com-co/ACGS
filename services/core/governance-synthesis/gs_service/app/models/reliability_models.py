@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -8,20 +8,20 @@ class ConstitutionalPrinciple:
 
     id: str
     text: str
-    version: Optional[str] = None
-    source: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    version: str | None = None
+    source: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class SynthesisContext:
     """Context information for policy synthesis."""
 
-    domain: Optional[str] = None
-    jurisdiction: Optional[str] = None
-    target_audience: Optional[str] = None
-    application_scenario: Optional[str] = None
-    historical_data: Optional[List[Dict[str, Any]]] = field(default_factory=list)
-    related_policies: Optional[List[str]] = field(default_factory=list)
-    custom_instructions: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    domain: str | None = None
+    jurisdiction: str | None = None
+    target_audience: str | None = None
+    application_scenario: str | None = None
+    historical_data: list[dict[str, Any]] | None = field(default_factory=list)
+    related_policies: list[str] | None = field(default_factory=list)
+    custom_instructions: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)

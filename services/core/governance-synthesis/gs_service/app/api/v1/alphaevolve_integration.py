@@ -4,14 +4,14 @@ import logging
 import time
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import schemas as gs_schemas
 from app.core.llm_integration import get_llm_client
 from app.services.ac_client import ac_service_client as ac_client
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.shared.database import get_async_db
 
 logger = logging.getLogger(__name__)
@@ -45,7 +45,9 @@ async def ec_constitutional_prompting(
         prompting_id = str(uuid.uuid4())
 
         # Step 1: Retrieve relevant constitutional principles
-        principles = await ac_client.get_principles_by_context(prompting_request.ec_context)
+        principles = await ac_client.get_principles_by_context(
+            prompting_request.ec_context
+        )
         if not principles:
             logger.warning(
                 f"No constitutional principles found for EC context: {prompting_request.ec_context}"
@@ -53,7 +55,9 @@ async def ec_constitutional_prompting(
             principles = []
 
         # Step 2: Analyze current EC population for constitutional compliance
-        population_analysis = _analyze_ec_population(prompting_request.current_population)
+        population_analysis = _analyze_ec_population(
+            prompting_request.current_population
+        )
 
         # Step 3: Build constitutional context for EC
         constitutional_context = await _build_ec_constitutional_context(
@@ -80,7 +84,9 @@ async def ec_constitutional_prompting(
         llm_response = await llm_client.get_constitutional_synthesis(synthesis_input)
 
         # Step 5: Parse LLM response and extract structured guidance
-        structured_guidance = _parse_ec_constitutional_guidance(llm_response.raw_llm_response)
+        structured_guidance = _parse_ec_constitutional_guidance(
+            llm_response.raw_llm_response
+        )
 
         # Step 6: Generate fitness modifications and operator constraints
         fitness_modifications = _generate_fitness_modifications(
@@ -91,7 +97,9 @@ async def ec_constitutional_prompting(
             structured_guidance, prompting_request.constitutional_constraints
         )
 
-        population_filters = _generate_population_filters(structured_guidance, population_analysis)
+        population_filters = _generate_population_filters(
+            structured_guidance, population_analysis
+        )
 
         # Step 7: Prepare response
         response = gs_schemas.ECConstitutionalPromptingOutput(
@@ -153,7 +161,9 @@ async def ec_governance_evaluation(
         start_time = time.time()
 
         # Step 1: Retrieve relevant constitutional principles for context
-        principles = await ac_client.get_principles_by_context(governance_request.context)
+        principles = await ac_client.get_principles_by_context(
+            governance_request.context
+        )
         if not principles:
             logger.warning(
                 f"No constitutional principles found for context: {governance_request.context}"
@@ -165,7 +175,9 @@ async def ec_governance_evaluation(
         total_compliance_score = 0.0
 
         for proposal in governance_request.proposals:
-            decision = await _evaluate_ec_proposal(proposal, principles, governance_request.context)
+            decision = await _evaluate_ec_proposal(
+                proposal, principles, governance_request.context
+            )
             decisions.append(decision)
 
             # Calculate compliance score (1.0 - governance_penalty)
@@ -186,10 +198,14 @@ async def ec_governance_evaluation(
             "denied_proposals": len([d for d in decisions if d.decision == "deny"]),
             "modified_proposals": len([d for d in decisions if d.decision == "modify"]),
             "average_confidence": (
-                sum(d.confidence for d in decisions) / len(decisions) if decisions else 0.0
+                sum(d.confidence for d in decisions) / len(decisions)
+                if decisions
+                else 0.0
             ),
             "average_governance_penalty": (
-                sum(d.governance_penalty for d in decisions) / len(decisions) if decisions else 0.0
+                sum(d.governance_penalty for d in decisions) / len(decisions)
+                if decisions
+                else 0.0
             ),
             "violated_principles_count": len(
                 set().union(*[d.violated_principles for d in decisions])
@@ -233,7 +249,7 @@ async def ec_governance_evaluation(
 # Helper functions
 
 
-def _analyze_ec_population(population: List[gs_schemas.ECProposal]) -> Dict[str, Any]:
+def _analyze_ec_population(population: list[gs_schemas.ECProposal]) -> dict[str, Any]:
     """Analyze EC population for constitutional compliance patterns."""
     analysis = {
         "population_size": len(population),
@@ -253,17 +269,19 @@ def _analyze_ec_population(population: List[gs_schemas.ECProposal]) -> Dict[str,
 
     # Identify potential constitutional issues
     if len(population) > 100:
-        analysis["potential_issues"].append("Large population size may require batch processing")
+        analysis["potential_issues"].append(
+            "Large population size may require batch processing"
+        )
 
     return analysis
 
 
 async def _build_ec_constitutional_context(
     ec_context: str,
-    principles: List[Dict[str, Any]],
+    principles: list[dict[str, Any]],
     optimization_objective: str,
-    constitutional_constraints: List[str],
-) -> Dict[str, Any]:
+    constitutional_constraints: list[str],
+) -> dict[str, Any]:
     """Build constitutional context for EC operations."""
     context = {
         "ec_context": ec_context,
@@ -288,13 +306,13 @@ async def _build_ec_constitutional_context(
 
 def _construct_ec_constitutional_prompt(
     prompting_request: gs_schemas.ECConstitutionalPromptingInput,
-    constitutional_context: Dict[str, Any],
-    population_analysis: Dict[str, Any],
+    constitutional_context: dict[str, Any],
+    population_analysis: dict[str, Any],
 ) -> str:
     """Construct constitutional prompting prompt for EC systems."""
 
     prompt = f"""
-You are a constitutional AI governance advisor for evolutionary computation systems. 
+You are a constitutional AI governance advisor for evolutionary computation systems.
 Your task is to provide constitutional guidance for an EC system operating in the context: {prompting_request.ec_context}
 
 CONSTITUTIONAL CONTEXT:
@@ -327,7 +345,7 @@ Format your response as structured guidance that can be parsed and implemented.
     return prompt
 
 
-def _parse_ec_constitutional_guidance(llm_response: str) -> Dict[str, Any]:
+def _parse_ec_constitutional_guidance(llm_response: str) -> dict[str, Any]:
     """Parse LLM response into structured constitutional guidance."""
     # This is a simplified parser - in production, use more sophisticated parsing
     guidance = {
@@ -359,10 +377,10 @@ def _parse_ec_constitutional_guidance(llm_response: str) -> Dict[str, Any]:
 
 
 def _generate_fitness_modifications(
-    structured_guidance: Dict[str, Any],
+    structured_guidance: dict[str, Any],
     optimization_objective: str,
-    principles: List[Dict[str, Any]],
-) -> Dict[str, Any]:
+    principles: list[dict[str, Any]],
+) -> dict[str, Any]:
     """Generate fitness function modifications based on constitutional guidance."""
     modifications = {
         "penalty_weights": {},
@@ -387,8 +405,8 @@ def _generate_fitness_modifications(
 
 
 def _generate_operator_constraints(
-    structured_guidance: Dict[str, Any], constitutional_constraints: List[str]
-) -> List[str]:
+    structured_guidance: dict[str, Any], constitutional_constraints: list[str]
+) -> list[str]:
     """Generate operator constraints for EC system."""
     constraints = []
 
@@ -411,8 +429,8 @@ def _generate_operator_constraints(
 
 
 def _generate_population_filters(
-    structured_guidance: Dict[str, Any], population_analysis: Dict[str, Any]
-) -> List[str]:
+    structured_guidance: dict[str, Any], population_analysis: dict[str, Any]
+) -> list[str]:
     """Generate population filtering rules."""
     filters = []
 
@@ -438,7 +456,7 @@ def _generate_population_filters(
 
 
 async def _evaluate_ec_proposal(
-    proposal: gs_schemas.ECProposal, principles: List[Dict[str, Any]], context: str
+    proposal: gs_schemas.ECProposal, principles: list[dict[str, Any]], context: str
 ) -> gs_schemas.ECGovernanceDecision:
     """Evaluate a single EC proposal for constitutional compliance."""
 
@@ -447,7 +465,9 @@ async def _evaluate_ec_proposal(
     confidence = 0.8
     violated_principles = []
     governance_penalty = 0.0
-    explanation = f"Proposal {proposal.proposal_id} evaluated for constitutional compliance"
+    explanation = (
+        f"Proposal {proposal.proposal_id} evaluated for constitutional compliance"
+    )
     enforcement_actions = []
 
     # Check for potential constitutional violations
@@ -463,9 +483,7 @@ async def _evaluate_ec_proposal(
                 violated_principles.append(str(principle.get("id", "unknown")))
                 governance_penalty += 0.3
                 decision = "deny"
-                explanation += (
-                    f". Safety violation detected in principle {principle.get('name', 'unknown')}"
-                )
+                explanation += f". Safety violation detected in principle {principle.get('name', 'unknown')}"
 
     # Adjust confidence based on violations
     if violated_principles:
@@ -490,10 +508,10 @@ async def _evaluate_ec_proposal(
 
 
 def _generate_ec_recommendations(
-    decisions: List[gs_schemas.ECGovernanceDecision],
-    batch_summary: Dict[str, Any],
+    decisions: list[gs_schemas.ECGovernanceDecision],
+    batch_summary: dict[str, Any],
     context: str,
-) -> List[str]:
+) -> list[str]:
     """Generate recommendations for EC system based on governance evaluation."""
     recommendations = []
 
@@ -502,10 +520,14 @@ def _generate_ec_recommendations(
     avg_penalty = batch_summary["average_governance_penalty"]
 
     if denied_rate > 0.3:
-        recommendations.append("High denial rate detected - consider adjusting EC operators")
+        recommendations.append(
+            "High denial rate detected - consider adjusting EC operators"
+        )
 
     if avg_penalty > 0.2:
-        recommendations.append("High governance penalties - review constitutional compliance")
+        recommendations.append(
+            "High governance penalties - review constitutional compliance"
+        )
 
     if batch_summary["violated_principles_count"] > 5:
         recommendations.append(

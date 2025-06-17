@@ -79,7 +79,7 @@ async def test_connectivity_from_gs_perspective():
             # Additional debugging
             import traceback
 
-            print(f"❌ Full traceback:")
+            print("❌ Full traceback:")
             traceback.print_exc()
 
 
@@ -194,7 +194,7 @@ async def simulate_gs_health_check():
             "GS Service is operational with all dependencies healthy."
         )
 
-    print(f"\n📊 Simulated Health Status:")
+    print("\n📊 Simulated Health Status:")
     import json
 
     print(json.dumps(health_status, indent=2))

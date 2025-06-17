@@ -8,13 +8,17 @@ class InputValidator:
     """Secure input validation utilities."""
 
     @staticmethod
-    def validate_string(value: str, max_length: int = 1000, allow_html: bool = False) -> str:
+    def validate_string(
+        value: str, max_length: int = 1000, allow_html: bool = False
+    ) -> str:
         """Validate and sanitize string input."""
         if not isinstance(value, str):
             raise HTTPException(status_code=400, detail="Invalid input type")
 
         if len(value) > max_length:
-            raise HTTPException(status_code=400, detail=f"Input too long (max {max_length})")
+            raise HTTPException(
+                status_code=400, detail=f"Input too long (max {max_length})"
+            )
 
         if not allow_html:
             # Remove potential HTML/script tags

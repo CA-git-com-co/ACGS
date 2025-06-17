@@ -14,7 +14,7 @@ Classes:
 
 import re  # For pattern matching
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
@@ -46,7 +46,7 @@ class SafetyAssertion:
         assertion_id: str,
         description: str,
         assertion_type: str,  # "pattern_match", "simulation_check", "formal_property"
-        configuration: Dict[str, Any],
+        configuration: dict[str, Any],
         severity: str = "medium",
     ):
         self.assertion_id = assertion_id
@@ -109,9 +109,9 @@ class SafetyValidator(ABC):
         self,
         policy_code: str,
         policy_id: str,
-        assertions: List[SafetyAssertion],
+        assertions: list[SafetyAssertion],
         policy_language: str = "rego",
-    ) -> List[Tuple[str, bool, str]]:  # assertion_id, passed, message
+    ) -> list[tuple[str, bool, str]]:  # assertion_id, passed, message
         """
         Validates a given policy against a set of safety assertions.
 
@@ -139,7 +139,7 @@ class PatternBasedSafetyValidator(SafetyValidator):
 
     def _check_pattern(
         self, policy_code: str, assertion: SafetyAssertion
-    ) -> Tuple[bool, str]:
+    ) -> tuple[bool, str]:
         """Checks a single pattern-based safety assertion."""
         if assertion.type != "pattern_match":
             return (
@@ -191,10 +191,10 @@ class PatternBasedSafetyValidator(SafetyValidator):
         self,
         policy_code: str,
         policy_id: str,
-        assertions: List[SafetyAssertion],
+        assertions: list[SafetyAssertion],
         policy_language: str = "rego",  # Language might influence patterns
-    ) -> List[Tuple[str, bool, str]]:
-        results: List[Tuple[str, bool, str]] = []
+    ) -> list[tuple[str, bool, str]]:
+        results: list[tuple[str, bool, str]] = []
 
         logger.info(
             f"Starting pattern-based safety validation for policy '{policy_id}' with {len(assertions)} assertions."
@@ -236,7 +236,7 @@ class SimulationBasedSafetyValidator(SafetyValidator):
 
     def _run_simulation(
         self, policy_code: str, assertion: SafetyAssertion, policy_id: str
-    ) -> Tuple[bool, str]:
+    ) -> tuple[bool, str]:
         """
         (Mock) Runs a single simulation-based safety check.
         A real implementation would use OPA or another engine.
@@ -278,10 +278,10 @@ class SimulationBasedSafetyValidator(SafetyValidator):
         self,
         policy_code: str,
         policy_id: str,
-        assertions: List[SafetyAssertion],
+        assertions: list[SafetyAssertion],
         policy_language: str = "rego",
-    ) -> List[Tuple[str, bool, str]]:
-        results: List[Tuple[str, bool, str]] = []
+    ) -> list[tuple[str, bool, str]]:
+        results: list[tuple[str, bool, str]] = []
         logger.info(
             f"Starting simulation-based safety validation for policy '{policy_id}' with {len(assertions)} assertions."
         )

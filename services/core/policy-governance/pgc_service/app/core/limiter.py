@@ -25,4 +25,6 @@ def get_pgc_request_identifier(request: Request) -> str:
     return f"ip:{remote_addr}"
 
 
-limiter = Limiter(key_func=get_pgc_request_identifier, default_limits=["100 per minute"])
+limiter = Limiter(
+    key_func=get_pgc_request_identifier, default_limits=["100 per minute"]
+)

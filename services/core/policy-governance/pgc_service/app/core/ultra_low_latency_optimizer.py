@@ -23,9 +23,9 @@ import uuid
 from collections import OrderedDict, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 from prometheus_client import Counter, Gauge, Histogram
@@ -88,8 +88,8 @@ class OptimizationResult:
     latency_ms: float
     cache_hit: bool
     optimization_level: OptimizationLevel
-    breakdown: Dict[str, float]  # Latency breakdown by component
-    recommendations: List[str]
+    breakdown: dict[str, float]  # Latency breakdown by component
+    recommendations: list[str]
     timestamp: datetime
 
 
@@ -104,12 +104,12 @@ class SpeculativeExecutor:
         # sha256: func_hash
         self.max_concurrent = max_concurrent
         self.executor = ThreadPoolExecutor(max_workers=max_concurrent)
-        self.speculative_cache: Dict[str, Any] = {}
+        self.speculative_cache: dict[str, Any] = {}
         self.prediction_accuracy = 0.8  # Track prediction accuracy
 
     async def speculative_execute(
-        self, policy_context: Dict[str, Any], prediction_confidence: float = 0.7
-    ) -> Optional[Any]:
+        self, policy_context: dict[str, Any], prediction_confidence: float = 0.7
+    ) -> Any | None:
         """
         Execute policy decision speculatively based on context prediction.
 
@@ -141,7 +141,7 @@ class SpeculativeExecutor:
             logger.debug(f"Speculative execution failed: {e}")
             return None
 
-    def _generate_context_key(self, context: Dict[str, Any]) -> str:
+    def _generate_context_key(self, context: dict[str, Any]) -> str:
         """Generate cache key from policy context."""
         # Simplified key generation
         key_parts = [
@@ -152,7 +152,7 @@ class SpeculativeExecutor:
         ]
         return ":".join(key_parts)
 
-    def _execute_policy_decision(self, context: Dict[str, Any]) -> Any:
+    def _execute_policy_decision(self, context: dict[str, Any]) -> Any:
         """Execute actual policy decision (placeholder)."""
         # This would call the actual policy engine
         time.sleep(0.01)  # Simulate processing
@@ -170,7 +170,7 @@ class FragmentLevelCache:
         # sha256: func_hash
         self.max_fragments = max_fragments
         self.fragment_cache: OrderedDict = OrderedDict()
-        self.fragment_stats: Dict[str, int] = defaultdict(int)
+        self.fragment_stats: dict[str, int] = defaultdict(int)
         self.lock = threading.RLock()
 
     def cache_fragment(self, fragment_id: str, fragment_result: Any, ttl: int = 300):
@@ -195,7 +195,7 @@ class FragmentLevelCache:
             # Move to end (most recent)
             self.fragment_cache.move_to_end(fragment_id)
 
-    def get_fragment(self, fragment_id: str) -> Optional[Any]:
+    def get_fragment(self, fragment_id: str) -> Any | None:
         """Get cached fragment result."""
         with self.lock:
             if fragment_id not in self.fragment_cache:
@@ -217,7 +217,7 @@ class FragmentLevelCache:
 
             return entry["result"]
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get fragment cache statistics."""
         with self.lock:
             total_fragments = len(self.fragment_cache)
@@ -258,8 +258,8 @@ class UltraLowLatencyOptimizer:
         self.fragment_cache = FragmentLevelCache()
 
         # Performance tracking
-        self.latency_history: List[float] = []
-        self.optimization_results: List[OptimizationResult] = []
+        self.latency_history: list[float] = []
+        self.optimization_results: list[OptimizationResult] = []
 
         # Prometheus metrics
         self.latency_histogram = Histogram(
@@ -270,11 +270,13 @@ class UltraLowLatencyOptimizer:
         self.cache_hit_counter = Counter(
             "pgc_cache_hits_total", "Total cache hits", ["cache_level"]
         )
-        self.throughput_gauge = Gauge("pgc_throughput_rps", "Requests per second throughput")
+        self.throughput_gauge = Gauge(
+            "pgc_throughput_rps", "Requests per second throughput"
+        )
 
     async def optimize_policy_decision(
         self,
-        policy_request: Dict[str, Any],
+        policy_request: dict[str, Any],
         optimization_level: OptimizationLevel = OptimizationLevel.ENHANCED,
     ) -> OptimizationResult:
         """
@@ -352,7 +354,7 @@ class UltraLowLatencyOptimizer:
                 optimization_level=optimization_level,
                 breakdown=breakdown,
                 recommendations=recommendations,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
 
             self.optimization_results.append(result)
@@ -361,7 +363,7 @@ class UltraLowLatencyOptimizer:
 
             # Log performance
             logger.debug(
-                f"Policy decision optimized",
+                "Policy decision optimized",
                 operation_id=operation_id,
                 latency_ms=total_latency,
                 cache_hit=cache_hit,
@@ -381,21 +383,21 @@ class UltraLowLatencyOptimizer:
                 optimization_level=optimization_level,
                 breakdown={"error": error_latency},
                 recommendations=["Investigate error cause", "Check system health"],
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
 
-    async def _check_cache_hierarchy(self, request: Dict[str, Any]) -> Optional[Any]:
+    async def _check_cache_hierarchy(self, request: dict[str, Any]) -> Any | None:
         """Check multi-tier cache hierarchy."""
         cache_key = self._generate_cache_key(request)
         return await self.multi_tier_cache.get(cache_key)
 
-    async def _check_fragment_cache(self, request: Dict[str, Any]) -> Optional[Any]:
+    async def _check_fragment_cache(self, request: dict[str, Any]) -> Any | None:
         """Check fragment-level cache."""
         fragment_id = self._generate_fragment_id(request)
         return self.fragment_cache.get_fragment(fragment_id)
 
     async def _optimized_policy_evaluation(
-        self, request: Dict[str, Any], optimization_level: OptimizationLevel
+        self, request: dict[str, Any], optimization_level: OptimizationLevel
     ) -> Any:
         """Perform optimized policy evaluation."""
         # Simulate optimized policy evaluation
@@ -415,7 +417,7 @@ class UltraLowLatencyOptimizer:
             "optimization_level": optimization_level.value,
         }
 
-    async def _cache_result(self, request: Dict[str, Any], result: Any):
+    async def _cache_result(self, request: dict[str, Any], result: Any):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -429,7 +431,7 @@ class UltraLowLatencyOptimizer:
         # Cache in fragment cache
         self.fragment_cache.cache_fragment(fragment_id, result)
 
-    def _generate_cache_key(self, request: Dict[str, Any]) -> str:
+    def _generate_cache_key(self, request: dict[str, Any]) -> str:
         """Generate cache key for request."""
         key_parts = [
             request.get("user_id", ""),
@@ -439,13 +441,13 @@ class UltraLowLatencyOptimizer:
         ]
         return ":".join(key_parts)
 
-    def _generate_fragment_id(self, request: Dict[str, Any]) -> str:
+    def _generate_fragment_id(self, request: dict[str, Any]) -> str:
         """Generate fragment ID for request."""
         return f"fragment:{hash(json.dumps(request, sort_keys=True))}"
 
     def _generate_optimization_recommendations(
-        self, breakdown: Dict[str, float], level: OptimizationLevel
-    ) -> List[str]:
+        self, breakdown: dict[str, float], level: OptimizationLevel
+    ) -> list[str]:
         """Generate optimization recommendations based on latency breakdown."""
         recommendations = []
 
@@ -456,7 +458,9 @@ class UltraLowLatencyOptimizer:
             recommendations.append("Optimize cache lookup - consider in-memory caching")
 
         if eval_time > 20:
-            recommendations.append("Optimize policy evaluation - consider rule simplification")
+            recommendations.append(
+                "Optimize policy evaluation - consider rule simplification"
+            )
             recommendations.append("Enable fragment-level caching for complex policies")
 
         if level == OptimizationLevel.STANDARD:
@@ -477,13 +481,17 @@ class UltraLowLatencyOptimizer:
         p99_latency = np.percentile(recent_latencies, 99)
 
         # Calculate cache hit rate
-        recent_results = self.optimization_results[-100:] if self.optimization_results else []
+        recent_results = (
+            self.optimization_results[-100:] if self.optimization_results else []
+        )
         cache_hits = sum(1 for r in recent_results if r.cache_hit)
         cache_hit_rate = cache_hits / len(recent_results) if recent_results else 0.0
 
         # Calculate throughput (simplified)
         if len(recent_results) >= 2:
-            time_span = (recent_results[-1].timestamp - recent_results[0].timestamp).total_seconds()
+            time_span = (
+                recent_results[-1].timestamp - recent_results[0].timestamp
+            ).total_seconds()
             throughput_rps = len(recent_results) / time_span if time_span > 0 else 0.0
         else:
             throughput_rps = 0.0
@@ -503,7 +511,7 @@ class UltraLowLatencyOptimizer:
             cpu_usage_percent=0.0,  # Would be calculated from system metrics
         )
 
-    def get_optimization_report(self) -> Dict[str, Any]:
+    def get_optimization_report(self) -> dict[str, Any]:
         """Get comprehensive optimization report."""
         metrics = self.get_performance_metrics()
         fragment_stats = self.fragment_cache.get_cache_stats()
@@ -517,14 +525,18 @@ class UltraLowLatencyOptimizer:
         }
 
         # Recent optimization trends
-        recent_results = self.optimization_results[-50:] if self.optimization_results else []
+        recent_results = (
+            self.optimization_results[-50:] if self.optimization_results else []
+        )
         optimization_trends = {}
 
         if recent_results:
             # Group by optimization level
             level_performance = defaultdict(list)
             for result in recent_results:
-                level_performance[result.optimization_level.value].append(result.latency_ms)
+                level_performance[result.optimization_level.value].append(
+                    result.latency_ms
+                )
 
             for level, latencies in level_performance.items():
                 optimization_trends[level] = {
@@ -545,7 +557,9 @@ class UltraLowLatencyOptimizer:
                 f"Cache hit rate ({metrics.cache_hit_rate:.1%}) below 80% target"
             )
         if metrics.error_rate > 0.01:
-            recommendations.append(f"Error rate ({metrics.error_rate:.1%}) above 1% threshold")
+            recommendations.append(
+                f"Error rate ({metrics.error_rate:.1%}) above 1% threshold"
+            )
 
         return {
             "performance_metrics": {
@@ -562,10 +576,10 @@ class UltraLowLatencyOptimizer:
             "recommendations": recommendations,
             "latency_target": self.target_latency,
             "total_optimizations": len(self.optimization_results),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    async def adaptive_optimization(self) -> Dict[str, Any]:
+    async def adaptive_optimization(self) -> dict[str, Any]:
         """
         Perform adaptive optimization based on current performance.
 
@@ -592,7 +606,9 @@ class UltraLowLatencyOptimizer:
         # Fragment cache optimization
         fragment_stats = self.fragment_cache.get_cache_stats()
         if fragment_stats["cache_utilization"] > 0.9:
-            adjustments.append("Fragment cache near capacity - consider increasing size")
+            adjustments.append(
+                "Fragment cache near capacity - consider increasing size"
+            )
 
         # Speculative execution tuning
         if metrics.cache_hit_rate < 0.7:
@@ -605,11 +621,13 @@ class UltraLowLatencyOptimizer:
                 "target_achievement": metrics.avg_latency <= self.target_latency,
             },
             "adjustments_made": adjustments,
-            "next_review": (datetime.now(timezone.utc) + timedelta(minutes=15)).isoformat(),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "next_review": (
+                datetime.now(UTC) + timedelta(minutes=15)
+            ).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    async def benchmark_performance(self, num_requests: int = 100) -> Dict[str, Any]:
+    async def benchmark_performance(self, num_requests: int = 100) -> dict[str, Any]:
         """
         Run performance benchmark with specified number of requests.
 
@@ -641,7 +659,9 @@ class UltraLowLatencyOptimizer:
         # Execute benchmark
         for i, request in enumerate(test_requests):
             try:
-                result = await self.optimize_policy_decision(request, OptimizationLevel.ENHANCED)
+                result = await self.optimize_policy_decision(
+                    request, OptimizationLevel.ENHANCED
+                )
 
                 latencies.append(result.latency_ms)
                 if result.cache_hit:
@@ -672,7 +692,11 @@ class UltraLowLatencyOptimizer:
         performance_grade = (
             "A"
             if target_met and cache_hit_rate > 0.8
-            else ("B" if target_met else "C" if avg_latency <= self.target_latency * 1.5 else "D")
+            else (
+                "B"
+                if target_met
+                else "C" if avg_latency <= self.target_latency * 1.5 else "D"
+            )
         )
 
         benchmark_results = {
@@ -704,11 +728,11 @@ class UltraLowLatencyOptimizer:
                     else "Good" if cache_hit_rate > 0.7 else "Needs Improvement"
                 ),
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         logger.info(
-            f"Benchmark completed",
+            "Benchmark completed",
             avg_latency=avg_latency,
             target_met=target_met,
             cache_hit_rate=cache_hit_rate,
@@ -719,7 +743,7 @@ class UltraLowLatencyOptimizer:
 
 
 # Global instance
-_ultra_low_latency_optimizer: Optional[UltraLowLatencyOptimizer] = None
+_ultra_low_latency_optimizer: UltraLowLatencyOptimizer | None = None
 
 
 def get_ultra_low_latency_optimizer() -> UltraLowLatencyOptimizer:

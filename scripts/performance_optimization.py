@@ -8,9 +8,9 @@ and Redis caching to achieve <0.01 SOL costs and <2s response times.
 import json
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import redis
 
@@ -25,8 +25,8 @@ class PerformanceOptimizer:
     def __init__(self):
         self.project_root = Path(__file__).parent.parent
         self.optimization_results = {
-            "execution_id": f"performance_opt_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
-            "start_time": datetime.now(timezone.utc).isoformat(),
+            "execution_id": f"performance_opt_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}",
+            "start_time": datetime.now(UTC).isoformat(),
             "optimizations": {},
             "performance_metrics": {
                 "transaction_cost_sol": {
@@ -48,7 +48,7 @@ class PerformanceOptimizer:
             },
         }
 
-    async def run_all_optimizations(self) -> Dict[str, Any]:
+    async def run_all_optimizations(self) -> dict[str, Any]:
         """Run all performance optimizations with comprehensive validation."""
         logger.info("⚡ Starting Performance Optimization")
 
@@ -73,7 +73,7 @@ class PerformanceOptimizer:
                     "status": "SUCCESS" if opt_result["success"] else "FAILED",
                     "duration_seconds": opt_duration,
                     "details": opt_result,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
 
                 if opt_result["success"]:
@@ -89,14 +89,14 @@ class PerformanceOptimizer:
                     "status": "CRASHED",
                     "duration_seconds": time.time() - opt_start,
                     "error": str(e),
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
 
         # Run performance benchmarks
         await self.run_performance_benchmarks()
 
         # Save optimization results
-        self.optimization_results["end_time"] = datetime.now(timezone.utc).isoformat()
+        self.optimization_results["end_time"] = datetime.now(UTC).isoformat()
         report_path = (
             self.project_root
             / f"reports/performance_optimization_report_{self.optimization_results['execution_id']}.json"
@@ -110,7 +110,7 @@ class PerformanceOptimizer:
         )
         return self.optimization_results
 
-    async def implement_transaction_batching(self) -> Dict[str, Any]:
+    async def implement_transaction_batching(self) -> dict[str, Any]:
         """Implement transaction batching for Solana operations."""
         results = {"success": True, "features_implemented": [], "cost_reduction": 0.0}
 
@@ -163,13 +163,13 @@ impl<'info> BatchedGovernanceAction<'info> {
     ) -> Result<()> {
         // Validate batch size
         require!(actions.len() <= 10, ErrorCode::BatchTooLarge);
-        
+
         // Execute actions in batch with cost optimization
         for action in actions {
             // Process each action with shared context
             Self::process_action(&ctx, action)?;
         }
-        
+
         Ok(())
     }
 }
@@ -197,7 +197,7 @@ impl<'info> BatchedGovernanceAction<'info> {
 
         return results
 
-    async def optimize_formal_verification(self) -> Dict[str, Any]:
+    async def optimize_formal_verification(self) -> dict[str, Any]:
         """Optimize formal verification pipeline with caching and parallelization."""
         results = {"success": True, "optimizations": [], "performance_gain": 0.0}
 
@@ -248,18 +248,18 @@ class VerificationCache:
     def __init__(self, redis_url: str = "redis://localhost:6379/1"):
         self.redis_client = redis.from_url(redis_url)
         self.cache_prefix = "z3_verification:"
-    
+
     def get_cache_key(self, constraints: str, context: Dict[str, Any]) -> str:
         content = f"{constraints}:{json.dumps(context, sort_keys=True)}"
         return self.cache_prefix + hashlib.sha256(content.encode()).hexdigest()
-    
+
     async def get_cached_result(self, constraints: str, context: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         cache_key = self.get_cache_key(constraints, context)
         cached = self.redis_client.get(cache_key)
         if cached:
             return json.loads(cached)
         return None
-    
+
     async def cache_result(self, constraints: str, context: Dict[str, Any], result: Dict[str, Any], ttl: int = 3600):
         cache_key = self.get_cache_key(constraints, context)
         self.redis_client.setex(cache_key, ttl, json.dumps(result))
@@ -286,7 +286,7 @@ class VerificationCache:
 
         return results
 
-    async def implement_redis_caching(self) -> Dict[str, Any]:
+    async def implement_redis_caching(self) -> dict[str, Any]:
         """Implement comprehensive Redis caching for performance optimization."""
         results = {"success": True, "cache_layers": [], "hit_rate_target": 0.90}
 

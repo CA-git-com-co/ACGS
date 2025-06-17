@@ -98,7 +98,7 @@ ACGS-1 Phase A2 has been successfully completed with significant security improv
    - **Fix**: Replaced `hashlib.md5()` with `hashlib.sha256()`
    - **Impact**: Secure request tracking
 
-5. **`integrations/alphaevolve-engine/alphaevolve_gs_engine/src/alphaevolve_gs_engine/services/crypto_service.py`**
+5. **`integrations/alphaevolve-engine/integrations/alphaevolve-engine/integrations/alphaevolve-engine/services/crypto_service.py`**
    - **Issue**: MD5 algorithm support in crypto service
    - **Fix**: Replaced MD5 fallback with SHA-256, updated examples
    - **Impact**: Eliminated weak cryptography options

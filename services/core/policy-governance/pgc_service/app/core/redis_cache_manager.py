@@ -18,16 +18,14 @@ Enterprise Features:
 - Performance monitoring and metrics
 """
 
-import asyncio
 import hashlib
 import hmac
 import json
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 
 import redis.asyncio as redis
 from prometheus_client import Counter, Gauge, Histogram
@@ -62,7 +60,7 @@ class CacheEntry:
     timestamp: float
     ttl: int
     hmac_signature: str
-    constitutional_hash: Optional[str] = None
+    constitutional_hash: str | None = None
     access_count: int = 0
     last_access: float = 0.0
 
@@ -105,11 +103,11 @@ class RedisCacheManager:
         self.max_memory_cache_size = max_memory_cache_size
 
         # Redis client
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
 
         # L1 Memory cache
-        self.memory_cache: Dict[str, CacheEntry] = {}
-        self.memory_cache_order: List[str] = []  # LRU tracking
+        self.memory_cache: dict[str, CacheEntry] = {}
+        self.memory_cache_order: list[str] = []  # LRU tracking
 
         # Circuit breaker for Redis failures
         self.circuit_breaker_failures = 0
@@ -131,14 +129,20 @@ class RedisCacheManager:
         }
 
         # Prometheus metrics
-        self.cache_hit_counter = Counter("pgc_cache_hits_total", "Total cache hits", ["level"])
-        self.cache_miss_counter = Counter("pgc_cache_misses_total", "Total cache misses")
+        self.cache_hit_counter = Counter(
+            "pgc_cache_hits_total", "Total cache hits", ["level"]
+        )
+        self.cache_miss_counter = Counter(
+            "pgc_cache_misses_total", "Total cache misses"
+        )
         self.cache_lookup_histogram = Histogram(
             "pgc_cache_lookup_duration_seconds",
             "Cache lookup duration in seconds",
             buckets=[0.001, 0.002, 0.005, 0.01, 0.025, 0.05, 0.1],
         )
-        self.cache_size_gauge = Gauge("pgc_cache_entries_total", "Total cache entries", ["level"])
+        self.cache_size_gauge = Gauge(
+            "pgc_cache_entries_total", "Total cache entries", ["level"]
+        )
 
     async def initialize(self) -> None:
         """Initialize Redis connection and validate configuration."""
@@ -173,7 +177,7 @@ class RedisCacheManager:
             self.redis_client = None
             raise
 
-    async def get(self, key: str, verify_constitutional: bool = True) -> Optional[Any]:
+    async def get(self, key: str, verify_constitutional: bool = True) -> Any | None:
         """
         Get value from cache with integrity verification.
 
@@ -251,9 +255,13 @@ class RedisCacheManager:
         try:
             # Validate constitutional compliance before caching
             if constitutional_validation:
-                compliance_valid = await self.validate_constitutional_compliance(key, value)
+                compliance_valid = await self.validate_constitutional_compliance(
+                    key, value
+                )
                 if not compliance_valid:
-                    logger.warning(f"Constitutional compliance validation failed for key: {key}")
+                    logger.warning(
+                        f"Constitutional compliance validation failed for key: {key}"
+                    )
                     return False
 
             # Create cache entry with integrity signature
@@ -263,7 +271,9 @@ class RedisCacheManager:
                 timestamp=time.time(),
                 ttl=ttl,
                 hmac_signature=self._generate_hmac(key, value),
-                constitutional_hash=self.constitutional_hash if constitutional_validation else None,
+                constitutional_hash=(
+                    self.constitutional_hash if constitutional_validation else None
+                ),
             )
 
             # Add to L1 memory cache
@@ -292,7 +302,9 @@ class RedisCacheManager:
         # sha256: hmac_generation_v1.0
 
         data = f"{key}:{json.dumps(value, sort_keys=True)}"
-        signature = hmac.new(self.hmac_secret, data.encode(), hashlib.sha256).hexdigest()
+        signature = hmac.new(
+            self.hmac_secret, data.encode(), hashlib.sha256
+        ).hexdigest()
         return signature
 
     def _verify_integrity(self, entry: CacheEntry) -> bool:
@@ -350,7 +362,7 @@ class RedisCacheManager:
             }
         )
 
-    def _deserialize_cache_entry(self, data: str) -> Optional[CacheEntry]:
+    def _deserialize_cache_entry(self, data: str) -> CacheEntry | None:
         """Deserialize cache entry from Redis storage."""
         try:
             entry_data = json.loads(data)
@@ -367,7 +379,10 @@ class RedisCacheManager:
     def _is_circuit_breaker_open(self) -> bool:
         """Check if circuit breaker is open (Redis unavailable)."""
         if self.circuit_breaker_failures >= self.circuit_breaker_threshold:
-            if time.time() - self.circuit_breaker_last_failure > self.circuit_breaker_reset_time:
+            if (
+                time.time() - self.circuit_breaker_last_failure
+                > self.circuit_breaker_reset_time
+            ):
                 # Reset circuit breaker
                 self.circuit_breaker_failures = 0
                 return False
@@ -413,7 +428,9 @@ class RedisCacheManager:
         invalidated_count = 0
 
         # Invalidate from L1 memory cache
-        keys_to_remove = [k for k in self.memory_cache.keys() if self._matches_pattern(k, pattern)]
+        keys_to_remove = [
+            k for k in self.memory_cache.keys() if self._matches_pattern(k, pattern)
+        ]
         for key in keys_to_remove:
             self._remove_from_memory_cache(key)
             invalidated_count += 1
@@ -503,7 +520,9 @@ class RedisCacheManager:
                 mapping={
                     "hash": self.constitutional_hash,
                     "last_validated": str(time.time()),
-                    "validation_count": str(self.metrics.get("constitutional_validations", 0) + 1),
+                    "validation_count": str(
+                        self.metrics.get("constitutional_validations", 0) + 1
+                    ),
                     "service": "pgc_service",
                 },
             )
@@ -523,7 +542,9 @@ class RedisCacheManager:
         try:
             # Set up constitutional hash expiration monitoring
             await self.redis_client.set(
-                "constitutional_hash_monitor", "active", ex=3600  # 1 hour monitoring interval
+                "constitutional_hash_monitor",
+                "active",
+                ex=3600,  # 1 hour monitoring interval
             )
 
             # Initialize constitutional compliance metrics
@@ -581,7 +602,8 @@ class RedisCacheManager:
         try:
             # Check if this is constitutional data
             if not any(
-                keyword in key.lower() for keyword in ["policy", "compliance", "constitutional"]
+                keyword in key.lower()
+                for keyword in ["policy", "compliance", "constitutional"]
             ):
                 return True  # Non-constitutional data doesn't need validation
 
@@ -598,10 +620,12 @@ class RedisCacheManager:
             return True
 
         except Exception as e:
-            logger.error(f"Constitutional compliance validation failed for key {key}: {e}")
+            logger.error(
+                f"Constitutional compliance validation failed for key {key}: {e}"
+            )
             return False
 
-    async def get_constitutional_state(self) -> Dict[str, Any]:
+    async def get_constitutional_state(self) -> dict[str, Any]:
         """Get current constitutional state and metrics."""
         try:
             # Get constitutional metadata
@@ -615,7 +639,9 @@ class RedisCacheManager:
                 "metadata": metadata,
                 "compliance_metrics": compliance_metrics,
                 "cache_metrics": {
-                    "constitutional_validations": self.metrics.get("constitutional_validations", 0),
+                    "constitutional_validations": self.metrics.get(
+                        "constitutional_validations", 0
+                    ),
                     "constitutional_hash_mismatches": self.metrics.get(
                         "constitutional_hash_mismatches", 0
                     ),
@@ -639,7 +665,7 @@ class RedisCacheManager:
 
 
 # Global cache manager instance
-_cache_manager: Optional[RedisCacheManager] = None
+_cache_manager: RedisCacheManager | None = None
 
 
 async def get_cache_manager() -> RedisCacheManager:

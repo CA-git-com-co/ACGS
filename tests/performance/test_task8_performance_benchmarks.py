@@ -20,7 +20,7 @@ import statistics
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
@@ -43,7 +43,7 @@ class Task8PerformanceBenchmark:
     """Performance benchmark suite for Task 8 incremental compilation."""
 
     def __init__(self):
-        self.results: List[Dict[str, Any]] = []
+        self.results: list[dict[str, Any]] = []
         self.compiler = None
 
     async def setup(self):
@@ -60,7 +60,7 @@ class Task8PerformanceBenchmark:
             raise
 
     def log_benchmark_result(
-        self, test_name: str, metrics: Dict[str, Any], meets_targets: bool
+        self, test_name: str, metrics: dict[str, Any], meets_targets: bool
     ):
         """Log benchmark result with detailed metrics."""
         result = {
@@ -80,7 +80,7 @@ class Task8PerformanceBenchmark:
             else:
                 print(f"   📊 {key}: {value}")
 
-    def create_test_policies(self, count: int) -> List:
+    def create_test_policies(self, count: int) -> list:
         """Create test policies for benchmarking."""
         from services.core.policy_governance.app.services.integrity_client import (
             IntegrityPolicyRule,
@@ -183,7 +183,7 @@ class Task8PerformanceBenchmark:
             runs = 5
             throughput_measurements = []
 
-            for run in range(runs):
+            for _run in range(runs):
                 start_time = time.time()
                 await self.compiler.compile_policies(
                     policies[:20], force_full=False
@@ -227,7 +227,7 @@ class Task8PerformanceBenchmark:
             # Clear cache and compile policies multiple times
             cache_measurements = []
 
-            for iteration in range(10):
+            for _iteration in range(10):
                 # First compilation (cache miss)
                 start_time = time.time()
                 await self.compiler.compile_policies(policies, force_full=True)

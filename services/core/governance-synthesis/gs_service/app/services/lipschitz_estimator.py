@@ -14,7 +14,7 @@ import logging
 # Use built-in math instead of external dependencies
 import math
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 # Import schemas with fallback
 try:
@@ -57,7 +57,9 @@ class LipschitzEstimationConfig:
     empirical_adjustment_factor: float = 1.2  # Safety factor for empirical estimates
     bounded_evolution_enabled: bool = True  # Enable bounded evolution constraints
     lipschitz_validation_threshold: float = 0.8  # Threshold for Lipschitz validation
-    discrepancy_resolution_mode: str = "conservative"  # "conservative", "adaptive", "theoretical"
+    discrepancy_resolution_mode: str = (
+        "conservative"  # "conservative", "adaptive", "theoretical"
+    )
 
 
 @dataclass
@@ -66,13 +68,13 @@ class LipschitzEstimationResult:
 
     component_name: str
     estimated_constant: float
-    confidence_interval: Tuple[float, float]
+    confidence_interval: tuple[float, float]
     num_samples: int
     max_ratio: float
     mean_ratio: float
     std_ratio: float
     methodology: str
-    raw_ratios: List[float]
+    raw_ratios: list[float]
     # AlphaEvolve-ACGS Integration System improvements
     theoretical_bound: float = 0.593
     empirical_bound: float = 0.0
@@ -87,8 +89,8 @@ class MetricSpaceValidator:
 
     @staticmethod
     def validate_triangle_inequality(
-        distance_func, points: List[Any], tolerance: float = 1e-6
-    ) -> Dict[str, Any]:
+        distance_func, points: list[Any], tolerance: float = 1e-6
+    ) -> dict[str, Any]:
         """Test triangle inequality: d(x,z) ≤ d(x,y) + d(y,z)"""
         violations = 0
         total_tests = 0
@@ -119,8 +121,8 @@ class MetricSpaceValidator:
 
     @staticmethod
     def validate_symmetry(
-        distance_func, points: List[Any], tolerance: float = 1e-6
-    ) -> Dict[str, Any]:
+        distance_func, points: list[Any], tolerance: float = 1e-6
+    ) -> dict[str, Any]:
         """Test symmetry: d(x,y) = d(y,x)"""
         violations = 0
         total_tests = 0
@@ -158,7 +160,7 @@ class ConstitutionDistanceFunction:
         self.embedding_model = embedding_model
         self._embeddings_cache = {}
 
-    def _get_embedding(self, text: str) -> List[float]:
+    def _get_embedding(self, text: str) -> list[float]:
         """Get or compute embedding for text."""
         if text not in self._embeddings_cache:
             # In practice, use actual sentence transformer
@@ -181,7 +183,7 @@ class ConstitutionDistanceFunction:
         emb2 = self._get_embedding(principle2)
 
         # Use Euclidean distance in embedding space (proper metric)
-        squared_diff = sum((a - b) ** 2 for a, b in zip(emb1, emb2))
+        squared_diff = sum((a - b) ** 2 for a, b in zip(emb1, emb2, strict=False))
         return math.sqrt(squared_diff)
 
     def edit_distance_normalized(self, text1: str, text2: str) -> float:
@@ -262,7 +264,7 @@ class LipschitzEstimator:
             self.policy_synthesizer = None
 
     async def estimate_llm_lipschitz_constant(
-        self, test_principles: List[str]
+        self, test_principles: list[str]
     ) -> LipschitzEstimationResult:
         """Estimate Lipschitz constant for LLM synthesis component."""
         if not self.llm_service:
@@ -282,7 +284,9 @@ class LipschitzEstimator:
             principle1, principle2 = test_principles[idx1], test_principles[idx2]
 
             # Compute input distance
-            input_distance = self.distance_func.combined_distance(principle1, principle2)
+            input_distance = self.distance_func.combined_distance(
+                principle1, principle2
+            )
 
             if input_distance < 1e-6:  # Skip nearly identical inputs
                 continue
@@ -309,21 +313,23 @@ class LipschitzEstimator:
         """Generate policy text from principle using LLM."""
         prompt = f"""
         Convert the following constitutional principle into a Rego policy rule:
-        
+
         Principle: {principle}
-        
+
         Generate only the Rego code without explanations:
         """
 
         try:
-            response = await self.llm_service.generate_text(prompt, max_tokens=500, temperature=0.1)
+            response = await self.llm_service.generate_text(
+                prompt, max_tokens=500, temperature=0.1
+            )
             return response.strip()
         except Exception as e:
             logger.error(f"LLM generation failed: {e}")
             return ""
 
     def _compute_estimation_result(
-        self, component_name: str, ratios: List[float]
+        self, component_name: str, ratios: list[float]
     ) -> LipschitzEstimationResult:
         """Compute estimation statistics from ratios with discrepancy resolution."""
         if not ratios:
@@ -419,7 +425,9 @@ class LipschitzEstimator:
             validation_passed=validation_passed,
         )
 
-    async def validate_metric_properties(self, test_principles: List[str]) -> Dict[str, Any]:
+    async def validate_metric_properties(
+        self, test_principles: list[str]
+    ) -> dict[str, Any]:
         """Validate that distance function satisfies metric properties."""
         validator = MetricSpaceValidator()
 
@@ -438,7 +446,8 @@ class LipschitzEstimator:
         return {
             "triangle_inequality": triangle_result,
             "symmetry": symmetry_result,
-            "is_valid_metric": triangle_result["is_metric"] and symmetry_result["is_symmetric"],
+            "is_valid_metric": triangle_result["is_metric"]
+            and symmetry_result["is_symmetric"],
         }
 
 

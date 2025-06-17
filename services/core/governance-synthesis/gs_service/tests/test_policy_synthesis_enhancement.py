@@ -63,7 +63,9 @@ class TestProactiveErrorPrediction:
             "multi_stakeholder": True,
         }
 
-        result = await qec_service.predict_synthesis_errors(sample_principles, context_data)
+        result = await qec_service.predict_synthesis_errors(
+            sample_principles, context_data
+        )
 
         # Verify result structure
         assert "risk_assessment" in result
@@ -79,7 +81,7 @@ class TestProactiveErrorPrediction:
         assert "overall_risk" in risk_assessment
 
         # Verify all risk scores are between 0 and 1
-        for risk_type, score in risk_assessment.items():
+        for _risk_type, score in risk_assessment.items():
             assert 0.0 <= score <= 1.0
 
         # Verify strategy recommendation is valid
@@ -101,7 +103,7 @@ class TestProactiveErrorPrediction:
 
         assert len(features) == len(sample_principles)
 
-        for i, feature in enumerate(features):
+        for _i, feature in enumerate(features):
             assert "principle_id" in feature
             assert "word_count" in feature
             assert "ambiguity_score" in feature
@@ -147,7 +149,9 @@ class TestProactiveErrorPrediction:
         assert 0.0 <= ambiguity_risk <= 1.0
 
         # Test misalignment risk calculation
-        misalignment_risk = await qec_service._calculate_misalignment_risk(principle_features)
+        misalignment_risk = await qec_service._calculate_misalignment_risk(
+            principle_features
+        )
         assert 0.0 <= misalignment_risk <= 1.0
 
         # Test implementation risk calculation
@@ -217,7 +221,9 @@ class TestPerformanceOptimizer:
         assert len(performance_optimizer.recent_synthesis_metrics) == 1
         assert "multi_model_consensus" in performance_optimizer.strategy_performance
 
-        strategy_perf = performance_optimizer.strategy_performance["multi_model_consensus"]
+        strategy_perf = performance_optimizer.strategy_performance[
+            "multi_model_consensus"
+        ]
         assert strategy_perf.total_uses == 1
         assert strategy_perf.success_count == 1
         assert strategy_perf.success_rate == 1.0
@@ -238,7 +244,7 @@ class TestPerformanceOptimizer:
         ]
 
         for i, strategy in enumerate(strategies):
-            for j in range(10):  # Add 10 records per strategy
+            for _j in range(10):  # Add 10 records per strategy
                 await performance_optimizer.track_synthesis_performance(
                     strategy_used=strategy,
                     response_time_seconds=1.0 + (i * 0.5),  # Different response times
@@ -290,8 +296,12 @@ class TestPerformanceOptimizer:
         for metrics in test_metrics:
             performance_optimizer.recent_synthesis_metrics.append(metrics)
             performance_optimizer.strategy_performance[metrics.strategy_used] = Mock()
-            performance_optimizer.strategy_performance[metrics.strategy_used].total_uses = 1
-            performance_optimizer.strategy_performance[metrics.strategy_used].success_rate = 1.0
+            performance_optimizer.strategy_performance[
+                metrics.strategy_used
+            ].total_uses = 1
+            performance_optimizer.strategy_performance[
+                metrics.strategy_used
+            ].success_rate = 1.0
             performance_optimizer.strategy_performance[
                 metrics.strategy_used
             ].average_response_time = metrics.response_time_seconds
@@ -337,7 +347,9 @@ class TestIntegration:
         for i in range(2):
             principle = Mock(spec=Principle)
             principle.id = i + 1
-            principle.content = f"Complex governance principle {i+1} with regulatory requirements."
+            principle.content = (
+                f"Complex governance principle {i+1} with regulatory requirements."
+            )
             principle.description = f"Detailed description for principle {i+1}"
             principle.priority_weight = 0.7
             principle.constraints = {"compliance": True}
@@ -352,7 +364,9 @@ class TestIntegration:
             "time_sensitive": False,
         }
 
-        prediction_result = await qec_service.predict_synthesis_errors(principles, context_data)
+        prediction_result = await qec_service.predict_synthesis_errors(
+            principles, context_data
+        )
 
         # Verify prediction result
         assert prediction_result["risk_assessment"]["overall_risk"] > 0.0

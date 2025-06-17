@@ -147,7 +147,7 @@ class MonitoringConfigUpdater:
                         "title": "Service Health Status",
                         "type": "stat",
                         "targets": [
-                            {"expr": f'up{{job=~"acgs-.*"}}', "legendFormat": "{{job}}"}
+                            {"expr": 'up{job=~"acgs-.*"}', "legendFormat": "{{job}}"}
                         ],
                         "fieldConfig": {
                             "defaults": {
@@ -418,11 +418,11 @@ check_service() {
     local service_name=$1
     local port=$2
     local endpoint=${3:-"/health"}
-    
+
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
-    
+
     echo -n "Checking $service_name (port $port)... "
-    
+
     if curl -s -f "http://localhost:$port$endpoint" > /dev/null 2>&1; then
         echo -e "${GREEN}✅ HEALTHY${NC}"
         PASSED_CHECKS=$((PASSED_CHECKS + 1))
@@ -438,13 +438,13 @@ check_response_time() {
     local port=$2
     local endpoint=${3:-"/health"}
     local max_time=${4:-2}
-    
+
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
-    
+
     echo -n "Checking $service_name response time... "
-    
+
     response_time=$(curl -s -w "%{time_total}" -o /dev/null "http://localhost:$port$endpoint" 2>/dev/null || echo "999")
-    
+
     if (( $(echo "$response_time < $max_time" | bc -l) )); then
         echo -e "${GREEN}✅ ${response_time}s (< ${max_time}s)${NC}"
         PASSED_CHECKS=$((PASSED_CHECKS + 1))
@@ -457,9 +457,9 @@ check_response_time() {
 # Function to check Solana connection
 check_solana() {
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
-    
+
     echo -n "Checking Solana devnet connection... "
-    
+
     if solana cluster-version --url devnet > /dev/null 2>&1; then
         echo -e "${GREEN}✅ CONNECTED${NC}"
         PASSED_CHECKS=$((PASSED_CHECKS + 1))
@@ -475,14 +475,14 @@ check_quantumagi_programs() {
         "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4:Quantumagi Core"
         "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ:Appeals Program"
     )
-    
+
     for program_info in "${programs[@]}"; do
         IFS=':' read -r program_id program_name <<< "$program_info"
-        
+
         TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
-        
+
         echo -n "Checking $program_name... "
-        
+
         if solana account "$program_id" --url devnet > /dev/null 2>&1; then
             echo -e "${GREEN}✅ DEPLOYED${NC}"
             PASSED_CHECKS=$((PASSED_CHECKS + 1))

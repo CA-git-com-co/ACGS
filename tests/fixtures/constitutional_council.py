@@ -5,9 +5,9 @@ Provides standardized test fixtures for Constitutional Council tests with Pydant
 """
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import pytest
 
@@ -16,7 +16,6 @@ from services.core.constitutional_ai.app.schemas import (
     ACAmendmentCreate,
     ACAmendmentVoteCreate,
 )
-
 from services.shared.models import User
 
 
@@ -48,7 +47,7 @@ class MockCouncilMember:
     voting_behavior: VotingBehavior = VotingBehavior.SYNCHRONOUS
     response_delay_seconds: int = 0
     bias_tendency: float = 0.0  # -1.0 (against) to 1.0 (for)
-    expertise_areas: List[str] = None
+    expertise_areas: list[str] = None
     is_active: bool = True
 
     def __post_init__(self):
@@ -66,7 +65,7 @@ class MockAmendmentScenario:
     expected_impact: str
     constitutional_significance: str
     rapid_processing_requested: bool = False
-    co_evolution_context: Optional[Dict[str, Any]] = None
+    co_evolution_context: dict[str, Any] | None = None
     expected_voting_window_hours: int = 168  # 1 week default
 
 
@@ -74,7 +73,7 @@ class ConstitutionalCouncilFixtures:
     """Centralized fixtures for Constitutional Council testing."""
 
     @staticmethod
-    def create_mock_council_members(count: int = 5) -> List[MockCouncilMember]:
+    def create_mock_council_members(count: int = 5) -> list[MockCouncilMember]:
         """Create a diverse set of mock Constitutional Council members."""
         members = [
             MockCouncilMember(
@@ -121,7 +120,7 @@ class ConstitutionalCouncilFixtures:
         return members[:count]
 
     @staticmethod
-    def create_amendment_scenarios() -> Dict[str, MockAmendmentScenario]:
+    def create_amendment_scenarios() -> dict[str, MockAmendmentScenario]:
         """Create various amendment scenarios for testing."""
         return {
             "rapid_privacy_update": MockAmendmentScenario(
@@ -320,7 +319,7 @@ async def mock_database_with_council_data(mock_database):
 class MockVotingSimulator:
     """Simulates voting behavior for Constitutional Council testing."""
 
-    def __init__(self, council_members: List[MockCouncilMember]):
+    def __init__(self, council_members: list[MockCouncilMember]):
         self.members = council_members
         self.voting_history = []
 
@@ -329,7 +328,7 @@ class MockVotingSimulator:
         amendment_id: int,
         scenario: MockAmendmentScenario,
         voting_behavior: VotingBehavior = VotingBehavior.SYNCHRONOUS,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Simulate a complete voting round."""
         votes = []
 
@@ -364,13 +363,13 @@ class MockVotingSimulator:
                     "amendment_id": amendment_id,
                     "voter_id": member.id,
                     "vote": vote,
-                    "timestamp": datetime.now(timezone.utc),
+                    "timestamp": datetime.now(UTC),
                 }
             )
 
         return votes
 
-    def calculate_voting_results(self, votes: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def calculate_voting_results(self, votes: list[dict[str, Any]]) -> dict[str, Any]:
         """Calculate voting results and determine outcome."""
         vote_counts = {"for": 0, "against": 0, "abstain": 0}
 
@@ -453,7 +452,7 @@ class ConstitutionalCouncilTestUtils:
     """Utility functions for Constitutional Council testing."""
 
     @staticmethod
-    def validate_pydantic_v2_schema(data: Dict[str, Any], schema_class) -> bool:
+    def validate_pydantic_v2_schema(data: dict[str, Any], schema_class) -> bool:
         """Validate data against Pydantic v2.0+ schema."""
         try:
             schema_class.model_validate(data)
@@ -463,7 +462,7 @@ class ConstitutionalCouncilTestUtils:
             return False
 
     @staticmethod
-    def create_edge_case_scenarios() -> Dict[str, Dict[str, Any]]:
+    def create_edge_case_scenarios() -> dict[str, dict[str, Any]]:
         """Create edge case test scenarios for comprehensive testing."""
         return {
             "quorum_failure": {
@@ -506,7 +505,7 @@ class ConstitutionalCouncilTestUtils:
         }
 
     @staticmethod
-    def create_negative_test_cases() -> Dict[str, Dict[str, Any]]:
+    def create_negative_test_cases() -> dict[str, dict[str, Any]]:
         """Create negative test cases for error handling validation."""
         return {
             "unauthorized_member": {
@@ -525,7 +524,7 @@ class ConstitutionalCouncilTestUtils:
             "vote_after_deadline": {
                 "member_id": 1,
                 "amendment_id": 1,
-                "voting_deadline": datetime.now(timezone.utc) - timedelta(hours=1),
+                "voting_deadline": datetime.now(UTC) - timedelta(hours=1),
                 "expected_error": "VotingDeadlineExceeded",
                 "error_message": "Voting period has ended",
             },
@@ -545,7 +544,7 @@ class ConstitutionalCouncilTestUtils:
         }
 
     @staticmethod
-    def create_performance_test_scenarios() -> Dict[str, Dict[str, Any]]:
+    def create_performance_test_scenarios() -> dict[str, dict[str, Any]]:
         """Create performance test scenarios for load testing."""
         return {
             "high_load_voting": {
@@ -578,7 +577,7 @@ class ConstitutionalCouncilTestUtils:
         }
 
     @staticmethod
-    def create_byzantine_fault_test_data() -> Dict[str, Any]:
+    def create_byzantine_fault_test_data() -> dict[str, Any]:
         """Create test data for Byzantine fault tolerance testing."""
         return {
             "faulty_behaviors": {
@@ -634,7 +633,7 @@ class ConstitutionalCouncilTestUtils:
     @staticmethod
     def create_optimistic_locking_test_data(
         base_version: int = 1,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Create test data for optimistic locking scenarios."""
         return [
             {

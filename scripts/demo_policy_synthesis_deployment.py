@@ -13,9 +13,9 @@ making actual system changes.
 import asyncio
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -29,9 +29,9 @@ class PolicySynthesisDeploymentDemo:
 
     def __init__(self):
         self.project_root = Path.cwd()
-        self.demo_start_time = datetime.now(timezone.utc)
+        self.demo_start_time = datetime.now(UTC)
 
-    async def run_deployment_demo(self) -> Dict[str, Any]:
+    async def run_deployment_demo(self) -> dict[str, Any]:
         """Run the complete deployment demonstration."""
         print("\n" + "=" * 80)
         print("🚀 POLICY SYNTHESIS ENHANCEMENT DEPLOYMENT PLAN DEMONSTRATION")
@@ -90,7 +90,7 @@ class PolicySynthesisDeploymentDemo:
             logger.error(f"Demo failed: {e}")
             return {"error": str(e), "demo_completed": False}
 
-    async def _demo_phase_1(self) -> Dict[str, Any]:
+    async def _demo_phase_1(self) -> dict[str, Any]:
         """Demonstrate Phase 1: Production Deployment and Monitoring."""
         print("🔧 Deploying enhanced Policy Synthesis services...")
         await asyncio.sleep(1)
@@ -136,7 +136,7 @@ class PolicySynthesisDeploymentDemo:
             },
         }
 
-    async def _demo_phase_2(self) -> Dict[str, Any]:
+    async def _demo_phase_2(self) -> dict[str, Any]:
         """Demonstrate Phase 2: Threshold Optimization."""
         print("📊 Collecting real-world performance data...")
         await asyncio.sleep(1)
@@ -189,7 +189,7 @@ class PolicySynthesisDeploymentDemo:
             },
         }
 
-    async def _demo_phase_3(self) -> Dict[str, Any]:
+    async def _demo_phase_3(self) -> dict[str, Any]:
         """Demonstrate Phase 3: Comprehensive Testing Expansion."""
         print("🔗 Developing integration tests...")
         await asyncio.sleep(1)
@@ -247,7 +247,7 @@ class PolicySynthesisDeploymentDemo:
             },
         }
 
-    async def _demo_phase_4(self) -> Dict[str, Any]:
+    async def _demo_phase_4(self) -> dict[str, Any]:
         """Demonstrate Phase 4: Performance Analysis and Quality Assessment."""
         print("🎯 Analyzing synthesis quality improvements...")
         await asyncio.sleep(1)
@@ -294,7 +294,7 @@ class PolicySynthesisDeploymentDemo:
             ],
         }
 
-    async def _demo_phase_5(self) -> Dict[str, Any]:
+    async def _demo_phase_5(self) -> dict[str, Any]:
         """Demonstrate Phase 5: Documentation and Knowledge Transfer."""
         print("📖 Creating comprehensive user documentation...")
         await asyncio.sleep(1)
@@ -339,9 +339,9 @@ class PolicySynthesisDeploymentDemo:
             },
         }
 
-    async def _generate_demo_summary(self) -> Dict[str, Any]:
+    async def _generate_demo_summary(self) -> dict[str, Any]:
         """Generate comprehensive demo summary."""
-        demo_end_time = datetime.now(timezone.utc)
+        demo_end_time = datetime.now(UTC)
         demo_duration = demo_end_time - self.demo_start_time
 
         return {

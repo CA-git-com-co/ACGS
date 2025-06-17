@@ -53,10 +53,10 @@ async def test_basic_reasoning():
         # Test basic reasoning
         prompt = """
         Analyze the following constitutional governance scenario:
-        
+
         A new AI system is being deployed that makes automated decisions about resource allocation.
         The system must balance efficiency with fairness, and ensure transparency while protecting privacy.
-        
+
         What constitutional principles should guide this system, and how should conflicts be resolved?
         """
 

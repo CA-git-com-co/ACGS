@@ -106,8 +106,10 @@ def get_diagnose_improvement_prompt(
     out_dir,
     run_id,
     dataset,
-    patch_files=[],
+    patch_files=None,
 ):
+    if patch_files is None:
+        patch_files = []
     md_logs, eval_logs, predicted_patches = find_selfimprove_eval_logs(
         entry_id, out_dir, commit_id=parent_commit
     )

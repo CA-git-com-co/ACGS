@@ -1,9 +1,8 @@
-from datetime import datetime, timedelta, timezone  # For setting timestamps
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime  # For setting timestamps
+from typing import Any
 
-from sqlalchemy import delete
+from sqlalchemy import delete, select, update
 from sqlalchemy import func as sql_func
-from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.models import Policy, PolicyTemplate
@@ -14,7 +13,7 @@ from services.shared.models import Policy, PolicyTemplate
 
 
 async def create_policy_template(
-    db: AsyncSession, template_data: Dict[str, Any], user_id: int
+    db: AsyncSession, template_data: dict[str, Any], user_id: int
 ) -> PolicyTemplate:
     # Ensure 'version' is handled, e.g., default to 1 or increment if updating
     # Ensure 'created_at' and 'updated_at' are set
@@ -22,8 +21,8 @@ async def create_policy_template(
         **template_data,
         created_by_user_id=user_id,
         version=template_data.get("version", 1),  # Default version or from data
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
     db.add(db_template)
     await db.commit()
@@ -31,14 +30,18 @@ async def create_policy_template(
     return db_template
 
 
-async def get_policy_template(db: AsyncSession, template_id: int) -> Optional[PolicyTemplate]:
-    result = await db.execute(select(PolicyTemplate).filter(PolicyTemplate.id == template_id))
+async def get_policy_template(
+    db: AsyncSession, template_id: int
+) -> PolicyTemplate | None:
+    result = await db.execute(
+        select(PolicyTemplate).filter(PolicyTemplate.id == template_id)
+    )
     return result.scalars().first()
 
 
 async def get_policy_templates(
     db: AsyncSession, skip: int = 0, limit: int = 100
-) -> List[PolicyTemplate]:
+) -> list[PolicyTemplate]:
     result = await db.execute(select(PolicyTemplate).offset(skip).limit(limit))
     return result.scalars().all()
 
@@ -49,8 +52,8 @@ async def count_policy_templates(db: AsyncSession) -> int:
 
 
 async def update_policy_template(
-    db: AsyncSession, template_id: int, update_data: Dict[str, Any]
-) -> Optional[PolicyTemplate]:
+    db: AsyncSession, template_id: int, update_data: dict[str, Any]
+) -> PolicyTemplate | None:
     # Increment version, update 'updated_at'
     # Exclude 'id', 'created_by_user_id', 'created_at' from update_data if present
     update_data.pop("id", None)
@@ -67,7 +70,7 @@ async def update_policy_template(
         .where(PolicyTemplate.id == template_id)
         .values(
             **update_data,
-            updated_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(UTC),
             version=current_template.version + 1,
         )
         .returning(PolicyTemplate)
@@ -85,15 +88,15 @@ async def delete_policy_template(db: AsyncSession, template_id: int) -> bool:
 
 
 async def create_direct_policy(
-    db: AsyncSession, policy_data: Dict[str, Any], user_id: int
+    db: AsyncSession, policy_data: dict[str, Any], user_id: int
 ) -> Policy:
     # Similar to create_policy_template, handles direct Policy creation
     db_policy = Policy(
         **policy_data,
         created_by_user_id=user_id,
         version=policy_data.get("version", 1),
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
     db.add(db_policy)
     await db.commit()
@@ -102,8 +105,8 @@ async def create_direct_policy(
 
 
 async def create_policy_from_template_logic(
-    db: AsyncSession, policy_data: Dict[str, Any], user_id: int
-) -> Optional[Policy]:
+    db: AsyncSession, policy_data: dict[str, Any], user_id: int
+) -> Policy | None:
     template_id = policy_data.get("template_id")
     if not template_id:
         # This case should ideally be for direct policy creation, handled by create_direct_policy
@@ -136,8 +139,8 @@ async def create_policy_from_template_logic(
         "source_principle_ids": policy_data.get("source_principle_ids"),
         "created_by_user_id": user_id,
         "version": 1,  # Initial version for a new policy instance
-        "created_at": datetime.now(timezone.utc),
-        "updated_at": datetime.now(timezone.utc),
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC),
     }
 
     # Filter out None values to use SQLAlchemy defaults if applicable
@@ -150,12 +153,14 @@ async def create_policy_from_template_logic(
     return db_policy
 
 
-async def get_policy(db: AsyncSession, policy_id: int) -> Optional[Policy]:
+async def get_policy(db: AsyncSession, policy_id: int) -> Policy | None:
     result = await db.execute(select(Policy).filter(Policy.id == policy_id))
     return result.scalars().first()
 
 
-async def get_policies(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[Policy]:
+async def get_policies(
+    db: AsyncSession, skip: int = 0, limit: int = 100
+) -> list[Policy]:
     result = await db.execute(select(Policy).offset(skip).limit(limit))
     return result.scalars().all()
 
@@ -166,13 +171,15 @@ async def count_policies(db: AsyncSession) -> int:
 
 
 async def update_policy(
-    db: AsyncSession, policy_id: int, update_data: Dict[str, Any]
-) -> Optional[Policy]:
+    db: AsyncSession, policy_id: int, update_data: dict[str, Any]
+) -> Policy | None:
     # Similar to update_policy_template
     update_data.pop("id", None)
     update_data.pop("created_by_user_id", None)
     update_data.pop("created_at", None)
-    update_data.pop("template_id", None)  # template_id should not be changed after creation
+    update_data.pop(
+        "template_id", None
+    )  # template_id should not be changed after creation
 
     # Get current policy to access instance version
     current_policy = await get_policy(db, policy_id)
@@ -184,7 +191,7 @@ async def update_policy(
         .where(Policy.id == policy_id)
         .values(
             **update_data,
-            updated_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(UTC),
             version=current_policy.version + 1,
         )
         .returning(Policy)

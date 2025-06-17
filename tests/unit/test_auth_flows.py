@@ -183,7 +183,10 @@ async def test_register_login_non_ascii_username(client: AsyncClient):
     user_data["email"] = f"用户{uuid.uuid4().hex[:4]}@example.com"
     await client.post(f"{API_V1_AUTH_PREFIX}/register", json=user_data)
 
-    login_payload = {"username": user_data["username"], "password": user_data["password"]}
+    login_payload = {
+        "username": user_data["username"],
+        "password": user_data["password"],
+    }
     response = await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
     assert response.status_code == status.HTTP_200_OK
     assert "access_token" in response.json()
@@ -286,7 +289,7 @@ async def test_refresh_token_success(client: AsyncClient):
         "username": user_data["username"],
         "password": user_data["password"],
     }
-    login_response = await client.post(
+    await client.post(
         f"{API_V1_AUTH_PREFIX}/token", data=login_payload
     )
     initial_access_cookie_value = client.cookies.get("access_token_cookie")

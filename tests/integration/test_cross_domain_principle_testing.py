@@ -11,9 +11,9 @@ Tests the complete cross-domain testing pipeline including:
 
 # Add project root to path for imports
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -114,7 +114,7 @@ class TestCrossDomainTestingFramework:
     @pytest.mark.skipif(
         not SHARED_MODELS_AVAILABLE, reason="Shared models not available"
     )
-    async def sample_domains(self, db_session: AsyncSession) -> List[DomainContext]:
+    async def sample_domains(self, db_session: AsyncSession) -> list[DomainContext]:
         """Create sample domain contexts for testing."""
 
         if not SHARED_MODELS_AVAILABLE:
@@ -214,7 +214,7 @@ class TestCrossDomainTestingFramework:
         return domains
 
     @pytest.fixture
-    async def sample_principles(self) -> List[Dict[str, Any]]:
+    async def sample_principles(self) -> list[dict[str, Any]]:
         """Create sample constitutional principles for testing."""
 
         return [
@@ -252,8 +252,8 @@ class TestCrossDomainTestingFramework:
 
     @pytest.fixture
     async def sample_test_scenarios(
-        self, db_session: AsyncSession, sample_domains: List[DomainContext]
-    ) -> List[CrossDomainTestScenario]:
+        self, db_session: AsyncSession, sample_domains: list[DomainContext]
+    ) -> list[CrossDomainTestScenario]:
         """Create sample test scenarios for cross-domain testing."""
 
         scenarios = [
@@ -361,7 +361,7 @@ class TestCrossDomainTestingFramework:
         not DOMAIN_CONTEXT_AVAILABLE, reason="Domain context manager not available"
     )
     async def test_principle_adaptation_to_domain(
-        self, sample_domains: List[DomainContext]
+        self, sample_domains: list[DomainContext]
     ):
         """Test principle adaptation to different domain contexts."""
 
@@ -432,9 +432,9 @@ class TestCrossDomainTestingFramework:
     )
     async def test_cross_domain_testing_engine(
         self,
-        sample_domains: List[DomainContext],
-        sample_principles: List[Dict[str, Any]],
-        sample_test_scenarios: List[CrossDomainTestScenario],
+        sample_domains: list[DomainContext],
+        sample_principles: list[dict[str, Any]],
+        sample_test_scenarios: list[CrossDomainTestScenario],
     ):
         """Test the core cross-domain testing engine functionality."""
 
@@ -576,7 +576,7 @@ class TestCrossDomainTestingFramework:
                 "consistency_score": 0.85,
                 "adaptation_required": False,
                 "conflict_detected": False,
-                "executed_at": datetime.now(timezone.utc).isoformat(),
+                "executed_at": datetime.now(UTC).isoformat(),
                 "execution_time_ms": 150,
                 "memory_usage_mb": 2.5,
             },
@@ -590,7 +590,7 @@ class TestCrossDomainTestingFramework:
                 "consistency_score": 0.65,
                 "adaptation_required": True,
                 "conflict_detected": True,
-                "executed_at": datetime.now(timezone.utc).isoformat(),
+                "executed_at": datetime.now(UTC).isoformat(),
                 "execution_time_ms": 200,
                 "memory_usage_mb": 3.2,
             },
@@ -633,7 +633,7 @@ class TestCrossDomainTestingFramework:
         not DOMAIN_CONTEXT_AVAILABLE, reason="Domain context manager not available"
     )
     async def test_cross_domain_conflict_detection(
-        self, sample_domains: List[DomainContext]
+        self, sample_domains: list[DomainContext]
     ):
         """Test conflict detection between principles across domains."""
 
@@ -715,9 +715,9 @@ def test_cross_domain_testing_mock_functionality():
 
     async def test_performance_and_accuracy_targets(
         self,
-        sample_domains: List[DomainContext],
-        sample_principles: List[Dict[str, Any]],
-        sample_test_scenarios: List[CrossDomainTestScenario],
+        sample_domains: list[DomainContext],
+        sample_principles: list[dict[str, Any]],
+        sample_test_scenarios: list[CrossDomainTestScenario],
     ):
         """Test that the framework meets performance and accuracy targets."""
 
@@ -804,11 +804,11 @@ async def mock_integrity_service():
 
 
 async def benchmark_cross_domain_testing(
-    scenarios: List[CrossDomainTestScenario],
-    domains: List[DomainContext],
-    principles: List[Dict[str, Any]],
+    scenarios: list[CrossDomainTestScenario],
+    domains: list[DomainContext],
+    principles: list[dict[str, Any]],
     iterations: int = 10,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Benchmark cross-domain testing performance."""
 
     import time
@@ -818,7 +818,7 @@ async def benchmark_cross_domain_testing(
     execution_times = []
     accuracy_scores = []
 
-    for i in range(iterations):
+    for _i in range(iterations):
         start_time = time.time()
 
         test_request = CrossDomainTestRequest(

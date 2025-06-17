@@ -9,7 +9,7 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 
 class ConstitutionalComplianceEnhancer:
@@ -59,7 +59,7 @@ class ConstitutionalComplianceEnhancer:
             return False
 
         # Read current content
-        with open(ac_main_file, "r") as f:
+        with open(ac_main_file) as f:
             current_content = f.read()
 
         # Enhanced AC service with constitutional compliance endpoints
@@ -365,7 +365,7 @@ if __name__ == "__main__":
 
         # Read current content
         try:
-            with open(pgc_main_file, "r") as f:
+            with open(pgc_main_file) as f:
                 current_content = f.read()
         except Exception as e:
             self.log_action(f"Could not read PGC main.py: {e}", "WARNING")
@@ -636,7 +636,7 @@ if __name__ == "__main__":
 
         return True
 
-    async def restart_enhanced_services(self) -> Dict[str, bool]:
+    async def restart_enhanced_services(self) -> dict[str, bool]:
         """Restart AC and PGC services with enhanced endpoints."""
         self.log_action("Restarting enhanced AC and PGC services", "INFO")
 
@@ -675,7 +675,7 @@ if __name__ == "__main__":
 
         return results
 
-    async def test_enhanced_compliance_workflow(self) -> Dict[str, Any]:
+    async def test_enhanced_compliance_workflow(self) -> dict[str, Any]:
         """Test the enhanced constitutional compliance workflow."""
         self.log_action("Testing enhanced constitutional compliance workflow", "INFO")
 
@@ -798,7 +798,7 @@ if __name__ == "__main__":
                     workflow_start = time.time()
 
                     # Step 1: Get constitutional rules from AC service
-                    ac_rules_response = await client.get(
+                    await client.get(
                         "http://localhost:8001/api/v1/constitutional/rules"
                     )
 
@@ -843,7 +843,7 @@ if __name__ == "__main__":
 
         return test_results
 
-    async def execute_constitutional_compliance_enhancement(self) -> Dict[str, Any]:
+    async def execute_constitutional_compliance_enhancement(self) -> dict[str, Any]:
         """Execute the complete constitutional compliance enhancement."""
         self.log_action("🚀 Starting Constitutional Compliance Enhancement", "INFO")
 

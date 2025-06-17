@@ -16,7 +16,6 @@ import json
 import logging
 import re
 from pathlib import Path
-from typing import List
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -34,7 +33,7 @@ class SecurityCleanup:
             "files_secured": [],
         }
 
-    def scan_for_hardcoded_secrets(self) -> List[str]:
+    def scan_for_hardcoded_secrets(self) -> list[str]:
         """Scan for hardcoded secrets and credentials."""
         logger.info("🔍 Scanning for hardcoded secrets...")
 
@@ -54,7 +53,7 @@ class SecurityCleanup:
         for py_file in self.project_root.glob("**/*.py"):
             if self._should_scan_file(py_file):
                 try:
-                    with open(py_file, "r", encoding="utf-8") as f:
+                    with open(py_file, encoding="utf-8") as f:
                         content = f.read()
 
                     for pattern in secret_patterns:
@@ -72,7 +71,7 @@ class SecurityCleanup:
 
         return suspicious_files
 
-    def clean_hardcoded_secrets(self, files_with_secrets: List[str]):
+    def clean_hardcoded_secrets(self, files_with_secrets: list[str]):
         """Clean hardcoded secrets from files."""
         logger.info("🧹 Cleaning hardcoded secrets...")
 
@@ -82,7 +81,7 @@ class SecurityCleanup:
                 if not file_obj.exists():
                     continue
 
-                with open(file_obj, "r", encoding="utf-8") as f:
+                with open(file_obj, encoding="utf-8") as f:
                     content = f.read()
 
                 # Replace common hardcoded patterns with environment variables
@@ -170,7 +169,7 @@ class SecurityCleanup:
         try:
             existing_content = ""
             if gitignore_path.exists():
-                with open(gitignore_path, "r") as f:
+                with open(gitignore_path) as f:
                     existing_content = f.read()
 
             # Add missing patterns

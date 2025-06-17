@@ -1,7 +1,6 @@
 # Enterprise API Key Management for Service-to-Service Authentication
 import secrets
-from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from datetime import UTC, datetime, timedelta
 
 from fastapi import HTTPException
 from sqlalchemy import and_, select
@@ -35,9 +34,9 @@ class ApiKeyManager:
         db: AsyncSession,
         user_id: int,
         name: str,
-        scopes: List[str] = None,
+        scopes: list[str] = None,
         rate_limit_per_minute: int = None,
-        allowed_ips: List[str] = None,
+        allowed_ips: list[str] = None,
         expires_in_days: int = None,
     ) -> dict:
         """Create new API key for user"""
@@ -61,7 +60,7 @@ class ApiKeyManager:
         # Calculate expiration
         expires_at = None
         if expires_in_days:
-            expires_at = datetime.now(timezone.utc) + timedelta(days=expires_in_days)
+            expires_at = datetime.now(UTC) + timedelta(days=expires_in_days)
 
         # Create API key record
         api_key_obj = ApiKey(
@@ -91,7 +90,7 @@ class ApiKeyManager:
             "created_at": api_key_obj.created_at.isoformat(),
         }
 
-    async def get_api_keys(self, db: AsyncSession, user_id: int) -> List[dict]:
+    async def get_api_keys(self, db: AsyncSession, user_id: int) -> list[dict]:
         """Get all API keys for a user (without the actual key values)"""
         result = await db.execute(select(ApiKey).where(ApiKey.user_id == user_id))
         api_keys = result.scalars().all()
@@ -106,14 +105,18 @@ class ApiKeyManager:
                 "allowed_ips": key.allowed_ips,
                 "is_active": key.is_active,
                 "expires_at": key.expires_at.isoformat() if key.expires_at else None,
-                "last_used_at": (key.last_used_at.isoformat() if key.last_used_at else None),
+                "last_used_at": (
+                    key.last_used_at.isoformat() if key.last_used_at else None
+                ),
                 "usage_count": key.usage_count,
                 "created_at": key.created_at.isoformat(),
             }
             for key in api_keys
         ]
 
-    async def get_api_key(self, db: AsyncSession, key_id: int, user_id: int) -> Optional[dict]:
+    async def get_api_key(
+        self, db: AsyncSession, key_id: int, user_id: int
+    ) -> dict | None:
         """Get specific API key details"""
         result = await db.execute(
             select(ApiKey).where(and_(ApiKey.id == key_id, ApiKey.user_id == user_id))
@@ -131,8 +134,12 @@ class ApiKeyManager:
             "rate_limit_per_minute": api_key.rate_limit_per_minute,
             "allowed_ips": api_key.allowed_ips,
             "is_active": api_key.is_active,
-            "expires_at": (api_key.expires_at.isoformat() if api_key.expires_at else None),
-            "last_used_at": (api_key.last_used_at.isoformat() if api_key.last_used_at else None),
+            "expires_at": (
+                api_key.expires_at.isoformat() if api_key.expires_at else None
+            ),
+            "last_used_at": (
+                api_key.last_used_at.isoformat() if api_key.last_used_at else None
+            ),
             "usage_count": api_key.usage_count,
             "created_at": api_key.created_at.isoformat(),
             "updated_at": api_key.updated_at.isoformat(),
@@ -144,9 +151,9 @@ class ApiKeyManager:
         key_id: int,
         user_id: int,
         name: str = None,
-        scopes: List[str] = None,
+        scopes: list[str] = None,
         rate_limit_per_minute: int = None,
-        allowed_ips: List[str] = None,
+        allowed_ips: list[str] = None,
         is_active: bool = None,
     ) -> bool:
         """Update API key settings"""
@@ -196,8 +203,8 @@ class ApiKeyManager:
         return True
 
     async def verify_api_key(
-        self, db: AsyncSession, api_key: str, required_scopes: List[str] = None
-    ) -> Optional[dict]:
+        self, db: AsyncSession, api_key: str, required_scopes: list[str] = None
+    ) -> dict | None:
         """Verify API key and return user/key information"""
         if len(api_key) < self.prefix_length:
             return None
@@ -206,7 +213,9 @@ class ApiKeyManager:
 
         # Find API key by prefix
         result = await db.execute(
-            select(ApiKey).where(and_(ApiKey.key_prefix == prefix, ApiKey.is_active == True))
+            select(ApiKey).where(
+                and_(ApiKey.key_prefix == prefix, ApiKey.is_active)
+            )
         )
         api_key_obj = result.scalar_one_or_none()
 
@@ -218,7 +227,9 @@ class ApiKeyManager:
             return None
 
         # Check expiration
-        if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(timezone.utc):
+        if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(
+            UTC
+        ):
             return None
 
         # Check scopes if required
@@ -245,10 +256,12 @@ class ApiKeyManager:
 
     async def cleanup_expired_keys(self, db: AsyncSession) -> int:
         """Clean up expired API keys"""
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(UTC)
 
         result = await db.execute(
-            select(ApiKey).where(and_(ApiKey.expires_at <= current_time, ApiKey.is_active == True))
+            select(ApiKey).where(
+                and_(ApiKey.expires_at <= current_time, ApiKey.is_active)
+            )
         )
         expired_keys = result.scalars().all()
 
@@ -267,10 +280,10 @@ class ApiKeyManager:
     ) -> dict:
         """Get API key usage statistics"""
         if not start_date:
-            start_date = datetime.now(timezone.utc) - timedelta(days=30)
+            start_date = datetime.now(UTC) - timedelta(days=30)
 
         if not end_date:
-            end_date = datetime.now(timezone.utc)
+            end_date = datetime.now(UTC)
 
         # Get all API keys for user
         result = await db.execute(select(ApiKey).where(ApiKey.user_id == user_id))
@@ -279,7 +292,9 @@ class ApiKeyManager:
         total_usage = sum(key.usage_count for key in api_keys)
         active_keys = sum(1 for key in api_keys if key.is_active)
         expired_keys = sum(
-            1 for key in api_keys if key.expires_at and key.expires_at <= datetime.now(timezone.utc)
+            1
+            for key in api_keys
+            if key.expires_at and key.expires_at <= datetime.now(UTC)
         )
 
         return {

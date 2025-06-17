@@ -2,6 +2,7 @@ import random
 
 from llm import create_client, extract_json_between_markers, get_response_from_llm
 from llm_withtools import convert_msg_history
+
 from utils.swe_log_parsers import MAP_REPO_TO_PARSER
 
 
@@ -53,11 +54,13 @@ def get_report_score(test_report):
 
 
 def score_tie_breaker(
-    problem_statement, code_diffs, test_reports, best_score_indices=[], logging=print
+    problem_statement, code_diffs, test_reports, best_score_indices=None, logging=print
 ):
     """
     Use LLM as a tiebreaker to choose the best code diff.
     """
+    if best_score_indices is None:
+        best_score_indices = []
     best_score_indices = (
         list(range(len(code_diffs))) if not best_score_indices else best_score_indices
     )

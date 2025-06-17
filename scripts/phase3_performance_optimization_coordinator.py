@@ -15,7 +15,7 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -27,17 +27,17 @@ class PerformanceTarget:
     target_value: float
     improvement_percentage: float
     priority: str
-    optimization_strategies: List[str] = field(default_factory=list)
+    optimization_strategies: list[str] = field(default_factory=list)
 
 
 @dataclass
 class Phase3ExecutionPlan:
     """Phase 3 execution plan configuration."""
 
-    performance_targets: List[PerformanceTarget]
-    optimization_areas: List[str]
-    success_criteria: Dict[str, float]
-    validation_requirements: Dict[str, Any]
+    performance_targets: list[PerformanceTarget]
+    optimization_areas: list[str]
+    success_criteria: dict[str, float]
+    validation_requirements: dict[str, Any]
 
 
 class Phase3PerformanceOptimizationCoordinator:

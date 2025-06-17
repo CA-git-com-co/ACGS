@@ -7,7 +7,7 @@ Tests core functionality without complex authentication.
 import json
 import subprocess
 import sys
-from typing import Any, Dict
+from typing import Any
 
 
 class SimplePhase1Validator:
@@ -19,10 +19,10 @@ class SimplePhase1Validator:
         self,
         method: str,
         url: str,
-        headers: Dict[str, str] = None,
-        data: Dict[str, Any] = None,
+        headers: dict[str, str] = None,
+        data: dict[str, Any] = None,
         timeout: int = 10,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute curl command and return response."""
         cmd = ["curl", "-s", "-w", "\\n%{http_code}", "-X", method]
 
@@ -115,7 +115,7 @@ class SimplePhase1Validator:
                 self.success_count += 1
                 print("✅ Test principles data: OK")
             else:
-                print(f"❌ Test principles data missing")
+                print("❌ Test principles data missing")
         except Exception as e:
             print(f"❌ Test principles data check failed: {e}")
 
@@ -193,7 +193,7 @@ class SimplePhase1Validator:
                 self.success_count += 1
                 print("✅ Enhanced principle schema: OK")
             else:
-                print(f"❌ Enhanced principle schema missing")
+                print("❌ Enhanced principle schema missing")
         except Exception as e:
             print(f"❌ Enhanced principle schema check failed: {e}")
 
@@ -224,7 +224,7 @@ class SimplePhase1Validator:
                 self.success_count += 1
                 print("✅ Meta-rules data: OK")
             else:
-                print(f"❌ Meta-rules data missing")
+                print("❌ Meta-rules data missing")
         except Exception as e:
             print(f"❌ Meta-rules data check failed: {e}")
 
@@ -255,7 +255,7 @@ class SimplePhase1Validator:
                 self.success_count += 1
                 print("✅ Environmental factors data: OK")
             else:
-                print(f"❌ Environmental factors data missing")
+                print("❌ Environmental factors data missing")
         except Exception as e:
             print(f"❌ Environmental factors data check failed: {e}")
 
@@ -275,7 +275,7 @@ class SimplePhase1Validator:
         self.test_environmental_factors_data()
 
         # Print summary
-        print(f"\n📊 Validation Summary:")
+        print("\n📊 Validation Summary:")
         print(f"Total tests: {self.total_tests}")
         print(f"Successful: {self.success_count}")
         print(f"Failed: {self.total_tests - self.success_count}")

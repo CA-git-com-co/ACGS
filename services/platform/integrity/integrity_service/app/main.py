@@ -24,8 +24,13 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 # Import shared components
 try:
-    from shared.api_models import HealthCheckResponse, ServiceInfo, create_success_response
+    from shared.api_models import (
+        HealthCheckResponse,
+        ServiceInfo,
+        create_success_response,
+    )
     from shared.middleware import add_production_middleware, create_exception_handlers
+
     SHARED_AVAILABLE = True
 except ImportError:
     # Fallback implementations
@@ -45,6 +50,7 @@ except ImportError:
 
     def create_exception_handlers(service_name):
         return {}
+
 
 # Configure structured logging
 logging.basicConfig(
@@ -113,6 +119,7 @@ try:
         add_prometheus_middleware,
         create_enhanced_metrics_endpoint,
     )
+
     PROMETHEUS_AVAILABLE = True
 except ImportError:
     PROMETHEUS_AVAILABLE = False
@@ -181,8 +188,8 @@ async def root(request: Request):
     # ensures: Correct function execution
     # sha256: func_hash
     """Root endpoint with comprehensive service information."""
-    correlation_id = getattr(request.state, "correlation_id", None)
-    response_time_ms = getattr(request.state, "response_time_ms", None)
+    getattr(request.state, "correlation_id", None)
+    getattr(request.state, "response_time_ms", None)
 
     service_info = ServiceInfo(
         service="ACGS-1 Production Integrity Service",
@@ -212,7 +219,7 @@ async def health_check(request: Request):
     # ensures: Correct function execution
     # sha256: func_hash
     """Enhanced health check endpoint with comprehensive service status."""
-    correlation_id = getattr(request.state, "correlation_id", None)
+    getattr(request.state, "correlation_id", None)
     uptime_seconds = time.time() - service_start_time
 
     health_info = HealthCheckResponse(
@@ -338,7 +345,7 @@ async def get_constitutional_hash_validation():
                 "appeals_processing": ROUTERS_AVAILABLE,
                 "research_pipeline": ROUTERS_AVAILABLE,
                 "blockchain_verification": True,
-            }
+            },
         }
 
     except Exception as e:
@@ -415,5 +422,7 @@ if __name__ == "__main__":
         "lifespan": "on",
     }
 
-    logger.info(f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service on port {config['port']}")
+    logger.info(
+        f"🚀 Starting ACGS-1 {SERVICE_PHASE} Integrity Service on port {config['port']}"
+    )
     uvicorn.run(app, **config)

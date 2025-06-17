@@ -8,7 +8,7 @@ workflows for intelligent automated patch suggestions and validation.
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from ..models import ACConflictResolution, Principle
 
@@ -41,13 +41,13 @@ class ConflictAnalysis:
     """Results of QEC-enhanced conflict analysis."""
 
     conflict_id: int
-    constitutional_distances: List[float]
+    constitutional_distances: list[float]
     average_distance: float
-    error_predictions: List[Dict[str, Any]]
-    recommended_strategy: Optional[str]
-    validation_scenarios: List[Dict[str, Any]]
+    error_predictions: list[dict[str, Any]]
+    recommended_strategy: str | None
+    validation_scenarios: list[dict[str, Any]]
     priority_score: float
-    qec_metadata: Dict[str, Any]
+    qec_metadata: dict[str, Any]
 
 
 @dataclass
@@ -55,11 +55,11 @@ class PatchResult:
     """Results of automated patch generation."""
 
     success: bool
-    patch_content: Optional[str]
-    strategy_used: Optional[str]
-    validation_tests: List[Dict[str, Any]]
+    patch_content: str | None
+    strategy_used: str | None
+    validation_tests: list[dict[str, Any]]
     confidence_score: float
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class QECConflictResolver:
@@ -83,10 +83,12 @@ class QECConflictResolver:
             self.recovery_dispatcher = RecoveryStrategyDispatcher()
             self.validation_parser = ValidationDSLParser()
         else:
-            logger.warning("QEC components not available - using fallback implementations")
+            logger.warning(
+                "QEC components not available - using fallback implementations"
+            )
 
     async def analyze_conflict(
-        self, conflict: ACConflictResolution, principles: List[Principle]
+        self, conflict: ACConflictResolution, principles: list[Principle]
     ) -> ConflictAnalysis:
         """
         Perform comprehensive QEC-enhanced conflict analysis.
@@ -103,7 +105,9 @@ class QECConflictResolver:
 
         try:
             # Convert AC principles to Constitutional principles for QEC processing
-            constitutional_principles = self._convert_to_constitutional_principles(principles)
+            constitutional_principles = self._convert_to_constitutional_principles(
+                principles
+            )
 
             # Calculate constitutional distances for prioritization
             distance_scores = []
@@ -114,7 +118,9 @@ class QECConflictResolver:
             # Predict potential synthesis challenges
             error_predictions = []
             for principle in constitutional_principles:
-                prediction = self.error_predictor.predict_synthesis_challenges(principle)
+                prediction = self.error_predictor.predict_synthesis_challenges(
+                    principle
+                )
                 error_predictions.append(
                     {
                         "principle_id": principle.principle_id,
@@ -152,9 +158,12 @@ class QECConflictResolver:
                     )
 
             # Calculate priority score based on distance and risk
-            average_distance = sum(distance_scores) / len(distance_scores) if distance_scores else 0
+            average_distance = (
+                sum(distance_scores) / len(distance_scores) if distance_scores else 0
+            )
             average_risk = (
-                sum(pred["overall_risk"] for pred in error_predictions) / len(error_predictions)
+                sum(pred["overall_risk"] for pred in error_predictions)
+                / len(error_predictions)
                 if error_predictions
                 else 0
             )
@@ -178,9 +187,13 @@ class QECConflictResolver:
                 },
                 "recovery_strategy": {
                     "recommended": (
-                        recovery_strategy.strategy_type.value if recovery_strategy else None
+                        recovery_strategy.strategy_type.value
+                        if recovery_strategy
+                        else None
                     ),
-                    "confidence": (recovery_strategy.confidence if recovery_strategy else 0),
+                    "confidence": (
+                        recovery_strategy.confidence if recovery_strategy else 0
+                    ),
                     "dispatcher_version": "1.0.0",
                 },
                 "validation": {
@@ -209,7 +222,7 @@ class QECConflictResolver:
     async def generate_patch(
         self,
         conflict: ACConflictResolution,
-        principles: List[Principle],
+        principles: list[Principle],
         analysis: ConflictAnalysis,
     ) -> PatchResult:
         """
@@ -228,7 +241,9 @@ class QECConflictResolver:
 
         try:
             # Convert principles for QEC processing
-            constitutional_principles = self._convert_to_constitutional_principles(principles)
+            constitutional_principles = self._convert_to_constitutional_principles(
+                principles
+            )
 
             # Apply recovery strategy based on analysis
             recovery_result = await self.recovery_dispatcher.apply_strategy(
@@ -292,8 +307,8 @@ class QECConflictResolver:
             return self._fallback_patch_generation(conflict, principles)
 
     def prioritize_conflicts(
-        self, conflicts: List[Tuple[ACConflictResolution, ConflictAnalysis]]
-    ) -> List[Tuple[ACConflictResolution, ConflictAnalysis]]:
+        self, conflicts: list[tuple[ACConflictResolution, ConflictAnalysis]]
+    ) -> list[tuple[ACConflictResolution, ConflictAnalysis]]:
         """
         Prioritize conflicts based on QEC analysis.
 
@@ -311,8 +326,8 @@ class QECConflictResolver:
             return conflicts
 
     def _convert_to_constitutional_principles(
-        self, ac_principles: List[Principle]
-    ) -> List[ConstitutionalPrinciple]:
+        self, ac_principles: list[Principle]
+    ) -> list[ConstitutionalPrinciple]:
         """Convert AC principles to Constitutional principles for QEC processing."""
         constitutional_principles = []
 
@@ -325,13 +340,17 @@ class QECConflictResolver:
                 category=ac_principle.category or "general",
                 priority_weight=ac_principle.priority_weight or 1.0,
                 scope=ac_principle.scope or "general",
-                normative_statement=ac_principle.normative_statement or ac_principle.description,
+                normative_statement=ac_principle.normative_statement
+                or ac_principle.description,
                 constraints=ac_principle.constraints or {},
                 rationale=ac_principle.rationale or "",
-                validation_criteria_structured=ac_principle.validation_criteria_structured or {},
+                validation_criteria_structured=ac_principle.validation_criteria_structured
+                or {},
                 distance_score=getattr(ac_principle, "distance_score", None),
                 score_updated_at=getattr(ac_principle, "score_updated_at", None),
-                error_prediction_metadata=getattr(ac_principle, "error_prediction_metadata", {}),
+                error_prediction_metadata=getattr(
+                    ac_principle, "error_prediction_metadata", {}
+                ),
                 recovery_strategies=getattr(ac_principle, "recovery_strategies", []),
             )
             constitutional_principles.append(constitutional_principle)
@@ -365,15 +384,21 @@ class QECConflictResolver:
 
         # Boost confidence based on analysis quality
         distance_confidence = 1.0 - analysis.average_distance
-        validation_confidence = min(validation_tests_count / 5.0, 1.0)  # Max boost at 5 tests
+        validation_confidence = min(
+            validation_tests_count / 5.0, 1.0
+        )  # Max boost at 5 tests
 
         # Combined confidence
-        confidence = base_confidence * 0.5 + distance_confidence * 0.3 + validation_confidence * 0.2
+        confidence = (
+            base_confidence * 0.5
+            + distance_confidence * 0.3
+            + validation_confidence * 0.2
+        )
 
         return min(confidence, 1.0)
 
     def _fallback_analysis(
-        self, conflict: ACConflictResolution, principles: List[Principle]
+        self, conflict: ACConflictResolution, principles: list[Principle]
     ) -> ConflictAnalysis:
         """Fallback analysis when QEC components are not available."""
         return ConflictAnalysis(
@@ -388,7 +413,7 @@ class QECConflictResolver:
         )
 
     def _fallback_patch_generation(
-        self, conflict: ACConflictResolution, principles: List[Principle]
+        self, conflict: ACConflictResolution, principles: list[Principle]
     ) -> PatchResult:
         """Fallback patch generation when QEC components are not available."""
         return PatchResult(

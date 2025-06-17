@@ -93,7 +93,7 @@ def test_user_login():
 
     if response.status_code == 200:
         cookies, csrf_token = extract_cookies_from_response(response)
-        print(f"   ✅ Login successful")
+        print("   ✅ Login successful")
         print(
             f"   CSRF Token: {csrf_token[:20]}..."
             if csrf_token

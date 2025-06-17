@@ -18,8 +18,7 @@ import os
 import statistics
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from datetime import UTC, datetime
 
 import aiohttp
 import asyncpg
@@ -38,7 +37,7 @@ class LoadTestConfig:
     concurrent_users: int = 100
     test_duration_seconds: int = 300  # 5 minutes
     target_response_time_ms: int = 200
-    services: Dict[str, int] = field(
+    services: dict[str, int] = field(
         default_factory=lambda: {
             "auth_service": 8000,
             "ac_service": 8001,
@@ -63,7 +62,7 @@ class TestResult:
     status_code: int
     success: bool
     timestamp: datetime
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -88,10 +87,10 @@ class LoadTestReport:
     average_response_time_ms: float
     p95_response_time_ms: float
     p99_response_time_ms: float
-    service_results: Dict[str, List[TestResult]]
-    cross_service_tests: List[TestResult]
+    service_results: dict[str, list[TestResult]]
+    cross_service_tests: list[TestResult]
     database_performance: DatabasePerformanceMetrics
-    alphaevolve_integration_results: List[TestResult]
+    alphaevolve_integration_results: list[TestResult]
 
 
 class LoadTester:
@@ -99,8 +98,8 @@ class LoadTester:
 
     def __init__(self, config: LoadTestConfig):
         self.config = config
-        self.results: List[TestResult] = []
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.results: list[TestResult] = []
+        self.session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
         """Async context manager entry."""
@@ -130,7 +129,7 @@ class LoadTester:
                     response_time_ms=response_time,
                     status_code=response.status,
                     success=success,
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                     error_message=None if success else f"HTTP {response.status}",
                 )
         except Exception as e:
@@ -141,11 +140,11 @@ class LoadTester:
                 response_time_ms=response_time,
                 status_code=0,
                 success=False,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 error_message=str(e),
             )
 
-    async def test_cross_service_communication(self) -> List[TestResult]:
+    async def test_cross_service_communication(self) -> list[TestResult]:
         """Test cross-service communication patterns."""
         cross_service_results = []
 
@@ -181,11 +180,11 @@ class LoadTester:
                                 response_time_ms=response_time,
                                 status_code=gs_resp.status,
                                 success=success,
-                                timestamp=datetime.now(timezone.utc),
+                                timestamp=datetime.now(UTC),
                                 error_message=(
                                     None
                                     if success
-                                    else f"Cross-service communication failed"
+                                    else "Cross-service communication failed"
                                 ),
                             )
                         )
@@ -198,14 +197,14 @@ class LoadTester:
                     response_time_ms=response_time,
                     status_code=0,
                     success=False,
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                     error_message=str(e),
                 )
             )
 
         return cross_service_results
 
-    async def test_alphaevolve_integration(self) -> List[TestResult]:
+    async def test_alphaevolve_integration(self) -> list[TestResult]:
         """Test AlphaEvolve integration under load."""
         alphaevolve_results = []
 
@@ -240,9 +239,9 @@ class LoadTester:
                         response_time_ms=response_time,
                         status_code=response.status,
                         success=success,
-                        timestamp=datetime.now(timezone.utc),
+                        timestamp=datetime.now(UTC),
                         error_message=(
-                            None if success else f"AlphaEvolve integration failed"
+                            None if success else "AlphaEvolve integration failed"
                         ),
                     )
                 )
@@ -255,7 +254,7 @@ class LoadTester:
                     response_time_ms=response_time,
                     status_code=0,
                     success=False,
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                     error_message=str(e),
                 )
             )
@@ -308,7 +307,7 @@ class LoadTester:
                 throughput_qps=0.0,
             )
 
-    async def run_concurrent_user_simulation(self, user_id: int) -> List[TestResult]:
+    async def run_concurrent_user_simulation(self, user_id: int) -> list[TestResult]:
         """Simulate a single concurrent user's workflow."""
         user_results = []
 
@@ -327,7 +326,7 @@ class LoadTester:
         logger.info(
             f"🚀 Starting ACGS-PGP Load Test with {self.config.concurrent_users} concurrent users"
         )
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
 
         # Create concurrent user tasks
         user_tasks = [
@@ -357,7 +356,7 @@ class LoadTester:
         logger.info("🗄️ Measuring database performance...")
         database_metrics = await self.test_database_performance()
 
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
 
         # Calculate metrics
         successful_results = [r for r in all_results if r.success]
@@ -406,7 +405,7 @@ def print_load_test_report(report: LoadTestReport):
     print("=" * 80)
 
     # Test configuration
-    print(f"📋 Test Configuration:")
+    print("📋 Test Configuration:")
     print(f"   Concurrent Users: {report.config.concurrent_users}")
     print(f"   Target Response Time: <{report.config.target_response_time_ms}ms")
     print(
@@ -419,7 +418,7 @@ def print_load_test_report(report: LoadTestReport):
         if report.total_requests > 0
         else 0
     )
-    print(f"\n📊 Overall Results:")
+    print("\n📊 Overall Results:")
     print(f"   Total Requests: {report.total_requests}")
     print(f"   Successful: {report.successful_requests} ({success_rate:.1f}%)")
     print(f"   Failed: {report.failed_requests}")
@@ -428,7 +427,7 @@ def print_load_test_report(report: LoadTestReport):
     print(f"   99th Percentile: {report.p99_response_time_ms:.1f}ms")
 
     # Service-specific results
-    print(f"\n🏥 Service Performance:")
+    print("\n🏥 Service Performance:")
     for service, results in report.service_results.items():
         if results:
             successful = [r for r in results if r.success]
@@ -449,7 +448,7 @@ def print_load_test_report(report: LoadTestReport):
             )
 
     # Cross-service communication
-    print(f"\n🔗 Cross-Service Communication:")
+    print("\n🔗 Cross-Service Communication:")
     if report.cross_service_tests:
         cross_success = [r for r in report.cross_service_tests if r.success]
         cross_success_rate = len(cross_success) / len(report.cross_service_tests) * 100
@@ -463,7 +462,7 @@ def print_load_test_report(report: LoadTestReport):
         print(f"   📈 Average Response Time: {cross_avg_response:.1f}ms")
 
     # Database performance
-    print(f"\n🗄️ Database Performance:")
+    print("\n🗄️ Database Performance:")
     if report.database_performance:
         dp = report.database_performance
         print(f"   Connection Time: {dp.connection_time_ms:.1f}ms")
@@ -471,7 +470,7 @@ def print_load_test_report(report: LoadTestReport):
         print(f"   Throughput: {dp.throughput_qps:.1f} qps")
 
     # AlphaEvolve integration
-    print(f"\n🧬 AlphaEvolve Integration:")
+    print("\n🧬 AlphaEvolve Integration:")
     if report.alphaevolve_integration_results:
         alpha_success = [r for r in report.alphaevolve_integration_results if r.success]
         alpha_success_rate = (
@@ -487,7 +486,7 @@ def print_load_test_report(report: LoadTestReport):
         print(f"   📈 Average Response Time: {alpha_avg_response:.1f}ms")
 
     # Performance assessment
-    print(f"\n🎯 Performance Assessment:")
+    print("\n🎯 Performance Assessment:")
     target_met = (
         success_rate >= 95
         and report.average_response_time_ms < report.config.target_response_time_ms

@@ -20,8 +20,8 @@ Test Coverage:
 import asyncio
 import json
 import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+from typing import Any
 
 import pytest
 import requests
@@ -86,11 +86,11 @@ class PolicySynthesisEnhancementTester:
         self.targets = TEST_CONFIG["performance_targets"]
         self.test_results = []
 
-    async def run_comprehensive_test_suite(self) -> Dict[str, Any]:
+    async def run_comprehensive_test_suite(self) -> dict[str, Any]:
         """Run the complete test suite for Policy Synthesis Enhancement."""
         print("🧪 Starting Policy Synthesis Enhancement Integration Tests")
 
-        test_start = datetime.now(timezone.utc)
+        test_start = datetime.now(UTC)
         overall_success = True
 
         try:
@@ -122,7 +122,7 @@ class PolicySynthesisEnhancementTester:
             load_tests = await self.test_load_performance()
             overall_success &= load_tests["success"]
 
-            test_end = datetime.now(timezone.utc)
+            test_end = datetime.now(UTC)
 
             return {
                 "overall_success": overall_success,
@@ -145,11 +145,11 @@ class PolicySynthesisEnhancementTester:
                 "overall_success": False,
                 "error": str(e),
                 "test_duration_seconds": (
-                    datetime.now(timezone.utc) - test_start
+                    datetime.now(UTC) - test_start
                 ).total_seconds(),
             }
 
-    async def test_basic_functionality(self) -> Dict[str, Any]:
+    async def test_basic_functionality(self) -> dict[str, Any]:
         """Test basic Policy Synthesis Enhancement functionality."""
         print("🔧 Testing basic functionality...")
 
@@ -194,7 +194,7 @@ class PolicySynthesisEnhancementTester:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def test_multi_model_consensus(self) -> Dict[str, Any]:
+    async def test_multi_model_consensus(self) -> dict[str, Any]:
         """Test multi-model consensus functionality."""
         print("🤝 Testing multi-model consensus...")
 
@@ -241,7 +241,7 @@ class PolicySynthesisEnhancementTester:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def test_error_prediction(self) -> Dict[str, Any]:
+    async def test_error_prediction(self) -> dict[str, Any]:
         """Test error prediction functionality."""
         print("🔮 Testing error prediction...")
 
@@ -313,7 +313,7 @@ class PolicySynthesisEnhancementTester:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def test_strategy_selection(self) -> Dict[str, Any]:
+    async def test_strategy_selection(self) -> dict[str, Any]:
         """Test strategy selection logic."""
         print("🎯 Testing strategy selection...")
 
@@ -372,7 +372,7 @@ class PolicySynthesisEnhancementTester:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def test_performance_optimization(self) -> Dict[str, Any]:
+    async def test_performance_optimization(self) -> dict[str, Any]:
         """Test performance optimization features."""
         print("⚡ Testing performance optimization...")
 
@@ -414,7 +414,7 @@ class PolicySynthesisEnhancementTester:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def _check_performance_targets(self) -> Dict[str, bool]:
+    def _check_performance_targets(self) -> dict[str, bool]:
         """Check if performance targets are met."""
         # This would analyze collected metrics
         return {
@@ -424,7 +424,7 @@ class PolicySynthesisEnhancementTester:
             "synthesis_quality": True,
         }
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate recommendations based on test results."""
         return [
             "Continue monitoring performance metrics",

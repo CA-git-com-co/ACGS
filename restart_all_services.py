@@ -11,7 +11,7 @@ import json
 import subprocess
 import sys
 import time
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 
@@ -30,7 +30,7 @@ class ACGSServiceManager:
             "ec_service": {"port": 8006, "status": "unknown"},
         }
 
-    def check_docker_containers(self) -> Dict[str, Any]:
+    def check_docker_containers(self) -> dict[str, Any]:
         """Check status of Docker containers."""
         print("🐳 Checking Docker container status...")
 
@@ -59,7 +59,7 @@ class ACGSServiceManager:
             print(f"❌ Failed to check Docker containers: {e}")
             return {}
 
-    def restart_docker_containers(self, containers: Dict[str, Any]) -> Dict[str, bool]:
+    def restart_docker_containers(self, containers: dict[str, Any]) -> dict[str, bool]:
         """Restart Docker containers."""
         print("🔄 Restarting Docker containers...")
 
@@ -86,7 +86,7 @@ class ACGSServiceManager:
                     time.sleep(2)
 
                     # Start container
-                    result = subprocess.run(
+                    subprocess.run(
                         ["docker", "start", container_name],
                         capture_output=True,
                         text=True,
@@ -108,7 +108,7 @@ class ACGSServiceManager:
 
         return restart_results
 
-    async def test_service_health(self, service_name: str, port: int) -> Dict[str, Any]:
+    async def test_service_health(self, service_name: str, port: int) -> dict[str, Any]:
         """Test health of a single service."""
         url = f"http://localhost:{port}/health"
 
@@ -135,7 +135,7 @@ class ACGSServiceManager:
                 "reachable": False,
             }
 
-    async def test_all_services(self) -> Dict[str, Any]:
+    async def test_all_services(self) -> dict[str, Any]:
         """Test health of all services."""
         print("🏥 Testing service health...")
 
@@ -155,8 +155,8 @@ class ACGSServiceManager:
         return results
 
     def generate_service_summary(
-        self, health_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, health_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate service health summary."""
 
         healthy = sum(
@@ -185,7 +185,7 @@ class ACGSServiceManager:
 
         return summary
 
-    async def run_comprehensive_restart(self) -> Dict[str, Any]:
+    async def run_comprehensive_restart(self) -> dict[str, Any]:
         """Run comprehensive service restart and validation."""
 
         print("🚀 ACGS-1 Comprehensive Service Restart")

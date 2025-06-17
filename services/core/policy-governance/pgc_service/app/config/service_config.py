@@ -7,7 +7,7 @@ integration points, and performance parameters.
 """
 
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 import yaml
 
@@ -75,7 +75,7 @@ class ServiceConfig:
         },
     }
 
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: str | None = None):
         """Initialize service configuration.
 
         Args:
@@ -102,7 +102,7 @@ class ServiceConfig:
             config_path: Path to YAML configuration file
         """
         try:
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 yaml_config = yaml.safe_load(f)
                 if yaml_config:
                     # Deep merge configuration
@@ -126,7 +126,11 @@ class ServiceConfig:
                         # Convert value to the appropriate type
                         current_value = self.config[section][key]
                         if isinstance(current_value, bool):
-                            self.config[section][key] = env_value.lower() in ["true", "1", "yes"]
+                            self.config[section][key] = env_value.lower() in [
+                                "true",
+                                "1",
+                                "yes",
+                            ]
                         elif isinstance(current_value, int):
                             self.config[section][key] = int(env_value)
                         elif isinstance(current_value, float):
@@ -134,7 +138,7 @@ class ServiceConfig:
                         else:
                             self.config[section][key] = env_value
 
-    def _deep_merge(self, target: Dict[str, Any], source: Dict[str, Any]) -> None:
+    def _deep_merge(self, target: dict[str, Any], source: dict[str, Any]) -> None:
         """Deep merge source dictionary into target dictionary.
 
         Args:
@@ -142,7 +146,11 @@ class ServiceConfig:
             source: Source dictionary to merge from
         """
         for key, value in source.items():
-            if key in target and isinstance(target[key], dict) and isinstance(value, dict):
+            if (
+                key in target
+                and isinstance(target[key], dict)
+                and isinstance(value, dict)
+            ):
                 self._deep_merge(target[key], value)
             else:
                 target[key] = value
@@ -162,7 +170,7 @@ class ServiceConfig:
             return self.config[section][key]
         return default
 
-    def get_section(self, section: str) -> Dict[str, Any]:
+    def get_section(self, section: str) -> dict[str, Any]:
         """Get configuration section.
 
         Args:
@@ -186,6 +194,8 @@ def get_service_config() -> ServiceConfig:
     """
     global _service_config
     if _service_config is None:
-        config_path = os.environ.get("PGC_CONFIG_PATH", "/app/config/service_config.yaml")
+        config_path = os.environ.get(
+            "PGC_CONFIG_PATH", "/app/config/service_config.yaml"
+        )
         _service_config = ServiceConfig(config_path)
     return _service_config

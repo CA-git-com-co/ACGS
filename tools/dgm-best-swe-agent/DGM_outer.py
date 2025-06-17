@@ -129,7 +129,7 @@ def choose_selfimproves(
         scores = [1 / (1 + math.exp(-10 * (score - 0.5))) for score in scores]
         children_counts = [candidates[commit]["children_count"] for commit in commits]
         children_counts = [1 / (1 + count) for count in children_counts]
-        probabilities = [score * count for score, count in zip(scores, children_counts)]
+        probabilities = [score * count for score, count in zip(scores, children_counts, strict=False)]
         probabilities = [prob / sum(probabilities) for prob in probabilities]
         parent_commits = random.choices(commits, probabilities, k=selfimprove_size)
     elif method == "best":
@@ -192,10 +192,12 @@ def choose_selfimproves(
     return selfimprove_entries
 
 
-def filter_compiled(run_ids, output_dir, num_swe_issues=[], logger=None):
+def filter_compiled(run_ids, output_dir, num_swe_issues=None, logger=None):
     """
     Filter out runs that did not compile or have all empty patches.
     """
+    if num_swe_issues is None:
+        num_swe_issues = []
     run_ids_compiled = []
 
     logger.info(f"num_swe_issues: {num_swe_issues}")

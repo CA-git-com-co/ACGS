@@ -16,17 +16,15 @@ Key Features:
 - Integration with existing constitutional compliance systems
 """
 
-import asyncio
 import hashlib
-import json
 import logging
 import statistics
 import time
 from collections import deque
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Deque, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -101,10 +99,10 @@ class ConstitutionalBaseline:
 
     baseline_id: str
     constitutional_hash: str
-    principles: Dict[str, str]  # principle_id -> content
-    principle_embeddings: Dict[str, np.ndarray]
-    governance_structure: Dict[str, Any]
-    core_values: List[str]
+    principles: dict[str, str]  # principle_id -> content
+    principle_embeddings: dict[str, np.ndarray]
+    governance_structure: dict[str, Any]
+    core_values: list[str]
     created_at: datetime
     version: str = "1.0.0"
 
@@ -123,8 +121,8 @@ class DriftMeasurement:
     value_drift_score: float
     overall_drift_score: float
     drift_severity: DriftSeverity
-    affected_principles: List[str]
-    drift_details: Dict[str, Any]
+    affected_principles: list[str]
+    drift_details: dict[str, Any]
 
 
 @dataclass
@@ -136,7 +134,7 @@ class DriftAlert:
     drift_measurement: DriftMeasurement
     severity: DriftSeverity
     message: str
-    recommended_actions: List[str]
+    recommended_actions: list[str]
     requires_constitutional_review: bool
 
 
@@ -186,14 +184,14 @@ class ConstitutionalDriftDetector:
         self.check_interval_hours = check_interval_hours
 
         # Baseline storage
-        self.constitutional_baselines: Dict[str, ConstitutionalBaseline] = {}
-        self.current_baseline_id: Optional[str] = None
+        self.constitutional_baselines: dict[str, ConstitutionalBaseline] = {}
+        self.current_baseline_id: str | None = None
 
         # Drift measurements history
-        self.drift_measurements: Deque[DriftMeasurement] = deque(maxlen=1000)
+        self.drift_measurements: deque[DriftMeasurement] = deque(maxlen=1000)
 
         # Alert history
-        self.drift_alerts: List[DriftAlert] = []
+        self.drift_alerts: list[DriftAlert] = []
 
         # Embedding model for semantic analysis
         self.embedding_model = None
@@ -269,9 +267,9 @@ class ConstitutionalDriftDetector:
     async def create_constitutional_baseline(
         self,
         constitutional_hash: str,
-        principles: Dict[str, str],
-        governance_structure: Dict[str, Any],
-        core_values: List[str],
+        principles: dict[str, str],
+        governance_structure: dict[str, Any],
+        core_values: list[str],
         version: str = "1.0.0",
     ) -> str:
         """Create a new constitutional baseline for drift comparison."""
@@ -291,7 +289,7 @@ class ConstitutionalDriftDetector:
                 principle_embeddings=principle_embeddings,
                 governance_structure=governance_structure.copy(),
                 core_values=core_values.copy(),
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
                 version=version,
             )
 
@@ -311,8 +309,8 @@ class ConstitutionalDriftDetector:
             return ""
 
     def _calculate_semantic_drift(
-        self, baseline: ConstitutionalBaseline, current_principles: Dict[str, str]
-    ) -> Tuple[float, List[str]]:
+        self, baseline: ConstitutionalBaseline, current_principles: dict[str, str]
+    ) -> tuple[float, list[str]]:
         """Calculate semantic drift between baseline and current principles."""
         try:
             if not baseline.principle_embeddings or not current_principles:
@@ -330,7 +328,8 @@ class ConstitutionalDriftDetector:
 
                     # Calculate cosine distance
                     cosine_sim = np.dot(current_embedding, baseline_embedding) / (
-                        np.linalg.norm(current_embedding) * np.linalg.norm(baseline_embedding)
+                        np.linalg.norm(current_embedding)
+                        * np.linalg.norm(baseline_embedding)
                     )
                     cosine_distance = 1 - cosine_sim
 
@@ -360,7 +359,7 @@ class ConstitutionalDriftDetector:
             return 0.0, []
 
     def _calculate_structural_drift(
-        self, baseline: ConstitutionalBaseline, current_structure: Dict[str, Any]
+        self, baseline: ConstitutionalBaseline, current_structure: dict[str, Any]
     ) -> float:
         """Calculate structural drift in governance framework."""
         try:
@@ -388,7 +387,7 @@ class ConstitutionalDriftDetector:
             return 0.0
 
     def _calculate_value_drift(
-        self, baseline: ConstitutionalBaseline, current_values: List[str]
+        self, baseline: ConstitutionalBaseline, current_values: list[str]
     ) -> float:
         """Calculate drift in core constitutional values."""
         try:
@@ -418,11 +417,11 @@ class ConstitutionalDriftDetector:
     async def detect_constitutional_drift(
         self,
         current_constitutional_hash: str,
-        current_principles: Dict[str, str],
-        current_structure: Dict[str, Any],
-        current_values: List[str],
-        baseline_id: Optional[str] = None,
-    ) -> Optional[DriftMeasurement]:
+        current_principles: dict[str, str],
+        current_structure: dict[str, Any],
+        current_values: list[str],
+        baseline_id: str | None = None,
+    ) -> DriftMeasurement | None:
         """Detect constitutional drift against baseline."""
         start_time = time.time()
 
@@ -440,7 +439,9 @@ class ConstitutionalDriftDetector:
                 baseline, current_principles
             )
 
-            structural_drift = self._calculate_structural_drift(baseline, current_structure)
+            structural_drift = self._calculate_structural_drift(
+                baseline, current_structure
+            )
 
             # Procedural drift (simplified - could be enhanced with actual procedure analysis)
             procedural_drift = min(
@@ -474,7 +475,7 @@ class ConstitutionalDriftDetector:
             # Create drift measurement
             measurement = DriftMeasurement(
                 measurement_id=f"drift_{int(time.time())}_{hash(current_constitutional_hash)%10000:04d}",
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 baseline_id=baseline_id,
                 current_constitutional_hash=current_constitutional_hash,
                 semantic_drift_score=semantic_drift,
@@ -486,7 +487,8 @@ class ConstitutionalDriftDetector:
                 affected_principles=affected_principles,
                 drift_details={
                     "baseline_version": baseline.version,
-                    "principles_added": len(current_principles) - len(baseline.principles),
+                    "principles_added": len(current_principles)
+                    - len(baseline.principles),
                     "principles_modified": len(affected_principles),
                     "detection_time_ms": (time.time() - start_time) * 1000,
                 },
@@ -503,7 +505,7 @@ class ConstitutionalDriftDetector:
                 * (self.detection_stats["total_measurements"] - 1)
                 + detection_time
             ) / self.detection_stats["total_measurements"]
-            self.detection_stats["last_check_timestamp"] = datetime.now(timezone.utc)
+            self.detection_stats["last_check_timestamp"] = datetime.now(UTC)
 
             # Update Prometheus metrics
             if PROMETHEUS_AVAILABLE:
@@ -524,26 +526,26 @@ class ConstitutionalDriftDetector:
             logger.error(f"Failed to detect constitutional drift: {e}")
             return None
 
-    def get_drift_detection_metrics(self) -> Dict[str, Any]:
+    def get_drift_detection_metrics(self) -> dict[str, Any]:
         """Get comprehensive drift detection performance metrics."""
         try:
             # Calculate recent accuracy if we have ground truth data
-            recent_accuracy = (
-                0.85  # Mock accuracy - in production would be calculated from validation data
-            )
+            recent_accuracy = 0.85  # Mock accuracy - in production would be calculated from validation data
 
             # Calculate alert frequency
             recent_alerts = [
                 a
                 for a in self.drift_alerts
-                if a.timestamp > datetime.now(timezone.utc) - timedelta(days=7)
+                if a.timestamp > datetime.now(UTC) - timedelta(days=7)
             ]
 
             return {
                 "detection_statistics": {
                     "total_measurements": self.detection_stats["total_measurements"],
                     "total_alerts": self.detection_stats["total_alerts"],
-                    "avg_detection_time_ms": self.detection_stats["avg_detection_time_ms"],
+                    "avg_detection_time_ms": self.detection_stats[
+                        "avg_detection_time_ms"
+                    ],
                     "last_check": (
                         self.detection_stats["last_check_timestamp"].isoformat()
                         if self.detection_stats["last_check_timestamp"]
@@ -581,7 +583,7 @@ class ConstitutionalDriftDetector:
 
 
 # Global constitutional drift detector instance
-_drift_detector: Optional[ConstitutionalDriftDetector] = None
+_drift_detector: ConstitutionalDriftDetector | None = None
 
 
 async def get_constitutional_drift_detector(

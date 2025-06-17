@@ -17,9 +17,9 @@ import json
 import logging
 import subprocess
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import docker
 import requests
@@ -43,8 +43,8 @@ class CriticalActionItemsCoordinator:
         self.project_root = Path(__file__).parent.parent
         self.docker_client = docker.from_env()
         self.execution_report = {
-            "execution_id": f"acgs_critical_fixes_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
-            "start_time": datetime.now(timezone.utc).isoformat(),
+            "execution_id": f"acgs_critical_fixes_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}",
+            "start_time": datetime.now(UTC).isoformat(),
             "phases": {},
             "success_criteria": {
                 "infrastructure_availability": {"target": 100.0, "achieved": 0.0},
@@ -56,7 +56,7 @@ class CriticalActionItemsCoordinator:
             "overall_success_rate": 0.0,
         }
 
-    async def execute_all_phases(self) -> Dict[str, Any]:
+    async def execute_all_phases(self) -> dict[str, Any]:
         """Execute all critical action item phases with comprehensive validation."""
         logger.info("🚀 Starting ACGS-1 Critical Action Items Implementation")
 
@@ -92,7 +92,7 @@ class CriticalActionItemsCoordinator:
                     "status": "SUCCESS" if phase_result["success"] else "FAILED",
                     "duration_seconds": phase_duration,
                     "details": phase_result,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
 
                 if phase_result["success"]:
@@ -111,14 +111,14 @@ class CriticalActionItemsCoordinator:
                     "status": "CRASHED",
                     "duration_seconds": time.time() - phase_start,
                     "error": str(e),
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
 
         # Calculate overall success rate
         self.execution_report["overall_success_rate"] = (
             successful_phases / total_phases
         ) * 100
-        self.execution_report["end_time"] = datetime.now(timezone.utc).isoformat()
+        self.execution_report["end_time"] = datetime.now(UTC).isoformat()
 
         # Final validation
         await self.final_validation()
@@ -139,7 +139,7 @@ class CriticalActionItemsCoordinator:
 
         return self.execution_report
 
-    async def phase1_infrastructure_fixes(self) -> Dict[str, Any]:
+    async def phase1_infrastructure_fixes(self) -> dict[str, Any]:
         """Phase 1: Critical Infrastructure Fixes"""
         results = {"success": True, "fixes_applied": [], "errors": []}
 
@@ -177,7 +177,7 @@ class CriticalActionItemsCoordinator:
 
         return results
 
-    async def phase2_testing_infrastructure(self) -> Dict[str, Any]:
+    async def phase2_testing_infrastructure(self) -> dict[str, Any]:
         """Phase 2: Enhanced Testing Infrastructure"""
         results = {"success": True, "enhancements": [], "errors": []}
 
@@ -211,7 +211,7 @@ class CriticalActionItemsCoordinator:
 
         return results
 
-    async def phase3_performance_optimization(self) -> Dict[str, Any]:
+    async def phase3_performance_optimization(self) -> dict[str, Any]:
         """Phase 3: Performance Optimization"""
         results = {"success": True, "optimizations": [], "errors": []}
 
@@ -238,7 +238,7 @@ class CriticalActionItemsCoordinator:
 
         return results
 
-    async def phase4_security_hardening(self) -> Dict[str, Any]:
+    async def phase4_security_hardening(self) -> dict[str, Any]:
         """Phase 4: Security Hardening"""
         results = {"success": True, "hardening": [], "errors": []}
 
@@ -260,7 +260,7 @@ class CriticalActionItemsCoordinator:
 
         return results
 
-    async def phase5_documentation_validation(self) -> Dict[str, Any]:
+    async def phase5_documentation_validation(self) -> dict[str, Any]:
         """Phase 5: Documentation and Final Validation"""
         results = {"success": True, "documentation": [], "errors": []}
 
@@ -591,7 +591,7 @@ class CriticalActionItemsCoordinator:
                 return "REDIS_NOT_FOUND"
 
             # Test Redis connectivity
-            response = requests.get("http://localhost:6380", timeout=5)
+            requests.get("http://localhost:6380", timeout=5)
             return "IMPLEMENTED"
         except Exception as e:
             return f"ERROR: {str(e)}"

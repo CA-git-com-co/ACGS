@@ -10,6 +10,7 @@ This script optimizes system performance to meet production targets:
 """
 
 import asyncio
+import concurrent.futures
 import json
 import logging
 import subprocess
@@ -17,9 +18,6 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
-import aiohttp
-import concurrent.futures
 
 # Configure logging
 logging.basicConfig(
@@ -37,7 +35,7 @@ class PerformanceOptimizer:
         self.target_concurrent_users = 1000
         self.target_availability = 99.9  # %
 
-    async def execute_performance_optimization(self) -> Dict:
+    async def execute_performance_optimization(self) -> dict:
         """Execute comprehensive performance optimization."""
         logger.info("⚡ Starting ACGS-1 Performance Optimization")
         start_time = time.time()
@@ -108,7 +106,7 @@ class PerformanceOptimizer:
             results["success"] = False
             return results
 
-    async def assess_baseline_performance(self) -> Dict:
+    async def assess_baseline_performance(self) -> dict:
         """Assess current baseline performance."""
         logger.info("📊 Assessing baseline performance...")
 
@@ -184,7 +182,7 @@ class PerformanceOptimizer:
             "baseline_metrics": baseline_metrics,
         }
 
-    async def test_governance_workflows(self) -> Dict:
+    async def test_governance_workflows(self) -> dict:
         """Test governance workflow performance."""
         logger.info("🏛️ Testing governance workflows...")
 
@@ -248,7 +246,7 @@ class PerformanceOptimizer:
             "workflow_performance": workflow_performance,
         }
 
-    async def test_concurrent_load(self) -> Dict:
+    async def test_concurrent_load(self) -> dict:
         """Test concurrent load capacity."""
         logger.info("🔄 Testing concurrent load...")
 
@@ -311,7 +309,7 @@ class PerformanceOptimizer:
 
         # Find maximum supported concurrent users
         max_supported_users = 0
-        for level, result in load_test_results.items():
+        for _level, result in load_test_results.items():
             if result.get("meets_target", False):
                 users = result.get("concurrent_users", 0)
                 max_supported_users = max(max_supported_users, users)
@@ -325,7 +323,7 @@ class PerformanceOptimizer:
             "load_test_results": load_test_results,
         }
 
-    def make_test_request(self) -> Dict:
+    def make_test_request(self) -> dict:
         """Make a single test request for load testing."""
         try:
             result = subprocess.run(
@@ -341,7 +339,7 @@ class PerformanceOptimizer:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    async def identify_bottlenecks(self) -> Dict:
+    async def identify_bottlenecks(self) -> dict:
         """Identify performance bottlenecks."""
         logger.info("🔍 Identifying bottlenecks...")
 
@@ -422,7 +420,7 @@ class PerformanceOptimizer:
             "bottleneck_analysis": bottleneck_analysis,
         }
 
-    async def implement_optimizations(self) -> Dict:
+    async def implement_optimizations(self) -> dict:
         """Implement performance optimizations."""
         logger.info("🚀 Implementing optimizations...")
 
@@ -446,7 +444,7 @@ class PerformanceOptimizer:
             "total_optimizations": len(optimizations_applied),
         }
 
-    async def validate_final_performance(self) -> Dict:
+    async def validate_final_performance(self) -> dict:
         """Validate final performance after optimizations."""
         logger.info("✅ Validating final performance...")
 
@@ -459,7 +457,7 @@ class PerformanceOptimizer:
             "performance_improved": True,  # Would compare with baseline in real implementation
         }
 
-    def evaluate_targets(self, results: Dict) -> Dict:
+    def evaluate_targets(self, results: dict) -> dict:
         """Evaluate if performance targets are met."""
         targets_met = {}
 
@@ -491,7 +489,7 @@ class PerformanceOptimizer:
             },
         }
 
-    async def save_performance_report(self, results: Dict) -> None:
+    async def save_performance_report(self, results: dict) -> None:
         """Save comprehensive performance report."""
         report_file = f"priority2_performance_optimization_{int(time.time())}.json"
         report_path = self.project_root / "logs" / report_file

@@ -44,7 +44,7 @@ async def health_check() -> dict:
 ```
 
 ### 6. **PYTHONPATH Configuration**
-**Status**: ✅ Already correctly configured in docker-compose.yml
+**Status**: ✅ Already correctly configured in infrastructure/docker/docker-compose.yml
 - All services have `PYTHONPATH=/app:/app/shared`
 - Volume mounting correctly configured: `./services/core/shared:/app/shared`
 

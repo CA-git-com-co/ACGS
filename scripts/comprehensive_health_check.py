@@ -10,7 +10,7 @@ import logging
 import sys
 import time
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -47,7 +47,7 @@ class ACGSHealthChecker:
         self.health_results = {}
         self.performance_metrics = {}
 
-    async def run_comprehensive_health_check(self) -> Dict[str, Any]:
+    async def run_comprehensive_health_check(self) -> dict[str, Any]:
         """Run comprehensive health check on all components."""
         logger.info("🏥 Starting ACGS-PGP Comprehensive Health Check")
 
@@ -77,7 +77,7 @@ class ACGSHealthChecker:
 
         return health_report
 
-    async def check_all_services(self) -> Dict[str, Any]:
+    async def check_all_services(self) -> dict[str, Any]:
         """Check health of all ACGS-PGP services."""
         logger.info("🔍 Checking service health...")
 
@@ -94,8 +94,8 @@ class ACGSHealthChecker:
         return service_results
 
     async def check_service_health(
-        self, session: aiohttp.ClientSession, service_name: str, config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, session: aiohttp.ClientSession, service_name: str, config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check individual service health."""
         result = {
             "status": "unknown",
@@ -130,7 +130,7 @@ class ACGSHealthChecker:
                         f"❌ {service_name}: Unhealthy (HTTP {response.status})"
                     )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             result["status"] = "timeout"
             result["error"] = "Request timeout"
             logger.warning(f"⏱️ {service_name}: Timeout")
@@ -141,7 +141,7 @@ class ACGSHealthChecker:
 
         return result
 
-    async def check_infrastructure(self) -> Dict[str, Any]:
+    async def check_infrastructure(self) -> dict[str, Any]:
         """Check infrastructure component health."""
         logger.info("🏗️ Checking infrastructure health...")
 
@@ -163,8 +163,8 @@ class ACGSHealthChecker:
         self,
         session: aiohttp.ClientSession,
         component_name: str,
-        config: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        config: dict[str, Any],
+    ) -> dict[str, Any]:
         """Check individual infrastructure component."""
         result = {
             "status": "unknown",
@@ -212,7 +212,7 @@ class ACGSHealthChecker:
 
         return result
 
-    async def check_service_dependencies(self) -> Dict[str, Any]:
+    async def check_service_dependencies(self) -> dict[str, Any]:
         """Check service dependency health."""
         logger.info("🔗 Checking service dependencies...")
 
@@ -239,7 +239,7 @@ class ACGSHealthChecker:
 
     async def test_service_dependency(
         self, session: aiohttp.ClientSession, source: str, target: str, description: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test dependency between two services."""
         result = {
             "description": description,
@@ -282,7 +282,7 @@ class ACGSHealthChecker:
 
         return result
 
-    async def check_performance_metrics(self) -> Dict[str, Any]:
+    async def check_performance_metrics(self) -> dict[str, Any]:
         """Check performance metrics and thresholds."""
         logger.info("📊 Checking performance metrics...")
 
@@ -349,7 +349,7 @@ class ACGSHealthChecker:
         return performance_results
 
     def calculate_overall_status(
-        self, service_results: Dict[str, Any], infrastructure_results: Dict[str, Any]
+        self, service_results: dict[str, Any], infrastructure_results: dict[str, Any]
     ) -> str:
         """Calculate overall system status."""
         # Check critical services
@@ -372,7 +372,7 @@ class ACGSHealthChecker:
         else:
             return "unhealthy"
 
-    def generate_recommendations(self) -> List[str]:
+    def generate_recommendations(self) -> list[str]:
         """Generate recommendations based on health check results."""
         recommendations = []
 

@@ -8,16 +8,16 @@ This guide helps existing contributors adapt to the new blockchain-focused direc
 
 | Old Location | New Location | Purpose |
 |--------------|--------------|---------|
-| `src/backend/ac_service/` | `services/core/constitutional-ai/` | Constitutional AI service |
-| `src/backend/gs_service/` | `services/core/governance-synthesis/` | Governance synthesis service |
-| `src/backend/pgc_service/` | `services/core/policy-governance/` | Policy governance service |
-| `src/backend/fv_service/` | `services/core/formal-verification/` | Formal verification service |
-| `src/backend/auth_service/` | `services/platform/authentication/` | Authentication service |
-| `src/backend/integrity_service/` | `services/platform/integrity/` | Integrity service |
-| `src/backend/shared/` | `services/shared/` | Shared libraries |
-| `src/frontend/` | `applications/legacy-frontend/` | Legacy frontend |
-| `quantumagi_core/` | `blockchain/` | Blockchain programs |
-| `src/alphaevolve_gs_engine/` | `integrations/alphaevolve-engine/` | AlphaEvolve integration |
+| `services/core/constitutional-ai/ac_service/` | `services/core/constitutional-ai/` | Constitutional AI service |
+| `services/core/governance-synthesis/gs_service/` | `services/core/governance-synthesis/` | Governance synthesis service |
+| `services/platform/pgc/pgc_service/` | `services/core/policy-governance/` | Policy governance service |
+| `services/core/formal-verification/fv_service/` | `services/core/formal-verification/` | Formal verification service |
+| `services/core/auth/auth_service/` | `services/platform/authentication/` | Authentication service |
+| `services/platform/integrity/integrity_service/` | `services/platform/integrity/` | Integrity service |
+| `services/shared/` | `services/shared/` | Shared libraries |
+| `applications/legacy-applications/governance-dashboard/` | `applications/legacy-applications/governance-dashboard/` | Legacy frontend |
+| `blockchain/` | `blockchain/` | Blockchain programs |
+| `integrations/alphaevolve-engine/` | `integrations/alphaevolve-engine/` | AlphaEvolve integration |
 
 ### Import Path Changes
 
@@ -32,9 +32,9 @@ This guide helps existing contributors adapt to the new blockchain-focused direc
 
 | Old Path | New Path |
 |----------|----------|
-| `./src/backend/ac_service` | `./services/core/constitutional-ai/ac_service` |
-| `./quantumagi_core/deploy` | `./blockchain/quantumagi-deployment/deploy` |
-| `docker-compose.yml` | `infrastructure/docker/docker-compose.yml` |
+| `./services/core/constitutional-ai/ac_service` | `./services/core/constitutional-ai/ac_service` |
+| `./blockchain/deploy` | `./blockchain/quantumagi-deployment/deploy` |
+| `infrastructure/docker/docker-compose.yml` | `infrastructure/docker/infrastructure/docker/docker-compose.yml` |
 
 ## 🛠️ Migration Steps
 
@@ -75,7 +75,7 @@ from services.core.constitutional_ai.ac_service.app.main import app
 **TypeScript/JavaScript**:
 ```typescript
 // Old
-import { SolanaService } from '../../../quantumagi_core/client'
+import { SolanaService } from '../../../blockchain/client'
 
 // New
 import { SolanaService } from '../../../blockchain/client'
@@ -83,12 +83,12 @@ import { SolanaService } from '../../../blockchain/client'
 
 ### 3. Update Docker Configurations
 
-**docker-compose.yml**:
+**infrastructure/docker/docker-compose.yml**:
 ```yaml
 # Old
 services:
   ac_service:
-    build: ./src/backend/ac_service
+    build: ./services/core/constitutional-ai/ac_service
 
 # New
 services:
@@ -102,7 +102,7 @@ services:
 ```yaml
 # Old
 - name: Build service
-  run: docker build ./src/backend/ac_service
+  run: docker build ./services/core/constitutional-ai/ac_service
 
 # New
 - name: Build service
@@ -111,8 +111,8 @@ services:
 
 ### 5. Update Documentation References
 
-- Replace `src/backend/` with `services/`
-- Replace `quantumagi_core/` with `blockchain/`
+- Replace `services/` with `services/`
+- Replace `blockchain/` with `blockchain/`
 - Update API endpoint documentation
 - Update deployment guide references
 
@@ -172,7 +172,7 @@ from services.shared.models import User
 **Solution**: Update Dockerfile paths:
 ```dockerfile
 # Change this
-COPY src/backend/shared /app/shared
+COPY services/shared /app/shared
 
 # To this
 COPY services/shared /app/shared

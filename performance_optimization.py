@@ -9,7 +9,6 @@ import json
 import statistics
 import time
 from datetime import datetime
-from typing import Dict, List, Optional
 
 import aiohttp
 
@@ -39,9 +38,9 @@ class PerformanceOptimizer:
         service: str,
         endpoint: str,
         method: str = "GET",
-        data: Optional[Dict] = None,
+        data: dict | None = None,
         iterations: int = 10,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Measure performance metrics for a specific endpoint"""
         response_times = []
         success_count = 0
@@ -90,7 +89,7 @@ class PerformanceOptimizer:
                 "total_requests": iterations,
             }
 
-    async def test_database_query_performance(self) -> Dict[str, Dict[str, float]]:
+    async def test_database_query_performance(self) -> dict[str, dict[str, float]]:
         """Test database query performance across services"""
         print("\n🗄️ Testing Database Query Performance...")
 
@@ -147,7 +146,7 @@ class PerformanceOptimizer:
 
         return results
 
-    async def test_llm_inference_performance(self) -> Dict[str, Dict[str, float]]:
+    async def test_llm_inference_performance(self) -> dict[str, dict[str, float]]:
         """Test LLM inference performance"""
         print("\n🤖 Testing LLM Inference Performance...")
 
@@ -206,7 +205,7 @@ class PerformanceOptimizer:
 
         return results
 
-    async def test_z3_solver_performance(self) -> Dict[str, Dict[str, float]]:
+    async def test_z3_solver_performance(self) -> dict[str, dict[str, float]]:
         """Test Z3 SMT solver performance"""
         print("\n🔍 Testing Z3 Solver Performance...")
 
@@ -269,7 +268,7 @@ class PerformanceOptimizer:
 
         return results
 
-    async def test_cryptographic_performance(self) -> Dict[str, Dict[str, float]]:
+    async def test_cryptographic_performance(self) -> dict[str, dict[str, float]]:
         """Test cryptographic operations performance"""
         print("\n🔐 Testing Cryptographic Performance...")
 
@@ -320,7 +319,7 @@ class PerformanceOptimizer:
 
         return results
 
-    def generate_optimization_recommendations(self, all_results: Dict) -> List[str]:
+    def generate_optimization_recommendations(self, all_results: dict) -> list[str]:
         """Generate performance optimization recommendations"""
         recommendations = []
 
@@ -392,7 +391,7 @@ class PerformanceOptimizer:
 
         return recommendations
 
-    async def run_performance_analysis(self) -> Dict:
+    async def run_performance_analysis(self) -> dict:
         """Run comprehensive performance analysis"""
         print("🚀 ACGS-PGP Performance Optimization Suite")
         print("=" * 60)
@@ -437,7 +436,7 @@ async def main():
         with open("performance_analysis_results.json", "w") as f:
             json.dump(analysis_results, f, indent=2)
 
-        print(f"\n📊 Results saved to: performance_analysis_results.json")
+        print("\n📊 Results saved to: performance_analysis_results.json")
         return 0
 
 

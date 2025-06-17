@@ -8,7 +8,7 @@ import logging
 import subprocess
 import sys
 import time
-from typing import Any, Dict
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ class MimesisValidationSuite:
     def __init__(self):
         self.test_results = {}
 
-    def test_mimesis_import(self) -> Dict[str, Any]:
+    def test_mimesis_import(self) -> dict[str, Any]:
         """Test basic mimesis import and version"""
         logger.info("📦 Testing mimesis import...")
 
@@ -33,7 +33,7 @@ class MimesisValidationSuite:
         except Exception as e:
             return {"status": "error", "error": str(e), "import_successful": False}
 
-    def test_basic_data_generation(self) -> Dict[str, Any]:
+    def test_basic_data_generation(self) -> dict[str, Any]:
         """Test basic data generation functionality"""
         logger.info("🎲 Testing basic data generation...")
 
@@ -72,7 +72,7 @@ class MimesisValidationSuite:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def test_localization(self) -> Dict[str, Any]:
+    def test_localization(self) -> dict[str, Any]:
         """Test localization functionality"""
         logger.info("🌍 Testing localization...")
 
@@ -105,7 +105,7 @@ class MimesisValidationSuite:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def test_custom_providers(self) -> Dict[str, Any]:
+    def test_custom_providers(self) -> dict[str, Any]:
         """Test custom provider functionality"""
         logger.info("🔧 Testing custom providers...")
 
@@ -143,7 +143,7 @@ class MimesisValidationSuite:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def run_pytest_tests(self) -> Dict[str, Any]:
+    def run_pytest_tests(self) -> dict[str, Any]:
         """Run existing pytest tests that use mimesis"""
         logger.info("🧪 Running pytest tests with mimesis...")
 
@@ -191,7 +191,7 @@ class MimesisValidationSuite:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def run_full_validation(self) -> Dict[str, Any]:
+    def run_full_validation(self) -> dict[str, Any]:
         """Run complete validation suite"""
         logger.info("🚀 Starting mimesis upgrade validation...")
 
@@ -214,7 +214,7 @@ class MimesisValidationSuite:
         successful_tests = 0
         total_tests = len(validation_results["tests"])
 
-        for test_name, test_result in validation_results["tests"].items():
+        for _test_name, test_result in validation_results["tests"].items():
             if test_result.get("status") in ["success", "completed"]:
                 successful_tests += 1
 

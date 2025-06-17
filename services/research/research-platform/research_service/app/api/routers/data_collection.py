@@ -5,7 +5,7 @@ Provides endpoints for research data collection and management.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -21,14 +21,16 @@ class DatasetCreateRequest(BaseModel):
     """Request model for creating datasets."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    description: Optional[str] = None
-    domain: Optional[str] = None
+    description: str | None = None
+    domain: str | None = None
     data_type: str = Field(..., pattern="^(experimental|observational|synthetic)$")
-    schema_definition: Dict[str, Any] = Field(default_factory=dict)
+    schema_definition: dict[str, Any] = Field(default_factory=dict)
     data_format: str = Field(default="json")
-    access_level: str = Field(default="private", pattern="^(public|private|restricted)$")
-    tags: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    access_level: str = Field(
+        default="private", pattern="^(public|private|restricted)$"
+    )
+    tags: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class DatasetResponse(BaseModel):
@@ -36,24 +38,26 @@ class DatasetResponse(BaseModel):
 
     id: str
     name: str
-    description: Optional[str]
+    description: str | None
     version: str
-    domain: Optional[str]
+    domain: str | None
     data_type: str
-    size_bytes: Optional[int]
-    record_count: Optional[int]
-    schema_definition: Dict[str, Any]
+    size_bytes: int | None
+    record_count: int | None
+    schema_definition: dict[str, Any]
     data_format: str
-    completeness_score: Optional[float]
-    consistency_score: Optional[float]
-    validity_score: Optional[float]
+    completeness_score: float | None
+    consistency_score: float | None
+    validity_score: float | None
     access_level: str
-    tags: List[str]
-    metadata: Dict[str, Any]
+    tags: list[str]
+    metadata: dict[str, Any]
 
 
 @router.post("/datasets", response_model=DatasetResponse)
-async def create_dataset(request: DatasetCreateRequest, db: AsyncSession = Depends(get_db_session)):
+async def create_dataset(
+    request: DatasetCreateRequest, db: AsyncSession = Depends(get_db_session)
+):
     """Create a new research dataset."""
     try:
         # Placeholder implementation
@@ -81,11 +85,11 @@ async def create_dataset(request: DatasetCreateRequest, db: AsyncSession = Depen
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/datasets", response_model=List[DatasetResponse])
+@router.get("/datasets", response_model=list[DatasetResponse])
 async def list_datasets(
     db: AsyncSession = Depends(get_db_session),
-    domain: Optional[str] = Query(None),
-    data_type: Optional[str] = Query(None),
+    domain: str | None = Query(None),
+    data_type: str | None = Query(None),
     limit: int = Query(50, le=100),
     offset: int = Query(0, ge=0),
 ):
@@ -116,13 +120,15 @@ async def get_dataset(dataset_id: str, db: AsyncSession = Depends(get_db_session
 @router.post("/datasets/{dataset_id}/data-points")
 async def add_data_points(
     dataset_id: str,
-    data_points: List[Dict[str, Any]],
+    data_points: list[dict[str, Any]],
     db: AsyncSession = Depends(get_db_session),
 ):
     """Add data points to a dataset."""
     try:
         # Placeholder implementation
-        return {"message": f"Added {len(data_points)} data points to dataset {dataset_id}"}
+        return {
+            "message": f"Added {len(data_points)} data points to dataset {dataset_id}"
+        }
 
     except Exception as e:
         logger.error(f"Error adding data points: {e}")
@@ -206,7 +212,9 @@ async def collect_llm_reliability_data(
 @router.post("/collect/performance-metrics")
 async def collect_performance_metrics(
     db: AsyncSession = Depends(get_db_session),
-    services: List[str] = Query(["ac_service", "gs_service", "fv_service", "pgc_service"]),
+    services: list[str] = Query(
+        ["ac_service", "gs_service", "fv_service", "pgc_service"]
+    ),
 ):
     """Collect performance metrics from specified services."""
     try:

@@ -97,7 +97,9 @@ def upgrade():
         ),
         sa.Column("verified_by", sa.Integer(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
-        sa.ForeignKeyConstraint(["policy_rule_id"], ["policy_rules.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(
+            ["policy_rule_id"], ["policy_rules.id"], ondelete="CASCADE"
+        ),
         sa.ForeignKeyConstraint(["verified_by"], ["users.id"], ondelete="SET NULL"),
     )
 
@@ -107,7 +109,9 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("property_id", sa.String(255), nullable=False),
         sa.Column("policy_rule_id", sa.Integer(), nullable=False),
-        sa.Column("status", sa.String(50), nullable=False),  # satisfied, violated, unknown
+        sa.Column(
+            "status", sa.String(50), nullable=False
+        ),  # satisfied, violated, unknown
         sa.Column("witness_trace", sa.Text(), nullable=True),
         sa.Column("counter_example_trace", sa.Text(), nullable=True),
         sa.Column("verification_depth", sa.Integer(), nullable=True),
@@ -121,7 +125,9 @@ def upgrade():
         ),
         sa.Column("checked_by", sa.Integer(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
-        sa.ForeignKeyConstraint(["policy_rule_id"], ["policy_rules.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(
+            ["policy_rule_id"], ["policy_rules.id"], ondelete="CASCADE"
+        ),
         sa.ForeignKeyConstraint(["checked_by"], ["users.id"], ondelete="SET NULL"),
     )
 
@@ -131,12 +137,18 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("conflict_id", sa.String(255), nullable=False, unique=True),
         sa.Column("conflict_type", conflict_type_enum, nullable=False),
-        sa.Column("conflicting_rule_ids", sa.JSON(), nullable=False),  # Array of rule IDs
+        sa.Column(
+            "conflicting_rule_ids", sa.JSON(), nullable=False
+        ),  # Array of rule IDs
         sa.Column("conflict_description", sa.Text(), nullable=False),
         sa.Column("severity", sa.String(50), nullable=False),
         sa.Column("resolution_suggestion", sa.Text(), nullable=True),
-        sa.Column("affected_principle_ids", sa.JSON(), nullable=True),  # Array of principle IDs
-        sa.Column("resolution_status", sa.String(50), nullable=False, default="unresolved"),
+        sa.Column(
+            "affected_principle_ids", sa.JSON(), nullable=True
+        ),  # Array of principle IDs
+        sa.Column(
+            "resolution_status", sa.String(50), nullable=False, default="unresolved"
+        ),
         sa.Column("resolved_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("resolved_by", sa.Integer(), nullable=True),
         sa.Column("resolution_notes", sa.Text(), nullable=True),
@@ -205,7 +217,9 @@ def upgrade():
             nullable=False,
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.ForeignKeyConstraint(["policy_rule_id"], ["policy_rules.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(
+            ["policy_rule_id"], ["policy_rules.id"], ondelete="CASCADE"
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="SET NULL"),
     )
 
@@ -231,7 +245,9 @@ def upgrade():
         "safety_check_results",
         ["property_id", "policy_rule_id"],
     )
-    op.create_index("idx_safety_check_results_status", "safety_check_results", ["status"])
+    op.create_index(
+        "idx_safety_check_results_status", "safety_check_results", ["status"]
+    )
 
     op.create_index(
         "idx_conflict_detection_results_type",
@@ -250,7 +266,9 @@ def upgrade():
     )
 
     op.create_index("idx_z3_solver_cache_input_hash", "z3_solver_cache", ["input_hash"])
-    op.create_index("idx_z3_solver_cache_last_accessed", "z3_solver_cache", ["last_accessed"])
+    op.create_index(
+        "idx_z3_solver_cache_last_accessed", "z3_solver_cache", ["last_accessed"]
+    )
 
     op.create_index(
         "idx_verification_audit_log_rule_type",
@@ -262,7 +280,9 @@ def upgrade():
         "verification_audit_log",
         ["created_at"],
     )
-    op.create_index("idx_verification_audit_log_user_id", "verification_audit_log", ["user_id"])
+    op.create_index(
+        "idx_verification_audit_log_user_id", "verification_audit_log", ["user_id"]
+    )
 
     # 12. Add Phase 3 specific columns to existing policy_rules table
     op.add_column(
@@ -273,9 +293,15 @@ def upgrade():
         "policy_rules",
         sa.Column("last_z3_verification", sa.DateTime(timezone=True), nullable=True),
     )
-    op.add_column("policy_rules", sa.Column("safety_check_status", sa.String(50), nullable=True))
-    op.add_column("policy_rules", sa.Column("conflict_check_status", sa.String(50), nullable=True))
-    op.add_column("policy_rules", sa.Column("verification_confidence", sa.Float(), nullable=True))
+    op.add_column(
+        "policy_rules", sa.Column("safety_check_status", sa.String(50), nullable=True)
+    )
+    op.add_column(
+        "policy_rules", sa.Column("conflict_check_status", sa.String(50), nullable=True)
+    )
+    op.add_column(
+        "policy_rules", sa.Column("verification_confidence", sa.Float(), nullable=True)
+    )
     op.add_column(
         "policy_rules",
         sa.Column("requires_human_review", sa.Boolean(), nullable=False, default=False),

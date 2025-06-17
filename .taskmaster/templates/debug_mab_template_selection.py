@@ -42,7 +42,7 @@ async def debug_template_selection():
             )
 
         # Check MAB algorithm arms
-        print(f"\n🎯 MAB Algorithm Arms:")
+        print("\n🎯 MAB Algorithm Arms:")
         if hasattr(mab_service.mab_optimizer.mab_algorithm, "alpha"):
             print("   Thompson Sampling arms:")
             for arm_id in mab_service.mab_optimizer.mab_algorithm.alpha.keys():
@@ -51,7 +51,7 @@ async def debug_template_selection():
                 print(f"     - {arm_id}: α={alpha}, β={beta}")
 
         # Test selection without category filtering
-        print(f"\n🧪 Testing selection without category filtering:")
+        print("\n🧪 Testing selection without category filtering:")
         context_no_category = {
             "safety_level": "standard",
             "target_format": "rego",

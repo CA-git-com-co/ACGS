@@ -1,5 +1,5 @@
 # backend/auth_service/app/api/v1/deps.py
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession  # For type hinting

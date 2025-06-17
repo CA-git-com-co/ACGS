@@ -12,7 +12,7 @@ Comprehensive DGM Integration Test
 This test validates all components of the Darwin Gödel Machine system:
 - Configuration loading
 - Polyglot language support
-- Evolution loop mechanics  
+- Evolution loop mechanics
 - Requesty API integration
 - Logging and progress tracking
 """
@@ -106,13 +106,13 @@ def test_dgm_configuration():
     config = DGMConfig()
     assert config.max_attempts == 3
     assert config.performance_threshold == 0.8
-    assert config.enable_self_improvement == True
+    assert config.enable_self_improvement
 
     # Test configuration from file
     config_from_file = DGMConfig()
     config_file = Path("dgm_config.json")
     if config_file.exists():
-        with open(config_file, "r") as f:
+        with open(config_file) as f:
             config_data = json.load(f)
             for key, value in config_data.items():
                 if hasattr(config_from_file, key):
@@ -182,8 +182,8 @@ def test_solution_archiving():
     # Test that we can archive and retrieve solutions
     archive = [attempt1, attempt2]
     assert len(archive) == 2
-    assert archive[0].test_success == True
-    assert archive[1].test_success == False
+    assert archive[0].test_success
+    assert not archive[1].test_success
 
     print("✅ Solution archiving works correctly")
 
@@ -314,7 +314,7 @@ def run_comprehensive_test():
 
         # Summary
         duration = time.time() - start_time
-        print(f"\n🎉 All integration tests completed successfully!")
+        print("\n🎉 All integration tests completed successfully!")
         print(f"⏱️ Total test duration: {duration:.2f} seconds")
         print(
             f"🤖 Requesty API: {'✅ Available' if requesty_available else '⚠️ Not available'}"
@@ -344,7 +344,7 @@ def run_comprehensive_test():
         with open("dgm_integration_test_report.json", "w") as f:
             json.dump(test_results, f, indent=2)
 
-        print(f"📄 Test report saved to: dgm_integration_test_report.json")
+        print("📄 Test report saved to: dgm_integration_test_report.json")
         return True
 
     except Exception as e:

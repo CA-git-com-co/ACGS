@@ -19,7 +19,7 @@ This phase focused on establishing the foundational elements of the ACGS-PGP, wi
 *   **[COMPLETE] Frontend Shell:** React application structure, basic routing, placeholder pages.
 *   **[COMPLETE] Containerization:** Dockerfiles for all services and frontend.
 *   **[COMPLETE] Orchestration (Basic):**
-    *   `docker-compose.yml` for local development.
+    *   `infrastructure/docker/docker-compose.yml` for local development.
     *   Initial Kubernetes manifests for each service.
 *   **[COMPLETE] Basic User Authentication:** User registration, login, JWT issuance.
 *   **[COMPLETE] Principles & Guidelines Management (`ac_service`):**

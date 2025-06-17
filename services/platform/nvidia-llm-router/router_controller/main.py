@@ -5,7 +5,6 @@ Main entry point for the router controller service.
 Manages routing policies, model configurations, and health monitoring.
 """
 
-import asyncio
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -13,9 +12,8 @@ from contextlib import asynccontextmanager
 import uvicorn
 import yaml
 from api_key_manager import get_api_key_manager
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
 from services.shared.database import init_database
 from services.shared.utils import get_logger
@@ -83,7 +81,7 @@ async def load_configuration():
     global config
     try:
         config_path = os.path.join(os.path.dirname(__file__), "config.yml")
-        with open(config_path, "r") as file:
+        with open(config_path) as file:
             config = yaml.safe_load(file)
         logger.info("Configuration loaded successfully")
     except Exception as e:
@@ -162,7 +160,11 @@ async def get_controller_metrics():
         "requests_processed": 0,  # Would be tracked in real implementation
         "configuration_reloads": 0,
         "active_models": len(
-            [model for tier_models in config.get("models", {}).values() for model in tier_models]
+            [
+                model
+                for tier_models in config.get("models", {}).values()
+                for model in tier_models
+            ]
         ),
         "uptime_seconds": 0,  # Would track actual uptime
     }

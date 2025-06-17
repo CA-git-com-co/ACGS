@@ -8,10 +8,9 @@ and lifecycle management to simplify service development and testing.
 import functools
 import inspect
 import logging
+from collections.abc import Callable
 from typing import (
     Any,
-    Callable,
-    Type,
     TypeVar,
     Union,
     get_args,
@@ -26,7 +25,7 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-def injectable(cls: Type[T]) -> Type[T]:
+def injectable(cls: type[T]) -> type[T]:
     """
     Mark a class as injectable, enabling automatic dependency resolution.
 
@@ -57,7 +56,7 @@ def injectable(cls: Type[T]) -> Type[T]:
         provided_params = set(kwargs.keys())
 
         # Add positional arguments to provided params
-        for i, arg in enumerate(args):
+        for i, _arg in enumerate(args):
             if i < len(param_names):
                 provided_params.add(param_names[i])
 
@@ -77,17 +76,25 @@ def injectable(cls: Type[T]) -> Type[T]:
                     args_types = get_args(param_type)
                     if len(args_types) == 2 and type(None) in args_types:
                         # Optional type
-                        param_type = args_types[0] if args_types[1] is type(None) else args_types[1]
+                        param_type = (
+                            args_types[0]
+                            if args_types[1] is type(None)
+                            else args_types[1]
+                        )
                         is_optional = True
 
                 # Try to resolve dependency
                 try:
                     dependency = container.resolve(param_type)
                     kwargs[param_name] = dependency
-                    logger.debug(f"Injected {param_type} into {cls.__name__}.{param_name}")
+                    logger.debug(
+                        f"Injected {param_type} into {cls.__name__}.{param_name}"
+                    )
                 except ValueError as e:
                     if not is_optional and param.default == inspect.Parameter.empty:
-                        logger.error(f"Failed to inject {param_type} into {cls.__name__}: {e}")
+                        logger.error(
+                            f"Failed to inject {param_type} into {cls.__name__}: {e}"
+                        )
                         raise
                     # Optional dependency or has default value
                     logger.debug(
@@ -102,7 +109,7 @@ def injectable(cls: Type[T]) -> Type[T]:
     return cls
 
 
-def inject(*dependencies: Type) -> Callable:
+def inject(*dependencies: type) -> Callable:
     """
     Decorator for injecting specific dependencies into a function or method.
 
@@ -131,7 +138,9 @@ def inject(*dependencies: Type) -> Callable:
                         kwargs[param_name] = dependency
                         logger.debug(f"Injected {dep_type} into {func.__name__}")
                     except ValueError as e:
-                        logger.error(f"Failed to inject {dep_type} into {func.__name__}: {e}")
+                        logger.error(
+                            f"Failed to inject {dep_type} into {func.__name__}: {e}"
+                        )
                         raise
 
             return func(*args, **kwargs)
@@ -141,7 +150,7 @@ def inject(*dependencies: Type) -> Callable:
     return decorator
 
 
-def singleton(interface: Type[T] = None):
+def singleton(interface: type[T] = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -155,7 +164,7 @@ def singleton(interface: Type[T] = None):
         Decorated class registered as singleton
     """
 
-    def decorator(cls: Type[T]) -> Type[T]:
+    def decorator(cls: type[T]) -> type[T]:
         container = get_container()
         registration_interface = interface or cls
 
@@ -167,7 +176,7 @@ def singleton(interface: Type[T] = None):
     return decorator
 
 
-def transient(interface: Type[T] = None):
+def transient(interface: type[T] = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -181,7 +190,7 @@ def transient(interface: Type[T] = None):
         Decorated class registered as transient
     """
 
-    def decorator(cls: Type[T]) -> Type[T]:
+    def decorator(cls: type[T]) -> type[T]:
         container = get_container()
         registration_interface = interface or cls
 
@@ -193,7 +202,7 @@ def transient(interface: Type[T] = None):
     return decorator
 
 
-def scoped(interface: Type[T] = None):
+def scoped(interface: type[T] = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -207,7 +216,7 @@ def scoped(interface: Type[T] = None):
         Decorated class registered as scoped
     """
 
-    def decorator(cls: Type[T]) -> Type[T]:
+    def decorator(cls: type[T]) -> type[T]:
         container = get_container()
         registration_interface = interface or cls
 
@@ -219,7 +228,7 @@ def scoped(interface: Type[T] = None):
     return decorator
 
 
-def factory(interface: Type[T], scope: Scope = Scope.TRANSIENT):
+def factory(interface: type[T], scope: Scope = Scope.TRANSIENT):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -238,7 +247,9 @@ def factory(interface: Type[T], scope: Scope = Scope.TRANSIENT):
         container = get_container()
 
         container.register_factory(interface, func, scope)
-        logger.debug(f"Registered factory {func.__name__} for {interface} ({scope.value})")
+        logger.debug(
+            f"Registered factory {func.__name__} for {interface} ({scope.value})"
+        )
 
         return func
 
@@ -279,7 +290,7 @@ def shutdown_callback(func: Callable) -> Callable:
     return func
 
 
-def auto_register(scope: Scope = Scope.TRANSIENT, interface: Type = None):
+def auto_register(scope: Scope = Scope.TRANSIENT, interface: type = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -294,12 +305,14 @@ def auto_register(scope: Scope = Scope.TRANSIENT, interface: Type = None):
         Decorated class registered with container
     """
 
-    def decorator(cls: Type[T]) -> Type[T]:
+    def decorator(cls: type[T]) -> type[T]:
         container = get_container()
         registration_interface = interface or cls
 
         container.register(registration_interface, cls, scope)
-        logger.debug(f"Auto-registered {cls} for {registration_interface} ({scope.value})")
+        logger.debug(
+            f"Auto-registered {cls} for {registration_interface} ({scope.value})"
+        )
 
         return injectable(cls)
 
@@ -313,7 +326,7 @@ class DIProperty:
     Allows lazy resolution of dependencies as class properties.
     """
 
-    def __init__(self, interface: Type, optional: bool = False):
+    def __init__(self, interface: type, optional: bool = False):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -356,7 +369,7 @@ class DIProperty:
         self._instance = value
 
 
-def di_property(interface: Type, optional: bool = False) -> DIProperty:
+def di_property(interface: type, optional: bool = False) -> DIProperty:
     """
     Create a dependency injection property.
 
@@ -409,7 +422,7 @@ def with_test_container(test_func: Callable) -> Callable:
     return wrapper
 
 
-def mock_dependency(interface: Type, mock_instance: Any):
+def mock_dependency(interface: type, mock_instance: Any):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

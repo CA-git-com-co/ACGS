@@ -17,8 +17,7 @@ import json
 import logging
 import subprocess
 import sys
-from datetime import datetime, timezone
-from typing import Dict
+from datetime import UTC, datetime
 
 import aiohttp
 
@@ -57,7 +56,7 @@ class ACGSSecurityValidator:
         }
 
         self.results = {
-            "test_start": datetime.now(timezone.utc).isoformat(),
+            "test_start": datetime.now(UTC).isoformat(),
             "services_tested": [],
             "dependency_scan_results": {},
             "penetration_test_results": {},
@@ -70,7 +69,7 @@ class ACGSSecurityValidator:
             "overall_status": "PENDING",
         }
 
-    async def run_dependency_security_scan(self) -> Dict:
+    async def run_dependency_security_scan(self) -> dict:
         """Run security scan on Python dependencies using Safety."""
         logger.info("🔍 Running dependency security scan...")
 
@@ -158,7 +157,7 @@ class ACGSSecurityValidator:
         self.results["dependency_scan_results"] = scan_results
         return scan_results
 
-    async def test_security_headers(self) -> Dict:
+    async def test_security_headers(self) -> dict:
         """Test security headers for all services."""
         logger.info("🛡️ Testing security headers...")
 
@@ -203,7 +202,7 @@ class ACGSSecurityValidator:
         self.results["security_headers_check"] = headers_results
         return headers_results
 
-    async def test_input_validation(self) -> Dict:
+    async def test_input_validation(self) -> dict:
         """Test input validation and injection protection."""
         logger.info("🔒 Testing input validation and injection protection...")
 
@@ -250,7 +249,7 @@ class ACGSSecurityValidator:
                                 if "script" in payload.lower():
                                     service_results["xss_protected"] = False
 
-                    except asyncio.TimeoutError:
+                    except TimeoutError:
                         # Timeout might indicate the service is hanging due to injection
                         if "DROP" in payload or "whoami" in payload:
                             service_results["sql_injection_protected"] = False
@@ -272,7 +271,7 @@ class ACGSSecurityValidator:
         self.results["input_validation_tests"] = validation_results
         return validation_results
 
-    async def test_authentication_security(self) -> Dict:
+    async def test_authentication_security(self) -> dict:
         """Test authentication and authorization security."""
         logger.info("🔐 Testing authentication security...")
 
@@ -307,7 +306,7 @@ class ACGSSecurityValidator:
                 rate_limited = False
 
                 # Make rapid requests to test rate limiting
-                for i in range(20):
+                for _i in range(20):
                     async with session.get(
                         "http://localhost:8000/health",
                         timeout=aiohttp.ClientTimeout(total=1),
@@ -494,7 +493,7 @@ class ACGSSecurityValidator:
 
     def generate_security_report(self):
         """Generate comprehensive security validation report."""
-        self.results["test_end"] = datetime.now(timezone.utc).isoformat()
+        self.results["test_end"] = datetime.now(UTC).isoformat()
 
         # Save detailed results to file
         report_file = f"logs/phase3_security_validation_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"

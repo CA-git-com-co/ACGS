@@ -5,7 +5,7 @@ This directory contains the backend service organization structure for the ACGS-
 ## Directory Structure
 
 ```
-src/backend/
+services/
 ├── core/                   # Core governance services
 │   ├── auth/              # Authentication Service
 │   ├── ac/                # Audit & Compliance Service
@@ -108,7 +108,7 @@ pip install -r requirements.txt
 pip install -r requirements-test.txt
 
 # Run tests
-python -m pytest src/backend/tests/ -v
+python -m pytest services/tests/ -v
 
 # Start services (development)
 ./scripts/start_services_simple.sh

@@ -28,8 +28,8 @@ from typing import Any
 
 from bson import ObjectId
 
-from src.api.db import get_db, init_db
-from src.api.models import (
+from services.core.api.db import get_db, init_db
+from services.core.api.models import (
     FlywheelRunStatus,
     LLMJudgeRun,
     NIMCustomization,
@@ -37,7 +37,7 @@ from src.api.models import (
     NIMRun,
     NIMRunStatus,
 )
-from src.api.schemas import DeploymentStatus
+from services.core.api.schemas import DeploymentStatus
 
 # NOTE: we only import the enum for typing -the collections still store raw
 # dictionaries produced by ``model.to_mongo()`` so they stay backward

@@ -164,16 +164,16 @@ GROQ_API_KEY=your_groq_api_key_here      # Optional fallback
 ### Service Startup Sequence
 ```bash
 # 1. Start infrastructure
-docker-compose up -d postgres_db langgraph_redis
+docker-compose -f infrastructure/docker/docker-compose.yml up -d postgres_db langgraph_redis
 
 # 2. Run database migrations
-docker-compose up alembic-runner
+docker-compose -f infrastructure/docker/docker-compose.yml up alembic-runner
 
 # 3. Start AC service with LangGraph
-docker-compose up -d ac_service
+docker-compose -f infrastructure/docker/docker-compose.yml up -d ac_service
 
 # 4. Start GS service with multi-model support
-docker-compose up -d gs_service
+docker-compose -f infrastructure/docker/docker-compose.yml up -d gs_service
 
 # 5. Verify workflow capabilities
 curl http://localhost:8001/api/v1/workflows/capabilities

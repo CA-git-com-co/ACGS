@@ -7,7 +7,6 @@ Tests the Z3 SMT solver integration, tiered validation pipeline, and safety/conf
 import asyncio
 import sys
 import time
-from typing import Dict
 
 import httpx
 
@@ -35,7 +34,7 @@ class Phase3TestRunner:
         await self.client.aclose()
 
     def log_test_result(
-        self, test_name: str, success: bool, message: str = "", details: Dict = None
+        self, test_name: str, success: bool, message: str = "", details: dict = None
     ):
         """Log test result."""
         result = {

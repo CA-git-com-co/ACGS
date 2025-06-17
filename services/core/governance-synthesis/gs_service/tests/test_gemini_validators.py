@@ -16,15 +16,11 @@ Formal Verification Comments:
 # sha256: evolutionary_tensor_decomposition_gemini_tests_v1.0
 """
 
-import asyncio
 import json
 import os
 import unittest
-from typing import Any, Dict
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
-import numpy as np
-import pytest
 from services.core.governance_synthesis.gs_service.app.core.heterogeneous_validator import (
     GovernanceContext,
     ValidationResult,
@@ -46,7 +42,10 @@ class TestGeminiProValidator(unittest.TestCase):
         self.test_context = GovernanceContext(
             constitutional_hash="cdd01ef066bc6cf2",
             policy_type="constitutional",
-            compliance_requirements={"accuracy_threshold": 0.95, "constitutional_compliance": True},
+            compliance_requirements={
+                "accuracy_threshold": 0.95,
+                "constitutional_compliance": True,
+            },
             performance_targets={"response_time_ms": 2000, "accuracy": 0.95},
         )
         self.test_policy_data = {
@@ -85,7 +84,9 @@ class TestGeminiProValidator(unittest.TestCase):
                                         "implementation_feasibility": 0.95,
                                         "stakeholder_impact": 0.90,
                                         "detailed_analysis": "Policy demonstrates strong constitutional alignment",
-                                        "recommendations": ["Consider stakeholder feedback"],
+                                        "recommendations": [
+                                            "Consider stakeholder feedback"
+                                        ],
                                         "risk_factors": ["Implementation complexity"],
                                     }
                                 )
@@ -152,7 +153,9 @@ class TestGeminiProValidator(unittest.TestCase):
         mock_response = AsyncMock()
         mock_response.status = 200
         mock_response.json.return_value = {
-            "candidates": [{"content": {"parts": [{"text": "This is not valid JSON for parsing"}]}}]
+            "candidates": [
+                {"content": {"parts": [{"text": "This is not valid JSON for parsing"}]}}
+            ]
         }
         mock_post.return_value.__aenter__.return_value = mock_response
 
@@ -250,7 +253,7 @@ class TestGeminiFlashValidator(unittest.TestCase):
     async def test_timeout_handling(self, mock_post):
         """Test timeout handling for rapid responses."""
         # Mock timeout scenario
-        mock_post.side_effect = asyncio.TimeoutError("Request timeout")
+        mock_post.side_effect = TimeoutError("Request timeout")
 
         validator = GeminiFlashValidator()
         validator.api_key = "test_api_key"
@@ -373,7 +376,9 @@ class TestPerformanceRequirements(unittest.TestCase):
             "candidates": [
                 {
                     "content": {
-                        "parts": [{"text": "SCORE: 0.8 | ASSESSMENT: Quick screening passed"}]
+                        "parts": [
+                            {"text": "SCORE: 0.8 | ASSESSMENT: Quick screening passed"}
+                        ]
                     }
                 }
             ]

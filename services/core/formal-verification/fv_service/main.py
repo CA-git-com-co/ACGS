@@ -2,7 +2,7 @@
 import hashlib
 import logging
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -85,7 +85,9 @@ try:
         endpoint_func = create_enhanced_metrics_endpoint("fv_service")
         return await endpoint_func()
 
-    logger.info("✅ Enhanced Prometheus metrics enabled for Formal Verification Service")
+    logger.info(
+        "✅ Enhanced Prometheus metrics enabled for Formal Verification Service"
+    )
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
 
@@ -103,7 +105,7 @@ except ImportError as e:
 # Will be re-enabled once dependencies are resolved
 
 # Blockchain audit trail storage (in-memory for demo, would use persistent storage in production)
-audit_trail: List[Dict[str, Any]] = []
+audit_trail: list[dict[str, Any]] = []
 
 
 class CryptographicValidationRequest(BaseModel):
@@ -119,13 +121,14 @@ class BlockchainAuditEntry(BaseModel):
     timestamp: float
     block_hash: str
 
+
 class ValidationRequest(BaseModel):
     content: str
     test_mode: bool = False
     adversarial_test: bool = False
     policy_id: str = None
     policy_content: str = None
-    constitutional_principles: List[str] = []
+    constitutional_principles: list[str] = []
     verification_level: str = "standard"
     enable_mathematical_proof: bool = False
 
@@ -312,10 +315,14 @@ async def get_blockchain_audit_trail():
         },
         "compliance_tracking": {
             "constitutional_verifications": sum(
-                1 for entry in audit_trail if "constitutional" in entry.get("operation", "")
+                1
+                for entry in audit_trail
+                if "constitutional" in entry.get("operation", "")
             ),
             "signature_validations": sum(
-                1 for entry in audit_trail if entry.get("operation") == "signature_validation"
+                1
+                for entry in audit_trail
+                if entry.get("operation") == "signature_validation"
             ),
             "policy_verifications": sum(
                 1 for entry in audit_trail if "policy" in entry.get("operation", "")
@@ -332,7 +339,9 @@ async def add_blockchain_audit_entry(entry: BlockchainAuditEntry):
     """Add entry to blockchain audit trail."""
     try:
         # Create blockchain-style entry with hash chain
-        previous_hash = audit_trail[-1].get("block_hash", "genesis") if audit_trail else "genesis"
+        previous_hash = (
+            audit_trail[-1].get("block_hash", "genesis") if audit_trail else "genesis"
+        )
         entry_data = f"{entry.verification_id}{entry.policy_hash}{entry.verification_result}{entry.timestamp}{previous_hash}"
         block_hash = hashlib.sha256(entry_data.encode()).hexdigest()
 
@@ -449,11 +458,21 @@ async def validate_content(request: ValidationRequest):
 
         # Security threat detection patterns
         threat_patterns = [
-            "override", "bypass", "ignore", "unrestricted", "void",
-            "script", "alert", "select * from", "drop table", "union select"
+            "override",
+            "bypass",
+            "ignore",
+            "unrestricted",
+            "void",
+            "script",
+            "alert",
+            "select * from",
+            "drop table",
+            "union select",
         ]
 
-        threats_detected = [pattern for pattern in threat_patterns if pattern in content]
+        threats_detected = [
+            pattern for pattern in threat_patterns if pattern in content
+        ]
 
         # Constitutional compliance check
         constitutional_violations = []
@@ -466,10 +485,8 @@ async def validate_content(request: ValidationRequest):
         # Determine validation result
         if threats_detected or constitutional_violations:
             validation_result = "blocked"
-            status_code = 403
         else:
             validation_result = "valid"
-            status_code = 200
 
         processing_time = (time.time() - start_time) * 1000
 
@@ -483,7 +500,7 @@ async def validate_content(request: ValidationRequest):
             "timestamp": time.time(),
             "processing_time_ms": processing_time,
             "test_mode": request.test_mode,
-            "adversarial_test": request.adversarial_test
+            "adversarial_test": request.adversarial_test,
         }
         audit_trail.append(audit_entry)
 
@@ -493,15 +510,16 @@ async def validate_content(request: ValidationRequest):
             "constitutional_violations": constitutional_violations,
             "processing_time_ms": processing_time,
             "audit_id": len(audit_trail),
-            "test_mode": request.test_mode
+            "test_mode": request.test_mode,
         }
 
     except Exception as e:
         logger.error(f"Content validation failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Validation error: {str(e)}"
+            detail=f"Validation error: {str(e)}",
         )
+
 
 @app.post("/api/v1/verify/constitutional-compliance")
 async def verify_constitutional_compliance(request: ValidationRequest):
@@ -518,7 +536,9 @@ async def verify_constitutional_compliance(request: ValidationRequest):
         mathematical_proof = None
 
         # Check for contradictions
-        if "unrestricted" in policy_content.lower() and any("security" in p.lower() for p in principles):
+        if "unrestricted" in policy_content.lower() and any(
+            "security" in p.lower() for p in principles
+        ):
             verification_status = "contradiction_detected"
 
         # Generate mathematical proof if requested
@@ -541,15 +561,16 @@ Z3 Constraints: SATISFIABLE if {verification_status == 'verified'}
             "mathematical_proof": mathematical_proof,
             "processing_time_ms": processing_time,
             "z3_solver_used": SMT_AVAILABLE,
-            "verification_level": request.verification_level
+            "verification_level": request.verification_level,
         }
 
     except Exception as e:
         logger.error(f"Constitutional compliance verification failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Verification failed: {str(e)}"
+            detail=f"Verification failed: {str(e)}",
         )
+
 
 # AC Service Integration Status
 @app.get("/api/v1/integration/ac-service")

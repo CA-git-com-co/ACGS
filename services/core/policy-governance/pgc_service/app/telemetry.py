@@ -7,7 +7,8 @@ distributed tracing, metrics, and logging with the specified version (v1.37.0).
 
 import logging
 import time
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 from opentelemetry import metrics, trace
@@ -16,7 +17,9 @@ from opentelemetry import metrics, trace
 logger = logging.getLogger(__name__)
 
 try:
-    from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+    from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
+        OTLPMetricExporter,
+    )
     from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
     from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
     from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
@@ -29,17 +32,23 @@ try:
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
     from opentelemetry.semconv.resource import ResourceAttributes
-    from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
+    from opentelemetry.trace.propagation.tracecontext import (
+        TraceContextTextMapPropagator,
+    )
+
     TELEMETRY_AVAILABLE = True
 except ImportError as e:
     logger.warning(f"OpenTelemetry components not available: {e}")
     TELEMETRY_AVAILABLE = False
+
     # Create fallback classes
     class NoOpTelemetry:
         def __init__(self, *args, **kwargs):
             pass
+
         def __call__(self, *args, **kwargs):
             return self
+
         def __getattr__(self, name):
             return self
 
@@ -94,8 +103,12 @@ class TelemetryManager:
 
         # Performance targets from config
         self.performance_config = self.config.get_section("performance")
-        self.p99_latency_target_ms = self.performance_config.get("p99_latency_target_ms", 500)
-        self.p95_latency_target_ms = self.performance_config.get("p95_latency_target_ms", 25)
+        self.p99_latency_target_ms = self.performance_config.get(
+            "p99_latency_target_ms", 500
+        )
+        self.p95_latency_target_ms = self.performance_config.get(
+            "p95_latency_target_ms", 25
+        )
 
     def setup(self) -> None:
         """Set up OpenTelemetry instrumentation."""
@@ -152,11 +165,15 @@ class TelemetryManager:
         # Add OTLP exporter if available
         if OTLP_AVAILABLE and OTLPSpanExporter:
             otlp_span_exporter = OTLPSpanExporter(endpoint=self.otlp_endpoint)
-            self.tracer_provider.add_span_processor(BatchSpanProcessor(otlp_span_exporter))
+            self.tracer_provider.add_span_processor(
+                BatchSpanProcessor(otlp_span_exporter)
+            )
 
         # Add console exporter in development or as fallback
         if self.environment == "development" or not OTLP_AVAILABLE:
-            self.tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+            self.tracer_provider.add_span_processor(
+                BatchSpanProcessor(ConsoleSpanExporter())
+            )
 
         # Get tracer
         self.tracer = trace.get_tracer(self.service_name, self.otlp_version)
@@ -176,7 +193,9 @@ class TelemetryManager:
 
         # Add console exporter in development or as fallback
         if self.environment == "development" or not OTLP_AVAILABLE:
-            metric_readers.append(PeriodicExportingMetricReader(ConsoleMetricExporter()))
+            metric_readers.append(
+                PeriodicExportingMetricReader(ConsoleMetricExporter())
+            )
 
         # Create meter provider
         self.meter_provider = MeterProvider(
@@ -250,7 +269,9 @@ class TelemetryManager:
 
             # Add middleware for latency SLO monitoring
             @app.middleware("http")
-            async def latency_slo_middleware(request: Request, call_next: Callable) -> Response:
+            async def latency_slo_middleware(
+                request: Request, call_next: Callable
+            ) -> Response:
                 # Record start time
                 start_time = time.time()
 
@@ -289,7 +310,9 @@ class TelemetryManager:
                             response.headers["X-PGC-P95-Latency-Target"] = str(
                                 self.p95_latency_target_ms
                             )
-                            response.headers["X-PGC-Request-Duration"] = f"{duration_ms:.2f}"
+                            response.headers["X-PGC-Request-Duration"] = (
+                                f"{duration_ms:.2f}"
+                            )
 
                             # Check if request exceeded targets
                             if duration_ms > self.p99_latency_target_ms:
@@ -303,7 +326,9 @@ class TelemetryManager:
                 finally:
                     # Decrement active requests
                     if self.active_requests_gauge:
-                        self.active_requests_gauge.add(-1, {"service": self.service_name})
+                        self.active_requests_gauge.add(
+                            -1, {"service": self.service_name}
+                        )
 
             logger.info("FastAPI application instrumentation complete")
 
@@ -357,7 +382,9 @@ class TelemetryManager:
         if self.validation_duration_histogram:
             self.validation_duration_histogram.record(duration_ms, attributes)
 
-    def create_span(self, name: str, attributes: Optional[Dict[str, Any]] = None) -> Any:
+    def create_span(
+        self, name: str, attributes: dict[str, Any] | None = None
+    ) -> Any:
         """Create a new span.
 
         Args:
@@ -389,7 +416,7 @@ class TelemetryManager:
 
         return self.tracer.start_as_current_span(name, attributes=attributes or {})
 
-    def inject_trace_context(self, headers: Dict[str, str]) -> None:
+    def inject_trace_context(self, headers: dict[str, str]) -> None:
         """Inject trace context into headers for distributed tracing.
 
         Args:

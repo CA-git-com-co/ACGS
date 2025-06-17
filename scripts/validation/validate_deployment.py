@@ -10,7 +10,6 @@ import logging
 import subprocess
 import time
 from pathlib import Path
-from typing import Dict
 
 import aiohttp
 
@@ -284,7 +283,7 @@ class DeploymentValidator:
 
         return all_passed
 
-    def generate_validation_report(self) -> Dict:
+    def generate_validation_report(self) -> dict:
         """Generate detailed validation report"""
         return {
             "timestamp": time.time(),

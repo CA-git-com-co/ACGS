@@ -116,7 +116,7 @@ async def test_mab_template_selection():
                 return False
 
         # Analyze selection patterns
-        print(f"\n📊 Template Selection Analysis:")
+        print("\n📊 Template Selection Analysis:")
         template_usage = {}
         for result in selection_results:
             template_name = result["selected_template"]
@@ -158,13 +158,13 @@ async def test_constitutional_synthesis_pipeline():
             print(f"\n📋 Testing synthesis: {scenario['name']}")
 
             # Create synthesis input
-            synthesis_input = ConstitutionalSynthesisInput(
+            ConstitutionalSynthesisInput(
                 context=scenario["context"],
                 synthesis_request=scenario["synthesis_request"],
                 target_format="rego",
             )
 
-            context = {
+            {
                 "category": scenario["category"],
                 "safety_level": scenario["safety_level"],
                 "auth_token": "test_token",
@@ -221,7 +221,7 @@ async def test_constitutional_synthesis_pipeline():
             print(f"   - Confidence: {mock_synthesis_result['confidence']:.3f}")
 
         # Performance analysis
-        print(f"\n📊 Synthesis Pipeline Performance:")
+        print("\n📊 Synthesis Pipeline Performance:")
         avg_template_time = sum(
             r["template_selection_time_ms"] for r in synthesis_results
         ) / len(synthesis_results)
@@ -323,7 +323,7 @@ async def test_mab_performance_tracking():
             )
 
         # Performance analysis
-        print(f"\n📊 Performance Tracking Analysis:")
+        print("\n📊 Performance Tracking Analysis:")
         for data in performance_data:
             print(
                 f"   Round {data['round']}: {data['template']} - "
@@ -333,7 +333,7 @@ async def test_mab_performance_tracking():
 
         # Get optimization metrics
         metrics = mab_service.mab_optimizer.get_optimization_metrics()
-        print(f"\n📈 Optimization Metrics:")
+        print("\n📈 Optimization Metrics:")
         print(f"   - Total optimizations: {metrics['total_optimizations']}")
         print(f"   - Template count: {metrics['template_count']}")
         print(f"   - Overall success rate: {metrics['overall_success_rate']:.3f}")

@@ -284,7 +284,7 @@ async def main():
         except Exception as e:
             print(f"❌ {test_name}: ERROR - {e}")
 
-    print(f"\n📊 Test Results Summary")
+    print("\n📊 Test Results Summary")
     print("=" * 30)
     print(f"Total Tests: {total}")
     print(f"Passed: {passed}")

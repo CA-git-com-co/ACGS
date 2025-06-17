@@ -12,7 +12,7 @@ import logging
 import time
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, status
 
@@ -29,7 +29,7 @@ class ECProposal:
         proposal_id: str,
         solution_code: str,
         generation: int,
-        fitness_context: Dict[str, Any],
+        fitness_context: dict[str, Any],
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -74,7 +74,7 @@ class ECEnforcementCache:
         self.max_size = max_size
         self.ttl_seconds = ttl_seconds
 
-    def get(self, key: str) -> Optional[ECEnforcementDecision]:
+    def get(self, key: str) -> ECEnforcementDecision | None:
         """Get cached decision if available and not expired."""
         if key not in self.cache:
             return None
@@ -96,7 +96,9 @@ class ECEnforcementCache:
         """Cache enforcement decision."""
         # Evict oldest if cache is full
         if len(self.cache) >= self.max_size:
-            oldest_key = min(self.access_times.keys(), key=lambda k: self.access_times[k])
+            oldest_key = min(
+                self.access_times.keys(), key=lambda k: self.access_times[k]
+            )
             del self.cache[oldest_key]
             del self.access_times[oldest_key]
 
@@ -117,7 +119,7 @@ ec_enforcement_cache = ECEnforcementCache()
 
 
 @router.post("/evaluate-batch")
-async def evaluate_ec_batch(request_data: Dict[str, Any]):
+async def evaluate_ec_batch(request_data: dict[str, Any]):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -165,9 +167,13 @@ async def evaluate_ec_batch(request_data: Dict[str, Any]):
         # Calculate batch statistics
         allowed_count = len([d for d in decisions if d.decision == "allow"])
         denied_count = len([d for d in decisions if d.decision == "deny"])
-        avg_latency = sum(d.latency_ms for d in decisions) / len(decisions) if decisions else 0
+        avg_latency = (
+            sum(d.latency_ms for d in decisions) / len(decisions) if decisions else 0
+        )
         avg_penalty = (
-            sum(d.governance_penalty for d in decisions) / len(decisions) if decisions else 0
+            sum(d.governance_penalty for d in decisions) / len(decisions)
+            if decisions
+            else 0
         )
 
         response = {
@@ -214,7 +220,7 @@ async def evaluate_ec_batch(request_data: Dict[str, Any]):
 
 
 @router.post("/evaluate-single")
-async def evaluate_single_proposal(request_data: Dict[str, Any]):
+async def evaluate_single_proposal(request_data: dict[str, Any]):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -257,7 +263,9 @@ async def evaluate_single_proposal(request_data: Dict[str, Any]):
             },
         }
 
-        logger.debug(f"Single proposal evaluation completed in {decision.latency_ms:.2f}ms")
+        logger.debug(
+            f"Single proposal evaluation completed in {decision.latency_ms:.2f}ms"
+        )
         return response
 
     except Exception as e:
@@ -299,12 +307,14 @@ async def clear_enforcement_cache():
 
 
 async def _evaluate_proposals_parallel(
-    proposals: List[ECProposal], context: str
-) -> List[ECEnforcementDecision]:
+    proposals: list[ECProposal], context: str
+) -> list[ECEnforcementDecision]:
     """Evaluate proposals in parallel for maximum performance."""
     tasks = []
     for proposal in proposals:
-        task = asyncio.create_task(_evaluate_single_proposal_optimized(proposal, context))
+        task = asyncio.create_task(
+            _evaluate_single_proposal_optimized(proposal, context)
+        )
         tasks.append(task)
 
     decisions = await asyncio.gather(*tasks, return_exceptions=True)
@@ -313,7 +323,9 @@ async def _evaluate_proposals_parallel(
     valid_decisions = []
     for i, decision in enumerate(decisions):
         if isinstance(decision, Exception):
-            logger.error(f"Error evaluating proposal {proposals[i].proposal_id}: {decision}")
+            logger.error(
+                f"Error evaluating proposal {proposals[i].proposal_id}: {decision}"
+            )
             # Create fallback decision
             fallback_decision = ECEnforcementDecision(
                 proposal_id=proposals[i].proposal_id,
@@ -330,8 +342,8 @@ async def _evaluate_proposals_parallel(
 
 
 async def _evaluate_proposals_sequential(
-    proposals: List[ECProposal], context: str
-) -> List[ECEnforcementDecision]:
+    proposals: list[ECProposal], context: str
+) -> list[ECEnforcementDecision]:
     """Evaluate proposals sequentially for large batches."""
     decisions = []
     for proposal in proposals:
@@ -365,7 +377,10 @@ async def _evaluate_single_proposal_optimized(
 
         # Quick safety checks
         code = proposal.solution_code.lower()
-        if any(keyword in code for keyword in ["unsafe", "dangerous", "harmful", "malicious"]):
+        if any(
+            keyword in code
+            for keyword in ["unsafe", "dangerous", "harmful", "malicious"]
+        ):
             decision = "deny"
             governance_penalty = 0.5
             explanation = "Safety violation detected"
@@ -417,7 +432,7 @@ def _generate_cache_key(proposal: ECProposal, context: str) -> str:
     return hashlib.sha256(content.encode()).hexdigest()
 
 
-def _calculate_cache_hit_rate(proposals: List[ECProposal]) -> float:
+def _calculate_cache_hit_rate(proposals: list[ECProposal]) -> float:
     """Calculate cache hit rate for the current batch."""
     hits = 0
     for proposal in proposals:

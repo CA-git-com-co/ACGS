@@ -16,7 +16,6 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple
 
 # Characters that are invalid on Windows
 INVALID_CHARS = r'[:<>"|?*]'
@@ -38,7 +37,7 @@ EXCLUDE_DIRS = {
 EXCLUDE_EXTENSIONS = {".pyc", ".pyo", ".pyd", ".so", ".dll", ".dylib"}
 
 
-def find_invalid_files(root_dir: str = ".") -> List[Tuple[str, str]]:
+def find_invalid_files(root_dir: str = ".") -> list[tuple[str, str]]:
     """
     Find files and directories with invalid characters.
 
@@ -164,7 +163,7 @@ def main():
     else:
         print("💡 Run with --fix-dry-run to see suggested fixes.")
 
-    print(f"\n📖 See FILE_NAMING_CONVENTIONS.md for detailed guidelines.")
+    print("\n📖 See FILE_NAMING_CONVENTIONS.md for detailed guidelines.")
 
     return 1
 

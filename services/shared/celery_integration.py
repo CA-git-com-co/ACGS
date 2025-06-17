@@ -6,9 +6,10 @@ Provides distributed task queue management with Redis broker
 import asyncio
 import logging
 import os
+from collections.abc import Callable
 from dataclasses import asdict
-from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 try:
     from celery import Celery, Task
@@ -106,7 +107,9 @@ if CELERY_AVAILABLE and Task:
             """Handle task failure."""
             logger.error(f"Task {task_id} failed: {exc}")
             # Update task status in Redis
-            asyncio.create_task(self._update_task_status(task_id, TaskStatus.FAILED, str(exc)))
+            asyncio.create_task(
+                self._update_task_status(task_id, TaskStatus.FAILED, str(exc))
+            )
 
         def on_success(self, retval, task_id, args, kwargs):
             # requires: Valid input parameters
@@ -117,7 +120,9 @@ if CELERY_AVAILABLE and Task:
             # Update task status in Redis
             asyncio.create_task(self._update_task_status(task_id, TaskStatus.COMPLETED))
 
-        async def _update_task_status(self, task_id: str, status: TaskStatus, error: str = None):
+        async def _update_task_status(
+            self, task_id: str, status: TaskStatus, error: str = None
+        ):
             # requires: Valid input parameters
             # ensures: Correct function execution
             # sha256: func_hash
@@ -126,10 +131,12 @@ if CELERY_AVAILABLE and Task:
                 redis_client = await get_redis_client("celery_tasks")
                 status_data = {
                     "status": status.value,
-                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(UTC).isoformat(),
                     "error": error,
                 }
-                await redis_client.set_json(f"task_status:{task_id}", status_data, ttl=3600)
+                await redis_client.set_json(
+                    f"task_status:{task_id}", status_data, ttl=3600
+                )
             except Exception as e:
                 logger.error(f"Failed to update task status: {e}")
 
@@ -141,8 +148,12 @@ else:
 
 if CELERY_AVAILABLE:
 
-    @celery_app.task(base=ACGSTask, bind=True, name="acgs.validation.execute_parallel_task")
-    def execute_parallel_validation_task(self, task_data: Dict[str, Any]) -> Dict[str, Any]:
+    @celery_app.task(
+        base=ACGSTask, bind=True, name="acgs.validation.execute_parallel_task"
+    )
+    def execute_parallel_validation_task(
+        self, task_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute a parallel validation task."""
         try:
             # Reconstruct task from data
@@ -176,7 +187,7 @@ if CELERY_AVAILABLE:
             }
 
 
-def _execute_policy_verification(task: ParallelTask) -> Dict[str, Any]:
+def _execute_policy_verification(task: ParallelTask) -> dict[str, Any]:
     """Execute policy verification task."""
     # Mock implementation - replace with actual verification logic
     import time
@@ -191,7 +202,7 @@ def _execute_policy_verification(task: ParallelTask) -> Dict[str, Any]:
     }
 
 
-def _execute_bias_detection(task: ParallelTask) -> Dict[str, Any]:
+def _execute_bias_detection(task: ParallelTask) -> dict[str, Any]:
     """Execute bias detection task."""
     # Mock implementation - replace with actual bias detection logic
     import time
@@ -206,7 +217,7 @@ def _execute_bias_detection(task: ParallelTask) -> Dict[str, Any]:
     }
 
 
-def _execute_safety_check(task: ParallelTask) -> Dict[str, Any]:
+def _execute_safety_check(task: ParallelTask) -> dict[str, Any]:
     """Execute safety property check."""
     # Mock implementation - replace with actual safety check logic
     import time
@@ -229,12 +240,12 @@ class CeleryTaskManager:
         # ensures: Correct function execution
         # sha256: func_hash
         self.aggregator = ByzantineFaultTolerantAggregator()
-        self.active_batches: Dict[str, ValidationBatch] = {}
+        self.active_batches: dict[str, ValidationBatch] = {}
 
     async def submit_batch(
         self,
         batch: ValidationBatch,
-        progress_callback: Optional[Callable[[str, float], None]] = None,
+        progress_callback: Callable[[str, float], None] | None = None,
     ) -> str:
         """Submit a batch of tasks to Celery."""
         if not CELERY_AVAILABLE:
@@ -258,7 +269,7 @@ class CeleryTaskManager:
             "batch_id": batch_id,
             "task_ids": [task.task_id for task in batch.tasks],
             "celery_task_ids": [ct.id for _, ct in celery_tasks],
-            "submitted_at": datetime.now(timezone.utc).isoformat(),
+            "submitted_at": datetime.now(UTC).isoformat(),
             "status": "submitted",
         }
         await redis_client.set_json(f"batch:{batch_id}", batch_data, ttl=7200)
@@ -269,7 +280,7 @@ class CeleryTaskManager:
 
         return batch_id
 
-    async def get_batch_status(self, batch_id: str) -> Dict[str, Any]:
+    async def get_batch_status(self, batch_id: str) -> dict[str, Any]:
         """Get status of a batch."""
         redis_client = await get_redis_client("celery_batches")
         batch_data = await redis_client.get_json(f"batch:{batch_id}")
@@ -298,7 +309,7 @@ class CeleryTaskManager:
             "task_statuses": task_statuses,
         }
 
-    async def get_batch_results(self, batch_id: str) -> Optional[AggregatedResult]:
+    async def get_batch_results(self, batch_id: str) -> AggregatedResult | None:
         """Get aggregated results for a completed batch."""
         batch_status = await self.get_batch_status(batch_id)
 
@@ -316,7 +327,9 @@ class CeleryTaskManager:
                     task_id=task_id,
                     validator_id=f"celery_worker_{task_id[:8]}",
                     result=result_data.get("result", {}),
-                    confidence_score=result_data.get("result", {}).get("confidence_score", 0.0),
+                    confidence_score=result_data.get("result", {}).get(
+                        "confidence_score", 0.0
+                    ),
                     execution_time_ms=result_data.get("execution_time_ms", 0.0),
                 )
                 validation_results.append(validation_result)
@@ -344,7 +357,7 @@ class CeleryTaskManager:
 
         # Update batch status
         batch_data["status"] = "cancelled"
-        batch_data["cancelled_at"] = datetime.now(timezone.utc).isoformat()
+        batch_data["cancelled_at"] = datetime.now(UTC).isoformat()
         await redis_client.set_json(f"batch:{batch_id}", batch_data, ttl=7200)
 
         return True
@@ -353,7 +366,7 @@ class CeleryTaskManager:
 if CELERY_AVAILABLE:
 
     @celery_app.task(name="acgs.monitoring.monitor_batch_progress")
-    def monitor_batch_progress(batch_id: str, celery_task_ids: List[str]):
+    def monitor_batch_progress(batch_id: str, celery_task_ids: list[str]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -378,7 +391,9 @@ if CELERY_AVAILABLE:
 
             time.sleep(1)  # Check every second
 
-        logger.info(f"Batch {batch_id} monitoring complete: {completed}/{total} successful")
+        logger.info(
+            f"Batch {batch_id} monitoring complete: {completed}/{total} successful"
+        )
 
 
 # Global task manager instance
@@ -391,7 +406,9 @@ async def initialize_celery_integration():
     # sha256: func_hash
     """Initialize Celery integration."""
     if not CELERY_AVAILABLE:
-        logger.warning("Celery not available - parallel processing will use local execution")
+        logger.warning(
+            "Celery not available - parallel processing will use local execution"
+        )
         return False
 
     try:
@@ -427,7 +444,7 @@ async def shutdown_celery_integration():
             active_tasks = inspect.active()
 
             if active_tasks:
-                for worker, tasks in active_tasks.items():
+                for _worker, tasks in active_tasks.items():
                     for task in tasks:
                         celery_app.control.revoke(task["id"], terminate=True)
 

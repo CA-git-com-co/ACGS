@@ -19,14 +19,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f"The grpc package installed is at version {GRPC_VERSION},"
-        + f" but the generated code in evaluation_pb2_grpc.py depends on"
+        + " but the generated code in evaluation_pb2_grpc.py depends on"
         + f" grpcio>={GRPC_GENERATED_VERSION}."
         + f" Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}"
         + f" or downgrade your generated code using grpcio-tools<={GRPC_VERSION}."
     )
 
 
-class NodeAgentServiceStub(object):
+class NodeAgentServiceStub:
     """The service definition for the Node Agent"""
 
     def __init__(self, channel):
@@ -43,7 +43,7 @@ class NodeAgentServiceStub(object):
         )
 
 
-class NodeAgentServiceServicer(object):
+class NodeAgentServiceServicer:
     """The service definition for the Node Agent"""
 
     def DispatchTest(self, request, context):
@@ -71,7 +71,7 @@ def add_NodeAgentServiceServicer_to_server(servicer, server):
 
 
 # This class is part of an EXPERIMENTAL API.
-class NodeAgentService(object):
+class NodeAgentService:
     """The service definition for the Node Agent"""
 
     @staticmethod

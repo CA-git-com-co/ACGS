@@ -33,7 +33,7 @@ This engine is the core component, offering:
 ## Project Structure
 
 ```
-alphaevolve_gs_engine/
+integrations/alphaevolve-engine/
 ├── .env.example                # Example environment variable configuration
 ├── README.md                   # This file
 ├── requirements.txt            # Python package dependencies
@@ -44,7 +44,7 @@ alphaevolve_gs_engine/
 │       └── dummy_constitutional_principle.rego
 ├── src/
 │   ├── __init__.py
-│   └── alphaevolve_gs_engine/  # Main package source code
+│   └── integrations/alphaevolve-engine/  # Main package source code
 │       ├── __init__.py         # Package-level imports and metadata
 │       ├── core/               # Core data structures (principles, rules, amendments)
 │       │   ├── __init__.py

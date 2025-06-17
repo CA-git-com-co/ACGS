@@ -4,12 +4,12 @@ Generation Engine Package
 Implements quantum-inspired policy generation with semantic fault tolerance.
 """
 
-from .engine import GenerationEngine, GenerationConfig
-from .models import RepresentationType, LSU, Representation, RepresentationSet
+from .engine import GenerationConfig, GenerationEngine
+from .models import LSU, Representation, RepresentationSet, RepresentationType
 
 __all__ = [
     "GenerationEngine",
-    "GenerationConfig", 
+    "GenerationConfig",
     "RepresentationType",
     "LSU",
     "Representation",

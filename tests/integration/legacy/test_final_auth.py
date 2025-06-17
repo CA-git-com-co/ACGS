@@ -88,7 +88,7 @@ def test_complete_auth_workflow():
 
     if response.status_code == 200:
         cookies, csrf_token = extract_cookies_from_response(response)
-        print(f"   ✅ Login successful")
+        print("   ✅ Login successful")
         print(
             f"   CSRF Token: {csrf_token[:20]}..."
             if csrf_token
@@ -115,7 +115,7 @@ def test_complete_auth_workflow():
 
     if response.status_code == 200:
         user_data = response.json()
-        print(f"   ✅ Protected endpoint access successful")
+        print("   ✅ Protected endpoint access successful")
         print(f"   User: {user_data.get('username')} (ID: {user_data.get('id')})")
         results["protected_access"] = True
     else:

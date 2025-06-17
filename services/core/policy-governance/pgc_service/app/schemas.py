@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -12,19 +12,19 @@ class PolicyQueryContext(BaseModel):
     Examples: user attributes, resource attributes, action details.
     """
 
-    user: Dict[str, Any] = Field(
+    user: dict[str, Any] = Field(
         ...,
         description="Attributes of the user making the request, e.g., {'id': 'user123', 'role': 'editor'}",
     )
-    resource: Dict[str, Any] = Field(
+    resource: dict[str, Any] = Field(
         ...,
         description="Attributes of the resource being accessed, e.g., {'id': 'doc456', 'sensitivity': 'high'}",
     )
-    action: Dict[str, Any] = Field(
+    action: dict[str, Any] = Field(
         ...,
         description="Details of the action being performed, e.g., {'type': 'read', 'parameters': {'version': 2}}",
     )
-    environment: Optional[Dict[str, Any]] = Field(
+    environment: dict[str, Any] | None = Field(
         None,
         description="Environmental factors, e.g., {'ip_address': '192.168.1.100', 'time_of_day': '14:30'}",
     )
@@ -43,14 +43,14 @@ class PolicyQueryResponse(BaseModel):
         ...,
         description="The outcome of the policy evaluation, e.g., 'permit', 'deny', 'not_applicable'.",
     )
-    matching_rules: Optional[List[Dict[str, Any]]] = Field(
+    matching_rules: list[dict[str, Any]] | None = Field(
         None,
         description="List of rules that led to the decision, with details like ID or content.",
     )
-    reason: Optional[str] = Field(
+    reason: str | None = Field(
         None, description="A human-readable explanation for the decision."
     )
-    error_message: Optional[str] = Field(
+    error_message: str | None = Field(
         None, description="Any error that occurred during evaluation."
     )
 
@@ -59,7 +59,7 @@ class PolicyQueryResponse(BaseModel):
 
 
 class PETContextInput(BaseModel):
-    data: Dict[str, Any]
+    data: dict[str, Any]
     transformation: str  # e.g., "homomorphic_encryption", "differential_privacy"
 
 
@@ -69,13 +69,13 @@ class PETContextOutput(BaseModel):
 
 
 class TEEContextInput(BaseModel):
-    data: Dict[str, Any]
+    data: dict[str, Any]
     code_to_execute: str  # Reference to code or actual code snippet
 
 
 class TEEContextOutput(BaseModel):
     result: Any
-    attestation_report: Optional[str] = None  # Simulating an attestation
+    attestation_report: str | None = None  # Simulating an attestation
     status: str
 
 
@@ -85,10 +85,10 @@ class IntegrityPolicyRule(BaseModel):  # Based on Integrity Service's PolicyRule
     rule_content: str
     version: int
     verification_status: str  # We'd only fetch 'verified' rules
-    source_principle_ids: Optional[List[int]] = []
+    source_principle_ids: list[int] | None = []
 
 
 # Placeholder for User (if PGC Service needs to be auth-aware for its own endpoints)
 class User(BaseModel):
     id: str
-    roles: List[str] = []
+    roles: list[str] = []

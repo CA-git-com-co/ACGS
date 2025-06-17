@@ -14,9 +14,8 @@ import statistics
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Dict, List
 
 import aiohttp
 
@@ -51,7 +50,7 @@ class DashboardTestConfig:
     prometheus_url: str = "http://localhost:9090"
 
     # Dashboard configurations
-    test_dashboards: List[Dict[str, str]] = field(
+    test_dashboards: list[dict[str, str]] = field(
         default_factory=lambda: [
             {"name": "ACGS Services Overview", "uid": "acgs-services-overview"},
             {"name": "Governance Workflows", "uid": "acgs-governance-workflows"},
@@ -68,11 +67,11 @@ class DashboardTestResult:
 
     test_name: str
     dashboard_name: str = ""
-    load_times: List[float] = field(default_factory=list)
-    query_times: List[float] = field(default_factory=list)
+    load_times: list[float] = field(default_factory=list)
+    query_times: list[float] = field(default_factory=list)
     success_count: int = 0
     error_count: int = 0
-    error_details: List[str] = field(default_factory=list)
+    error_details: list[str] = field(default_factory=list)
 
     @property
     def total_requests(self) -> int:
@@ -102,7 +101,7 @@ class DashboardPerformanceTester:
 
     def __init__(self, config: DashboardTestConfig):
         self.config = config
-        self.test_results: Dict[str, DashboardTestResult] = {}
+        self.test_results: dict[str, DashboardTestResult] = {}
 
         # Common Grafana API endpoints for testing
         self.grafana_endpoints = [
@@ -212,7 +211,7 @@ class DashboardPerformanceTester:
                                         f"HTTP {response.status}"
                                     )
 
-                        except asyncio.TimeoutError:
+                        except TimeoutError:
                             result.error_count += 1
                             result.error_details.append("Timeout")
                         except Exception as e:
@@ -605,9 +604,9 @@ class DashboardPerformanceTester:
         total_tests = len(self.test_results)
         passed_tests = 0
 
-        logger.info(f"📊 Dashboard Performance Test Results:")
+        logger.info("📊 Dashboard Performance Test Results:")
 
-        for test_name, result in self.test_results.items():
+        for _test_name, result in self.test_results.items():
             # Evaluate success criteria
             meets_load_time = True
             meets_success_rate = True
@@ -652,7 +651,7 @@ class DashboardPerformanceTester:
 
         report = {
             "test_metadata": {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "test_duration_seconds": self.config.test_duration_seconds,
                 "concurrent_users": self.config.concurrent_users,
                 "test_type": "dashboard_performance_validation",
@@ -693,7 +692,7 @@ class DashboardPerformanceTester:
         except Exception as e:
             logger.error(f"❌ Failed to save report: {str(e)}")
 
-    def summarize_errors(self, error_details: List[str]) -> Dict[str, int]:
+    def summarize_errors(self, error_details: list[str]) -> dict[str, int]:
         """Summarize error details for reporting."""
         error_summary = {}
         for error in error_details:

@@ -9,7 +9,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict
+from typing import Any
 
 
 class EventType(Enum):
@@ -113,7 +113,7 @@ class EventMetadata:
     session_id: str = None
     retry_count: int = 0
     max_retries: int = 3
-    tags: Dict[str, str] = None
+    tags: dict[str, str] = None
 
     def __post_init__(self):
         # requires: Valid input parameters
@@ -130,7 +130,7 @@ class EventMetadata:
 class EventData:
     """Event payload data."""
 
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     schema_version: str = "1.0"
     content_type: str = "application/json"
     encoding: str = "utf-8"

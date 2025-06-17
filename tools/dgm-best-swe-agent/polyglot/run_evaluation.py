@@ -8,6 +8,18 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import docker
+from swebench.harness.constants import (
+    APPLY_PATCH_FAIL,
+    APPLY_PATCH_PASS,
+    INSTANCE_IMAGE_BUILD_DIR,
+    KEY_INSTANCE_ID,
+    RUN_EVALUATION_LOG_DIR,
+)
+from swebench.harness.grading import get_eval_report
+from swebench.harness.test_spec import TestSpec, make_test_spec
+from swebench.harness.utils import load_swebench_dataset, str2bool
+from tqdm import tqdm
+
 from polyglot.docker_build import (
     BuildImageError,
     build_container,
@@ -24,17 +36,6 @@ from polyglot.docker_utils import (
     remove_image,
     should_remove,
 )
-from swebench.harness.constants import (
-    APPLY_PATCH_FAIL,
-    APPLY_PATCH_PASS,
-    INSTANCE_IMAGE_BUILD_DIR,
-    KEY_INSTANCE_ID,
-    RUN_EVALUATION_LOG_DIR,
-)
-from swebench.harness.grading import get_eval_report
-from swebench.harness.test_spec import TestSpec, make_test_spec
-from swebench.harness.utils import load_swebench_dataset, str2bool
-from tqdm import tqdm
 
 
 class EvaluationError(Exception):
@@ -124,7 +125,7 @@ def run_instance(
             user="root",
         )
         if val.exit_code != 0:
-            logger.info(f"Failed to apply patch to container, trying again...")
+            logger.info("Failed to apply patch to container, trying again...")
 
             # try "patch --batch --fuzz=5 -p1 -i {patch_path}" to try again
             val = container.exec_run(
@@ -186,7 +187,7 @@ def run_instance(
         # Check if git diff changed after running eval script
         logger.info(f"Git diff after:\n{git_diff_output_after}")
         if git_diff_output_after != git_diff_output_before:
-            logger.info(f"Git diff changed after running eval script")
+            logger.info("Git diff changed after running eval script")
 
         # Get report from test output
         logger.info(f"Grading answer for {instance_id}...")
@@ -332,10 +333,10 @@ def get_dataset_from_preds(
     prediction_ids = set(predictions.keys())
     if prediction_ids - dataset_ids:
         raise ValueError(
-            (
+
                 "Some prediction IDs not found in dataset!"
                 f"\nMissing IDs:\n{' '.join(prediction_ids - dataset_ids)}"
-            )
+
         )
     if instance_ids:
         dataset = [i for i in dataset if i[KEY_INSTANCE_ID] in instance_ids]
@@ -471,15 +472,15 @@ def make_run_report(
         "empty_patch_instances": len(empty_patch_ids),
         "error_instances": len(error_ids),
         "unstopped_instances": len(unstopped_containers),
-        "completed_ids": list(sorted(completed_ids)),
-        "incomplete_ids": list(sorted(incomplete_ids)),
-        "empty_patch_ids": list(sorted(empty_patch_ids)),
-        "submitted_ids": list(sorted(predictions.keys())),
-        "resolved_ids": list(sorted(resolved_ids)),
-        "unresolved_ids": list(sorted(unresolved_ids)),
-        "error_ids": list(sorted(error_ids)),
-        "unstopped_containers": list(sorted(unstopped_containers)),
-        "unremoved_images": list(sorted(unremoved_images)),
+        "completed_ids": sorted(completed_ids),
+        "incomplete_ids": sorted(incomplete_ids),
+        "empty_patch_ids": sorted(empty_patch_ids),
+        "submitted_ids": sorted(predictions.keys()),
+        "resolved_ids": sorted(resolved_ids),
+        "unresolved_ids": sorted(unresolved_ids),
+        "error_ids": sorted(error_ids),
+        "unstopped_containers": sorted(unstopped_containers),
+        "unremoved_images": sorted(unremoved_images),
         "schema_version": 2,
     }
     report_file = Path(
@@ -535,10 +536,10 @@ def main(
         predictions = get_gold_predictions(dataset_name, split)
     else:
         if predictions_path.endswith(".json"):
-            with open(predictions_path, "r") as f:
+            with open(predictions_path) as f:
                 predictions = json.load(f)
         elif predictions_path.endswith(".jsonl"):
-            with open(predictions_path, "r") as f:
+            with open(predictions_path) as f:
                 predictions = [json.loads(line) for line in f]
         else:
             raise ValueError('Predictions path must be "gold", .json, or .jsonl')

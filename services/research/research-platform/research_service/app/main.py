@@ -102,11 +102,17 @@ app.include_router(
     tags=["Experiment Tracking"],
 )
 
-app.include_router(data_collection_router, prefix="/api/v1/data", tags=["Data Collection"])
+app.include_router(
+    data_collection_router, prefix="/api/v1/data", tags=["Data Collection"]
+)
 
-app.include_router(analysis_router, prefix="/api/v1/analysis", tags=["Statistical Analysis"])
+app.include_router(
+    analysis_router, prefix="/api/v1/analysis", tags=["Statistical Analysis"]
+)
 
-app.include_router(automation_router, prefix="/api/v1/automation", tags=["Research Automation"])
+app.include_router(
+    automation_router, prefix="/api/v1/automation", tags=["Research Automation"]
+)
 
 app.include_router(
     reproducibility_router, prefix="/api/v1/reproducibility", tags=["Reproducibility"]

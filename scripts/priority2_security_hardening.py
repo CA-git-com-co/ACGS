@@ -13,7 +13,6 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -29,7 +28,7 @@ class SecurityHardener:
         self.project_root = Path("/home/dislove/ACGS-1")
         self.target_security_score = 90.0
 
-    def execute_security_hardening(self) -> Dict:
+    def execute_security_hardening(self) -> dict:
         """Execute comprehensive security hardening."""
         logger.info("🛡️ Starting ACGS-1 Security Hardening")
         start_time = time.time()
@@ -93,7 +92,7 @@ class SecurityHardener:
             results["overall_success"] = False
             return results
 
-    def assess_security_vulnerabilities(self) -> Dict:
+    def assess_security_vulnerabilities(self) -> dict:
         """Assess current security vulnerabilities."""
         logger.info("🔍 Assessing security vulnerabilities...")
 
@@ -101,7 +100,7 @@ class SecurityHardener:
 
         # Run bandit security analysis on Python code
         try:
-            result = subprocess.run(
+            subprocess.run(
                 [
                     "python",
                     "-m",
@@ -173,7 +172,7 @@ class SecurityHardener:
             "vulnerability_results": vulnerability_results,
         }
 
-    def perform_security_checks(self) -> Dict:
+    def perform_security_checks(self) -> dict:
         """Perform common security configuration checks."""
         checks = {}
 
@@ -241,7 +240,7 @@ class SecurityHardener:
 
         return checks
 
-    def audit_dependencies(self) -> Dict:
+    def audit_dependencies(self) -> dict:
         """Audit dependencies for security vulnerabilities."""
         logger.info("📦 Auditing dependencies...")
 
@@ -336,7 +335,7 @@ class SecurityHardener:
             "dependency_results": dependency_results,
         }
 
-    def configure_service_security(self) -> Dict:
+    def configure_service_security(self) -> dict:
         """Configure security settings for services."""
         logger.info("⚙️ Configuring service security...")
 
@@ -395,7 +394,7 @@ class SecurityHardener:
             "security_configs": security_configs,
         }
 
-    def harden_auth_systems(self) -> Dict:
+    def harden_auth_systems(self) -> dict:
         """Harden authentication and authorization systems."""
         logger.info("🔐 Hardening authentication systems...")
 
@@ -441,7 +440,7 @@ class SecurityHardener:
             "auth_hardening": auth_hardening,
         }
 
-    def implement_network_security(self) -> Dict:
+    def implement_network_security(self) -> dict:
         """Implement network security measures."""
         logger.info("🌐 Implementing network security...")
 
@@ -490,7 +489,7 @@ class SecurityHardener:
             "network_security": network_security,
         }
 
-    def validate_security_posture(self) -> Dict:
+    def validate_security_posture(self) -> dict:
         """Validate overall security posture."""
         logger.info("✅ Validating security posture...")
 
@@ -529,7 +528,7 @@ class SecurityHardener:
             "validation_results": validation_results,
         }
 
-    def calculate_security_score(self, validation_results: Dict) -> float:
+    def calculate_security_score(self, validation_results: dict) -> float:
         """Calculate overall security score."""
         # Simple scoring based on available information
         base_score = 70.0  # Base score for running services
@@ -544,7 +543,7 @@ class SecurityHardener:
 
         return min(base_score, 100.0)
 
-    def evaluate_security_success(self, results: Dict) -> bool:
+    def evaluate_security_success(self, results: dict) -> bool:
         """Evaluate overall security hardening success."""
         phases = results.get("phases", {})
 
@@ -556,7 +555,7 @@ class SecurityHardener:
 
         return successful_phases >= (total_phases * 0.8)  # 80% of phases successful
 
-    def calculate_improvements(self, results: Dict) -> Dict:
+    def calculate_improvements(self, results: dict) -> dict:
         """Calculate security improvements made."""
         return {
             "vulnerability_scanning": "Completed",
@@ -567,7 +566,7 @@ class SecurityHardener:
             "security_validation": "Completed",
         }
 
-    def save_security_report(self, results: Dict) -> None:
+    def save_security_report(self, results: dict) -> None:
         """Save comprehensive security report."""
         report_file = f"priority2_security_hardening_{int(time.time())}.json"
         report_path = self.project_root / "logs" / report_file

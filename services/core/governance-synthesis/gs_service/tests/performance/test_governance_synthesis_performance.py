@@ -14,6 +14,7 @@ import time
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+
 from services.core.governance_synthesis.app.core.opa_integration import (
     PolicyDecisionRequest,
     PolicyDecisionResponse,
@@ -105,9 +106,9 @@ def sample_performance_requests():
         request = PolicyValidationRequest(
             policy_content=f"""
             package acgs.performance.test{i}
-            
+
             default allow := false
-            
+
             allow if {{
                 input.user.role == "admin"
                 input.resource.type == "governance"
@@ -162,7 +163,7 @@ class TestSingleRequestLatency:
             request = sample_performance_requests[i % len(sample_performance_requests)]
 
             start_time = time.time()
-            response = await performance_policy_validator.validate_policy(request)
+            await performance_policy_validator.validate_policy(request)
             end_time = time.time()
 
             latency_ms = (end_time - start_time) * 1000
@@ -179,7 +180,7 @@ class TestSingleRequestLatency:
         p99_latency = statistics.quantiles(latencies, n=100)[98]  # 99th percentile
         max_latency = max(latencies)
 
-        print(f"\nSingle Request Latency Statistics:")
+        print("\nSingle Request Latency Statistics:")
         print(f"Average: {avg_latency:.2f}ms")
         print(f"95th percentile: {p95_latency:.2f}ms")
         print(f"99th percentile: {p99_latency:.2f}ms")
@@ -262,7 +263,9 @@ class TestBatchProcessingPerformance:
             # Test multiple batches
             for _ in range(5):
                 start_time = time.time()
-                responses = await performance_policy_validator.batch_validate(batch_requests)
+                responses = await performance_policy_validator.batch_validate(
+                    batch_requests
+                )
                 end_time = time.time()
 
                 batch_latency_ms = (end_time - start_time) * 1000
@@ -275,7 +278,9 @@ class TestBatchProcessingPerformance:
             avg_per_request_latency = statistics.mean(latencies)
             batch_results[batch_size] = avg_per_request_latency
 
-            print(f"Batch size {batch_size}: {avg_per_request_latency:.2f}ms per request")
+            print(
+                f"Batch size {batch_size}: {avg_per_request_latency:.2f}ms per request"
+            )
 
             # Per-request latency should remain low even in batches
             assert (
@@ -330,7 +335,8 @@ class TestBatchProcessingPerformance:
 
             # Concurrent processing should maintain reasonable performance
             assert (
-                avg_latency_per_request < performance_test_config["target_latency_ms"] * 2
+                avg_latency_per_request
+                < performance_test_config["target_latency_ms"] * 2
             ), f"Concurrent processing latency {avg_latency_per_request:.2f}ms too high"
 
 
@@ -339,7 +345,9 @@ class TestOPAIntegrationPerformance:
 
     @pytest.mark.performance
     @pytest.mark.asyncio
-    async def test_opa_client_decision_latency(self, mock_fast_opa_client, performance_test_config):
+    async def test_opa_client_decision_latency(
+        self, mock_fast_opa_client, performance_test_config
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -358,7 +366,7 @@ class TestOPAIntegrationPerformance:
             )
 
             start_time = time.time()
-            response = await mock_fast_opa_client.evaluate_policy(request)
+            await mock_fast_opa_client.evaluate_policy(request)
             end_time = time.time()
 
             latency_ms = (end_time - start_time) * 1000
@@ -369,7 +377,7 @@ class TestOPAIntegrationPerformance:
         avg_latency = statistics.mean(latencies)
         p95_latency = statistics.quantiles(latencies, n=20)[18]
 
-        print(f"\nOPA Decision Latency Statistics:")
+        print("\nOPA Decision Latency Statistics:")
         print(f"Average: {avg_latency:.2f}ms")
         print(f"95th percentile: {p95_latency:.2f}ms")
 
@@ -378,7 +386,9 @@ class TestOPAIntegrationPerformance:
 
     @pytest.mark.performance
     @pytest.mark.asyncio
-    async def test_policy_validation_latency(self, mock_fast_opa_client, performance_test_config):
+    async def test_policy_validation_latency(
+        self, mock_fast_opa_client, performance_test_config
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -393,7 +403,9 @@ class TestOPAIntegrationPerformance:
             """
 
             start_time = time.time()
-            result = await mock_fast_opa_client.validate_policy(policy_content, f"test_policy_{i}")
+            await mock_fast_opa_client.validate_policy(
+                policy_content, f"test_policy_{i}"
+            )
             end_time = time.time()
 
             latency_ms = (end_time - start_time) * 1000
@@ -439,7 +451,9 @@ class TestMemoryAndResourceUsage:
         )
 
         # Memory increase should be reasonable
-        assert memory_increase < 100, f"Memory increase {memory_increase:.1f}MB too high"
+        assert (
+            memory_increase < 100
+        ), f"Memory increase {memory_increase:.1f}MB too high"
 
     @pytest.mark.performance
     @pytest.mark.asyncio
@@ -455,7 +469,9 @@ class TestMemoryAndResourceUsage:
         cache = PolicyDecisionCache(max_size=1000, ttl_seconds=300)
 
         # Test cache hit performance
-        request = PolicyDecisionRequest(input_data={"test": "data"}, policy_path="test/policy")
+        request = PolicyDecisionRequest(
+            input_data={"test": "data"}, policy_path="test/policy"
+        )
 
         # Mock response
         response = PolicyDecisionResponse(
@@ -535,7 +551,9 @@ class TestThroughputMeasurement:
         print(f"Total requests completed: {completed_requests}")
 
         # Should achieve reasonable throughput
-        assert throughput_per_second > 100, f"Throughput {throughput_per_second:.1f} req/s too low"
+        assert (
+            throughput_per_second > 100
+        ), f"Throughput {throughput_per_second:.1f} req/s too low"
 
     @pytest.mark.performance
     @pytest.mark.asyncio
@@ -571,7 +589,7 @@ class TestThroughputMeasurement:
         avg_per_request_latency = avg_batch_latency / batch_size
         total_requests = batches_completed * batch_size
 
-        print(f"Sustained load test results:")
+        print("Sustained load test results:")
         print(f"Duration: {sustained_duration_seconds}s")
         print(f"Total requests: {total_requests}")
         print(f"Average per-request latency: {avg_per_request_latency:.2f}ms")

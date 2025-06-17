@@ -8,9 +8,9 @@ import asyncio
 import os
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -36,15 +36,15 @@ class PromptTemplate:
     template_content: str
     category: str
     version: str = "1.0"
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     # Performance tracking
     total_uses: int = 0
     total_rewards: float = 0.0
     success_count: int = 0
     average_reward: float = 0.0
-    confidence_interval: Tuple[float, float] = (0.0, 1.0)
+    confidence_interval: tuple[float, float] = (0.0, 1.0)
 
 
 @dataclass
@@ -86,7 +86,7 @@ class MockLLMOutput:
     """Mock LLM output for testing."""
 
     raw_llm_response: str
-    interpretations: List[Any] = field(default_factory=list)
+    interpretations: list[Any] = field(default_factory=list)
 
 
 class ThompsonSamplingMAB:
@@ -98,7 +98,7 @@ class ThompsonSamplingMAB:
         self.beta = {}  # Failure counts + beta_prior
 
     def select_arm(
-        self, context: Dict[str, Any] = None, available_arms: List[str] = None
+        self, context: dict[str, Any] = None, available_arms: list[str] = None
     ) -> str:
         """Select arm using Thompson Sampling (Beta-Bernoulli)."""
         if not self.alpha:
@@ -123,7 +123,7 @@ class ThompsonSamplingMAB:
         best_arm = max(samples.keys(), key=lambda x: samples[x])
         return best_arm
 
-    def update_reward(self, arm_id: str, reward: float, context: Dict[str, Any] = None):
+    def update_reward(self, arm_id: str, reward: float, context: dict[str, Any] = None):
         """Update Beta distribution parameters."""
         if arm_id not in self.alpha:
             self.alpha[arm_id] = self.config.alpha_prior
@@ -155,8 +155,8 @@ class StandaloneMABOptimizer:
         self.mab_algorithm.beta[template.template_id] = self.config.beta_prior
 
     async def select_optimal_prompt(
-        self, context: Dict[str, Any]
-    ) -> Optional[PromptTemplate]:
+        self, context: dict[str, Any]
+    ) -> PromptTemplate | None:
         """Select the optimal prompt template for given context."""
         if not self.prompt_templates:
             return None
@@ -188,7 +188,7 @@ class StandaloneMABOptimizer:
         return selected_template
 
     async def update_performance(
-        self, template_id: str, llm_output: MockLLMOutput, context: Dict[str, Any]
+        self, template_id: str, llm_output: MockLLMOutput, context: dict[str, Any]
     ):
         """Update prompt template performance with new results."""
         if template_id not in self.prompt_templates:
@@ -216,7 +216,7 @@ class StandaloneMABOptimizer:
         # Record optimization history
         self.optimization_history.append(
             {
-                "timestamp": datetime.now(timezone.utc),
+                "timestamp": datetime.now(UTC),
                 "template_id": template_id,
                 "template_name": template.name,
                 "context": context,
@@ -230,7 +230,7 @@ class StandaloneMABOptimizer:
         self.total_optimizations += 1
 
     async def _calculate_mock_reward(
-        self, template: PromptTemplate, output: MockLLMOutput, context: Dict[str, Any]
+        self, template: PromptTemplate, output: MockLLMOutput, context: dict[str, Any]
     ) -> RewardComponents:
         """Calculate mock reward for testing."""
         components = RewardComponents()
@@ -289,7 +289,7 @@ class StandaloneMABOptimizer:
 
         return components
 
-    def get_optimization_metrics(self) -> Dict[str, Any]:
+    def get_optimization_metrics(self) -> dict[str, Any]:
         """Get comprehensive optimization metrics."""
         if not self.prompt_templates:
             return {"error": "No templates registered"}
@@ -417,7 +417,7 @@ async def test_standalone_mab():
 
         # Show template performance
         print("\n📈 Template Performance:")
-        for template_id, template_metrics in metrics["template_metrics"].items():
+        for _template_id, template_metrics in metrics["template_metrics"].items():
             print(
                 f"   {template_metrics['name']}: {template_metrics['total_uses']} uses, "
                 f"avg_reward={template_metrics['average_reward']:.3f}, "
@@ -487,13 +487,13 @@ async def test_ab_testing_framework():
             ("safety_critical_v1", "Safety Critical Template", 0.5),
         ]
 
-        test_result = ab_framework.create_ab_test(
+        ab_framework.create_ab_test(
             "template_comparison_test", test_variants
         )
         print(f"✅ Created A/B test with {len(test_variants)} variants")
 
         # Simulate test data
-        for i in range(25):  # 25 samples per variant
+        for _i in range(25):  # 25 samples per variant
             # Select variant
             selected_template = ab_framework.select_variant("template_comparison_test")
 
@@ -594,7 +594,7 @@ async def test_performance_validation():
 
         # Check performance targets
         target_results = validator.check_performance_targets("random_baseline")
-        print(f"✅ Performance validation completed:")
+        print("✅ Performance validation completed:")
         print(f"   Current iteration: {target_results['current_iteration']}")
 
         improvement_target = target_results["targets"]["improvement_25_percent"]

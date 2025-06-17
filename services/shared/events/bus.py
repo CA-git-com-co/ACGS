@@ -10,9 +10,10 @@ import json
 import logging
 import uuid
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional, Set
+from datetime import UTC, datetime
+from typing import Any
 
 from ..common.error_handling import ACGSException, handle_service_error
 from ..di.interfaces import EventBusInterface
@@ -33,12 +34,12 @@ class Event:
     def create(
         cls,
         event_type: EventType,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         source_service: str,
         priority: EventPriority = EventPriority.NORMAL,
         user_id: str = None,
         correlation_id: str = None,
-        tags: Dict[str, str] = None,
+        tags: dict[str, str] = None,
     ) -> "Event":
         """
         Create a new event.
@@ -55,7 +56,7 @@ class Event:
         Returns:
             New event instance
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         metadata = EventMetadata(
             event_id=str(uuid.uuid4()),
@@ -74,7 +75,7 @@ class Event:
 
         return cls(metadata=metadata, data=data)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert event to dictionary."""
         return {
             "metadata": {
@@ -115,14 +116,16 @@ class EventHandler:
     is_async: bool = True
     max_retries: int = 3
     timeout: float = 30.0
-    filters: Dict[str, Any] = field(default_factory=dict)
+    filters: dict[str, Any] = field(default_factory=dict)
 
     async def handle(self, event: Event) -> Any:
         """Handle an event."""
         try:
             if self.is_async:
                 if asyncio.iscoroutinefunction(self.handler_func):
-                    return await asyncio.wait_for(self.handler_func(event), timeout=self.timeout)
+                    return await asyncio.wait_for(
+                        self.handler_func(event), timeout=self.timeout
+                    )
                 else:
                     # Run sync function in thread pool
                     loop = asyncio.get_event_loop()
@@ -130,8 +133,10 @@ class EventHandler:
             else:
                 return self.handler_func(event)
 
-        except asyncio.TimeoutError:
-            raise ACGSException(f"Event handler {self.handler_id} timed out", "HANDLER_TIMEOUT")
+        except TimeoutError:
+            raise ACGSException(
+                f"Event handler {self.handler_id} timed out", "HANDLER_TIMEOUT"
+            )
         except Exception as e:
             raise handle_service_error(
                 e, self.service_name, f"handle_event_{event.metadata.event_type.value}"
@@ -183,10 +188,10 @@ class EventBus(EventBusInterface):
             event_store: Event store for persistence (defaults to in-memory)
         """
         self.event_store = event_store or InMemoryEventStore()
-        self.handlers: Dict[EventType, List[EventHandler]] = defaultdict(list)
-        self.middleware: List[Callable] = []
+        self.handlers: dict[EventType, list[EventHandler]] = defaultdict(list)
+        self.middleware: list[Callable] = []
         self.running = False
-        self.processing_tasks: Set[asyncio.Task] = set()
+        self.processing_tasks: set[asyncio.Task] = set()
 
         # Metrics
         self.metrics = {
@@ -231,7 +236,7 @@ class EventBus(EventBusInterface):
         logger.info("Event bus stopped")
 
     async def publish(
-        self, event_type: str, data: Dict[str, Any], metadata: Dict[str, Any] = None
+        self, event_type: str, data: dict[str, Any], metadata: dict[str, Any] = None
     ) -> bool:
         """
         Publish an event to the bus.
@@ -274,7 +279,9 @@ class EventBus(EventBusInterface):
             for middleware in self.middleware:
                 event = await middleware(event)
                 if event is None:
-                    logger.warning(f"Event {event_type_enum.value} filtered by middleware")
+                    logger.warning(
+                        f"Event {event_type_enum.value} filtered by middleware"
+                    )
                     return False
 
             # Store event
@@ -283,7 +290,9 @@ class EventBus(EventBusInterface):
             # Update metrics
             self.metrics["events_published"] += 1
 
-            logger.debug(f"Published event {event.metadata.event_id}: {event_type_enum.value}")
+            logger.debug(
+                f"Published event {event.metadata.event_id}: {event_type_enum.value}"
+            )
             return True
 
         except Exception as e:
@@ -341,7 +350,7 @@ class EventBus(EventBusInterface):
         Returns:
             True if subscription was removed
         """
-        for event_type, handlers in self.handlers.items():
+        for _event_type, handlers in self.handlers.items():
             for i, handler in enumerate(handlers):
                 if handler.handler_id == subscription_id:
                     del handlers[i]
@@ -353,7 +362,7 @@ class EventBus(EventBusInterface):
 
     async def get_events(
         self, event_type: str = None, since: datetime = None
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Get events from the bus.
 
@@ -397,7 +406,9 @@ class EventBus(EventBusInterface):
                     self.processing_tasks.add(task)
 
                     # Clean up completed tasks
-                    self.processing_tasks = {t for t in self.processing_tasks if not t.done()}
+                    self.processing_tasks = {
+                        t for t in self.processing_tasks if not t.done()
+                    }
 
                 # Wait before next iteration
                 await asyncio.sleep(1.0)
@@ -414,7 +425,7 @@ class EventBus(EventBusInterface):
         try:
             # Update event status
             event.metadata.status = EventStatus.PROCESSING
-            event.metadata.updated_at = datetime.now(timezone.utc)
+            event.metadata.updated_at = datetime.now(UTC)
             await self.event_store.update_event(event)
 
             # Get handlers for event type
@@ -432,16 +443,20 @@ class EventBus(EventBusInterface):
                 if handler.matches_filters(event):
                     try:
                         result = await handler.handle(event)
-                        handler_results.append({"handler_id": handler.handler_id, "result": result})
+                        handler_results.append(
+                            {"handler_id": handler.handler_id, "result": result}
+                        )
                     except Exception as e:
                         logger.error(
                             f"Handler {handler.handler_id} failed for event {event.metadata.event_id}: {e}"
                         )
-                        handler_results.append({"handler_id": handler.handler_id, "error": str(e)})
+                        handler_results.append(
+                            {"handler_id": handler.handler_id, "error": str(e)}
+                        )
 
             # Update event status
             event.metadata.status = EventStatus.COMPLETED
-            event.metadata.updated_at = datetime.now(timezone.utc)
+            event.metadata.updated_at = datetime.now(UTC)
             await self.event_store.update_event(event)
 
             self.metrics["events_processed"] += 1
@@ -451,24 +466,25 @@ class EventBus(EventBusInterface):
 
             # Update event status to failed
             event.metadata.status = EventStatus.FAILED
-            event.metadata.updated_at = datetime.now(timezone.utc)
+            event.metadata.updated_at = datetime.now(UTC)
             await self.event_store.update_event(event)
 
             self.metrics["events_failed"] += 1
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get event bus metrics."""
         return {
             **self.metrics,
             "handlers_by_type": {
-                event_type.value: len(handlers) for event_type, handlers in self.handlers.items()
+                event_type.value: len(handlers)
+                for event_type, handlers in self.handlers.items()
             },
             "active_processing_tasks": len(self.processing_tasks),
         }
 
 
 # Global event bus instance
-_event_bus: Optional[EventBus] = None
+_event_bus: EventBus | None = None
 
 
 async def get_event_bus() -> EventBus:

@@ -17,8 +17,7 @@ import os
 # Import the module under test
 import sys
 import time
-from typing import Any, Dict
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -126,7 +125,9 @@ class TestPolicyCacheOptimizer:
         # ensures: Correct function execution
         # sha256: func_hash
         """Create cache optimizer for testing."""
-        return PolicyCacheOptimizer(max_size=100, default_ttl=300, enable_adaptive_ttl=True)
+        return PolicyCacheOptimizer(
+            max_size=100, default_ttl=300, enable_adaptive_ttl=True
+        )
 
     @pytest.fixture
     def sample_policy_context(self):
@@ -224,7 +225,9 @@ class TestPolicyCacheOptimizer:
         policy_decision = {"result": "allow", "confidence": 0.95}
 
         # Store value in cache
-        success = await cache_optimizer.set(policy_id, sample_policy_context, policy_decision)
+        success = await cache_optimizer.set(
+            policy_id, sample_policy_context, policy_decision
+        )
         assert success
 
         # Retrieve value from cache (should be a hit)
@@ -256,7 +259,9 @@ class TestPolicyCacheOptimizer:
         assert cache_optimizer.stats.evictions > 0
 
     @pytest.mark.asyncio
-    async def test_cache_invalidation_specific(self, cache_optimizer, sample_policy_context):
+    async def test_cache_invalidation_specific(
+        self, cache_optimizer, sample_policy_context
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -316,7 +321,9 @@ class TestPolicyCacheOptimizer:
         policy_id = "POL-001"
 
         # Store entry with very short TTL
-        await cache_optimizer.set(policy_id, sample_policy_context, {"result": "allow"}, ttl=1)
+        await cache_optimizer.set(
+            policy_id, sample_policy_context, {"result": "allow"}, ttl=1
+        )
 
         # Wait for expiration
         await asyncio.sleep(1.1)
@@ -407,7 +414,7 @@ class TestCacheOptimizerIntegration:
         context = {"user": "test"}
 
         # Should call Redis on cache miss
-        result = await optimizer.get(policy_id, context)
+        await optimizer.get(policy_id, context)
         mock_client.get.assert_called_once()
 
         # Should call Redis on cache set

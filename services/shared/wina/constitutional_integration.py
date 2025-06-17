@@ -7,8 +7,8 @@ for WINA (Weight Informed Neuron Activation) within the ACGS-PGP framework.
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from .config import WINAConfig, WINAIntegrationConfig
 from .exceptions import WINAConstitutionalError
@@ -22,7 +22,7 @@ class WINAConstitutionalPrincipleAnalyzer:
     and proposes efficiency-oriented constitutional updates.
     """
 
-    def __init__(self, wina_config: Optional[Dict[str, Any]] = None):
+    def __init__(self, wina_config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -42,8 +42,8 @@ class WINAConstitutionalPrincipleAnalyzer:
         self.analysis_cache = {}
 
     async def analyze_principle_for_wina_optimization(
-        self, principle: Dict[str, Any], optimization_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, principle: dict[str, Any], optimization_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Analyze a constitutional principle for WINA optimization opportunities.
 
@@ -81,11 +81,15 @@ class WINAConstitutionalPrincipleAnalyzer:
             analysis["constitutional_compatibility"] = compatibility_score
 
             # Identify risk factors
-            risk_factors = await self._identify_risk_factors(principle, optimization_context)
+            risk_factors = await self._identify_risk_factors(
+                principle, optimization_context
+            )
             analysis["risk_factors"] = risk_factors
 
             # Generate WINA-specific insights
-            wina_insights = await self._generate_wina_insights(principle, optimization_context)
+            wina_insights = await self._generate_wina_insights(
+                principle, optimization_context
+            )
             analysis["wina_specific_insights"] = wina_insights
 
             # Calculate overall optimization potential
@@ -94,8 +98,8 @@ class WINAConstitutionalPrincipleAnalyzer:
             )
 
             # Generate recommendations
-            analysis["recommendations"] = await self._generate_optimization_recommendations(
-                principle, analysis
+            analysis["recommendations"] = (
+                await self._generate_optimization_recommendations(principle, analysis)
             )
 
             logger.info(
@@ -111,9 +115,9 @@ class WINAConstitutionalPrincipleAnalyzer:
 
     async def propose_constitutional_update(
         self,
-        principle: Dict[str, Any],
-        optimization_analysis: Dict[str, Any],
-        update_context: Dict[str, Any],
+        principle: dict[str, Any],
+        optimization_analysis: dict[str, Any],
+        update_context: dict[str, Any],
     ) -> "ConstitutionalPrincipleUpdate":
         """
         Propose a constitutional principle update based on WINA analysis.
@@ -130,14 +134,18 @@ class WINAConstitutionalPrincipleAnalyzer:
         logger.info(f"Proposing constitutional update for principle {principle_id}")
 
         # Determine update type based on optimization potential
-        optimization_potential = optimization_analysis.get("optimization_potential", 0.0)
+        optimization_potential = optimization_analysis.get(
+            "optimization_potential", 0.0
+        )
 
         if optimization_potential > 0.7:
             update_type = "modify"
             rationale = "High WINA optimization potential identified"
         elif optimization_potential > 0.4:
             update_type = "modify"
-            rationale = "Moderate WINA optimization potential with constitutional safeguards"
+            rationale = (
+                "Moderate WINA optimization potential with constitutional safeguards"
+            )
         else:
             update_type = "add"
             rationale = "New efficiency principle needed for WINA optimization"
@@ -183,7 +191,7 @@ class WINAConstitutionalPrincipleAnalyzer:
             efficiency_impact=efficiency_impact,
             compliance_assessment=compliance_assessment,
             approval_status="pending",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             wina_analysis=optimization_analysis,
             constitutional_distance=constitutional_distance,
             risk_assessment=risk_assessment,
@@ -192,7 +200,7 @@ class WINAConstitutionalPrincipleAnalyzer:
             metadata={
                 "analyzer_version": "1.0",
                 "optimization_context": update_context,
-                "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
+                "analysis_timestamp": datetime.now(UTC).isoformat(),
             },
         )
 
@@ -204,8 +212,8 @@ class WINAConstitutionalPrincipleAnalyzer:
         return update
 
     async def _analyze_efficiency_potential(
-        self, principle: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, float]:
+        self, principle: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, float]:
         """Analyze the efficiency potential of a constitutional principle."""
         # Simulate efficiency analysis based on principle characteristics
         policy_code = principle.get("policy_code", "")
@@ -226,18 +234,22 @@ class WINAConstitutionalPrincipleAnalyzer:
         complexity_factor = min(len(policy_code) / 1000, 1.0)  # Normalize by length
 
         return {
-            "gflops_reduction_potential": base_score * 0.6 * (1 - complexity_factor * 0.3),
+            "gflops_reduction_potential": base_score
+            * 0.6
+            * (1 - complexity_factor * 0.3),
             "accuracy_retention_expected": 0.95 + (base_score * 0.04),
             "latency_impact": complexity_factor * 0.1,
             "optimization_confidence": base_score * 0.9,
         }
 
     async def _assess_constitutional_compatibility(
-        self, principle: Dict[str, Any], context: Dict[str, Any]
+        self, principle: dict[str, Any], context: dict[str, Any]
     ) -> float:
         """Assess how compatible a principle is with WINA optimization."""
         # Check for efficiency-related keywords
-        content = f"{principle.get('description', '')} {principle.get('policy_code', '')}"
+        content = (
+            f"{principle.get('description', '')} {principle.get('policy_code', '')}"
+        )
         efficiency_keywords = [
             "efficiency",
             "performance",
@@ -246,7 +258,9 @@ class WINAConstitutionalPrincipleAnalyzer:
             "speed",
         ]
 
-        keyword_score = sum(1 for keyword in efficiency_keywords if keyword in content.lower())
+        keyword_score = sum(
+            1 for keyword in efficiency_keywords if keyword in content.lower()
+        )
         keyword_score = min(keyword_score / len(efficiency_keywords), 1.0)
 
         # Check category compatibility
@@ -265,8 +279,8 @@ class WINAConstitutionalPrincipleAnalyzer:
         return keyword_score * 0.4 + category_score * 0.6
 
     async def _identify_risk_factors(
-        self, principle: Dict[str, Any], context: Dict[str, Any]
-    ) -> List[str]:
+        self, principle: dict[str, Any], context: dict[str, Any]
+    ) -> list[str]:
         """Identify risk factors for WINA optimization of a principle."""
         risks = []
 
@@ -288,8 +302,8 @@ class WINAConstitutionalPrincipleAnalyzer:
         return risks
 
     async def _generate_wina_insights(
-        self, principle: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, principle: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate WINA-specific insights for the principle."""
         return {
             "svd_transformation_applicability": 0.8,
@@ -305,9 +319,9 @@ class WINAConstitutionalPrincipleAnalyzer:
 
     def _calculate_optimization_potential(
         self,
-        efficiency_analysis: Dict[str, float],
+        efficiency_analysis: dict[str, float],
         compatibility_score: float,
-        risk_factors: List[str],
+        risk_factors: list[str],
     ) -> float:
         """Calculate overall optimization potential score."""
         # Base score from efficiency analysis
@@ -324,8 +338,8 @@ class WINAConstitutionalPrincipleAnalyzer:
         return max(0.0, min(1.0, final_score))
 
     async def _generate_optimization_recommendations(
-        self, principle: Dict[str, Any], analysis: Dict[str, Any]
-    ) -> List[str]:
+        self, principle: dict[str, Any], analysis: dict[str, Any]
+    ) -> list[str]:
         """Generate optimization recommendations based on analysis."""
         recommendations = []
 
@@ -333,9 +347,13 @@ class WINAConstitutionalPrincipleAnalyzer:
         risk_factors = analysis.get("risk_factors", [])
 
         if optimization_potential > 0.7:
-            recommendations.append("Implement aggressive WINA optimization with monitoring")
+            recommendations.append(
+                "Implement aggressive WINA optimization with monitoring"
+            )
         elif optimization_potential > 0.4:
-            recommendations.append("Implement conservative WINA optimization with safeguards")
+            recommendations.append(
+                "Implement conservative WINA optimization with safeguards"
+            )
         else:
             recommendations.append("Consider alternative efficiency approaches")
 
@@ -343,15 +361,19 @@ class WINAConstitutionalPrincipleAnalyzer:
             recommendations.append("Implement additional safety validation layers")
 
         if "complex_policy_logic" in risk_factors:
-            recommendations.append("Consider principle decomposition before optimization")
+            recommendations.append(
+                "Consider principle decomposition before optimization"
+            )
 
         recommendations.append("Monitor constitutional compliance continuously")
-        recommendations.append("Implement fallback mechanisms for optimization failures")
+        recommendations.append(
+            "Implement fallback mechanisms for optimization failures"
+        )
 
         return recommendations
 
     async def _generate_proposed_content(
-        self, principle: Dict[str, Any], analysis: Dict[str, Any], update_type: str
+        self, principle: dict[str, Any], analysis: dict[str, Any], update_type: str
     ) -> str:
         """Generate proposed content for constitutional principle update."""
         if update_type == "add":
@@ -393,8 +415,8 @@ allow_wina_optimization {{
             return original_policy + "\n" + wina_clause
 
     async def _perform_compliance_assessment(
-        self, principle: Dict[str, Any], proposed_content: str, analysis: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, principle: dict[str, Any], proposed_content: str, analysis: dict[str, Any]
+    ) -> dict[str, Any]:
         """Perform compliance assessment for proposed constitutional update."""
         return {
             "constitutional_compliance_score": 0.9,
@@ -410,7 +432,7 @@ allow_wina_optimization {{
         }
 
     async def _calculate_constitutional_distance(
-        self, principle: Dict[str, Any], proposed_content: str
+        self, principle: dict[str, Any], proposed_content: str
     ) -> float:
         """Calculate constitutional distance between original and proposed content."""
         original_content = principle.get("policy_code", "")
@@ -432,8 +454,8 @@ allow_wina_optimization {{
         return min(distance, 1.0)
 
     async def _generate_risk_assessment(
-        self, principle: Dict[str, Any], proposed_content: str, analysis: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, principle: dict[str, Any], proposed_content: str, analysis: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate risk assessment for proposed constitutional update."""
         risk_factors = analysis.get("risk_factors", [])
 
@@ -467,8 +489,8 @@ allow_wina_optimization {{
         }
 
     async def _create_validation_criteria(
-        self, principle: Dict[str, Any], proposed_content: str, analysis: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        self, principle: dict[str, Any], proposed_content: str, analysis: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Create validation criteria for proposed constitutional update."""
         efficiency_impact = analysis.get("efficiency_impact", {})
 
@@ -500,8 +522,8 @@ allow_wina_optimization {{
         ]
 
     async def _define_recovery_strategies(
-        self, principle: Dict[str, Any], analysis: Dict[str, Any]
-    ) -> List[str]:
+        self, principle: dict[str, Any], analysis: dict[str, Any]
+    ) -> list[str]:
         """Define recovery strategies for constitutional update failures."""
         strategies = [
             "revert_to_original_principle",
@@ -530,9 +552,9 @@ class WINAConstitutionalUpdateService:
 
     def __init__(
         self,
-        analyzer: Optional[WINAConstitutionalPrincipleAnalyzer] = None,
-        ac_service_client: Optional[Any] = None,
-        constitutional_council_client: Optional[Any] = None,
+        analyzer: WINAConstitutionalPrincipleAnalyzer | None = None,
+        ac_service_client: Any | None = None,
+        constitutional_council_client: Any | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -553,8 +575,8 @@ class WINAConstitutionalUpdateService:
         self.update_history = []
 
     async def propose_constitutional_updates(
-        self, principles: List[Dict[str, Any]], optimization_context: Dict[str, Any]
-    ) -> List["ConstitutionalPrincipleUpdate"]:
+        self, principles: list[dict[str, Any]], optimization_context: dict[str, Any]
+    ) -> list["ConstitutionalPrincipleUpdate"]:
         """
         Propose constitutional updates for a list of principles based on WINA analysis.
 
@@ -565,7 +587,9 @@ class WINAConstitutionalUpdateService:
         Returns:
             List of proposed constitutional principle updates
         """
-        logger.info(f"Proposing constitutional updates for {len(principles)} principles")
+        logger.info(
+            f"Proposing constitutional updates for {len(principles)} principles"
+        )
 
         proposed_updates = []
 
@@ -601,8 +625,8 @@ class WINAConstitutionalUpdateService:
     async def submit_update_for_approval(
         self,
         update: "ConstitutionalPrincipleUpdate",
-        approval_context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        approval_context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Submit a constitutional update for approval through the Constitutional Council.
 
@@ -628,11 +652,15 @@ class WINAConstitutionalUpdateService:
                 }
 
             # Prepare amendment proposal for Constitutional Council
-            amendment_proposal = await self._prepare_amendment_proposal(update, approval_context)
+            amendment_proposal = await self._prepare_amendment_proposal(
+                update, approval_context
+            )
 
             # Submit to Constitutional Council if client is available
             if self.constitutional_council_client:
-                council_result = await self._submit_to_constitutional_council(amendment_proposal)
+                council_result = await self._submit_to_constitutional_council(
+                    amendment_proposal
+                )
 
                 return {
                     "success": True,
@@ -669,8 +697,8 @@ class WINAConstitutionalUpdateService:
     async def apply_approved_update(
         self,
         update: "ConstitutionalPrincipleUpdate",
-        application_context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        application_context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Apply an approved constitutional update to the AC service.
 
@@ -681,7 +709,9 @@ class WINAConstitutionalUpdateService:
         Returns:
             Application result with success/failure information
         """
-        logger.info(f"Applying approved constitutional update for principle {update.principle_id}")
+        logger.info(
+            f"Applying approved constitutional update for principle {update.principle_id}"
+        )
 
         try:
             # Verify update is approved
@@ -693,7 +723,9 @@ class WINAConstitutionalUpdateService:
 
             # Apply update to AC service
             if self.ac_service_client:
-                application_result = await self._apply_to_ac_service(update, application_context)
+                application_result = await self._apply_to_ac_service(
+                    update, application_context
+                )
             else:
                 # Simulate application for testing
                 application_result = await self._simulate_ac_service_application(update)
@@ -709,7 +741,7 @@ class WINAConstitutionalUpdateService:
                     {
                         "principle_id": update.principle_id,
                         "update_type": update.update_type,
-                        "applied_at": datetime.now(timezone.utc),
+                        "applied_at": datetime.now(UTC),
                         "application_result": application_result,
                     }
                 )
@@ -728,7 +760,7 @@ class WINAConstitutionalUpdateService:
         self,
         update: "ConstitutionalPrincipleUpdate",
         monitoring_duration: int = 3600,  # 1 hour default
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Monitor the performance of an applied constitutional update.
 
@@ -745,7 +777,7 @@ class WINAConstitutionalUpdateService:
 
         monitoring_results = {
             "principle_id": update.principle_id,
-            "monitoring_start": datetime.now(timezone.utc),
+            "monitoring_start": datetime.now(UTC),
             "monitoring_duration": monitoring_duration,
             "performance_metrics": {},
             "compliance_status": "monitoring",
@@ -755,7 +787,9 @@ class WINAConstitutionalUpdateService:
 
         try:
             # Monitor efficiency metrics
-            efficiency_metrics = await self._monitor_efficiency_metrics(update, monitoring_duration)
+            efficiency_metrics = await self._monitor_efficiency_metrics(
+                update, monitoring_duration
+            )
             monitoring_results["performance_metrics"]["efficiency"] = efficiency_metrics
 
             # Monitor constitutional compliance
@@ -765,7 +799,9 @@ class WINAConstitutionalUpdateService:
             monitoring_results["performance_metrics"]["compliance"] = compliance_metrics
 
             # Monitor accuracy retention
-            accuracy_metrics = await self._monitor_accuracy_retention(update, monitoring_duration)
+            accuracy_metrics = await self._monitor_accuracy_retention(
+                update, monitoring_duration
+            )
             monitoring_results["performance_metrics"]["accuracy"] = accuracy_metrics
 
             # Analyze monitoring results
@@ -786,7 +822,7 @@ class WINAConstitutionalUpdateService:
 
     async def _validate_update_for_submission(
         self, update: "ConstitutionalPrincipleUpdate"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate constitutional update before submission."""
         issues = []
 
@@ -803,15 +839,18 @@ class WINAConstitutionalUpdateService:
             issues.append("Constitutional distance too high (>0.8)")
 
         # Check risk assessment
-        if update.risk_assessment and update.risk_assessment.get("overall_risk_level") == "high":
+        if (
+            update.risk_assessment
+            and update.risk_assessment.get("overall_risk_level") == "high"
+        ):
             if not update.validation_criteria:
                 issues.append("High-risk update requires validation criteria")
 
         return {"valid": len(issues) == 0, "issues": issues}
 
     async def _prepare_amendment_proposal(
-        self, update: "ConstitutionalPrincipleUpdate", context: Optional[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, update: "ConstitutionalPrincipleUpdate", context: dict[str, Any] | None
+    ) -> dict[str, Any]:
         """Prepare amendment proposal for Constitutional Council."""
         return {
             "title": f"WINA Optimization Amendment for Principle {update.principle_id}",
@@ -833,8 +872,8 @@ class WINAConstitutionalUpdateService:
         }
 
     async def _submit_to_constitutional_council(
-        self, amendment_proposal: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, amendment_proposal: dict[str, Any]
+    ) -> dict[str, Any]:
         """Submit amendment proposal to Constitutional Council."""
         # Simulate Constitutional Council submission
         return {
@@ -845,7 +884,9 @@ class WINAConstitutionalUpdateService:
             "voting_deadline": (datetime.now() + timedelta(hours=72)).isoformat(),
         }
 
-    async def _auto_approve_update(self, update: "ConstitutionalPrincipleUpdate") -> None:
+    async def _auto_approve_update(
+        self, update: "ConstitutionalPrincipleUpdate"
+    ) -> None:
         """Auto-approve low-risk constitutional update."""
         update.approval_status = "approved"
         logger.info(
@@ -853,41 +894,45 @@ class WINAConstitutionalUpdateService:
         )
 
     async def _apply_to_ac_service(
-        self, update: "ConstitutionalPrincipleUpdate", context: Optional[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, update: "ConstitutionalPrincipleUpdate", context: dict[str, Any] | None
+    ) -> dict[str, Any]:
         """Apply constitutional update to AC service."""
         # Simulate AC service application
         return {
             "success": True,
             "principle_id": update.principle_id,
             "new_version": 2,
-            "applied_at": datetime.now(timezone.utc).isoformat(),
+            "applied_at": datetime.now(UTC).isoformat(),
             "backup_created": True,
             "rollback_available": True,
         }
 
     async def _simulate_ac_service_application(
         self, update: "ConstitutionalPrincipleUpdate"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Simulate AC service application for testing."""
         return {
             "success": True,
             "principle_id": update.principle_id,
             "simulated": True,
-            "applied_at": datetime.now(timezone.utc).isoformat(),
+            "applied_at": datetime.now(UTC).isoformat(),
         }
 
     async def _monitor_efficiency_metrics(
         self, update: "ConstitutionalPrincipleUpdate", duration: int
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Monitor efficiency metrics for applied update."""
         # Simulate efficiency monitoring
         expected_impact = update.efficiency_impact
 
         return {
-            "gflops_reduction_achieved": expected_impact.get("gflops_reduction_potential", 0.5)
+            "gflops_reduction_achieved": expected_impact.get(
+                "gflops_reduction_potential", 0.5
+            )
             * 0.9,
-            "accuracy_retention_measured": expected_impact.get("accuracy_retention_expected", 0.95)
+            "accuracy_retention_measured": expected_impact.get(
+                "accuracy_retention_expected", 0.95
+            )
             * 1.01,
             "latency_impact_measured": expected_impact.get("latency_impact", 0.1) * 0.8,
             "optimization_stability": 0.95,
@@ -896,7 +941,7 @@ class WINAConstitutionalUpdateService:
 
     async def _monitor_constitutional_compliance(
         self, update: "ConstitutionalPrincipleUpdate", duration: int
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Monitor constitutional compliance for applied update."""
         compliance_assessment = update.compliance_assessment
 
@@ -904,17 +949,23 @@ class WINAConstitutionalUpdateService:
             "constitutional_compliance_score": compliance_assessment.get(
                 "constitutional_compliance_score", 0.9
             ),
-            "safety_compliance_score": compliance_assessment.get("safety_compliance_score", 0.85),
-            "overall_compliance_score": compliance_assessment.get("overall_compliance_score", 0.9),
+            "safety_compliance_score": compliance_assessment.get(
+                "safety_compliance_score", 0.85
+            ),
+            "overall_compliance_score": compliance_assessment.get(
+                "overall_compliance_score", 0.9
+            ),
             "compliance_violations": 0,
             "monitoring_duration": duration,
         }
 
     async def _monitor_accuracy_retention(
         self, update: "ConstitutionalPrincipleUpdate", duration: int
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Monitor accuracy retention for applied update."""
-        expected_accuracy = update.efficiency_impact.get("accuracy_retention_expected", 0.95)
+        expected_accuracy = update.efficiency_impact.get(
+            "accuracy_retention_expected", 0.95
+        )
 
         return {
             "baseline_accuracy": 0.96,
@@ -925,11 +976,15 @@ class WINAConstitutionalUpdateService:
         }
 
     async def _analyze_monitoring_results(
-        self, monitoring_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, monitoring_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze monitoring results and provide recommendations."""
-        efficiency_metrics = monitoring_results["performance_metrics"].get("efficiency", {})
-        compliance_metrics = monitoring_results["performance_metrics"].get("compliance", {})
+        efficiency_metrics = monitoring_results["performance_metrics"].get(
+            "efficiency", {}
+        )
+        compliance_metrics = monitoring_results["performance_metrics"].get(
+            "compliance", {}
+        )
         accuracy_metrics = monitoring_results["performance_metrics"].get("accuracy", {})
 
         issues = []
@@ -996,18 +1051,18 @@ class ConstitutionalPrincipleUpdate:
     update_type: str  # "modify", "add", "deprecate"
     proposed_content: str
     rationale: str
-    efficiency_impact: Dict[str, float]
-    compliance_assessment: Dict[str, Any]
+    efficiency_impact: dict[str, float]
+    compliance_assessment: dict[str, Any]
     approval_status: str  # "pending", "approved", "rejected"
     timestamp: datetime
 
     # Enhanced WINA-specific fields
-    wina_analysis: Optional[Dict[str, Any]] = None
-    constitutional_distance: Optional[float] = None
-    risk_assessment: Optional[Dict[str, Any]] = None
-    validation_criteria: Optional[List[Dict[str, Any]]] = None
-    recovery_strategies: Optional[List[str]] = None
-    metadata: Optional[Dict[str, Any]] = None
+    wina_analysis: dict[str, Any] | None = None
+    constitutional_distance: float | None = None
+    risk_assessment: dict[str, Any] | None = None
+    validation_criteria: list[dict[str, Any]] | None = None
+    recovery_strategies: list[str] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -1028,10 +1083,10 @@ class WINAGovernanceDecision:
 
     decision_id: str
     decision_type: str
-    context: Dict[str, Any]
-    wina_recommendation: Dict[str, Any]
-    constitutional_constraints: List[str]
-    final_decision: Dict[str, Any]
+    context: dict[str, Any]
+    wina_recommendation: dict[str, Any]
+    constitutional_constraints: list[str]
+    final_decision: dict[str, Any]
     compliance_score: float
     timestamp: datetime
 
@@ -1044,7 +1099,9 @@ class ConstitutionalWINASupport:
     and the constitutional governance framework of ACGS-PGP.
     """
 
-    def __init__(self, wina_config: WINAConfig, integration_config: WINAIntegrationConfig):
+    def __init__(
+        self, wina_config: WINAConfig, integration_config: WINAIntegrationConfig
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -1059,13 +1116,13 @@ class ConstitutionalWINASupport:
         self.integration_config = integration_config
 
         # Constitutional principles related to efficiency
-        self.efficiency_principles: Dict[str, Dict[str, Any]] = {}
+        self.efficiency_principles: dict[str, dict[str, Any]] = {}
 
         # Proposed principle updates
-        self.proposed_updates: List["ConstitutionalPrincipleUpdate"] = []
+        self.proposed_updates: list[ConstitutionalPrincipleUpdate] = []
 
         # Governance decisions
-        self.governance_decisions: List[WINAGovernanceDecision] = []
+        self.governance_decisions: list[WINAGovernanceDecision] = []
 
         logger.info("Initialized constitutional WINA support")
 
@@ -1125,7 +1182,9 @@ class ConstitutionalWINASupport:
 
             self.efficiency_principles.update(efficiency_principles)
 
-            logger.info(f"Initialized {len(efficiency_principles)} efficiency principles for WINA")
+            logger.info(
+                f"Initialized {len(efficiency_principles)} efficiency principles for WINA"
+            )
 
         except Exception as e:
             logger.error(f"Failed to initialize efficiency principles: {e}")
@@ -1137,7 +1196,7 @@ class ConstitutionalWINASupport:
         update_type: str,
         proposed_content: str,
         rationale: str,
-        efficiency_impact: Dict[str, float],
+        efficiency_impact: dict[str, float],
     ) -> str:
         """
         Propose an update to constitutional principles based on WINA insights.
@@ -1167,7 +1226,7 @@ class ConstitutionalWINASupport:
                 efficiency_impact=efficiency_impact,
                 compliance_assessment=compliance_assessment,
                 approval_status="pending",
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
 
             self.proposed_updates.append(update)
@@ -1186,8 +1245,8 @@ class ConstitutionalWINASupport:
             raise WINAConstitutionalError(f"Principle update proposal failed: {e}")
 
     async def evaluate_wina_compliance(
-        self, optimization_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, optimization_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Evaluate WINA optimization compliance with constitutional principles.
 
@@ -1217,9 +1276,13 @@ class ConstitutionalWINASupport:
                     compliance_results["overall_compliant"] = False
                     compliance_results["violations"].extend(evaluation["violations"])
 
-                compliance_results["recommendations"].extend(evaluation["recommendations"])
+                compliance_results["recommendations"].extend(
+                    evaluation["recommendations"]
+                )
 
-            logger.debug(f"WINA compliance evaluation: {compliance_results['overall_compliant']}")
+            logger.debug(
+                f"WINA compliance evaluation: {compliance_results['overall_compliant']}"
+            )
 
             return compliance_results
 
@@ -1228,7 +1291,7 @@ class ConstitutionalWINASupport:
             raise WINAConstitutionalError(f"Compliance evaluation failed: {e}")
 
     async def generate_governance_recommendation(
-        self, decision_context: Dict[str, Any]
+        self, decision_context: dict[str, Any]
     ) -> WINAGovernanceDecision:
         """
         Generate governance recommendation based on WINA analysis and constitutional principles.
@@ -1240,15 +1303,15 @@ class ConstitutionalWINASupport:
             WINAGovernanceDecision containing the recommendation
         """
         try:
-            decision_id = (
-                f"WINA_GOV_{len(self.governance_decisions)}_{int(datetime.now().timestamp())}"
-            )
+            decision_id = f"WINA_GOV_{len(self.governance_decisions)}_{int(datetime.now().timestamp())}"
 
             # Analyze context with WINA
             wina_recommendation = await self._analyze_with_wina(decision_context)
 
             # Identify applicable constitutional constraints
-            constitutional_constraints = self._identify_constitutional_constraints(decision_context)
+            constitutional_constraints = self._identify_constitutional_constraints(
+                decision_context
+            )
 
             # Generate final decision considering both WINA and constitutional factors
             final_decision = await self._synthesize_governance_decision(
@@ -1268,7 +1331,7 @@ class ConstitutionalWINASupport:
                 constitutional_constraints=constitutional_constraints,
                 final_decision=final_decision,
                 compliance_score=compliance_score,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
 
             self.governance_decisions.append(governance_decision)
@@ -1284,8 +1347,8 @@ class ConstitutionalWINASupport:
             raise WINAConstitutionalError(f"Governance recommendation failed: {e}")
 
     async def _assess_principle_compliance(
-        self, proposed_content: str, efficiency_impact: Dict[str, float]
-    ) -> Dict[str, Any]:
+        self, proposed_content: str, efficiency_impact: dict[str, float]
+    ) -> dict[str, Any]:
         """
         Assess compliance of proposed principle with existing framework.
 
@@ -1322,8 +1385,8 @@ class ConstitutionalWINASupport:
         return assessment
 
     async def _evaluate_principle_compliance(
-        self, principle: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, principle: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Evaluate compliance with a specific principle.
 
@@ -1375,7 +1438,7 @@ class ConstitutionalWINASupport:
         return evaluation
 
     def _check_principle_conflict(
-        self, proposed_content: str, existing_principle: Dict[str, Any]
+        self, proposed_content: str, existing_principle: dict[str, Any]
     ) -> bool:
         """
         Check if proposed content conflicts with existing principle.
@@ -1427,7 +1490,9 @@ class ConstitutionalWINASupport:
             and len(assessment["conflicts"]) == 0
         )
 
-    async def _approve_principle_update(self, update: "ConstitutionalPrincipleUpdate") -> None:
+    async def _approve_principle_update(
+        self, update: "ConstitutionalPrincipleUpdate"
+    ) -> None:
         """
         Approve a principle update.
 
@@ -1435,9 +1500,11 @@ class ConstitutionalWINASupport:
             update: Update to approve
         """
         update.approval_status = "approved"
-        logger.info(f"Auto-approved low-risk principle update for {update.principle_id}")
+        logger.info(
+            f"Auto-approved low-risk principle update for {update.principle_id}"
+        )
 
-    async def _analyze_with_wina(self, context: Dict[str, Any]) -> Dict[str, Any]:
+    async def _analyze_with_wina(self, context: dict[str, Any]) -> dict[str, Any]:
         """
         Analyze decision context using WINA insights.
 
@@ -1456,7 +1523,9 @@ class ConstitutionalWINASupport:
             "optimization_strategy": "layer_specific_sparsity",
         }
 
-    def _identify_constitutional_constraints(self, context: Dict[str, Any]) -> List[str]:
+    def _identify_constitutional_constraints(
+        self, context: dict[str, Any]
+    ) -> list[str]:
         """
         Identify applicable constitutional constraints for the context.
 
@@ -1476,7 +1545,7 @@ class ConstitutionalWINASupport:
         return applicable_constraints
 
     def _principle_applies_to_context(
-        self, principle: Dict[str, Any], context: Dict[str, Any]
+        self, principle: dict[str, Any], context: dict[str, Any]
     ) -> bool:
         """
         Check if a principle applies to the given context.
@@ -1496,10 +1565,10 @@ class ConstitutionalWINASupport:
 
     async def _synthesize_governance_decision(
         self,
-        wina_recommendation: Dict[str, Any],
-        constitutional_constraints: List[str],
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        wina_recommendation: dict[str, Any],
+        constitutional_constraints: list[str],
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Synthesize final governance decision considering WINA and constitutional factors.
 
@@ -1532,7 +1601,7 @@ class ConstitutionalWINASupport:
         return decision
 
     async def _calculate_compliance_score(
-        self, decision: Dict[str, Any], constraints: List[str]
+        self, decision: dict[str, Any], constraints: list[str]
     ) -> float:
         """
         Calculate compliance score for a governance decision.
@@ -1569,7 +1638,7 @@ class ConstitutionalWINASupport:
 
         return np.mean(compliance_factors) if compliance_factors else 1.0
 
-    def get_efficiency_principles(self) -> Dict[str, Dict[str, Any]]:
+    def get_efficiency_principles(self) -> dict[str, dict[str, Any]]:
         """
         Get current efficiency principles.
 
@@ -1578,7 +1647,7 @@ class ConstitutionalWINASupport:
         """
         return self.efficiency_principles.copy()
 
-    def get_proposed_updates(self) -> List["ConstitutionalPrincipleUpdate"]:
+    def get_proposed_updates(self) -> list["ConstitutionalPrincipleUpdate"]:
         """
         Get list of proposed principle updates.
 
@@ -1587,7 +1656,7 @@ class ConstitutionalWINASupport:
         """
         return self.proposed_updates.copy()
 
-    def get_governance_decisions(self) -> List[WINAGovernanceDecision]:
+    def get_governance_decisions(self) -> list[WINAGovernanceDecision]:
         """
         Get list of governance decisions.
 

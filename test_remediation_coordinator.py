@@ -14,7 +14,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Setup logging
 logging.basicConfig(
@@ -78,7 +78,7 @@ class TestRemediationCoordinator:
 
     def run_test_subset(
         self, test_pattern: str, max_failures: int = 5
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run a subset of tests with error handling."""
         logger.info(f"Running tests matching pattern: {test_pattern}")
 
@@ -133,7 +133,7 @@ class TestRemediationCoordinator:
                 "success": False,
             }
 
-    def analyze_test_failures(self, test_result: Dict[str, Any]) -> List[str]:
+    def analyze_test_failures(self, test_result: dict[str, Any]) -> list[str]:
         """Analyze test failures and categorize issues."""
         issues = []
 
@@ -154,7 +154,7 @@ class TestRemediationCoordinator:
 
         return issues
 
-    def execute_test_categories(self) -> Dict[str, Any]:
+    def execute_test_categories(self) -> dict[str, Any]:
         """Execute tests by category with systematic error handling."""
 
         test_categories = [
@@ -221,7 +221,7 @@ class TestRemediationCoordinator:
 
         return results
 
-    def generate_summary_report(self, test_results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_summary_report(self, test_results: dict[str, Any]) -> dict[str, Any]:
         """Generate comprehensive summary report."""
 
         total_categories = len(test_results)
@@ -254,7 +254,7 @@ class TestRemediationCoordinator:
 
         return summary
 
-    def generate_recommendations(self, issue_counts: Dict[str, int]) -> List[str]:
+    def generate_recommendations(self, issue_counts: dict[str, int]) -> list[str]:
         """Generate specific recommendations based on issues found."""
         recommendations = []
 
@@ -275,7 +275,7 @@ class TestRemediationCoordinator:
 
         return recommendations
 
-    def generate_next_actions(self, test_results: Dict[str, Any]) -> List[str]:
+    def generate_next_actions(self, test_results: dict[str, Any]) -> list[str]:
         """Generate prioritized next actions."""
         actions = []
 
@@ -314,7 +314,7 @@ class TestRemediationCoordinator:
 
         return actions
 
-    async def execute_full_analysis(self) -> Dict[str, Any]:
+    async def execute_full_analysis(self) -> dict[str, Any]:
         """Execute full test analysis and remediation workflow."""
         logger.info("🚀 Starting ACGS-1 Test Remediation Analysis")
 
@@ -363,11 +363,11 @@ async def main():
     print(
         f"Categories Passed: {summary['passed_categories']}/{summary['total_test_categories']}"
     )
-    print(f"\nTop Issues:")
+    print("\nTop Issues:")
     for issue, count in summary["top_issues"]:
         print(f"  - {issue}: {count} occurrences")
 
-    print(f"\nNext Actions:")
+    print("\nNext Actions:")
     for i, action in enumerate(summary["next_actions"][:5], 1):
         print(f"  {i}. {action}")
 

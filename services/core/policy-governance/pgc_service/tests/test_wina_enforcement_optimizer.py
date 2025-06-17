@@ -33,7 +33,7 @@ except ImportError:
     # Mock implementations for testing when modules are not available
     from dataclasses import dataclass
     from enum import Enum
-    from typing import Any, Dict, List, Optional
+    from typing import Any
 
     class EnforcementStrategy(Enum):
         STANDARD = "standard"
@@ -46,10 +46,10 @@ except ImportError:
         user_id: str
         action_type: str
         resource_id: str
-        environment_factors: Dict[str, Any]
+        environment_factors: dict[str, Any]
         priority_level: str
-        constitutional_requirements: List[str]
-        performance_constraints: Dict[str, Any]
+        constitutional_requirements: list[str]
+        performance_constraints: dict[str, Any]
 
     @dataclass
     class WINAEnforcementMetrics:
@@ -74,23 +74,23 @@ except ImportError:
         enforcement_metrics: WINAEnforcementMetrics
         constitutional_compliance: bool
         optimization_applied: bool
-        matching_rules: Optional[List[Dict]] = None
-        warnings: List[str] = None
-        errors: List[str] = None
-        wina_insights: Dict[str, Any] = None
+        matching_rules: list[dict] | None = None
+        warnings: list[str] = None
+        errors: list[str] = None
+        wina_insights: dict[str, Any] = None
 
     @dataclass
     class PolicyEvaluationRequest:
-        input_data: Dict[str, Any]
+        input_data: dict[str, Any]
         policy_content: str
 
     @dataclass
     class PolicyEvaluationResponse:
-        result: Dict[str, Any]
+        result: dict[str, Any]
         decision_id: str
-        metrics: Dict[str, Any]
-        explanation: List[Any]
-        provenance: Dict[str, Any]
+        metrics: dict[str, Any]
+        explanation: list[Any]
+        provenance: dict[str, Any]
 
     @dataclass
     class IntegrityPolicyRule:
@@ -314,7 +314,9 @@ class TestWINAEnforcementOptimizer:
         # sha256: func_hash
         """Test strategy selection for constitutional priority."""
         # Mock WINA insights to trigger constitutional priority
-        with patch.object(wina_optimizer, "_get_wina_strategy_insights") as mock_insights:
+        with patch.object(
+            wina_optimizer, "_get_wina_strategy_insights"
+        ) as mock_insights:
             mock_insights.return_value = {
                 "constitutional_risk": 0.6,  # High risk
                 "performance_benefit": 0.3,
@@ -337,7 +339,9 @@ class TestWINAEnforcementOptimizer:
         # sha256: func_hash
         """Test strategy selection for performance-focused enforcement."""
         # Mock WINA insights to trigger performance focus
-        with patch.object(wina_optimizer, "_get_wina_strategy_insights") as mock_insights:
+        with patch.object(
+            wina_optimizer, "_get_wina_strategy_insights"
+        ) as mock_insights:
             mock_insights.return_value = {
                 "constitutional_risk": 0.2,  # Low risk
                 "performance_benefit": 0.5,  # High benefit
@@ -360,7 +364,9 @@ class TestWINAEnforcementOptimizer:
         # sha256: func_hash
         """Test policy relevance calculation."""
         # Test with policy containing relevant terms
-        mock_policy_rule.rule_content = "allow { user.id == 'test_user' && action.type == 'read' }"
+        mock_policy_rule.rule_content = (
+            "allow { user.id == 'test_user' && action.type == 'read' }"
+        )
 
         relevance = await wina_optimizer._calculate_policy_relevance(
             mock_policy_rule, enforcement_context
@@ -397,7 +403,9 @@ class TestWINAEnforcementOptimizer:
         """Test constitutional compliance verification."""
         # Mock constitutional WINA integration
         mock_constitutional_wina = AsyncMock()
-        mock_constitutional_wina.verify_enforcement_compliance.return_value = 0.9  # High compliance
+        mock_constitutional_wina.verify_enforcement_compliance.return_value = (
+            0.9  # High compliance
+        )
         wina_optimizer.constitutional_wina = mock_constitutional_wina
 
         compliance = await wina_optimizer._verify_constitutional_compliance(
@@ -417,7 +425,9 @@ class TestWINAEnforcementOptimizer:
         """Test constitutional compliance verification with low compliance."""
         # Mock constitutional WINA integration with low compliance
         mock_constitutional_wina = AsyncMock()
-        mock_constitutional_wina.verify_enforcement_compliance.return_value = 0.7  # Low compliance
+        mock_constitutional_wina.verify_enforcement_compliance.return_value = (
+            0.7  # Low compliance
+        )
         wina_optimizer.constitutional_wina = mock_constitutional_wina
 
         compliance = await wina_optimizer._verify_constitutional_compliance(
@@ -441,7 +451,9 @@ class TestWINAEnforcementOptimizer:
             hashlib.sha256().hexdigest()
         )  # Dynamically compute SHA-256 hash length
         assert len(cache_key) == expected_length
-        assert all(c in "0123456789abcdef" for c in cache_key)  # Verify hexadecimal format
+        assert all(
+            c in "0123456789abcdef" for c in cache_key
+        )  # Verify hexadecimal format
 
         # Test that same context generates same key
         cache_key2 = wina_optimizer._generate_cache_key(enforcement_context)
@@ -470,7 +482,9 @@ class TestWINAEnforcementOptimizer:
         assert confidence <= 1.0
 
     @pytest.mark.asyncio
-    async def test_enforcement_reason_generation(self, wina_optimizer, enforcement_context):
+    async def test_enforcement_reason_generation(
+        self, wina_optimizer, enforcement_context
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

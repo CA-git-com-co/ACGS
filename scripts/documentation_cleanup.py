@@ -10,16 +10,13 @@ Author: ACGS-1 Development Team
 Version: 1.0.0
 """
 
-import os
-import shutil
 import json
-import subprocess
 import re
+import shutil
+import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
-
 
 # Configuration Variables
 # Auto-detect project root - use current working directory if it contains ACGS-1 structure
@@ -41,13 +38,13 @@ SERVICE_PORTS = {
     "fv_service": 8003,
     "gs_service": 8004,
     "pgc_service": 8005,
-    "ec_service": 8006
+    "ec_service": 8006,
 }
 
 # Files to remove (outdated/duplicate files)
 FILES_TO_REMOVE = [
     "requirements-dgm.txt",
-    "requirements-test.txt", 
+    "requirements-test.txt",
     "backup_reorganization/",
     "src/",  # Legacy src directory
     "*.pyc",
@@ -56,7 +53,7 @@ FILES_TO_REMOVE = [
     "temp_results_*.json",
     "acgs_health_report_*.json",
     "bandit-report*.json",
-    "coverage.json"
+    "coverage.json",
 ]
 
 # Documentation path mappings (old_path -> new_path)
@@ -75,7 +72,7 @@ DOCUMENTATION_UPDATES = {
     "tests/e2e/": "tests/e2e/",
     "config/docker/": "infrastructure/docker/",
     "scripts/": "scripts/",
-    "docs/": "docs/"
+    "docs/": "docs/",
 }
 
 
@@ -96,10 +93,10 @@ class DocumentationCleanupManager:
             "validation_results": {},
             "performance_metrics": {},
             "blockchain_compliance": {},
-            "errors": []
+            "errors": [],
         }
 
-    def validate_solana_governance_costs(self) -> Dict:
+    def validate_solana_governance_costs(self) -> dict:
         """
         Validate Solana governance transaction costs meet <0.01 SOL requirement.
 
@@ -113,30 +110,30 @@ class DocumentationCleanupManager:
                 "policy_creation": 0.002,
                 "voting_transaction": 0.001,
                 "compliance_check": 0.001,
-                "state_update": 0.001
-            }
+                "state_update": 0.001,
+            },
         }
 
         # In a real implementation, this would query actual Solana network costs
         # For now, we use conservative estimates based on typical Solana transaction costs
 
         return cost_validation
-    
+
     def backup_files(self) -> bool:
         """
         Create backups of critical files before modifications.
-        
+
         Returns:
             bool: True if backup successful, False otherwise
         """
         try:
             print(f"Creating backup directory: {self.backup_dir}")
             self.backup_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Backup critical directories
             critical_dirs = ["docs/", "scripts/", "README.md", "*.md"]
             backed_up_files = []
-            
+
             for pattern in critical_dirs:
                 if pattern.endswith("/"):
                     # Directory backup
@@ -152,33 +149,37 @@ class DocumentationCleanupManager:
                             dest_path = self.backup_dir / file_path.name
                             shutil.copy2(file_path, dest_path)
                             backed_up_files.append(str(file_path))
-            
-            self.report_data["operations"].append({
-                "operation": "backup_files",
-                "status": "success",
-                "files_backed_up": len(backed_up_files),
-                "backup_location": str(self.backup_dir)
-            })
-            
-            print(f"✅ Backup completed: {len(backed_up_files)} files/directories backed up")
+
+            self.report_data["operations"].append(
+                {
+                    "operation": "backup_files",
+                    "status": "success",
+                    "files_backed_up": len(backed_up_files),
+                    "backup_location": str(self.backup_dir),
+                }
+            )
+
+            print(
+                f"✅ Backup completed: {len(backed_up_files)} files/directories backed up"
+            )
             return True
-            
+
         except Exception as e:
             error_msg = f"Backup failed: {str(e)}"
             print(f"❌ {error_msg}")
             self.report_data["errors"].append(error_msg)
             return False
-    
+
     def remove_outdated_files(self) -> bool:
         """
         Remove outdated and duplicate files.
-        
+
         Returns:
             bool: True if removal successful, False otherwise
         """
         try:
             removed_files = []
-            
+
             for file_pattern in FILES_TO_REMOVE:
                 if file_pattern.endswith("/"):
                     # Directory removal
@@ -194,77 +195,83 @@ class DocumentationCleanupManager:
                             file_path.unlink()
                             removed_files.append(str(file_path))
                             print(f"🗑️  Removed file: {file_path}")
-            
-            self.report_data["operations"].append({
-                "operation": "remove_outdated_files",
-                "status": "success",
-                "files_removed": len(removed_files),
-                "removed_items": removed_files
-            })
-            
+
+            self.report_data["operations"].append(
+                {
+                    "operation": "remove_outdated_files",
+                    "status": "success",
+                    "files_removed": len(removed_files),
+                    "removed_items": removed_files,
+                }
+            )
+
             print(f"✅ File cleanup completed: {len(removed_files)} items removed")
             return True
-            
+
         except Exception as e:
             error_msg = f"File removal failed: {str(e)}"
             print(f"❌ {error_msg}")
             self.report_data["errors"].append(error_msg)
             return False
-    
+
     def update_documentation(self) -> bool:
         """
         Update path references in documentation files.
-        
+
         Returns:
             bool: True if updates successful, False otherwise
         """
         try:
             updated_files = []
-            doc_files = list(self.project_root.glob("**/*.md")) + list(self.project_root.glob("**/*.rst"))
-            
+            doc_files = list(self.project_root.glob("**/*.md")) + list(
+                self.project_root.glob("**/*.rst")
+            )
+
             for doc_file in doc_files:
                 if doc_file.is_file() and "backup_" not in str(doc_file):
                     try:
-                        content = doc_file.read_text(encoding='utf-8')
+                        content = doc_file.read_text(encoding="utf-8")
                         original_content = content
-                        
+
                         # Apply path updates
                         for old_path, new_path in DOCUMENTATION_UPDATES.items():
                             content = content.replace(old_path, new_path)
-                        
+
                         # Update service port references
                         for service, port in SERVICE_PORTS.items():
                             # Update port references in documentation
                             content = re.sub(
-                                rf'{service}.*?:(\d+)',
-                                f'{service}:{port}',
-                                content
+                                rf"{service}.*?:(\d+)", f"{service}:{port}", content
                             )
-                        
+
                         if content != original_content:
-                            doc_file.write_text(content, encoding='utf-8')
+                            doc_file.write_text(content, encoding="utf-8")
                             updated_files.append(str(doc_file))
                             print(f"📝 Updated documentation: {doc_file}")
-                            
+
                     except Exception as e:
                         print(f"⚠️  Warning: Could not update {doc_file}: {e}")
-            
-            self.report_data["operations"].append({
-                "operation": "update_documentation",
-                "status": "success",
-                "files_updated": len(updated_files),
-                "updated_files": updated_files
-            })
-            
-            print(f"✅ Documentation update completed: {len(updated_files)} files updated")
+
+            self.report_data["operations"].append(
+                {
+                    "operation": "update_documentation",
+                    "status": "success",
+                    "files_updated": len(updated_files),
+                    "updated_files": updated_files,
+                }
+            )
+
+            print(
+                f"✅ Documentation update completed: {len(updated_files)} files updated"
+            )
             return True
-            
+
         except Exception as e:
             error_msg = f"Documentation update failed: {str(e)}"
             print(f"❌ {error_msg}")
             self.report_data["errors"].append(error_msg)
             return False
-    
+
     def validate_changes(self) -> bool:
         """
         Validate that services remain operational after changes.
@@ -286,7 +293,7 @@ class DocumentationCleanupManager:
                     result = subprocess.run(
                         ["curl", "-f", "-s", f"http://localhost:{port}/health"],
                         capture_output=True,
-                        timeout=5
+                        timeout=5,
                     )
 
                     response_time = (time.time() - start_time) * 1000  # Convert to ms
@@ -295,7 +302,8 @@ class DocumentationCleanupManager:
                         "status": "healthy" if result.returncode == 0 else "unhealthy",
                         "port": port,
                         "response_time_ms": round(response_time, 2),
-                        "meets_performance_target": response_time < 50  # <50ms requirement
+                        "meets_performance_target": response_time
+                        < 50,  # <50ms requirement
                     }
 
                 except subprocess.TimeoutExpired:
@@ -303,45 +311,55 @@ class DocumentationCleanupManager:
                         "status": "timeout",
                         "port": port,
                         "response_time_ms": 5000,
-                        "meets_performance_target": False
+                        "meets_performance_target": False,
                     }
                 except Exception as e:
                     validation_results[service_name] = {
                         "status": "error",
                         "port": port,
                         "error": str(e),
-                        "meets_performance_target": False
+                        "meets_performance_target": False,
                     }
 
             # Blockchain-specific validation
             try:
                 # Check Solana CLI availability
                 solana_result = subprocess.run(
-                    ["solana", "--version"],
-                    capture_output=True,
-                    timeout=10
+                    ["solana", "--version"], capture_output=True, timeout=10
                 )
                 blockchain_validation["solana_cli"] = {
                     "available": solana_result.returncode == 0,
-                    "version": solana_result.stdout.decode().strip() if solana_result.returncode == 0 else None
+                    "version": (
+                        solana_result.stdout.decode().strip()
+                        if solana_result.returncode == 0
+                        else None
+                    ),
                 }
 
                 # Check Anchor CLI availability
                 anchor_result = subprocess.run(
-                    ["anchor", "--version"],
-                    capture_output=True,
-                    timeout=10
+                    ["anchor", "--version"], capture_output=True, timeout=10
                 )
                 blockchain_validation["anchor_cli"] = {
                     "available": anchor_result.returncode == 0,
-                    "version": anchor_result.stdout.decode().strip() if anchor_result.returncode == 0 else None
+                    "version": (
+                        anchor_result.stdout.decode().strip()
+                        if anchor_result.returncode == 0
+                        else None
+                    ),
                 }
 
                 # Check Quantumagi deployment status
-                quantumagi_dir = self.project_root / "blockchain" / "programs" / "quantumagi"
+                quantumagi_dir = (
+                    self.project_root / "blockchain" / "programs" / "quantumagi"
+                )
                 blockchain_validation["quantumagi_program"] = {
                     "directory_exists": quantumagi_dir.exists(),
-                    "program_files_present": (quantumagi_dir / "src" / "lib.rs").exists() if quantumagi_dir.exists() else False
+                    "program_files_present": (
+                        (quantumagi_dir / "src" / "lib.rs").exists()
+                        if quantumagi_dir.exists()
+                        else False
+                    ),
                 }
 
             except Exception as e:
@@ -354,12 +372,15 @@ class DocumentationCleanupManager:
             self.report_data["blockchain_validation"] = blockchain_validation
             self.report_data["blockchain_compliance"] = {
                 "cost_validation": cost_validation,
-                "meets_cost_requirements": cost_validation["meets_cost_target"]
+                "meets_cost_requirements": cost_validation["meets_cost_target"],
             }
 
             # Check overall health
-            healthy_services = sum(1 for result in validation_results.values()
-                                 if result.get("status") == "healthy")
+            healthy_services = sum(
+                1
+                for result in validation_results.values()
+                if result.get("status") == "healthy"
+            )
             total_services = len(validation_results)
             uptime_percentage = (healthy_services / total_services) * 100
 
@@ -368,8 +389,11 @@ class DocumentationCleanupManager:
             if uptime_percentage >= 99.5:
                 governance_score += 30  # Uptime compliance
 
-            fast_responses = sum(1 for result in validation_results.values()
-                               if result.get("meets_performance_target", False))
+            fast_responses = sum(
+                1
+                for result in validation_results.values()
+                if result.get("meets_performance_target", False)
+            )
             if fast_responses == total_services:
                 governance_score += 25  # Response time compliance
 
@@ -388,18 +412,26 @@ class DocumentationCleanupManager:
                 "uptime_percentage": round(uptime_percentage, 2),
                 "meets_uptime_target": uptime_percentage >= 99.5,
                 "governance_compliance_score": governance_score,
-                "blockchain_ready": governance_score >= 70
+                "blockchain_ready": governance_score >= 70,
             }
 
-            print(f"✅ Service validation completed: {healthy_services}/{total_services} services healthy")
+            print(
+                f"✅ Service validation completed: {healthy_services}/{total_services} services healthy"
+            )
             print(f"📊 Uptime: {uptime_percentage:.1f}% (Target: ≥99.5%)")
-            print(f"💰 Governance cost: {cost_validation['estimated_governance_cost_sol']:.3f} SOL (Target: <0.01 SOL)")
+            print(
+                f"💰 Governance cost: {cost_validation['estimated_governance_cost_sol']:.3f} SOL (Target: <0.01 SOL)"
+            )
             print(f"🏛️  Governance compliance: {governance_score}/100")
 
             # In development/testing environment, allow validation to pass if services aren't running
             # but other governance requirements are met
-            if healthy_services == 0 and governance_score >= 45:  # Cost + blockchain tools available
-                print("ℹ️  Development environment detected - services not running but governance tools available")
+            if (
+                healthy_services == 0 and governance_score >= 45
+            ):  # Cost + blockchain tools available
+                print(
+                    "ℹ️  Development environment detected - services not running but governance tools available"
+                )
                 return True
 
             return uptime_percentage >= 99.5 and governance_score >= 70
@@ -409,33 +441,37 @@ class DocumentationCleanupManager:
             print(f"❌ {error_msg}")
             self.report_data["errors"].append(error_msg)
             return False
-    
+
     def generate_report(self) -> bool:
         """
         Generate a comprehensive JSON report of all changes.
-        
+
         Returns:
             bool: True if report generation successful, False otherwise
         """
         try:
             # Ensure reports directory exists
             self.report_file.parent.mkdir(parents=True, exist_ok=True)
-            
+
             # Add completion metrics
             end_time = datetime.now()
-            self.report_data.update({
-                "completion_time": end_time.isoformat(),
-                "total_duration_seconds": (end_time - self.start_time).total_seconds(),
-                "success": len(self.report_data["errors"]) == 0
-            })
-            
+            self.report_data.update(
+                {
+                    "completion_time": end_time.isoformat(),
+                    "total_duration_seconds": (
+                        end_time - self.start_time
+                    ).total_seconds(),
+                    "success": len(self.report_data["errors"]) == 0,
+                }
+            )
+
             # Write report
-            with open(self.report_file, 'w', encoding='utf-8') as f:
+            with open(self.report_file, "w", encoding="utf-8") as f:
                 json.dump(self.report_data, f, indent=2, ensure_ascii=False)
-            
+
             print(f"📋 Report generated: {self.report_file}")
             return True
-            
+
         except Exception as e:
             error_msg = f"Report generation failed: {str(e)}"
             print(f"❌ {error_msg}")
@@ -446,7 +482,7 @@ class DocumentationCleanupManager:
 def main() -> int:
     """
     Main execution function for the documentation cleanup process.
-    
+
     Returns:
         int: Exit code (0 for success, 1 for failure)
     """
@@ -456,19 +492,19 @@ def main() -> int:
     print(f"📁 Project Root: {PROJECT_ROOT}")
     print(f"🕐 Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print()
-    
+
     # Initialize cleanup manager
     cleanup_manager = DocumentationCleanupManager()
-    
+
     # Execute cleanup operations in sequence
     operations = [
         ("Creating backups", cleanup_manager.backup_files),
         ("Removing outdated files", cleanup_manager.remove_outdated_files),
         ("Updating documentation", cleanup_manager.update_documentation),
         ("Validating changes", cleanup_manager.validate_changes),
-        ("Generating report", cleanup_manager.generate_report)
+        ("Generating report", cleanup_manager.generate_report),
     ]
-    
+
     success = True
     for operation_name, operation_func in operations:
         print(f"🔄 {operation_name}...")
@@ -477,20 +513,22 @@ def main() -> int:
             print(f"❌ {operation_name} failed!")
             break
         print()
-    
+
     # Print summary
     print("=" * 80)
     if success:
         print("✅ Documentation cleanup completed successfully!")
         print(f"📋 Report: {cleanup_manager.report_file}")
         print(f"💾 Backup: {cleanup_manager.backup_dir}")
-        
+
         # Performance summary
         metrics = cleanup_manager.report_data.get("performance_metrics", {})
         if metrics:
-            print(f"📊 Services: {metrics.get('healthy_services', 0)}/{metrics.get('total_services', 0)} healthy")
+            print(
+                f"📊 Services: {metrics.get('healthy_services', 0)}/{metrics.get('total_services', 0)} healthy"
+            )
             print(f"⏱️  Uptime: {metrics.get('uptime_percentage', 0):.1f}%")
-        
+
         return 0
     else:
         print("❌ Documentation cleanup failed!")

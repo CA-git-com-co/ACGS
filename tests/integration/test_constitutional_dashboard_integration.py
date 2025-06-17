@@ -21,7 +21,6 @@ try:
         ReportFormat,
         ReportType,
     )
-
     from services.shared.metrics import get_metrics
 except ImportError:
     # Mock implementations for testing when modules are not available

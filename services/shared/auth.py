@@ -5,8 +5,7 @@ Provides JWT token validation and user authentication across all services
 
 import os
 import uuid  # Added uuid
-from datetime import datetime, timedelta, timezone  # Added timedelta
-from typing import List, Optional
+from datetime import UTC, datetime, timedelta  # Added timedelta
 
 import httpx
 from fastapi import Depends, HTTPException, status
@@ -29,12 +28,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 class TokenPayload(BaseModel):
     """JWT token payload structure"""
 
-    sub: Optional[str] = None
-    user_id: Optional[int] = None
-    roles: Optional[List[str]] = None
-    type: Optional[str] = None
-    jti: Optional[str] = None
-    exp: Optional[int] = None
+    sub: str | None = None
+    user_id: int | None = None
+    roles: list[str] | None = None
+    type: str | None = None
+    jti: str | None = None
+    exp: int | None = None
 
 
 class User(BaseModel):
@@ -42,7 +41,7 @@ class User(BaseModel):
 
     id: int
     username: str
-    roles: List[str]
+    roles: list[str]
     is_active: bool = True
 
 
@@ -71,8 +70,8 @@ def verify_token_and_get_payload(token_str: str) -> TokenPayload:
         # Validate expiration
         exp_timestamp = payload.get("exp")
         if exp_timestamp is None or datetime.fromtimestamp(
-            exp_timestamp, timezone.utc
-        ) < datetime.now(timezone.utc):
+            exp_timestamp, UTC
+        ) < datetime.now(UTC):
             raise token_expired_exception
 
         token_payload = TokenPayload(**payload)
@@ -91,8 +90,8 @@ def verify_token_and_get_payload(token_str: str) -> TokenPayload:
 
 
 async def get_current_user_from_token(
-    token: Optional[str] = Depends(oauth2_scheme),
-) -> Optional[User]:
+    token: str | None = Depends(oauth2_scheme),
+) -> User | None:
     """
     Extract and validate JWT token, return User object
     Returns None if no token provided (for optional authentication)
@@ -128,7 +127,7 @@ async def get_current_user_from_token(
 
 
 async def get_current_active_user(
-    current_user: Optional[User] = Depends(get_current_user_from_token),
+    current_user: User | None = Depends(get_current_user_from_token),
 ) -> User:
     """
     Require authenticated user (raises exception if not authenticated)
@@ -147,7 +146,7 @@ class RoleChecker:
     Dependency class for role-based access control
     """
 
-    def __init__(self, allowed_roles: List[str]):
+    def __init__(self, allowed_roles: list[str]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -198,7 +197,7 @@ async def get_service_token() -> str:
     )
 
     expiration_delta = timedelta(days=365)  # Long expiry for this placeholder
-    expire = datetime.now(timezone.utc) + expiration_delta
+    expire = datetime.now(UTC) + expiration_delta
     payload = {
         "sub": "internal_service_user",
         "user_id": 0,  # Or a conventional ID for internal services
@@ -212,7 +211,7 @@ async def get_service_token() -> str:
     return encoded_jwt
 
 
-async def get_auth_headers(token: Optional[str] = None) -> dict:  # Changed to async
+async def get_auth_headers(token: str | None = None) -> dict:  # Changed to async
     """
     Asynchronously generates HTTP authorization headers with a Bearer token.
 
@@ -246,7 +245,7 @@ class AuthServiceClient:
         self.base_url = base_url
         self.client = httpx.AsyncClient(base_url=base_url, timeout=10.0)
 
-    async def validate_token(self, token: str) -> Optional[User]:
+    async def validate_token(self, token: str) -> User | None:
         """
         Validate token with auth service
         Returns User object if valid, None if invalid

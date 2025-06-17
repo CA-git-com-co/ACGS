@@ -45,7 +45,7 @@ class ProductionDatabaseConfig:
             cursor.close()
             conn.close()
 
-            print(f"  ✅ Database connection successful")
+            print("  ✅ Database connection successful")
             print(f"  📊 PostgreSQL version: {version[0]}")
             return True
 
@@ -186,16 +186,16 @@ fi
 # Database size
 echo -e "\\n2. Database size information..."
 psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "
-SELECT 
+SELECT
     pg_database.datname as database_name,
     pg_size_pretty(pg_database_size(pg_database.datname)) as size
-FROM pg_database 
+FROM pg_database
 WHERE datname = '$DB_NAME';"
 
 # Table information
 echo -e "\\n3. Table information..."
 psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "
-SELECT 
+SELECT
     schemaname,
     tablename,
     pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size,
@@ -210,11 +210,11 @@ ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;"
 # Active connections
 echo -e "\\n4. Active connections..."
 psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "
-SELECT 
+SELECT
     count(*) as active_connections,
     state,
     application_name
-FROM pg_stat_activity 
+FROM pg_stat_activity
 WHERE datname = '$DB_NAME'
 GROUP BY state, application_name
 ORDER BY active_connections DESC;"
@@ -260,15 +260,15 @@ pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME > $BACKUP_FILE
 
 if [ $? -eq 0 ]; then
     echo "✅ Backup created successfully"
-    
+
     # Compress backup
     gzip $BACKUP_FILE
     echo "✅ Backup compressed: $BACKUP_FILE.gz"
-    
+
     # Clean old backups (keep last 30 days)
     find $BACKUP_DIR -name "*.sql.gz" -mtime +30 -delete
     echo "✅ Old backups cleaned"
-    
+
     # Show backup info
     ls -lh $BACKUP_FILE.gz
 else

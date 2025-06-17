@@ -14,9 +14,12 @@ Classes:
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from sqlalchemy import and_, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # Import Constitutional Council integration
 from app.core.constitutional_council_scalability import (
@@ -28,9 +31,6 @@ from app.services.stakeholder_engagement import (
     NotificationChannel,
     StakeholderNotificationService,
 )
-from sqlalchemy import and_, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from services.shared.database import get_async_db
 from services.shared.models import (
     ConstitutionalViolation,
@@ -67,11 +67,11 @@ class EscalationRule:
 
     rule_id: str
     trigger_type: EscalationTrigger
-    trigger_conditions: Dict[str, Any]
+    trigger_conditions: dict[str, Any]
     target_level: EscalationLevel
     timeout_minutes: int
-    required_roles: List[str]
-    notification_channels: List[NotificationChannel]
+    required_roles: list[str]
+    notification_channels: list[NotificationChannel]
     priority_boost: float
     auto_assign: bool = True
     description: str = ""
@@ -84,11 +84,11 @@ class EscalationResult:
     escalation_id: str
     escalated: bool
     escalation_level: EscalationLevel
-    assigned_to: Optional[str]
+    assigned_to: str | None
     notification_sent: bool
     response_time_target: int  # minutes
-    escalation_metadata: Dict[str, Any]
-    error_message: Optional[str] = None
+    escalation_metadata: dict[str, Any]
+    error_message: str | None = None
 
 
 class ViolationEscalationService:
@@ -99,7 +99,7 @@ class ViolationEscalationService:
     integration to Constitutional Council and stakeholder notification systems.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -119,14 +119,14 @@ class ViolationEscalationService:
         self.escalation_rules = self._initialize_escalation_rules()
 
         # Escalation state
-        self.active_escalations: Dict[str, ViolationEscalation] = {}
-        self.escalation_queue: List[str] = []
+        self.active_escalations: dict[str, ViolationEscalation] = {}
+        self.escalation_queue: list[str] = []
 
         logger.info("Violation Escalation Service initialized")
 
     async def evaluate_escalation(
         self, violation: ConstitutionalViolation, db: AsyncSession
-    ) -> Optional[EscalationResult]:
+    ) -> EscalationResult | None:
         """
         Evaluate if a violation requires escalation.
 
@@ -155,7 +155,9 @@ class ViolationEscalationService:
             return None
 
         except Exception as e:
-            logger.error(f"Error evaluating escalation for violation {violation.id}: {e}")
+            logger.error(
+                f"Error evaluating escalation for violation {violation.id}: {e}"
+            )
             return EscalationResult(
                 escalation_id="",
                 escalated=False,
@@ -172,8 +174,8 @@ class ViolationEscalationService:
         violation: ConstitutionalViolation,
         escalation_level: EscalationLevel,
         reason: str,
-        escalated_by: Optional[User] = None,
-        db: Optional[AsyncSession] = None,
+        escalated_by: User | None = None,
+        db: AsyncSession | None = None,
     ) -> EscalationResult:
         """
         Manually escalate a violation.
@@ -212,7 +214,7 @@ class ViolationEscalationService:
             # Update violation
             violation.escalated = True
             violation.escalation_level = escalation_level.value
-            violation.escalated_at = datetime.now(timezone.utc)
+            violation.escalated_at = datetime.now(UTC)
             violation.escalated_by = escalated_by.id if escalated_by else None
 
             # Assign to appropriate personnel
@@ -242,11 +244,13 @@ class ViolationEscalationService:
                 escalation_metadata={
                     "escalation_type": "manual",
                     "escalated_by": escalated_by.username if escalated_by else "system",
-                    "escalated_at": datetime.now(timezone.utc).isoformat(),
+                    "escalated_at": datetime.now(UTC).isoformat(),
                 },
             )
 
-            logger.info(f"Violation {violation.id} escalated to {escalation_level.value}")
+            logger.info(
+                f"Violation {violation.id} escalated to {escalation_level.value}"
+            )
             return result
 
         except Exception as e:
@@ -263,7 +267,7 @@ class ViolationEscalationService:
                 error_message=str(e),
             )
 
-    async def check_escalation_timeouts(self, db: AsyncSession) -> List[str]:
+    async def check_escalation_timeouts(self, db: AsyncSession) -> list[str]:
         """
         Check for escalation timeouts and take appropriate action.
 
@@ -282,7 +286,7 @@ class ViolationEscalationService:
                     and_(
                         ViolationEscalation.status == "pending",
                         ViolationEscalation.escalated_at
-                        < datetime.now(timezone.utc) - timedelta(hours=1),
+                        < datetime.now(UTC) - timedelta(hours=1),
                     )
                 )
             )
@@ -293,9 +297,11 @@ class ViolationEscalationService:
                 timeout_minutes = self._get_response_time_target(
                     EscalationLevel(escalation.escalation_level)
                 )
-                timeout_threshold = escalation.escalated_at + timedelta(minutes=timeout_minutes)
+                timeout_threshold = escalation.escalated_at + timedelta(
+                    minutes=timeout_minutes
+                )
 
-                if datetime.now(timezone.utc) > timeout_threshold:
+                if datetime.now(UTC) > timeout_threshold:
                     # Handle timeout
                     await self._handle_escalation_timeout(escalation, db)
                     timed_out.append(str(escalation.id))
@@ -323,12 +329,15 @@ class ViolationEscalationService:
             elif rule.trigger_type == EscalationTrigger.VIOLATION_COUNT:
                 # Count recent violations of same type
                 time_window = conditions.get("time_window_hours", 1)
-                threshold_time = datetime.now(timezone.utc) - timedelta(hours=time_window)
+                threshold_time = datetime.now(UTC) - timedelta(
+                    hours=time_window
+                )
 
                 result = await db.execute(
                     select(func.count(ConstitutionalViolation.id)).where(
                         and_(
-                            ConstitutionalViolation.violation_type == violation.violation_type,
+                            ConstitutionalViolation.violation_type
+                            == violation.violation_type,
                             ConstitutionalViolation.detected_at >= threshold_time,
                         )
                     )
@@ -339,10 +348,13 @@ class ViolationEscalationService:
             elif rule.trigger_type == EscalationTrigger.TIME_THRESHOLD:
                 # Check if violation has been unresolved for too long
                 max_unresolved_minutes = conditions.get("max_unresolved_minutes", 30)
-                threshold_time = datetime.now(timezone.utc) - timedelta(
+                threshold_time = datetime.now(UTC) - timedelta(
                     minutes=max_unresolved_minutes
                 )
-                return violation.detected_at <= threshold_time and violation.status != "resolved"
+                return (
+                    violation.detected_at <= threshold_time
+                    and violation.status != "resolved"
+                )
 
             return False
 
@@ -374,7 +386,7 @@ class ViolationEscalationService:
             # Update violation
             violation.escalated = True
             violation.escalation_level = rule.target_level.value
-            violation.escalated_at = datetime.now(timezone.utc)
+            violation.escalated_at = datetime.now(UTC)
 
             # Assign to appropriate personnel
             assigned_user = None
@@ -405,7 +417,7 @@ class ViolationEscalationService:
                 escalation_metadata={
                     "rule_id": rule.rule_id,
                     "trigger_type": rule.trigger_type.value,
-                    "escalated_at": datetime.now(timezone.utc).isoformat(),
+                    "escalated_at": datetime.now(UTC).isoformat(),
                 },
             )
 
@@ -425,7 +437,7 @@ class ViolationEscalationService:
 
     async def _assign_escalation(
         self, escalation_level: EscalationLevel, db: AsyncSession
-    ) -> Optional[User]:
+    ) -> User | None:
         """Assign escalation to appropriate user based on level."""
         try:
             role_mapping = {
@@ -443,7 +455,7 @@ class ViolationEscalationService:
             # Find available user with required role
             result = await db.execute(
                 select(User)
-                .where(and_(User.role == required_role, User.is_active == True))
+                .where(and_(User.role == required_role, User.is_active))
                 .limit(1)
             )
 
@@ -457,8 +469,8 @@ class ViolationEscalationService:
         self,
         escalation: ViolationEscalation,
         violation: ConstitutionalViolation,
-        assigned_user: Optional[User],
-        channels: Optional[List[NotificationChannel]] = None,
+        assigned_user: User | None,
+        channels: list[NotificationChannel] | None = None,
     ) -> bool:
         """Send escalation notifications."""
         try:
@@ -496,10 +508,14 @@ class ViolationEscalationService:
                         )
                     elif channel == NotificationChannel.WEBSOCKET:
                         # Send WebSocket notification (would integrate with existing WebSocket system)
-                        await self._send_websocket_escalation_notification(notification_content)
+                        await self._send_websocket_escalation_notification(
+                            notification_content
+                        )
 
                 except Exception as e:
-                    logger.error(f"Failed to send notification via {channel.value}: {e}")
+                    logger.error(
+                        f"Failed to send notification via {channel.value}: {e}"
+                    )
                     success = False
 
             return success
@@ -508,7 +524,7 @@ class ViolationEscalationService:
             logger.error(f"Error sending escalation notifications: {e}")
             return False
 
-    async def _send_websocket_escalation_notification(self, content: Dict[str, Any]):
+    async def _send_websocket_escalation_notification(self, content: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -517,7 +533,9 @@ class ViolationEscalationService:
         # For now, just log the notification
         logger.info(f"WebSocket escalation notification: {content['subject']}")
 
-    async def _handle_escalation_timeout(self, escalation: ViolationEscalation, db: AsyncSession):
+    async def _handle_escalation_timeout(
+        self, escalation: ViolationEscalation, db: AsyncSession
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -560,7 +578,7 @@ class ViolationEscalationService:
 
     def _get_next_escalation_level(
         self, current_level: EscalationLevel
-    ) -> Optional[EscalationLevel]:
+    ) -> EscalationLevel | None:
         """Get next escalation level for timeout handling."""
         escalation_hierarchy = {
             EscalationLevel.TECHNICAL_REVIEW: EscalationLevel.POLICY_MANAGER,
@@ -582,7 +600,7 @@ class ViolationEscalationService:
         }
         return targets.get(escalation_level, 30)
 
-    def _initialize_escalation_rules(self) -> List[EscalationRule]:
+    def _initialize_escalation_rules(self) -> list[EscalationRule]:
         """Initialize escalation rules configuration."""
         return [
             # Critical severity immediate escalation
@@ -638,7 +656,7 @@ class ViolationEscalationService:
             ),
         ]
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration for escalation service."""
         return {
             "enable_automatic_escalation": True,

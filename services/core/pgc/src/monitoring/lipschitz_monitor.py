@@ -14,17 +14,15 @@ Key Features:
 - Historical trend analysis and prediction
 """
 
-import asyncio
 import hashlib
-import json
 import logging
 import statistics
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Deque, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -48,7 +46,9 @@ logger = logging.getLogger(__name__)
 
 # Prometheus metrics for Lipschitz monitoring
 if PROMETHEUS_AVAILABLE:
-    LIPSCHITZ_CONSTANT = Gauge("pgc_lipschitz_constant", "Current Lipschitz constant value")
+    LIPSCHITZ_CONSTANT = Gauge(
+        "pgc_lipschitz_constant", "Current Lipschitz constant value"
+    )
     STABILITY_THRESHOLD_VIOLATIONS = Counter(
         "pgc_stability_violations_total", "Stability threshold violations", ["severity"]
     )
@@ -86,8 +86,8 @@ class PolicyState:
 
     policy_id: str
     content: str
-    embedding: Optional[np.ndarray] = None
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    embedding: np.ndarray | None = None
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     version: int = 1
 
 
@@ -97,8 +97,8 @@ class PrincipleState:
 
     principle_id: str
     content: str
-    embedding: Optional[np.ndarray] = None
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    embedding: np.ndarray | None = None
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     weight: float = 1.0  # Importance weight
 
 
@@ -124,8 +124,8 @@ class StabilityAlert:
     lipschitz_value: float
     threshold: float
     message: str
-    affected_policies: List[str]
-    recommended_actions: List[str]
+    affected_policies: list[str]
+    recommended_actions: list[str]
 
 
 class LipschitzMonitor:
@@ -157,11 +157,11 @@ class LipschitzMonitor:
         self.recalibration_threshold = recalibration_threshold
 
         # Rolling window for Lipschitz samples
-        self.lipschitz_samples: Deque[LipschitzSample] = deque(maxlen=window_size)
+        self.lipschitz_samples: deque[LipschitzSample] = deque(maxlen=window_size)
 
         # Current state tracking
-        self.policy_states: Dict[str, PolicyState] = {}
-        self.principle_states: Dict[str, PrincipleState] = {}
+        self.policy_states: dict[str, PolicyState] = {}
+        self.principle_states: dict[str, PrincipleState] = {}
 
         # Embedding model for semantic distance
         self.embedding_model = None
@@ -177,7 +177,7 @@ class LipschitzMonitor:
         }
 
         # Alert history
-        self.alert_history: List[StabilityAlert] = []
+        self.alert_history: list[StabilityAlert] = []
 
         logger.info(
             f"Initialized LipschitzMonitor with window_size={window_size}, "
@@ -218,7 +218,9 @@ class LipschitzMonitor:
         else:
             return self._generate_mock_embedding(text)
 
-    async def update_policy_state(self, policy_id: str, content: str, version: int = 1) -> bool:
+    async def update_policy_state(
+        self, policy_id: str, content: str, version: int = 1
+    ) -> bool:
         """Update policy state for monitoring."""
         try:
             # Generate embedding
@@ -229,7 +231,7 @@ class LipschitzMonitor:
                 policy_id=policy_id,
                 content=content,
                 embedding=embedding,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 version=version,
             )
 
@@ -255,20 +257,24 @@ class LipschitzMonitor:
                 principle_id=principle_id,
                 content=content,
                 embedding=embedding,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 weight=weight,
             )
 
             self.principle_states[principle_id] = principle_state
 
-            logger.debug(f"Updated principle state for {principle_id} (weight {weight})")
+            logger.debug(
+                f"Updated principle state for {principle_id} (weight {weight})"
+            )
             return True
 
         except Exception as e:
             logger.error(f"Failed to update principle state for {principle_id}: {e}")
             return False
 
-    def _calculate_semantic_distance(self, embedding1: np.ndarray, embedding2: np.ndarray) -> float:
+    def _calculate_semantic_distance(
+        self, embedding1: np.ndarray, embedding2: np.ndarray
+    ) -> float:
         """Calculate semantic distance between embeddings using cosine distance."""
         try:
             # Cosine similarity
@@ -285,7 +291,7 @@ class LipschitzMonitor:
             logger.error(f"Failed to calculate semantic distance: {e}")
             return 1.0  # Default moderate distance
 
-    def _calculate_policy_distances(self) -> List[float]:
+    def _calculate_policy_distances(self) -> list[float]:
         """Calculate pairwise distances between all policies."""
         distances = []
         policy_list = list(self.policy_states.values())
@@ -302,7 +308,7 @@ class LipschitzMonitor:
 
         return distances
 
-    def _calculate_principle_distances(self) -> List[float]:
+    def _calculate_principle_distances(self) -> list[float]:
         """Calculate weighted distances between constitutional principles."""
         distances = []
         principle_list = list(self.principle_states.values())
@@ -311,18 +317,23 @@ class LipschitzMonitor:
             for j in range(i + 1, len(principle_list)):
                 principle1, principle2 = principle_list[i], principle_list[j]
 
-                if principle1.embedding is not None and principle2.embedding is not None:
+                if (
+                    principle1.embedding is not None
+                    and principle2.embedding is not None
+                ):
                     distance = self._calculate_semantic_distance(
                         principle1.embedding, principle2.embedding
                     )
 
                     # Weight the distance by principle importance
-                    weighted_distance = distance * (principle1.weight + principle2.weight) / 2.0
+                    weighted_distance = (
+                        distance * (principle1.weight + principle2.weight) / 2.0
+                    )
                     distances.append(weighted_distance)
 
         return distances
 
-    async def calculate_lipschitz_constant(self) -> Optional[LipschitzSample]:
+    async def calculate_lipschitz_constant(self) -> LipschitzSample | None:
         """Calculate current Lipschitz constant for constitutional stability."""
         start_time = time.time()
 
@@ -369,7 +380,7 @@ class LipschitzMonitor:
 
             # Create sample
             sample = LipschitzSample(
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 lipschitz_constant=lipschitz_constant,
                 policy_distance=statistics.mean(policy_distances),
                 principle_distance=statistics.mean(principle_distances),
@@ -388,7 +399,9 @@ class LipschitzMonitor:
                 * (self.monitoring_stats["total_samples"] - 1)
                 + calculation_time
             ) / self.monitoring_stats["total_samples"]
-            self.monitoring_stats["last_calculation_timestamp"] = datetime.now(timezone.utc)
+            self.monitoring_stats["last_calculation_timestamp"] = datetime.now(
+                UTC
+            )
 
             # Update Prometheus metrics
             if PROMETHEUS_AVAILABLE:
@@ -513,7 +526,7 @@ class LipschitzMonitor:
         except Exception as e:
             logger.error(f"Failed to trigger recalibration: {e}")
 
-    def get_current_stability_status(self) -> Dict[str, Any]:
+    def get_current_stability_status(self) -> dict[str, Any]:
         """Get current constitutional stability status."""
         try:
             if not self.lipschitz_samples:
@@ -558,7 +571,8 @@ class LipschitzMonitor:
                     [
                         a
                         for a in self.alert_history
-                        if a.timestamp > datetime.now(timezone.utc) - timedelta(hours=24)
+                        if a.timestamp
+                        > datetime.now(UTC) - timedelta(hours=24)
                     ]
                 ),
             }
@@ -569,7 +583,7 @@ class LipschitzMonitor:
 
 
 # Global Lipschitz monitor instance
-_lipschitz_monitor: Optional[LipschitzMonitor] = None
+_lipschitz_monitor: LipschitzMonitor | None = None
 
 
 async def get_lipschitz_monitor(

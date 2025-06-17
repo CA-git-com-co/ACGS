@@ -3,7 +3,7 @@
 ## 1. Start All Services
 ```bash
 # Start main services
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # Start monitoring stack
 ./start_monitoring.sh

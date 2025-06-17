@@ -1,6 +1,5 @@
 # backend/auth_service/app/core/config.py
 import os
-from typing import List, Optional
 
 from pydantic import ConfigDict, model_validator
 from pydantic_settings import BaseSettings
@@ -46,16 +45,18 @@ class Settings(BaseSettings):
     # Test Database URL. If set, it overrides SQLALCHEMY_DATABASE_URI during tests.
     # This logic is often handled in test conftest.py by patching settings or a dedicated test settings instance.
     # For simplicity in config, we can allow it to be overridden if TEST_ASYNC_DATABASE_URL is set.
-    TEST_ASYNC_DATABASE_URL: Optional[str] = os.getenv("TEST_ASYNC_DATABASE_URL", None)
+    TEST_ASYNC_DATABASE_URL: str | None = os.getenv("TEST_ASYNC_DATABASE_URL", None)
 
     @property
-    def cors_origins_list(self) -> List[str]:
+    def cors_origins_list(self) -> list[str]:
         """Parse CORS origins from comma-separated string."""
         if not self.BACKEND_CORS_ORIGINS.strip():
             return []
         # Split by comma and strip whitespace
         origins = [
-            origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",") if origin.strip()
+            origin.strip()
+            for origin in self.BACKEND_CORS_ORIGINS.split(",")
+            if origin.strip()
         ]
         # Basic URL validation - ensure they start with http:// or https://
         validated_origins = []
@@ -64,7 +65,9 @@ class Settings(BaseSettings):
                 validated_origins.append(origin)
             else:
                 # Log warning but don't fail - allow for development flexibility
-                print(f"Warning: CORS origin '{origin}' does not start with http:// or https://")
+                print(
+                    f"Warning: CORS origin '{origin}' does not start with http:// or https://"
+                )
                 validated_origins.append(origin)
         return validated_origins
 

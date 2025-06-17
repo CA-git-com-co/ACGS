@@ -33,13 +33,9 @@ from integrations.alphaevolve_engine.services.llm_service import (  # For LLMBia
     get_llm_service,
 )
 from integrations.alphaevolve_engine.services.validation.bias_validator import (
-    FairnessMetricValidator,  # OPA part is mocked in its example, will be here too
-)
-from integrations.alphaevolve_engine.services.validation.bias_validator import (
-    LLMBiasReviewer,  # LLM part is mocked
-)
-from integrations.alphaevolve_engine.services.validation.bias_validator import (
     BiasMetric,
+    FairnessMetricValidator,  # OPA part is mocked in its example, will be here too
+    LLMBiasReviewer,  # LLM part is mocked
 )
 from integrations.alphaevolve_engine.services.validation.conflict_validator import (
     ConflictDefinition,
@@ -50,11 +46,9 @@ from integrations.alphaevolve_engine.services.validation.formal_verifier import 
     MockFormalVerifier,
 )
 from integrations.alphaevolve_engine.services.validation.safety_validator import (
-    SimulationBasedSafetyValidator,  # This is mocked for simulation part
-)
-from integrations.alphaevolve_engine.services.validation.safety_validator import (
     PatternBasedSafetyValidator,
     SafetyAssertion,
+    SimulationBasedSafetyValidator,  # This is mocked for simulation part
 )
 from integrations.alphaevolve_engine.services.validation.semantic_validator import (
     ScenarioBasedSemanticValidator,
@@ -74,7 +68,7 @@ allow { input.user.role == "admin" }
 INVALID_REGO_POLICY_SYNTAX = """
 package test.invalid_syntax
 default allow = wrong_keyword # syntax error
-allow { input.user.role = "admin" } 
+allow { input.user.role = "admin" }
 """
 
 # For Semantic and Safety tests

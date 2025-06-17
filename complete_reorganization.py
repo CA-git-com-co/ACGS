@@ -141,7 +141,7 @@ class CompleteReorganizer:
         for compose_file in compose_files:
             file_path = self.project_root / compose_file
             if file_path.exists():
-                with open(file_path, "r") as f:
+                with open(file_path) as f:
                     content = f.read()
 
                 original_content = content
@@ -170,7 +170,7 @@ class CompleteReorganizer:
             workspace_content = """[workspace]
 members = [
     "blockchain/programs/quantumagi-core",
-    "blockchain/programs/appeals", 
+    "blockchain/programs/appeals",
     "blockchain/programs/logging",
 ]
 

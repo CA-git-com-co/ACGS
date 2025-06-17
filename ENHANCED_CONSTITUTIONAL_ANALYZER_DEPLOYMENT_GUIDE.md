@@ -78,8 +78,8 @@ python test_pgc_enhanced_integration.py
 
    ```bash
    cd services/core/policy-governance/pgc_service
-   docker-compose build
-   docker-compose up -d
+   docker-compose -f infrastructure/docker/docker-compose.yml build
+   docker-compose -f infrastructure/docker/docker-compose.yml up -d
    ```
 
 2. **Configure Environment Variables**:

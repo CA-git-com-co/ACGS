@@ -13,7 +13,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 from prometheus_client import Counter, Gauge, Histogram
 from sqlalchemy import and_, func, select
@@ -68,7 +68,7 @@ class CoEvolutionMetrics:
     consensus_rate: float  # Rate of achieving consensus
     participation_rate: float  # Council member participation
     scalability_score: float  # Overall scalability metric
-    bottleneck_indicators: List[str]  # Identified bottlenecks
+    bottleneck_indicators: list[str]  # Identified bottlenecks
 
 
 class RapidCoEvolutionHandler:
@@ -156,7 +156,7 @@ class RapidCoEvolutionHandler:
         db: AsyncSession,
         amendment_data: ACAmendmentCreate,
         urgency_level: CoEvolutionMode = CoEvolutionMode.RAPID,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process amendment with rapid co-evolution handling."""
         start_time = time.time()
 
@@ -170,10 +170,14 @@ class RapidCoEvolutionHandler:
             }
 
         # Create amendment with rapid processing flags
-        amendment = await self._create_rapid_amendment(db, amendment_data, urgency_level)
+        amendment = await self._create_rapid_amendment(
+            db, amendment_data, urgency_level
+        )
 
         # Initialize rapid voting process
-        voting_result = await self._initialize_rapid_voting(db, amendment, urgency_level)
+        await self._initialize_rapid_voting(
+            db, amendment, urgency_level
+        )
 
         # Monitor and optimize performance
         if self.config.performance_monitoring_enabled:
@@ -190,7 +194,7 @@ class RapidCoEvolutionHandler:
 
     async def _validate_rapid_amendment(
         self, db: AsyncSession, amendment_data: ACAmendmentCreate
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate amendment for rapid processing eligibility."""
         # Check concurrent amendment limit
         active_count = await self._get_active_amendment_count(db)
@@ -226,7 +230,7 @@ class RapidCoEvolutionHandler:
 
     async def _check_amendment_conflicts(
         self, db: AsyncSession, amendment_data: ACAmendmentCreate
-    ) -> List[str]:
+    ) -> list[str]:
         """Check for conflicting amendments."""
         # Simplified conflict detection - would be more sophisticated in practice
         conflicts = []
@@ -245,26 +249,37 @@ class RapidCoEvolutionHandler:
             )
             conflicting_amendments = result.fetchall()
             conflicts.extend(
-                [f"Amendment {a.id}: {a.proposed_changes[:50]}..." for a in conflicting_amendments]
+                [
+                    f"Amendment {a.id}: {a.proposed_changes[:50]}..."
+                    for a in conflicting_amendments
+                ]
             )
 
         return conflicts
 
     async def _validate_amendment_content(
         self, amendment_data: ACAmendmentCreate
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate amendment content for completeness and safety."""
         # Use proposed_changes as title equivalent
-        if not amendment_data.proposed_changes or len(amendment_data.proposed_changes.strip()) < 10:
+        if (
+            not amendment_data.proposed_changes
+            or len(amendment_data.proposed_changes.strip()) < 10
+        ):
             return {"valid": False, "error": "Amendment proposed changes too short"}
 
         # Use justification as description equivalent
-        if not amendment_data.justification or len(amendment_data.justification.strip()) < 20:
+        if (
+            not amendment_data.justification
+            or len(amendment_data.justification.strip()) < 20
+        ):
             return {"valid": False, "error": "Amendment justification too short"}
 
         # Check for dangerous keywords (simplified)
         dangerous_keywords = ["delete all", "remove everything", "disable system"]
-        content = f"{amendment_data.proposed_changes} {amendment_data.justification}".lower()
+        content = (
+            f"{amendment_data.proposed_changes} {amendment_data.justification}".lower()
+        )
         for keyword in dangerous_keywords:
             if keyword in content:
                 return {
@@ -360,7 +375,7 @@ class RapidCoEvolutionHandler:
 
     async def _initialize_rapid_voting(
         self, db: AsyncSession, amendment: ACAmendment, urgency_level: CoEvolutionMode
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Initialize rapid voting process."""
         # Get Constitutional Council members
         council_members = await self._get_council_members(db)
@@ -391,16 +406,18 @@ class RapidCoEvolutionHandler:
             "voting_deadline": voting_queue["voting_deadline"],
         }
 
-    async def _get_council_members(self, db: AsyncSession) -> List[User]:
+    async def _get_council_members(self, db: AsyncSession) -> list[User]:
         """Get active Constitutional Council members."""
         result = await db.execute(
-            select(User).where(and_(User.role == "constitutional_council", User.is_active == True))
+            select(User).where(
+                and_(User.role == "constitutional_council", User.is_active)
+            )
         )
         return result.scalars().all()
 
     async def _notify_council_members(
         self,
-        members: List[User],
+        members: list[User],
         amendment: ACAmendment,
         urgency_level: CoEvolutionMode,
     ):
@@ -413,7 +430,9 @@ class RapidCoEvolutionHandler:
             f"Notifying {len(members)} council members of {urgency_level.value} amendment {amendment.id}"
         )
 
-    async def _monitor_amendment_performance(self, amendment_id: int, start_time: float):
+    async def _monitor_amendment_performance(
+        self, amendment_id: int, start_time: float
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -463,7 +482,9 @@ class RapidCoEvolutionHandler:
 
             # Add to active amendments set
             active_key = self.redis_client.generate_key("active_amendments")
-            await self.redis_client.add_to_list(active_key, amendment.id, max_length=100)
+            await self.redis_client.add_to_list(
+                active_key, amendment.id, max_length=100
+            )
 
         except Exception as e:
             logger.error(f"Failed to cache amendment {amendment.id}: {e}")
@@ -472,9 +493,9 @@ class RapidCoEvolutionHandler:
         self,
         db: AsyncSession,
         amendment_id: int,
-        updates: Dict[str, Any],
+        updates: dict[str, Any],
         expected_version: int,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Update amendment with optimistic locking to prevent conflicts."""
         try:
             # Get current amendment
@@ -554,7 +575,7 @@ class AsyncVotingManager:
         amendment_id: int,
         vote_data: ACAmendmentVoteCreate,
         voter_id: int,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process vote asynchronously for better scalability."""
         start_time = time.time()
 
@@ -577,7 +598,9 @@ class AsyncVotingManager:
             }
         else:
             # Process synchronously
-            result = await self._process_vote_background(db, amendment_id, vote_data, voter_id)
+            result = await self._process_vote_background(
+                db, amendment_id, vote_data, voter_id
+            )
             return {
                 "success": result["success"],
                 "vote_recorded": True,
@@ -586,7 +609,7 @@ class AsyncVotingManager:
 
     async def _validate_vote(
         self, db: AsyncSession, amendment_id: int, voter_id: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate vote eligibility."""
         # Check if amendment exists and is in voting state
         amendment = await db.get(ACAmendment, amendment_id)
@@ -622,7 +645,7 @@ class AsyncVotingManager:
         amendment_id: int,
         vote_data: ACAmendmentVoteCreate,
         voter_id: int,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process vote in background."""
         try:
             # Create vote record
@@ -677,7 +700,9 @@ class AsyncVotingManager:
             elif against_votes / total_votes > 0.4:
                 await self._finalize_amendment(db, amendment_id, "rejected")
 
-    async def _finalize_amendment(self, db: AsyncSession, amendment_id: int, status: str):
+    async def _finalize_amendment(
+        self, db: AsyncSession, amendment_id: int, status: str
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -736,7 +761,9 @@ class ConstitutionalCouncilScalabilityFramework:
                         amendment.finalized_at - amendment.created_at
                     ).total_seconds() / 3600
                     voting_times.append(voting_time)
-            avg_voting_time = sum(voting_times) / len(voting_times) if voting_times else 0.0
+            avg_voting_time = (
+                sum(voting_times) / len(voting_times) if voting_times else 0.0
+            )
 
         # Calculate consensus rate (approved / total completed)
         consensus_rate = (

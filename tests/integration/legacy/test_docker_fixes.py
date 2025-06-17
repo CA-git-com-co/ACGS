@@ -16,7 +16,6 @@ import subprocess
 import sys
 import time
 from datetime import datetime
-from typing import Dict
 
 import aiohttp
 
@@ -126,7 +125,7 @@ class DockerFixTester:
             print(f"❌ {service_name}: Error checking logs - {str(e)}")
             return False
 
-    async def test_service_health(self, service_name: str, config: Dict) -> bool:
+    async def test_service_health(self, service_name: str, config: dict) -> bool:
         """Test individual service health endpoint"""
         try:
             url = f"{config['url']}{config['health']}"
@@ -144,7 +143,7 @@ class DockerFixTester:
             print(f"❌ {service_name.upper()} Service: Connection failed - {str(e)}")
             return False
 
-    async def run_comprehensive_test(self) -> Dict[str, bool]:
+    async def run_comprehensive_test(self) -> dict[str, bool]:
         """Run comprehensive Docker fix verification"""
         print("🔧 ACGS-PGP Docker Container Import Path Fix Verification")
         print("=" * 70)

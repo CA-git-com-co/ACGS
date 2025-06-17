@@ -1,5 +1,4 @@
 import re
-from typing import List
 
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
@@ -86,7 +85,7 @@ class EnhancedSecurityMiddleware:
 
         return base_content_type in self.allowed_content_types
 
-    def get_allowed_methods(self, path: str) -> List[str]:
+    def get_allowed_methods(self, path: str) -> list[str]:
         """Get allowed methods for a specific path."""
         for pattern, allowed_methods in self.endpoint_methods.items():
             if re.match(pattern, path):

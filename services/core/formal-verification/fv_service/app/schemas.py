@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -18,11 +18,11 @@ class ACPrincipleRef(BaseModel):
 
 
 class VerificationRequest(BaseModel):
-    policy_rule_refs: List[PolicyRuleRef] = Field(
+    policy_rule_refs: list[PolicyRuleRef] = Field(
         ..., description="References to policy rules to be verified."
     )
     # Optionally, principles can be referenced directly if verification is triggered per principle
-    ac_principle_refs: Optional[List[ACPrincipleRef]] = Field(
+    ac_principle_refs: list[ACPrincipleRef] | None = Field(
         None,
         description="References to AC principles to derive proof obligations from. If not provided, obligations might be derived from principles linked to the policy rules.",
     )
@@ -31,14 +31,14 @@ class VerificationRequest(BaseModel):
 class VerificationResult(BaseModel):
     policy_rule_id: int
     status: str  # e.g., "verified", "failed", "error"
-    message: Optional[str] = None
-    counter_example: Optional[str] = None  # If applicable and found by SMT solver
+    message: str | None = None
+    counter_example: str | None = None  # If applicable and found by SMT solver
 
 
 class VerificationResponse(BaseModel):
-    results: List[VerificationResult]
+    results: list[VerificationResult]
     overall_status: str  # e.g., "all_verified", "some_failed", "error"
-    summary_message: Optional[str] = None
+    summary_message: str | None = None
 
 
 # --- Schemas for internal logic and SMT interaction ---
@@ -47,28 +47,24 @@ class VerificationResponse(BaseModel):
 class ProofObligation(BaseModel):
     principle_id: int
     obligation_content: str  # e.g., a formal representation of the principle's intent
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class SMTSolverInput(BaseModel):
-    datalog_rules: List[str]  # List of Datalog rule strings
-    proof_obligations: List[str]  # List of proof obligation strings (formalized)
+    datalog_rules: list[str]  # List of Datalog rule strings
+    proof_obligations: list[str]  # List of proof obligation strings (formalized)
 
 
 class SMTSolverOutput(BaseModel):
-    is_satisfiable: (
-        bool  # True if rules + NOT(obligation) is satisfiable (meaning obligation NOT entailed)
-    )
-    is_unsatisfiable: (
-        bool  # True if rules + NOT(obligation) is unsatisfiable (meaning obligation IS entailed)
-    )
+    is_satisfiable: bool  # True if rules + NOT(obligation) is satisfiable (meaning obligation NOT entailed)
+    is_unsatisfiable: bool  # True if rules + NOT(obligation) is unsatisfiable (meaning obligation IS entailed)
     # In a real SMT solver, satisfiability refers to whether a model exists for the given assertions.
     # For verifying if Rules => Obligation, we check if Rules AND (NOT Obligation) is UNSATISFIABLE.
     # If UNSAT, then Obligation is entailed by Rules.
-    counter_example: Optional[str] = (
+    counter_example: str | None = (
         None  # If satisfiable, a model might be a counter-example to the obligation
     )
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 # --- Schemas for interacting with external services ---
@@ -79,14 +75,14 @@ class ACPrinciple(BaseModel):  # Simplified version of AC's Principle schema
     id: int
     name: str
     content: str
-    description: Optional[str] = None
+    description: str | None = None
 
 
 # For Integrity Service (integrity_service)
 class PolicyRule(BaseModel):  # Matches Integrity Service's PolicyRule response
     id: int
     rule_content: str
-    source_principle_ids: Optional[List[int]] = []
+    source_principle_ids: list[int] | None = []
     version: int
     verification_status: str
 
@@ -106,20 +102,18 @@ class BiasMetric(BaseModel):
     metric_type: str  # "statistical", "counterfactual", "embedding", "llm_review"
     metric_name: str
     description: str
-    threshold: Optional[float] = None
-    parameters: Optional[Dict[str, Any]] = None
+    threshold: float | None = None
+    parameters: dict[str, Any] | None = None
 
 
 class FairnessProperty(BaseModel):
     """Fairness property definition."""
 
     property_id: str
-    property_type: (
-        str  # "demographic_parity", "equalized_odds", "calibration", "individual_fairness"
-    )
+    property_type: str  # "demographic_parity", "equalized_odds", "calibration", "individual_fairness"
     property_name: str
     description: str
-    protected_attributes: List[str]
+    protected_attributes: list[str]
     threshold: float = 0.1
     criticality_level: str = "medium"  # "low", "medium", "high", "critical"
 
@@ -127,11 +121,11 @@ class FairnessProperty(BaseModel):
 class BiasDetectionRequest(BaseModel):
     """Request for bias detection analysis."""
 
-    policy_rule_ids: List[int]
-    bias_metrics: List[BiasMetric]
-    fairness_properties: List[FairnessProperty]
-    dataset: Optional[List[Dict[str, Any]]] = None
-    protected_attributes: List[str]
+    policy_rule_ids: list[int]
+    bias_metrics: list[BiasMetric]
+    fairness_properties: list[FairnessProperty]
+    dataset: list[dict[str, Any]] | None = None
+    protected_attributes: list[str]
     analysis_type: str = "comprehensive"  # "basic", "comprehensive", "expert_review"
 
 
@@ -141,32 +135,32 @@ class BiasDetectionResult(BaseModel):
     metric_id: str
     policy_rule_id: int
     bias_detected: bool
-    bias_score: Optional[float] = None
+    bias_score: float | None = None
     confidence: float
     explanation: str
-    recommendations: Optional[List[str]] = None
+    recommendations: list[str] | None = None
     requires_human_review: bool = False
 
 
 class BiasDetectionResponse(BaseModel):
     """Response from bias detection analysis."""
 
-    policy_rule_ids: List[int]
-    results: List[BiasDetectionResult]
+    policy_rule_ids: list[int]
+    results: list[BiasDetectionResult]
     overall_bias_score: float
     risk_level: str  # "low", "medium", "high", "critical"
     summary: str
-    recommendations: List[str]
+    recommendations: list[str]
     human_review_required: bool
 
 
 class FairnessValidationRequest(BaseModel):
     """Request for fairness validation."""
 
-    policy_rule_ids: List[int]
-    fairness_properties: List[FairnessProperty]
-    validation_dataset: Optional[List[Dict[str, Any]]] = None
-    simulation_parameters: Optional[Dict[str, Any]] = None
+    policy_rule_ids: list[int]
+    fairness_properties: list[FairnessProperty]
+    validation_dataset: list[dict[str, Any]] | None = None
+    simulation_parameters: dict[str, Any] | None = None
 
 
 class FairnessValidationResult(BaseModel):
@@ -176,15 +170,15 @@ class FairnessValidationResult(BaseModel):
     policy_rule_id: int
     fairness_satisfied: bool
     fairness_score: float
-    violation_details: Optional[str] = None
-    counterfactual_examples: Optional[List[Dict[str, Any]]] = None
+    violation_details: str | None = None
+    counterfactual_examples: list[dict[str, Any]] | None = None
 
 
 class FairnessValidationResponse(BaseModel):
     """Response from fairness validation."""
 
-    policy_rule_ids: List[int]
-    results: List[FairnessValidationResult]
+    policy_rule_ids: list[int]
+    results: list[FairnessValidationResult]
     overall_fairness_score: float
     compliance_status: str  # "compliant", "non_compliant", "requires_review"
     summary: str
@@ -223,13 +217,13 @@ class SafetyProperty(BaseModel):
 class TieredVerificationRequest(BaseModel):
     """Request for tiered formal verification."""
 
-    policy_rule_refs: List[PolicyRuleRef]
+    policy_rule_refs: list[PolicyRuleRef]
     validation_tier: ValidationTier
     validation_level: ValidationLevel = ValidationLevel.STANDARD
-    safety_properties: Optional[List[SafetyProperty]] = None
-    timeout_seconds: Optional[int] = 300
+    safety_properties: list[SafetyProperty] | None = None
+    timeout_seconds: int | None = 300
     require_proof: bool = False
-    human_reviewer_id: Optional[str] = None  # For HITL validation
+    human_reviewer_id: str | None = None  # For HITL validation
 
 
 class TieredVerificationResult(BaseModel):
@@ -241,22 +235,22 @@ class TieredVerificationResult(BaseModel):
     status: str  # "verified", "failed", "inconclusive", "timeout"
     confidence_score: float  # 0.0 to 1.0
     verification_method: str
-    proof_trace: Optional[str] = None
-    counter_example: Optional[str] = None
-    safety_violations: Optional[List[str]] = None
-    human_review_notes: Optional[str] = None
-    verification_time_ms: Optional[int] = None
+    proof_trace: str | None = None
+    counter_example: str | None = None
+    safety_violations: list[str] | None = None
+    human_review_notes: str | None = None
+    verification_time_ms: int | None = None
 
 
 class TieredVerificationResponse(BaseModel):
     """Response from tiered formal verification."""
 
-    results: List[TieredVerificationResult]
+    results: list[TieredVerificationResult]
     overall_status: str
     overall_confidence: float
-    summary_message: Optional[str] = None
+    summary_message: str | None = None
     escalation_required: bool = False
-    next_tier_recommendation: Optional[ValidationTier] = None
+    next_tier_recommendation: ValidationTier | None = None
 
 
 # --- Schemas for Safety and Conflict Checking ---
@@ -274,9 +268,9 @@ class ConflictType(str, Enum):
 class ConflictCheckRequest(BaseModel):
     """Request for conflict detection between rules."""
 
-    rule_sets: List[str]  # Names or IDs of rule sets to check
-    conflict_types: List[ConflictType]
-    resolution_strategy: Optional[str] = "principle_priority_based"
+    rule_sets: list[str]  # Names or IDs of rule sets to check
+    conflict_types: list[ConflictType]
+    resolution_strategy: str | None = "principle_priority_based"
     include_suggestions: bool = True
 
 
@@ -285,17 +279,17 @@ class ConflictDetectionResult(BaseModel):
 
     conflict_id: str
     conflict_type: ConflictType
-    conflicting_rules: List[int]  # Rule IDs
+    conflicting_rules: list[int]  # Rule IDs
     conflict_description: str
     severity: str  # "low", "medium", "high", "critical"
-    resolution_suggestion: Optional[str] = None
-    affected_principles: Optional[List[int]] = None
+    resolution_suggestion: str | None = None
+    affected_principles: list[int] | None = None
 
 
 class ConflictCheckResponse(BaseModel):
     """Response from conflict checking."""
 
-    conflicts: List[ConflictDetectionResult]
+    conflicts: list[ConflictDetectionResult]
     total_conflicts: int
     critical_conflicts: int
     resolution_required: bool
@@ -306,10 +300,10 @@ class SafetyCheckRequest(BaseModel):
     """Request for safety property validation."""
 
     system_model: str
-    safety_properties: List[SafetyProperty]
+    safety_properties: list[SafetyProperty]
     verification_method: str = "bounded_model_checking"
-    depth_limit: Optional[int] = 100
-    time_limit_seconds: Optional[int] = 600
+    depth_limit: int | None = 100
+    time_limit_seconds: int | None = 600
 
 
 class SafetyCheckResult(BaseModel):
@@ -317,25 +311,25 @@ class SafetyCheckResult(BaseModel):
 
     property_id: str
     status: str  # "satisfied", "violated", "unknown"
-    witness_trace: Optional[str] = None
-    counter_example_trace: Optional[str] = None
-    verification_depth: Optional[int] = None
-    verification_time_ms: Optional[int] = None
+    witness_trace: str | None = None
+    counter_example_trace: str | None = None
+    verification_depth: int | None = None
+    verification_time_ms: int | None = None
 
 
 class SafetyCheckResponse(BaseModel):
     """Response from safety property checking."""
 
-    results: List[SafetyCheckResult]
+    results: list[SafetyCheckResult]
     overall_safety_status: str
-    critical_violations: List[str]
+    critical_violations: list[str]
     summary: str
 
 
 # Placeholder for User (if FV Service needs to be auth-aware for its own endpoints)
 class User(BaseModel):
     id: str
-    roles: List[str] = []
+    roles: list[str] = []
 
 
 # --- Enhanced Multi-Model Validation Schemas ---
@@ -349,18 +343,18 @@ class ValidationResult(BaseModel):
     validation_type: str
     is_valid: bool
     confidence_score: float = Field(..., ge=0.0, le=1.0)
-    error_details: Optional[str] = None
-    suggestions: Optional[List[str]] = None
-    metadata: Optional[Dict[str, Any]] = None
+    error_details: str | None = None
+    suggestions: list[str] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class ValidationContext(BaseModel):
     """Context for multi-model validation."""
 
     request_id: str
-    models: Dict[str, List[Dict[str, Any]]]
-    validation_rules: Optional[List[str]] = None
-    performance_budget: Optional[Dict[str, float]] = None
+    models: dict[str, list[dict[str, Any]]]
+    validation_rules: list[str] | None = None
+    performance_budget: dict[str, float] | None = None
 
 
 class MultiModelValidationResult(BaseModel):
@@ -368,9 +362,9 @@ class MultiModelValidationResult(BaseModel):
 
     request_id: str
     overall_valid: bool
-    validation_results: List[ValidationResult]
-    performance_metrics: Dict[str, float]
-    recommendations: List[str]
+    validation_results: list[ValidationResult]
+    performance_metrics: dict[str, float]
+    recommendations: list[str]
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -378,10 +372,10 @@ class ConflictCheckResult(BaseModel):
     """Result of conflict checking between models."""
 
     has_conflicts: bool
-    conflict_details: List[str]
+    conflict_details: list[str]
     severity: str = Field(..., pattern="^(low|medium|high|critical)$")
-    resolution_suggestions: List[str]
-    affected_principles: List[int]
+    resolution_suggestions: list[str]
+    affected_principles: list[int]
 
 
 # --- Task 13: Cross-Domain Principle Testing Framework Schemas ---
@@ -393,21 +387,27 @@ class DomainContextBase(BaseModel):
     domain_name: str = Field(
         ..., max_length=100, description="Domain name (e.g., healthcare, finance)"
     )
-    domain_description: Optional[str] = Field(None, description="Description of the domain")
-    regulatory_frameworks: Optional[List[str]] = Field(
+    domain_description: str | None = Field(
+        None, description="Description of the domain"
+    )
+    regulatory_frameworks: list[str] | None = Field(
         None, description="Applicable regulatory frameworks"
     )
-    compliance_requirements: Optional[Dict[str, Any]] = Field(
+    compliance_requirements: dict[str, Any] | None = Field(
         None, description="Specific compliance requirements"
     )
-    cultural_contexts: Optional[Dict[str, Any]] = Field(
+    cultural_contexts: dict[str, Any] | None = Field(
         None, description="Cultural and social context factors"
     )
-    domain_constraints: Optional[Dict[str, Any]] = Field(
+    domain_constraints: dict[str, Any] | None = Field(
         None, description="Technical and operational constraints"
     )
-    risk_factors: Optional[List[str]] = Field(None, description="Domain-specific risk factors")
-    stakeholder_groups: Optional[List[str]] = Field(None, description="Relevant stakeholder groups")
+    risk_factors: list[str] | None = Field(
+        None, description="Domain-specific risk factors"
+    )
+    stakeholder_groups: list[str] | None = Field(
+        None, description="Relevant stakeholder groups"
+    )
 
 
 class DomainContextCreate(DomainContextBase):
@@ -417,14 +417,14 @@ class DomainContextCreate(DomainContextBase):
 class DomainContextUpdate(BaseModel):
     """Schema for updating domain context."""
 
-    domain_description: Optional[str] = None
-    regulatory_frameworks: Optional[List[str]] = None
-    compliance_requirements: Optional[Dict[str, Any]] = None
-    cultural_contexts: Optional[Dict[str, Any]] = None
-    domain_constraints: Optional[Dict[str, Any]] = None
-    risk_factors: Optional[List[str]] = None
-    stakeholder_groups: Optional[List[str]] = None
-    is_active: Optional[bool] = None
+    domain_description: str | None = None
+    regulatory_frameworks: list[str] | None = None
+    compliance_requirements: dict[str, Any] | None = None
+    cultural_contexts: dict[str, Any] | None = None
+    domain_constraints: dict[str, Any] | None = None
+    risk_factors: list[str] | None = None
+    stakeholder_groups: list[str] | None = None
+    is_active: bool | None = None
 
 
 class DomainContext(DomainContextBase):
@@ -434,7 +434,7 @@ class DomainContext(DomainContextBase):
     is_active: bool
     created_at: datetime
     updated_at: datetime
-    created_by_user_id: Optional[int] = None
+    created_by_user_id: int | None = None
 
     class Config:
         from_attributes = True
@@ -443,21 +443,27 @@ class DomainContext(DomainContextBase):
 class CrossDomainTestScenarioBase(BaseModel):
     """Base schema for cross-domain test scenario."""
 
-    scenario_name: str = Field(..., max_length=255, description="Name of the test scenario")
-    scenario_description: Optional[str] = Field(
+    scenario_name: str = Field(
+        ..., max_length=255, description="Name of the test scenario"
+    )
+    scenario_description: str | None = Field(
         None, description="Description of the test scenario"
     )
     primary_domain_id: int = Field(..., description="Primary domain ID for testing")
-    secondary_domains: Optional[List[int]] = Field(None, description="Secondary domain IDs")
+    secondary_domains: list[int] | None = Field(
+        None, description="Secondary domain IDs"
+    )
     test_type: str = Field(
         ..., description="Type of test (consistency, adaptation, conflict_detection)"
     )
-    test_parameters: Optional[Dict[str, Any]] = Field(
+    test_parameters: dict[str, Any] | None = Field(
         None, description="Configurable test parameters"
     )
-    expected_outcomes: Optional[Dict[str, Any]] = Field(None, description="Expected test results")
-    principle_ids: List[int] = Field(..., description="List of principle IDs to test")
-    principle_adaptations: Optional[Dict[str, Any]] = Field(
+    expected_outcomes: dict[str, Any] | None = Field(
+        None, description="Expected test results"
+    )
+    principle_ids: list[int] = Field(..., description="List of principle IDs to test")
+    principle_adaptations: dict[str, Any] | None = Field(
         None, description="Domain-specific adaptations"
     )
 
@@ -469,12 +475,12 @@ class CrossDomainTestScenarioCreate(CrossDomainTestScenarioBase):
 class CrossDomainTestScenarioUpdate(BaseModel):
     """Schema for updating cross-domain test scenario."""
 
-    scenario_description: Optional[str] = None
-    secondary_domains: Optional[List[int]] = None
-    test_parameters: Optional[Dict[str, Any]] = None
-    expected_outcomes: Optional[Dict[str, Any]] = None
-    principle_adaptations: Optional[Dict[str, Any]] = None
-    status: Optional[str] = None
+    scenario_description: str | None = None
+    secondary_domains: list[int] | None = None
+    test_parameters: dict[str, Any] | None = None
+    expected_outcomes: dict[str, Any] | None = None
+    principle_adaptations: dict[str, Any] | None = None
+    status: str | None = None
 
 
 class CrossDomainTestScenario(CrossDomainTestScenarioBase):
@@ -482,12 +488,12 @@ class CrossDomainTestScenario(CrossDomainTestScenarioBase):
 
     id: int
     status: str
-    last_run_at: Optional[datetime] = None
-    accuracy_score: Optional[float] = None
-    consistency_score: Optional[float] = None
+    last_run_at: datetime | None = None
+    accuracy_score: float | None = None
+    consistency_score: float | None = None
     created_at: datetime
     updated_at: datetime
-    created_by_user_id: Optional[int] = None
+    created_by_user_id: int | None = None
 
     class Config:
         from_attributes = True
@@ -508,16 +514,22 @@ class CrossDomainTestResultBase(BaseModel):
         ..., ge=0.0, le=1.0, description="Consistency score (0.0 to 1.0)"
     )
     adaptation_required: bool = Field(..., description="Whether adaptation is required")
-    adaptation_suggestions: Optional[List[str]] = Field(None, description="Suggested adaptations")
-    validation_details: Optional[Dict[str, Any]] = Field(
+    adaptation_suggestions: list[str] | None = Field(
+        None, description="Suggested adaptations"
+    )
+    validation_details: dict[str, Any] | None = Field(
         None, description="Detailed validation results"
     )
-    conflict_detected: bool = Field(False, description="Whether conflicts were detected")
-    conflict_details: Optional[Dict[str, Any]] = Field(
+    conflict_detected: bool = Field(
+        False, description="Whether conflicts were detected"
+    )
+    conflict_details: dict[str, Any] | None = Field(
         None, description="Details of conflicts found"
     )
-    execution_time_ms: Optional[int] = Field(None, description="Execution time in milliseconds")
-    memory_usage_mb: Optional[float] = Field(None, description="Memory usage in MB")
+    execution_time_ms: int | None = Field(
+        None, description="Execution time in milliseconds"
+    )
+    memory_usage_mb: float | None = Field(None, description="Memory usage in MB")
 
 
 class CrossDomainTestResult(CrossDomainTestResultBase):
@@ -525,7 +537,7 @@ class CrossDomainTestResult(CrossDomainTestResultBase):
 
     id: int
     executed_at: datetime
-    executed_by_user_id: Optional[int] = None
+    executed_by_user_id: int | None = None
 
     class Config:
         from_attributes = True
@@ -534,10 +546,14 @@ class CrossDomainTestResult(CrossDomainTestResultBase):
 class CrossDomainTestRequest(BaseModel):
     """Schema for requesting cross-domain testing."""
 
-    scenario_ids: List[int] = Field(..., description="List of scenario IDs to execute")
-    target_accuracy: float = Field(0.9, ge=0.0, le=1.0, description="Target accuracy threshold")
+    scenario_ids: list[int] = Field(..., description="List of scenario IDs to execute")
+    target_accuracy: float = Field(
+        0.9, ge=0.0, le=1.0, description="Target accuracy threshold"
+    )
     enable_parallel: bool = Field(True, description="Enable parallel execution")
-    max_execution_time_seconds: int = Field(300, description="Maximum execution time per scenario")
+    max_execution_time_seconds: int = Field(
+        300, description="Maximum execution time per scenario"
+    )
 
 
 class CrossDomainTestResponse(BaseModel):
@@ -545,8 +561,16 @@ class CrossDomainTestResponse(BaseModel):
 
     test_run_id: str = Field(..., description="Unique test run identifier")
     scenarios_executed: int = Field(..., description="Number of scenarios executed")
-    overall_accuracy: float = Field(..., description="Overall accuracy across all tests")
+    overall_accuracy: float = Field(
+        ..., description="Overall accuracy across all tests"
+    )
     overall_consistency: float = Field(..., description="Overall consistency score")
-    results: List[CrossDomainTestResult] = Field(..., description="Detailed test results")
-    execution_summary: Dict[str, Any] = Field(..., description="Execution summary and metrics")
-    recommendations: List[str] = Field(..., description="Recommendations based on results")
+    results: list[CrossDomainTestResult] = Field(
+        ..., description="Detailed test results"
+    )
+    execution_summary: dict[str, Any] = Field(
+        ..., description="Execution summary and metrics"
+    )
+    recommendations: list[str] = Field(
+        ..., description="Recommendations based on results"
+    )

@@ -5,7 +5,7 @@
 ### Current State Assessment
 
 #### Legacy Frontend Components
-Located in `applications/legacy-frontend/src/components/`:
+Located in `applications/legacy-applications/governance-dashboard/src/components/`:
 
 1. **Layout Components**
    - `Layout/Layout.js` - Main layout wrapper with navigation

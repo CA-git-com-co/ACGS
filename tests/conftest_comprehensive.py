@@ -16,13 +16,11 @@ Key Features:
 import asyncio
 import os
 import sys
+from collections.abc import AsyncGenerator
 from pathlib import Path
-from typing import AsyncGenerator, Dict, Any, Optional
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-import pytest_asyncio
-from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -48,8 +46,7 @@ SERVICE_PORTS = {
 
 # Service base URLs for testing
 SERVICE_URLS = {
-    name: f"http://localhost:{port}" 
-    for name, port in SERVICE_PORTS.items()
+    name: f"http://localhost:{port}" for name, port in SERVICE_PORTS.items()
 }
 
 
@@ -197,20 +194,20 @@ def performance_metrics():
 
 class MockServiceRegistry:
     """Mock service registry for testing service discovery."""
-    
+
     def __init__(self):
         self.services = {
             name: {"url": url, "status": "healthy", "version": "3.0.0"}
             for name, url in SERVICE_URLS.items()
         }
-    
+
     async def get_service_url(self, service_name: str) -> str:
         return self.services.get(service_name, {}).get("url", "")
-    
+
     async def register_service(self, name: str, url: str) -> bool:
         self.services[name] = {"url": url, "status": "healthy"}
         return True
-    
+
     async def health_check(self, service_name: str) -> bool:
         return service_name in self.services
 
@@ -258,8 +255,10 @@ def pytest_collection_modifyitems(config, items):
     """Modify test collection to add default markers."""
     for item in items:
         # Add unit marker to tests without specific markers
-        if not any(mark.name in ["integration", "performance", "security", "e2e"] 
-                  for mark in item.iter_markers()):
+        if not any(
+            mark.name in ["integration", "performance", "security", "e2e"]
+            for mark in item.iter_markers()
+        ):
             item.add_marker(pytest.mark.unit)
 
 

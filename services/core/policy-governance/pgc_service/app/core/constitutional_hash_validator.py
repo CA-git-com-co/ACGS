@@ -17,18 +17,15 @@ Enterprise Features:
 - Performance monitoring with <5ms validation latency target
 """
 
-import asyncio
 import hashlib
 import hmac
-import json
 import logging
 import time
 from dataclasses import dataclass
-from datetime import timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 
-from prometheus_client import Counter, Gauge, Histogram, CollectorRegistry, REGISTRY
+from prometheus_client import Counter, Gauge, Histogram
 
 logger = logging.getLogger(__name__)
 
@@ -61,11 +58,11 @@ class ConstitutionalValidationResult:
     compliance_score: float
     validation_timestamp: float
     validation_level: ConstitutionalValidationLevel
-    violations: List[str]
-    recommendations: List[str]
-    performance_metrics: Dict[str, float]
+    violations: list[str]
+    recommendations: list[str]
+    performance_metrics: dict[str, float]
     constitutional_hash: str
-    integrity_signature: Optional[str] = None
+    integrity_signature: str | None = None
 
 
 @dataclass
@@ -73,11 +70,13 @@ class ConstitutionalContext:
     """Context for constitutional validation operations."""
 
     operation_type: str
-    policy_id: Optional[str] = None
-    user_id: Optional[str] = None
+    policy_id: str | None = None
+    user_id: str | None = None
     service_name: str = "pgc_service"
-    validation_level: ConstitutionalValidationLevel = ConstitutionalValidationLevel.STANDARD
-    additional_context: Dict[str, Any] = None
+    validation_level: ConstitutionalValidationLevel = (
+        ConstitutionalValidationLevel.STANDARD
+    )
+    additional_context: dict[str, Any] = None
 
 
 class ConstitutionalHashValidator:
@@ -91,8 +90,8 @@ class ConstitutionalHashValidator:
     def __init__(
         self,
         constitutional_hash: str = "cdd01ef066bc6cf2",
-        hmac_secret_key: Optional[str] = None,
-        redis_client: Optional[Any] = None,
+        hmac_secret_key: str | None = None,
+        redis_client: Any | None = None,
         performance_target_ms: float = 5.0,
     ):
         """
@@ -124,11 +123,11 @@ class ConstitutionalHashValidator:
         )
         self.compliance_score_gauge = Gauge(
             f"pgc_constitutional_compliance_score_{instance_id}",
-            "Current constitutional compliance score in PGC service"
+            "Current constitutional compliance score in PGC service",
         )
 
         # Internal state
-        self._validation_cache: Dict[str, ConstitutionalValidationResult] = {}
+        self._validation_cache: dict[str, ConstitutionalValidationResult] = {}
         self._circuit_breaker_failures = 0
         self._circuit_breaker_threshold = 5
         self._circuit_breaker_reset_time = None
@@ -139,9 +138,9 @@ class ConstitutionalHashValidator:
 
     async def validate_constitutional_hash(
         self,
-        provided_hash: Optional[str],
+        provided_hash: str | None,
         context: ConstitutionalContext,
-        policy_data: Optional[Dict[str, Any]] = None,
+        policy_data: dict[str, Any] | None = None,
     ) -> ConstitutionalValidationResult:
         """
         Validate constitutional hash with comprehensive compliance checking.
@@ -194,14 +193,19 @@ class ConstitutionalHashValidator:
                 validation_timestamp=time.time(),
                 validation_level=context.validation_level,
                 violations=[f"Validation error: {str(e)}"],
-                recommendations=["Retry validation", "Check constitutional service health"],
-                performance_metrics={"validation_time_ms": (time.time() - start_time) * 1000},
+                recommendations=[
+                    "Retry validation",
+                    "Check constitutional service health",
+                ],
+                performance_metrics={
+                    "validation_time_ms": (time.time() - start_time) * 1000
+                },
                 constitutional_hash=self.constitutional_hash,
             )
 
     async def validate_policy_constitutional_compliance(
         self,
-        policy_data: Dict[str, Any],
+        policy_data: dict[str, Any],
         context: ConstitutionalContext,
     ) -> ConstitutionalValidationResult:
         """
@@ -221,10 +225,14 @@ class ConstitutionalHashValidator:
             policy_hash = policy_data.get("constitutional_hash")
 
             # Perform hash validation
-            hash_result = await self.validate_constitutional_hash(policy_hash, context, policy_data)
+            hash_result = await self.validate_constitutional_hash(
+                policy_hash, context, policy_data
+            )
 
             # Perform additional policy compliance checks
-            compliance_checks = await self._perform_policy_compliance_checks(policy_data, context)
+            compliance_checks = await self._perform_policy_compliance_checks(
+                policy_data, context
+            )
 
             # Combine results
             combined_result = self._combine_validation_results(
@@ -237,7 +245,7 @@ class ConstitutionalHashValidator:
             logger.error(f"Policy constitutional compliance validation failed: {e}")
             return self._create_error_result(context, str(e), start_time)
 
-    async def get_constitutional_state(self) -> Dict[str, Any]:
+    async def get_constitutional_state(self) -> dict[str, Any]:
         """
         Get current constitutional state and validation metrics.
 
@@ -295,9 +303,9 @@ class ConstitutionalHashValidator:
 
     async def _perform_constitutional_validation(
         self,
-        provided_hash: Optional[str],
+        provided_hash: str | None,
         context: ConstitutionalContext,
-        policy_data: Optional[Dict[str, Any]] = None,
+        policy_data: dict[str, Any] | None = None,
     ) -> ConstitutionalValidationResult:
         """Perform the actual constitutional validation."""
         violations = []
@@ -310,7 +318,9 @@ class ConstitutionalHashValidator:
                 ConstitutionalValidationLevel.COMPREHENSIVE,
                 ConstitutionalValidationLevel.CRITICAL,
             ]:
-                violations.append("Constitutional hash is required for this operation level")
+                violations.append(
+                    "Constitutional hash is required for this operation level"
+                )
                 compliance_score -= 0.3
             else:
                 recommendations.append(
@@ -362,10 +372,10 @@ class ConstitutionalHashValidator:
 
     async def _perform_enhanced_constitutional_checks(
         self,
-        provided_hash: Optional[str],
+        provided_hash: str | None,
         context: ConstitutionalContext,
-        policy_data: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        policy_data: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Perform enhanced constitutional checks for comprehensive validation."""
         violations = []
         recommendations = []
@@ -383,7 +393,9 @@ class ConstitutionalHashValidator:
 
         # Policy-specific checks
         if policy_data:
-            policy_checks = await self._validate_policy_constitutional_elements(policy_data)
+            policy_checks = await self._validate_policy_constitutional_elements(
+                policy_data
+            )
             violations.extend(policy_checks.get("violations", []))
             recommendations.extend(policy_checks.get("recommendations", []))
             compliance_multiplier *= policy_checks.get("compliance_multiplier", 1.0)
@@ -391,7 +403,9 @@ class ConstitutionalHashValidator:
         # Context-specific checks
         if context.operation_type in ["policy_creation", "constitutional_amendment"]:
             if not provided_hash:
-                violations.append("Constitutional hash is mandatory for constitutional operations")
+                violations.append(
+                    "Constitutional hash is mandatory for constitutional operations"
+                )
                 compliance_multiplier *= 0.5
 
         return {
@@ -401,8 +415,8 @@ class ConstitutionalHashValidator:
         }
 
     async def _validate_policy_constitutional_elements(
-        self, policy_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, policy_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate policy constitutional elements."""
         violations = []
         recommendations = []
@@ -412,13 +426,17 @@ class ConstitutionalHashValidator:
         required_elements = ["title", "description", "constitutional_principles"]
         for element in required_elements:
             if not policy_data.get(element):
-                violations.append(f"Policy missing required constitutional element: {element}")
+                violations.append(
+                    f"Policy missing required constitutional element: {element}"
+                )
                 compliance_multiplier *= 0.9
 
         # Check constitutional principles
         principles = policy_data.get("constitutional_principles", [])
         if isinstance(principles, list) and len(principles) == 0:
-            recommendations.append("Consider specifying applicable constitutional principles")
+            recommendations.append(
+                "Consider specifying applicable constitutional principles"
+            )
 
         # Check for constitutional compliance metadata
         if not policy_data.get("constitutional_compliance"):
@@ -432,9 +450,9 @@ class ConstitutionalHashValidator:
 
     async def _perform_policy_compliance_checks(
         self,
-        policy_data: Dict[str, Any],
+        policy_data: dict[str, Any],
         context: ConstitutionalContext,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Perform comprehensive policy compliance checks."""
         violations = []
         recommendations = []
@@ -474,11 +492,13 @@ class ConstitutionalHashValidator:
     def _combine_validation_results(
         self,
         hash_result: ConstitutionalValidationResult,
-        compliance_checks: Dict[str, Any],
+        compliance_checks: dict[str, Any],
         start_time: float,
     ) -> ConstitutionalValidationResult:
         """Combine hash validation and compliance check results."""
-        combined_violations = hash_result.violations + compliance_checks.get("violations", [])
+        combined_violations = hash_result.violations + compliance_checks.get(
+            "violations", []
+        )
         combined_recommendations = hash_result.recommendations + compliance_checks.get(
             "recommendations", []
         )
@@ -504,13 +524,15 @@ class ConstitutionalHashValidator:
             validation_level=hash_result.validation_level,
             violations=combined_violations,
             recommendations=combined_recommendations,
-            performance_metrics={"validation_time_ms": (time.time() - start_time) * 1000},
+            performance_metrics={
+                "validation_time_ms": (time.time() - start_time) * 1000
+            },
             constitutional_hash=self.constitutional_hash,
             integrity_signature=hash_result.integrity_signature,
         )
 
     def _generate_cache_key(
-        self, provided_hash: Optional[str], context: ConstitutionalContext
+        self, provided_hash: str | None, context: ConstitutionalContext
     ) -> str:
         """Generate cache key for validation result."""
         key_components = [
@@ -523,7 +545,7 @@ class ConstitutionalHashValidator:
 
     async def _get_cached_validation(
         self, cache_key: str
-    ) -> Optional[ConstitutionalValidationResult]:
+    ) -> ConstitutionalValidationResult | None:
         """Get cached validation result."""
         try:
             # Check in-memory cache first
@@ -537,7 +559,9 @@ class ConstitutionalHashValidator:
 
             # Check Redis cache if available
             if self.redis_client:
-                cached_data = await self.redis_client.get(f"constitutional_validation:{cache_key}")
+                cached_data = await self.redis_client.get(
+                    f"constitutional_validation:{cache_key}"
+                )
                 if cached_data:
                     # Parse cached result (simplified for this implementation)
                     return None  # Would implement proper deserialization
@@ -613,7 +637,10 @@ class ConstitutionalHashValidator:
             validation_timestamp=time.time(),
             validation_level=context.validation_level,
             violations=["Constitutional validation service temporarily unavailable"],
-            recommendations=["Retry after circuit breaker reset", "Check service health"],
+            recommendations=[
+                "Retry after circuit breaker reset",
+                "Check service health",
+            ],
             performance_metrics={"circuit_breaker_open": True},
             constitutional_hash=self.constitutional_hash,
         )
@@ -630,7 +657,9 @@ class ConstitutionalHashValidator:
             validation_level=context.validation_level,
             violations=[f"Validation error: {error_message}"],
             recommendations=["Check input data", "Retry validation", "Contact support"],
-            performance_metrics={"validation_time_ms": (time.time() - start_time) * 1000},
+            performance_metrics={
+                "validation_time_ms": (time.time() - start_time) * 1000
+            },
             constitutional_hash=self.constitutional_hash,
         )
 
@@ -653,7 +682,8 @@ class ConstitutionalHashValidator:
             # Update latency histogram
             validation_time = time.time() - start_time
             self.validation_latency.labels(
-                level=context.validation_level.value, operation_type=context.operation_type
+                level=context.validation_level.value,
+                operation_type=context.operation_type,
             ).observe(validation_time)
 
             # Update compliance score gauge

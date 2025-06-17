@@ -259,7 +259,7 @@ class TestLLMReliabilityFramework:
     def test_failure_mode_detection(self, llm_framework):
         """Test detection of different failure modes."""
         # Test timeout failure
-        timeout_error = asyncio.TimeoutError("Request timed out")
+        timeout_error = TimeoutError("Request timed out")
         failure_mode = llm_framework._detect_failure_mode(timeout_error)
         assert failure_mode == FailureMode.TIMEOUT
 

@@ -61,7 +61,7 @@ Use environment variable substitution in configuration files:
 For containerized deployments:
 
 ```yaml
-# docker-compose.yml
+# infrastructure/docker/docker-compose.yml
 environment:
   - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}
 

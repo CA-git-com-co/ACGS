@@ -21,9 +21,9 @@ import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 import psutil
@@ -104,7 +104,7 @@ class HardwareCapability:
     memory_gb: float
     bandwidth_gbps: float
     power_consumption_watts: float
-    supported_precisions: List[str]
+    supported_precisions: list[str]
     driver_version: str
     utilization_percent: float = 0.0
     temperature_celsius: float = 0.0
@@ -117,11 +117,11 @@ class AccelerationProfile:
 
     profile_id: str
     target_hardware: HardwareType
-    acceleration_types: List[AccelerationType]
+    acceleration_types: list[AccelerationType]
     optimization_level: str  # "conservative", "balanced", "aggressive"
-    memory_limit_gb: Optional[float]
-    power_limit_watts: Optional[float]
-    thermal_limit_celsius: Optional[float]
+    memory_limit_gb: float | None
+    power_limit_watts: float | None
+    thermal_limit_celsius: float | None
     precision: str  # "fp32", "fp16", "int8", "int4"
     batch_size: int
     created_at: datetime
@@ -137,8 +137,8 @@ class EdgeDeploymentConfig:
     inference_latency_ms: float
     memory_footprint_mb: float
     power_consumption_watts: float
-    network_requirements: Dict[str, Any]
-    security_requirements: List[str]
+    network_requirements: dict[str, Any]
+    security_requirements: list[str]
     update_mechanism: str
     offline_capability: bool
 
@@ -157,13 +157,13 @@ class HardwareAccelerationManager:
         self.ultra_low_latency_optimizer = get_ultra_low_latency_optimizer()
 
         # Hardware detection and management
-        self.available_hardware: Dict[str, HardwareCapability] = {}
-        self.acceleration_profiles: Dict[str, AccelerationProfile] = {}
-        self.edge_deployments: Dict[str, EdgeDeploymentConfig] = {}
+        self.available_hardware: dict[str, HardwareCapability] = {}
+        self.acceleration_profiles: dict[str, AccelerationProfile] = {}
+        self.edge_deployments: dict[str, EdgeDeploymentConfig] = {}
 
         # Performance tracking
-        self.performance_history: List[Dict[str, Any]] = []
-        self.hardware_utilization: Dict[str, List[float]] = defaultdict(list)
+        self.performance_history: list[dict[str, Any]] = []
+        self.hardware_utilization: dict[str, list[float]] = defaultdict(list)
 
         # Initialize hardware detection
         asyncio.create_task(self._detect_available_hardware())
@@ -194,7 +194,9 @@ class HardwareAccelerationManager:
         for edge_id, capability in edge_capabilities.items():
             self.available_hardware[edge_id] = capability
 
-        logger.info(f"Detected {len(self.available_hardware)} hardware acceleration devices")
+        logger.info(
+            f"Detected {len(self.available_hardware)} hardware acceleration devices"
+        )
 
     def _detect_cpu_capabilities(self) -> HardwareCapability:
         """Detect CPU capabilities."""
@@ -216,7 +218,7 @@ class HardwareAccelerationManager:
             available=True,
         )
 
-    async def _detect_gpu_capabilities(self) -> Dict[str, HardwareCapability]:
+    async def _detect_gpu_capabilities(self) -> dict[str, HardwareCapability]:
         """Detect GPU capabilities."""
         gpu_capabilities = {}
 
@@ -242,7 +244,7 @@ class HardwareAccelerationManager:
 
         if TF_AVAILABLE:
             gpus = tf.config.experimental.list_physical_devices("GPU")
-            for i, gpu in enumerate(gpus):
+            for i, _gpu in enumerate(gpus):
                 if f"gpu_{i}" not in gpu_capabilities:  # Avoid duplicates
                     gpu_capability = HardwareCapability(
                         hardware_type=HardwareType.GPU_NVIDIA,
@@ -259,7 +261,7 @@ class HardwareAccelerationManager:
 
         return gpu_capabilities
 
-    async def _detect_tpu_capabilities(self) -> Dict[str, HardwareCapability]:
+    async def _detect_tpu_capabilities(self) -> dict[str, HardwareCapability]:
         """Detect TPU capabilities."""
         tpu_capabilities = {}
 
@@ -289,7 +291,7 @@ class HardwareAccelerationManager:
 
         return tpu_capabilities
 
-    async def _detect_edge_capabilities(self) -> Dict[str, HardwareCapability]:
+    async def _detect_edge_capabilities(self) -> dict[str, HardwareCapability]:
         """Detect edge device capabilities."""
         edge_capabilities = {}
 
@@ -319,7 +321,7 @@ class HardwareAccelerationManager:
         target_hardware: HardwareType,
         optimization_level: str = "balanced",
         precision: str = "fp32",
-        memory_limit_gb: Optional[float] = None,
+        memory_limit_gb: float | None = None,
     ) -> AccelerationProfile:
         """
         Create an acceleration profile for specific hardware.
@@ -336,7 +338,9 @@ class HardwareAccelerationManager:
         profile_id = str(uuid.uuid4())
 
         # Determine acceleration types based on hardware and optimization level
-        acceleration_types = self._determine_acceleration_types(target_hardware, optimization_level)
+        acceleration_types = self._determine_acceleration_types(
+            target_hardware, optimization_level
+        )
 
         # Set hardware-specific defaults
         if target_hardware == HardwareType.GPU_NVIDIA:
@@ -366,7 +370,7 @@ class HardwareAccelerationManager:
             thermal_limit_celsius=thermal_limit,
             precision=precision,
             batch_size=batch_size,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
 
         self.acceleration_profiles[profile_id] = profile
@@ -375,13 +379,15 @@ class HardwareAccelerationManager:
         self.metrics.increment("acceleration_profiles_created")
         self.metrics.record_value("profile_batch_size", batch_size)
 
-        logger.info(f"Created acceleration profile {profile_id} for {target_hardware.value}")
+        logger.info(
+            f"Created acceleration profile {profile_id} for {target_hardware.value}"
+        )
 
         return profile
 
     def _determine_acceleration_types(
         self, target_hardware: HardwareType, optimization_level: str
-    ) -> List[AccelerationType]:
+    ) -> list[AccelerationType]:
         """Determine appropriate acceleration types for hardware and optimization level."""
 
         base_types = [
@@ -417,10 +423,10 @@ class HardwareAccelerationManager:
 
     async def accelerate_policy_evaluation(
         self,
-        policy_request: Dict[str, Any],
+        policy_request: dict[str, Any],
         profile_id: str,
         target_latency_ms: float = 5.0,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Accelerate policy evaluation using hardware acceleration.
 
@@ -460,7 +466,7 @@ class HardwareAccelerationManager:
 
         # Update performance history
         performance_record = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "profile_id": profile_id,
             "hardware_type": profile.target_hardware.value,
             "evaluation_time_ms": evaluation_time,
@@ -475,7 +481,9 @@ class HardwareAccelerationManager:
             self.performance_history = self.performance_history[-1000:]
 
         # Record metrics
-        self.metrics.record_timing("accelerated_policy_evaluation_duration", evaluation_time / 1000)
+        self.metrics.record_timing(
+            "accelerated_policy_evaluation_duration", evaluation_time / 1000
+        )
         self.metrics.record_value(
             "acceleration_target_achievement",
             1.0 if evaluation_time <= target_latency_ms else 0.0,
@@ -489,17 +497,21 @@ class HardwareAccelerationManager:
                     "hardware_type": profile.target_hardware.value,
                     "evaluation_time_ms": evaluation_time,
                     "target_met": evaluation_time <= target_latency_ms,
-                    "acceleration_types": [at.value for at in profile.acceleration_types],
+                    "acceleration_types": [
+                        at.value for at in profile.acceleration_types
+                    ],
                     "precision": profile.precision,
                 }
             }
         )
 
-        logger.debug(f"Accelerated policy evaluation completed in {evaluation_time:.2f}ms")
+        logger.debug(
+            f"Accelerated policy evaluation completed in {evaluation_time:.2f}ms"
+        )
 
         return result
 
-    def _select_optimal_device(self, target_hardware: HardwareType) -> Optional[str]:
+    def _select_optimal_device(self, target_hardware: HardwareType) -> str | None:
         """Select optimal device for target hardware type."""
         available_devices = [
             device_id
@@ -519,8 +531,8 @@ class HardwareAccelerationManager:
         return optimal_device
 
     async def _cpu_accelerated_evaluation(
-        self, policy_request: Dict[str, Any], profile: AccelerationProfile
-    ) -> Dict[str, Any]:
+        self, policy_request: dict[str, Any], profile: AccelerationProfile
+    ) -> dict[str, Any]:
         """Perform CPU-accelerated policy evaluation."""
         # Simulate CPU acceleration with vectorization and parallel processing
         await asyncio.sleep(0.008)  # 8ms simulation for CPU acceleration
@@ -534,10 +546,10 @@ class HardwareAccelerationManager:
 
     async def _gpu_accelerated_evaluation(
         self,
-        policy_request: Dict[str, Any],
+        policy_request: dict[str, Any],
         profile: AccelerationProfile,
         device_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Perform GPU-accelerated policy evaluation."""
         if TORCH_AVAILABLE and torch.cuda.is_available():
             # Use PyTorch for GPU acceleration
@@ -560,8 +572,8 @@ class HardwareAccelerationManager:
         }
 
     async def _tpu_accelerated_evaluation(
-        self, policy_request: Dict[str, Any], profile: AccelerationProfile
-    ) -> Dict[str, Any]:
+        self, policy_request: dict[str, Any], profile: AccelerationProfile
+    ) -> dict[str, Any]:
         """Perform TPU-accelerated policy evaluation."""
         if TF_AVAILABLE:
             # Use TensorFlow for TPU acceleration
@@ -582,8 +594,8 @@ class HardwareAccelerationManager:
         }
 
     async def _edge_accelerated_evaluation(
-        self, policy_request: Dict[str, Any], profile: AccelerationProfile
-    ) -> Dict[str, Any]:
+        self, policy_request: dict[str, Any], profile: AccelerationProfile
+    ) -> dict[str, Any]:
         """Perform edge-optimized policy evaluation."""
         # Edge devices prioritize power efficiency over raw speed
         await asyncio.sleep(0.012)  # 12ms simulation for edge acceleration
@@ -674,13 +686,17 @@ class HardwareAccelerationManager:
         # Record metrics
         self.metrics.increment("edge_deployments_created")
         self.metrics.record_value("edge_model_size_mb", config["model_size_mb"])
-        self.metrics.record_value("edge_inference_latency_ms", config["inference_latency_ms"])
+        self.metrics.record_value(
+            "edge_inference_latency_ms", config["inference_latency_ms"]
+        )
 
-        logger.info(f"Created edge deployment {deployment_id} for {target_device.value}")
+        logger.info(
+            f"Created edge deployment {deployment_id} for {target_device.value}"
+        )
 
         return edge_deployment
 
-    async def optimize_for_quantum_resistance(self) -> Dict[str, Any]:
+    async def optimize_for_quantum_resistance(self) -> dict[str, Any]:
         """
         Prepare system for quantum-resistant cryptography.
 
@@ -736,7 +752,7 @@ class HardwareAccelerationManager:
 
         return optimization_results
 
-    async def monitor_hardware_performance(self) -> Dict[str, Any]:
+    async def monitor_hardware_performance(self) -> dict[str, Any]:
         """Monitor real-time hardware performance and utilization."""
         performance_data = {}
 
@@ -745,7 +761,9 @@ class HardwareAccelerationManager:
             if capability.hardware_type == HardwareType.CPU:
                 capability.utilization_percent = psutil.cpu_percent(interval=0.1)
                 capability.temperature_celsius = 0.0  # Would need sensors
-            elif capability.hardware_type == HardwareType.GPU_NVIDIA and TORCH_AVAILABLE:
+            elif (
+                capability.hardware_type == HardwareType.GPU_NVIDIA and TORCH_AVAILABLE
+            ):
                 try:
                     # Would use nvidia-ml-py for real GPU monitoring
                     capability.utilization_percent = np.random.uniform(20, 80)
@@ -757,7 +775,9 @@ class HardwareAccelerationManager:
             # Store utilization history
             self.hardware_utilization[device_id].append(capability.utilization_percent)
             if len(self.hardware_utilization[device_id]) > 100:
-                self.hardware_utilization[device_id] = self.hardware_utilization[device_id][-100:]
+                self.hardware_utilization[device_id] = self.hardware_utilization[
+                    device_id
+                ][-100:]
 
             performance_data[device_id] = {
                 "hardware_type": capability.hardware_type.value,
@@ -770,10 +790,12 @@ class HardwareAccelerationManager:
             }
 
         return {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "hardware_performance": performance_data,
             "total_devices": len(self.available_hardware),
-            "active_devices": len([h for h in self.available_hardware.values() if h.available]),
+            "active_devices": len(
+                [h for h in self.available_hardware.values() if h.available]
+            ),
             "average_utilization": np.mean(
                 [h.utilization_percent for h in self.available_hardware.values()]
             ),
@@ -783,7 +805,7 @@ class HardwareAccelerationManager:
             ),
         }
 
-    async def get_hardware_acceleration_metrics(self) -> Dict[str, Any]:
+    async def get_hardware_acceleration_metrics(self) -> dict[str, Any]:
         """Get comprehensive hardware acceleration metrics."""
         if not self.performance_history:
             return {"message": "No performance history available"}
@@ -812,7 +834,9 @@ class HardwareAccelerationManager:
         # Acceleration effectiveness by hardware type
         hardware_performance = defaultdict(list)
         for perf in recent_performance:
-            hardware_performance[perf["hardware_type"]].append(perf["evaluation_time_ms"])
+            hardware_performance[perf["hardware_type"]].append(
+                perf["evaluation_time_ms"]
+            )
 
         hardware_effectiveness = {}
         for hw_type, latencies in hardware_performance.items():
@@ -842,12 +866,12 @@ class HardwareAccelerationManager:
                 "sub_1ms_latency": "requires_fpga_asic",
                 "quantum_resistance": "in_development",
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 
 # Global instance
-_hardware_acceleration_manager: Optional[HardwareAccelerationManager] = None
+_hardware_acceleration_manager: HardwareAccelerationManager | None = None
 
 
 def get_hardware_acceleration_manager() -> HardwareAccelerationManager:

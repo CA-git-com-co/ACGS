@@ -171,7 +171,7 @@ def print_executive_summary(report_data):
 
     print(f"\n📅 Execution Date: {report_data['execution_metadata']['execution_date']}")
     print(f"⏱️  Timeline: {report_data['execution_metadata']['timeline']}")
-    print(f"🎯 Overall Success: ✅ ACHIEVED")
+    print("🎯 Overall Success: ✅ ACHIEVED")
 
     print("\n" + "=" * 50)
     print("📊 PRIORITY EXECUTION RESULTS")

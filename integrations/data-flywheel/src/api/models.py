@@ -19,8 +19,13 @@ from typing import Any
 from bson import ObjectId
 from pydantic import BaseModel, Field
 
-from src.api.schemas import Dataset, DeploymentStatus, FlywheelRunStatus, NIMRunStatus
-from src.config import DataSplitConfig, LLMJudgeConfig, NIMConfig
+from services.core.api.schemas import (
+    Dataset,
+    DeploymentStatus,
+    FlywheelRunStatus,
+    NIMRunStatus,
+)
+from services.core.config import DataSplitConfig, LLMJudgeConfig, NIMConfig
 
 
 class EvalType(str, Enum):

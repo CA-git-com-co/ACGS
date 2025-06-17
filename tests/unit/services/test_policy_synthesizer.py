@@ -24,11 +24,16 @@ import pytest
 # Skip all tests in this module if AlphaEvolve is not available
 try:
     # Add AlphaEvolve to path
-    alphaevolve_path = os.path.join(os.path.dirname(__file__), "../../../integrations/alphaevolve-engine/alphaevolve_gs_engine/src")
+    alphaevolve_path = os.path.join(
+        os.path.dirname(__file__),
+        "../../../integrations/alphaevolve-engine/alphaevolve_gs_engine/src",
+    )
     if alphaevolve_path not in sys.path:
         sys.path.insert(0, alphaevolve_path)
 
-    from alphaevolve_gs_engine.core.constitutional_principle import ConstitutionalPrinciple
+    from alphaevolve_gs_engine.core.constitutional_principle import (
+        ConstitutionalPrinciple,
+    )
     from alphaevolve_gs_engine.core.operational_rule import OperationalRule
     from alphaevolve_gs_engine.services.llm_service import LLMService, MockLLMService
     from alphaevolve_gs_engine.services.policy_synthesizer import (
@@ -36,13 +41,16 @@ try:
         PolicySuggestion,
         PolicySynthesisInput,
     )
+
     ALPHAEVOLVE_AVAILABLE = True
 except ImportError as e:
     print(f"AlphaEvolve engine not available: {e}")
     ALPHAEVOLVE_AVAILABLE = False
 
 # Skip all tests if AlphaEvolve is not available
-pytestmark = pytest.mark.skipif(not ALPHAEVOLVE_AVAILABLE, reason="AlphaEvolve engine not available")
+pytestmark = pytest.mark.skipif(
+    not ALPHAEVOLVE_AVAILABLE, reason="AlphaEvolve engine not available"
+)
 
 
 class TestLLMPolicyGenerator(unittest.TestCase):
@@ -236,7 +244,6 @@ class TestLLMPolicyGenerator(unittest.TestCase):
         if not ALPHAEVOLVE_AVAILABLE:
             self.skipTest("AlphaEvolve engine not available")
 
-        from typing import Dict
 
         class FailingLLM(LLMService):  # Minimal LLMService that always fails
             def generate_text(
@@ -251,11 +258,11 @@ class TestLLMPolicyGenerator(unittest.TestCase):
             def generate_structured_output(
                 self,
                 prompt: str,
-                output_format: Dict,
+                output_format: dict,
                 max_tokens: int = 1,
                 temperature: float = 0,
                 model: str = None,
-            ) -> Dict:
+            ) -> dict:
                 raise Exception("LLM API simulated error for structured")
 
         failing_synthesizer = LLMPolicyGenerator(llm_service=FailingLLM())

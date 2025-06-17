@@ -187,7 +187,7 @@ def test_advanced_cache_performance():
 
         get_time = (time.time() - start_time) * 1000
 
-        print(f"📊 Cache Performance:")
+        print("📊 Cache Performance:")
         print(f"   - Put 100 items: {put_time:.2f}ms ({put_time/100:.2f}ms per item)")
         print(f"   - Get 100 items: {get_time:.2f}ms ({get_time/100:.2f}ms per item)")
 
@@ -301,7 +301,7 @@ async def main():
         except Exception as e:
             print(f"\n❌ {test_name}: ERROR - {e}")
 
-    print(f"\n📊 Phase 3 Validation Results")
+    print("\n📊 Phase 3 Validation Results")
     print("=" * 40)
     print(f"Total Tests: {total}")
     print(f"Passed: {passed}")

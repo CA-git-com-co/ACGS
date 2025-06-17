@@ -17,21 +17,19 @@ Test Coverage:
 """
 
 import asyncio
-import logging
-import time
 import json
+import logging
 import sys
-import os
-from typing import Dict, List, Any
+import time
 from pathlib import Path
+from typing import Any
 
 # Add the services directory to Python path
 sys.path.insert(0, str(Path(__file__).parent / "services"))
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -52,7 +50,7 @@ TEST_CONFIG = {
 class EnhancedConstitutionalAnalyzerTestSuite:
     """
     Comprehensive test suite for Enhanced Constitutional Analyzer.
-    
+
     Tests integration with ACGS-1 architecture and validates performance
     against constitutional governance requirements.
     """
@@ -68,36 +66,36 @@ class EnhancedConstitutionalAnalyzerTestSuite:
         }
         self.start_time = time.time()
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run comprehensive test suite."""
         logger.info("🚀 Starting Enhanced Constitutional Analyzer Test Suite")
         logger.info("=" * 70)
-        
+
         try:
             # Test 1: Basic functionality tests
             await self.test_qwen3_embedding_client()
-            
+
             # Test 2: Multi-model integration tests
             await self.test_multi_model_integration()
-            
+
             # Test 3: Governance workflow integration tests
             await self.test_governance_workflow_integration()
-            
+
             # Test 4: PGC service integration tests
             await self.test_pgc_service_integration()
-            
+
             # Test 5: Performance validation tests
             await self.test_performance_validation()
-            
+
             # Test 6: Constitution hash validation tests
             await self.test_constitution_hash_validation()
-            
+
             # Test 7: Error handling and reliability tests
             await self.test_error_handling_reliability()
-            
+
             # Generate final report
             return await self.generate_test_report()
-            
+
         except Exception as e:
             logger.error(f"Critical error in test suite: {e}")
             return await self.generate_error_report(str(e))
@@ -105,152 +103,150 @@ class EnhancedConstitutionalAnalyzerTestSuite:
     async def test_qwen3_embedding_client(self):
         """Test Qwen3EmbeddingClient basic functionality."""
         logger.info("🧪 Testing Qwen3EmbeddingClient functionality...")
-        
+
         test_name = "qwen3_embedding_client"
         start_time = time.time()
-        
+
         try:
             # Mock test since we don't have actual model files
             if TEST_CONFIG["mock_mode"]:
                 # Simulate embedding client tests
                 await self._mock_embedding_client_test()
-                
+
                 self._record_test_result(
-                    test_name, True, 
+                    test_name,
+                    True,
                     "Mock embedding client test passed",
-                    time.time() - start_time
+                    time.time() - start_time,
                 )
             else:
                 # Real implementation test (requires model files)
                 from services.core.governance_synthesis.gs_service.app.core.qwen3_embedding_client import (
-                    get_qwen3_embedding_client, EmbeddingRequest
+                    EmbeddingRequest,
+                    get_qwen3_embedding_client,
                 )
-                
+
                 client = await get_qwen3_embedding_client()
                 health = await client.health_check()
-                
+
                 if health["status"] == "healthy":
                     # Test embedding generation
                     request = EmbeddingRequest(
                         text="Test constitutional principle for embedding generation",
-                        task_type="constitutional_analysis"
+                        task_type="constitutional_analysis",
                     )
-                    
+
                     response = await client.generate_embedding(request)
-                    
+
                     if response.success and len(response.embedding) > 0:
                         self._record_test_result(
-                            test_name, True,
+                            test_name,
+                            True,
                             f"Embedding generated successfully: {len(response.embedding)} dimensions",
-                            time.time() - start_time
+                            time.time() - start_time,
                         )
                     else:
                         self._record_test_result(
-                            test_name, False,
+                            test_name,
+                            False,
                             f"Embedding generation failed: {response.error_message}",
-                            time.time() - start_time
+                            time.time() - start_time,
                         )
                 else:
                     self._record_test_result(
-                        test_name, False,
+                        test_name,
+                        False,
                         f"Client health check failed: {health}",
-                        time.time() - start_time
+                        time.time() - start_time,
                     )
-                    
+
         except Exception as e:
             self._record_test_result(
-                test_name, False,
+                test_name,
+                False,
                 f"Exception in embedding client test: {str(e)}",
-                time.time() - start_time
+                time.time() - start_time,
             )
 
     async def _mock_embedding_client_test(self):
         """Mock implementation of embedding client test."""
         # Simulate initialization
         await asyncio.sleep(0.1)
-        
+
         # Simulate embedding generation
         mock_embedding = [0.1] * 8192  # Mock 8192-dimensional embedding
-        
+
         # Simulate health check
-        mock_health = {
-            "status": "healthy",
-            "initialized": True,
-            "model_available": True,
-            "test_response_time_ms": 50.0,
-            "cache_size": 0,
-            "performance_metrics": {
-                "total_requests": 1,
-                "success_rate": 100.0,
-                "average_response_time": 0.05,
-            },
-            "llama_cpp_available": True,
-        }
-        
+
         logger.info(f"✅ Mock embedding client test: {len(mock_embedding)} dimensions")
         return True
 
     async def test_multi_model_integration(self):
         """Test integration with existing MultiModelManager."""
         logger.info("🧪 Testing Multi-Model Integration...")
-        
+
         test_name = "multi_model_integration"
         start_time = time.time()
-        
+
         try:
             # Mock test for multi-model integration
             if TEST_CONFIG["mock_mode"]:
                 await self._mock_multi_model_integration_test()
-                
+
                 self._record_test_result(
-                    test_name, True,
+                    test_name,
+                    True,
                     "Mock multi-model integration test passed",
-                    time.time() - start_time
+                    time.time() - start_time,
                 )
             else:
                 # Real integration test
                 from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
-                    get_enhanced_constitutional_analyzer
+                    get_enhanced_constitutional_analyzer,
                 )
-                
+
                 analyzer = await get_enhanced_constitutional_analyzer()
                 success = await analyzer.initialize()
-                
+
                 if success:
                     # Test health check
                     health = await analyzer.health_check()
-                    
+
                     if health["status"] in ["healthy", "degraded"]:
                         self._record_test_result(
-                            test_name, True,
+                            test_name,
+                            True,
                             f"Multi-model integration successful: {health['status']}",
-                            time.time() - start_time
+                            time.time() - start_time,
                         )
                     else:
                         self._record_test_result(
-                            test_name, False,
+                            test_name,
+                            False,
                             f"Multi-model integration unhealthy: {health}",
-                            time.time() - start_time
+                            time.time() - start_time,
                         )
                 else:
                     self._record_test_result(
-                        test_name, False,
+                        test_name,
+                        False,
                         "Analyzer initialization failed",
-                        time.time() - start_time
+                        time.time() - start_time,
                     )
-                    
+
         except Exception as e:
             self._record_test_result(
-                test_name, False,
+                test_name,
+                False,
                 f"Exception in multi-model integration test: {str(e)}",
-                time.time() - start_time
+                time.time() - start_time,
             )
 
     async def _mock_multi_model_integration_test(self):
         """Mock implementation of multi-model integration test."""
         # Simulate analyzer initialization
         await asyncio.sleep(0.2)
-        
+
         # Mock health check
         mock_health = {
             "status": "healthy",
@@ -262,7 +258,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             "error_rate": 0.0,
             "constitutional_hash": TEST_CONFIG["constitution_hash"],
         }
-        
+
         logger.info(f"✅ Mock multi-model integration: {mock_health['status']}")
         return True
 
@@ -275,7 +271,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             "constitutional_compliance",
             "policy_enforcement",
             "wina_oversight",
-            "audit_transparency"
+            "audit_transparency",
         ]
 
         for workflow in workflows:
@@ -287,25 +283,28 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                     success = await self._mock_governance_workflow_test(workflow)
 
                     self._record_test_result(
-                        test_name, success,
+                        test_name,
+                        success,
                         f"Mock {workflow} workflow test passed",
-                        time.time() - start_time
+                        time.time() - start_time,
                     )
                 else:
                     # Real workflow integration test
                     success = await self._real_governance_workflow_test(workflow)
 
                     self._record_test_result(
-                        test_name, success,
+                        test_name,
+                        success,
                         f"{workflow} workflow integration successful",
-                        time.time() - start_time
+                        time.time() - start_time,
                     )
 
             except Exception as e:
                 self._record_test_result(
-                    test_name, False,
+                    test_name,
+                    False,
                     f"Exception in {workflow} workflow test: {str(e)}",
-                    time.time() - start_time
+                    time.time() - start_time,
                 )
 
     async def _mock_governance_workflow_test(self, workflow: str) -> bool:
@@ -349,21 +348,25 @@ class EnhancedConstitutionalAnalyzerTestSuite:
         }
 
         response = mock_responses.get(workflow, {})
-        logger.info(f"✅ Mock {workflow} workflow: {response.get('processing_time_ms', 0)}ms")
+        logger.info(
+            f"✅ Mock {workflow} workflow: {response.get('processing_time_ms', 0)}ms"
+        )
         return True
 
     async def _real_governance_workflow_test(self, workflow: str) -> bool:
         """Real implementation of governance workflow test."""
         try:
             from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
-                get_enhanced_constitutional_analyzer
+                get_enhanced_constitutional_analyzer,
             )
 
             analyzer = await get_enhanced_constitutional_analyzer()
 
             if workflow == "policy_creation":
                 # Test policy creation workflow
-                from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import PolicyRule
+                from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
+                    PolicyRule,
+                )
 
                 test_policy = PolicyRule(
                     id="TEST-POL-001",
@@ -372,22 +375,30 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                     rule_type="test",
                 )
 
-                constitutional_framework = await analyzer._get_constitutional_framework()
+                constitutional_framework = (
+                    await analyzer._get_constitutional_framework()
+                )
                 result = await analyzer.policy_creation_workflow_analysis(
                     test_policy, constitutional_framework
                 )
 
-                return result.get("processing_time_ms", 0) < TEST_CONFIG["performance_targets"]["response_time_ms"]
+                return (
+                    result.get("processing_time_ms", 0)
+                    < TEST_CONFIG["performance_targets"]["response_time_ms"]
+                )
 
             elif workflow == "constitutional_compliance":
                 # Test constitutional compliance workflow
                 result = await analyzer.constitutional_compliance_workflow_analysis(
                     policy_id="TEST-001",
                     policy_content="Test policy for compliance validation",
-                    validation_type="comprehensive"
+                    validation_type="comprehensive",
                 )
 
-                return result.get("processing_time_ms", 0) < TEST_CONFIG["performance_targets"]["response_time_ms"]
+                return (
+                    result.get("processing_time_ms", 0)
+                    < TEST_CONFIG["performance_targets"]["response_time_ms"]
+                )
 
             # Add other workflow tests as needed
             return True
@@ -419,41 +430,48 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 # Simulate PGC integration
                 await asyncio.sleep(0.05)
 
-                success = mock_enforcement["processing_time_ms"] < TEST_CONFIG["performance_targets"]["response_time_ms"]
+                success = (
+                    mock_enforcement["processing_time_ms"]
+                    < TEST_CONFIG["performance_targets"]["response_time_ms"]
+                )
 
                 self._record_test_result(
-                    test_name, success,
+                    test_name,
+                    success,
                     f"Mock PGC integration: {mock_enforcement['enforcement_action']} in {mock_enforcement['processing_time_ms']}ms",
-                    time.time() - start_time
+                    time.time() - start_time,
                 )
             else:
                 # Real PGC integration test
                 from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
-                    integrate_with_pgc_service
+                    integrate_with_pgc_service,
                 )
 
                 result = await integrate_with_pgc_service(
                     policy_id="TEST-PGC-001",
                     policy_content="Test policy for PGC enforcement validation",
-                    enforcement_context={"risk_level": "medium"}
+                    enforcement_context={"risk_level": "medium"},
                 )
 
                 success = (
-                    "enforcement_action" in result and
-                    result.get("processing_time_ms", 1000) < TEST_CONFIG["performance_targets"]["response_time_ms"]
+                    "enforcement_action" in result
+                    and result.get("processing_time_ms", 1000)
+                    < TEST_CONFIG["performance_targets"]["response_time_ms"]
                 )
 
                 self._record_test_result(
-                    test_name, success,
+                    test_name,
+                    success,
                     f"PGC integration: {result.get('enforcement_action', 'unknown')}",
-                    time.time() - start_time
+                    time.time() - start_time,
                 )
 
         except Exception as e:
             self._record_test_result(
-                test_name, False,
+                test_name,
+                False,
                 f"Exception in PGC integration test: {str(e)}",
-                time.time() - start_time
+                time.time() - start_time,
             )
 
     async def test_performance_validation(self):
@@ -467,7 +485,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             # Test response time targets
             response_times = []
 
-            for i in range(10):  # Test 10 operations
+            for _i in range(10):  # Test 10 operations
                 op_start = time.time()
 
                 if TEST_CONFIG["mock_mode"]:
@@ -476,11 +494,11 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 else:
                     # Real operation test
                     from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
-                        get_enhanced_constitutional_analyzer
+                        get_enhanced_constitutional_analyzer,
                     )
 
                     analyzer = await get_enhanced_constitutional_analyzer()
-                    health = await analyzer.health_check()
+                    await analyzer.health_check()
 
                 response_time = (time.time() - op_start) * 1000
                 response_times.append(response_time)
@@ -488,33 +506,43 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             # Calculate performance metrics
             avg_response_time = sum(response_times) / len(response_times)
             max_response_time = max(response_times)
-            target_met_count = sum(1 for rt in response_times if rt < TEST_CONFIG["performance_targets"]["response_time_ms"])
+            target_met_count = sum(
+                1
+                for rt in response_times
+                if rt < TEST_CONFIG["performance_targets"]["response_time_ms"]
+            )
             target_met_percentage = (target_met_count / len(response_times)) * 100
 
             # Performance validation
             performance_success = (
-                avg_response_time < TEST_CONFIG["performance_targets"]["response_time_ms"] and
-                target_met_percentage >= 95.0  # 95% of operations should meet target
+                avg_response_time
+                < TEST_CONFIG["performance_targets"]["response_time_ms"]
+                and target_met_percentage
+                >= 95.0  # 95% of operations should meet target
             )
 
             self.test_results["performance_metrics"] = {
                 "average_response_time_ms": avg_response_time,
                 "max_response_time_ms": max_response_time,
                 "target_met_percentage": target_met_percentage,
-                "target_response_time_ms": TEST_CONFIG["performance_targets"]["response_time_ms"],
+                "target_response_time_ms": TEST_CONFIG["performance_targets"][
+                    "response_time_ms"
+                ],
             }
 
             self._record_test_result(
-                test_name, performance_success,
+                test_name,
+                performance_success,
                 f"Performance: {avg_response_time:.1f}ms avg, {target_met_percentage:.1f}% meet target",
-                time.time() - start_time
+                time.time() - start_time,
             )
 
         except Exception as e:
             self._record_test_result(
-                test_name, False,
+                test_name,
+                False,
                 f"Exception in performance validation: {str(e)}",
-                time.time() - start_time
+                time.time() - start_time,
             )
 
     async def test_constitution_hash_validation(self):
@@ -533,14 +561,15 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 hash_valid = mock_hash == expected_hash
 
                 self._record_test_result(
-                    test_name, hash_valid,
+                    test_name,
+                    hash_valid,
                     f"Mock constitution hash validation: {mock_hash}",
-                    time.time() - start_time
+                    time.time() - start_time,
                 )
             else:
                 # Real hash validation
                 from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
-                    get_enhanced_constitutional_analyzer
+                    get_enhanced_constitutional_analyzer,
                 )
 
                 analyzer = await get_enhanced_constitutional_analyzer()
@@ -548,16 +577,18 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 hash_valid = actual_hash == expected_hash
 
                 self._record_test_result(
-                    test_name, hash_valid,
+                    test_name,
+                    hash_valid,
                     f"Constitution hash validation: {actual_hash} {'==' if hash_valid else '!='} {expected_hash}",
-                    time.time() - start_time
+                    time.time() - start_time,
                 )
 
         except Exception as e:
             self._record_test_result(
-                test_name, False,
+                test_name,
+                False,
                 f"Exception in constitution hash validation: {str(e)}",
-                time.time() - start_time
+                time.time() - start_time,
             )
 
     async def test_error_handling_reliability(self):
@@ -574,7 +605,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 "network_timeout",
                 "model_unavailable",
                 "memory_pressure",
-                "concurrent_overload"
+                "concurrent_overload",
             ]
 
             passed_scenarios = 0
@@ -592,25 +623,33 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                         passed_scenarios += 1
                         logger.info(f"✅ Error scenario '{scenario}' handled correctly")
                     else:
-                        logger.warning(f"⚠️ Error scenario '{scenario}' not handled properly")
+                        logger.warning(
+                            f"⚠️ Error scenario '{scenario}' not handled properly"
+                        )
 
                 except Exception as e:
-                    logger.error(f"❌ Error scenario '{scenario}' caused exception: {e}")
+                    logger.error(
+                        f"❌ Error scenario '{scenario}' caused exception: {e}"
+                    )
 
             reliability_score = (passed_scenarios / len(error_scenarios)) * 100
-            reliability_success = reliability_score >= 80.0  # 80% of error scenarios should pass
+            reliability_success = (
+                reliability_score >= 80.0
+            )  # 80% of error scenarios should pass
 
             self._record_test_result(
-                test_name, reliability_success,
+                test_name,
+                reliability_success,
                 f"Error handling: {passed_scenarios}/{len(error_scenarios)} scenarios passed ({reliability_score:.1f}%)",
-                time.time() - start_time
+                time.time() - start_time,
             )
 
         except Exception as e:
             self._record_test_result(
-                test_name, False,
+                test_name,
+                False,
                 f"Exception in error handling test: {str(e)}",
-                time.time() - start_time
+                time.time() - start_time,
             )
 
     async def _mock_error_scenario_test(self, scenario: str) -> bool:
@@ -635,7 +674,9 @@ class EnhancedConstitutionalAnalyzerTestSuite:
         # For now, return True as placeholder
         return True
 
-    def _record_test_result(self, test_name: str, success: bool, message: str, duration: float):
+    def _record_test_result(
+        self, test_name: str, success: bool, message: str, duration: float
+    ):
         """Record test result."""
         self.test_results["total_tests"] += 1
 
@@ -658,20 +699,28 @@ class EnhancedConstitutionalAnalyzerTestSuite:
         self.test_results["test_details"].append(test_detail)
         logger.info(f"{status} {test_name}: {message} ({test_detail['duration_ms']}ms)")
 
-    async def generate_test_report(self) -> Dict[str, Any]:
+    async def generate_test_report(self) -> dict[str, Any]:
         """Generate comprehensive test report."""
         total_duration = time.time() - self.start_time
-        success_rate = (self.test_results["passed_tests"] / max(1, self.test_results["total_tests"])) * 100
+        success_rate = (
+            self.test_results["passed_tests"] / max(1, self.test_results["total_tests"])
+        ) * 100
 
         # Integration status summary
         self.test_results["integration_status"] = {
-            "qwen3_embedding_integration": self._get_test_status("qwen3_embedding_client"),
+            "qwen3_embedding_integration": self._get_test_status(
+                "qwen3_embedding_client"
+            ),
             "multi_model_integration": self._get_test_status("multi_model_integration"),
             "governance_workflows": self._get_governance_workflow_status(),
             "pgc_service_integration": self._get_test_status("pgc_service_integration"),
             "performance_validation": self._get_test_status("performance_validation"),
-            "constitution_hash_validation": self._get_test_status("constitution_hash_validation"),
-            "error_handling_reliability": self._get_test_status("error_handling_reliability"),
+            "constitution_hash_validation": self._get_test_status(
+                "constitution_hash_validation"
+            ),
+            "error_handling_reliability": self._get_test_status(
+                "error_handling_reliability"
+            ),
         }
 
         # Final report
@@ -697,7 +746,9 @@ class EnhancedConstitutionalAnalyzerTestSuite:
         # Log summary
         logger.info("=" * 70)
         logger.info("🏁 Enhanced Constitutional Analyzer Test Suite Complete")
-        logger.info(f"📊 Results: {report['test_summary']['passed_tests']}/{report['test_summary']['total_tests']} tests passed ({success_rate:.1f}%)")
+        logger.info(
+            f"📊 Results: {report['test_summary']['passed_tests']}/{report['test_summary']['total_tests']} tests passed ({success_rate:.1f}%)"
+        )
         logger.info(f"⏱️ Duration: {total_duration:.2f} seconds")
         logger.info(f"🎯 Overall Status: {report['overall_status']}")
         logger.info("=" * 70)
@@ -711,9 +762,15 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 return "PASS" if test_detail["success"] else "FAIL"
         return "NOT_RUN"
 
-    def _get_governance_workflow_status(self) -> Dict[str, str]:
+    def _get_governance_workflow_status(self) -> dict[str, str]:
         """Get status of governance workflow tests."""
-        workflows = ["policy_creation", "constitutional_compliance", "policy_enforcement", "wina_oversight", "audit_transparency"]
+        workflows = [
+            "policy_creation",
+            "constitutional_compliance",
+            "policy_enforcement",
+            "wina_oversight",
+            "audit_transparency",
+        ]
         status = {}
 
         for workflow in workflows:
@@ -722,18 +779,25 @@ class EnhancedConstitutionalAnalyzerTestSuite:
 
         return status
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate recommendations based on test results."""
         recommendations = []
 
         # Check performance
         if "performance_metrics" in self.test_results:
             metrics = self.test_results["performance_metrics"]
-            if metrics.get("average_response_time_ms", 0) > TEST_CONFIG["performance_targets"]["response_time_ms"]:
-                recommendations.append("⚠️ Optimize response times - currently exceeding 500ms target")
+            if (
+                metrics.get("average_response_time_ms", 0)
+                > TEST_CONFIG["performance_targets"]["response_time_ms"]
+            ):
+                recommendations.append(
+                    "⚠️ Optimize response times - currently exceeding 500ms target"
+                )
 
             if metrics.get("target_met_percentage", 0) < 95.0:
-                recommendations.append("⚠️ Improve consistency - less than 95% of operations meet response time target")
+                recommendations.append(
+                    "⚠️ Improve consistency - less than 95% of operations meet response time target"
+                )
 
         # Check integration status
         integration_status = self.test_results.get("integration_status", {})
@@ -745,21 +809,29 @@ class EnhancedConstitutionalAnalyzerTestSuite:
             recommendations.append("🚨 Fix multi-model manager integration")
 
         if integration_status.get("pgc_service_integration") == "FAIL":
-            recommendations.append("🚨 Fix PGC service integration for real-time enforcement")
+            recommendations.append(
+                "🚨 Fix PGC service integration for real-time enforcement"
+            )
 
         # Check governance workflows
         governance_status = integration_status.get("governance_workflows", {})
-        failed_workflows = [wf for wf, status in governance_status.items() if status == "FAIL"]
+        failed_workflows = [
+            wf for wf, status in governance_status.items() if status == "FAIL"
+        ]
 
         if failed_workflows:
-            recommendations.append(f"🚨 Fix governance workflow integration: {', '.join(failed_workflows)}")
+            recommendations.append(
+                f"🚨 Fix governance workflow integration: {', '.join(failed_workflows)}"
+            )
 
         if not recommendations:
-            recommendations.append("✅ All tests passed - system ready for production deployment")
+            recommendations.append(
+                "✅ All tests passed - system ready for production deployment"
+            )
 
         return recommendations
 
-    async def generate_error_report(self, error_message: str) -> Dict[str, Any]:
+    async def generate_error_report(self, error_message: str) -> dict[str, Any]:
         """Generate error report for critical failures."""
         return {
             "test_suite": "Enhanced Constitutional Analyzer Integration Test",
@@ -780,9 +852,11 @@ async def main():
     """Main test execution function."""
     print("🚀 Enhanced Constitutional Analyzer Integration Test Suite")
     print("=" * 70)
-    print(f"📅 Test Configuration:")
+    print("📅 Test Configuration:")
     print(f"   Constitution Hash: {TEST_CONFIG['constitution_hash']}")
-    print(f"   Performance Targets: <{TEST_CONFIG['performance_targets']['response_time_ms']}ms, >{TEST_CONFIG['performance_targets']['uptime_percentage']}% uptime")
+    print(
+        f"   Performance Targets: <{TEST_CONFIG['performance_targets']['response_time_ms']}ms, >{TEST_CONFIG['performance_targets']['uptime_percentage']}% uptime"
+    )
     print(f"   Mock Mode: {TEST_CONFIG['mock_mode']}")
     print("=" * 70)
 
@@ -791,8 +865,10 @@ async def main():
     report = await test_suite.run_all_tests()
 
     # Save report
-    report_filename = f"enhanced_constitutional_analyzer_test_report_{int(time.time())}.json"
-    with open(report_filename, 'w') as f:
+    report_filename = (
+        f"enhanced_constitutional_analyzer_test_report_{int(time.time())}.json"
+    )
+    with open(report_filename, "w") as f:
         json.dump(report, f, indent=2)
 
     print(f"📄 Test report saved to: {report_filename}")

@@ -7,9 +7,10 @@ and integration with existing GS service components.
 """
 
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 import pytest
+
 from integrations.alphaevolve_engine.core.constitutional_principle import (
     ConstitutionalPrinciple,
 )
@@ -33,7 +34,7 @@ class MockLLMInterpretationInput:
     def __init__(
         self,
         principle_text: str,
-        context_information: Dict[str, Any],
+        context_information: dict[str, Any],
         interpretation_type: str,
     ):
         self.principle_text = principle_text

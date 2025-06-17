@@ -73,7 +73,7 @@ def start_gs_service():
     cmd = ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004", "--reload"]
 
     print(f"🔧 Command: {' '.join(cmd)}")
-    print(f"🌍 Environment variables set:")
+    print("🌍 Environment variables set:")
     for key, value in os.environ.items():
         if "SERVICE_URL" in key or "SERVICE_" in key:
             print(f"  {key}={value}")
@@ -147,7 +147,7 @@ async def test_gs_service():
             print(f"⚠️ Attempt {attempt + 1}/{max_retries}: {e}")
 
         if attempt < max_retries - 1:
-            print(f"⏳ Waiting 10 seconds before retry...")
+            print("⏳ Waiting 10 seconds before retry...")
             await asyncio.sleep(10)
 
     print("❌ GS Service is not responding after all retries")

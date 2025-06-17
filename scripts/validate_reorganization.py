@@ -93,7 +93,7 @@ def check_import_syntax():
     print("\n🔍 Checking Python syntax...")
 
     python_files = []
-    for root, dirs, files in os.walk("src"):
+    for root, _dirs, files in os.walk("src"):
         for file in files:
             if file.endswith(".py"):
                 python_files.append(os.path.join(root, file))
@@ -101,7 +101,7 @@ def check_import_syntax():
     syntax_errors = []
     for py_file in python_files[:10]:  # Check first 10 files to avoid too much output
         try:
-            with open(py_file, "r") as f:
+            with open(py_file) as f:
                 compile(f.read(), py_file, "exec")
             print(f"  ✅ {py_file}")
         except SyntaxError as e:

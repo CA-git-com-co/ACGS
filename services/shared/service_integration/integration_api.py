@@ -9,18 +9,16 @@ ensures: Comprehensive service integration monitoring and control
 sha256: b8a7c6d5e4f3b2a1c8d7e6f5c4b3a2d1e8f7c6d5e4f3b2a1c8d7e6f5c4b3a2d1
 """
 
-import asyncio
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
 
 from .phase2_orchestrator import (
     EventType,
-    IntegrationPattern,
     Phase2ServiceOrchestrator,
     ServiceEvent,
     ServiceType,
@@ -38,9 +36,9 @@ class ServiceCallRequest(BaseModel):
     service_type: str = Field(..., description="Target service type")
     endpoint: str = Field(..., description="API endpoint to call")
     method: str = Field(default="GET", description="HTTP method")
-    data: Optional[Dict[str, Any]] = Field(None, description="Request data")
-    headers: Optional[Dict[str, str]] = Field(None, description="Additional headers")
-    timeout: Optional[float] = Field(None, description="Request timeout")
+    data: dict[str, Any] | None = Field(None, description="Request data")
+    headers: dict[str, str] | None = Field(None, description="Additional headers")
+    timeout: float | None = Field(None, description="Request timeout")
 
 
 class EventPublishRequest(BaseModel):
@@ -48,8 +46,8 @@ class EventPublishRequest(BaseModel):
 
     event_type: str = Field(..., description="Type of event to publish")
     source_service: str = Field(..., description="Source service")
-    target_services: List[str] = Field(..., description="Target services")
-    payload: Dict[str, Any] = Field(default_factory=dict, description="Event payload")
+    target_services: list[str] = Field(..., description="Target services")
+    payload: dict[str, Any] = Field(default_factory=dict, description="Event payload")
     priority: int = Field(default=5, description="Event priority (1-10)")
 
 
@@ -57,8 +55,10 @@ class WorkflowStartRequest(BaseModel):
     """Request model for starting workflows."""
 
     workflow_type: str = Field(..., description="Type of workflow")
-    services: List[str] = Field(..., description="Services involved in workflow")
-    workflow_data: Dict[str, Any] = Field(default_factory=dict, description="Workflow data")
+    services: list[str] = Field(..., description="Services involved in workflow")
+    workflow_data: dict[str, Any] = Field(
+        default_factory=dict, description="Workflow data"
+    )
 
 
 class ServiceIntegrationStatus(BaseModel):
@@ -70,7 +70,7 @@ class ServiceIntegrationStatus(BaseModel):
     active_workflows: int
     total_events_processed: int
     average_event_processing_time_ms: float
-    service_health: Dict[str, bool]
+    service_health: dict[str, bool]
     timestamp: datetime
 
 
@@ -133,7 +133,7 @@ async def call_service_endpoint(
                 "target_time_ms": 2000,  # <2s target
                 "performance_met": call_time_ms < 2000,
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         logger.info(
@@ -181,14 +181,17 @@ async def publish_event_endpoint(
         try:
             event_type = EventType(request.event_type)
         except ValueError:
-            raise HTTPException(status_code=400, detail=f"Invalid event type: {request.event_type}")
+            raise HTTPException(
+                status_code=400, detail=f"Invalid event type: {request.event_type}"
+            )
 
         # Validate source service
         try:
             source_service = ServiceType(request.source_service)
         except ValueError:
             raise HTTPException(
-                status_code=400, detail=f"Invalid source service: {request.source_service}"
+                status_code=400,
+                detail=f"Invalid source service: {request.source_service}",
             )
 
         # Validate target services
@@ -235,7 +238,9 @@ async def publish_event_endpoint(
     except Exception as e:
         logger.error(f"Event publishing failed: {e}")
 
-        raise HTTPException(status_code=500, detail=f"Event publishing failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Event publishing failed: {str(e)}"
+        )
 
 
 @router.post("/start-workflow", status_code=200)
@@ -268,7 +273,9 @@ async def start_workflow_endpoint(
             try:
                 services.append(ServiceType(service_str))
             except ValueError:
-                raise HTTPException(status_code=400, detail=f"Invalid service: {service_str}")
+                raise HTTPException(
+                    status_code=400, detail=f"Invalid service: {service_str}"
+                )
 
         # Generate workflow ID
         workflow_id = f"workflow-{int(time.time() * 1000)}"
@@ -290,10 +297,12 @@ async def start_workflow_endpoint(
             "services": request.services,
             "total_steps": len(services),
             "status": "started",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
-        logger.info(f"Workflow started: {workflow_id} with correlation {correlation_id}")
+        logger.info(
+            f"Workflow started: {workflow_id} with correlation {correlation_id}"
+        )
 
         return result
 
@@ -342,9 +351,11 @@ async def get_integration_status(
             healthy_services=healthy_services,
             active_workflows=metrics["workflow_metrics"]["active_workflows"],
             total_events_processed=metrics["event_metrics"]["total_events"],
-            average_event_processing_time_ms=metrics["event_metrics"]["average_processing_time_ms"],
+            average_event_processing_time_ms=metrics["event_metrics"][
+                "average_processing_time_ms"
+            ],
             service_health=health_status,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         return status_response
@@ -352,7 +363,9 @@ async def get_integration_status(
     except Exception as e:
         logger.error(f"Status retrieval failed: {e}")
 
-        raise HTTPException(status_code=500, detail=f"Status retrieval failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Status retrieval failed: {str(e)}"
+        )
 
 
 @router.get("/metrics", status_code=200)
@@ -389,7 +402,9 @@ async def get_integration_metrics(
                     / max(len(metrics["health_status"]), 1)
                     * 100
                 ),
-                "event_success_rate_percentage": (metrics["event_metrics"]["success_rate"] * 100),
+                "event_success_rate_percentage": (
+                    metrics["event_metrics"]["success_rate"] * 100
+                ),
                 "average_service_call_time_ms": (
                     sum(
                         service_metrics["average_time_ms"]
@@ -407,7 +422,7 @@ async def get_integration_metrics(
                 "target_service_availability": 0.995,
                 "target_event_success_rate": 0.95,
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         return enhanced_metrics
@@ -415,7 +430,9 @@ async def get_integration_metrics(
     except Exception as e:
         logger.error(f"Metrics retrieval failed: {e}")
 
-        raise HTTPException(status_code=500, detail=f"Metrics retrieval failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Metrics retrieval failed: {str(e)}"
+        )
 
 
 @router.post("/health-check", status_code=200)
@@ -445,24 +462,27 @@ async def trigger_health_check(
             """Perform health checks for all services."""
             health_results = {}
 
-            for service_type, service_config in orchestrator.services.items():
+            for service_type, _service_config in orchestrator.services.items():
                 try:
                     # Perform health check
                     response_data = await orchestrator.call_service(
-                        service_type=service_type, endpoint="/health", method="GET", timeout=5.0
+                        service_type=service_type,
+                        endpoint="/health",
+                        method="GET",
+                        timeout=5.0,
                     )
 
                     health_results[service_type.value] = {
                         "healthy": True,
                         "response": response_data,
-                        "checked_at": datetime.now(timezone.utc).isoformat(),
+                        "checked_at": datetime.now(UTC).isoformat(),
                     }
 
                 except Exception as e:
                     health_results[service_type.value] = {
                         "healthy": False,
                         "error": str(e),
-                        "checked_at": datetime.now(timezone.utc).isoformat(),
+                        "checked_at": datetime.now(UTC).isoformat(),
                     }
 
             logger.info(f"Health check completed for {len(health_results)} services")
@@ -476,7 +496,7 @@ async def trigger_health_check(
             "success": True,
             "message": "Health check initiated for all services",
             "services_checked": len(orchestrator.services),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         return result
@@ -484,16 +504,18 @@ async def trigger_health_check(
     except Exception as e:
         logger.error(f"Health check trigger failed: {e}")
 
-        raise HTTPException(status_code=500, detail=f"Health check trigger failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Health check trigger failed: {str(e)}"
+        )
 
 
-def _calculate_integration_grade(metrics: Dict[str, Any]) -> str:
+def _calculate_integration_grade(metrics: dict[str, Any]) -> str:
     """Calculate overall integration grade based on metrics."""
 
     # Calculate component scores
-    health_score = sum(1 for healthy in metrics["health_status"].values() if healthy) / max(
-        len(metrics["health_status"]), 1
-    )
+    health_score = sum(
+        1 for healthy in metrics["health_status"].values() if healthy
+    ) / max(len(metrics["health_status"]), 1)
 
     event_score = metrics["event_metrics"]["success_rate"]
 
@@ -504,7 +526,9 @@ def _calculate_integration_grade(metrics: Dict[str, Any]) -> str:
         service_score = max(0, 1 - (avg_time / 2000))  # 2s target
         service_scores.append(service_score)
 
-    avg_service_score = sum(service_scores) / max(len(service_scores), 1) if service_scores else 0.8
+    avg_service_score = (
+        sum(service_scores) / max(len(service_scores), 1) if service_scores else 0.8
+    )
 
     # Calculate overall score
     overall_score = health_score * 0.4 + event_score * 0.3 + avg_service_score * 0.3

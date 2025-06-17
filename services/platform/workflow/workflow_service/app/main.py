@@ -11,15 +11,17 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 
 from fastapi import FastAPI, Request, Response
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
 # Add shared modules to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 
 # Import shared modules
-from services.shared.auth import get_current_active_user, require_admin
-from services.shared.metrics import create_metrics_endpoint, get_metrics, metrics_middleware
+from services.shared.metrics import (
+    create_metrics_endpoint,
+    get_metrics,
+    metrics_middleware,
+)
 from services.shared.security_middleware import add_security_middleware
 from services.shared.service_registry import service_registry
 
@@ -215,7 +217,9 @@ async def health_check():
         "metrics": {
             "active_workflows": len(workflow_engine.running_workflows),
             "total_workflows": len(workflow_engine.workflows),
-            "active_alerts": len([a for a in workflow_monitor.alerts.values() if not a.resolved]),
+            "active_alerts": len(
+                [a for a in workflow_monitor.alerts.values() if not a.resolved]
+            ),
             "monitoring_tasks": len(workflow_monitor.monitoring_tasks),
         },
     }
@@ -234,7 +238,9 @@ async def metrics():
     metrics_data = []
 
     # Workflow metrics
-    metrics_data.append(f"acgs_active_workflows {len(workflow_engine.running_workflows)}")
+    metrics_data.append(
+        f"acgs_active_workflows {len(workflow_engine.running_workflows)}"
+    )
     metrics_data.append(f"acgs_total_workflows {len(workflow_engine.workflows)}")
 
     # Alert metrics
@@ -260,7 +266,9 @@ async def initialize_monitoring():
     logger.info("Initializing monitoring system")
 
     # Register service health monitoring
-    asyncio.create_task(workflow_monitor.monitor_service_health("workflow_service", "/health"))
+    asyncio.create_task(
+        workflow_monitor.monitor_service_health("workflow_service", "/health")
+    )
 
     # Set performance baselines
     automated_validator.set_performance_baseline(
@@ -357,12 +365,14 @@ async def check_stale_workflows():
             if workflow.started_at:
                 runtime = current_time - workflow.started_at
                 if runtime.total_seconds() > 3600:  # 1 hour
-                    logger.warning(f"Workflow {workflow_id} has been running for {runtime}")
+                    logger.warning(
+                        f"Workflow {workflow_id} has been running for {runtime}"
+                    )
 
                     # Create alert for long-running workflow
                     workflow_monitor._create_alert(
                         severity=workflow_monitor.AlertSeverity.HIGH,
-                        title=f"Long-running workflow detected",
+                        title="Long-running workflow detected",
                         description=f"Workflow {workflow_id} has been running for {runtime}",
                         workflow_id=workflow_id,
                         metadata={"runtime_seconds": runtime.total_seconds()},
@@ -379,7 +389,7 @@ async def cleanup_old_data():
     cutoff_time = current_time - timedelta(days=7)  # Keep 7 days of data
 
     # Cleanup old metrics
-    for metric_name, metric_list in workflow_monitor.metrics.items():
+    for _metric_name, metric_list in workflow_monitor.metrics.items():
         # Remove old metrics
         while metric_list and metric_list[0].timestamp < cutoff_time:
             metric_list.popleft()
@@ -410,7 +420,9 @@ async def cleanup_resources():
 
     # Wait for tasks to complete
     if workflow_monitor.monitoring_tasks:
-        await asyncio.gather(*workflow_monitor.monitoring_tasks.values(), return_exceptions=True)
+        await asyncio.gather(
+            *workflow_monitor.monitoring_tasks.values(), return_exceptions=True
+        )
 
     logger.info("Resource cleanup completed")
 
@@ -418,4 +430,6 @@ async def cleanup_resources():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8006, reload=True, log_level="info")
+    uvicorn.run(
+        "app.main:app", host="0.0.0.0", port=8006, reload=True, log_level="info"
+    )

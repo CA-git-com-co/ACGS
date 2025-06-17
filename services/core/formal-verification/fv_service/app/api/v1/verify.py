@@ -1,7 +1,6 @@
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from datetime import UTC, datetime
 
 from fastapi import (
     APIRouter,
@@ -70,10 +69,14 @@ async def get_service_token():
     return "mock_service_token"
 
 
-@router.post("/", response_model=schemas.VerificationResponse, status_code=status.HTTP_200_OK)
+@router.post(
+    "/", response_model=schemas.VerificationResponse, status_code=status.HTTP_200_OK
+)
 async def verify_policies(
     request_data: schemas.VerificationRequest,
-    current_user: User = Depends(require_verification_triggerer),  # Protect this endpoint
+    current_user: User = Depends(
+        require_verification_triggerer
+    ),  # Protect this endpoint
 ):
     """
     Orchestrates the formal verification of Datalog policy rules against AC principles.
@@ -85,11 +88,13 @@ async def verify_policies(
         )
 
     # 1. Fetch Policy Rules from Integrity Service
-    policy_rules_to_verify: List[PolicyRule] = []
+    policy_rules_to_verify: list[PolicyRule] = []
     rule_ids_to_fetch = [ref.id for ref in request_data.policy_rule_refs]
 
-    fetched_rules_from_integrity = await integrity_service_client.get_policy_rules_by_ids(
-        rule_ids=rule_ids_to_fetch, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+    fetched_rules_from_integrity = (
+        await integrity_service_client.get_policy_rules_by_ids(
+            rule_ids=rule_ids_to_fetch, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+        )
     )
     if len(fetched_rules_from_integrity) != len(rule_ids_to_fetch):
         # Handle case where some rules couldn't be fetched
@@ -104,7 +109,7 @@ async def verify_policies(
 
     # 2. Determine and Fetch AC Principles
     # Principles can be directly referenced in the request or derived from the policy rules.
-    ac_principles_for_obligations: List[ACPrinciple] = []
+    ac_principles_for_obligations: list[ACPrinciple] = []
     principle_ids_to_fetch = set()
 
     if request_data.ac_principle_refs:
@@ -163,7 +168,7 @@ async def verify_policies(
     ac_principles_for_obligations = fetched_ac_principles
 
     # 3. Perform Verification using Verification Logic
-    verification_results: List[schemas.VerificationResult] = await verify_policy_rules(
+    verification_results: list[schemas.VerificationResult] = await verify_policy_rules(
         policy_rules=policy_rules_to_verify, ac_principles=ac_principles_for_obligations
     )
 
@@ -179,7 +184,7 @@ async def verify_policies(
             if not updated_rule:
                 result.message = (
                     result.message or ""
-                ) + f" | Failed to update status in Integrity Service."
+                ) + " | Failed to update status in Integrity Service."
                 # Potentially change result.status to "error_updating_status" here if needed
 
     # 5. Determine overall status and return response
@@ -189,7 +194,9 @@ async def verify_policies(
     if any(r.status == "error" for r in verification_results):
         overall_status = "error"  # Or more granular if mixed results
 
-    summary = f"Verification process completed. {len(verification_results)} rules processed."
+    summary = (
+        f"Verification process completed. {len(verification_results)} rules processed."
+    )
     if overall_status == "error":
         summary += " Errors occurred during verification."
 
@@ -302,12 +309,14 @@ async def conflict_detection(
     Phase 3: Conflict detection between policy rule sets.
     """
     if not request_data.rule_sets:
-        raise HTTPException(status_code=400, detail="No rule sets provided for conflict detection.")
+        raise HTTPException(
+            status_code=400, detail="No rule sets provided for conflict detection."
+        )
 
     # Fetch rules for each rule set
     # In this simplified implementation, we'll treat rule_sets as categories or tags
     # In a real implementation, you'd have a more sophisticated rule set management system
-    all_rules_by_set: Dict[str, List[PolicyRule]] = {}
+    all_rules_by_set: dict[str, list[PolicyRule]] = {}
 
     for rule_set_name in request_data.rule_sets:
         # For demonstration, we'll fetch all rules and filter by a hypothetical category
@@ -318,7 +327,9 @@ async def conflict_detection(
 
         # Simple filtering - in practice, you'd have proper rule set categorization
         filtered_rules = [
-            rule for rule in all_rules if rule_set_name.lower() in rule.rule_content.lower()
+            rule
+            for rule in all_rules
+            if rule_set_name.lower() in rule.rule_content.lower()
         ]
         all_rules_by_set[rule_set_name] = filtered_rules
 
@@ -330,7 +341,9 @@ async def conflict_detection(
     return response
 
 
-@router.get("/validation-status/{rule_id}", response_model=Dict, status_code=status.HTTP_200_OK)
+@router.get(
+    "/validation-status/{rule_id}", response_model=dict, status_code=status.HTTP_200_OK
+)
 async def get_validation_status(
     rule_id: int, current_user: User = Depends(require_verification_triggerer)
 ):
@@ -344,7 +357,9 @@ async def get_validation_status(
         )
 
         if not rules:
-            raise HTTPException(status_code=404, detail=f"Policy rule {rule_id} not found.")
+            raise HTTPException(
+                status_code=404, detail=f"Policy rule {rule_id} not found."
+            )
 
         rule = rules[0]
 
@@ -370,7 +385,9 @@ async def get_validation_status(
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving validation status: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving validation status: {str(e)}"
+        )
 
 
 # --- Task 7: Parallel Validation Pipeline Endpoints ---
@@ -385,8 +402,8 @@ async def parallel_verify_policies(
     request_data: schemas.VerificationRequest,
     current_user: User = Depends(require_verification_triggerer),
     enable_parallel: bool = True,
-    amendment_id: Optional[int] = None,
-    voting_session_id: Optional[str] = None,
+    amendment_id: int | None = None,
+    voting_session_id: str | None = None,
     governance_workflow_stage: str = "validation",
 ):
     """
@@ -401,7 +418,9 @@ async def parallel_verify_policies(
     - Comprehensive error handling with rollback capabilities
     """
     if not request_data.policy_rule_ids:
-        raise HTTPException(status_code=400, detail="No policy rule IDs provided for verification.")
+        raise HTTPException(
+            status_code=400, detail="No policy rule IDs provided for verification."
+        )
 
     try:
         # Task 7: Create constitutional validation context
@@ -427,7 +446,9 @@ async def parallel_verify_policies(
         return response
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Parallel verification failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Parallel verification failed: {str(e)}"
+        )
 
 
 @router.post("/constitutional-compliance", status_code=200)
@@ -449,7 +470,6 @@ async def verify_constitutional_compliance(
 
     from ..core.constitutional_verification_engine import (
         ConstitutionalProperty,
-        ConstitutionalVerificationEngine,
         VerificationLevel,
         get_constitutional_verification_engine,
     )
@@ -461,7 +481,8 @@ async def verify_constitutional_compliance(
         policy_content = request_data.get("policy_content", "")
         if not policy_content:
             raise HTTPException(
-                status_code=400, detail="Policy content is required for constitutional verification"
+                status_code=400,
+                detail="Policy content is required for constitutional verification",
             )
 
         verification_level_str = request_data.get("verification_level", "standard")
@@ -473,11 +494,15 @@ async def verify_constitutional_compliance(
 
         for prop_data in properties_data:
             prop = ConstitutionalProperty(
-                property_id=prop_data.get("property_id", f"prop-{len(constitutional_properties)}"),
+                property_id=prop_data.get(
+                    "property_id", f"prop-{len(constitutional_properties)}"
+                ),
                 name=prop_data.get("name", "Constitutional Property"),
                 description=prop_data.get("description", ""),
                 formal_specification=prop_data.get("formal_specification", ""),
-                constitutional_principle_id=prop_data.get("constitutional_principle_id", ""),
+                constitutional_principle_id=prop_data.get(
+                    "constitutional_principle_id", ""
+                ),
                 verification_level=verification_level,
             )
             constitutional_properties.append(prop)
@@ -516,10 +541,12 @@ async def verify_constitutional_compliance(
         verification_engine = await get_constitutional_verification_engine()
 
         # Perform constitutional compliance verification
-        verification_result = await verification_engine.verify_constitutional_compliance(
-            policy_content=policy_content,
-            constitutional_properties=constitutional_properties,
-            verification_level=verification_level,
+        verification_result = (
+            await verification_engine.verify_constitutional_compliance(
+                policy_content=policy_content,
+                constitutional_properties=constitutional_properties,
+                verification_level=verification_level,
+            )
         )
 
         # Calculate total response time
@@ -539,7 +566,9 @@ async def verify_constitutional_compliance(
             },
             "performance_analysis": {
                 "total_response_time_ms": total_time_ms,
-                "verification_efficiency": "optimized" if total_time_ms < 5000 else "standard",
+                "verification_efficiency": (
+                    "optimized" if total_time_ms < 5000 else "standard"
+                ),
                 "formal_proof_count": len(verification_result.get("formal_proofs", [])),
                 "properties_verified": len(constitutional_properties),
             },
@@ -565,7 +594,8 @@ async def verify_constitutional_compliance(
         )
 
         raise HTTPException(
-            status_code=500, detail=f"Constitutional compliance verification failed: {str(e)}"
+            status_code=500,
+            detail=f"Constitutional compliance verification failed: {str(e)}",
         )
 
 
@@ -643,7 +673,9 @@ async def generate_formal_proof(
                 "proof_generation_time_ms": proof_time_ms,
                 "verification_time_ms": formal_proof.verification_time_ms,
                 "proof_steps_count": len(formal_proof.proof_steps),
-                "z3_solver_performance": "optimal" if proof_time_ms < 1000 else "standard",
+                "z3_solver_performance": (
+                    "optimal" if proof_time_ms < 1000 else "standard"
+                ),
             },
             # Protocol compliance
             "protocol_compliance": {
@@ -666,7 +698,9 @@ async def generate_formal_proof(
         proof_time_ms = (time.time() - proof_start) * 1000
         logger.error(f"Formal proof generation failed after {proof_time_ms:.2f}ms: {e}")
 
-        raise HTTPException(status_code=500, detail=f"Formal proof generation failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Formal proof generation failed: {str(e)}"
+        )
 
 
 @router.get("/verification-metrics", status_code=200)
@@ -684,7 +718,9 @@ async def get_verification_performance_metrics(
     - Cache hit rates
     """
     try:
-        from ..core.constitutional_verification_engine import get_constitutional_verification_engine
+        from ..core.constitutional_verification_engine import (
+            get_constitutional_verification_engine,
+        )
 
         # Get verification engine
         verification_engine = await get_constitutional_verification_engine()
@@ -748,10 +784,12 @@ async def get_parallel_validation_statistics(
         return {
             "status": "success",
             "statistics": statistics,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get statistics: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get statistics: {str(e)}"
+        )
 
 
 @router.post("/parallel/scale", status_code=status.HTTP_200_OK)
@@ -765,7 +803,9 @@ async def manual_scale_parallel_pipeline(
         scale_factor: Scaling factor (0.5 to 2.0)
     """
     if not 0.5 <= scale_factor <= 2.0:
-        raise HTTPException(status_code=400, detail="Scale factor must be between 0.5 and 2.0")
+        raise HTTPException(
+            status_code=400, detail="Scale factor must be between 0.5 and 2.0"
+        )
 
     try:
         if scale_factor > parallel_pipeline.current_scale_factor:
@@ -782,7 +822,7 @@ async def manual_scale_parallel_pipeline(
         raise HTTPException(status_code=500, detail=f"Scaling failed: {str(e)}")
 
 
-@router.get("/parallel/stats", response_model=Dict, status_code=status.HTTP_200_OK)
+@router.get("/parallel/stats", response_model=dict, status_code=status.HTTP_200_OK)
 async def get_parallel_pipeline_stats(
     current_user: User = Depends(require_verification_triggerer),
 ):
@@ -794,7 +834,9 @@ async def get_parallel_pipeline_stats(
         return stats
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get pipeline stats: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get pipeline stats: {str(e)}"
+        )
 
 
 @router.websocket("/ws/progress")
@@ -856,7 +898,9 @@ async def bias_detection_analysis(
         )
 
     if not request_data.bias_metrics:
-        raise HTTPException(status_code=400, detail="No bias metrics specified for analysis.")
+        raise HTTPException(
+            status_code=400, detail="No bias metrics specified for analysis."
+        )
 
     # Fetch Policy Rules from Integrity Service
     fetched_rules = await integrity_service_client.get_policy_rules_by_ids(
@@ -872,7 +916,9 @@ async def bias_detection_analysis(
         )
 
     # Perform bias detection analysis
-    response = await bias_detector.detect_bias(request=request_data, policy_rules=fetched_rules)
+    response = await bias_detector.detect_bias(
+        request=request_data, policy_rules=fetched_rules
+    )
 
     return response
 
@@ -921,7 +967,7 @@ async def fairness_validation_analysis(
     return response
 
 
-@router.get("/bias-metrics", response_model=List[Dict], status_code=status.HTTP_200_OK)
+@router.get("/bias-metrics", response_model=list[dict], status_code=status.HTTP_200_OK)
 async def get_available_bias_metrics(
     current_user: User = Depends(require_verification_triggerer),
 ):
@@ -967,7 +1013,9 @@ async def get_available_bias_metrics(
     return bias_metrics
 
 
-@router.get("/fairness-properties", response_model=List[Dict], status_code=status.HTTP_200_OK)
+@router.get(
+    "/fairness-properties", response_model=list[dict], status_code=status.HTTP_200_OK
+)
 async def get_available_fairness_properties(
     current_user: User = Depends(require_verification_triggerer),
 ):
