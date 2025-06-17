@@ -30,7 +30,9 @@ async def test_create_user(client: TestClient, random_user_payload: dict):
 
 
 @pytest.mark.asyncio
-async def test_create_user_existing_email(client: TestClient, random_user_payload: dict):
+async def test_create_user_existing_email(
+    client: TestClient, random_user_payload: dict
+):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -99,7 +101,9 @@ API_V1_AUTH_PREFIX = f"{settings.API_V1_STR}/auth"
 
 
 @pytest.mark.asyncio
-async def test_read_current_user_success(async_client: TestClient, random_user_payload: dict):
+async def test_read_current_user_success(
+    async_client: TestClient, random_user_payload: dict
+):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -108,7 +112,8 @@ async def test_read_current_user_success(async_client: TestClient, random_user_p
     # but /auth/register expects 'username', 'email', 'password', 'full_name'
     # We'll adapt random_user_payload or create a new one.
     user_data_for_registration = {
-        "username": random_user_payload["email"].split("@")[0] + "_usr",  # Create a unique username
+        "username": random_user_payload["email"].split("@")[0]
+        + "_usr",  # Create a unique username
         "email": random_user_payload["email"],
         "password": random_user_payload["password"],
         "full_name": "Test User Me",

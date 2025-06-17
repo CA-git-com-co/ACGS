@@ -1,12 +1,12 @@
-from typing import Optional
 
-from app.core.config import settings
-from app.db.base_class import Base  # Import Base for metadata
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
+from app.core.config import settings
+from app.db.base_class import Base  # Import Base for metadata
+
 # Determine which database URL to use
-db_url_to_use: Optional[str] = settings.SQLALCHEMY_DATABASE_URI
+db_url_to_use: str | None = settings.SQLALCHEMY_DATABASE_URI
 
 # Create an async engine instance
 # SQLALCHEMY_DATABASE_URI will point to test DB if TEST_ASYNC_DATABASE_URL is set.

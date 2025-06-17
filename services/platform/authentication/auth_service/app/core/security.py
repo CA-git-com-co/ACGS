@@ -1,7 +1,6 @@
 # acgspcp-main/auth_service/app/core/security.py
 import uuid
-from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from datetime import UTC, datetime, timedelta
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
@@ -36,7 +35,7 @@ class TokenPayload(BaseModel):
     sub: str  # username
     exp: int  # expiry timestamp
     user_id: int
-    roles: List[str]
+    roles: list[str]
     type: str  # "access" or "refresh"
     jti: str  # JWT ID
 
@@ -57,13 +56,13 @@ revoked_access_jti_blacklist: set[str] = set()
 def create_access_token(
     subject: str,
     user_id: int,
-    roles: List[str],
-    expires_delta: Optional[timedelta] = None,
+    roles: list[str],
+    expires_delta: timedelta | None = None,
 ) -> tuple[str, str]:  # returns (token, jti)
     if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
+        expire = datetime.now(UTC) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(
+        expire = datetime.now(UTC) + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
 
@@ -76,15 +75,17 @@ def create_access_token(
         "type": "access",
         "jti": jti,
     }
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
     return encoded_jwt, jti
 
 
 def create_refresh_token(
-    subject: str, user_id: int, roles: List[str]
+    subject: str, user_id: int, roles: list[str]
 ) -> tuple[str, str, datetime]:  # returns (token, jti, expiry_datetime)
     expires_delta = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    expire_datetime = datetime.now(timezone.utc) + expires_delta
+    expire_datetime = datetime.now(UTC) + expires_delta
     jti = uuid.uuid4().hex
     to_encode = {
         "exp": int(expire_datetime.timestamp()),
@@ -94,7 +95,9 @@ def create_refresh_token(
         "type": "refresh",
         "jti": jti,
     }
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
     return encoded_jwt, jti, expire_datetime
 
 
@@ -113,7 +116,9 @@ def is_access_jti_revoked(jti: str) -> bool:
 credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
-    headers={"WWW-Authenticate": "Bearer"},  # Even with cookies, this header is conventional
+    headers={
+        "WWW-Authenticate": "Bearer"
+    },  # Even with cookies, this header is conventional
 )
 token_expired_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -124,13 +129,15 @@ token_expired_exception = HTTPException(
 
 def verify_token_and_get_payload(token_str: str) -> TokenPayload:
     try:
-        payload = jwt.decode(token_str, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token_str, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
 
         # Validate expiration (jose's decode already does this, but an explicit check is fine)
         exp_timestamp = payload.get("exp")
         if exp_timestamp is None or datetime.fromtimestamp(
-            exp_timestamp, timezone.utc
-        ) < datetime.now(timezone.utc):
+            exp_timestamp, UTC
+        ) < datetime.now(UTC):
             raise token_expired_exception
 
         token_payload = TokenPayload(**payload)  # Validate structure
@@ -159,7 +166,9 @@ async def get_current_user_from_cookie(
         access_token_cookie
     )  # Raises HTTPException on failure
 
-    user = await crud_user.get_user(db, user_id=token_payload.user_id)  # Fetch by user_id
+    user = await crud_user.get_user(
+        db, user_id=token_payload.user_id
+    )  # Fetch by user_id
     if user is None:
         raise credentials_exception  # User not found for user_id in token
     return user
@@ -169,22 +178,28 @@ async def get_current_active_user(
     current_user: User = Depends(get_current_user_from_cookie),
 ) -> User:
     if not current_user.is_active:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
+        )
     return current_user
 
 
 # --- Role-based Authorization ---
-def authorize_roles(required_roles: List[str]):
+def authorize_roles(required_roles: list[str]):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
     async def role_checker(
         current_user: User = Depends(get_current_active_user),
     ) -> User:
-        user_role = getattr(current_user, "role", None)  # Assuming 'role' attribute exists
+        user_role = getattr(
+            current_user, "role", None
+        )  # Assuming 'role' attribute exists
         if user_role is None or user_role not in required_roles:
             # Add "admin" role check for superuser access if needed
-            if "admin" in required_roles and getattr(current_user, "is_superuser", False):
+            if "admin" in required_roles and getattr(
+                current_user, "is_superuser", False
+            ):
                 return current_user
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -196,7 +211,7 @@ def authorize_roles(required_roles: List[str]):
 
 
 # --- Rate Limiting Helper Function ---
-def get_user_id_from_request_optional(request: Request) -> Optional[str]:
+def get_user_id_from_request_optional(request: Request) -> str | None:
     """
     Extracts user identifier from request for rate limiting purposes.
     Returns username if user is authenticated via cookie, None otherwise.
@@ -216,7 +231,9 @@ def get_user_id_from_request_optional(request: Request) -> Optional[str]:
 
 
 # OAuth2PasswordBearer for form data in /token endpoint, not for Bearer token auth itself
-oauth2_password_bearer_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/token")
+oauth2_password_bearer_scheme = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_V1_STR}/auth/token"
+)
 
 
 # --- Enterprise API Key Authentication ---
@@ -244,7 +261,7 @@ async def get_current_user_from_api_key(
     from sqlalchemy import select
 
     result = await db.execute(
-        select(ApiKey).where(ApiKey.key_prefix == key_prefix, ApiKey.is_active == True)
+        select(ApiKey).where(ApiKey.key_prefix == key_prefix, ApiKey.is_active)
     )
     api_key_obj = result.scalar_one_or_none()
 
@@ -258,8 +275,10 @@ async def get_current_user_from_api_key(
         raise credentials_exception
 
     # Check expiration
-    if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(timezone.utc):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API key has expired")
+    if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(UTC):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="API key has expired"
+        )
 
     # Check IP whitelist if configured
     if api_key_obj.allowed_ips:
@@ -271,7 +290,7 @@ async def get_current_user_from_api_key(
             )
 
     # Update usage statistics
-    api_key_obj.last_used_at = datetime.now(timezone.utc)
+    api_key_obj.last_used_at = datetime.now(UTC)
     api_key_obj.usage_count += 1
     await db.commit()
 
@@ -284,7 +303,7 @@ async def get_current_user_from_api_key(
 
 
 # --- Enhanced Role-based Authorization with Fine-grained Permissions ---
-def authorize_permissions(required_permissions: List[str]):
+def authorize_permissions(required_permissions: list[str]):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

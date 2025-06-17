@@ -14,24 +14,26 @@ Key Features:
 """
 
 import asyncio
-import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from opentelemetry import metrics, trace
-    from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+    from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
+        OTLPMetricExporter,
+    )
     from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
     from opentelemetry.sdk.metrics import MeterProvider
     from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+    from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
-    from opentelemetry.sdk.resources import Resource
     from opentelemetry.semconv.resource import ResourceAttributes
+
     OPENTELEMETRY_AVAILABLE = True
 except ImportError:
     OPENTELEMETRY_AVAILABLE = False
@@ -43,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 class MetricType(Enum):
     """Metric type enumeration."""
+
     COUNTER = "counter"
     GAUGE = "gauge"
     HISTOGRAM = "histogram"
@@ -51,6 +54,7 @@ class MetricType(Enum):
 
 class AlertLevel(Enum):
     """Alert level enumeration."""
+
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -60,85 +64,88 @@ class AlertLevel(Enum):
 @dataclass
 class PerformanceMetric:
     """Performance metric data structure."""
+
     metric_name: str
     metric_type: MetricType
     value: float
     unit: str = ""
-    labels: Dict[str, str] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class TraceSpan:
     """Trace span data structure."""
+
     span_id: str
     trace_id: str
     operation_name: str
     start_time: datetime
-    end_time: Optional[datetime] = None
-    duration_ms: Optional[float] = None
+    end_time: datetime | None = None
+    duration_ms: float | None = None
     status: str = "ok"
-    tags: Dict[str, str] = field(default_factory=dict)
-    logs: List[Dict[str, Any]] = field(default_factory=list)
+    tags: dict[str, str] = field(default_factory=dict)
+    logs: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
 class Alert:
     """Alert data structure."""
+
     alert_id: str
     alert_level: AlertLevel
     title: str
     description: str
     source: str
-    metric_name: Optional[str] = None
-    threshold_value: Optional[float] = None
-    current_value: Optional[float] = None
-    triggered_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    resolved_at: Optional[datetime] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metric_name: str | None = None
+    threshold_value: float | None = None
+    current_value: float | None = None
+    triggered_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    resolved_at: datetime | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ObservabilityFramework:
     """
     Comprehensive observability framework for self-evolving AI architecture.
-    
+
     This framework provides distributed tracing, metrics collection, and
     monitoring capabilities with OpenTelemetry integration.
     """
-    
+
     def __init__(self, settings):
         self.settings = settings
-        
+
         # OpenTelemetry configuration
         self.otlp_endpoint = settings.OTLP_ENDPOINT
         self.otlp_version = settings.OTLP_VERSION
         self.tracing_enabled = settings.TRACING_ENABLED
         self.metrics_enabled = settings.METRICS_ENABLED
-        
+
         # Service information
         self.service_name = settings.SERVICE_NAME
         self.service_version = settings.VERSION
         self.environment = settings.ENVIRONMENT
-        
+
         # Observability state
-        self.active_spans: Dict[str, TraceSpan] = {}
-        self.metrics_buffer: List[PerformanceMetric] = []
-        self.active_alerts: Dict[str, Alert] = {}
-        self.observability_metrics: Dict[str, Any] = {
+        self.active_spans: dict[str, TraceSpan] = {}
+        self.metrics_buffer: list[PerformanceMetric] = []
+        self.active_alerts: dict[str, Alert] = {}
+        self.observability_metrics: dict[str, Any] = {
             "spans_created": 0,
             "spans_completed": 0,
             "metrics_collected": 0,
             "alerts_triggered": 0,
             "alerts_resolved": 0,
         }
-        
+
         # OpenTelemetry components
-        self.tracer_provider: Optional[TracerProvider] = None
-        self.meter_provider: Optional[MeterProvider] = None
+        self.tracer_provider: TracerProvider | None = None
+        self.meter_provider: MeterProvider | None = None
         self.tracer = None
         self.meter = None
-        
+
         # Performance targets
         self.performance_targets = {
             "response_time_ms": 500,
@@ -146,60 +153,58 @@ class ObservabilityFramework:
             "error_rate_percent": 1.0,
             "evolution_cycle_minutes": 10,
         }
-        
+
         logger.info("Observability framework initialized with OpenTelemetry")
-    
+
     async def initialize(self):
         """Initialize the observability framework."""
         try:
             if not OPENTELEMETRY_AVAILABLE:
-                logger.warning("OpenTelemetry not available - observability features limited")
+                logger.warning(
+                    "OpenTelemetry not available - observability features limited"
+                )
                 return
-            
+
             # Initialize OpenTelemetry components
             await self._initialize_opentelemetry()
-            
+
             # Start metrics collection
             asyncio.create_task(self._collect_metrics_periodically())
-            
+
             # Start alert monitoring
             asyncio.create_task(self._monitor_alerts())
-            
+
             logger.info("✅ Observability framework initialization complete")
-            
+
         except Exception as e:
             logger.error(f"❌ Observability framework initialization failed: {e}")
             raise
-    
-    async def start_span(
-        self, 
-        operation_name: str, 
-        tags: Dict[str, str] = None
-    ) -> str:
+
+    async def start_span(self, operation_name: str, tags: dict[str, str] = None) -> str:
         """
         Start a new trace span.
-        
+
         Args:
             operation_name: Name of the operation being traced
             tags: Optional tags for the span
-            
+
         Returns:
             Span ID
         """
         try:
             span_id = f"span_{int(time.time())}_{len(self.active_spans)}"
             trace_id = f"trace_{int(time.time())}"
-            
+
             span = TraceSpan(
                 span_id=span_id,
                 trace_id=trace_id,
                 operation_name=operation_name,
-                start_time=datetime.now(timezone.utc),
+                start_time=datetime.now(UTC),
                 tags=tags or {},
             )
-            
+
             self.active_spans[span_id] = span
-            
+
             # Create OpenTelemetry span if available
             if self.tracer:
                 otel_span = self.tracer.start_span(operation_name)
@@ -207,27 +212,24 @@ class ObservabilityFramework:
                     for key, value in tags.items():
                         otel_span.set_attribute(key, value)
                 span.metadata["otel_span"] = otel_span
-            
+
             # Update metrics
             self.observability_metrics["spans_created"] += 1
-            
+
             logger.debug(f"Span started: {operation_name} ({span_id})")
-            
+
             return span_id
-            
+
         except Exception as e:
             logger.error(f"Failed to start span: {e}")
             return ""
-    
+
     async def finish_span(
-        self, 
-        span_id: str, 
-        status: str = "ok",
-        logs: List[Dict[str, Any]] = None
+        self, span_id: str, status: str = "ok", logs: list[dict[str, Any]] = None
     ):
         """
         Finish a trace span.
-        
+
         Args:
             span_id: Span identifier
             status: Span status (ok, error, timeout)
@@ -237,42 +239,44 @@ class ObservabilityFramework:
             if span_id not in self.active_spans:
                 logger.warning(f"Span not found: {span_id}")
                 return
-            
+
             span = self.active_spans[span_id]
-            span.end_time = datetime.now(timezone.utc)
+            span.end_time = datetime.now(UTC)
             span.duration_ms = (span.end_time - span.start_time).total_seconds() * 1000
             span.status = status
             span.logs = logs or []
-            
+
             # Finish OpenTelemetry span if available
             if "otel_span" in span.metadata:
                 otel_span = span.metadata["otel_span"]
                 if status == "error":
                     otel_span.set_status(trace.Status(trace.StatusCode.ERROR))
                 otel_span.end()
-            
+
             # Remove from active spans
             del self.active_spans[span_id]
-            
+
             # Update metrics
             self.observability_metrics["spans_completed"] += 1
-            
-            logger.debug(f"Span finished: {span.operation_name} ({span_id}) - {span.duration_ms:.2f}ms")
-            
+
+            logger.debug(
+                f"Span finished: {span.operation_name} ({span_id}) - {span.duration_ms:.2f}ms"
+            )
+
         except Exception as e:
             logger.error(f"Failed to finish span: {e}")
-    
+
     async def record_metric(
-        self, 
-        metric_name: str, 
+        self,
+        metric_name: str,
         value: float,
         metric_type: MetricType = MetricType.GAUGE,
         unit: str = "",
-        labels: Dict[str, str] = None
+        labels: dict[str, str] = None,
     ):
         """
         Record a performance metric.
-        
+
         Args:
             metric_name: Name of the metric
             value: Metric value
@@ -288,9 +292,9 @@ class ObservabilityFramework:
                 unit=unit,
                 labels=labels or {},
             )
-            
+
             self.metrics_buffer.append(metric)
-            
+
             # Record with OpenTelemetry if available
             if self.meter:
                 if metric_type == MetricType.COUNTER:
@@ -302,31 +306,31 @@ class ObservabilityFramework:
                 elif metric_type == MetricType.HISTOGRAM:
                     histogram = self.meter.create_histogram(metric_name, unit=unit)
                     histogram.record(value, labels or {})
-            
+
             # Update metrics
             self.observability_metrics["metrics_collected"] += 1
-            
+
             # Check for alert conditions
             await self._check_metric_alerts(metric)
-            
+
             logger.debug(f"Metric recorded: {metric_name} = {value} {unit}")
-            
+
         except Exception as e:
             logger.error(f"Failed to record metric: {e}")
-    
+
     async def trigger_alert(
-        self, 
-        title: str, 
+        self,
+        title: str,
         description: str,
         alert_level: AlertLevel = AlertLevel.WARNING,
         source: str = "observability_framework",
         metric_name: str = None,
         threshold_value: float = None,
-        current_value: float = None
+        current_value: float = None,
     ) -> str:
         """
         Trigger an alert.
-        
+
         Args:
             title: Alert title
             description: Alert description
@@ -335,13 +339,13 @@ class ObservabilityFramework:
             metric_name: Related metric name
             threshold_value: Threshold that was exceeded
             current_value: Current metric value
-            
+
         Returns:
             Alert ID
         """
         try:
             alert_id = f"alert_{int(time.time())}_{len(self.active_alerts)}"
-            
+
             alert = Alert(
                 alert_id=alert_id,
                 alert_level=alert_level,
@@ -352,24 +356,26 @@ class ObservabilityFramework:
                 threshold_value=threshold_value,
                 current_value=current_value,
             )
-            
+
             self.active_alerts[alert_id] = alert
-            
+
             # Update metrics
             self.observability_metrics["alerts_triggered"] += 1
-            
-            logger.warning(f"Alert triggered: {title} ({alert_level.value}) - {description}")
-            
+
+            logger.warning(
+                f"Alert triggered: {title} ({alert_level.value}) - {description}"
+            )
+
             return alert_id
-            
+
         except Exception as e:
             logger.error(f"Failed to trigger alert: {e}")
             return ""
-    
+
     async def resolve_alert(self, alert_id: str):
         """
         Resolve an active alert.
-        
+
         Args:
             alert_id: Alert identifier
         """
@@ -377,21 +383,21 @@ class ObservabilityFramework:
             if alert_id not in self.active_alerts:
                 logger.warning(f"Alert not found: {alert_id}")
                 return
-            
+
             alert = self.active_alerts[alert_id]
-            alert.resolved_at = datetime.now(timezone.utc)
-            
+            alert.resolved_at = datetime.now(UTC)
+
             # Remove from active alerts
             del self.active_alerts[alert_id]
-            
+
             # Update metrics
             self.observability_metrics["alerts_resolved"] += 1
-            
+
             logger.info(f"Alert resolved: {alert.title} ({alert_id})")
-            
+
         except Exception as e:
             logger.error(f"Failed to resolve alert: {e}")
-    
+
     async def record_evolution_completion(self, evolution_result):
         """Record completion of an evolution cycle."""
         try:
@@ -403,24 +409,28 @@ class ObservabilityFramework:
                     "evolution_id": evolution_result.evolution_id,
                     "status": evolution_result.status.value,
                     "success": str(evolution_result.success),
-                }
+                },
             )
-            
+
             if evolution_result.performance_metrics:
-                duration = evolution_result.performance_metrics.get("duration_minutes", 0)
+                duration = evolution_result.performance_metrics.get(
+                    "duration_minutes", 0
+                )
                 await self.record_metric(
                     "evolution_duration_minutes",
                     duration,
                     MetricType.HISTOGRAM,
                     unit="minutes",
-                    labels={"evolution_id": evolution_result.evolution_id}
+                    labels={"evolution_id": evolution_result.evolution_id},
                 )
-            
-            logger.info(f"Evolution completion recorded: {evolution_result.evolution_id}")
-            
+
+            logger.info(
+                f"Evolution completion recorded: {evolution_result.evolution_id}"
+            )
+
         except Exception as e:
             logger.error(f"Failed to record evolution completion: {e}")
-    
+
     async def record_evolution_failure(self, evolution_result):
         """Record failure of an evolution cycle."""
         try:
@@ -431,9 +441,9 @@ class ObservabilityFramework:
                 labels={
                     "evolution_id": evolution_result.evolution_id,
                     "error_type": "evolution_failure",
-                }
+                },
             )
-            
+
             # Trigger alert for evolution failure
             await self.trigger_alert(
                 "Evolution Cycle Failed",
@@ -442,13 +452,15 @@ class ObservabilityFramework:
                 "evolution_engine",
                 "evolution_failure_total",
             )
-            
+
             logger.error(f"Evolution failure recorded: {evolution_result.evolution_id}")
-            
+
         except Exception as e:
             logger.error(f"Failed to record evolution failure: {e}")
-    
-    async def record_evolution_warning(self, evolution_id: str, warning_type: str, details: Any):
+
+    async def record_evolution_warning(
+        self, evolution_id: str, warning_type: str, details: Any
+    ):
         """Record a warning for an evolution cycle."""
         try:
             await self.record_metric(
@@ -458,9 +470,9 @@ class ObservabilityFramework:
                 labels={
                     "evolution_id": evolution_id,
                     "warning_type": warning_type,
-                }
+                },
             )
-            
+
             # Trigger alert for evolution warning
             await self.trigger_alert(
                 "Evolution Cycle Warning",
@@ -469,22 +481,26 @@ class ObservabilityFramework:
                 "evolution_engine",
                 "evolution_warning_total",
             )
-            
-            logger.warning(f"Evolution warning recorded: {evolution_id} - {warning_type}")
-            
+
+            logger.warning(
+                f"Evolution warning recorded: {evolution_id} - {warning_type}"
+            )
+
         except Exception as e:
             logger.error(f"Failed to record evolution warning: {e}")
-    
+
     # Private helper methods
     async def _initialize_opentelemetry(self):
         """Initialize OpenTelemetry components."""
         try:
             # Create resource
-            resource = Resource.create({
-                ResourceAttributes.SERVICE_NAME: self.service_name,
-                ResourceAttributes.SERVICE_VERSION: self.service_version,
-                ResourceAttributes.DEPLOYMENT_ENVIRONMENT: self.environment,
-            })
+            resource = Resource.create(
+                {
+                    ResourceAttributes.SERVICE_NAME: self.service_name,
+                    ResourceAttributes.SERVICE_VERSION: self.service_version,
+                    ResourceAttributes.DEPLOYMENT_ENVIRONMENT: self.environment,
+                }
+            )
 
             # Initialize tracing
             if self.tracing_enabled:
@@ -552,7 +568,7 @@ class ObservabilityFramework:
                 "system_cpu_usage_percent",
                 cpu_percent,
                 MetricType.GAUGE,
-                unit="percent"
+                unit="percent",
             )
 
             # Memory usage
@@ -561,17 +577,17 @@ class ObservabilityFramework:
                 "system_memory_usage_percent",
                 memory.percent,
                 MetricType.GAUGE,
-                unit="percent"
+                unit="percent",
             )
 
             # Disk usage
-            disk = psutil.disk_usage('/')
+            disk = psutil.disk_usage("/")
             disk_percent = (disk.used / disk.total) * 100
             await self.record_metric(
                 "system_disk_usage_percent",
                 disk_percent,
                 MetricType.GAUGE,
-                unit="percent"
+                unit="percent",
             )
 
         except ImportError:
@@ -588,7 +604,7 @@ class ObservabilityFramework:
                 "active_spans_count",
                 len(self.active_spans),
                 MetricType.GAUGE,
-                unit="count"
+                unit="count",
             )
 
             # Active alerts count
@@ -596,7 +612,7 @@ class ObservabilityFramework:
                 "active_alerts_count",
                 len(self.active_alerts),
                 MetricType.GAUGE,
-                unit="count"
+                unit="count",
             )
 
             # Metrics buffer size
@@ -604,7 +620,7 @@ class ObservabilityFramework:
                 "metrics_buffer_size",
                 len(self.metrics_buffer),
                 MetricType.GAUGE,
-                unit="count"
+                unit="count",
             )
 
         except Exception as e:
@@ -618,7 +634,7 @@ class ObservabilityFramework:
                 "security_events_total",
                 self.observability_metrics.get("security_events", 0),
                 MetricType.COUNTER,
-                unit="count"
+                unit="count",
             )
 
         except Exception as e:
@@ -627,7 +643,7 @@ class ObservabilityFramework:
     async def _cleanup_old_metrics(self):
         """Clean up old metrics from buffer."""
         try:
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
             old_metrics = []
 
             for metric in self.metrics_buffer:
@@ -674,7 +690,7 @@ class ObservabilityFramework:
                         "performance_monitor",
                         metric.metric_name,
                         self.performance_targets["response_time_ms"],
-                        metric.value
+                        metric.value,
                     )
 
             # Error rate alerts
@@ -687,7 +703,7 @@ class ObservabilityFramework:
                         "performance_monitor",
                         metric.metric_name,
                         self.performance_targets["error_rate_percent"],
-                        metric.value
+                        metric.value,
                     )
 
             # Evolution cycle time alerts
@@ -700,7 +716,7 @@ class ObservabilityFramework:
                         "evolution_monitor",
                         metric.metric_name,
                         self.performance_targets["evolution_cycle_minutes"],
-                        metric.value
+                        metric.value,
                     )
 
         except Exception as e:
@@ -711,7 +727,9 @@ class ObservabilityFramework:
         try:
             for alert_id, alert in list(self.active_alerts.items()):
                 # Auto-resolve alerts older than 1 hour (simplified logic)
-                if (datetime.now(timezone.utc) - alert.triggered_at).total_seconds() > 3600:
+                if (
+                    datetime.now(UTC) - alert.triggered_at
+                ).total_seconds() > 3600:
                     await self.resolve_alert(alert_id)
 
         except Exception as e:
@@ -722,16 +740,23 @@ class ObservabilityFramework:
         try:
             for alert in self.active_alerts.values():
                 # Escalate critical alerts that have been active for more than 15 minutes
-                if (alert.alert_level == AlertLevel.CRITICAL and
-                    (datetime.now(timezone.utc) - alert.triggered_at).total_seconds() > 900):
+                if (
+                    alert.alert_level == AlertLevel.CRITICAL
+                    and (
+                        datetime.now(UTC) - alert.triggered_at
+                    ).total_seconds()
+                    > 900
+                ):
 
-                    logger.critical(f"ESCALATION: Critical alert {alert.alert_id} has been active for >15 minutes")
+                    logger.critical(
+                        f"ESCALATION: Critical alert {alert.alert_id} has been active for >15 minutes"
+                    )
                     # In production, this would trigger escalation procedures
 
         except Exception as e:
             logger.error(f"Alert escalation check failed: {e}")
 
-    async def get_observability_status(self) -> Dict[str, Any]:
+    async def get_observability_status(self) -> dict[str, Any]:
         """Get current observability framework status."""
         try:
             return {
@@ -754,14 +779,14 @@ class ObservabilityFramework:
                 },
                 "metrics": self.observability_metrics,
                 "performance_targets": self.performance_targets,
-                "last_updated": datetime.now(timezone.utc).isoformat(),
+                "last_updated": datetime.now(UTC).isoformat(),
             }
 
         except Exception as e:
             logger.error(f"Failed to get observability status: {e}")
             return {"error": str(e)}
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check for the observability framework."""
         try:
             health_status = {
@@ -790,10 +815,13 @@ class ObservabilityFramework:
             health_status["checks"]["alerting"] = {
                 "healthy": True,
                 "active_alerts": len(self.active_alerts),
-                "critical_alerts": len([
-                    alert for alert in self.active_alerts.values()
-                    if alert.alert_level == AlertLevel.CRITICAL
-                ]),
+                "critical_alerts": len(
+                    [
+                        alert
+                        for alert in self.active_alerts.values()
+                        if alert.alert_level == AlertLevel.CRITICAL
+                    ]
+                ),
             }
 
             return health_status

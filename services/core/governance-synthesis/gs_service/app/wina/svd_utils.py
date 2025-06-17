@@ -1,9 +1,8 @@
-from typing import Tuple
 
 import numpy as np
 
 
-def perform_svd(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def perform_svd(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Performs Singular Value Decomposition (SVD) on a given matrix.
 
@@ -25,7 +24,9 @@ def perform_svd(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]
     return U, s, Vh
 
 
-def reconstruct_from_svd(U: np.ndarray, s: np.ndarray, Vh: np.ndarray, k: int = None) -> np.ndarray:
+def reconstruct_from_svd(
+    U: np.ndarray, s: np.ndarray, Vh: np.ndarray, k: int = None
+) -> np.ndarray:
     """
     Reconstructs a matrix from its SVD components, optionally reducing dimensionality.
 
@@ -103,7 +104,7 @@ def apply_svd_transformation(matrix: np.ndarray, k: int) -> np.ndarray:
 # Placeholder for a function that might return the components for further use
 def get_svd_reduced_components(
     matrix: np.ndarray, k: int
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Performs SVD and returns the top k components (U_k, s_k, Vh_k).
 

@@ -7,9 +7,9 @@ and production-grade API implementation.
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from pydantic import BaseModel, Field, validator
 
@@ -43,9 +43,9 @@ class APIError(BaseModel):
 
     code: ErrorCode
     message: str
-    details: Optional[Dict[str, Any]] = None
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    correlation_id: Optional[str] = None
+    details: dict[str, Any] | None = None
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    correlation_id: str | None = None
 
     class Config:
         json_encoders = {datetime: lambda v: v.isoformat()}
@@ -55,12 +55,12 @@ class APIMetadata(BaseModel):
     """Metadata for API responses including performance and tracing information."""
 
     correlation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    response_time_ms: Optional[float] = None
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    response_time_ms: float | None = None
     service_name: str
     service_version: str = "3.0.0"
     api_version: str = "v1"
-    request_id: Optional[str] = None
+    request_id: str | None = None
 
     class Config:
         json_encoders = {datetime: lambda v: v.isoformat()}
@@ -75,8 +75,8 @@ class APIResponse(BaseModel):
     """
 
     status: APIStatus
-    data: Optional[Union[Dict[str, Any], List[Any], str, int, bool]] = None
-    error: Optional[APIError] = None
+    data: dict[str, Any] | list[Any] | str | int | bool | None = None
+    error: APIError | None = None
     metadata: APIMetadata
 
     @validator("error")
@@ -108,10 +108,10 @@ class HealthCheckResponse(BaseModel):
     service: str
     version: str = "3.0.0"
     port: int
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    uptime_seconds: Optional[float] = None
-    dependencies: Dict[str, str] = Field(default_factory=dict)
-    performance_metrics: Dict[str, Any] = Field(default_factory=dict)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    uptime_seconds: float | None = None
+    dependencies: dict[str, str] = Field(default_factory=dict)
+    performance_metrics: dict[str, Any] = Field(default_factory=dict)
 
     class Config:
         json_encoders = {datetime: lambda v: v.isoformat()}
@@ -125,7 +125,7 @@ class ServiceInfo(BaseModel):
     status: str = "operational"
     port: int
     phase: str = "Phase A3 - Production Implementation"
-    capabilities: List[str] = Field(default_factory=list)
+    capabilities: list[str] = Field(default_factory=list)
     api_documentation: str = "/docs"
     health_check: str = "/health"
 
@@ -135,14 +135,14 @@ class PaginationParams(BaseModel):
 
     page: int = Field(1, ge=1, description="Page number (1-based)")
     size: int = Field(20, ge=1, le=100, description="Items per page")
-    sort_by: Optional[str] = Field(None, description="Field to sort by")
+    sort_by: str | None = Field(None, description="Field to sort by")
     sort_order: str = Field("asc", pattern="^(asc|desc)$", description="Sort order")
 
 
 class PaginatedResponse(BaseModel):
     """Standardized paginated response structure."""
 
-    items: List[Any]
+    items: list[Any]
     total: int
     page: int
     size: int
@@ -185,33 +185,35 @@ class ConstitutionalComplianceInfo(BaseModel):
 
     is_compliant: bool
     compliance_score: float = Field(ge=0.0, le=1.0)
-    violations: List[str] = Field(default_factory=list)
-    recommendations: List[str] = Field(default_factory=list)
-    validation_timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    violations: list[str] = Field(default_factory=list)
+    recommendations: list[str] = Field(default_factory=list)
+    validation_timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(UTC)
+    )
 
 
 class PerformanceMetrics(BaseModel):
     """Performance metrics for API responses."""
 
     response_time_ms: float
-    cpu_usage_percent: Optional[float] = None
-    memory_usage_mb: Optional[float] = None
-    database_query_time_ms: Optional[float] = None
-    cache_hit_rate: Optional[float] = None
+    cpu_usage_percent: float | None = None
+    memory_usage_mb: float | None = None
+    database_query_time_ms: float | None = None
+    cache_hit_rate: float | None = None
 
 
 # Common validation schemas
 class IDParam(BaseModel):
     """Standard ID parameter validation."""
 
-    id: Union[int, str] = Field(..., description="Resource identifier")
+    id: int | str = Field(..., description="Resource identifier")
 
 
 class TimestampRange(BaseModel):
     """Standard timestamp range for filtering."""
 
-    start: Optional[datetime] = Field(None, description="Start timestamp")
-    end: Optional[datetime] = Field(None, description="End timestamp")
+    start: datetime | None = Field(None, description="Start timestamp")
+    end: datetime | None = Field(None, description="End timestamp")
 
     @validator("end")
     def end_after_start(cls, v, values):
@@ -228,8 +230,8 @@ class TimestampRange(BaseModel):
 def create_success_response(
     data: Any,
     service_name: str,
-    correlation_id: Optional[str] = None,
-    response_time_ms: Optional[float] = None,
+    correlation_id: str | None = None,
+    response_time_ms: float | None = None,
 ) -> APIResponse:
     """Helper function to create standardized success responses."""
     metadata = APIMetadata(
@@ -245,9 +247,9 @@ def create_error_response(
     error_code: ErrorCode,
     message: str,
     service_name: str,
-    details: Optional[Dict[str, Any]] = None,
-    correlation_id: Optional[str] = None,
-    response_time_ms: Optional[float] = None,
+    details: dict[str, Any] | None = None,
+    correlation_id: str | None = None,
+    response_time_ms: float | None = None,
 ) -> APIResponse:
     """Helper function to create standardized error responses."""
     metadata = APIMetadata(

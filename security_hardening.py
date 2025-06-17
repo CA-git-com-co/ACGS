@@ -9,7 +9,6 @@ import json
 import os
 import re
 from datetime import datetime
-from typing import Dict, List
 
 import aiohttp
 
@@ -35,7 +34,7 @@ class SecurityHardener:
         if self.session:
             await self.session.close()
 
-    async def test_authentication_security(self) -> Dict[str, bool]:
+    async def test_authentication_security(self) -> dict[str, bool]:
         """Test authentication and authorization security"""
         print("\n🔐 Testing Authentication Security...")
 
@@ -88,7 +87,7 @@ class SecurityHardener:
 
         return security_tests
 
-    async def test_input_validation(self) -> Dict[str, bool]:
+    async def test_input_validation(self) -> dict[str, bool]:
         """Test input validation and sanitization"""
         print("\n🛡️ Testing Input Validation...")
 
@@ -161,7 +160,7 @@ class SecurityHardener:
 
         return validation_tests
 
-    async def test_rate_limiting(self) -> Dict[str, bool]:
+    async def test_rate_limiting(self) -> dict[str, bool]:
         """Test rate limiting implementation"""
         print("\n⏱️ Testing Rate Limiting...")
 
@@ -174,7 +173,7 @@ class SecurityHardener:
             successful_requests = 0
             rate_limited_requests = 0
 
-            for i in range(rapid_requests):
+            for _i in range(rapid_requests):
                 async with self.session.get(endpoint) as response:
                     if response.status == 200:
                         successful_requests += 1
@@ -202,7 +201,7 @@ class SecurityHardener:
 
         return rate_limit_tests
 
-    def check_environment_security(self) -> Dict[str, bool]:
+    def check_environment_security(self) -> dict[str, bool]:
         """Check environment and configuration security"""
         print("\n🔧 Checking Environment Security...")
 
@@ -252,7 +251,7 @@ class SecurityHardener:
 
         return env_security
 
-    def check_file_permissions(self) -> Dict[str, bool]:
+    def check_file_permissions(self) -> dict[str, bool]:
         """Check file and directory permissions"""
         print("\n📁 Checking File Permissions...")
 
@@ -285,7 +284,7 @@ class SecurityHardener:
 
         return permission_tests
 
-    def generate_security_recommendations(self) -> List[str]:
+    def generate_security_recommendations(self) -> list[str]:
         """Generate security hardening recommendations"""
         recommendations = [
             "🔐 Security Hardening Recommendations:",
@@ -329,7 +328,7 @@ class SecurityHardener:
 
         return recommendations
 
-    async def run_security_assessment(self) -> Dict:
+    async def run_security_assessment(self) -> dict:
         """Run comprehensive security assessment"""
         print("🚀 ACGS-PGP Security Hardening Suite")
         print("=" * 60)
@@ -380,7 +379,7 @@ async def main():
         with open("security_assessment_results.json", "w") as f:
             json.dump(assessment_results, f, indent=2)
 
-        print(f"\n🔒 Results saved to: security_assessment_results.json")
+        print("\n🔒 Results saved to: security_assessment_results.json")
         return 0
 
 

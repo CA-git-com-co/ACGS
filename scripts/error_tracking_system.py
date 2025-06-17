@@ -12,7 +12,7 @@ import logging
 from dataclasses import asdict, dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -57,12 +57,12 @@ class ErrorRecord:
     category: ErrorCategory
     severity: ErrorSeverity
     status: ErrorStatus
-    file_path: Optional[str] = None
-    line_number: Optional[int] = None
+    file_path: str | None = None
+    line_number: int | None = None
     identified_date: str = ""
-    fixed_date: Optional[str] = None
-    fix_description: Optional[str] = None
-    verification_notes: Optional[str] = None
+    fixed_date: str | None = None
+    fix_description: str | None = None
+    verification_notes: str | None = None
 
     def __post_init__(self):
         if not self.identified_date:
@@ -74,14 +74,14 @@ class ErrorTrackingSystem:
 
     def __init__(self, tracking_file: Path = None):
         self.tracking_file = tracking_file or Path("error_tracking.json")
-        self.errors: Dict[str, ErrorRecord] = {}
+        self.errors: dict[str, ErrorRecord] = {}
         self.load_errors()
 
     def load_errors(self):
         """Load errors from tracking file."""
         if self.tracking_file.exists():
             try:
-                with open(self.tracking_file, "r") as f:
+                with open(self.tracking_file) as f:
                     data = json.load(f)
                     for error_id, error_data in data.items():
                         # Convert string enums back to enum objects
@@ -140,15 +140,15 @@ class ErrorTrackingSystem:
         else:
             logger.error(f"Error {error_id} not found")
 
-    def get_errors_by_category(self, category: ErrorCategory) -> List[ErrorRecord]:
+    def get_errors_by_category(self, category: ErrorCategory) -> list[ErrorRecord]:
         """Get all errors in a specific category."""
         return [error for error in self.errors.values() if error.category == category]
 
-    def get_errors_by_status(self, status: ErrorStatus) -> List[ErrorRecord]:
+    def get_errors_by_status(self, status: ErrorStatus) -> list[ErrorRecord]:
         """Get all errors with a specific status."""
         return [error for error in self.errors.values() if error.status == status]
 
-    def get_critical_errors(self) -> List[ErrorRecord]:
+    def get_critical_errors(self) -> list[ErrorRecord]:
         """Get all critical errors."""
         return [
             error
@@ -156,7 +156,7 @@ class ErrorTrackingSystem:
             if error.severity == ErrorSeverity.CRITICAL
         ]
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate a comprehensive error report."""
         total_errors = len(self.errors)
 

@@ -9,9 +9,9 @@ import json
 import logging
 import subprocess
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -24,8 +24,8 @@ class EnhancedTestingInfrastructure:
     def __init__(self):
         self.project_root = Path(__file__).parent.parent
         self.test_results = {
-            "execution_id": f"enhanced_testing_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
-            "start_time": datetime.now(timezone.utc).isoformat(),
+            "execution_id": f"enhanced_testing_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}",
+            "start_time": datetime.now(UTC).isoformat(),
             "test_suites": {},
             "coverage_metrics": {},
             "performance_benchmarks": {},
@@ -37,7 +37,7 @@ class EnhancedTestingInfrastructure:
             },
         }
 
-    async def run_comprehensive_testing(self) -> Dict[str, Any]:
+    async def run_comprehensive_testing(self) -> dict[str, Any]:
         """Run all enhanced testing suites with comprehensive validation."""
         logger.info("🧪 Starting Enhanced Testing Infrastructure")
 
@@ -62,7 +62,7 @@ class EnhancedTestingInfrastructure:
                     "status": "PASSED" if suite_result["success"] else "FAILED",
                     "duration_seconds": suite_duration,
                     "details": suite_result,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
 
                 if suite_result["success"]:
@@ -78,7 +78,7 @@ class EnhancedTestingInfrastructure:
                     "status": "CRASHED",
                     "duration_seconds": time.time() - suite_start,
                     "error": str(e),
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
 
         # Generate comprehensive coverage report
@@ -88,7 +88,7 @@ class EnhancedTestingInfrastructure:
         await self.calculate_success_metrics()
 
         # Save test results
-        self.test_results["end_time"] = datetime.now(timezone.utc).isoformat()
+        self.test_results["end_time"] = datetime.now(UTC).isoformat()
         report_path = (
             self.project_root
             / f"reports/enhanced_testing_report_{self.test_results['execution_id']}.json"
@@ -100,7 +100,7 @@ class EnhancedTestingInfrastructure:
         logger.info(f"📊 Testing completed. Report saved to: {report_path}")
         return self.test_results
 
-    async def run_unit_tests(self) -> Dict[str, Any]:
+    async def run_unit_tests(self) -> dict[str, Any]:
         """Run comprehensive unit tests with coverage measurement."""
         results = {"success": True, "tests_run": 0, "failures": [], "coverage": 0.0}
 
@@ -146,7 +146,7 @@ class EnhancedTestingInfrastructure:
 
         return results
 
-    async def run_integration_tests(self) -> Dict[str, Any]:
+    async def run_integration_tests(self) -> dict[str, Any]:
         """Run integration tests for cross-service communication."""
         results = {"success": True, "tests_run": 0, "failures": []}
 
@@ -181,7 +181,7 @@ class EnhancedTestingInfrastructure:
 
         return results
 
-    async def run_e2e_tests(self) -> Dict[str, Any]:
+    async def run_e2e_tests(self) -> dict[str, Any]:
         """Run end-to-end governance workflow tests."""
         results = {"success": True, "workflows_tested": [], "performance_metrics": {}}
 
@@ -228,7 +228,7 @@ class EnhancedTestingInfrastructure:
 
         return results
 
-    async def run_anchor_tests(self) -> Dict[str, Any]:
+    async def run_anchor_tests(self) -> dict[str, Any]:
         """Run Anchor program tests for blockchain components."""
         results = {"success": True, "programs_tested": [], "coverage": 0.0}
 
@@ -260,7 +260,7 @@ class EnhancedTestingInfrastructure:
 
         return results
 
-    async def run_performance_benchmarks(self) -> Dict[str, Any]:
+    async def run_performance_benchmarks(self) -> dict[str, Any]:
         """Run performance benchmarks for governance operations."""
         results = {"success": True, "benchmarks": {}, "targets_met": 0}
 
@@ -312,7 +312,7 @@ class EnhancedTestingInfrastructure:
 
         return results
 
-    async def run_security_tests(self) -> Dict[str, Any]:
+    async def run_security_tests(self) -> dict[str, Any]:
         """Run security tests and vulnerability assessments."""
         results = {"success": True, "vulnerabilities": [], "security_score": 0.0}
 

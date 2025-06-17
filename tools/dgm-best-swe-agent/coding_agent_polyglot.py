@@ -160,7 +160,7 @@ class AgenticSystem:
 Your task is to make changes to the files in the {self.git_tempdir} directory to address the <problem_description>. I have already taken care of the required dependencies.
 """
         instruction = f"{task}\n\nPlease analyze the problem description carefully. Then make edits to the code files to complete the instruction."
-        init_edit = chat_with_agent(
+        chat_with_agent(
             instruction, model=self.code_model, msg_history=[], logging=safe_log
         )
 

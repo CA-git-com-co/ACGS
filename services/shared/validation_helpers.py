@@ -8,7 +8,7 @@ across all ACGS-1 services.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any
 
 from fastapi import HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -24,9 +24,9 @@ class ValidationHelper:
 
     @staticmethod
     def create_validation_error_response(
-        exc: Union[ValidationError, RequestValidationError],
+        exc: ValidationError | RequestValidationError,
         service_name: str,
-        correlation_id: Optional[str] = None,
+        correlation_id: str | None = None,
     ) -> APIResponse:
         """
         Create standardized validation error response from Pydantic validation errors.
@@ -76,11 +76,11 @@ class ValidationHelper:
 
     @staticmethod
     def validate_model_data(
-        model_class: Type[BaseModel],
-        data: Dict[str, Any],
+        model_class: type[BaseModel],
+        data: dict[str, Any],
         service_name: str,
-        correlation_id: Optional[str] = None,
-    ) -> Union[BaseModel, APIResponse]:
+        correlation_id: str | None = None,
+    ) -> BaseModel | APIResponse:
         """
         Validate data against a Pydantic model and return either the validated model
         or an error response.
@@ -107,11 +107,11 @@ class ValidationHelper:
 
     @staticmethod
     def validate_query_params(
-        params: Dict[str, Any],
-        allowed_params: Dict[str, Type],
+        params: dict[str, Any],
+        allowed_params: dict[str, type],
         service_name: str,
-        correlation_id: Optional[str] = None,
-    ) -> Union[Dict[str, Any], APIResponse]:
+        correlation_id: str | None = None,
+    ) -> dict[str, Any] | APIResponse:
         """
         Validate query parameters against allowed types.
 
@@ -182,8 +182,8 @@ class ValidationHelper:
 
     @staticmethod
     def validate_pagination_params(
-        page: Optional[int] = None, size: Optional[int] = None, max_size: int = 100
-    ) -> Dict[str, int]:
+        page: int | None = None, size: int | None = None, max_size: int = 100
+    ) -> dict[str, int]:
         """
         Validate and normalize pagination parameters.
 
@@ -228,10 +228,10 @@ class ValidationHelper:
 
     @staticmethod
     def validate_date_range(
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
         max_range_days: int = 365,
-    ) -> Dict[str, Optional[datetime]]:
+    ) -> dict[str, datetime | None]:
         """
         Validate date range parameters.
 
@@ -266,7 +266,7 @@ class ValidationHelper:
     @staticmethod
     def sanitize_input(
         text: str,
-        max_length: Optional[int] = None,
+        max_length: int | None = None,
         allow_html: bool = False,
         strip_whitespace: bool = True,
     ) -> str:
@@ -307,7 +307,7 @@ class ValidationHelper:
 
     @staticmethod
     def validate_file_upload(
-        file_content: bytes, allowed_types: List[str], max_size_mb: int = 10
+        file_content: bytes, allowed_types: list[str], max_size_mb: int = 10
     ) -> bool:
         """
         Validate file upload content.

@@ -148,7 +148,7 @@ switch (effort) {
 
 **Pattern**: Multi-stage builds with health checks
 ```yaml
-# From docker-compose.yml
+# From infrastructure/docker/docker-compose.yml
 healthcheck:
   test: redis-cli ping
   interval: 5s

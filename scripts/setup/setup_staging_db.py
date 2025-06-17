@@ -99,7 +99,7 @@ def create_staging_database():
             synthesized_by_gs_run_id VARCHAR(100),
             verified_by_fv_run_id VARCHAR(100)
         );
-        
+
         -- Create refresh_tokens table
         CREATE TABLE IF NOT EXISTS refresh_tokens (
             id SERIAL PRIMARY KEY,
@@ -143,7 +143,7 @@ def create_staging_database():
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
-        
+
         -- Create governance_synthesis_runs table
         CREATE TABLE IF NOT EXISTS governance_synthesis_runs (
             id SERIAL PRIMARY KEY,
@@ -156,7 +156,7 @@ def create_staging_database():
             completed_at TIMESTAMP WITH TIME ZONE,
             error_message TEXT
         );
-        
+
         -- Create formal_verification_runs table
         CREATE TABLE IF NOT EXISTS formal_verification_runs (
             id SERIAL PRIMARY KEY,
@@ -169,15 +169,15 @@ def create_staging_database():
             completed_at TIMESTAMP WITH TIME ZONE,
             error_message TEXT
         );
-        
+
         -- Create alembic_version table for migration tracking
         CREATE TABLE IF NOT EXISTS alembic_version (
             version_num VARCHAR(32) NOT NULL,
             CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num)
         );
-        
+
         -- Insert a version number to indicate manual setup
-        INSERT INTO alembic_version (version_num) VALUES ('staging_manual_setup') 
+        INSERT INTO alembic_version (version_num) VALUES ('staging_manual_setup')
         ON CONFLICT (version_num) DO NOTHING;
         """
 
@@ -189,9 +189,9 @@ def create_staging_database():
         # Verify tables were created
         cursor.execute(
             """
-            SELECT table_name 
-            FROM information_schema.tables 
-            WHERE table_schema = 'public' 
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
             ORDER BY table_name;
         """
         )
@@ -225,7 +225,7 @@ def test_database_connection():
         cursor = conn.cursor()
         cursor.execute("SELECT version();")
         version = cursor.fetchone()
-        print(f"✅ Database connection successful!")
+        print("✅ Database connection successful!")
         print(f"PostgreSQL version: {version[0]}")
 
         cursor.close()

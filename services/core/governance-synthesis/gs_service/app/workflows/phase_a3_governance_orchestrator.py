@@ -27,9 +27,9 @@ import sys
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Import shared components
 sys.path.append("/home/dislove/ACGS-1/services/shared")
@@ -84,11 +84,11 @@ class WorkflowStep:
     timeout_seconds: int = 300
     retry_count: int = 3
     status: WorkflowStepStatus = WorkflowStepStatus.PENDING
-    input_data: Dict[str, Any] = field(default_factory=dict)
-    output_data: Dict[str, Any] = field(default_factory=dict)
-    error_message: Optional[str] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    input_data: dict[str, Any] = field(default_factory=dict)
+    output_data: dict[str, Any] = field(default_factory=dict)
+    error_message: str | None = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     execution_time_ms: float = 0.0
 
 
@@ -101,12 +101,12 @@ class WorkflowInstance:
     name: str
     description: str
     status: WorkflowStatus = WorkflowStatus.PENDING
-    steps: List[WorkflowStep] = field(default_factory=list)
-    context: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    steps: list[WorkflowStep] = field(default_factory=list)
+    context: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     created_by: str = "system"
     priority: str = "medium"
     total_execution_time_ms: float = 0.0
@@ -131,8 +131,8 @@ class ServiceClient:
         self.timeout = 30
 
     async def call_service(
-        self, service: str, endpoint: str, data: Dict[str, Any], method: str = "POST"
-    ) -> Dict[str, Any]:
+        self, service: str, endpoint: str, data: dict[str, Any], method: str = "POST"
+    ) -> dict[str, Any]:
         """Call an ACGS service endpoint."""
         try:
             # Simulate service call (would use actual HTTP client in production)
@@ -145,7 +145,7 @@ class ServiceClient:
                     "service": service,
                     "endpoint": endpoint,
                     "processed_data": data,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 },
                 "execution_time_ms": 100,
             }
@@ -168,8 +168,8 @@ class PhaseA3GovernanceOrchestrator:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize the governance orchestrator."""
-        self.active_workflows: Dict[str, WorkflowInstance] = {}
-        self.workflow_templates: Dict[WorkflowType, List[WorkflowStep]] = {}
+        self.active_workflows: dict[str, WorkflowInstance] = {}
+        self.workflow_templates: dict[WorkflowType, list[WorkflowStep]] = {}
         self.service_client = ServiceClient()
         self.performance_metrics = {}
 
@@ -372,14 +372,16 @@ class PhaseA3GovernanceOrchestrator:
             ),
         ]
 
-        logger.info("Initialized workflow templates for all 5 core governance workflows")
+        logger.info(
+            "Initialized workflow templates for all 5 core governance workflows"
+        )
 
     async def create_workflow(
         self,
         workflow_type: WorkflowType,
         name: str,
         description: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         created_by: str = "system",
         priority: str = "medium",
     ) -> str:
@@ -431,7 +433,9 @@ class PhaseA3GovernanceOrchestrator:
             metadata={
                 "template_version": "1.0",
                 "total_steps": len(workflow_steps),
-                "estimated_duration_seconds": sum(step.timeout_seconds for step in workflow_steps),
+                "estimated_duration_seconds": sum(
+                    step.timeout_seconds for step in workflow_steps
+                ),
             },
         )
 
@@ -465,7 +469,7 @@ class PhaseA3GovernanceOrchestrator:
             return False
 
         workflow.status = WorkflowStatus.RUNNING
-        workflow.started_at = datetime.now(timezone.utc)
+        workflow.started_at = datetime.now(UTC)
 
         # Start workflow execution in background
         asyncio.create_task(self._execute_workflow(workflow))
@@ -489,7 +493,9 @@ class PhaseA3GovernanceOrchestrator:
 
                 if not success:
                     workflow.status = WorkflowStatus.FAILED
-                    logger.error(f"Workflow {workflow.workflow_id} failed at step {step.name}")
+                    logger.error(
+                        f"Workflow {workflow.workflow_id} failed at step {step.name}"
+                    )
                     return
 
                 # Check if workflow should continue
@@ -499,7 +505,7 @@ class PhaseA3GovernanceOrchestrator:
 
             # All steps completed successfully
             workflow.status = WorkflowStatus.COMPLETED
-            workflow.completed_at = datetime.now(timezone.utc)
+            workflow.completed_at = datetime.now(UTC)
             workflow.total_execution_time_ms = (time.time() - start_time) * 1000
 
             # Update performance metrics
@@ -514,10 +520,12 @@ class PhaseA3GovernanceOrchestrator:
             workflow.status = WorkflowStatus.FAILED
             logger.error(f"Workflow {workflow.workflow_id} execution failed: {e}")
 
-    async def _execute_step(self, workflow: WorkflowInstance, step: WorkflowStep) -> bool:
+    async def _execute_step(
+        self, workflow: WorkflowInstance, step: WorkflowStep
+    ) -> bool:
         """Execute a single workflow step."""
         step.status = WorkflowStepStatus.RUNNING
-        step.started_at = datetime.now(timezone.utc)
+        step.started_at = datetime.now(UTC)
 
         step_start_time = time.time()
 
@@ -537,13 +545,15 @@ class PhaseA3GovernanceOrchestrator:
             )
 
             step.execution_time_ms = (time.time() - step_start_time) * 1000
-            step.completed_at = datetime.now(timezone.utc)
+            step.completed_at = datetime.now(UTC)
 
             if result.get("success", False):
                 step.status = WorkflowStepStatus.COMPLETED
                 step.output_data = result.get("data", {})
 
-                logger.info(f"Step {step.name} completed in {step.execution_time_ms:.2f}ms")
+                logger.info(
+                    f"Step {step.name} completed in {step.execution_time_ms:.2f}ms"
+                )
                 return True
             else:
                 step.status = WorkflowStepStatus.FAILED
@@ -556,12 +566,12 @@ class PhaseA3GovernanceOrchestrator:
             step.status = WorkflowStepStatus.FAILED
             step.error_message = str(e)
             step.execution_time_ms = (time.time() - step_start_time) * 1000
-            step.completed_at = datetime.now(timezone.utc)
+            step.completed_at = datetime.now(UTC)
 
             logger.error(f"Step {step.name} execution failed: {e}")
             return False
 
-    async def get_workflow_status(self, workflow_id: str) -> Optional[Dict[str, Any]]:
+    async def get_workflow_status(self, workflow_id: str) -> dict[str, Any] | None:
         """Get current workflow status and progress."""
         if workflow_id not in self.active_workflows:
             return None
@@ -573,7 +583,9 @@ class PhaseA3GovernanceOrchestrator:
             1 for step in workflow.steps if step.status == WorkflowStepStatus.COMPLETED
         )
         total_steps = len(workflow.steps)
-        progress_percentage = (completed_steps / total_steps * 100) if total_steps > 0 else 0
+        progress_percentage = (
+            (completed_steps / total_steps * 100) if total_steps > 0 else 0
+        )
 
         # Get current step info
         current_step = None
@@ -598,8 +610,12 @@ class PhaseA3GovernanceOrchestrator:
                 else None
             ),
             "created_at": workflow.created_at.isoformat(),
-            "started_at": (workflow.started_at.isoformat() if workflow.started_at else None),
-            "completed_at": (workflow.completed_at.isoformat() if workflow.completed_at else None),
+            "started_at": (
+                workflow.started_at.isoformat() if workflow.started_at else None
+            ),
+            "completed_at": (
+                workflow.completed_at.isoformat() if workflow.completed_at else None
+            ),
             "total_execution_time_ms": workflow.total_execution_time_ms,
             "created_by": workflow.created_by,
             "priority": workflow.priority,
@@ -607,10 +623,10 @@ class PhaseA3GovernanceOrchestrator:
 
     async def list_workflows(
         self,
-        status_filter: Optional[WorkflowStatus] = None,
-        workflow_type_filter: Optional[WorkflowType] = None,
+        status_filter: WorkflowStatus | None = None,
+        workflow_type_filter: WorkflowType | None = None,
         limit: int = 100,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """List workflows with optional filtering."""
         workflows = []
 
@@ -648,7 +664,7 @@ class PhaseA3GovernanceOrchestrator:
             return False
 
         workflow.status = WorkflowStatus.CANCELLED
-        workflow.completed_at = datetime.now(timezone.utc)
+        workflow.completed_at = datetime.now(UTC)
 
         logger.info(f"Cancelled workflow {workflow_id}")
         return True
@@ -682,12 +698,12 @@ class PhaseA3GovernanceOrchestrator:
             metrics["total_execution_time_ms"] / metrics["total_executions"]
         )
 
-    async def get_performance_metrics(self) -> Dict[str, Any]:
+    async def get_performance_metrics(self) -> dict[str, Any]:
         """Get workflow performance metrics."""
         return {
             "workflow_metrics": self.performance_metrics,
             "active_workflows": len(self.active_workflows),
             "service_endpoints": len(self.service_client.service_endpoints),
             "workflow_templates": len(self.workflow_templates),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }

@@ -11,7 +11,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from openai import OpenAI
@@ -29,12 +29,12 @@ class QwenReasoningResponse:
     """Response from Qwen model with reasoning capabilities."""
 
     content: str
-    reasoning_content: Optional[str] = None
+    reasoning_content: str | None = None
     model_used: str = ""
     response_time_ms: float = 0.0
-    token_usage: Optional[Dict[str, int]] = None
+    token_usage: dict[str, int] | None = None
     success: bool = True
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -58,7 +58,9 @@ class NVIDIAQwenClient:
     deep reasoning and analysis capabilities.
     """
 
-    def __init__(self, api_key: str, base_url: str = "https://integrate.api.nvidia.com/v1"):
+    def __init__(
+        self, api_key: str, base_url: str = "https://integrate.api.nvidia.com/v1"
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -82,7 +84,7 @@ class NVIDIAQwenClient:
     async def generate_constitutional_analysis(
         self,
         prompt: str,
-        config: Optional[QwenModelConfig] = None,
+        config: QwenModelConfig | None = None,
         enable_reasoning: bool = True,
     ) -> QwenReasoningResponse:
         """
@@ -173,7 +175,7 @@ class NVIDIAQwenClient:
         self,
         constitutional_context: str,
         synthesis_requirements: str,
-        config: Optional[QwenModelConfig] = None,
+        config: QwenModelConfig | None = None,
     ) -> QwenReasoningResponse:
         """
         Generate policy synthesis with constitutional reasoning.
@@ -212,8 +214,8 @@ considering multiple perspectives and potential edge cases.
     async def analyze_constitutional_compliance(
         self,
         policy_text: str,
-        constitutional_principles: List[str],
-        config: Optional[QwenModelConfig] = None,
+        constitutional_principles: list[str],
+        config: QwenModelConfig | None = None,
     ) -> QwenReasoningResponse:
         """
         Analyze policy compliance with constitutional principles.
@@ -226,7 +228,9 @@ considering multiple perspectives and potential edge cases.
         Returns:
             QwenReasoningResponse with compliance analysis and reasoning
         """
-        principles_text = "\n".join([f"- {principle}" for principle in constitutional_principles])
+        principles_text = "\n".join(
+            [f"- {principle}" for principle in constitutional_principles]
+        )
 
         prompt = f"""
 CONSTITUTIONAL COMPLIANCE ANALYSIS
@@ -270,9 +274,9 @@ Please format your response as JSON with the following structure:
 
     async def generate_conflict_resolution(
         self,
-        conflicting_policies: List[str],
+        conflicting_policies: list[str],
         constitutional_framework: str,
-        config: Optional[QwenModelConfig] = None,
+        config: QwenModelConfig | None = None,
     ) -> QwenReasoningResponse:
         """
         Generate conflict resolution strategies for conflicting policies.
@@ -286,7 +290,10 @@ Please format your response as JSON with the following structure:
             QwenReasoningResponse with conflict resolution and reasoning
         """
         policies_text = "\n\n".join(
-            [f"Policy {i+1}:\n{policy}" for i, policy in enumerate(conflicting_policies)]
+            [
+                f"Policy {i+1}:\n{policy}"
+                for i, policy in enumerate(conflicting_policies)
+            ]
         )
 
         prompt = f"""
@@ -315,7 +322,7 @@ Please provide both the reasoning process and the final resolution recommendatio
             prompt=prompt, config=config, enable_reasoning=True
         )
 
-    def get_model_capabilities(self) -> Dict[str, Any]:
+    def get_model_capabilities(self) -> dict[str, Any]:
         """
         Get information about model capabilities.
 
@@ -336,10 +343,10 @@ Please provide both the reasoning process and the final resolution recommendatio
 
 
 # Global NVIDIA Qwen client instance
-_nvidia_qwen_client: Optional[NVIDIAQwenClient] = None
+_nvidia_qwen_client: NVIDIAQwenClient | None = None
 
 
-def get_nvidia_qwen_client(api_key: Optional[str] = None) -> Optional[NVIDIAQwenClient]:
+def get_nvidia_qwen_client(api_key: str | None = None) -> NVIDIAQwenClient | None:
     """
     Get the global NVIDIA Qwen client instance.
 

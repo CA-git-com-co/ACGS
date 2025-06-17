@@ -408,7 +408,7 @@ async def test_concurrent_federated_evaluations():
         # Cleanup
         await evaluator.shutdown()
 
-        print(f"✅ Concurrent evaluations test successful:")
+        print("✅ Concurrent evaluations test successful:")
         print(f"  - Success rate: {success_rate:.1%}")
         print(f"  - Average submission time: {avg_submission_time:.1f}ms")
         print(f"  - Total time for {concurrent_requests} requests: {total_time:.1f}ms")
@@ -554,7 +554,7 @@ async def test_resource_utilization_monitoring():
         # Cleanup
         await evaluator.shutdown()
 
-        print(f"✅ Resource utilization monitoring successful:")
+        print("✅ Resource utilization monitoring successful:")
         print(f"  - CPU increase: {cpu_increase:.1f}%")
         print(f"  - Memory increase: {memory_increase:.1f}%")
 

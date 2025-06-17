@@ -11,7 +11,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -29,7 +29,7 @@ class ACGSValidationPipeline:
         self.warnings = []
         self.fixes_applied = []
 
-    def run_full_validation(self) -> Dict[str, Any]:
+    def run_full_validation(self) -> dict[str, Any]:
         """Run the complete validation pipeline."""
         logger.info("Starting ACGS-PGP validation pipeline")
 
@@ -53,7 +53,7 @@ class ACGSValidationPipeline:
 
         return results
 
-    def validate_syntax(self) -> Dict[str, Any]:
+    def validate_syntax(self) -> dict[str, Any]:
         """Validate Python syntax across all backend services."""
         logger.info("Validating Python syntax")
 
@@ -62,7 +62,7 @@ class ACGSValidationPipeline:
 
         for py_file in python_files:
             try:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     compile(f.read(), py_file, "exec")
             except SyntaxError as e:
                 error_msg = f"Syntax error in {py_file}: {e}"
@@ -79,7 +79,7 @@ class ACGSValidationPipeline:
             "files_checked": len(python_files),
         }
 
-    def validate_imports(self) -> Dict[str, Any]:
+    def validate_imports(self) -> dict[str, Any]:
         """Validate import statements and dependencies."""
         logger.info("Validating imports and dependencies")
 
@@ -108,14 +108,14 @@ class ACGSValidationPipeline:
             "missing_dependencies": missing_dependencies,
         }
 
-    def _check_service_imports(self, service_path: Path) -> List[str]:
+    def _check_service_imports(self, service_path: Path) -> list[str]:
         """Check imports for a specific service."""
         errors = []
 
         # Check for deprecated Pydantic imports
         for py_file in service_path.rglob("*.py"):
             try:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     content = f.read()
 
                 # Check for deprecated validator import
@@ -136,7 +136,7 @@ class ACGSValidationPipeline:
 
         return errors
 
-    def validate_schemas(self) -> Dict[str, Any]:
+    def validate_schemas(self) -> dict[str, Any]:
         """Validate Pydantic schema consistency across services."""
         logger.info("Validating schema consistency")
 
@@ -150,12 +150,12 @@ class ACGSValidationPipeline:
 
         return {"passed": len(schema_errors) == 0, "errors": schema_errors}
 
-    def _validate_shared_schemas(self, schemas_path: Path) -> List[str]:
+    def _validate_shared_schemas(self, schemas_path: Path) -> list[str]:
         """Validate shared schemas file."""
         errors = []
 
         try:
-            with open(schemas_path, "r", encoding="utf-8") as f:
+            with open(schemas_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Check for required imports
@@ -177,7 +177,7 @@ class ACGSValidationPipeline:
 
         return errors
 
-    def validate_data_consistency(self) -> Dict[str, Any]:
+    def validate_data_consistency(self) -> dict[str, Any]:
         """Validate data consistency in research documents."""
         logger.info("Validating data consistency")
 
@@ -203,7 +203,7 @@ class ACGSValidationPipeline:
         except Exception as e:
             return {"passed": False, "errors": [f"Data validation failed: {e}"]}
 
-    def validate_documentation(self) -> Dict[str, Any]:
+    def validate_documentation(self) -> dict[str, Any]:
         """Validate documentation completeness and consistency."""
         logger.info("Validating documentation")
 
@@ -224,7 +224,7 @@ class ACGSValidationPipeline:
 
         return {"passed": len(doc_errors) == 0, "errors": doc_errors}
 
-    def run_tests(self) -> Dict[str, Any]:
+    def run_tests(self) -> dict[str, Any]:
         """Run available tests."""
         logger.info("Running tests")
 
@@ -265,7 +265,7 @@ class ACGSValidationPipeline:
 
         return test_results
 
-    def apply_automatic_fixes(self) -> List[str]:
+    def apply_automatic_fixes(self) -> list[str]:
         """Apply automatic fixes for common issues."""
         logger.info("Applying automatic fixes")
 
@@ -279,13 +279,13 @@ class ACGSValidationPipeline:
 
         return fixes
 
-    def _fix_pydantic_imports(self) -> List[str]:
+    def _fix_pydantic_imports(self) -> list[str]:
         """Fix deprecated Pydantic imports."""
         fixes = []
 
         for py_file in self.project_root.rglob("*.py"):
             try:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     content = f.read()
 
                 original_content = content
@@ -331,13 +331,13 @@ class ACGSValidationPipeline:
 
         return fixes
 
-    def _fix_schema_configs(self) -> List[str]:
+    def _fix_schema_configs(self) -> list[str]:
         """Fix schema configuration issues."""
         fixes = []
 
         for py_file in self.project_root.rglob("*.py"):
             try:
-                with open(py_file, "r", encoding="utf-8") as f:
+                with open(py_file, encoding="utf-8") as f:
                     content = f.read()
 
                 original_content = content

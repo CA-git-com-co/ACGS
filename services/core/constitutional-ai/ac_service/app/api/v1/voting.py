@@ -15,7 +15,6 @@ Key Features:
 """
 
 import logging
-from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket
 from fastapi.responses import JSONResponse
@@ -45,22 +44,30 @@ class CreateVotingSessionRequest(BaseModel):
         default=ConsensusAlgorithm.SIMPLE_MAJORITY,
         description="Consensus algorithm to use",
     )
-    duration_hours: int = Field(default=72, ge=1, le=168, description="Voting duration in hours")
-    eligible_voters: Optional[List[int]] = Field(
+    duration_hours: int = Field(
+        default=72, ge=1, le=168, description="Voting duration in hours"
+    )
+    eligible_voters: list[int] | None = Field(
         default=None, description="List of eligible voter IDs"
     )
-    custom_threshold: Optional[float] = Field(
+    custom_threshold: float | None = Field(
         default=None, ge=0.0, le=1.0, description="Custom consensus threshold"
     )
-    metadata: Optional[Dict] = Field(default=None, description="Additional session metadata")
+    metadata: dict | None = Field(
+        default=None, description="Additional session metadata"
+    )
 
 
 class CastVoteRequest(BaseModel):
     """Request model for casting a vote."""
 
     vote: VoteType = Field(..., description="Vote choice")
-    reasoning: Optional[str] = Field(default=None, description="Optional vote reasoning")
-    signature: Optional[str] = Field(default=None, description="Optional cryptographic signature")
+    reasoning: str | None = Field(
+        default=None, description="Optional vote reasoning"
+    )
+    signature: str | None = Field(
+        default=None, description="Optional cryptographic signature"
+    )
 
 
 class VotingSessionResponse(BaseModel):
@@ -76,7 +83,7 @@ class VotingSessionResponse(BaseModel):
     eligible_voters_count: int
     current_votes_count: int
     time_remaining_seconds: float
-    metadata: Dict
+    metadata: dict
 
 
 class VoteStatusResponse(BaseModel):
@@ -90,9 +97,9 @@ class VoteStatusResponse(BaseModel):
     participation_rate: float
     current_result: str
     consensus_reached: bool
-    votes: Dict
-    weighted_votes: Dict
-    threshold: Dict
+    votes: dict
+    weighted_votes: dict
+    threshold: dict
 
 
 class VotingResultResponse(BaseModel):
@@ -111,7 +118,7 @@ class VotingResultResponse(BaseModel):
     actual_threshold: float
     algorithm_used: str
     result: str
-    metadata: Dict
+    metadata: dict
 
 
 # WebSocket connection manager
@@ -122,7 +129,7 @@ class VotingWebSocketManager:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.active_connections: Dict[str, List[WebSocket]] = {}
+        self.active_connections: dict[str, list[WebSocket]] = {}
 
     async def connect(self, websocket: WebSocket, session_id: str):
         # requires: Valid input parameters
@@ -204,7 +211,9 @@ async def create_voting_session(
             threshold=session.threshold,
             eligible_voters_count=len(session.eligible_voters),
             current_votes_count=len(session.current_votes),
-            time_remaining_seconds=max(0, (session.end_time - session.start_time).total_seconds()),
+            time_remaining_seconds=max(
+                0, (session.end_time - session.start_time).total_seconds()
+            ),
             metadata=session.metadata,
         )
 
@@ -352,14 +361,16 @@ async def finalize_voting_session(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/sessions", response_model=List[VotingSessionResponse])
+@router.get("/sessions", response_model=list[VotingSessionResponse])
 async def list_voting_sessions(
-    status_filter: Optional[VotingStatus] = Query(
+    status_filter: VotingStatus | None = Query(
         default=None, description="Filter by voting status"
     ),
-    amendment_id: Optional[int] = Query(default=None, description="Filter by amendment ID"),
+    amendment_id: int | None = Query(
+        default=None, description="Filter by amendment ID"
+    ),
     db: AsyncSession = Depends(get_db_session),
-) -> List[VotingSessionResponse]:
+) -> list[VotingSessionResponse]:
     """
     List all voting sessions with optional filtering.
 
@@ -403,8 +414,8 @@ async def list_voting_sessions(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/algorithms", response_model=List[Dict])
-async def get_available_algorithms() -> List[Dict]:
+@router.get("/algorithms", response_model=list[dict])
+async def get_available_algorithms() -> list[dict]:
     """
     Get list of available consensus algorithms.
 

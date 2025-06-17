@@ -10,7 +10,7 @@ import logging
 import time
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..advanced_redis_client import AdvancedRedisClient
 from .common_types import ServiceType
@@ -50,19 +50,21 @@ class GovernanceSession:
     state: SessionState = SessionState.ACTIVE
 
     # Service affinities
-    service_affinities: Dict[str, str] = field(default_factory=dict)  # service_type -> instance_id
+    service_affinities: dict[str, str] = field(
+        default_factory=dict
+    )  # service_type -> instance_id
 
     # Workflow state
     current_step: str = "initial"
-    completed_steps: List[str] = field(default_factory=list)
-    workflow_data: Dict[str, Any] = field(default_factory=dict)
+    completed_steps: list[str] = field(default_factory=list)
+    workflow_data: dict[str, Any] = field(default_factory=dict)
 
     # Performance tracking
-    step_durations: Dict[str, float] = field(default_factory=dict)
-    total_duration: Optional[float] = None
+    step_durations: dict[str, float] = field(default_factory=dict)
+    total_duration: float | None = None
 
     # Metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def is_active(self) -> bool:
@@ -94,11 +96,11 @@ class GovernanceSession:
         self.service_affinities[service_type.value] = instance_id
         self.update_activity()
 
-    def get_service_affinity(self, service_type: ServiceType) -> Optional[str]:
+    def get_service_affinity(self, service_type: ServiceType) -> str | None:
         """Get service affinity for a service type."""
         return self.service_affinities.get(service_type.value)
 
-    def advance_step(self, step_name: str, step_data: Optional[Dict[str, Any]] = None):
+    def advance_step(self, step_name: str, step_data: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -133,12 +135,12 @@ class GovernanceSession:
         self.total_duration = self.age_seconds
         self.update_activity()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert session to dictionary."""
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "GovernanceSession":
+    def from_dict(cls, data: dict[str, Any]) -> "GovernanceSession":
         """Create session from dictionary."""
         # Convert enum fields
         data["workflow_type"] = GovernanceWorkflowType(data["workflow_type"])
@@ -156,7 +158,7 @@ class GovernanceSessionManager:
 
     def __init__(
         self,
-        redis_client: Optional[AdvancedRedisClient] = None,
+        redis_client: AdvancedRedisClient | None = None,
         session_ttl: int = 3600,  # 1 hour default
         cleanup_interval: int = 300,  # 5 minutes
     ):
@@ -176,10 +178,10 @@ class GovernanceSessionManager:
         self.cleanup_interval = cleanup_interval
 
         # In-memory cache for active sessions
-        self._sessions: Dict[str, GovernanceSession] = {}
+        self._sessions: dict[str, GovernanceSession] = {}
 
         # Cleanup task
-        self._cleanup_task: Optional[asyncio.Task] = None
+        self._cleanup_task: asyncio.Task | None = None
         self._running = False
 
     async def start(self):
@@ -221,7 +223,7 @@ class GovernanceSessionManager:
         self,
         workflow_type: GovernanceWorkflowType,
         user_id: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> GovernanceSession:
         """
         Create a new governance session.
@@ -251,10 +253,12 @@ class GovernanceSessionManager:
         self._sessions[session_id] = session
         await self._persist_session(session)
 
-        logger.info(f"Created governance session {session_id} for {workflow_type.value}")
+        logger.info(
+            f"Created governance session {session_id} for {workflow_type.value}"
+        )
         return session
 
-    async def get_session(self, session_id: str) -> Optional[GovernanceSession]:
+    async def get_session(self, session_id: str) -> GovernanceSession | None:
         """
         Get governance session by ID.
 
@@ -319,7 +323,7 @@ class GovernanceSessionManager:
 
     async def get_service_affinity(
         self, session_id: str, service_type: ServiceType
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Get service affinity for a session.
 
@@ -339,7 +343,7 @@ class GovernanceSessionManager:
         self,
         session_id: str,
         step_name: str,
-        step_data: Optional[Dict[str, Any]] = None,
+        step_data: dict[str, Any] | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -372,7 +376,9 @@ class GovernanceSessionManager:
             session.complete_workflow()
             await self.update_session(session)
 
-    async def get_active_sessions(self, user_id: Optional[str] = None) -> List[GovernanceSession]:
+    async def get_active_sessions(
+        self, user_id: str | None = None
+    ) -> list[GovernanceSession]:
         """
         Get active governance sessions.
 
@@ -391,7 +397,7 @@ class GovernanceSessionManager:
 
         return active_sessions
 
-    async def get_session_stats(self) -> Dict[str, Any]:
+    async def get_session_stats(self) -> dict[str, Any]:
         """Get session statistics."""
         active_sessions = await self.get_active_sessions()
 
@@ -408,7 +414,9 @@ class GovernanceSessionManager:
             "session_ttl": self.session_ttl,
         }
 
-    def _generate_session_id(self, workflow_type: GovernanceWorkflowType, user_id: str) -> str:
+    def _generate_session_id(
+        self, workflow_type: GovernanceWorkflowType, user_id: str
+    ) -> str:
         """Generate unique session ID."""
         timestamp = str(time.time())
         data = f"{workflow_type.value}:{user_id}:{timestamp}"
@@ -424,7 +432,7 @@ class GovernanceSessionManager:
             data = json.dumps(session.to_dict())
             await self.redis_client.setex(key, self.session_ttl, data)
 
-    async def _load_session(self, session_id: str) -> Optional[Dict[str, Any]]:
+    async def _load_session(self, session_id: str) -> dict[str, Any] | None:
         """Load session from Redis."""
         if self.redis_client:
             key = f"governance_session:{session_id}"
@@ -466,7 +474,7 @@ class GovernanceSessionManager:
 
 
 # Global governance session manager
-_governance_session_manager: Optional[GovernanceSessionManager] = None
+_governance_session_manager: GovernanceSessionManager | None = None
 
 
 async def get_governance_session_manager() -> GovernanceSessionManager:

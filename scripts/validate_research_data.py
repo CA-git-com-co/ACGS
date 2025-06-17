@@ -9,7 +9,7 @@ and checks for numerical discrepancies between text claims and table data.
 import logging
 import re
 import sys
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -26,7 +26,7 @@ class ResearchDataValidator:
         self.warnings = []
         self.corrupted_entries = []
 
-    def validate_table_data(self, data: List[Dict[str, Any]], table_name: str) -> bool:
+    def validate_table_data(self, data: list[dict[str, Any]], table_name: str) -> bool:
         """Validate table data for corruption and consistency."""
         logger.info(f"Validating table: {table_name}")
 
@@ -85,7 +85,7 @@ class ResearchDataValidator:
         return bool(re.search(footnote_pattern, value))
 
     def validate_numerical_consistency(
-        self, text_claims: Dict[str, float], table_data: Dict[str, float]
+        self, text_claims: dict[str, float], table_data: dict[str, float]
     ) -> bool:
         """Validate consistency between text claims and table data."""
         logger.info("Validating numerical consistency between text and tables")
@@ -110,7 +110,7 @@ class ResearchDataValidator:
 
         return is_consistent
 
-    def fix_corrupted_data(self, data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def fix_corrupted_data(self, data: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Attempt to fix corrupted data entries."""
         logger.info("Attempting to fix corrupted data")
 
@@ -140,7 +140,7 @@ class ResearchDataValidator:
         # If no pattern matches, return original value
         return value
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate a comprehensive validation report."""
         return {
             "errors": self.errors,

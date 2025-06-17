@@ -17,7 +17,7 @@ import logging
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -62,12 +62,12 @@ class AuditEntry:
     timestamp: datetime
     event_type: AuditEventType
     conflict_id: int
-    user_id: Optional[int]
-    event_data: Dict[str, Any]
+    user_id: int | None
+    event_data: dict[str, Any]
     integrity_hash: str
-    previous_hash: Optional[str]
+    previous_hash: str | None
     audit_level: AuditLevel
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -75,12 +75,12 @@ class ConflictResolutionTrace:
     """Complete trace of conflict resolution process."""
 
     conflict_id: int
-    detection_trace: Optional[Dict[str, Any]]
-    resolution_attempts: List[Dict[str, Any]]
-    escalation_trace: Optional[Dict[str, Any]]
-    final_outcome: Dict[str, Any]
+    detection_trace: dict[str, Any] | None
+    resolution_attempts: list[dict[str, Any]]
+    escalation_trace: dict[str, Any] | None
+    final_outcome: dict[str, Any]
     total_processing_time: float
-    audit_entries: List[AuditEntry]
+    audit_entries: list[AuditEntry]
     integrity_verified: bool
 
 
@@ -112,11 +112,11 @@ class ConflictAuditSystem:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize the audit system."""
-        self.audit_chain: List[AuditEntry] = []
-        self.last_hash: Optional[str] = None
+        self.audit_chain: list[AuditEntry] = []
+        self.last_hash: str | None = None
 
         # Performance tracking
-        self.metrics_history: List[PerformanceMetrics] = []
+        self.metrics_history: list[PerformanceMetrics] = []
         self.current_metrics = {
             "conflicts_detected": 0,
             "resolutions_attempted": 0,
@@ -136,7 +136,7 @@ class ConflictAuditSystem:
         db: AsyncSession,
         conflict: ACConflictResolution,
         detection_result: ConflictDetectionResult,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
         audit_level: AuditLevel = None,
     ) -> AuditEntry:
         """Log conflict detection event."""
@@ -146,7 +146,9 @@ class ConflictAuditSystem:
             "confidence_score": detection_result.confidence_score,
             "priority_score": detection_result.priority_score,
             "principle_ids": detection_result.principle_ids,
-            "detection_method": detection_result.detection_metadata.get("method", "unknown"),
+            "detection_method": detection_result.detection_metadata.get(
+                "method", "unknown"
+            ),
             "recommended_strategy": detection_result.recommended_strategy,
         }
 
@@ -168,7 +170,7 @@ class ConflictAuditSystem:
         db: AsyncSession,
         conflict: ACConflictResolution,
         resolution_result: ResolutionResult,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
         audit_level: AuditLevel = None,
     ) -> AuditEntry:
         """Log resolution attempt event."""
@@ -203,7 +205,9 @@ class ConflictAuditSystem:
         if resolution_result.success:
             self.current_metrics["resolutions_succeeded"] += 1
 
-        self.current_metrics["total_processing_time"] += resolution_result.processing_time
+        self.current_metrics[
+            "total_processing_time"
+        ] += resolution_result.processing_time
 
         return audit_entry
 
@@ -212,8 +216,8 @@ class ConflictAuditSystem:
         db: AsyncSession,
         conflict: ACConflictResolution,
         escalation_request: EscalationRequest,
-        escalation_response: Optional[EscalationResponse] = None,
-        user_id: Optional[int] = None,
+        escalation_response: EscalationResponse | None = None,
+        user_id: int | None = None,
         audit_level: AuditLevel = None,
     ) -> AuditEntry:
         """Log escalation event."""
@@ -223,7 +227,9 @@ class ConflictAuditSystem:
             "urgency_score": escalation_request.urgency_score,
             "required_roles": escalation_request.required_roles,
             "timeout_deadline": escalation_request.timeout_deadline.isoformat(),
-            "notification_channels": [ch.value for ch in escalation_request.notification_channels],
+            "notification_channels": [
+                ch.value for ch in escalation_request.notification_channels
+            ],
         }
 
         if escalation_response:
@@ -252,7 +258,7 @@ class ConflictAuditSystem:
         self,
         db: AsyncSession,
         conflict: ACConflictResolution,
-        intervention_data: Dict[str, Any],
+        intervention_data: dict[str, Any],
         user_id: int,
         audit_level: AuditLevel = None,
     ) -> AuditEntry:
@@ -283,7 +289,7 @@ class ConflictAuditSystem:
         conflict: ACConflictResolution,
         old_status: str,
         new_status: str,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
         audit_level: AuditLevel = None,
     ) -> AuditEntry:
         """Log conflict status change event."""
@@ -317,7 +323,9 @@ class ConflictAuditSystem:
 
             # Organize entries by type
             detection_entries = [
-                e for e in audit_entries if e.event_type == AuditEventType.CONFLICT_DETECTED
+                e
+                for e in audit_entries
+                if e.event_type == AuditEventType.CONFLICT_DETECTED
             ]
             resolution_entries = [
                 e
@@ -330,11 +338,15 @@ class ConflictAuditSystem:
                 ]
             ]
             escalation_entries = [
-                e for e in audit_entries if e.event_type == AuditEventType.ESCALATION_TRIGGERED
+                e
+                for e in audit_entries
+                if e.event_type == AuditEventType.ESCALATION_TRIGGERED
             ]
 
             # Build trace components
-            detection_trace = detection_entries[0].event_data if detection_entries else None
+            detection_trace = (
+                detection_entries[0].event_data if detection_entries else None
+            )
 
             resolution_attempts = []
             for entry in resolution_entries:
@@ -348,7 +360,9 @@ class ConflictAuditSystem:
                     }
                 )
 
-            escalation_trace = escalation_entries[0].event_data if escalation_entries else None
+            escalation_trace = (
+                escalation_entries[0].event_data if escalation_entries else None
+            )
 
             # Determine final outcome
             final_outcome = {}
@@ -362,7 +376,9 @@ class ConflictAuditSystem:
                 }
 
             # Calculate total processing time
-            total_time = sum(attempt.get("processing_time", 0) for attempt in resolution_attempts)
+            total_time = sum(
+                attempt.get("processing_time", 0) for attempt in resolution_attempts
+            )
 
             # Verify audit chain integrity
             integrity_verified = await self._verify_audit_chain_integrity(audit_entries)
@@ -399,7 +415,9 @@ class ConflictAuditSystem:
             )
 
             # Calculate system availability (simplified)
-            error_rate = (self.current_metrics["errors_encountered"] / max(total_attempts, 1)) * 100
+            error_rate = (
+                self.current_metrics["errors_encountered"] / max(total_attempts, 1)
+            ) * 100
             system_availability = max(0, 100 - error_rate)
 
             # Calculate throughput (conflicts per hour)

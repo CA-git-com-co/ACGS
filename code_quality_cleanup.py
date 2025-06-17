@@ -224,7 +224,7 @@ class CodeQualityCleanup:
         for py_file in python_files:
             if self._should_format_file(py_file):
                 try:
-                    with open(py_file, "r", encoding="utf-8") as f:
+                    with open(py_file, encoding="utf-8") as f:
                         lines = f.readlines()
 
                     # Remove large blocks of commented code (5+ consecutive comment lines)
@@ -348,7 +348,7 @@ class CodeQualityCleanup:
             + len(self.quality_report["rust_files_formatted"])
         )
 
-        logger.info(f"📊 Summary:")
+        logger.info("📊 Summary:")
         logger.info(f"  - {total_files} files formatted")
         logger.info(
             f"  - {len(self.quality_report['unused_imports_removed'])} files cleaned of unused imports"

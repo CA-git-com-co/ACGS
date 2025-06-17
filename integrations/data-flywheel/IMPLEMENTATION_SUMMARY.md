@@ -206,7 +206,7 @@ integrations/data-flywheel/
 
 ### **Next Steps**
 1. **Configure NGC API Key** - Add your NVIDIA NGC API key to `.env`
-2. **Deploy Services** - Run `docker-compose up -d` to start all services
+2. **Deploy Services** - Run `docker-compose -f infrastructure/docker/docker-compose.yml up -d` to start all services
 3. **Validate Integration** - Execute test scripts to confirm functionality
 4. **Create First Job** - Submit a governance optimization job
 5. **Monitor Results** - Use Grafana dashboards to track performance

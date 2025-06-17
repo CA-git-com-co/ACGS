@@ -5,7 +5,7 @@ Validates the monitoring infrastructure and endpoints for ACGS Phase 3 deploymen
 """
 
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 import requests
 
@@ -17,7 +17,7 @@ class Phase3MonitoringValidator:
         self.alertmanager_url = "http://localhost:9093"
         self.results = []
 
-    def validate_prometheus(self) -> Dict[str, Any]:
+    def validate_prometheus(self) -> dict[str, Any]:
         """Validate Prometheus is running and configured correctly."""
         print("🔍 Validating Prometheus...")
         result = {
@@ -87,7 +87,7 @@ class Phase3MonitoringValidator:
 
         return result
 
-    def validate_grafana(self) -> Dict[str, Any]:
+    def validate_grafana(self) -> dict[str, Any]:
         """Validate Grafana is running and accessible."""
         print("📊 Validating Grafana...")
         result = {
@@ -125,7 +125,7 @@ class Phase3MonitoringValidator:
 
         return result
 
-    def validate_alertmanager(self) -> Dict[str, Any]:
+    def validate_alertmanager(self) -> dict[str, Any]:
         """Validate AlertManager is running and configured."""
         print("🚨 Validating AlertManager...")
         result = {
@@ -175,7 +175,7 @@ class Phase3MonitoringValidator:
 
         return result
 
-    def validate_phase3_configuration(self) -> Dict[str, Any]:
+    def validate_phase3_configuration(self) -> dict[str, Any]:
         """Validate Phase 3 specific configuration."""
         print("⚙️ Validating Phase 3 Configuration...")
         result = {
@@ -264,7 +264,7 @@ class Phase3MonitoringValidator:
         for result in self.results:
             print(f"\n{result['service']}: {result['status']}")
 
-            for key, value in result["details"].items():
+            for _key, value in result["details"].items():
                 print(f"  {value}")
 
             if result["issues"]:
@@ -276,7 +276,7 @@ class Phase3MonitoringValidator:
         operational_count = sum(1 for r in self.results if "✅" in r["status"])
         total_count = len(self.results)
 
-        print(f"\n🎯 Summary")
+        print("\n🎯 Summary")
         print("=" * 50)
         print(f"Operational Services: {operational_count}/{total_count}")
         print(
@@ -284,7 +284,7 @@ class Phase3MonitoringValidator:
         )
 
         # Recommendations
-        print(f"\n💡 Recommendations")
+        print("\n💡 Recommendations")
         print("=" * 50)
         if operational_count == total_count:
             print("✅ All monitoring services operational")

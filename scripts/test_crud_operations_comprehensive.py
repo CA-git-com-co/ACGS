@@ -8,7 +8,7 @@ import asyncio
 import json
 import subprocess
 import sys
-from typing import Any, Dict
+from typing import Any
 
 # Service configuration - using nginx gateway on port 8000
 SERVICES = {
@@ -66,10 +66,10 @@ class CRUDTester:
         self,
         method: str,
         url: str,
-        headers: Dict[str, str] = None,
-        data: Dict[str, Any] = None,
+        headers: dict[str, str] = None,
+        data: dict[str, Any] = None,
         timeout: int = 10,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute curl command and return response."""
         cmd = ["curl", "-s", "-w", "\\n%{http_code}", "-X", method]
 
@@ -167,7 +167,7 @@ class CRUDTester:
         if register_result["success"]:
             print(f"✅ Test user registered: {test_username}")
         else:
-            print(f"⚠️  Test user registration failed, trying existing user")
+            print("⚠️  Test user registration failed, trying existing user")
             test_username = "admin_user"
 
         # Try to authenticate with token endpoint (OAuth2 style)
@@ -223,7 +223,7 @@ class CRUDTester:
                 self.auth_token = response_data.get("access_token")
                 if self.auth_token:
                     self.success_count += 1
-                    print(f"✅ Authentication successful")
+                    print("✅ Authentication successful")
                     return True
             except json.JSONDecodeError:
                 pass
@@ -421,7 +421,7 @@ class CRUDTester:
         self.test_other_services_crud()
 
         # Print summary
-        print(f"\n📊 Test Summary:")
+        print("\n📊 Test Summary:")
         print(f"Total tests: {self.total_tests}")
         print(f"Successful: {self.success_count}")
         print(f"Failed: {self.total_tests - self.success_count}")

@@ -7,7 +7,7 @@ with proper configuration and lifecycle management.
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, Type, TypeVar
+from typing import Any, TypeVar
 
 from ..common.error_handling import ACGSException
 from .interfaces import CacheInterface, DatabaseInterface
@@ -25,7 +25,7 @@ class ServiceProvider(ABC):
         """Create a service instance."""
 
     @abstractmethod
-    async def configure_instance(self, instance: Any, config: Dict[str, Any]) -> Any:
+    async def configure_instance(self, instance: Any, config: dict[str, Any]) -> Any:
         """Configure a service instance."""
 
     @abstractmethod
@@ -36,7 +36,7 @@ class ServiceProvider(ABC):
 class DatabaseProvider(ServiceProvider):
     """Provider for database service instances."""
 
-    def __init__(self, connection_string: str, config: Dict[str, Any] = None):
+    def __init__(self, connection_string: str, config: dict[str, Any] = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -55,7 +55,7 @@ class DatabaseProvider(ServiceProvider):
         # This would create actual database connection in production
         from ..database.pool_manager import PoolConfig
 
-        pool_config = PoolConfig(
+        PoolConfig(
             min_connections=self.config.get("min_connections", 5),
             max_connections=self.config.get("max_connections", 20),
             pool_timeout=self.config.get("pool_timeout", 30.0),
@@ -75,13 +75,15 @@ class DatabaseProvider(ServiceProvider):
                 # sha256: func_hash
                 pass
 
-            async def execute_query(self, query: str, params: Dict[str, Any] = None):
+            async def execute_query(self, query: str, params: dict[str, Any] = None):
                 # requires: Valid input parameters
                 # ensures: Correct function execution
                 # sha256: func_hash
                 return []
 
-            async def execute_command(self, command: str, params: Dict[str, Any] = None):
+            async def execute_command(
+                self, command: str, params: dict[str, Any] = None
+            ):
                 # requires: Valid input parameters
                 # ensures: Correct function execution
                 # sha256: func_hash
@@ -102,7 +104,7 @@ class DatabaseProvider(ServiceProvider):
         return MockDatabaseService()
 
     async def configure_instance(
-        self, instance: DatabaseInterface, config: Dict[str, Any]
+        self, instance: DatabaseInterface, config: dict[str, Any]
     ) -> DatabaseInterface:
         """Configure database instance."""
         await instance.connect()
@@ -116,7 +118,7 @@ class DatabaseProvider(ServiceProvider):
 class CacheProvider(ServiceProvider):
     """Provider for cache service instances."""
 
-    def __init__(self, cache_url: str, config: Dict[str, Any] = None):
+    def __init__(self, cache_url: str, config: dict[str, Any] = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -141,10 +143,12 @@ class CacheProvider(ServiceProvider):
                 # sha256: func_hash
                 self._cache = {}
 
-            async def get(self, key: str) -> Optional[Any]:
+            async def get(self, key: str) -> Any | None:
                 return self._cache.get(key)
 
-            async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+            async def set(
+                self, key: str, value: Any, ttl: int | None = None
+            ) -> bool:
                 self._cache[key] = value
                 return True
 
@@ -158,13 +162,13 @@ class CacheProvider(ServiceProvider):
                 self._cache.clear()
                 return True
 
-            async def health_check(self) -> Dict[str, Any]:
+            async def health_check(self) -> dict[str, Any]:
                 return {"status": "healthy", "keys": len(self._cache)}
 
         return MockCacheService()
 
     async def configure_instance(
-        self, instance: CacheInterface, config: Dict[str, Any]
+        self, instance: CacheInterface, config: dict[str, Any]
     ) -> CacheInterface:
         """Configure cache instance."""
         # Configuration would be applied here
@@ -183,14 +187,14 @@ class ServiceFactory:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize service factory."""
-        self.providers: Dict[Type, ServiceProvider] = {}
-        self.configurations: Dict[Type, Dict[str, Any]] = {}
+        self.providers: dict[type, ServiceProvider] = {}
+        self.configurations: dict[type, dict[str, Any]] = {}
 
     def register_provider(
         self,
-        service_type: Type[T],
+        service_type: type[T],
         provider: ServiceProvider,
-        config: Dict[str, Any] = None,
+        config: dict[str, Any] = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -207,7 +211,7 @@ class ServiceFactory:
         self.configurations[service_type] = config or {}
         logger.debug(f"Registered provider for {service_type}")
 
-    async def create_service(self, service_type: Type[T]) -> T:
+    async def create_service(self, service_type: type[T]) -> T:
         """
         Create a service instance using registered provider.
 
@@ -221,7 +225,9 @@ class ServiceFactory:
             ACGSException: If no provider is registered
         """
         if service_type not in self.providers:
-            raise ACGSException(f"No provider registered for {service_type}", "PROVIDER_NOT_FOUND")
+            raise ACGSException(
+                f"No provider registered for {service_type}", "PROVIDER_NOT_FOUND"
+            )
 
         provider = self.providers[service_type]
         config = self.configurations[service_type]
@@ -242,7 +248,7 @@ class ServiceFactory:
                 "SERVICE_CREATION_FAILED",
             )
 
-    async def dispose_service(self, service_type: Type[T], instance: T):
+    async def dispose_service(self, service_type: type[T], instance: T):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -276,9 +282,9 @@ class ConfigurationProvider:
             config_source: Source of configuration (environment, file, etc.)
         """
         self.config_source = config_source
-        self._config_cache: Dict[str, Any] = {}
+        self._config_cache: dict[str, Any] = {}
 
-    def get_service_config(self, service_name: str) -> Dict[str, Any]:
+    def get_service_config(self, service_name: str) -> dict[str, Any]:
         """
         Get configuration for a service.
 
@@ -297,7 +303,7 @@ class ConfigurationProvider:
 
         return config
 
-    def _load_config(self, service_name: str) -> Dict[str, Any]:
+    def _load_config(self, service_name: str) -> dict[str, Any]:
         """Load configuration from source."""
         # Default configuration
         default_config = {
@@ -364,8 +370,8 @@ class ConfigurationProvider:
 
 
 # Global instances
-_service_factory: Optional[ServiceFactory] = None
-_config_provider: Optional[ConfigurationProvider] = None
+_service_factory: ServiceFactory | None = None
+_config_provider: ConfigurationProvider | None = None
 
 
 def get_service_factory() -> ServiceFactory:

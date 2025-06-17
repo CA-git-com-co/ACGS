@@ -7,15 +7,22 @@ import asyncio
 import json
 import logging
 import time
-from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import httpx
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
-from .enhanced_service_registry import CircuitBreaker, ServiceStatus, enhanced_service_registry
+from .enhanced_service_registry import (
+    CircuitBreaker,
+    enhanced_service_registry,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,12 +42,12 @@ class ServiceCallResult:
     """Result of a service call."""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
-    status_code: Optional[int] = None
+    data: dict[str, Any] | None = None
+    error: str | None = None
+    status_code: int | None = None
     response_time: float = 0.0
-    service_name: Optional[str] = None
-    endpoint: Optional[str] = None
+    service_name: str | None = None
+    endpoint: str | None = None
     retries_attempted: int = 0
 
 
@@ -67,13 +74,15 @@ class EnhancedServiceClient:
         # HTTP client with connection pooling
         self.http_client = httpx.AsyncClient(
             timeout=httpx.Timeout(timeout, connect=connect_timeout),
-            limits=httpx.Limits(max_connections=connection_pool_size, max_keepalive_connections=20),
+            limits=httpx.Limits(
+                max_connections=connection_pool_size, max_keepalive_connections=20
+            ),
             http2=True,
             follow_redirects=True,
         )
 
         # Circuit breakers for each service
-        self.circuit_breakers: Dict[str, CircuitBreaker] = {}
+        self.circuit_breakers: dict[str, CircuitBreaker] = {}
 
         # Performance metrics
         self.call_metrics = {
@@ -124,14 +133,18 @@ class EnhancedServiceClient:
         self,
         method: RequestMethod,
         url: str,
-        data: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        data: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> httpx.Response:
         """Make HTTP request with retry logic."""
         request_kwargs = {"url": url, "headers": headers or {}, "params": params}
 
-        if data and method in [RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH]:
+        if data and method in [
+            RequestMethod.POST,
+            RequestMethod.PUT,
+            RequestMethod.PATCH,
+        ]:
             request_kwargs["json"] = data
 
         if method == RequestMethod.GET:
@@ -152,11 +165,11 @@ class EnhancedServiceClient:
         service_name: str,
         endpoint: str,
         method: RequestMethod = RequestMethod.GET,
-        data: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        data: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        params: dict[str, Any] | None = None,
         use_fallback: bool = True,
-        timeout_override: Optional[float] = None,
+        timeout_override: float | None = None,
     ) -> ServiceCallResult:
         """Make a call to another ACGS service with enhanced reliability."""
         start_time = time.time()
@@ -205,12 +218,18 @@ class EnhancedServiceClient:
         # Override timeout if specified
         if timeout_override:
             original_timeout = self.http_client.timeout
-            self.http_client.timeout = httpx.Timeout(timeout_override, connect=self.connect_timeout)
+            self.http_client.timeout = httpx.Timeout(
+                timeout_override, connect=self.connect_timeout
+            )
 
         try:
             # Make the request with retry logic
             response = await self._make_http_request(
-                method=method, url=url, data=data, headers=default_headers, params=params
+                method=method,
+                url=url,
+                data=data,
+                headers=default_headers,
+                params=params,
             )
 
             response_time = time.time() - start_time
@@ -264,12 +283,12 @@ class EnhancedServiceClient:
     async def call_service_with_fallback_chain(
         self,
         primary_service: str,
-        fallback_services: List[str],
+        fallback_services: list[str],
         endpoint: str,
         method: RequestMethod = RequestMethod.GET,
-        data: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        data: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> ServiceCallResult:
         """Call service with a chain of fallbacks."""
         services_to_try = [primary_service] + fallback_services
@@ -302,8 +321,8 @@ class EnhancedServiceClient:
         )
 
     async def batch_call_services(
-        self, calls: List[Dict[str, Any]], max_concurrent: int = 10
-    ) -> List[ServiceCallResult]:
+        self, calls: list[dict[str, Any]], max_concurrent: int = 10
+    ) -> list[ServiceCallResult]:
         """Make multiple service calls concurrently."""
         semaphore = asyncio.Semaphore(max_concurrent)
 
@@ -352,11 +371,13 @@ class EnhancedServiceClient:
             alpha * response_time + (1 - alpha) * self.call_metrics["avg_response_time"]
         )
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get client performance metrics."""
         total_calls = self.call_metrics["total_calls"]
         success_rate = (
-            self.call_metrics["successful_calls"] / total_calls if total_calls > 0 else 1.0
+            self.call_metrics["successful_calls"] / total_calls
+            if total_calls > 0
+            else 1.0
         )
 
         return {
@@ -380,10 +401,10 @@ async def call_service(
     service_name: str,
     endpoint: str,
     method: str = "GET",
-    data: Optional[Dict[str, Any]] = None,
-    headers: Optional[Dict[str, str]] = None,
-    timeout: Optional[float] = None,
-) -> Optional[Dict[str, Any]]:
+    data: dict[str, Any] | None = None,
+    headers: dict[str, str] | None = None,
+    timeout: float | None = None,
+) -> dict[str, Any] | None:
     """Convenience function for service calls."""
     method_enum = RequestMethod(method.upper())
 

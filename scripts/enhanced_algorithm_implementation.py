@@ -9,7 +9,7 @@ enhancement analysis for the ACGS-PGP framework.
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(
@@ -25,8 +25,8 @@ class ValidationResult:
     is_valid: bool
     confidence: float
     explanation: str
-    suggestions: List[str]
-    metadata: Dict[str, Any]
+    suggestions: list[str]
+    metadata: dict[str, Any]
 
 
 class EnhancedGSEngine:
@@ -37,7 +37,7 @@ class EnhancedGSEngine:
         self.active_learning_data = []
         self.xai_explainer = XAIExplainer()
 
-    def _load_formal_spec_templates(self) -> Dict[str, str]:
+    def _load_formal_spec_templates(self) -> dict[str, str]:
         """Load formal specification language templates."""
         return {
             "access_control": """
@@ -72,7 +72,7 @@ class EnhancedGSEngine:
         }
 
     def synthesize_with_formal_specs(
-        self, principle: Dict[str, Any], target_context: str
+        self, principle: dict[str, Any], target_context: str
     ) -> ValidationResult:
         """Synthesize rules using formal specification templates."""
         logger.info(
@@ -107,7 +107,7 @@ class EnhancedGSEngine:
             # Fallback to LLM-based synthesis
             return self._llm_synthesis_fallback(principle, target_context)
 
-    def _select_template(self, principle: Dict[str, Any], context: str) -> str:
+    def _select_template(self, principle: dict[str, Any], context: str) -> str:
         """Select appropriate formal specification template."""
         content = principle.get("content", "").lower()
 
@@ -123,8 +123,8 @@ class EnhancedGSEngine:
             return "access_control"  # Default template
 
     def _extract_parameters(
-        self, principle: Dict[str, Any], template_name: str
-    ) -> Dict[str, str]:
+        self, principle: dict[str, Any], template_name: str
+    ) -> dict[str, str]:
         """Extract parameters from principle for template instantiation."""
         content = principle.get("content", "")
 
@@ -190,7 +190,7 @@ class EnhancedGSEngine:
         return "true"  # Default condition
 
     def _instantiate_template(
-        self, template_name: str, parameters: Dict[str, str]
+        self, template_name: str, parameters: dict[str, str]
     ) -> str:
         """Instantiate template with extracted parameters."""
         template = self.formal_spec_templates[template_name]
@@ -208,8 +208,8 @@ class EnhancedGSEngine:
         return template.strip()
 
     def _validate_generated_rule(
-        self, rule_content: str, principle: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, rule_content: str, principle: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate the generated rule against the principle."""
         # Simplified validation logic
         is_valid = len(rule_content.strip()) > 0
@@ -226,7 +226,7 @@ class EnhancedGSEngine:
         }
 
     def _llm_synthesis_fallback(
-        self, principle: Dict[str, Any], context: str
+        self, principle: dict[str, Any], context: str
     ) -> ValidationResult:
         """Fallback to LLM-based synthesis when templates don't apply."""
         logger.info("Using LLM synthesis fallback")
@@ -244,7 +244,7 @@ class EnhancedGSEngine:
             metadata={"method": "llm_fallback", "rule_content": rule_content},
         )
 
-    def implement_active_learning(self, validation_failures: List[Dict[str, Any]]):
+    def implement_active_learning(self, validation_failures: list[dict[str, Any]]):
         """Implement active learning from validation failures."""
         logger.info(
             f"Processing {len(validation_failures)} validation failures for active learning"
@@ -260,8 +260,8 @@ class EnhancedGSEngine:
         self.active_learning_data.extend(validation_failures)
 
     def _analyze_failure_patterns(
-        self, failures: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, failures: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Analyze patterns in validation failures."""
         patterns = {"common_errors": {}, "principle_types": {}, "context_issues": {}}
 
@@ -278,7 +278,7 @@ class EnhancedGSEngine:
 
         return patterns
 
-    def _update_templates_from_patterns(self, patterns: Dict[str, Any]):
+    def _update_templates_from_patterns(self, patterns: dict[str, Any]):
         """Update formal specification templates based on failure patterns."""
         # Identify most common failure types
         common_errors = patterns.get("common_errors", {})
@@ -297,8 +297,8 @@ class XAIExplainer:
     """Explainable AI component for validation failures."""
 
     def explain_validation_failure(
-        self, rule: str, principle: Dict[str, Any], failure_reason: str
-    ) -> Dict[str, Any]:
+        self, rule: str, principle: dict[str, Any], failure_reason: str
+    ) -> dict[str, Any]:
         """Provide detailed explanation for validation failure."""
         explanation = {
             "failure_type": self._categorize_failure(failure_reason),
@@ -323,7 +323,7 @@ class XAIExplainer:
             return "unknown_error"
 
     def _identify_root_cause(
-        self, rule: str, principle: Dict[str, Any], failure_reason: str
+        self, rule: str, principle: dict[str, Any], failure_reason: str
     ) -> str:
         """Identify the root cause of the validation failure."""
         # Analyze rule structure and principle content
@@ -337,8 +337,8 @@ class XAIExplainer:
             return "Complex interaction between principle and rule generation logic"
 
     def _generate_suggestions(
-        self, rule: str, principle: Dict[str, Any], failure_reason: str
-    ) -> List[str]:
+        self, rule: str, principle: dict[str, Any], failure_reason: str
+    ) -> list[str]:
         """Generate actionable suggestions for fixing the validation failure."""
         suggestions = []
 

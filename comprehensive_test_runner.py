@@ -12,7 +12,6 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -36,7 +35,7 @@ class ComprehensiveTestRunner:
             "summary": {"total_tests": 0, "passed": 0, "failed": 0, "skipped": 0},
         }
 
-    def run_blockchain_tests(self) -> Dict:
+    def run_blockchain_tests(self) -> dict:
         """Run blockchain/Anchor program tests."""
         logger.info("🔗 Running Blockchain Tests...")
 
@@ -87,7 +86,7 @@ class ComprehensiveTestRunner:
         self.test_results["test_suites"]["blockchain_tests"] = results
         return results
 
-    def run_python_unit_tests(self) -> Dict:
+    def run_python_unit_tests(self) -> dict:
         """Run Python unit tests for core services."""
         logger.info("🐍 Running Python Unit Tests...")
 
@@ -178,7 +177,7 @@ class ComprehensiveTestRunner:
         self.test_results["test_suites"]["python_unit_tests"] = results
         return results
 
-    def run_service_integration_tests(self) -> Dict:
+    def run_service_integration_tests(self) -> dict:
         """Run service integration tests."""
         logger.info("🔗 Running Service Integration Tests...")
 
@@ -223,7 +222,7 @@ class ComprehensiveTestRunner:
         self.test_results["test_suites"]["service_integration_tests"] = results
         return results
 
-    def run_end_to_end_tests(self) -> Dict:
+    def run_end_to_end_tests(self) -> dict:
         """Run end-to-end governance workflow tests."""
         logger.info("🔄 Running End-to-End Tests...")
 
@@ -273,7 +272,7 @@ class ComprehensiveTestRunner:
         self.test_results["test_suites"]["end_to_end_tests"] = results
         return results
 
-    def run_security_validation(self) -> Dict:
+    def run_security_validation(self) -> dict:
         """Run security validation tests."""
         logger.info("🔒 Running Security Validation...")
 
@@ -325,7 +324,7 @@ class ComprehensiveTestRunner:
         try:
             gitignore_path = self.project_root / ".gitignore"
             if gitignore_path.exists():
-                with open(gitignore_path, "r") as f:
+                with open(gitignore_path) as f:
                     content = f.read()
                 return "*.env" in content and "auth_tokens" in content
         except:
@@ -340,7 +339,7 @@ class ComprehensiveTestRunner:
                 if "venv" in str(py_file) or "__pycache__" in str(py_file):
                     continue
                 try:
-                    with open(py_file, "r") as f:
+                    with open(py_file) as f:
                         content = f.read()
                         if 'password = "' in content or 'secret = "' in content:
                             return False
@@ -364,7 +363,7 @@ class ComprehensiveTestRunner:
         total_passed = 0
         total_failed = 0
 
-        for suite_name, suite_results in self.test_results["test_suites"].items():
+        for _suite_name, suite_results in self.test_results["test_suites"].items():
             if suite_results["status"] == "PASS":
                 total_passed += 1
             elif suite_results["status"] == "FAIL":

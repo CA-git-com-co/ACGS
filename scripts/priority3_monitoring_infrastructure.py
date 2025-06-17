@@ -8,11 +8,9 @@ metrics collection and Grafana dashboards for all 7 core services.
 
 import json
 import logging
-import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -47,7 +45,7 @@ class MonitoringInfrastructureDeployer:
             "alerting": "Service degradation, security incidents, workflow failures",
         }
 
-    def execute_monitoring_deployment(self) -> Dict:
+    def execute_monitoring_deployment(self) -> dict:
         """Execute comprehensive monitoring infrastructure deployment."""
         logger.info("📊 Starting ACGS-1 Monitoring Infrastructure Deployment")
         start_time = time.time()
@@ -111,7 +109,7 @@ class MonitoringInfrastructureDeployer:
             results["overall_success"] = False
             return results
 
-    def setup_monitoring_structure(self) -> Dict:
+    def setup_monitoring_structure(self) -> dict:
         """Setup monitoring directory structure."""
         logger.info("📁 Setting up monitoring directory structure...")
 
@@ -141,7 +139,7 @@ class MonitoringInfrastructureDeployer:
             "directory_list": created_dirs,
         }
 
-    def configure_prometheus_metrics(self) -> Dict:
+    def configure_prometheus_metrics(self) -> dict:
         """Configure Prometheus metrics collection."""
         logger.info("📈 Configuring Prometheus metrics collection...")
 
@@ -238,7 +236,7 @@ class MonitoringInfrastructureDeployer:
             "scrape_configs": len(prometheus_config["scrape_configs"]),
         }
 
-    def create_grafana_dashboards(self) -> Dict:
+    def create_grafana_dashboards(self) -> dict:
         """Create Grafana dashboards."""
         logger.info("📊 Creating Grafana dashboards...")
 
@@ -415,7 +413,7 @@ class MonitoringInfrastructureDeployer:
             "datasource_configured": True,
         }
 
-    def implement_alerting_system(self) -> Dict:
+    def implement_alerting_system(self) -> dict:
         """Implement alerting system."""
         logger.info("🚨 Implementing alerting system...")
 
@@ -457,7 +455,7 @@ class MonitoringInfrastructureDeployer:
             "notification_channels": ["webhook"],
         }
 
-    def deploy_monitoring_services(self) -> Dict:
+    def deploy_monitoring_services(self) -> dict:
         """Deploy monitoring services."""
         logger.info("🚀 Deploying monitoring services...")
 
@@ -519,7 +517,7 @@ class MonitoringInfrastructureDeployer:
             "deployment_ready": True,
         }
 
-    def validate_monitoring_infrastructure(self) -> Dict:
+    def validate_monitoring_infrastructure(self) -> dict:
         """Validate monitoring infrastructure."""
         logger.info("✅ Validating monitoring infrastructure...")
 
@@ -555,7 +553,7 @@ class MonitoringInfrastructureDeployer:
             "infrastructure_ready": validation_success,
         }
 
-    def evaluate_deployment_success(self, results: Dict) -> bool:
+    def evaluate_deployment_success(self, results: dict) -> bool:
         """Evaluate overall deployment success."""
         phases = results.get("deployment_phases", {})
 
@@ -574,7 +572,7 @@ class MonitoringInfrastructureDeployer:
             and validation_success
         )
 
-    def generate_monitoring_summary(self, results: Dict) -> Dict:
+    def generate_monitoring_summary(self, results: dict) -> dict:
         """Generate monitoring deployment summary."""
         phases = results.get("deployment_phases", {})
 
@@ -596,7 +594,7 @@ class MonitoringInfrastructureDeployer:
             },
         }
 
-    def save_monitoring_report(self, results: Dict) -> None:
+    def save_monitoring_report(self, results: dict) -> None:
         """Save monitoring deployment report."""
         report_file = f"priority3_monitoring_deployment_{int(time.time())}.json"
         report_path = self.project_root / "logs" / report_file
@@ -619,7 +617,7 @@ def main():
         print("✅ Monitoring infrastructure deployment completed successfully!")
 
         summary = results.get("monitoring_summary", {})
-        print(f"📊 Monitoring Summary:")
+        print("📊 Monitoring Summary:")
         print(f"  • Services Monitored: {summary.get('services_monitored', 0)}")
         print(f"  • Dashboards Created: {summary.get('dashboards_created', 0)}")
         print(f"  • Alert Rules: {summary.get('alert_rules', 0)}")

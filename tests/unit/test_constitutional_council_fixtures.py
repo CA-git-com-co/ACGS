@@ -149,7 +149,7 @@ class TestConstitutionalCouncilFixtures:
             assert hasattr(member, "role")
             assert hasattr(member, "expertise_areas")
             assert hasattr(member, "bias_tendency")
-            assert isinstance(member.bias_tendency, (int, float))
+            assert isinstance(member.bias_tendency, int | float)
             assert member.role == "constitutional_council"
 
     def test_co_evolution_test_scenarios_fixture(self, co_evolution_test_scenarios):
@@ -359,7 +359,7 @@ class TestConstitutionalCouncilFixtures:
 
     def test_scenario_timeline_validation(self, co_evolution_test_scenarios):
         """Test that scenario timelines are properly configured."""
-        for scenario_name, scenario_data in co_evolution_test_scenarios.items():
+        for _scenario_name, scenario_data in co_evolution_test_scenarios.items():
             timeline = scenario_data["timeline"]
             completion_window = scenario_data["expected_completion_window"]
 
@@ -375,7 +375,7 @@ class TestConstitutionalCouncilFixtures:
         """Test that quorum requirements are valid."""
         total_members = len(mock_council_members)
 
-        for scenario_name, scenario_data in co_evolution_test_scenarios.items():
+        for _scenario_name, scenario_data in co_evolution_test_scenarios.items():
             required_quorum = scenario_data["required_quorum"]
 
             # Quorum should be positive and not exceed total members
@@ -402,7 +402,7 @@ class TestConstitutionalCouncilFixtures:
 
     def test_performance_scenario_metrics(self, performance_test_scenarios):
         """Test that performance scenarios have appropriate metrics."""
-        for scenario_name, scenario_data in performance_test_scenarios.items():
+        for _scenario_name, scenario_data in performance_test_scenarios.items():
             if "concurrent_amendments" in scenario_data:
                 assert scenario_data["concurrent_amendments"] > 0
 

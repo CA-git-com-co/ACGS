@@ -22,7 +22,7 @@ The legacy-frontend application represents a transitional architecture that brid
 
 ### Current Structure
 ```
-legacy-frontend/
+legacy-applications/governance-dashboard/
 ├── src/
 │   ├── App.js                    # Legacy JavaScript entry point
 │   ├── App.tsx                   # Modern TypeScript entry point

@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from src.lib.nemo.llm_as_judge import validate_llm_judge
-from src.log_utils import setup_logging
-from src.tasks.tasks import celery_app
+from services.core.lib.nemo.llm_as_judge import validate_llm_judge
+from services.core.log_utils import setup_logging
+from services.core.tasks.tasks import celery_app
 
 logger = setup_logging("src.tasks.cli")
 validate_llm_judge()

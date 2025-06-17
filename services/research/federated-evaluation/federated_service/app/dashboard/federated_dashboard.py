@@ -86,7 +86,9 @@ def create_dashboard_layout():
                                 [
                                     dbc.CardBody(
                                         [
-                                            html.H4("Active Nodes", className="card-title"),
+                                            html.H4(
+                                                "Active Nodes", className="card-title"
+                                            ),
                                             html.H2(
                                                 id="active-nodes-count",
                                                 children="0",
@@ -109,7 +111,9 @@ def create_dashboard_layout():
                                 [
                                     dbc.CardBody(
                                         [
-                                            html.H4("Privacy Budget", className="card-title"),
+                                            html.H4(
+                                                "Privacy Budget", className="card-title"
+                                            ),
                                             html.H2(
                                                 id="privacy-budget-remaining",
                                                 children="0%",
@@ -132,7 +136,9 @@ def create_dashboard_layout():
                                 [
                                     dbc.CardBody(
                                         [
-                                            html.H4("Success Rate", className="card-title"),
+                                            html.H4(
+                                                "Success Rate", className="card-title"
+                                            ),
                                             html.H2(
                                                 id="success-rate",
                                                 children="0%",
@@ -186,7 +192,9 @@ def create_dashboard_layout():
                             dbc.Card(
                                 [
                                     dbc.CardHeader("Evaluation Performance Over Time"),
-                                    dbc.CardBody([dcc.Graph(id="performance-timeline")]),
+                                    dbc.CardBody(
+                                        [dcc.Graph(id="performance-timeline")]
+                                    ),
                                 ]
                             )
                         ],
@@ -214,7 +222,9 @@ def create_dashboard_layout():
                             dbc.Card(
                                 [
                                     dbc.CardHeader("Privacy Budget Usage"),
-                                    dbc.CardBody([dcc.Graph(id="privacy-budget-chart")]),
+                                    dbc.CardBody(
+                                        [dcc.Graph(id="privacy-budget-chart")]
+                                    ),
                                 ]
                             )
                         ],
@@ -360,7 +370,7 @@ def create_performance_timeline(metrics):
             y=timeline["success_rates"],
             mode="lines+markers",
             name="Success Rate",
-            line=dict(color="#28a745"),
+            line={"color": "#28a745"},
             yaxis="y",
         )
     )
@@ -372,7 +382,7 @@ def create_performance_timeline(metrics):
             y=timeline["response_times"],
             mode="lines+markers",
             name="Response Time (ms)",
-            line=dict(color="#ffc107"),
+            line={"color": "#ffc107"},
             yaxis="y2",
         )
     )
@@ -380,9 +390,9 @@ def create_performance_timeline(metrics):
     fig.update_layout(
         title="Evaluation Performance Timeline",
         xaxis_title="Time",
-        yaxis=dict(title="Success Rate", side="left", range=[0, 1]),
-        yaxis2=dict(title="Response Time (ms)", side="right", overlaying="y"),
-        legend=dict(x=0, y=1),
+        yaxis={"title": "Success Rate", "side": "left", "range": [0, 1]},
+        yaxis2={"title": "Response Time (ms)", "side": "right", "overlaying": "y"},
+        legend={"x": 0, "y": 1},
         height=400,
     )
 
@@ -415,7 +425,7 @@ def create_platform_comparison(metrics):
         title="Cross-Platform Success Rates",
         xaxis_title="Platform",
         yaxis_title="Success Rate",
-        yaxis=dict(range=[0, 1]),
+        yaxis={"range": [0, 1]},
         height=400,
     )
 
@@ -451,13 +461,13 @@ def create_privacy_budget_chart(metrics):
         title="Privacy Budget (Epsilon) Usage",
         height=400,
         annotations=[
-            dict(
-                text=f"ε = {privacy_data['epsilon_total']}",
-                x=0.5,
-                y=0.5,
-                font_size=20,
-                showarrow=False,
-            )
+            {
+                "text": f"ε = {privacy_data['epsilon_total']}",
+                "x": 0.5,
+                "y": 0.5,
+                "font_size": 20,
+                "showarrow": False,
+            }
         ],
     )
 

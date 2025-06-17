@@ -9,7 +9,7 @@ import logging
 import re
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Type, Union
+from typing import Any
 
 from pydantic import BaseModel
 from pydantic import ValidationError as PydanticValidationError
@@ -33,7 +33,9 @@ class ValidationError(Exception):
 class ValidationResult:
     """Result of validation operation."""
 
-    def __init__(self, is_valid: bool, errors: List[str] = None, warnings: List[str] = None):
+    def __init__(
+        self, is_valid: bool, errors: list[str] = None, warnings: list[str] = None
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -97,7 +99,9 @@ def validate_email(email: str) -> str:
     """
     email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     if not re.match(email_pattern, email):
-        raise ValidationError(f"Invalid email format: {email}", field="email", value=email)
+        raise ValidationError(
+            f"Invalid email format: {email}", field="email", value=email
+        )
     return email.lower()
 
 
@@ -174,7 +178,9 @@ def validate_password(password: str) -> ValidationResult:
     return result
 
 
-def validate_json_data(data: Any, required_fields: List[str] = None) -> ValidationResult:
+def validate_json_data(
+    data: Any, required_fields: list[str] = None
+) -> ValidationResult:
     """
     Validate JSON data structure.
 
@@ -203,7 +209,7 @@ def validate_json_data(data: Any, required_fields: List[str] = None) -> Validati
 
 def validate_pagination_params(
     page: int = 1, size: int = 10, max_size: int = 100
-) -> Dict[str, int]:
+) -> dict[str, int]:
     """
     Validate pagination parameters.
 
@@ -219,18 +225,24 @@ def validate_pagination_params(
         ValidationError: If parameters are invalid
     """
     if page < 1:
-        raise ValidationError("Page number must be greater than 0", field="page", value=page)
+        raise ValidationError(
+            "Page number must be greater than 0", field="page", value=page
+        )
 
     if size < 1:
-        raise ValidationError("Page size must be greater than 0", field="size", value=size)
+        raise ValidationError(
+            "Page size must be greater than 0", field="size", value=size
+        )
 
     if size > max_size:
-        raise ValidationError(f"Page size cannot exceed {max_size}", field="size", value=size)
+        raise ValidationError(
+            f"Page size cannot exceed {max_size}", field="size", value=size
+        )
 
     return {"page": page, "size": size}
 
 
-def validate_request(data: Dict[str, Any], schema: Type[BaseModel]) -> BaseModel:
+def validate_request(data: dict[str, Any], schema: type[BaseModel]) -> BaseModel:
     """
     Validate request data against Pydantic schema.
 
@@ -260,7 +272,7 @@ def validate_request(data: Dict[str, Any], schema: Type[BaseModel]) -> BaseModel
         )
 
 
-def validate_response(data: Any) -> Dict[str, Any]:
+def validate_response(data: Any) -> dict[str, Any]:
     """
     Validate response data format.
 
@@ -279,14 +291,16 @@ def validate_response(data: Any) -> Dict[str, Any]:
     if isinstance(data, dict):
         return data
 
-    if isinstance(data, (list, str, int, float, bool)):
+    if isinstance(data, list | str | int | float | bool):
         return {"data": data}
 
     # Try to convert to dict if it has dict-like attributes
     if hasattr(data, "__dict__"):
         return data.__dict__
 
-    raise ValidationError(f"Invalid response data type: {type(data)}", field="response", value=data)
+    raise ValidationError(
+        f"Invalid response data type: {type(data)}", field="response", value=data
+    )
 
 
 def validate_service_name(service_name: str) -> str:
@@ -322,7 +336,7 @@ def validate_service_name(service_name: str) -> str:
     return service_name
 
 
-def validate_timestamp(timestamp: Union[str, datetime]) -> datetime:
+def validate_timestamp(timestamp: str | datetime) -> datetime:
     """
     Validate and parse timestamp.
 

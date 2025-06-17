@@ -14,7 +14,7 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
@@ -66,12 +66,12 @@ class FormalVerifier(ABC):
     @abstractmethod
     def verify_properties(
         self,
-        policies: List[
-            Dict[str, str]
+        policies: list[
+            dict[str, str]
         ],  # List of policies, e.g., [{"id": "P1", "code": "rego code"}]
-        properties: List[FormalVerificationProperty],
-        context_data: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Tuple[bool, str]]:
+        properties: list[FormalVerificationProperty],
+        context_data: dict[str, Any] | None = None,
+    ) -> dict[str, tuple[bool, str]]:
         """
         Verifies a list of formal properties against a given set of policies.
 
@@ -95,7 +95,7 @@ class MockFormalVerifier(FormalVerifier):
     This mock verifier can be configured to return specific outcomes for testing.
     """
 
-    def __init__(self, mock_results: Optional[Dict[str, Tuple[bool, str]]] = None):
+    def __init__(self, mock_results: dict[str, tuple[bool, str]] | None = None):
         """
         Initializes the MockFormalVerifier.
 
@@ -109,16 +109,16 @@ class MockFormalVerifier(FormalVerifier):
 
     def verify_properties(
         self,
-        policies: List[Dict[str, str]],
-        properties: List[FormalVerificationProperty],
-        context_data: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Tuple[bool, str]]:
+        policies: list[dict[str, str]],
+        properties: list[FormalVerificationProperty],
+        context_data: dict[str, Any] | None = None,
+    ) -> dict[str, tuple[bool, str]]:
         """
         Simulates verification of properties.
         If a property_id is in `self.mock_results`, returns the predefined result.
         Otherwise, returns a default mock result based on `expected_outcome`.
         """
-        results: Dict[str, Tuple[bool, str]] = {}
+        results: dict[str, tuple[bool, str]] = {}
         policy_ids = [p.get("id", "N/A") for p in policies]
         logger.debug(
             f"MockFormalVerifier: Verifying {len(properties)} properties against policies: {policy_ids} "

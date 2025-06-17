@@ -4,7 +4,6 @@ Service Registry - Central service discovery and configuration
 
 import os
 from dataclasses import dataclass
-from typing import Dict, Optional
 
 
 @dataclass
@@ -22,7 +21,7 @@ class ServiceRegistry:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self._services: Dict[str, ServiceConfig] = {}
+        self._services: dict[str, ServiceConfig] = {}
         self._load_from_environment()
 
     def _load_from_environment(self):
@@ -70,12 +69,12 @@ class ServiceRegistry:
         }
         self._services.update(services)
 
-    def get_service_url(self, service_name: str) -> Optional[str]:
+    def get_service_url(self, service_name: str) -> str | None:
         """Get service URL by name"""
         service = self._services.get(service_name)
         return service.url if service else None
 
-    def get_service_config(self, service_name: str) -> Optional[ServiceConfig]:
+    def get_service_config(self, service_name: str) -> ServiceConfig | None:
         """Get full service configuration"""
         return self._services.get(service_name)
 

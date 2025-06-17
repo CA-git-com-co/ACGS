@@ -10,7 +10,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -28,7 +28,7 @@ class WorkflowEnhancer:
         self.recommendations = []
         self.performance_metrics = {}
 
-    async def analyze_current_workflows(self) -> Dict[str, Any]:
+    async def analyze_current_workflows(self) -> dict[str, Any]:
         """Analyze current workflow implementations"""
 
         print("🔍 Analyzing Current ACGS-PGP Workflows")
@@ -71,7 +71,7 @@ class WorkflowEnhancer:
 
         return analysis_results
 
-    async def _analyze_workflow_type(self, workflow_type: str) -> Dict[str, Any]:
+    async def _analyze_workflow_type(self, workflow_type: str) -> dict[str, Any]:
         """Analyze a specific workflow type"""
 
         print(f"  📋 Analyzing {workflow_type}...")
@@ -128,7 +128,7 @@ class WorkflowEnhancer:
 
         return analysis
 
-    async def _identify_system_issues(self) -> List[Dict[str, Any]]:
+    async def _identify_system_issues(self) -> list[dict[str, Any]]:
         """Identify system-wide workflow issues"""
 
         print("  🔧 Identifying System-Wide Issues...")
@@ -173,7 +173,7 @@ class WorkflowEnhancer:
 
         return issues
 
-    async def _generate_enhancement_opportunities(self) -> List[Dict[str, Any]]:
+    async def _generate_enhancement_opportunities(self) -> list[dict[str, Any]]:
         """Generate workflow enhancement opportunities"""
 
         print("  💡 Generating Enhancement Opportunities...")
@@ -278,7 +278,7 @@ class WorkflowEnhancer:
 
         return opportunities
 
-    async def _collect_performance_metrics(self) -> Dict[str, Any]:
+    async def _collect_performance_metrics(self) -> dict[str, Any]:
         """Collect current performance metrics"""
 
         print("  📊 Collecting Performance Metrics...")
@@ -314,7 +314,7 @@ class WorkflowEnhancer:
         return metrics
 
     async def generate_enhancement_report(
-        self, analysis_results: Dict[str, Any]
+        self, analysis_results: dict[str, Any]
     ) -> str:
         """Generate comprehensive enhancement report"""
 
@@ -343,7 +343,7 @@ This report provides a comprehensive analysis of the ACGS-PGP workflow system an
 - **Key Issues:** {', '.join(workflow['issues'][:3])}
 """
 
-        report += f"""
+        report += """
 ## Identified Issues
 
 ### Critical Issues Requiring Immediate Attention
@@ -362,7 +362,7 @@ This report provides a comprehensive analysis of the ACGS-PGP workflow system an
 - **Recommended Solution:** {issue['solution']}
 """
 
-        report += f"""
+        report += """
 ## Enhancement Opportunities
 
 ### Priority Recommendations
@@ -388,7 +388,7 @@ This report provides a comprehensive analysis of the ACGS-PGP workflow system an
 {chr(10).join(f"{i+1}. {step}" for i, step in enumerate(opportunity['implementation_steps']))}
 """
 
-        report += f"""
+        report += """
 ## Performance Metrics
 
 ### Current Performance Baseline
@@ -415,7 +415,7 @@ This report provides a comprehensive analysis of the ACGS-PGP workflow system an
 - **PGC Service:** {metrics['service_availability']['pgc_service']}%
 """
 
-        report += f"""
+        report += """
 ## Implementation Roadmap
 
 ### Phase 1: Critical Infrastructure (Weeks 1-4)
@@ -451,7 +451,7 @@ Implementation of these recommendations should be prioritized based on the criti
         return report
 
     async def save_enhancement_artifacts(
-        self, analysis_results: Dict[str, Any], report: str
+        self, analysis_results: dict[str, Any], report: str
     ):
         """Save enhancement artifacts"""
 
@@ -477,11 +477,11 @@ Implementation of these recommendations should be prioritized based on the criti
         print(f"✅ Artifacts saved to {output_dir}/")
 
     def _generate_implementation_checklist(
-        self, analysis_results: Dict[str, Any]
+        self, analysis_results: dict[str, Any]
     ) -> str:
         """Generate implementation checklist"""
 
-        checklist = f"""
+        checklist = """
 # ACGS-PGP Workflow Enhancement Implementation Checklist
 
 ## Phase 1: Critical Infrastructure

@@ -151,7 +151,9 @@ async def get_fidelity_trend(
 
         return {
             "trend": trend,
-            "current_score": (current_fidelity.composite_score if current_fidelity else None),
+            "current_score": (
+                current_fidelity.composite_score if current_fidelity else None
+            ),
             "current_level": current_fidelity.level.value if current_fidelity else None,
             "analysis_timestamp": datetime.now().isoformat(),
         }
@@ -283,7 +285,9 @@ async def get_monitoring_status(
                 if fidelity_monitor.last_calculation_time
                 else None
             ),
-            "current_score": (current_fidelity.composite_score if current_fidelity else None),
+            "current_score": (
+                current_fidelity.composite_score if current_fidelity else None
+            ),
             "current_level": current_fidelity.level.value if current_fidelity else None,
             "active_alerts": len(active_alerts),
             "alert_handlers": len(fidelity_monitor.alert_handlers),

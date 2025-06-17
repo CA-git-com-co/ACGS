@@ -10,14 +10,12 @@ Tests cover:
 - Error handling and edge cases
 """
 
-import asyncio
 import os
 
 # Import the module under test
 import sys
 import time
-from typing import Any, Dict, List
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -117,11 +115,11 @@ class TestMultiModelValidator:
         """Sample policy content for testing."""
         return """
         Policy POL-001: Constitutional Governance Framework
-        
+
         This policy establishes the framework for constitutional governance
         within the ACGS-1 system, ensuring all governance actions comply
         with established constitutional principles.
-        
+
         Requirements:
         1. All policy proposals must undergo constitutional review
         2. Governance actions require appropriate authorization
@@ -205,7 +203,9 @@ class TestMultiModelValidator:
         """Test parsing valid JSON model response."""
         json_response = '{"result": "COMPLIANT", "confidence": 0.95, "reasoning": "Policy aligns well", "constitutional_alignment": 0.9}'
 
-        result, confidence, reasoning, alignment = validator._parse_model_response(json_response)
+        result, confidence, reasoning, alignment = validator._parse_model_response(
+            json_response
+        )
 
         assert result == ValidationResult.COMPLIANT
         assert confidence == 0.95
@@ -219,7 +219,9 @@ class TestMultiModelValidator:
         """Test parsing invalid JSON with fallback."""
         text_response = "This policy is COMPLIANT with constitutional principles."
 
-        result, confidence, reasoning, alignment = validator._parse_model_response(text_response)
+        result, confidence, reasoning, alignment = validator._parse_model_response(
+            text_response
+        )
 
         assert result == ValidationResult.COMPLIANT
         assert 0.0 <= confidence <= 1.0
@@ -232,9 +234,7 @@ class TestMultiModelValidator:
         # sha256: func_hash
         """Test mock model response for compliant policy."""
         model_config = validator.models[0]
-        policy_content = (
-            "This is a constitutional governance policy that ensures authorized actions."
-        )
+        policy_content = "This is a constitutional governance policy that ensures authorized actions."
 
         result, confidence, reasoning, alignment = validator._mock_model_response(
             model_config, policy_content
@@ -251,7 +251,9 @@ class TestMultiModelValidator:
         # sha256: func_hash
         """Test mock model response for non-compliant policy."""
         model_config = validator.models[0]
-        policy_content = "This policy allows unsafe and unauthorized bypass of security measures."
+        policy_content = (
+            "This policy allows unsafe and unauthorized bypass of security measures."
+        )
 
         result, confidence, reasoning, alignment = validator._mock_model_response(
             model_config, policy_content
@@ -410,7 +412,9 @@ class TestMultiModelValidator:
         # ensures: Correct function execution
         # sha256: func_hash
         """Test fallback validation mechanism."""
-        result = await validator._fallback_validation(sample_policy_content, sample_policy_context)
+        result = await validator._fallback_validation(
+            sample_policy_content, sample_policy_context
+        )
 
         assert isinstance(result, ConsensusResult)
         assert len(result.model_responses) == 1  # Single model response
@@ -449,7 +453,9 @@ class TestMultiModelValidator:
         initial_validations = validator.validation_stats["total_validations"]
         validator._update_performance_stats(consensus_result)
 
-        assert validator.validation_stats["total_validations"] == initial_validations + 1
+        assert (
+            validator.validation_stats["total_validations"] == initial_validations + 1
+        )
         assert validator.validation_stats["consensus_achieved"] > 0
         assert len(validator.validation_stats["accuracy_samples"]) > 0
         assert len(validator.validation_stats["latency_samples"]) > 0
@@ -529,7 +535,9 @@ class TestMultiModelValidatorIntegration:
         policy_content = "Test policy content"
         policy_context = {"test": "context"}
 
-        result = await validator.validate_constitutional_compliance(policy_content, policy_context)
+        result = await validator.validate_constitutional_compliance(
+            policy_content, policy_context
+        )
 
         assert isinstance(result, ConsensusResult)
         # Verify model client was called
@@ -537,4 +545,6 @@ class TestMultiModelValidatorIntegration:
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-v", "--cov=multi_model_validator", "--cov-report=term-missing"])
+    pytest.main(
+        [__file__, "-v", "--cov=multi_model_validator", "--cov-report=term-missing"]
+    )

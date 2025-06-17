@@ -197,7 +197,7 @@ echo "1. Service Health Status:"
 for service in "${services[@]}"; do
     IFS=':' read -r name port <<< "$service"
     response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$port/health)
-    
+
     if [ "$response" = "200" ]; then
         echo "  ✅ $name: Healthy"
         ((healthy_services++))

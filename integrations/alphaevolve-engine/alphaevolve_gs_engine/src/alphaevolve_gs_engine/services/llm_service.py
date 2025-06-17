@@ -17,7 +17,7 @@ Functions:
 
 import os
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 # Placeholder for actual LLM client libraries like 'openai'
 # Ensure these are added to requirements.txt if you implement a specific service
@@ -27,6 +27,7 @@ except ImportError:
     openai = None  # Allows the module to be imported even if openai is not installed
 
 from dotenv import load_dotenv
+
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
 # Load environment variables from .env file
@@ -47,7 +48,7 @@ class LLMService(ABC):
         prompt: str,
         max_tokens: int = 1024,
         temperature: float = 0.7,
-        model: Optional[str] = None,
+        model: str | None = None,
     ) -> str:
         """
         Generates text based on a given prompt.
@@ -70,11 +71,11 @@ class LLMService(ABC):
     def generate_structured_output(
         self,
         prompt: str,
-        output_format: Dict[str, Any],
+        output_format: dict[str, Any],
         max_tokens: int = 2048,
         temperature: float = 0.5,
-        model: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        model: str | None = None,
+    ) -> dict[str, Any]:
         """
         Generates structured output (e.g., JSON) based on a prompt and a desired format.
 
@@ -101,7 +102,7 @@ class OpenAILLMService(LLMService):
     """
 
     def __init__(
-        self, api_key: Optional[str] = None, default_model: str = "gpt-3.5-turbo"
+        self, api_key: str | None = None, default_model: str = "gpt-3.5-turbo"
     ):
         if openai is None:
             raise ImportError(
@@ -123,7 +124,7 @@ class OpenAILLMService(LLMService):
         prompt: str,
         max_tokens: int = 1024,
         temperature: float = 0.7,
-        model: Optional[str] = None,
+        model: str | None = None,
     ) -> str:
         """
         Generates text using the OpenAI API.
@@ -156,11 +157,11 @@ class OpenAILLMService(LLMService):
     def generate_structured_output(
         self,
         prompt: str,
-        output_format: Dict[str, Any],  # This is a conceptual guide for the prompt
+        output_format: dict[str, Any],  # This is a conceptual guide for the prompt
         max_tokens: int = 2048,
         temperature: float = 0.5,
-        model: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        model: str | None = None,
+    ) -> dict[str, Any]:
         """
         Generates structured JSON output using OpenAI's function calling or newer JSON mode.
         Note: For reliable JSON, use models that explicitly support JSON mode (e.g., gpt-3.5-turbo-1106+).
@@ -251,7 +252,7 @@ class MockLLMService(LLMService):
         prompt: str,
         max_tokens: int = 1024,
         temperature: float = 0.7,
-        model: Optional[str] = None,
+        model: str | None = None,
     ) -> str:
         import time
 
@@ -273,11 +274,11 @@ class MockLLMService(LLMService):
     def generate_structured_output(
         self,
         prompt: str,
-        output_format: Dict[str, Any],
+        output_format: dict[str, Any],
         max_tokens: int = 2048,
         temperature: float = 0.5,
-        model: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        model: str | None = None,
+    ) -> dict[str, Any]:
         import time
 
         time.sleep(self.delay)
@@ -286,7 +287,7 @@ class MockLLMService(LLMService):
         )
 
         # Generate a mock response based on the output_format keys
-        mock_data: Dict[str, Any] = {}
+        mock_data: dict[str, Any] = {}
         for key, value_type in output_format.items():
             if value_type == "string":
                 mock_data[key] = f"mock_{key}_value"
@@ -321,7 +322,7 @@ class GroqLLMService(LLMService):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         default_model: str = "llama-3.3-70b-versatile",
     ):
         if openai is None:
@@ -347,7 +348,7 @@ class GroqLLMService(LLMService):
         prompt: str,
         max_tokens: int = 1024,
         temperature: float = 0.7,
-        model: Optional[str] = None,
+        model: str | None = None,
     ) -> str:
         """
         Generates text using the Groq API.
@@ -377,11 +378,11 @@ class GroqLLMService(LLMService):
     def generate_structured_output(
         self,
         prompt: str,
-        output_format: Dict[str, Any],
+        output_format: dict[str, Any],
         max_tokens: int = 2048,
         temperature: float = 0.5,
-        model: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        model: str | None = None,
+    ) -> dict[str, Any]:
         """
         Generates structured JSON output using Groq API.
         Note: Groq models may not support JSON mode, so we rely on prompt engineering.
@@ -418,7 +419,7 @@ Ensure your response is valid JSON that can be parsed.
                     f"GroqLLMService generated structured response for model {selected_model}."
                 )
                 return parsed_json
-            except json.JSONDecodeError as json_err:
+            except json.JSONDecodeError:
                 logger.warning(
                     f"GroqLLMService: Failed to parse JSON from model {selected_model}. Attempting to extract JSON..."
                 )
@@ -451,7 +452,7 @@ Ensure your response is valid JSON that can be parsed.
 
 def get_llm_service(
     service_type: Literal["openai", "groq", "mock"] = "mock",
-    config: Optional[Dict[str, Any]] = None,
+    config: dict[str, Any] | None = None,
 ) -> LLMService:
     """
     Factory function to get an instance of an LLM service.

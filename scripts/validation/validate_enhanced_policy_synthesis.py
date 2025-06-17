@@ -21,35 +21,41 @@ Usage:
     python scripts/validation/validate_enhanced_policy_synthesis.py --performance-only
 """
 
-import asyncio
 import argparse
+import asyncio
 import json
 import logging
 import statistics
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
+from typing import Any
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 # Import enhanced policy synthesis engine
-import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../services/core/policy-governance/pgc_service/app/core'))
+import sys
+
+sys.path.append(
+    os.path.join(
+        os.path.dirname(__file__),
+        "../../services/core/policy-governance/pgc_service/app/core",
+    )
+)
 
 try:
     from policy_synthesis_engine import (
+        ENHANCED_COMPONENTS_AVAILABLE,
+        EnhancedSynthesisRequest,
         PolicySynthesisEngine,
         RiskStrategy,
-        EnhancedSynthesisRequest,
-        ENHANCED_COMPONENTS_AVAILABLE
     )
+
     ENGINE_AVAILABLE = True
 except ImportError as e:
     logger.error(f"Failed to import enhanced policy synthesis engine: {e}")
@@ -61,30 +67,34 @@ class EnhancedPolicySynthesisValidator:
 
     def __init__(self):
         self.results = {
-            "validation_timestamp": datetime.now(timezone.utc).isoformat(),
+            "validation_timestamp": datetime.now(UTC).isoformat(),
             "constitutional_hash": "cdd01ef066bc6cf2",
             "performance_targets": {
                 "accuracy_threshold": 0.95,
                 "max_response_time_ms": 500.0,
                 "constitutional_alignment_threshold": 0.95,
-                "uptime_target": 0.995
+                "uptime_target": 0.995,
             },
             "test_results": {},
             "summary": {},
-            "recommendations": []
+            "recommendations": [],
         }
 
         self.synthesis_engine = None
         if ENGINE_AVAILABLE:
             self.synthesis_engine = PolicySynthesisEngine()
 
-    async def run_validation(self, comprehensive: bool = False, performance_only: bool = False) -> Dict[str, Any]:
+    async def run_validation(
+        self, comprehensive: bool = False, performance_only: bool = False
+    ) -> dict[str, Any]:
         """Run comprehensive validation of enhanced policy synthesis engine."""
         logger.info("Starting Enhanced Policy Synthesis Engine validation...")
 
         if not ENGINE_AVAILABLE:
             self.results["summary"]["status"] = "FAILED"
-            self.results["summary"]["error"] = "Enhanced Policy Synthesis Engine not available"
+            self.results["summary"][
+                "error"
+            ] = "Enhanced Policy Synthesis Engine not available"
             return self.results
 
         try:
@@ -122,12 +132,16 @@ class EnhancedPolicySynthesisValidator:
             "success": self.synthesis_engine.initialized,
             "time_ms": initialization_time,
             "constitutional_hash": self.synthesis_engine.constitutional_hash,
-            "corpus_principles": len(self.synthesis_engine.constitutional_corpus.get("principles", [])),
-            "enhanced_components_available": ENHANCED_COMPONENTS_AVAILABLE
+            "corpus_principles": len(
+                self.synthesis_engine.constitutional_corpus.get("principles", [])
+            ),
+            "enhanced_components_available": ENHANCED_COMPONENTS_AVAILABLE,
         }
 
         assert self.synthesis_engine.initialized, "Engine initialization failed"
-        assert self.synthesis_engine.constitutional_hash == "cdd01ef066bc6cf2", "Constitutional hash mismatch"
+        assert (
+            self.synthesis_engine.constitutional_hash == "cdd01ef066bc6cf2"
+        ), "Constitutional hash mismatch"
 
         logger.info(f"Engine initialized in {initialization_time:.2f}ms")
 
@@ -170,14 +184,14 @@ class EnhancedPolicySynthesisValidator:
                 "name": "standard_policy",
                 "title": "Standard Governance Policy",
                 "description": "Basic policy for standard governance operations",
-                "risk_strategy": RiskStrategy.STANDARD
+                "risk_strategy": RiskStrategy.STANDARD,
             },
             {
                 "name": "enhanced_validation_policy",
                 "title": "Enhanced Validation Policy",
                 "description": "Policy requiring enhanced validation procedures",
-                "risk_strategy": RiskStrategy.ENHANCED_VALIDATION
-            }
+                "risk_strategy": RiskStrategy.ENHANCED_VALIDATION,
+            },
         ]
 
         results = []
@@ -192,10 +206,12 @@ class EnhancedPolicySynthesisValidator:
                 domain_context={"scope": "governance"},
                 risk_strategy=case["risk_strategy"],
                 enable_chain_of_thought=True,
-                enable_rag=True
+                enable_rag=True,
             )
 
-            result = await self.synthesis_engine.synthesize_policy(request, case["risk_strategy"])
+            result = await self.synthesis_engine.synthesize_policy(
+                request, case["risk_strategy"]
+            )
             processing_time = (time.time() - start_time) * 1000
 
             test_result = {
@@ -203,10 +219,13 @@ class EnhancedPolicySynthesisValidator:
                 "success": result.get("success", False),
                 "processing_time_ms": processing_time,
                 "accuracy_score": result.get("accuracy_score", 0.0),
-                "constitutional_alignment": result.get("constitutional_alignment_score", 0.0),
-                "constitutional_hash_valid": result.get("constitutional_hash") == "cdd01ef066bc6cf2",
+                "constitutional_alignment": result.get(
+                    "constitutional_alignment_score", 0.0
+                ),
+                "constitutional_hash_valid": result.get("constitutional_hash")
+                == "cdd01ef066bc6cf2",
                 "enhanced_features_used": result.get("enhanced_features_used", {}),
-                "performance_targets_met": result.get("performance_targets_met", {})
+                "performance_targets_met": result.get("performance_targets_met", {}),
             }
 
             results.append(test_result)
@@ -214,11 +233,15 @@ class EnhancedPolicySynthesisValidator:
         self.results["test_results"]["basic_synthesis"] = {
             "total_cases": len(test_cases),
             "successful_cases": sum(1 for r in results if r["success"]),
-            "average_processing_time_ms": statistics.mean(r["processing_time_ms"] for r in results),
+            "average_processing_time_ms": statistics.mean(
+                r["processing_time_ms"] for r in results
+            ),
             "average_accuracy": statistics.mean(r["accuracy_score"] for r in results),
-            "average_constitutional_alignment": statistics.mean(r["constitutional_alignment"] for r in results),
+            "average_constitutional_alignment": statistics.mean(
+                r["constitutional_alignment"] for r in results
+            ),
             "all_hash_valid": all(r["constitutional_hash_valid"] for r in results),
-            "cases": results
+            "cases": results,
         }
 
     async def _test_chain_of_thought_analysis(self):
@@ -232,11 +255,13 @@ class EnhancedPolicySynthesisValidator:
             domain_context={"scope": "safety", "priority": "high"},
             risk_strategy=RiskStrategy.ENHANCED_VALIDATION,
             enable_chain_of_thought=True,
-            enable_rag=True
+            enable_rag=True,
         )
 
         start_time = time.time()
-        result = await self.synthesis_engine.synthesize_policy(request, RiskStrategy.ENHANCED_VALIDATION)
+        result = await self.synthesis_engine.synthesize_policy(
+            request, RiskStrategy.ENHANCED_VALIDATION
+        )
         processing_time = (time.time() - start_time) * 1000
 
         constitutional_analysis = result.get("constitutional_analysis", {})
@@ -244,12 +269,21 @@ class EnhancedPolicySynthesisValidator:
         self.results["test_results"]["chain_of_thought"] = {
             "success": result.get("success", False),
             "processing_time_ms": processing_time,
-            "decomposed_elements_count": len(constitutional_analysis.get("decomposed_elements", [])),
-            "reasoning_chain_length": len(constitutional_analysis.get("reasoning_chain", [])),
+            "decomposed_elements_count": len(
+                constitutional_analysis.get("decomposed_elements", [])
+            ),
+            "reasoning_chain_length": len(
+                constitutional_analysis.get("reasoning_chain", [])
+            ),
             "scope_analysis": constitutional_analysis.get("scope_analysis"),
             "severity_assessment": constitutional_analysis.get("severity_assessment"),
-            "invariant_conditions_count": len(constitutional_analysis.get("invariant_conditions", [])),
-            "constitutional_hash_valid": constitutional_analysis.get("constitutional_hash") == "cdd01ef066bc6cf2"
+            "invariant_conditions_count": len(
+                constitutional_analysis.get("invariant_conditions", [])
+            ),
+            "constitutional_hash_valid": constitutional_analysis.get(
+                "constitutional_hash"
+            )
+            == "cdd01ef066bc6cf2",
         }
 
     async def _test_rag_integration(self):
@@ -263,11 +297,13 @@ class EnhancedPolicySynthesisValidator:
             domain_context={"scope": "governance", "complexity": "high"},
             risk_strategy=RiskStrategy.MULTI_MODEL_CONSENSUS,
             enable_chain_of_thought=True,
-            enable_rag=True
+            enable_rag=True,
         )
 
         start_time = time.time()
-        result = await self.synthesis_engine.synthesize_policy(request, RiskStrategy.MULTI_MODEL_CONSENSUS)
+        result = await self.synthesis_engine.synthesize_policy(
+            request, RiskStrategy.MULTI_MODEL_CONSENSUS
+        )
         processing_time = (time.time() - start_time) * 1000
 
         rag_context = result.get("rag_context", {})
@@ -279,7 +315,10 @@ class EnhancedPolicySynthesisValidator:
             "constitutional_context_available": "constitutional_context" in rag_context,
             "analysis_context_available": "analysis_context" in rag_context,
             "context_quality_score": rag_context.get("context_quality_score", 0.0),
-            "constitutional_hash_valid": rag_context.get("constitutional_context", {}).get("constitutional_hash") == "cdd01ef066bc6cf2"
+            "constitutional_hash_valid": rag_context.get(
+                "constitutional_context", {}
+            ).get("constitutional_hash")
+            == "cdd01ef066bc6cf2",
         }
 
     async def _test_validation_pipeline(self):
@@ -293,11 +332,13 @@ class EnhancedPolicySynthesisValidator:
             domain_context={"scope": "constitutional", "validation": "comprehensive"},
             risk_strategy=RiskStrategy.HUMAN_REVIEW,
             enable_chain_of_thought=True,
-            enable_rag=True
+            enable_rag=True,
         )
 
         start_time = time.time()
-        result = await self.synthesis_engine.synthesize_policy(request, RiskStrategy.HUMAN_REVIEW)
+        result = await self.synthesis_engine.synthesize_policy(
+            request, RiskStrategy.HUMAN_REVIEW
+        )
         processing_time = (time.time() - start_time) * 1000
 
         validation_pipeline = result.get("validation_pipeline", {})
@@ -310,12 +351,20 @@ class EnhancedPolicySynthesisValidator:
             "passed_stages_count": len(validation_pipeline.get("passed_stages", [])),
             "failed_stages_count": len(validation_pipeline.get("failed_stages", [])),
             "stages": {
-                "llm_generation": stage_results.get("llm_generation", {}).get("passed", False),
-                "static_validation": stage_results.get("static_validation", {}).get("passed", False),
-                "semantic_verification": stage_results.get("semantic_verification", {}).get("passed", False),
-                "smt_consistency": stage_results.get("smt_consistency", {}).get("passed", False)
+                "llm_generation": stage_results.get("llm_generation", {}).get(
+                    "passed", False
+                ),
+                "static_validation": stage_results.get("static_validation", {}).get(
+                    "passed", False
+                ),
+                "semantic_verification": stage_results.get(
+                    "semantic_verification", {}
+                ).get("passed", False),
+                "smt_consistency": stage_results.get("smt_consistency", {}).get(
+                    "passed", False
+                ),
             },
-            "all_stages_passed": len(validation_pipeline.get("failed_stages", [])) == 0
+            "all_stages_passed": len(validation_pipeline.get("failed_stages", [])) == 0,
         }
 
     async def _test_performance_targets(self):
@@ -328,10 +377,10 @@ class EnhancedPolicySynthesisValidator:
                 title=f"Performance Test Policy {i+1}",
                 description=f"Policy for performance testing iteration {i+1}",
                 constitutional_principles=["CP-001"],
-                domain_context={"scope": "performance", "iteration": i+1},
+                domain_context={"scope": "performance", "iteration": i + 1},
                 risk_strategy=RiskStrategy.STANDARD,
                 enable_chain_of_thought=True,
-                enable_rag=True
+                enable_rag=True,
             )
             test_requests.append(request)
 
@@ -342,12 +391,16 @@ class EnhancedPolicySynthesisValidator:
 
         for request in test_requests:
             start_time = time.time()
-            result = await self.synthesis_engine.synthesize_policy(request, RiskStrategy.STANDARD)
+            result = await self.synthesis_engine.synthesize_policy(
+                request, RiskStrategy.STANDARD
+            )
             processing_time = (time.time() - start_time) * 1000
 
             processing_times.append(processing_time)
             accuracy_scores.append(result.get("accuracy_score", 0.0))
-            constitutional_alignments.append(result.get("constitutional_alignment_score", 0.0))
+            constitutional_alignments.append(
+                result.get("constitutional_alignment_score", 0.0)
+            )
 
             if result.get("success", False):
                 successes += 1
@@ -369,8 +422,8 @@ class EnhancedPolicySynthesisValidator:
                 "response_time": avg_processing_time <= 500.0,
                 "accuracy": avg_accuracy >= 0.85,  # Relaxed for testing
                 "constitutional_alignment": avg_alignment >= 0.85,
-                "success_rate": success_rate >= 0.95
-            }
+                "success_rate": success_rate >= 0.95,
+            },
         }
 
     async def _test_concurrent_operations(self):
@@ -384,10 +437,10 @@ class EnhancedPolicySynthesisValidator:
                 title=f"Concurrent Policy {i+1}",
                 description=f"Policy for concurrent testing {i+1}",
                 constitutional_principles=["CP-001"],
-                domain_context={"scope": "concurrency", "id": i+1},
+                domain_context={"scope": "concurrency", "id": i + 1},
                 risk_strategy=RiskStrategy.STANDARD,
                 enable_chain_of_thought=True,
-                enable_rag=True
+                enable_rag=True,
             )
             concurrent_requests.append(request)
 
@@ -400,15 +453,18 @@ class EnhancedPolicySynthesisValidator:
         results = await asyncio.gather(*tasks, return_exceptions=True)
         total_time = (time.time() - start_time) * 1000
 
-        successful_results = [r for r in results if isinstance(r, dict) and r.get("success", False)]
+        successful_results = [
+            r for r in results if isinstance(r, dict) and r.get("success", False)
+        ]
 
         self.results["test_results"]["concurrent_operations"] = {
             "total_requests": len(concurrent_requests),
             "successful_requests": len(successful_results),
             "total_time_ms": total_time,
             "avg_time_per_request_ms": total_time / len(concurrent_requests),
-            "concurrency_efficiency": len(successful_results) / len(concurrent_requests),
-            "errors": [str(r) for r in results if isinstance(r, Exception)]
+            "concurrency_efficiency": len(successful_results)
+            / len(concurrent_requests),
+            "errors": [str(r) for r in results if isinstance(r, Exception)],
         }
 
     def _generate_summary(self):
@@ -429,13 +485,15 @@ class EnhancedPolicySynthesisValidator:
                 if test_result.get("success", False):
                     successful_tests += 1
                 else:
-                    critical_failures.append(f"Engine initialization failed")
+                    critical_failures.append("Engine initialization failed")
 
             elif test_name == "basic_synthesis":
-                if test_result.get("successful_cases", 0) == test_result.get("total_cases", 0):
+                if test_result.get("successful_cases", 0) == test_result.get(
+                    "total_cases", 0
+                ):
                     successful_tests += 1
                 else:
-                    critical_failures.append(f"Basic synthesis tests failed")
+                    critical_failures.append("Basic synthesis tests failed")
 
             elif test_name == "performance_targets":
                 targets_met = test_result.get("targets_met", {})
@@ -443,7 +501,9 @@ class EnhancedPolicySynthesisValidator:
                     successful_tests += 1
                 else:
                     failed_targets = [k for k, v in targets_met.items() if not v]
-                    warnings.append(f"Performance targets not met: {', '.join(failed_targets)}")
+                    warnings.append(
+                        f"Performance targets not met: {', '.join(failed_targets)}"
+                    )
 
             else:
                 if test_result.get("success", False):
@@ -465,21 +525,29 @@ class EnhancedPolicySynthesisValidator:
         recommendations = []
 
         if critical_failures:
-            recommendations.extend([f"CRITICAL: {failure}" for failure in critical_failures])
+            recommendations.extend(
+                [f"CRITICAL: {failure}" for failure in critical_failures]
+            )
 
         if warnings:
             recommendations.extend([f"WARNING: {warning}" for warning in warnings])
 
         if status == "PASSED":
-            recommendations.append("Enhanced Policy Synthesis Engine is ready for production deployment")
+            recommendations.append(
+                "Enhanced Policy Synthesis Engine is ready for production deployment"
+            )
 
         # Performance recommendations
         perf_results = test_results.get("performance_targets", {})
         if perf_results.get("avg_processing_time_ms", 0) > 400:
-            recommendations.append("Consider optimizing processing time for better performance")
+            recommendations.append(
+                "Consider optimizing processing time for better performance"
+            )
 
         if perf_results.get("avg_accuracy_score", 0) < 0.9:
-            recommendations.append("Consider tuning accuracy parameters for better results")
+            recommendations.append(
+                "Consider tuning accuracy parameters for better results"
+            )
 
         self.results["summary"] = {
             "status": status,
@@ -493,8 +561,8 @@ class EnhancedPolicySynthesisValidator:
                 "chain_of_thought_analysis",
                 "retrieval_augmented_generation",
                 "validation_pipeline",
-                "multi_model_integration"
-            ]
+                "multi_model_integration",
+            ],
         }
 
         self.results["recommendations"] = recommendations
@@ -502,9 +570,17 @@ class EnhancedPolicySynthesisValidator:
 
 async def main():
     """Main validation function."""
-    parser = argparse.ArgumentParser(description="Enhanced Policy Synthesis Engine Validation")
-    parser.add_argument("--comprehensive", action="store_true", help="Run comprehensive validation tests")
-    parser.add_argument("--performance-only", action="store_true", help="Run performance tests only")
+    parser = argparse.ArgumentParser(
+        description="Enhanced Policy Synthesis Engine Validation"
+    )
+    parser.add_argument(
+        "--comprehensive",
+        action="store_true",
+        help="Run comprehensive validation tests",
+    )
+    parser.add_argument(
+        "--performance-only", action="store_true", help="Run performance tests only"
+    )
     parser.add_argument("--output", type=str, help="Output file for results (JSON)")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
@@ -516,15 +592,14 @@ async def main():
     # Run validation
     validator = EnhancedPolicySynthesisValidator()
     results = await validator.run_validation(
-        comprehensive=args.comprehensive,
-        performance_only=args.performance_only
+        comprehensive=args.comprehensive, performance_only=args.performance_only
     )
 
     # Output results
     if args.output:
         output_path = Path(args.output)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             json.dump(results, f, indent=2)
         logger.info(f"Results saved to {output_path}")
     else:
@@ -533,24 +608,26 @@ async def main():
     # Print summary
     summary = results["summary"]
     print(f"\n{'='*60}")
-    print(f"ENHANCED POLICY SYNTHESIS ENGINE VALIDATION SUMMARY")
+    print("ENHANCED POLICY SYNTHESIS ENGINE VALIDATION SUMMARY")
     print(f"{'='*60}")
     print(f"Status: {summary['status']}")
-    print(f"Tests: {summary['successful_tests']}/{summary['total_tests']} passed ({summary['success_rate']:.1%})")
+    print(
+        f"Tests: {summary['successful_tests']}/{summary['total_tests']} passed ({summary['success_rate']:.1%})"
+    )
     print(f"Constitutional Hash: {summary['constitutional_hash_validated']}")
 
     if summary.get("critical_failures"):
-        print(f"\nCRITICAL FAILURES:")
+        print("\nCRITICAL FAILURES:")
         for failure in summary["critical_failures"]:
             print(f"  - {failure}")
 
     if summary.get("warnings"):
-        print(f"\nWARNINGS:")
+        print("\nWARNINGS:")
         for warning in summary["warnings"]:
             print(f"  - {warning}")
 
     if results.get("recommendations"):
-        print(f"\nRECOMMENDATIONS:")
+        print("\nRECOMMENDATIONS:")
         for rec in results["recommendations"]:
             print(f"  - {rec}")
 

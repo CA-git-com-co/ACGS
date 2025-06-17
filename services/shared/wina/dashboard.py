@@ -15,8 +15,8 @@ Key Features:
 
 import json
 import logging
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from .performance_monitoring import (
     WINAComponentType,
@@ -40,10 +40,10 @@ class WINADashboard:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize WINA dashboard."""
-        self.performance_collector: Optional[WINAPerformanceCollector] = None
-        self.dashboard_cache: Dict[str, Any] = {}
+        self.performance_collector: WINAPerformanceCollector | None = None
+        self.dashboard_cache: dict[str, Any] = {}
         self.cache_ttl = timedelta(seconds=30)  # 30-second cache
-        self.last_cache_update = datetime.min.replace(tzinfo=timezone.utc)
+        self.last_cache_update = datetime.min.replace(tzinfo=UTC)
 
         # Dashboard configuration
         self.refresh_interval = 5  # seconds
@@ -61,7 +61,7 @@ class WINADashboard:
             logger.error(f"Failed to initialize dashboard: {e}")
             raise
 
-    async def get_dashboard_data(self, refresh_cache: bool = False) -> Dict[str, Any]:
+    async def get_dashboard_data(self, refresh_cache: bool = False) -> dict[str, Any]:
         """
         Get comprehensive dashboard data.
 
@@ -72,7 +72,7 @@ class WINADashboard:
             Dashboard data with all visualizations and metrics
         """
         try:
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
 
             # Check cache validity
             if (
@@ -107,12 +107,12 @@ class WINADashboard:
         except Exception as e:
             logger.error(f"Dashboard data retrieval failed: {e}")
             return {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "error": f"Dashboard data unavailable: {str(e)}",
                 "status": "error",
             }
 
-    async def _get_system_overview(self) -> Dict[str, Any]:
+    async def _get_system_overview(self) -> dict[str, Any]:
         """Get high-level system overview."""
         try:
             real_time_metrics = await self.performance_collector.get_real_time_metrics()
@@ -127,12 +127,16 @@ class WINADashboard:
                     "performance_targets_met", False
                 ),
                 "gflops_reduction": {
-                    "current": overall_performance.get("gflops_reduction_achieved", 0.0),
+                    "current": overall_performance.get(
+                        "gflops_reduction_achieved", 0.0
+                    ),
                     "target_min": 0.4,
                     "target_max": 0.7,
                     "status": (
                         "optimal"
-                        if 0.4 <= overall_performance.get("gflops_reduction_achieved", 0.0) <= 0.7
+                        if 0.4
+                        <= overall_performance.get("gflops_reduction_achieved", 0.0)
+                        <= 0.7
                         else "needs_attention"
                     ),
                 },
@@ -146,11 +150,16 @@ class WINADashboard:
                     ),
                 },
                 "constitutional_compliance": {
-                    "current": overall_performance.get("constitutional_compliance_rate", 0.95),
+                    "current": overall_performance.get(
+                        "constitutional_compliance_rate", 0.95
+                    ),
                     "target": 0.90,
                     "status": (
                         "compliant"
-                        if overall_performance.get("constitutional_compliance_rate", 0.95) >= 0.90
+                        if overall_performance.get(
+                            "constitutional_compliance_rate", 0.95
+                        )
+                        >= 0.90
                         else "non_compliant"
                     ),
                 },
@@ -161,14 +170,14 @@ class WINADashboard:
                     "throughput": system_health.get("throughput", 0.0),
                 },
                 "monitoring_active": self.performance_collector.monitoring_active,
-                "last_update": datetime.now(timezone.utc).isoformat(),
+                "last_update": datetime.now(UTC).isoformat(),
             }
 
         except Exception as e:
             logger.error(f"System overview generation failed: {e}")
             return {"error": str(e)}
 
-    async def _get_performance_metrics(self) -> Dict[str, Any]:
+    async def _get_performance_metrics(self) -> dict[str, Any]:
         """Get detailed performance metrics."""
         try:
             real_time_metrics = await self.performance_collector.get_real_time_metrics()
@@ -177,41 +186,47 @@ class WINADashboard:
                 "neuron_activation": real_time_metrics.get("neuron_activation", {}),
                 "svd_transformation": real_time_metrics.get("svd_transformation", {}),
                 "dynamic_gating": real_time_metrics.get("dynamic_gating", {}),
-                "constitutional_compliance": real_time_metrics.get("constitutional_compliance", {}),
-                "learning_feedback": real_time_metrics.get("learning_feedback", {}),
-                "integration_performance": real_time_metrics.get("integration_performance", {}),
-                "efficiency_score": real_time_metrics.get("overall_performance", {}).get(
-                    "efficiency_score", 0.0
+                "constitutional_compliance": real_time_metrics.get(
+                    "constitutional_compliance", {}
                 ),
+                "learning_feedback": real_time_metrics.get("learning_feedback", {}),
+                "integration_performance": real_time_metrics.get(
+                    "integration_performance", {}
+                ),
+                "efficiency_score": real_time_metrics.get(
+                    "overall_performance", {}
+                ).get("efficiency_score", 0.0),
             }
 
         except Exception as e:
             logger.error(f"Performance metrics generation failed: {e}")
             return {"error": str(e)}
 
-    async def _get_component_status(self) -> Dict[str, Any]:
+    async def _get_component_status(self) -> dict[str, Any]:
         """Get status of all WINA components."""
         try:
             component_status = {}
 
             for component in WINAComponentType:
                 # Get recent component metrics
-                component_metrics = self.performance_collector.component_metrics.get(component, [])
+                component_metrics = self.performance_collector.component_metrics.get(
+                    component, []
+                )
                 recent_metrics = [
                     m
                     for m in component_metrics
-                    if datetime.now(timezone.utc)
-                    - m.get("timestamp", datetime.min.replace(tzinfo=timezone.utc))
+                    if datetime.now(UTC)
+                    - m.get("timestamp", datetime.min.replace(tzinfo=UTC))
                     < timedelta(minutes=5)
                 ]
 
                 if recent_metrics:
-                    success_rate = sum(1 for m in recent_metrics if m.get("success", True)) / len(
-                        recent_metrics
-                    )
-                    avg_duration = sum(m.get("duration_ms", 0) for m in recent_metrics) / len(
-                        recent_metrics
-                    )
+                    success_rate = sum(
+                        1 for m in recent_metrics if m.get("success", True)
+                    ) / len(recent_metrics)
+                    avg_duration = sum(
+                        m.get("duration_ms", 0) for m in recent_metrics
+                    ) / len(recent_metrics)
 
                     status = "healthy"
                     if success_rate < 0.95:
@@ -228,7 +243,7 @@ class WINADashboard:
                             max(
                                 m.get(
                                     "timestamp",
-                                    datetime.min.replace(tzinfo=timezone.utc),
+                                    datetime.min.replace(tzinfo=UTC),
                                 )
                                 for m in recent_metrics
                             ).isoformat()
@@ -251,10 +266,10 @@ class WINADashboard:
             logger.error(f"Component status generation failed: {e}")
             return {"error": str(e)}
 
-    async def _get_alerts_summary(self) -> Dict[str, Any]:
+    async def _get_alerts_summary(self) -> dict[str, Any]:
         """Get alerts summary for dashboard."""
         try:
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
 
             # Get recent alerts
             recent_alerts = [
@@ -264,8 +279,12 @@ class WINADashboard:
             ]
 
             # Categorize alerts by severity
-            critical_alerts = [a for a in recent_alerts if a.get("severity") == "critical"]
-            warning_alerts = [a for a in recent_alerts if a.get("severity") == "warning"]
+            critical_alerts = [
+                a for a in recent_alerts if a.get("severity") == "critical"
+            ]
+            warning_alerts = [
+                a for a in recent_alerts if a.get("severity") == "warning"
+            ]
 
             # Get active alerts (last 1 hour)
             active_alerts = [
@@ -285,7 +304,9 @@ class WINADashboard:
                 "active_alerts": len(active_alerts),
                 "recent_alerts": active_alerts[-self.alert_display_limit :],
                 "alert_trend": (
-                    "increasing" if len(active_alerts) > len(recent_alerts) / 24 else "stable"
+                    "increasing"
+                    if len(active_alerts) > len(recent_alerts) / 24
+                    else "stable"
                 ),
             }
 
@@ -293,7 +314,7 @@ class WINADashboard:
             logger.error(f"Alerts summary generation failed: {e}")
             return {"error": str(e)}
 
-    async def _get_chart_data(self) -> Dict[str, Any]:
+    async def _get_chart_data(self) -> dict[str, Any]:
         """Get data for dashboard charts."""
         try:
             chart_data = {}
@@ -302,7 +323,9 @@ class WINADashboard:
             chart_data["gflops_reduction_chart"] = await self._get_gflops_chart_data()
 
             # Accuracy retention over time
-            chart_data["accuracy_retention_chart"] = await self._get_accuracy_chart_data()
+            chart_data["accuracy_retention_chart"] = (
+                await self._get_accuracy_chart_data()
+            )
 
             # Component performance distribution
             chart_data["component_performance_chart"] = (
@@ -313,7 +336,9 @@ class WINADashboard:
             chart_data["system_health_chart"] = await self._get_system_health_chart()
 
             # Integration latency trends
-            chart_data["integration_latency_chart"] = await self._get_integration_latency_chart()
+            chart_data["integration_latency_chart"] = (
+                await self._get_integration_latency_chart()
+            )
 
             return chart_data
 
@@ -321,10 +346,10 @@ class WINADashboard:
             logger.error(f"Chart data generation failed: {e}")
             return {"error": str(e)}
 
-    async def _get_gflops_chart_data(self) -> Dict[str, Any]:
+    async def _get_gflops_chart_data(self) -> dict[str, Any]:
         """Get GFLOPs reduction chart data."""
         try:
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
             time_range = timedelta(hours=2)
 
             # Get neuron activation metrics for GFLOPs calculation
@@ -350,17 +375,19 @@ class WINADashboard:
                 "target_min": 0.4,
                 "target_max": 0.7,
                 "current": data[-1] if data else 0.0,
-                "trend": ("improving" if len(data) > 1 and data[-1] > data[0] else "stable"),
+                "trend": (
+                    "improving" if len(data) > 1 and data[-1] > data[0] else "stable"
+                ),
             }
 
         except Exception as e:
             logger.error(f"GFLOPs chart data generation failed: {e}")
             return {"labels": [], "data": [], "error": str(e)}
 
-    async def _get_accuracy_chart_data(self) -> Dict[str, Any]:
+    async def _get_accuracy_chart_data(self) -> dict[str, Any]:
         """Get accuracy retention chart data."""
         try:
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
             time_range = timedelta(hours=2)
 
             # Get constitutional compliance metrics for accuracy
@@ -385,35 +412,39 @@ class WINADashboard:
                 "data": data,
                 "target": 0.95,
                 "current": data[-1] if data else 0.95,
-                "trend": ("improving" if len(data) > 1 and data[-1] > data[0] else "stable"),
+                "trend": (
+                    "improving" if len(data) > 1 and data[-1] > data[0] else "stable"
+                ),
             }
 
         except Exception as e:
             logger.error(f"Accuracy chart data generation failed: {e}")
             return {"labels": [], "data": [], "error": str(e)}
 
-    async def _get_component_performance_chart(self) -> Dict[str, Any]:
+    async def _get_component_performance_chart(self) -> dict[str, Any]:
         """Get component performance distribution chart."""
         try:
             component_data = []
 
             for component in WINAComponentType:
-                component_metrics = self.performance_collector.component_metrics.get(component, [])
+                component_metrics = self.performance_collector.component_metrics.get(
+                    component, []
+                )
                 recent_metrics = [
                     m
                     for m in component_metrics
-                    if datetime.now(timezone.utc)
-                    - m.get("timestamp", datetime.min.replace(tzinfo=timezone.utc))
+                    if datetime.now(UTC)
+                    - m.get("timestamp", datetime.min.replace(tzinfo=UTC))
                     < timedelta(minutes=30)
                 ]
 
                 if recent_metrics:
-                    avg_duration = sum(m.get("duration_ms", 0) for m in recent_metrics) / len(
-                        recent_metrics
-                    )
-                    success_rate = sum(1 for m in recent_metrics if m.get("success", True)) / len(
-                        recent_metrics
-                    )
+                    avg_duration = sum(
+                        m.get("duration_ms", 0) for m in recent_metrics
+                    ) / len(recent_metrics)
+                    success_rate = sum(
+                        1 for m in recent_metrics if m.get("success", True)
+                    ) / len(recent_metrics)
 
                     component_data.append(
                         {
@@ -430,10 +461,10 @@ class WINADashboard:
             logger.error(f"Component performance chart generation failed: {e}")
             return {"components": [], "error": str(e)}
 
-    async def _get_system_health_chart(self) -> Dict[str, Any]:
+    async def _get_system_health_chart(self) -> dict[str, Any]:
         """Get system health metrics chart."""
         try:
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
             time_range = timedelta(hours=1)
 
             relevant_metrics = [
@@ -474,10 +505,10 @@ class WINADashboard:
                 "error": str(e),
             }
 
-    async def _get_integration_latency_chart(self) -> Dict[str, Any]:
+    async def _get_integration_latency_chart(self) -> dict[str, Any]:
         """Get integration latency trends chart."""
         try:
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
             time_range = timedelta(hours=2)
 
             relevant_metrics = [
@@ -501,7 +532,9 @@ class WINADashboard:
             latency_trends = []
             for pair_key, metrics in integration_pairs.items():
                 if len(metrics) >= 2:
-                    avg_latency = sum(m.integration_latency_ms for m in metrics) / len(metrics)
+                    avg_latency = sum(m.integration_latency_ms for m in metrics) / len(
+                        metrics
+                    )
                     latest_latency = metrics[-1].integration_latency_ms
                     earliest_latency = metrics[0].integration_latency_ms
 
@@ -530,7 +563,7 @@ class WINADashboard:
             logger.error(f"Integration latency chart generation failed: {e}")
             return {"integration_pairs": [], "latency_trends": [], "error": str(e)}
 
-    async def _get_health_indicators(self) -> Dict[str, Any]:
+    async def _get_health_indicators(self) -> dict[str, Any]:
         """Get system health indicators."""
         try:
             real_time_metrics = await self.performance_collector.get_real_time_metrics()
@@ -582,7 +615,9 @@ class WINADashboard:
                 "system_health_score": system_health_score,
                 "indicators": {
                     "wina_optimization": {
-                        "status": overall_performance.get("optimization_status", "unknown"),
+                        "status": overall_performance.get(
+                            "optimization_status", "unknown"
+                        ),
                         "score": performance_health,
                     },
                     "system_stability": {
@@ -609,14 +644,16 @@ class WINADashboard:
                 "error": str(e),
             }
 
-    async def _get_trends_data(self) -> Dict[str, Any]:
+    async def _get_trends_data(self) -> dict[str, Any]:
         """Get trend analysis data."""
         try:
             # Get 24-hour performance report for trends
-            end_time = datetime.now(timezone.utc)
+            end_time = datetime.now(UTC)
             start_time = end_time - timedelta(hours=24)
 
-            report = await self.performance_collector.get_performance_report(start_time, end_time)
+            report = await self.performance_collector.get_performance_report(
+                start_time, end_time
+            )
 
             return {
                 "performance_trends": report.trends,
@@ -633,7 +670,9 @@ class WINADashboard:
                     "current": report.overall_accuracy_retention,
                     "target": "≥95%",
                     "status": (
-                        "on_target" if report.overall_accuracy_retention >= 0.95 else "below_target"
+                        "on_target"
+                        if report.overall_accuracy_retention >= 0.95
+                        else "below_target"
                     ),
                 },
                 "operations_trend": {
@@ -647,7 +686,7 @@ class WINADashboard:
             logger.error(f"Trends data generation failed: {e}")
             return {"error": str(e)}
 
-    async def _get_recommendations(self) -> List[str]:
+    async def _get_recommendations(self) -> list[str]:
         """Get system recommendations based on current performance."""
         try:
             recommendations = []
@@ -690,11 +729,13 @@ class WINADashboard:
             recent_alerts = [
                 alert
                 for alert in self.performance_collector.alerts_history
-                if datetime.now(timezone.utc) - alert["timestamp"] < timedelta(hours=1)
+                if datetime.now(UTC) - alert["timestamp"] < timedelta(hours=1)
             ]
 
             if len(recent_alerts) > 5:
-                recommendations.append("Multiple recent alerts detected. Review system stability.")
+                recommendations.append(
+                    "Multiple recent alerts detected. Review system stability."
+                )
 
             # Component-specific recommendations
             neuron_activation = real_time_metrics.get("neuron_activation", {})
@@ -753,7 +794,7 @@ class WINADashboard:
             logger.error(f"Dashboard data export failed: {e}")
             raise
 
-    async def get_component_details(self, component_type: str) -> Dict[str, Any]:
+    async def get_component_details(self, component_type: str) -> dict[str, Any]:
         """
         Get detailed information for a specific component.
 
@@ -770,14 +811,17 @@ class WINADashboard:
             except ValueError:
                 raise ValueError(f"Invalid component type: {component_type}")
 
-            component_metrics = self.performance_collector.component_metrics.get(component_enum, [])
+            component_metrics = self.performance_collector.component_metrics.get(
+                component_enum, []
+            )
 
             # Get recent metrics (last hour)
-            current_time = datetime.now(timezone.utc)
+            current_time = datetime.now(UTC)
             recent_metrics = [
                 m
                 for m in component_metrics
-                if current_time - m.get("timestamp", datetime.min.replace(tzinfo=timezone.utc))
+                if current_time
+                - m.get("timestamp", datetime.min.replace(tzinfo=UTC))
                 < timedelta(hours=1)
             ]
 
@@ -789,9 +833,9 @@ class WINADashboard:
                 }
 
             # Calculate statistics
-            success_rate = sum(1 for m in recent_metrics if m.get("success", True)) / len(
-                recent_metrics
-            )
+            success_rate = sum(
+                1 for m in recent_metrics if m.get("success", True)
+            ) / len(recent_metrics)
             avg_duration = sum(m.get("duration_ms", 0) for m in recent_metrics) / len(
                 recent_metrics
             )
@@ -827,7 +871,7 @@ class WINADashboard:
                     "success_rate": success_rate,
                     "avg_duration_ms": avg_duration,
                     "last_activity": max(
-                        m.get("timestamp", datetime.min.replace(tzinfo=timezone.utc))
+                        m.get("timestamp", datetime.min.replace(tzinfo=UTC))
                         for m in recent_metrics
                     ).isoformat(),
                 },
@@ -848,7 +892,7 @@ class WINADashboard:
 
 
 # Global dashboard instance
-_wina_dashboard: Optional[WINADashboard] = None
+_wina_dashboard: WINADashboard | None = None
 
 
 async def get_wina_dashboard() -> WINADashboard:

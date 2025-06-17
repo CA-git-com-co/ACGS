@@ -457,7 +457,7 @@ chmod +x scripts/deploy_monitoring.sh
 
 # Start all services
 cd config/docker
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # Verify deployment
 ./scripts/load_test_monitoring.sh 10 60

@@ -9,7 +9,7 @@ and configurable limits per endpoint and user type.
 import logging
 import time
 from enum import Enum
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import redis.asyncio as redis
 from fastapi import Request
@@ -74,7 +74,7 @@ class RateLimiter:
         self,
         redis_url: str = "redis://localhost:6379",
         service_name: str = "acgs_service",
-        default_config: Optional[RateLimitConfig] = None,
+        default_config: RateLimitConfig | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -82,17 +82,23 @@ class RateLimiter:
         self.redis_url = redis_url
         self.service_name = service_name
         self.default_config = default_config or RateLimitConfig()
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
 
         # Endpoint-specific configurations
-        self.endpoint_configs: Dict[str, RateLimitConfig] = {
+        self.endpoint_configs: dict[str, RateLimitConfig] = {
             "/auth/login": RateLimitConfig(requests_per_minute=10, burst_size=3),
             "/auth/register": RateLimitConfig(requests_per_minute=5, burst_size=2),
-            "/auth/token/refresh": RateLimitConfig(requests_per_minute=20, burst_size=5),
+            "/auth/token/refresh": RateLimitConfig(
+                requests_per_minute=20, burst_size=5
+            ),
             "/api/v1/policies": RateLimitConfig(requests_per_minute=200, burst_size=50),
-            "/api/v1/principles": RateLimitConfig(requests_per_minute=100, burst_size=25),
+            "/api/v1/principles": RateLimitConfig(
+                requests_per_minute=100, burst_size=25
+            ),
             "/api/v1/synthesis": RateLimitConfig(requests_per_minute=30, burst_size=10),
-            "/api/v1/verification": RateLimitConfig(requests_per_minute=50, burst_size=15),
+            "/api/v1/verification": RateLimitConfig(
+                requests_per_minute=50, burst_size=15
+            ),
             "/health": RateLimitConfig(requests_per_minute=1000, burst_size=100),
         }
 
@@ -198,7 +204,9 @@ class RateLimiter:
 
         return False
 
-    def _get_rate_limit_config(self, request: Request, endpoint_pattern: str) -> RateLimitConfig:
+    def _get_rate_limit_config(
+        self, request: Request, endpoint_pattern: str
+    ) -> RateLimitConfig:
         """Get rate limit configuration for request."""
         # Get base configuration
         config = self.endpoint_configs.get(endpoint_pattern, self.default_config)
@@ -256,7 +264,7 @@ class RateLimiter:
 
     async def _check_rate_limit(
         self, client_id: str, endpoint_pattern: str, config: RateLimitConfig
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """
         Check rate limit using sliding window algorithm.
 
@@ -363,7 +371,7 @@ class RateLimiter:
         elif recent_violations >= 5:  # 5 violations in 1 hour
             await self._block_client(client_id, 900)  # Block for 15 minutes
 
-    async def check_rate_limit(self, request: Request) -> Tuple[bool, Dict[str, Any]]:
+    async def check_rate_limit(self, request: Request) -> tuple[bool, dict[str, Any]]:
         """
         Main rate limiting check for incoming requests.
 

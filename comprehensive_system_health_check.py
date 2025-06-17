@@ -13,7 +13,7 @@ import time
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 
@@ -37,9 +37,9 @@ class ServiceHealthResult:
     port: int
     status: ServiceStatus
     response_time_ms: float
-    http_status: Optional[int] = None
-    health_data: Optional[Dict] = None
-    error_message: Optional[str] = None
+    http_status: int | None = None
+    health_data: dict | None = None
+    error_message: str | None = None
     timestamp: str = None
 
     def __post_init__(self):
@@ -55,11 +55,11 @@ class SystemHealthReport:
     degraded_services: int
     unhealthy_services: int
     unreachable_services: int
-    service_results: List[ServiceHealthResult]
-    performance_metrics: Dict[str, Any]
-    constitutional_compliance_status: Dict[str, Any]
-    wina_oversight_status: Dict[str, Any]
-    recommendations: List[str]
+    service_results: list[ServiceHealthResult]
+    performance_metrics: dict[str, Any]
+    constitutional_compliance_status: dict[str, Any]
+    wina_oversight_status: dict[str, Any]
+    recommendations: list[str]
     timestamp: str
     execution_time_ms: float
 
@@ -97,7 +97,7 @@ class ACGSSystemHealthChecker:
             await self.session.close()
 
     async def check_service_health(
-        self, service_name: str, config: Dict
+        self, service_name: str, config: dict
     ) -> ServiceHealthResult:
         """Check health of a single service."""
         port = config["port"]
@@ -156,7 +156,7 @@ class ACGSSystemHealthChecker:
                         error_message=f"HTTP {response.status}",
                     )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             response_time_ms = (time.time() - start_time) * 1000
             return ServiceHealthResult(
                 service_name=service_name,
@@ -175,7 +175,7 @@ class ACGSSystemHealthChecker:
                 error_message=str(e),
             )
 
-    async def check_all_services(self) -> List[ServiceHealthResult]:
+    async def check_all_services(self) -> list[ServiceHealthResult]:
         """Check health of all services concurrently."""
         logger.info("🔍 Checking health of all ACGS-1 services...")
 
@@ -206,7 +206,7 @@ class ACGSSystemHealthChecker:
 
         return health_results
 
-    async def check_constitutional_compliance(self) -> Dict[str, Any]:
+    async def check_constitutional_compliance(self) -> dict[str, Any]:
         """Check constitutional compliance validation status."""
         logger.info("⚖️ Checking constitutional compliance validation...")
 
@@ -252,7 +252,7 @@ class ACGSSystemHealthChecker:
 
         return compliance_status
 
-    async def check_wina_oversight_operations(self) -> Dict[str, Any]:
+    async def check_wina_oversight_operations(self) -> dict[str, Any]:
         """Check WINA oversight operations status."""
         logger.info("🎯 Checking WINA oversight operations...")
 
@@ -308,8 +308,8 @@ class ACGSSystemHealthChecker:
         return wina_status
 
     async def check_performance_metrics(
-        self, service_results: List[ServiceHealthResult]
-    ) -> Dict[str, Any]:
+        self, service_results: list[ServiceHealthResult]
+    ) -> dict[str, Any]:
         """Analyze performance metrics against targets."""
         logger.info("📊 Analyzing performance metrics...")
 
@@ -364,11 +364,11 @@ class ACGSSystemHealthChecker:
 
     def generate_recommendations(
         self,
-        service_results: List[ServiceHealthResult],
-        performance_metrics: Dict[str, Any],
-        compliance_status: Dict[str, Any],
-        wina_status: Dict[str, Any],
-    ) -> List[str]:
+        service_results: list[ServiceHealthResult],
+        performance_metrics: dict[str, Any],
+        compliance_status: dict[str, Any],
+        wina_status: dict[str, Any],
+    ) -> list[str]:
         """Generate recommendations based on health check results."""
         recommendations = []
 
@@ -433,7 +433,7 @@ class ACGSSystemHealthChecker:
         return recommendations
 
     def determine_overall_status(
-        self, service_results: List[ServiceHealthResult]
+        self, service_results: list[ServiceHealthResult]
     ) -> ServiceStatus:
         """Determine overall system status based on service results."""
         unreachable_count = sum(

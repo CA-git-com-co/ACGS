@@ -13,13 +13,12 @@ Ensures >99.5% availability and <2s response times across all ACGS services.
 """
 
 import asyncio
-import json
 import logging
-import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 from .discovery import ServiceDiscovery
 from .enhanced_service_stabilizer import (
@@ -27,7 +26,7 @@ from .enhanced_service_stabilizer import (
     StabilizationConfig,
     StabilizationLevel,
 )
-from .failover_circuit_breaker import FailoverConfig, FailoverManager
+from .failover_circuit_breaker import FailoverManager
 from .load_balancer import LoadBalancer, LoadBalancingStrategy
 from .performance_monitor import get_performance_monitor
 from .registry import ServiceType, get_service_registry
@@ -70,7 +69,7 @@ class OrchestrationConfig:
 
     # Alert configuration
     enable_alerts: bool = True
-    alert_channels: List[str] = None
+    alert_channels: list[str] = None
 
 
 class ACGSServiceOrchestrator:
@@ -81,7 +80,7 @@ class ACGSServiceOrchestrator:
     service mesh capabilities for high availability and performance.
     """
 
-    def __init__(self, config: Optional[OrchestrationConfig] = None):
+    def __init__(self, config: OrchestrationConfig | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -90,16 +89,16 @@ class ACGSServiceOrchestrator:
 
         # Core components
         self.service_registry = get_service_registry()
-        self.service_discovery: Optional[ServiceDiscovery] = None
-        self.load_balancer: Optional[LoadBalancer] = None
-        self.failover_manager: Optional[FailoverManager] = None
-        self.service_stabilizer: Optional[EnhancedServiceStabilizer] = None
+        self.service_discovery: ServiceDiscovery | None = None
+        self.load_balancer: LoadBalancer | None = None
+        self.failover_manager: FailoverManager | None = None
+        self.service_stabilizer: EnhancedServiceStabilizer | None = None
         self.performance_monitor = None
 
         # Orchestration state
         self.running = False
-        self.orchestration_tasks: List[asyncio.Task] = []
-        self.start_time: Optional[datetime] = None
+        self.orchestration_tasks: list[asyncio.Task] = []
+        self.start_time: datetime | None = None
 
         # Metrics and monitoring
         self.orchestration_metrics = {
@@ -114,7 +113,7 @@ class ACGSServiceOrchestrator:
         }
 
         # Event callbacks
-        self.event_callbacks: Dict[str, List[Callable]] = {
+        self.event_callbacks: dict[str, list[Callable]] = {
             "service_registered": [],
             "service_failed": [],
             "service_recovered": [],
@@ -132,7 +131,9 @@ class ACGSServiceOrchestrator:
             logger.warning("Service orchestrator already running")
             return
 
-        logger.info(f"Starting ACGS Service Orchestrator in {self.config.mode.value} mode")
+        logger.info(
+            f"Starting ACGS Service Orchestrator in {self.config.mode.value} mode"
+        )
         self.running = True
         self.start_time = datetime.utcnow()
 
@@ -206,7 +207,9 @@ class ACGSServiceOrchestrator:
 
         # Initialize load balancer
         if self.config.enable_load_balancing:
-            self.load_balancer = LoadBalancer(strategy=LoadBalancingStrategy.WEIGHTED_ROUND_ROBIN)
+            self.load_balancer = LoadBalancer(
+                strategy=LoadBalancingStrategy.WEIGHTED_ROUND_ROBIN
+            )
             logger.info("Load balancer initialized")
 
         # Initialize failover manager
@@ -215,7 +218,10 @@ class ACGSServiceOrchestrator:
             logger.info("Failover manager initialized")
 
         # Initialize service stabilizer
-        if self.config.enable_health_monitoring or self.config.enable_performance_monitoring:
+        if (
+            self.config.enable_health_monitoring
+            or self.config.enable_performance_monitoring
+        ):
 
             stabilization_config = StabilizationConfig(
                 level=StabilizationLevel.ENTERPRISE,
@@ -251,10 +257,14 @@ class ACGSServiceOrchestrator:
         self.orchestration_tasks = []
 
         # Metrics collection task
-        self.orchestration_tasks.append(asyncio.create_task(self._metrics_collection_loop()))
+        self.orchestration_tasks.append(
+            asyncio.create_task(self._metrics_collection_loop())
+        )
 
         # System health monitoring task
-        self.orchestration_tasks.append(asyncio.create_task(self._system_health_monitoring_loop()))
+        self.orchestration_tasks.append(
+            asyncio.create_task(self._system_health_monitoring_loop())
+        )
 
         # Performance optimization task
         if self.config.enable_performance_monitoring:
@@ -264,7 +274,9 @@ class ACGSServiceOrchestrator:
 
         # Auto-scaling task (future feature)
         if self.config.enable_auto_scaling:
-            self.orchestration_tasks.append(asyncio.create_task(self._auto_scaling_loop()))
+            self.orchestration_tasks.append(
+                asyncio.create_task(self._auto_scaling_loop())
+            )
 
         logger.info(f"Started {len(self.orchestration_tasks)} orchestration tasks")
 
@@ -374,11 +386,15 @@ class ACGSServiceOrchestrator:
                     "response_time": avg_response_time,
                     "target_availability": self.config.target_availability_percent,
                     "target_response_time": self.config.target_response_time_ms,
-                    "recommendations": self._generate_performance_recommendations(system_status),
+                    "recommendations": self._generate_performance_recommendations(
+                        system_status
+                    ),
                 },
             )
 
-    def _generate_performance_recommendations(self, system_status: Dict[str, Any]) -> List[str]:
+    def _generate_performance_recommendations(
+        self, system_status: dict[str, Any]
+    ) -> list[str]:
         """Generate performance improvement recommendations."""
         recommendations = []
 
@@ -466,7 +482,7 @@ class ACGSServiceOrchestrator:
         if self.service_stabilizer:
             self.service_stabilizer.register_alert_callback(self._handle_service_alert)
 
-    def _handle_service_alert(self, alert_type: str, alert_data: Dict[str, Any]):
+    def _handle_service_alert(self, alert_type: str, alert_data: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -476,7 +492,7 @@ class ACGSServiceOrchestrator:
         # Emit orchestration event
         asyncio.create_task(self._emit_event(f"alert_{alert_type}", alert_data))
 
-    async def _emit_event(self, event_type: str, event_data: Dict[str, Any]):
+    async def _emit_event(self, event_type: str, event_data: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -502,7 +518,7 @@ class ACGSServiceOrchestrator:
 
         self.event_callbacks[event_type].append(callback)
 
-    def get_orchestration_status(self) -> Dict[str, Any]:
+    def get_orchestration_status(self) -> dict[str, Any]:
         """Get comprehensive orchestration status."""
         status = {
             "running": self.running,
@@ -534,15 +550,17 @@ class ACGSServiceOrchestrator:
         return status
 
     async def get_service_status(
-        self, service_type: Optional[ServiceType] = None
-    ) -> Dict[str, Any]:
+        self, service_type: ServiceType | None = None
+    ) -> dict[str, Any]:
         """Get status for specific service or all services."""
         if not self.service_stabilizer:
             return {"error": "Service stabilizer not initialized"}
 
         return self.service_stabilizer.get_service_health(service_type)
 
-    async def trigger_manual_failover(self, service_type: ServiceType) -> Dict[str, Any]:
+    async def trigger_manual_failover(
+        self, service_type: ServiceType
+    ) -> dict[str, Any]:
         """Manually trigger failover for a service."""
         if not self.failover_manager:
             return {"error": "Failover manager not initialized"}
@@ -553,10 +571,16 @@ class ACGSServiceOrchestrator:
 
             await self._emit_event(
                 "manual_failover_triggered",
-                {"service": service_type.value, "timestamp": datetime.utcnow().isoformat()},
+                {
+                    "service": service_type.value,
+                    "timestamp": datetime.utcnow().isoformat(),
+                },
             )
 
-            return {"success": True, "message": f"Failover triggered for {service_type.value}"}
+            return {
+                "success": True,
+                "message": f"Failover triggered for {service_type.value}",
+            }
 
         except Exception as e:
             logger.error(f"Manual failover failed for {service_type.value}: {e}")
@@ -564,11 +588,11 @@ class ACGSServiceOrchestrator:
 
 
 # Global orchestrator instance
-_orchestrator: Optional[ACGSServiceOrchestrator] = None
+_orchestrator: ACGSServiceOrchestrator | None = None
 
 
 async def get_service_orchestrator(
-    config: Optional[OrchestrationConfig] = None,
+    config: OrchestrationConfig | None = None,
 ) -> ACGSServiceOrchestrator:
     """Get the global service orchestrator instance."""
     global _orchestrator

@@ -148,7 +148,7 @@ All failing services have the **identical issue**: Docker containers cannot find
 **Impact**: Complete resolution
 
 1. **Rebuild Docker images** with correct Python path and working directory
-2. **Update docker-compose.yml** with proper volume mounts
+2. **Update infrastructure/docker/docker-compose.yml** with proper volume mounts
 3. **Restart all services** with new images
 
 ### **Option B: Host-Based Deployment (Quick Fix)**

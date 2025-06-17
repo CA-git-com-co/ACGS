@@ -19,7 +19,6 @@ import asyncio
 import os
 import sys
 import time
-from typing import List
 
 # Add project paths
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -246,7 +245,7 @@ Include specific conditions and actions.
             print(f"❌ Failed to import GS Service components: {e}")
 
     def evaluate_response_quality(
-        self, response: str, expected_elements: List[str]
+        self, response: str, expected_elements: list[str]
     ) -> float:
         """Evaluate response quality based on expected elements"""
         if not response:
@@ -288,7 +287,7 @@ Include specific conditions and actions.
                 if hasattr(interp, "explanation") and interp.explanation:
                     score += 0.2
                 if hasattr(interp, "confidence") and isinstance(
-                    interp.confidence, (int, float)
+                    interp.confidence, int | float
                 ):
                     score += 0.2
                 break  # Just check first interpretation for structure
@@ -333,7 +332,7 @@ Include specific conditions and actions.
                     print(f"   GS Service: ❌ {result['error']}")
 
         # Recommendations
-        print(f"\n💡 RECOMMENDATIONS")
+        print("\n💡 RECOMMENDATIONS")
         print("-" * 50)
 
         successful_tests = sum(
@@ -382,7 +381,7 @@ async def main():
     # Generate report
     tester.print_comprehensive_report()
 
-    print(f"\n🎉 Testing completed!")
+    print("\n🎉 Testing completed!")
 
 
 if __name__ == "__main__":

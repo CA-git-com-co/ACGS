@@ -8,7 +8,7 @@ import asyncio
 import json
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 
@@ -65,7 +65,7 @@ async def get_constitutional_rules():
                 "enforcement": "mandatory"
             },
             {
-                "id": "CONST-002", 
+                "id": "CONST-002",
                 "title": "Transparency Requirement",
                 "description": "All policy changes must be transparent and auditable",
                 "priority": "high",
@@ -91,10 +91,10 @@ async def validate_constitutional_compliance(request: dict):
     """Validate policy against constitutional rules."""
     policy = request.get("policy", {})
     rules = request.get("rules", [])
-    
+
     validation_results = []
     overall_compliant = True
-    
+
     for rule_id in ["CONST-001", "CONST-002", "CONST-003"]:
         compliance_check = {
             "rule_id": rule_id,
@@ -102,16 +102,16 @@ async def validate_constitutional_compliance(request: dict):
             "confidence": 0.95,
             "details": f"Policy complies with {rule_id}"
         }
-        
+
         # Simulate some validation logic
         if "democratic" not in str(policy).lower() and rule_id == "CONST-001":
             compliance_check["compliant"] = False
             compliance_check["confidence"] = 0.85
             compliance_check["details"] = "Policy lacks democratic participation elements"
             overall_compliant = False
-        
+
         validation_results.append(compliance_check)
-    
+
     return {
         "validation_id": f"VAL-{int(time.time())}",
         "overall_compliant": overall_compliant,
@@ -129,7 +129,7 @@ async def synthesize_governance_policy(request: dict):
     requirements = request.get("requirements", {})
     context = request.get("context", "general")
     priority = request.get("priority", "medium")
-    
+
     # Simulate policy synthesis
     synthesized_policy = {
         "policy_id": f"POL-{int(time.time())}",
@@ -149,7 +149,7 @@ async def synthesize_governance_policy(request: dict):
             "generated_at": time.time()
         }
     }
-    
+
     return {
         "synthesis_id": f"SYN-{int(time.time())}",
         "status": "completed",
@@ -176,7 +176,7 @@ async def validate_policy_compliance(request: dict):
     """Validate policy compliance against governance rules."""
     policy = request.get("policy", {})
     validation_type = request.get("type", "full")
-    
+
     compliance_results = {
         "validation_id": f"COMP-{int(time.time())}",
         "policy_id": policy.get("policy_id", "unknown"),
@@ -191,7 +191,7 @@ async def validate_policy_compliance(request: dict):
             },
             {
                 "check_type": "democratic_process",
-                "status": "passed", 
+                "status": "passed",
                 "score": 0.92,
                 "details": "Democratic participation requirements met"
             },
@@ -208,7 +208,7 @@ async def validate_policy_compliance(request: dict):
         ],
         "validated_at": time.time()
     }
-    
+
     return compliance_results
 
 @app.get("/api/v1/compliance/rules")
@@ -223,7 +223,7 @@ async def get_compliance_rules():
                 "enforcement": "mandatory"
             },
             {
-                "rule_id": "COMP-002", 
+                "rule_id": "COMP-002",
                 "category": "transparency",
                 "requirement": "Policy decisions must be transparent and auditable",
                 "enforcement": "mandatory"
@@ -241,7 +241,7 @@ async def coordinate_governance_oversight(request: dict):
     """Coordinate oversight of governance processes."""
     governance_action = request.get("action", {})
     coordination_type = request.get("type", "standard")
-    
+
     coordination_result = {
         "coordination_id": f"COORD-{int(time.time())}",
         "action_id": governance_action.get("id", "unknown"),
@@ -259,14 +259,14 @@ async def coordinate_governance_oversight(request: dict):
         },
         "coordinated_at": time.time()
     }
-    
+
     return coordination_result
 
 @app.post("/api/v1/oversight/batch")
 async def batch_oversight_coordination(request: dict):
     """Coordinate oversight for multiple governance actions."""
     actions = request.get("governance_actions", [])
-    
+
     batch_results = []
     for i, action in enumerate(actions):
         result = {
@@ -277,7 +277,7 @@ async def batch_oversight_coordination(request: dict):
             "estimated_completion": time.time() + (i * 300)  # 5 min intervals
         }
         batch_results.append(result)
-    
+
     return {
         "batch_id": f"BATCH-{int(time.time())}",
         "total_actions": len(actions),
@@ -295,7 +295,7 @@ async def batch_oversight_coordination(request: dict):
             "ec_enhancement": ec_enhancement,
         }
 
-    async def test_complete_governance_workflow(self) -> Dict[str, Any]:
+    async def test_complete_governance_workflow(self) -> dict[str, Any]:
         """Test the complete governance workflow: synthesis → validation → oversight."""
         self.log_action("Testing complete governance workflow", "INFO")
 
@@ -663,7 +663,7 @@ async def batch_oversight_coordination(request: dict):
 
         return workflow_results
 
-    async def execute_workflow_completion(self) -> Dict[str, Any]:
+    async def execute_workflow_completion(self) -> dict[str, Any]:
         """Execute the complete workflow completion process."""
         self.log_action("🚀 Starting End-to-End Workflow Completion", "INFO")
 

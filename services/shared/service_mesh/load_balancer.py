@@ -6,7 +6,7 @@ Enterprise-grade load balancing with multiple strategies and session affinity
 import hashlib
 import random
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from .common_types import LoadBalancingStrategy, ServiceInstance, ServiceType
 
@@ -33,17 +33,17 @@ class LoadBalancer:
             default_strategy: Default load balancing strategy
         """
         self.default_strategy = default_strategy
-        self._round_robin_counters: Dict[ServiceType, int] = {}
-        self._consistent_hash_ring: Dict[ServiceType, List[Tuple[int, str]]] = {}
-        self._session_affinity: Dict[str, str] = {}  # session_id -> instance_id
+        self._round_robin_counters: dict[ServiceType, int] = {}
+        self._consistent_hash_ring: dict[ServiceType, list[tuple[int, str]]] = {}
+        self._session_affinity: dict[str, str] = {}  # session_id -> instance_id
 
     def select_instance(
         self,
-        instances: List[ServiceInstance],
-        strategy: Optional[LoadBalancingStrategy] = None,
-        session_id: Optional[str] = None,
-        hash_key: Optional[str] = None,
-    ) -> Optional[ServiceInstance]:
+        instances: list[ServiceInstance],
+        strategy: LoadBalancingStrategy | None = None,
+        session_id: str | None = None,
+        hash_key: str | None = None,
+    ) -> ServiceInstance | None:
         """
         Select the best instance using the specified strategy.
 
@@ -85,14 +85,16 @@ class LoadBalancer:
         elif strategy == LoadBalancingStrategy.LEAST_RESPONSE_TIME:
             return self._least_response_time_select(healthy_instances)
         elif strategy == LoadBalancingStrategy.CONSISTENT_HASH:
-            return self._consistent_hash_select(healthy_instances, hash_key or session_id)
+            return self._consistent_hash_select(
+                healthy_instances, hash_key or session_id
+            )
         elif strategy == LoadBalancingStrategy.RANDOM:
             return self._random_select(healthy_instances)
         else:
             # Fallback to least response time
             return self._least_response_time_select(healthy_instances)
 
-    def _round_robin_select(self, instances: List[ServiceInstance]) -> ServiceInstance:
+    def _round_robin_select(self, instances: list[ServiceInstance]) -> ServiceInstance:
         """Round robin selection."""
         if not instances:
             return None
@@ -108,11 +110,15 @@ class LoadBalancer:
 
         return selected
 
-    def _least_connections_select(self, instances: List[ServiceInstance]) -> ServiceInstance:
+    def _least_connections_select(
+        self, instances: list[ServiceInstance]
+    ) -> ServiceInstance:
         """Select instance with least connections."""
         return min(instances, key=lambda x: x.current_connections)
 
-    def _weighted_round_robin_select(self, instances: List[ServiceInstance]) -> ServiceInstance:
+    def _weighted_round_robin_select(
+        self, instances: list[ServiceInstance]
+    ) -> ServiceInstance:
         """Weighted round robin selection based on instance weights."""
         # Create weighted list
         weighted_instances = []
@@ -125,16 +131,20 @@ class LoadBalancer:
 
         return self._round_robin_select(weighted_instances)
 
-    def _least_response_time_select(self, instances: List[ServiceInstance]) -> ServiceInstance:
+    def _least_response_time_select(
+        self, instances: list[ServiceInstance]
+    ) -> ServiceInstance:
         """Select instance with best response time and load score."""
         # Sort by load score (combines response time, connections, failure rate)
-        instances_with_scores = [(instance, instance.load_score) for instance in instances]
+        instances_with_scores = [
+            (instance, instance.load_score) for instance in instances
+        ]
         instances_with_scores.sort(key=lambda x: x[1])
 
         return instances_with_scores[0][0]
 
     def _consistent_hash_select(
-        self, instances: List[ServiceInstance], key: Optional[str]
+        self, instances: list[ServiceInstance], key: str | None
     ) -> ServiceInstance:
         """Consistent hash selection for session affinity."""
         if not key:
@@ -172,11 +182,13 @@ class LoadBalancer:
         # Fallback
         return instances[0]
 
-    def _random_select(self, instances: List[ServiceInstance]) -> ServiceInstance:
+    def _random_select(self, instances: list[ServiceInstance]) -> ServiceInstance:
         """Random selection."""
         return random.choice(instances)
 
-    def _build_hash_ring(self, service_type: ServiceType, instances: List[ServiceInstance]):
+    def _build_hash_ring(
+        self, service_type: ServiceType, instances: list[ServiceInstance]
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -209,7 +221,9 @@ class LoadBalancer:
         """Clear session affinity for a session."""
         self._session_affinity.pop(session_id, None)
 
-    def get_load_balancing_stats(self, instances: List[ServiceInstance]) -> Dict[str, Any]:
+    def get_load_balancing_stats(
+        self, instances: list[ServiceInstance]
+    ) -> dict[str, Any]:
         """Get load balancing statistics."""
         if not instances:
             return {}
@@ -227,7 +241,9 @@ class LoadBalancer:
             "total_requests": total_requests,
             "total_failures": total_failures,
             "failure_rate": (total_failures / max(total_requests, 1)) * 100,
-            "average_response_time": sum(inst.response_time or 0 for inst in healthy_instances)
+            "average_response_time": sum(
+                inst.response_time or 0 for inst in healthy_instances
+            )
             / max(len(healthy_instances), 1),
             "load_distribution": [
                 {
@@ -260,9 +276,9 @@ class SessionAffinityManager:
             ttl_seconds: Time-to-live for session affinity entries
         """
         self.ttl_seconds = ttl_seconds
-        self._sessions: Dict[str, Dict[str, Any]] = {}
+        self._sessions: dict[str, dict[str, Any]] = {}
 
-    def get_affinity(self, session_id: str, service_type: ServiceType) -> Optional[str]:
+    def get_affinity(self, session_id: str, service_type: ServiceType) -> str | None:
         """
         Get instance affinity for a session and service type.
 
@@ -285,7 +301,9 @@ class SessionAffinityManager:
 
         return session_data.get("affinities", {}).get(service_type.value)
 
-    def set_affinity(self, session_id: str, service_type: ServiceType, instance_id: str):
+    def set_affinity(
+        self, session_id: str, service_type: ServiceType, instance_id: str
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -329,7 +347,7 @@ class SessionAffinityManager:
         for session_id in expired_sessions:
             self.clear_session(session_id)
 
-    def get_session_stats(self) -> Dict[str, Any]:
+    def get_session_stats(self) -> dict[str, Any]:
         """Get session affinity statistics."""
         current_time = time.time()
         active_sessions = 0

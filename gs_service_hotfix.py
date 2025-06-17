@@ -27,7 +27,7 @@ def apply_gs_service_hotfix():
     print(f"🔧 Applying hot-fix to {gs_main_path}")
 
     # Read the current file
-    with open(gs_main_path, "r") as f:
+    with open(gs_main_path) as f:
         content = f.read()
 
     # Create backup

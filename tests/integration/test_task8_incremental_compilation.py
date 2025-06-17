@@ -24,7 +24,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 
@@ -53,8 +53,8 @@ class Task8IntegrationTester:
 
     def __init__(self):
         self.client = httpx.AsyncClient(timeout=30.0)
-        self.test_results: List[Dict[str, Any]] = []
-        self.performance_metrics: Dict[str, Any] = {}
+        self.test_results: list[dict[str, Any]] = []
+        self.performance_metrics: dict[str, Any] = {}
 
     async def __aenter__(self):
         return self
@@ -67,7 +67,7 @@ class Task8IntegrationTester:
         test_name: str,
         success: bool,
         details: str = "",
-        metrics: Dict[str, Any] = None,
+        metrics: dict[str, Any] = None,
     ):
         """Log test result with performance metrics."""
         result = {
@@ -722,7 +722,6 @@ class Task8IntegrationTester:
                 headers={"Authorization": "Bearer test_token"},
             )
 
-            success = response.status_code in [200, 401, 403]  # Auth errors acceptable
 
             if response.status_code == 200:
                 metrics_data = response.json()
@@ -772,7 +771,6 @@ class Task8IntegrationTester:
                 headers={"Authorization": "Bearer test_token"},
             )
 
-            success = response.status_code in [200, 401, 403]  # Auth errors acceptable
 
             if response.status_code == 200:
                 status_data = response.json()

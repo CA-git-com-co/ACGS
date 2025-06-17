@@ -10,7 +10,7 @@ import dataclasses
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 
@@ -58,9 +58,9 @@ class ModelConfig:
     max_tokens: int
     temperature: float
     enabled: bool = True
-    endpoint: Optional[str] = None
-    api_key: Optional[str] = None
-    role: Optional[ModelRole] = None
+    endpoint: str | None = None
+    api_key: str | None = None
+    role: ModelRole | None = None
 
 
 @dataclass
@@ -70,9 +70,9 @@ class ModelResponse:
     content: str
     model_id: str
     provider: str
-    tokens_used: Optional[int] = None
-    finish_reason: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    tokens_used: int | None = None
+    finish_reason: str | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class AIModelService:
@@ -92,7 +92,7 @@ class AIModelService:
 
         logger.info(f"AIModelService initialized with {len(self.models)} models")
 
-    def _load_model_configurations(self) -> Dict[str, ModelConfig]:
+    def _load_model_configurations(self) -> dict[str, ModelConfig]:
         """Load model configurations from centralized config."""
         models = {}
 
@@ -231,10 +231,10 @@ class AIModelService:
     async def generate_text(
         self,
         prompt: str,
-        model_name: Optional[str] = None,
-        role: Optional[ModelRole] = None,
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
+        model_name: str | None = None,
+        role: ModelRole | None = None,
+        max_tokens: int | None = None,
+        temperature: float | None = None,
         **kwargs,
     ) -> ModelResponse:
         """
@@ -298,7 +298,9 @@ class AIModelService:
         # Fallback to primary model
         return self.models["primary"]
 
-    async def _generate_google(self, prompt: str, config: ModelConfig, **kwargs) -> ModelResponse:
+    async def _generate_google(
+        self, prompt: str, config: ModelConfig, **kwargs
+    ) -> ModelResponse:
         """Generate text using Google Gemini API."""
         if not config.api_key:
             raise ValueError("Google API key not configured")
@@ -389,7 +391,9 @@ class AIModelService:
                         model_id=config.model_id,
                         provider=config.provider.value,
                         tokens_used=tokens_used,
-                        finish_reason=result["choices"][0].get("finish_reason", "completed"),
+                        finish_reason=result["choices"][0].get(
+                            "finish_reason", "completed"
+                        ),
                         metadata={
                             "provider": "openrouter",
                             "model_type": (
@@ -402,7 +406,9 @@ class AIModelService:
                     )
                 else:
                     error_text = await response.text()
-                    raise Exception(f"OpenRouter API error: {response.status_code} - {error_text}")
+                    raise Exception(
+                        f"OpenRouter API error: {response.status_code} - {error_text}"
+                    )
 
         except Exception as e:
             logger.warning(f"OpenRouter API call failed for {config.model_id}: {e}")
@@ -418,7 +424,9 @@ class AIModelService:
                 metadata={"provider": "openrouter", "fallback": True, "error": str(e)},
             )
 
-    async def _generate_cerebras(self, prompt: str, config: ModelConfig, **kwargs) -> ModelResponse:
+    async def _generate_cerebras(
+        self, prompt: str, config: ModelConfig, **kwargs
+    ) -> ModelResponse:
         """Generate text using Cerebras API."""
         if not config.api_key:
             raise ValueError("Cerebras API key not configured")
@@ -457,7 +465,9 @@ class AIModelService:
                         model_id=config.model_id,
                         provider=config.provider.value,
                         tokens_used=tokens_used,
-                        finish_reason=result["choices"][0].get("finish_reason", "completed"),
+                        finish_reason=result["choices"][0].get(
+                            "finish_reason", "completed"
+                        ),
                         metadata={
                             "provider": "cerebras",
                             "model_type": "cerebras_inference",
@@ -465,10 +475,14 @@ class AIModelService:
                         },
                     )
                 else:
-                    raise Exception(f"Cerebras API error: {response.status_code} - {response.text}")
+                    raise Exception(
+                        f"Cerebras API error: {response.status_code} - {response.text}"
+                    )
 
         except Exception as e:
-            logger.warning(f"Cerebras API call failed: {e}, falling back to mock response")
+            logger.warning(
+                f"Cerebras API call failed: {e}, falling back to mock response"
+            )
             # Fallback to mock response for development
             await asyncio.sleep(0.05)  # Simulate fast Cerebras inference
 
@@ -482,7 +496,7 @@ class AIModelService:
             )
 
     async def _generate_mock(
-        self, prompt: str, config: ModelConfig, error: Optional[str] = None, **kwargs
+        self, prompt: str, config: ModelConfig, error: str | None = None, **kwargs
     ) -> ModelResponse:
         """Generate mock response for testing."""
         await asyncio.sleep(0.05)
@@ -501,7 +515,7 @@ class AIModelService:
             metadata={"provider": config.provider.value, "mock": True, "error": error},
         )
 
-    def get_available_models(self) -> Dict[str, Dict[str, Any]]:
+    def get_available_models(self) -> dict[str, dict[str, Any]]:
         """Get information about available models."""
         return {
             name: {
@@ -525,7 +539,7 @@ class AIModelService:
 
 
 # Global AI model service instance
-_ai_model_service: Optional[AIModelService] = None
+_ai_model_service: AIModelService | None = None
 
 
 async def get_ai_model_service() -> AIModelService:

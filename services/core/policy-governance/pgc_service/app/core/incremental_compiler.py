@@ -26,7 +26,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import networkx as nx
 
@@ -182,25 +182,27 @@ class CompilationPlan:
     """Plan for incremental compilation."""
 
     strategy: CompilationStrategy
-    policies_to_compile: Set[str]
-    compilation_order: List[str]
+    policies_to_compile: set[str]
+    compilation_order: list[str]
     estimated_time_ms: float
-    cache_invalidations: Set[str]
-    dependencies_affected: Set[str]
+    cache_invalidations: set[str]
+    dependencies_affected: set[str]
 
 
 @dataclass
 class PolicyChangeSet:
     """Set of policy changes for compilation."""
 
-    added: Dict[str, str] = field(default_factory=dict)
-    modified: Dict[str, str] = field(default_factory=dict)
-    deleted: Set[str] = field(default_factory=set)
-    metadata_changed: Set[str] = field(default_factory=set)
+    added: dict[str, str] = field(default_factory=dict)
+    modified: dict[str, str] = field(default_factory=dict)
+    deleted: set[str] = field(default_factory=set)
+    metadata_changed: set[str] = field(default_factory=set)
     # Task 8 enhancements
-    constitutional_amendments: List[int] = field(default_factory=list)  # Amendment IDs
-    version_changes: Dict[str, int] = field(default_factory=dict)  # Policy ID -> new version
-    rollback_requests: Set[str] = field(default_factory=set)  # Policies to rollback
+    constitutional_amendments: list[int] = field(default_factory=list)  # Amendment IDs
+    version_changes: dict[str, int] = field(
+        default_factory=dict
+    )  # Policy ID -> new version
+    rollback_requests: set[str] = field(default_factory=set)  # Policies to rollback
 
 
 @dataclass
@@ -208,12 +210,12 @@ class DeploymentPlan:
     """Plan for zero-downtime deployment (Task 8)."""
 
     strategy: CompilationStrategy
-    target_policies: Set[str]
-    deployment_order: List[str]
-    rollback_points: Dict[str, int]  # Policy ID -> version to rollback to
-    validation_requirements: List[str]
+    target_policies: set[str]
+    deployment_order: list[str]
+    rollback_points: dict[str, int]  # Policy ID -> version to rollback to
+    validation_requirements: list[str]
     estimated_deployment_time_ms: float
-    health_check_endpoints: List[str]
+    health_check_endpoints: list[str]
 
 
 @dataclass
@@ -224,9 +226,9 @@ class ValidationReport:
     version_number: int
     validation_result: ValidationResult
     constitutional_compliance: bool
-    performance_metrics: Dict[str, Any]
-    error_messages: List[str]
-    warnings: List[str]
+    performance_metrics: dict[str, Any]
+    error_messages: list[str]
+    warnings: list[str]
     validation_time_ms: float
 
 
@@ -238,9 +240,9 @@ class RollbackContext:
     current_version: int
     target_version: int
     rollback_reason: str
-    initiated_by_user_id: Optional[int]
+    initiated_by_user_id: int | None
     automatic_rollback: bool
-    rollback_triggers: List[str]  # What triggered the rollback
+    rollback_triggers: list[str]  # What triggered the rollback
 
 
 class IncrementalCompiler:
@@ -255,7 +257,7 @@ class IncrementalCompiler:
     5. Monitoring performance metrics
     """
 
-    def __init__(self, opa_client: Optional[OPAClient] = None):
+    def __init__(self, opa_client: OPAClient | None = None):
         # requires: opa_client is None or valid OPAClient instance
         # ensures: compiler initialized with enterprise-grade configuration
         # sha256: incremental_compiler_init_enterprise_v2.1_acgs1
@@ -263,12 +265,12 @@ class IncrementalCompiler:
 
         # Dependency tracking
         self.dependency_graph = nx.DiGraph()
-        self.policy_hashes: Dict[str, str] = {}
-        self.policy_metadata: Dict[str, Dict[str, Any]] = {}
+        self.policy_hashes: dict[str, str] = {}
+        self.policy_metadata: dict[str, dict[str, Any]] = {}
 
         # Compilation cache
-        self.compilation_cache: Dict[str, Any] = {}
-        self.cache_timestamps: Dict[str, float] = {}
+        self.compilation_cache: dict[str, Any] = {}
+        self.cache_timestamps: dict[str, float] = {}
 
         # Performance metrics
         self.metrics = {
@@ -290,10 +292,12 @@ class IncrementalCompiler:
         }
 
         # Task 8 enhancements
-        self.active_deployments: Dict[str, DeploymentPlan] = {}
-        self.version_history: Dict[str, List[int]] = {}  # Policy ID -> version history
-        self.rollback_points: Dict[str, Dict[int, str]] = {}  # Policy ID -> {version: hash}
-        self.validation_cache: Dict[str, ValidationReport] = {}
+        self.active_deployments: dict[str, DeploymentPlan] = {}
+        self.version_history: dict[str, list[int]] = {}  # Policy ID -> version history
+        self.rollback_points: dict[str, dict[int, str]] = (
+            {}
+        )  # Policy ID -> {version: hash}
+        self.validation_cache: dict[str, ValidationReport] = {}
         self.deployment_lock = asyncio.Lock()  # Prevent concurrent deployments
         self.max_concurrent_deployments = 3
         self.target_compilation_time_ms = 30000  # 30 seconds target
@@ -304,7 +308,7 @@ class IncrementalCompiler:
             self.opa_client = await get_opa_client()
 
     async def compile_policies(
-        self, policies: List[IntegrityPolicyRule], force_full: bool = False
+        self, policies: list[IntegrityPolicyRule], force_full: bool = False
     ) -> CompilationMetrics:
         """
         Compile policies using optimal incremental strategy.
@@ -350,11 +354,15 @@ class IncrementalCompiler:
             logger.error(f"Policy compilation failed: {e}")
             raise
 
-    async def _analyze_policy_changes(self, policies: List[IntegrityPolicyRule]) -> PolicyChangeSet:
+    async def _analyze_policy_changes(
+        self, policies: list[IntegrityPolicyRule]
+    ) -> PolicyChangeSet:
         """Analyze what has changed since last compilation."""
         change_set = PolicyChangeSet()
 
-        current_policies = {self._get_policy_id(policy): policy.rule_content for policy in policies}
+        current_policies = {
+            self._get_policy_id(policy): policy.rule_content for policy in policies
+        }
 
         # Find added and modified policies
         for policy_id, content in current_policies.items():
@@ -429,13 +437,15 @@ class IncrementalCompiler:
             strategy=strategy,
             policies_to_compile=policies_to_compile,
             compilation_order=compilation_order,
-            estimated_time_ms=self._estimate_incremental_compilation_time(len(policies_to_compile)),
+            estimated_time_ms=self._estimate_incremental_compilation_time(
+                len(policies_to_compile)
+            ),
             cache_invalidations=cache_invalidations,
             dependencies_affected=dependencies_affected,
         )
 
     async def _execute_compilation_plan(
-        self, plan: CompilationPlan, policies: List[IntegrityPolicyRule]
+        self, plan: CompilationPlan, policies: list[IntegrityPolicyRule]
     ) -> CompilationMetrics:
         """Execute the compilation plan."""
 
@@ -476,7 +486,9 @@ class IncrementalCompiler:
 
     def _should_use_full_compilation(self, change_set: PolicyChangeSet) -> bool:
         """Determine if full compilation is necessary."""
-        total_changes = len(change_set.added) + len(change_set.modified) + len(change_set.deleted)
+        total_changes = (
+            len(change_set.added) + len(change_set.modified) + len(change_set.deleted)
+        )
 
         # Use full compilation if:
         # 1. More than 50% of policies changed
@@ -497,7 +509,7 @@ class IncrementalCompiler:
 
         return False
 
-    def _get_dependent_policies(self, policy_id: str) -> Set[str]:
+    def _get_dependent_policies(self, policy_id: str) -> set[str]:
         """Get all policies that depend on the given policy."""
         if policy_id not in self.dependency_graph:
             return set()
@@ -510,7 +522,7 @@ class IncrementalCompiler:
 
         return dependents
 
-    def _topological_sort(self, policies: Set[str]) -> List[str]:
+    def _topological_sort(self, policies: set[str]) -> list[str]:
         """Sort policies in dependency order for compilation."""
         subgraph = self.dependency_graph.subgraph(policies)
         try:
@@ -521,8 +533,8 @@ class IncrementalCompiler:
             return sorted(policies)
 
     def _determine_cache_invalidations(
-        self, policies_to_compile: Set[str], dependencies_affected: Set[str]
-    ) -> Set[str]:
+        self, policies_to_compile: set[str], dependencies_affected: set[str]
+    ) -> set[str]:
         """Determine which cache entries need invalidation."""
         invalidations = set()
 
@@ -548,7 +560,7 @@ class IncrementalCompiler:
         # Base estimate: 5ms per policy + 50ms overhead
         return max(50, policy_count * 5 + 50)
 
-    async def _update_policy_state(self, policies: List[IntegrityPolicyRule]) -> None:
+    async def _update_policy_state(self, policies: list[IntegrityPolicyRule]) -> None:
         """Update internal policy state after compilation."""
         # Update policy hashes
         self.policy_hashes.clear()
@@ -560,7 +572,9 @@ class IncrementalCompiler:
         # Update dependency graph (simplified - would need actual dependency analysis)
         await self._update_dependency_graph(policies)
 
-    async def _update_dependency_graph(self, policies: List[IntegrityPolicyRule]) -> None:
+    async def _update_dependency_graph(
+        self, policies: list[IntegrityPolicyRule]
+    ) -> None:
         """Update the policy dependency graph."""
         # Clear existing graph
         self.dependency_graph.clear()
@@ -579,7 +593,7 @@ class IncrementalCompiler:
                 if dep in self.policy_hashes:
                     self.dependency_graph.add_edge(dep, policy_id)
 
-    def _extract_policy_dependencies(self, policy_content: str) -> List[str]:
+    def _extract_policy_dependencies(self, policy_content: str) -> list[str]:
         """Extract policy dependencies from Rego content."""
         # Simplified dependency extraction
         # In practice, would need proper Rego AST parsing
@@ -629,10 +643,12 @@ class IncrementalCompiler:
         # Calculate compilation savings
         if strategy != CompilationStrategy.FULL:
             estimated_full_time = self._estimate_full_compilation_time()
-            savings = max(0, (estimated_full_time - compilation_time_ms) / estimated_full_time)
+            savings = max(
+                0, (estimated_full_time - compilation_time_ms) / estimated_full_time
+            )
             self.metrics["compilation_savings_percent"] = savings * 100
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get compilation performance metrics."""
         return {
             **self.metrics,
@@ -645,17 +661,19 @@ class IncrementalCompiler:
             "version_history_size": sum(
                 len(versions) for versions in self.version_history.values()
             ),
-            "rollback_points_count": sum(len(points) for points in self.rollback_points.values()),
+            "rollback_points_count": sum(
+                len(points) for points in self.rollback_points.values()
+            ),
         }
 
     # ===== Task 8: Enhanced Incremental Compilation Methods =====
 
     async def deploy_policy_update(
         self,
-        policies: List[IntegrityPolicyRule],
-        amendment_id: Optional[int] = None,
+        policies: list[IntegrityPolicyRule],
+        amendment_id: int | None = None,
         force_hot_swap: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Deploy policy update with zero-downtime hot-swapping.
 
@@ -708,7 +726,9 @@ class IncrementalCompiler:
 
                 # Update metrics
                 deployment_time = (time.time() - start_time) * 1000
-                self._update_deployment_metrics(deployment_time, deployment_plan.strategy)
+                self._update_deployment_metrics(
+                    deployment_time, deployment_plan.strategy
+                )
 
                 return deployment_result
 
@@ -724,9 +744,9 @@ class IncrementalCompiler:
     async def rollback_policy(
         self,
         policy_id: str,
-        target_version: Optional[int] = None,
+        target_version: int | None = None,
         rollback_reason: str = "Manual rollback",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Rollback policy to a previous version.
 
@@ -765,7 +785,9 @@ class IncrementalCompiler:
 
             # Create rollback context
             current_version = (
-                self.version_history[policy_id][-1] if policy_id in self.version_history else 0
+                self.version_history[policy_id][-1]
+                if policy_id in self.version_history
+                else 0
             )
             rollback_context = RollbackContext(
                 policy_id=policy_id,
@@ -799,14 +821,16 @@ class IncrementalCompiler:
     async def _create_deployment_plan(
         self,
         change_set: PolicyChangeSet,
-        policies: List[IntegrityPolicyRule],
+        policies: list[IntegrityPolicyRule],
         force_hot_swap: bool,
     ) -> DeploymentPlan:
         """Create deployment plan for zero-downtime deployment."""
 
         # Determine deployment strategy
         strategy = (
-            CompilationStrategy.HOT_SWAP if force_hot_swap else CompilationStrategy.INCREMENTAL
+            CompilationStrategy.HOT_SWAP
+            if force_hot_swap
+            else CompilationStrategy.INCREMENTAL
         )
 
         # Identify target policies
@@ -842,8 +866,8 @@ class IncrementalCompiler:
         )
 
     async def _validate_with_parallel_pipeline(
-        self, policies: List[IntegrityPolicyRule], deployment_plan: DeploymentPlan
-    ) -> List[ValidationReport]:
+        self, policies: list[IntegrityPolicyRule], deployment_plan: DeploymentPlan
+    ) -> list[ValidationReport]:
         """Validate policies using parallel validation pipeline from Task 7."""
         validation_results = []
 
@@ -909,9 +933,9 @@ class IncrementalCompiler:
     async def _execute_hot_swap_deployment(
         self,
         deployment_plan: DeploymentPlan,
-        policies: List[IntegrityPolicyRule],
-        validation_results: List[ValidationReport],
-    ) -> Dict[str, Any]:
+        policies: list[IntegrityPolicyRule],
+        validation_results: list[ValidationReport],
+    ) -> dict[str, Any]:
         """Execute hot-swap deployment with zero downtime."""
 
         deployment_id = f"deploy_{int(time.time())}"
@@ -971,8 +995,8 @@ class IncrementalCompiler:
     async def _create_policy_versions(
         self,
         db: AsyncSession,
-        policies: List[IntegrityPolicyRule],
-        validation_results: List[ValidationReport],
+        policies: list[IntegrityPolicyRule],
+        validation_results: list[ValidationReport],
     ) -> None:
         """Create policy version records in database."""
         try:
@@ -992,7 +1016,9 @@ class IncrementalCompiler:
                     policy_rule_id=int(policy_id) if policy_id.isdigit() else None,
                     version_number=validation_result.version_number,
                     content_hash=self._compute_content_hash(policy.rule_content),
-                    compilation_hash=self._compute_content_hash(f"compiled_{policy.rule_content}"),
+                    compilation_hash=self._compute_content_hash(
+                        f"compiled_{policy.rule_content}"
+                    ),
                     compilation_status="compiled",
                     compilation_time_ms=validation_result.validation_time_ms,
                     compilation_strategy=CompilationStrategy.HOT_SWAP.value,
@@ -1019,8 +1045,8 @@ class IncrementalCompiler:
 
     async def _update_version_tracking(
         self,
-        policies: List[IntegrityPolicyRule],
-        validation_results: List[ValidationReport],
+        policies: list[IntegrityPolicyRule],
+        validation_results: list[ValidationReport],
     ) -> None:
         """Update version history and rollback points."""
         for policy in policies:
@@ -1049,7 +1075,9 @@ class IncrementalCompiler:
                 self.rollback_points[policy_id] = {}
 
             content_hash = self._compute_content_hash(policy.rule_content)
-            self.rollback_points[policy_id][validation_result.version_number] = content_hash
+            self.rollback_points[policy_id][
+                validation_result.version_number
+            ] = content_hash
 
     async def _check_constitutional_compliance(
         self, policy: IntegrityPolicyRule, deployment_plan: DeploymentPlan
@@ -1062,7 +1090,10 @@ class IncrementalCompiler:
             # Check for constitutional amendment requirements
             if deployment_plan.strategy == CompilationStrategy.HOT_SWAP:
                 # Hot-swap deployments require higher compliance standards
-                return len(policy.rule_content) > 10 and "allow" in policy.rule_content.lower()
+                return (
+                    len(policy.rule_content) > 10
+                    and "allow" in policy.rule_content.lower()
+                )
 
             return True
 
@@ -1070,7 +1101,9 @@ class IncrementalCompiler:
             logger.error(f"Constitutional compliance check failed: {e}")
             return False
 
-    async def _validate_policy_performance(self, policy: IntegrityPolicyRule) -> Dict[str, Any]:
+    async def _validate_policy_performance(
+        self, policy: IntegrityPolicyRule
+    ) -> dict[str, Any]:
         """Validate policy performance characteristics."""
         try:
             start_time = time.time()
@@ -1103,7 +1136,9 @@ class IncrementalCompiler:
             return 1
         return max(self.version_history[policy_id]) + 1
 
-    def _estimate_deployment_time(self, policy_count: int, strategy: CompilationStrategy) -> float:
+    def _estimate_deployment_time(
+        self, policy_count: int, strategy: CompilationStrategy
+    ) -> float:
         """Estimate deployment time based on strategy and policy count."""
         base_time = {
             CompilationStrategy.INCREMENTAL: 100,
@@ -1113,7 +1148,7 @@ class IncrementalCompiler:
 
         return base_time + (policy_count * 50)
 
-    async def _perform_health_checks(self, endpoints: List[str]) -> Dict[str, bool]:
+    async def _perform_health_checks(self, endpoints: list[str]) -> dict[str, bool]:
         """Perform health checks on specified endpoints."""
         health_status = {}
 
@@ -1143,9 +1178,9 @@ class IncrementalCompiler:
 
     async def _handle_validation_failure(
         self,
-        validation_results: List[ValidationReport],
+        validation_results: list[ValidationReport],
         deployment_plan: DeploymentPlan,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Handle validation failures during deployment."""
         failed_policies = [
             result
@@ -1174,11 +1209,13 @@ class IncrementalCompiler:
             "deployment_strategy": deployment_plan.strategy.value,
         }
 
-    async def _execute_policy_rollback(self, rollback_context: RollbackContext) -> Dict[str, Any]:
+    async def _execute_policy_rollback(
+        self, rollback_context: RollbackContext
+    ) -> dict[str, Any]:
         """Execute policy rollback to previous version."""
         try:
             # Get rollback target content
-            target_hash = self.rollback_points[rollback_context.policy_id][
+            self.rollback_points[rollback_context.policy_id][
                 rollback_context.target_version
             ]
 
@@ -1190,11 +1227,12 @@ class IncrementalCompiler:
                     .where(
                         and_(
                             (
-                                PolicyVersion.policy_rule_id == int(rollback_context.policy_id)
+                                PolicyVersion.policy_rule_id
+                                == int(rollback_context.policy_id)
                                 if rollback_context.policy_id.isdigit()
                                 else 0
                             ),
-                            PolicyVersion.is_active == True,
+                            PolicyVersion.is_active,
                         )
                     )
                     .values(is_active=False)
@@ -1206,11 +1244,13 @@ class IncrementalCompiler:
                     .where(
                         and_(
                             (
-                                PolicyVersion.policy_rule_id == int(rollback_context.policy_id)
+                                PolicyVersion.policy_rule_id
+                                == int(rollback_context.policy_id)
                                 if rollback_context.policy_id.isdigit()
                                 else 0
                             ),
-                            PolicyVersion.version_number == rollback_context.target_version,
+                            PolicyVersion.version_number
+                            == rollback_context.target_version,
                         )
                     )
                     .values(
@@ -1282,7 +1322,7 @@ class IncrementalCompiler:
 
 
 # Global incremental compiler instance
-_incremental_compiler: Optional[IncrementalCompiler] = None
+_incremental_compiler: IncrementalCompiler | None = None
 
 
 async def get_incremental_compiler() -> IncrementalCompiler:

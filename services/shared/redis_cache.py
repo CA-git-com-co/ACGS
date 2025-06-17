@@ -8,7 +8,7 @@ import hashlib
 import json
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 import redis
 
@@ -52,7 +52,7 @@ class RedisCache:
         hash_obj = hashlib.sha256(data_str.encode())
         return f"{prefix}:{hash_obj.hexdigest()}"
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get value from cache."""
         if not self.redis_client:
             return None
@@ -105,14 +105,18 @@ class RedisCache:
             logger.error(f"Error in get_or_set for key {key}: {e}")
             return None
 
-    def cache_policy_decision(self, policy_content: str, input_data: Dict, result: Any) -> str:
+    def cache_policy_decision(
+        self, policy_content: str, input_data: dict, result: Any
+    ) -> str:
         """Cache a policy decision with 5-minute TTL."""
         cache_data = {"policy_content": policy_content, "input_data": input_data}
         key = self._generate_key("policy_decision", cache_data)
         self.set(key, result, ttl_seconds=300)  # 5 minutes
         return key
 
-    def get_cached_policy_decision(self, policy_content: str, input_data: Dict) -> Optional[Any]:
+    def get_cached_policy_decision(
+        self, policy_content: str, input_data: dict
+    ) -> Any | None:
         """Get cached policy decision."""
         cache_data = {"policy_content": policy_content, "input_data": input_data}
         key = self._generate_key("policy_decision", cache_data)
@@ -124,7 +128,7 @@ class RedisCache:
         self.set(key, rule_data, ttl_seconds=3600)  # 1 hour
         return key
 
-    def get_cached_governance_rule(self, rule_id: str) -> Optional[Any]:
+    def get_cached_governance_rule(self, rule_id: str) -> Any | None:
         """Get cached governance rule."""
         key = self._generate_key("governance_rule", rule_id)
         return self.get(key)
@@ -135,12 +139,12 @@ class RedisCache:
         self.set(key, config_data, ttl_seconds=86400)  # 24 hours
         return key
 
-    def get_cached_static_config(self, config_key: str) -> Optional[Any]:
+    def get_cached_static_config(self, config_key: str) -> Any | None:
         """Get cached static configuration."""
         key = self._generate_key("static_config", config_key)
         return self.get(key)
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         if not self.redis_client:
             return {"error": "Redis not connected"}

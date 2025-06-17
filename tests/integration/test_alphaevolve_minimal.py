@@ -17,7 +17,7 @@ def test_lipschitz_config_enhancements():
     print("Testing Lipschitz configuration enhancements...")
 
     try:
-        from backend.gs_service.app.services.lipschitz_estimator import (
+        from services.core.governance-synthesis.gs_service.app.services.lipschitz_estimator import (
             LipschitzEstimationConfig,
         )
 
@@ -48,7 +48,7 @@ def test_reliability_enums():
     print("Testing LLM reliability enums...")
 
     try:
-        from backend.gs_service.app.core.llm_reliability_framework import (
+        from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
             ReliabilityLevel,
         )
 
@@ -71,7 +71,7 @@ def test_scalability_enums():
     print("Testing Constitutional Council scalability enums...")
 
     try:
-        from backend.ac_service.app.core.constitutional_council_scalability import (
+        from services.core.constitutional-ai.ac_service.app.core.constitutional_council_scalability import (
             CoEvolutionMode,
             VotingStrategy,
         )
@@ -101,7 +101,7 @@ def test_adversarial_enums():
     print("Testing adversarial robustness enums...")
 
     try:
-        from backend.fv_service.app.core.adversarial_robustness_tester import (
+        from services.core.formal-verification.fv_service.app.core.adversarial_robustness_tester import (
             AdversarialTestType,
             VulnerabilityLevel,
         )
@@ -131,7 +131,7 @@ def test_fairness_enums():
     print("Testing proactive fairness enums...")
 
     try:
-        from backend.pgc_service.app.core.proactive_fairness_generator import (
+        from services.platform.pgc.pgc_service.app.core.proactive_fairness_generator import (
             FairnessMetric,
             ProtectedAttribute,
         )
@@ -162,7 +162,7 @@ def test_configuration_classes():
 
     try:
         # Test Lipschitz config
-        from backend.gs_service.app.services.lipschitz_estimator import (
+        from services.core.governance-synthesis.gs_service.app.services.lipschitz_estimator import (
             LipschitzEstimationConfig,
         )
 
@@ -171,7 +171,7 @@ def test_configuration_classes():
         assert hasattr(lipschitz_config, "bounded_evolution_enabled")
 
         # Test reliability config
-        from backend.gs_service.app.core.llm_reliability_framework import (
+        from services.core.governance-synthesis.gs_service.app.core.llm_reliability_framework import (
             LLMReliabilityConfig,
         )
 
@@ -180,7 +180,7 @@ def test_configuration_classes():
         assert hasattr(reliability_config, "ensemble_size")
 
         # Test scalability config
-        from backend.ac_service.app.core.constitutional_council_scalability import (
+        from services.core.constitutional-ai.ac_service.app.core.constitutional_council_scalability import (
             ScalabilityConfig,
         )
 
@@ -189,7 +189,7 @@ def test_configuration_classes():
         assert hasattr(scalability_config, "async_voting_enabled")
 
         # Test adversarial config
-        from backend.fv_service.app.core.adversarial_robustness_tester import (
+        from services.core.formal-verification.fv_service.app.core.adversarial_robustness_tester import (
             AdversarialTestConfig,
         )
 
@@ -198,7 +198,7 @@ def test_configuration_classes():
         assert hasattr(adversarial_config, "num_test_cases")
 
         # Test fairness config
-        from backend.pgc_service.app.core.proactive_fairness_generator import (
+        from services.platform.pgc.pgc_service.app.core.proactive_fairness_generator import (
             FairnessGenerationConfig,
         )
 
@@ -220,7 +220,7 @@ def test_dataclass_structures():
 
     try:
         # Test Lipschitz result structure
-        from backend.gs_service.app.services.lipschitz_estimator import (
+        from services.core.governance-synthesis.gs_service.app.services.lipschitz_estimator import (
             LipschitzEstimationResult,
         )
 
@@ -239,7 +239,7 @@ def test_dataclass_structures():
         assert hasattr(result, "bounded_evolution_compliant")
 
         # Test fairness constraint structure
-        from backend.pgc_service.app.core.proactive_fairness_generator import (
+        from services.platform.pgc.pgc_service.app.core.proactive_fairness_generator import (
             FairnessConstraint,
             FairnessMetric,
             ProtectedAttribute,

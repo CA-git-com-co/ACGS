@@ -17,8 +17,10 @@ sys.path.insert(0, str(project_root / "src"))
 sys.path.insert(0, str(project_root / "src/backend"))
 
 try:
-    from backend.pgc_service.app.core.manifest_manager import ManifestManager
-    from backend.pgc_service.app.core.policy_format_router import (
+    from services.platform.pgc.pgc_service.app.core.manifest_manager import (
+        ManifestManager,
+    )
+    from services.platform.pgc.pgc_service.app.core.policy_format_router import (
         PolicyFormatRouter,
         PolicyFramework,
     )
@@ -38,9 +40,9 @@ def test_policy_format_router():
     # Test 1: Format detection
     rego_content = """
     package example.authz
-    
+
     default allow = false
-    
+
     allow {
         input.user == "admin"
     }
@@ -211,7 +213,9 @@ async def test_policy_manager_integration():
     # In a real environment, this would test the actual policy loading pipeline
 
     try:
-        from backend.pgc_service.app.core.policy_manager import PolicyManager
+        from services.platform.pgc.pgc_service.app.core.policy_manager import (
+            PolicyManager,
+        )
 
         # Create policy manager instance
         policy_manager = PolicyManager()

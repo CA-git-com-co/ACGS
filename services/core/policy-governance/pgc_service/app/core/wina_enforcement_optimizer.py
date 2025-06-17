@@ -24,7 +24,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # WINA imports
 try:
@@ -66,10 +66,10 @@ class EnforcementContext:
     user_id: str
     action_type: str
     resource_id: str
-    environment_factors: Dict[str, Any] = field(default_factory=dict)
+    environment_factors: dict[str, Any] = field(default_factory=dict)
     priority_level: str = "normal"
-    constitutional_requirements: List[str] = field(default_factory=list)
-    performance_constraints: Dict[str, float] = field(default_factory=dict)
+    constitutional_requirements: list[str] = field(default_factory=list)
+    performance_constraints: dict[str, float] = field(default_factory=dict)
 
 
 @dataclass
@@ -100,10 +100,10 @@ class WINAEnforcementResult:
     enforcement_metrics: WINAEnforcementMetrics
     constitutional_compliance: bool
     optimization_applied: bool
-    matching_rules: Optional[List[Dict[str, Any]]] = None
-    warnings: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
-    wina_insights: Dict[str, Any] = field(default_factory=dict)
+    matching_rules: list[dict[str, Any]] | None = None
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    wina_insights: dict[str, Any] = field(default_factory=dict)
 
 
 class WINAEnforcementOptimizer:
@@ -129,29 +129,33 @@ class WINAEnforcementOptimizer:
         # Initialize WINA components
         if enable_wina and WINA_AVAILABLE:
             try:
-                self.wina_config, self.wina_integration_config = load_wina_config_from_env()
+                self.wina_config, self.wina_integration_config = (
+                    load_wina_config_from_env()
+                )
                 self.wina_metrics = WINAMetrics(self.wina_config)
                 self.constitutional_wina = ConstitutionalWINAIntegration(
                     self.wina_config, self.wina_integration_config
                 )
                 logger.info("WINA optimization enabled for policy enforcement")
             except Exception as e:
-                logger.warning(f"Failed to initialize WINA: {e}. Disabling WINA optimization.")
+                logger.warning(
+                    f"Failed to initialize WINA: {e}. Disabling WINA optimization."
+                )
                 self.enable_wina = False
         else:
             self.enable_wina = False
 
         # Initialize core components
-        self.opa_client: Optional[OPAClient] = None
-        self.wina_policy_compiler: Optional[WINAPolicyCompiler] = None
+        self.opa_client: OPAClient | None = None
+        self.wina_policy_compiler: WINAPolicyCompiler | None = None
 
         # Performance tracking
-        self._enforcement_history: List[WINAEnforcementResult] = []
-        self._strategy_performance: Dict[EnforcementStrategy, List[float]] = {
+        self._enforcement_history: list[WINAEnforcementResult] = []
+        self._strategy_performance: dict[EnforcementStrategy, list[float]] = {
             strategy: [] for strategy in EnforcementStrategy
         }
-        self._constitutional_compliance_cache: Dict[str, Tuple[bool, datetime]] = {}
-        self._enforcement_cache: Dict[str, Tuple[WINAEnforcementResult, datetime]] = {}
+        self._constitutional_compliance_cache: dict[str, tuple[bool, datetime]] = {}
+        self._enforcement_cache: dict[str, tuple[WINAEnforcementResult, datetime]] = {}
 
         # Configuration
         self.cache_ttl = timedelta(minutes=5)
@@ -161,7 +165,9 @@ class WINAEnforcementOptimizer:
 
         logger.info("WINA Enforcement Optimizer initialized")
 
-    async def initialize(self, opa_client: OPAClient, wina_policy_compiler: WINAPolicyCompiler):
+    async def initialize(
+        self, opa_client: OPAClient, wina_policy_compiler: WINAPolicyCompiler
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -173,8 +179,8 @@ class WINAEnforcementOptimizer:
     async def optimize_enforcement(
         self,
         context: EnforcementContext,
-        policies: List[IntegrityPolicyRule],
-        optimization_hints: Optional[Dict[str, Any]] = None,
+        policies: list[IntegrityPolicyRule],
+        optimization_hints: dict[str, Any] | None = None,
     ) -> WINAEnforcementResult:
         """
         Perform WINA-optimized policy enforcement.
@@ -192,7 +198,9 @@ class WINAEnforcementOptimizer:
         errors = []
 
         try:
-            logger.info(f"Starting WINA-optimized enforcement for user {context.user_id}")
+            logger.info(
+                f"Starting WINA-optimized enforcement for user {context.user_id}"
+            )
 
             # Phase 1: Check cache for previous enforcement decisions
             cache_result = await self._check_enforcement_cache(context)
@@ -233,11 +241,14 @@ class WINAEnforcementOptimizer:
             # Create final result
             result = WINAEnforcementResult(
                 decision=enforcement_result.get("decision", "deny"),
-                reason=enforcement_result.get("reason", "No specific policy grants permission"),
+                reason=enforcement_result.get(
+                    "reason", "No specific policy grants permission"
+                ),
                 confidence_score=enforcement_result.get("confidence_score", 0.0),
                 enforcement_metrics=metrics,
                 constitutional_compliance=constitutional_compliance,
-                optimization_applied=self.enable_wina and strategy != EnforcementStrategy.STANDARD,
+                optimization_applied=self.enable_wina
+                and strategy != EnforcementStrategy.STANDARD,
                 matching_rules=enforcement_result.get("matching_rules"),
                 warnings=warnings,
                 errors=errors,
@@ -266,7 +277,7 @@ class WINAEnforcementOptimizer:
 
     async def _check_enforcement_cache(
         self, context: EnforcementContext
-    ) -> Optional[WINAEnforcementResult]:
+    ) -> WINAEnforcementResult | None:
         """Check cache for previous enforcement decisions."""
         cache_key = self._generate_cache_key(context)
 
@@ -284,8 +295,8 @@ class WINAEnforcementOptimizer:
     async def _select_enforcement_strategy(
         self,
         context: EnforcementContext,
-        policies: List[IntegrityPolicyRule],
-        optimization_hints: Optional[Dict[str, Any]],
+        policies: list[IntegrityPolicyRule],
+        optimization_hints: dict[str, Any] | None,
     ) -> EnforcementStrategy:
         """Select optimal enforcement strategy based on WINA insights and context."""
 
@@ -313,7 +324,10 @@ class WINAEnforcementOptimizer:
                 > self.performance_improvement_threshold
             ):
                 return EnforcementStrategy.PERFORMANCE_FOCUSED
-            elif is_high_priority and wina_insights.get("optimization_potential", 0) > 0.7:
+            elif (
+                is_high_priority
+                and wina_insights.get("optimization_potential", 0) > 0.7
+            ):
                 return EnforcementStrategy.WINA_OPTIMIZED
             elif wina_insights.get("adaptive_recommendation", False):
                 return EnforcementStrategy.ADAPTIVE
@@ -330,11 +344,11 @@ class WINAEnforcementOptimizer:
 
     async def _optimize_policies_for_enforcement(
         self,
-        policies: List[IntegrityPolicyRule],
+        policies: list[IntegrityPolicyRule],
         context: EnforcementContext,
         strategy: EnforcementStrategy,
-        optimization_hints: Optional[Dict[str, Any]],
-    ) -> List[IntegrityPolicyRule]:
+        optimization_hints: dict[str, Any] | None,
+    ) -> list[IntegrityPolicyRule]:
         """Optimize policies for enforcement using WINA insights."""
 
         if not self.enable_wina or strategy == EnforcementStrategy.STANDARD:
@@ -346,7 +360,9 @@ class WINAEnforcementOptimizer:
 
             for policy in policies:
                 # Check policy relevance for current context
-                relevance_score = await self._calculate_policy_relevance(policy, context)
+                relevance_score = await self._calculate_policy_relevance(
+                    policy, context
+                )
 
                 if relevance_score > 0.1:  # Only include relevant policies
                     # Apply WINA optimization based on strategy
@@ -365,7 +381,7 @@ class WINAEnforcementOptimizer:
             return policies
 
     async def _verify_constitutional_compliance(
-        self, context: EnforcementContext, policies: List[IntegrityPolicyRule]
+        self, context: EnforcementContext, policies: list[IntegrityPolicyRule]
     ) -> bool:
         """Verify constitutional compliance for enforcement context."""
 
@@ -376,20 +392,24 @@ class WINAEnforcementOptimizer:
             # Check cache first
             compliance_key = self._generate_compliance_cache_key(context, policies)
             if compliance_key in self._constitutional_compliance_cache:
-                compliance, timestamp = self._constitutional_compliance_cache[compliance_key]
+                compliance, timestamp = self._constitutional_compliance_cache[
+                    compliance_key
+                ]
                 if datetime.now() - timestamp < self.cache_ttl:
                     return compliance
 
             # Perform constitutional compliance verification
-            compliance_score = await self.constitutional_wina.verify_enforcement_compliance(
-                context.constitutional_requirements,
-                [policy.rule_content for policy in policies],
-                {
-                    "user_id": context.user_id,
-                    "action_type": context.action_type,
-                    "resource_id": context.resource_id,
-                    "environment_factors": context.environment_factors,
-                },
+            compliance_score = (
+                await self.constitutional_wina.verify_enforcement_compliance(
+                    context.constitutional_requirements,
+                    [policy.rule_content for policy in policies],
+                    {
+                        "user_id": context.user_id,
+                        "action_type": context.action_type,
+                        "resource_id": context.resource_id,
+                        "environment_factors": context.environment_factors,
+                    },
+                )
             )
 
             is_compliant = compliance_score >= self.constitutional_compliance_threshold
@@ -416,9 +436,9 @@ class WINAEnforcementOptimizer:
         self,
         strategy: EnforcementStrategy,
         context: EnforcementContext,
-        policies: List[IntegrityPolicyRule],
+        policies: list[IntegrityPolicyRule],
         constitutional_compliance: bool,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute the selected enforcement strategy."""
 
         if not self.opa_client:
@@ -437,7 +457,9 @@ class WINAEnforcementOptimizer:
                     "strategy": strategy.value,
                 },
                 explain=(
-                    "full" if strategy == EnforcementStrategy.CONSTITUTIONAL_PRIORITY else "off"
+                    "full"
+                    if strategy == EnforcementStrategy.CONSTITUTIONAL_PRIORITY
+                    else "off"
                 ),
                 metrics=True,
             )
@@ -469,8 +491,8 @@ class WINAEnforcementOptimizer:
             }
 
     async def _get_wina_strategy_insights(
-        self, context: EnforcementContext, policies: List[IntegrityPolicyRule]
-    ) -> Dict[str, Any]:
+        self, context: EnforcementContext, policies: list[IntegrityPolicyRule]
+    ) -> dict[str, Any]:
         """Get WINA insights for strategy selection."""
 
         if not self.enable_wina:
@@ -480,13 +502,19 @@ class WINAEnforcementOptimizer:
             # Analyze constitutional risk
             constitutional_risk = 0.0
             if context.constitutional_requirements:
-                constitutional_risk = await self._analyze_constitutional_risk(context, policies)
+                constitutional_risk = await self._analyze_constitutional_risk(
+                    context, policies
+                )
 
             # Analyze performance benefit potential
-            performance_benefit = await self._analyze_performance_benefit(context, policies)
+            performance_benefit = await self._analyze_performance_benefit(
+                context, policies
+            )
 
             # Analyze optimization potential
-            optimization_potential = await self._analyze_optimization_potential(context, policies)
+            optimization_potential = await self._analyze_optimization_potential(
+                context, policies
+            )
 
             # Determine adaptive recommendation
             adaptive_recommendation = (
@@ -524,11 +552,17 @@ class WINAEnforcementOptimizer:
                 relevance_score += 0.3
 
             # Check for action-related terms
-            if context.action_type.lower() in policy_content or "action" in policy_content:
+            if (
+                context.action_type.lower() in policy_content
+                or "action" in policy_content
+            ):
                 relevance_score += 0.3
 
             # Check for resource-related terms
-            if context.resource_id.lower() in policy_content or "resource" in policy_content:
+            if (
+                context.resource_id.lower() in policy_content
+                or "resource" in policy_content
+            ):
                 relevance_score += 0.3
 
             # Check for environment factors
@@ -548,7 +582,7 @@ class WINAEnforcementOptimizer:
         policy: IntegrityPolicyRule,
         context: EnforcementContext,
         strategy: EnforcementStrategy,
-        optimization_hints: Optional[Dict[str, Any]],
+        optimization_hints: dict[str, Any] | None,
     ) -> IntegrityPolicyRule:
         """Apply WINA optimization to a single policy."""
 
@@ -569,7 +603,7 @@ class WINAEnforcementOptimizer:
         self,
         request: PolicyEvaluationRequest,
         strategy: EnforcementStrategy,
-        policies: List[IntegrityPolicyRule],
+        policies: list[IntegrityPolicyRule],
     ) -> PolicyEvaluationResponse:
         """Execute OPA evaluation with strategy-specific optimizations."""
 
@@ -599,7 +633,7 @@ class WINAEnforcementOptimizer:
         strategy: EnforcementStrategy,
         context: EnforcementContext,
         constitutional_compliance: bool,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process OPA response based on enforcement strategy."""
 
         try:
@@ -613,13 +647,17 @@ class WINAEnforcementOptimizer:
             )
 
             # Generate reason
-            reason = self._generate_enforcement_reason(response, decision, strategy, context)
+            reason = self._generate_enforcement_reason(
+                response, decision, strategy, context
+            )
 
             # Extract matching rules if available
             matching_rules = self._extract_matching_rules(response)
 
             # Generate WINA insights
-            wina_insights = await self._generate_wina_insights(response, strategy, context)
+            wina_insights = await self._generate_wina_insights(
+                response, strategy, context
+            )
 
             return {
                 "decision": decision,
@@ -653,12 +691,14 @@ class WINAEnforcementOptimizer:
         return hashlib.sha256(key_data.encode()).hexdigest()
 
     def _generate_compliance_cache_key(
-        self, context: EnforcementContext, policies: List[IntegrityPolicyRule]
+        self, context: EnforcementContext, policies: list[IntegrityPolicyRule]
     ) -> str:
         """Generate cache key for constitutional compliance."""
         import hashlib
 
-        policy_ids = [str(getattr(policy, "id", hash(policy.rule_content))) for policy in policies]
+        policy_ids = [
+            str(getattr(policy, "id", hash(policy.rule_content))) for policy in policies
+        ]
         key_data = f"{context.user_id}:{context.action_type}:{sorted(policy_ids)}"
         if context.constitutional_requirements:
             key_data += f":{sorted(context.constitutional_requirements)}"
@@ -721,7 +761,7 @@ class WINAEnforcementOptimizer:
 
     def _extract_matching_rules(
         self, response: PolicyEvaluationResponse
-    ) -> Optional[List[Dict[str, Any]]]:
+    ) -> list[dict[str, Any]] | None:
         """Extract matching rules from OPA response."""
 
         if not response.explanation:
@@ -744,7 +784,7 @@ class WINAEnforcementOptimizer:
         response: PolicyEvaluationResponse,
         strategy: EnforcementStrategy,
         context: EnforcementContext,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate WINA-specific insights for the enforcement result."""
 
         insights = {
@@ -755,7 +795,9 @@ class WINAEnforcementOptimizer:
 
         if self.enable_wina and response.metrics:
             # Add WINA-specific performance insights
-            evaluation_time = response.metrics.get("timer_rego_query_eval_ns", 0) / 1_000_000
+            evaluation_time = (
+                response.metrics.get("timer_rego_query_eval_ns", 0) / 1_000_000
+            )
             insights.update(
                 {
                     "evaluation_time_ms": evaluation_time,
@@ -774,8 +816,8 @@ class WINAEnforcementOptimizer:
         enforcement_time: float,
         strategy: EnforcementStrategy,
         context: EnforcementContext,
-        policies: List[IntegrityPolicyRule],
-        enforcement_result: Dict[str, Any],
+        policies: list[IntegrityPolicyRule],
+        enforcement_result: dict[str, Any],
     ) -> WINAEnforcementMetrics:
         """Calculate comprehensive enforcement metrics."""
 
@@ -793,16 +835,20 @@ class WINAEnforcementOptimizer:
         return WINAEnforcementMetrics(
             enforcement_time_ms=enforcement_time,
             strategy_used=strategy,
-            wina_optimization_applied=self.enable_wina and strategy != EnforcementStrategy.STANDARD,
+            wina_optimization_applied=self.enable_wina
+            and strategy != EnforcementStrategy.STANDARD,
             constitutional_compliance_score=enforcement_result.get(
                 "constitutional_compliance_score", 1.0
             ),
             performance_improvement=performance_improvement,
             cache_hit_rate=cache_hit_rate,
-            opa_evaluation_time_ms=enforcement_result.get("opa_evaluation_time_ms", 0.0),
+            opa_evaluation_time_ms=enforcement_result.get(
+                "opa_evaluation_time_ms", 0.0
+            ),
             wina_analysis_time_ms=max(
                 0.0,
-                enforcement_time - enforcement_result.get("opa_evaluation_time_ms", 0.0),
+                enforcement_time
+                - enforcement_result.get("opa_evaluation_time_ms", 0.0),
             ),
             total_policies_evaluated=len(policies),
             optimized_policies_count=(
@@ -815,7 +861,7 @@ class WINAEnforcementOptimizer:
     # Additional helper methods
 
     async def _analyze_constitutional_risk(
-        self, context: EnforcementContext, policies: List[IntegrityPolicyRule]
+        self, context: EnforcementContext, policies: list[IntegrityPolicyRule]
     ) -> float:
         """Analyze constitutional risk for the enforcement context."""
         if not context.constitutional_requirements:
@@ -826,7 +872,7 @@ class WINAEnforcementOptimizer:
         return risk_score
 
     async def _analyze_performance_benefit(
-        self, context: EnforcementContext, policies: List[IntegrityPolicyRule]
+        self, context: EnforcementContext, policies: list[IntegrityPolicyRule]
     ) -> float:
         """Analyze potential performance benefit from WINA optimization."""
         # Simple heuristic: more policies and complex context = higher benefit potential
@@ -835,7 +881,7 @@ class WINAEnforcementOptimizer:
         return policy_factor + context_factor
 
     async def _analyze_optimization_potential(
-        self, context: EnforcementContext, policies: List[IntegrityPolicyRule]
+        self, context: EnforcementContext, policies: list[IntegrityPolicyRule]
     ) -> float:
         """Analyze optimization potential for the current context."""
         # Simple heuristic based on context complexity and policy count
@@ -846,7 +892,9 @@ class WINAEnforcementOptimizer:
         else:
             return 0.4
 
-    async def _get_baseline_enforcement_time(self, context: EnforcementContext) -> float:
+    async def _get_baseline_enforcement_time(
+        self, context: EnforcementContext
+    ) -> float:
         """Get baseline enforcement time for performance comparison."""
         # Simple baseline calculation based on historical data
         if hasattr(self, "_baseline_times"):
@@ -881,7 +929,9 @@ class WINAEnforcementOptimizer:
 
         # Keep only recent performance data
         if len(self._strategy_performance[strategy]) > 100:
-            self._strategy_performance[strategy] = self._strategy_performance[strategy][-50:]
+            self._strategy_performance[strategy] = self._strategy_performance[strategy][
+                -50:
+            ]
 
     async def _cache_enforcement_result(
         self, context: EnforcementContext, result: WINAEnforcementResult
@@ -930,8 +980,8 @@ class WINAEnforcementOptimizer:
     async def _fallback_enforcement(
         self,
         context: EnforcementContext,
-        policies: List[IntegrityPolicyRule],
-        errors: List[str],
+        policies: list[IntegrityPolicyRule],
+        errors: list[str],
     ) -> WINAEnforcementResult:
         """Fallback enforcement when WINA optimization fails."""
 
@@ -963,7 +1013,7 @@ class WINAEnforcementOptimizer:
             wina_insights={},
         )
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get performance summary for monitoring and optimization."""
 
         total_enforcements = len(self._enforcement_history)
@@ -972,11 +1022,17 @@ class WINAEnforcementOptimizer:
 
         # Calculate average metrics
         avg_enforcement_time = (
-            sum(r.enforcement_metrics.enforcement_time_ms for r in self._enforcement_history)
+            sum(
+                r.enforcement_metrics.enforcement_time_ms
+                for r in self._enforcement_history
+            )
             / total_enforcements
         )
         avg_performance_improvement = (
-            sum(r.enforcement_metrics.performance_improvement for r in self._enforcement_history)
+            sum(
+                r.enforcement_metrics.performance_improvement
+                for r in self._enforcement_history
+            )
             / total_enforcements
         )
         avg_constitutional_compliance = (
@@ -1006,7 +1062,7 @@ class WINAEnforcementOptimizer:
 
 
 # Global WINA enforcement optimizer instance
-_wina_enforcement_optimizer: Optional[WINAEnforcementOptimizer] = None
+_wina_enforcement_optimizer: WINAEnforcementOptimizer | None = None
 
 
 async def get_wina_enforcement_optimizer() -> WINAEnforcementOptimizer:

@@ -6,21 +6,22 @@ viewing performance metrics, and configuring optimization parameters.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+from fastapi import APIRouter, HTTPException, Query, status
+from pydantic import BaseModel
 
 # Fix the import paths to use the full package path
 from app.core.mab_integration import MABIntegratedGSService
 from app.core.mab_prompt_optimizer import MABAlgorithm, MABConfig, PromptTemplate
 from app.schemas import ConstitutionalSynthesisInput
-from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 # Global MAB service instance (would be dependency injected in production)
-_mab_service: Optional[MABIntegratedGSService] = None
+_mab_service: MABIntegratedGSService | None = None
 
 
 def get_mab_service() -> MABIntegratedGSService:
@@ -50,7 +51,7 @@ class PromptTemplateRequest(BaseModel):
     template_content: str
     category: str
     version: str = "1.0"
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
 
 
 class SynthesisRequest(BaseModel):
@@ -58,7 +59,7 @@ class SynthesisRequest(BaseModel):
     target_format: str = "rego"
     category: str = "constitutional"
     safety_level: str = "standard"
-    additional_context: Dict[str, Any] = {}
+    additional_context: dict[str, Any] = {}
 
 
 class MABMetricsResponse(BaseModel):
@@ -67,15 +68,15 @@ class MABMetricsResponse(BaseModel):
     total_template_uses: int
     overall_success_rate: float
     template_count: int
-    template_metrics: Dict[str, Any]
-    recent_history: List[Dict[str, Any]]
+    template_metrics: dict[str, Any]
+    recent_history: list[dict[str, Any]]
 
 
 class IntegrationStatusResponse(BaseModel):
-    integration_metrics: Dict[str, Any]
-    mab_optimization: Dict[str, Any]
-    best_templates: List[Dict[str, Any]]
-    reliability_config: Dict[str, Any]
+    integration_metrics: dict[str, Any]
+    mab_optimization: dict[str, Any]
+    best_templates: list[dict[str, Any]]
+    reliability_config: dict[str, Any]
     system_status: str
 
 
@@ -194,8 +195,8 @@ async def synthesize_with_mab(
         }
 
         # Execute MAB-optimized synthesis
-        synthesis_output, integration_metadata = await mab_service.synthesize_with_mab_optimization(
-            synthesis_input, context
+        synthesis_output, integration_metadata = (
+            await mab_service.synthesize_with_mab_optimization(synthesis_input, context)
         )
 
         return {
@@ -270,7 +271,7 @@ async def update_mab_config(
 
 @router.get("/templates")
 async def list_prompt_templates(
-    category: Optional[str] = Query(None, description="Filter by category"),
+    category: str | None = Query(None, description="Filter by category"),
     active_only: bool = Query(True, description="Show only active templates"),
 ):
     """List all registered prompt templates."""
@@ -279,7 +280,7 @@ async def list_prompt_templates(
         templates = mab_service.mab_optimizer.prompt_templates
 
         template_list = []
-        for template_id, template in templates.items():
+        for _template_id, template in templates.items():
             if category and template.category != category:
                 continue
 
@@ -299,7 +300,7 @@ async def list_prompt_templates(
         return {
             "templates": template_list,
             "total_count": len(template_list),
-            "categories": list(set(t.category for t in templates.values())),
+            "categories": list({t.category for t in templates.values()}),
         }
     except Exception as e:
         logger.error(f"Failed to list templates: {e}")

@@ -52,7 +52,7 @@ async def monitor_cache_performance():
     print("=" * 50)
 
     redis_info = await get_redis_info()
-    print(f"📊 Redis Server Status:")
+    print("📊 Redis Server Status:")
     print(f"   Memory Usage: {redis_info.get('memory_usage', 'N/A')}")
     print(f"   Connected Clients: {redis_info.get('connected_clients', 'N/A')}")
     print(f"   Hit Rate: {redis_info.get('hit_rate', 'N/A')}%")

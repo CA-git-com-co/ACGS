@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -11,11 +11,11 @@ class NeuronActivationInput(BaseModel):
     observed over a period or a set of inputs.
     """
 
-    activations: Dict[str, List[float]] = Field(
+    activations: dict[str, list[float]] = Field(
         ...,
         description="Dictionary of neuron activations. Keys are neuron IDs, values are lists of activation strengths.",
     )
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Optional metadata, e.g., layer name, timestamp.",
     )
@@ -27,12 +27,14 @@ class AnalyzedNeuronActivation(BaseModel):
     """
 
     neuron_id: str = Field(..., description="Identifier for the neuron.")
-    mean_activation: float = Field(..., description="Mean activation value for the neuron.")
+    mean_activation: float = Field(
+        ..., description="Mean activation value for the neuron."
+    )
     variance_activation: float = Field(
         ..., description="Variance of activation values for the neuron."
     )
     # Add other relevant metrics as needed, e.g., max, min, activation frequency
-    raw_activations_sample: List[float] = Field(
+    raw_activations_sample: list[float] = Field(
         default_factory=list,
         description="A sample of raw activation values, for reference.",
     )
@@ -43,11 +45,11 @@ class WINAWeightOutput(BaseModel):
     Represents the calculated WINA weights for a set of neurons.
     """
 
-    weights: Dict[str, float] = Field(
+    weights: dict[str, float] = Field(
         ...,
         description="Dictionary of WINA weights. Keys are neuron IDs, values are the calculated weights.",
     )
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Optional metadata, e.g., calculation method, timestamp.",
     )
@@ -58,11 +60,11 @@ class BatchWINAWeightOutput(BaseModel):
     Represents WINA weights for multiple sets of neurons, possibly from different layers or contexts.
     """
 
-    batch_weights: List[WINAWeightOutput] = Field(
+    batch_weights: list[WINAWeightOutput] = Field(
         ...,
         description="A list of WINAWeightOutput objects, each corresponding to a set of neurons.",
     )
-    overall_metadata: Dict[str, Any] = Field(
+    overall_metadata: dict[str, Any] = Field(
         default_factory=dict, description="Optional metadata for the entire batch."
     )
 
@@ -88,11 +90,11 @@ class GatingDecision(BaseModel):
     Indicates which neurons/components are active or inactive.
     """
 
-    gating_mask: Dict[str, bool] = Field(
+    gating_mask: dict[str, bool] = Field(
         ...,
         description="A dictionary where keys are neuron/component IDs and values are booleans (True for active, False for inactive).",
     )
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Optional metadata, e.g., gating configuration used, timestamp.",
     )

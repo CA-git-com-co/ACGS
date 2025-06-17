@@ -126,7 +126,7 @@ def test_protected_endpoint(auth_data):
 
     if response.status_code == 200:
         user_data = response.json()
-        print(f"   ✅ Protected endpoint access successful")
+        print("   ✅ Protected endpoint access successful")
         print(f"   User: {user_data.get('username')} (ID: {user_data.get('id')})")
         return True
     else:

@@ -34,7 +34,9 @@ class ResearchDataset(Base):
 
     # Dataset metadata
     domain = Column(String(100), index=True)
-    data_type = Column(String(50), nullable=False)  # experimental, observational, synthetic
+    data_type = Column(
+        String(50), nullable=False
+    )  # experimental, observational, synthetic
     size_bytes = Column(Integer)
     record_count = Column(Integer)
 
@@ -65,7 +67,9 @@ class ResearchDataset(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    data_points = relationship("DataPoint", back_populates="dataset", cascade="all, delete-orphan")
+    data_points = relationship(
+        "DataPoint", back_populates="dataset", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         # requires: Valid input parameters
@@ -80,7 +84,9 @@ class DataPoint(Base):
     __tablename__ = "data_points"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    dataset_id = Column(String, ForeignKey("research_datasets.id"), nullable=False, index=True)
+    dataset_id = Column(
+        String, ForeignKey("research_datasets.id"), nullable=False, index=True
+    )
 
     # Data content
     data = Column(JSON, nullable=False)
@@ -209,7 +215,9 @@ class BenchmarkResult(Base):
     __tablename__ = "benchmark_results"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    benchmark_id = Column(String, ForeignKey("benchmarks.id"), nullable=False, index=True)
+    benchmark_id = Column(
+        String, ForeignKey("benchmarks.id"), nullable=False, index=True
+    )
 
     # Execution metadata
     system_under_test = Column(String(255), nullable=False)

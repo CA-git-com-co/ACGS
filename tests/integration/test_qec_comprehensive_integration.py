@@ -580,7 +580,7 @@ class TestQECComprehensiveIntegration:
                     invalid_principle
                 )
                 # Should return default/fallback value
-                assert isinstance(distance, (int, float))
+                assert isinstance(distance, int | float)
                 assert 0 <= distance <= 1
             except Exception as e:
                 # Should handle errors gracefully
@@ -599,7 +599,7 @@ class TestQECComprehensiveIntegration:
         if QEC_AVAILABLE:
             distance_calculator = ConstitutionalDistanceCalculator()
             distance = await distance_calculator.calculate_distance(legacy_principle)
-            assert isinstance(distance, (int, float))
+            assert isinstance(distance, int | float)
 
         return {
             "fallback_behavior": "functional",
@@ -634,7 +634,7 @@ class TestQECComprehensiveIntegration:
 
                 # Simulate AC service calling GS service
                 async with httpx.AsyncClient() as client:
-                    response = await client.post(
+                    await client.post(
                         f"{service_endpoints['gs_service']}/api/v1/synthesis/qec-enhanced",
                         json={
                             "principles": sample_principles[:2],
@@ -662,7 +662,7 @@ class TestQECComprehensiveIntegration:
 
                 # Simulate GS service calling FV service
                 async with httpx.AsyncClient() as client:
-                    response = await client.post(
+                    await client.post(
                         f"{service_endpoints['fv_service']}/api/v1/verification/qec-enhanced",
                         json={
                             "policy": "test_policy",
@@ -833,7 +833,7 @@ class TestQECComprehensiveIntegration:
         )
 
         # Calculate average resolution time (simulated)
-        avg_resolution_time = statistics.mean(
+        statistics.mean(
             [r["processing_time"] for r in workflow_result["results"]]
         )
 

@@ -449,7 +449,7 @@ await learning_system.process_feedback_signal(test_feedback)
 ### Production Deployment
 
 ```yaml
-# docker-compose.yml
+# infrastructure/docker/docker-compose.yml
 version: '3.8'
 services:
   wina-learning:

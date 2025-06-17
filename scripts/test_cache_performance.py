@@ -9,7 +9,7 @@ import json
 import statistics
 import time
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 import aiohttp
 import redis.asyncio as redis
@@ -51,7 +51,7 @@ class CachePerformanceTester:
             print(f"❌ Failed to connect to Redis: {e}")
             raise
 
-    async def test_redis_performance(self) -> Dict[str, Any]:
+    async def test_redis_performance(self) -> dict[str, Any]:
         """Test basic Redis performance."""
         print("\n🔍 Testing Redis Performance...")
 
@@ -112,7 +112,7 @@ class CachePerformanceTester:
 
     async def test_service_cache_integration(
         self, service_name: str, port: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test cache integration for a specific service."""
         print(f"\n🔍 Testing {service_name} cache integration...")
 
@@ -126,7 +126,7 @@ class CachePerformanceTester:
 
                 # Test multiple requests to measure caching effect
                 response_times = []
-                for i in range(10):
+                for _i in range(10):
                     start_time = time.time()
                     try:
                         async with session.get(
@@ -164,7 +164,7 @@ class CachePerformanceTester:
                 "p95_response_time_ms": 0,
             }
 
-    async def test_concurrent_load(self) -> Dict[str, Any]:
+    async def test_concurrent_load(self) -> dict[str, Any]:
         """Test concurrent cache operations."""
         print("\n🔍 Testing Concurrent Load Performance...")
 
@@ -210,7 +210,7 @@ class CachePerformanceTester:
 
         return results
 
-    async def test_cache_warming(self) -> Dict[str, Any]:
+    async def test_cache_warming(self) -> dict[str, Any]:
         """Test cache warming performance."""
         print("\n🔍 Testing Cache Warming Performance...")
 
@@ -254,8 +254,8 @@ class CachePerformanceTester:
         return results
 
     async def validate_performance_targets(
-        self, results: Dict[str, Any]
-    ) -> Dict[str, bool]:
+        self, results: dict[str, Any]
+    ) -> dict[str, bool]:
         """Validate results against performance targets."""
         print("\n📊 Validating Performance Targets...")
 
@@ -309,7 +309,7 @@ class CachePerformanceTester:
 
         return validations
 
-    async def run_full_test_suite(self) -> Dict[str, Any]:
+    async def run_full_test_suite(self) -> dict[str, Any]:
         """Run complete cache performance test suite."""
         print("🚀 Starting ACGS-1 Cache Performance Test Suite")
         print("=" * 60)
@@ -357,7 +357,7 @@ class CachePerformanceTester:
             json.dump(results, f, indent=2)
 
         print(
-            f"\n📊 Test results saved to: /home/dislove/ACGS-1/logs/caching/performance_test_results.json"
+            "\n📊 Test results saved to: /home/dislove/ACGS-1/logs/caching/performance_test_results.json"
         )
 
         await self.redis_client.close()

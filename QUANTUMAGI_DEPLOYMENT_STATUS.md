@@ -10,7 +10,7 @@
 
 ### ✅ **Completed Components**
 
-#### 1. **Core Solana Smart Contract** (`programs/quantumagi_core/src/lib.rs`)
+#### 1. **Core Solana Smart Contract** (`programs/blockchain/src/lib.rs`)
 - **Status:** ✅ Compiled Successfully
 - **Features Implemented:**
   - Constitution management with versioning and hash verification

@@ -13,7 +13,7 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from integrations.alphaevolve_engine.core.constitutional_principle import (
     ConstitutionalPrinciple,
@@ -53,12 +53,10 @@ class PolicySynthesisInput:
         synthesis_goal: str,
         policy_type: str,  # "constitutional_principle" or "operational_rule"
         desired_format: str = "rego",
-        existing_policies: Optional[
-            List[Union[ConstitutionalPrinciple, OperationalRule]]
-        ] = None,
-        constraints: Optional[List[str]] = None,
-        context_data: Optional[Dict[str, Any]] = None,
-        target_id: Optional[str] = None,
+        existing_policies: list[ConstitutionalPrinciple | OperationalRule] | None = None,
+        constraints: list[str] | None = None,
+        context_data: dict[str, Any] | None = None,
+        target_id: str | None = None,
     ):  # For refinement
         self.synthesis_goal = synthesis_goal
         if policy_type not in ["constitutional_principle", "operational_rule"]:
@@ -96,8 +94,8 @@ class PolicySuggestion:
         suggested_policy_code: str,
         explanation: str,
         source_synthesizer: str,
-        confidence_score: Optional[float] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        confidence_score: float | None = None,
+        metadata: dict[str, Any] | None = None,
     ):
         self.suggested_policy_code = suggested_policy_code
         self.explanation = explanation
@@ -121,7 +119,7 @@ class PolicySynthesizer(ABC):
     @abstractmethod
     def synthesize_policy(
         self, s_input: PolicySynthesisInput
-    ) -> Optional[PolicySuggestion]:
+    ) -> PolicySuggestion | None:
         """
         Generates or refines a policy based on the synthesis input.
 
@@ -195,7 +193,7 @@ class LLMPolicyGenerator(PolicySynthesizer):
 
     def _parse_llm_response(
         self, llm_output: str
-    ) -> Tuple[Optional[str], Optional[str], Optional[float]]:
+    ) -> tuple[str | None, str | None, float | None]:
         """Parses the LLM's response to extract code, explanation, and confidence."""
         policy_code = None
         explanation = None
@@ -240,7 +238,7 @@ class LLMPolicyGenerator(PolicySynthesizer):
 
     def synthesize_policy(
         self, s_input: PolicySynthesisInput
-    ) -> Optional[PolicySuggestion]:
+    ) -> PolicySuggestion | None:
         prompt = self._construct_prompt(s_input)
         logger.debug(
             f"LLM Prompt for policy synthesis ({s_input.policy_type}, goal: '{s_input.synthesis_goal}'):\n{prompt}"

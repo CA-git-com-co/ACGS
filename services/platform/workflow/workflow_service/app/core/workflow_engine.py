@@ -6,10 +6,11 @@ Provides state management, coordination, and monitoring for all framework workfl
 import asyncio
 import logging
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -39,15 +40,15 @@ class WorkflowStep:
     name: str
     service: str
     endpoint: str
-    input_data: Dict[str, Any]
-    dependencies: List[str]
+    input_data: dict[str, Any]
+    dependencies: list[str]
     timeout_seconds: int = 300
     retry_count: int = 3
     status: WorkflowStatus = WorkflowStatus.PENDING
-    result: Optional[Dict[str, Any]] = None
-    error_message: Optional[str] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    result: dict[str, Any] | None = None
+    error_message: str | None = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
 
 
 @dataclass
@@ -56,13 +57,13 @@ class Workflow:
     type: WorkflowType
     name: str
     description: str
-    steps: List[WorkflowStep]
+    steps: list[WorkflowStep]
     status: WorkflowStatus = WorkflowStatus.PENDING
     created_at: datetime = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     created_by: str = None
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
     def __post_init__(self):
         # requires: Valid input parameters
@@ -83,10 +84,10 @@ class WorkflowEngine:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.workflows: Dict[str, Workflow] = {}
-        self.running_workflows: Dict[str, asyncio.Task] = {}
-        self.step_handlers: Dict[str, Callable] = {}
-        self.workflow_templates: Dict[WorkflowType, List[WorkflowStep]] = {}
+        self.workflows: dict[str, Workflow] = {}
+        self.running_workflows: dict[str, asyncio.Task] = {}
+        self.step_handlers: dict[str, Callable] = {}
+        self.workflow_templates: dict[WorkflowType, list[WorkflowStep]] = {}
         self._initialize_templates()
 
     def _initialize_templates(self):
@@ -209,9 +210,9 @@ class WorkflowEngine:
         workflow_type: WorkflowType,
         name: str,
         description: str,
-        input_data: Dict[str, Any],
+        input_data: dict[str, Any],
         created_by: str,
-        custom_steps: Optional[List[WorkflowStep]] = None,
+        custom_steps: list[WorkflowStep] | None = None,
     ) -> str:
         """Create a new workflow instance"""
 
@@ -331,7 +332,9 @@ class WorkflowEngine:
             if workflow.id in self.running_workflows:
                 del self.running_workflows[workflow.id]
 
-    async def _execute_step(self, workflow: Workflow, step: WorkflowStep) -> Dict[str, Any]:
+    async def _execute_step(
+        self, workflow: Workflow, step: WorkflowStep
+    ) -> dict[str, Any]:
         """Execute a single workflow step"""
 
         step.status = WorkflowStatus.RUNNING
@@ -353,9 +356,11 @@ class WorkflowEngine:
                     step.completed_at = datetime.utcnow()
                     return result
 
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     if attempt == step.retry_count - 1:
-                        raise Exception(f"Step timed out after {step.timeout_seconds} seconds")
+                        raise Exception(
+                            f"Step timed out after {step.timeout_seconds} seconds"
+                        )
                     await asyncio.sleep(2**attempt)  # Exponential backoff
 
                 except Exception as e:
@@ -375,7 +380,7 @@ class WorkflowEngine:
         """Register a step execution handler for a service"""
         self.step_handlers[service] = handler
 
-    def get_workflow_status(self, workflow_id: str) -> Optional[Dict[str, Any]]:
+    def get_workflow_status(self, workflow_id: str) -> dict[str, Any] | None:
         """Get workflow status and progress"""
 
         if workflow_id not in self.workflows:
@@ -383,7 +388,9 @@ class WorkflowEngine:
 
         workflow = self.workflows[workflow_id]
 
-        completed_steps = len([s for s in workflow.steps if s.status == WorkflowStatus.COMPLETED])
+        completed_steps = len(
+            [s for s in workflow.steps if s.status == WorkflowStatus.COMPLETED]
+        )
         total_steps = len(workflow.steps)
 
         return {
@@ -393,8 +400,12 @@ class WorkflowEngine:
             "status": workflow.status.value,
             "progress": f"{completed_steps}/{total_steps}",
             "created_at": workflow.created_at.isoformat(),
-            "started_at": (workflow.started_at.isoformat() if workflow.started_at else None),
-            "completed_at": (workflow.completed_at.isoformat() if workflow.completed_at else None),
+            "started_at": (
+                workflow.started_at.isoformat() if workflow.started_at else None
+            ),
+            "completed_at": (
+                workflow.completed_at.isoformat() if workflow.completed_at else None
+            ),
             "steps": [
                 {
                     "id": step.id,
@@ -441,7 +452,9 @@ class WorkflowEngine:
         logger.info(f"Resumed workflow {workflow_id}")
         return True
 
-    def list_workflows(self, status: Optional[WorkflowStatus] = None) -> List[Dict[str, Any]]:
+    def list_workflows(
+        self, status: WorkflowStatus | None = None
+    ) -> list[dict[str, Any]]:
         """List all workflows with optional status filter"""
 
         workflows = list(self.workflows.values())

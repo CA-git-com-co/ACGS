@@ -10,10 +10,10 @@ import json
 import logging
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..core.config import get_settings
 from .experiment_tracker import ExperimentTracker
@@ -53,10 +53,10 @@ class AutomationRule:
     name: str
     description: str
     trigger: AutomationTrigger
-    conditions: Dict[str, Any]
-    actions: List[Dict[str, Any]]
+    conditions: dict[str, Any]
+    actions: list[dict[str, Any]]
     enabled: bool = True
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -66,11 +66,11 @@ class ResearchPipeline:
     id: str
     name: str
     description: str
-    stages: List[Dict[str, Any]]
-    dependencies: List[str]
-    schedule: Optional[str] = None
+    stages: list[dict[str, Any]]
+    dependencies: list[str]
+    schedule: str | None = None
     enabled: bool = True
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ResearchAutomationService:
@@ -85,12 +85,12 @@ class ResearchAutomationService:
         # self.statistical_analyzer = StatisticalAnalyzer()
         # self.reproducibility_manager = ReproducibilityManager()
 
-        self.automation_rules: Dict[str, AutomationRule] = {}
-        self.research_pipelines: Dict[str, ResearchPipeline] = {}
-        self.active_pipelines: Dict[str, PipelineStatus] = {}
+        self.automation_rules: dict[str, AutomationRule] = {}
+        self.research_pipelines: dict[str, ResearchPipeline] = {}
+        self.active_pipelines: dict[str, PipelineStatus] = {}
 
         self.running = False
-        self.automation_task: Optional[asyncio.Task] = None
+        self.automation_task: asyncio.Task | None = None
 
     async def initialize(self):
         # requires: Valid input parameters
@@ -147,7 +147,7 @@ class ResearchAutomationService:
         logger.info(f"Registered research pipeline: {pipeline.name}")
 
     async def trigger_pipeline(
-        self, pipeline_id: str, parameters: Optional[Dict[str, Any]] = None
+        self, pipeline_id: str, parameters: dict[str, Any] | None = None
     ) -> str:
         """Manually trigger a research pipeline."""
         if pipeline_id not in self.research_pipelines:
@@ -163,9 +163,13 @@ class ResearchAutomationService:
 
         # Start pipeline execution
         execution_id = str(uuid.uuid4())
-        asyncio.create_task(self._execute_pipeline(pipeline, execution_id, parameters or {}))
+        asyncio.create_task(
+            self._execute_pipeline(pipeline, execution_id, parameters or {})
+        )
 
-        logger.info(f"Triggered pipeline {pipeline_id} with execution ID {execution_id}")
+        logger.info(
+            f"Triggered pipeline {pipeline_id} with execution ID {execution_id}"
+        )
         return execution_id
 
     async def create_constitutional_compliance_pipeline(self) -> str:
@@ -381,7 +385,7 @@ class ResearchAutomationService:
         # ensures: Correct function execution
         # sha256: func_hash
         """Check and execute scheduled pipelines."""
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(UTC)
 
         for pipeline in self.research_pipelines.values():
             if not pipeline.enabled or not pipeline.schedule:
@@ -396,7 +400,7 @@ class ResearchAutomationService:
                 asyncio.create_task(self._execute_pipeline(pipeline, execution_id, {}))
 
     async def _execute_pipeline(
-        self, pipeline: ResearchPipeline, execution_id: str, parameters: Dict[str, Any]
+        self, pipeline: ResearchPipeline, execution_id: str, parameters: dict[str, Any]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -404,7 +408,9 @@ class ResearchAutomationService:
         """Execute a research pipeline."""
         try:
             self.active_pipelines[pipeline.id] = PipelineStatus.RUNNING
-            logger.info(f"Starting pipeline execution {execution_id} for {pipeline.name}")
+            logger.info(
+                f"Starting pipeline execution {execution_id} for {pipeline.name}"
+            )
 
             # Execute each stage
             for stage in pipeline.stages:
@@ -418,7 +424,7 @@ class ResearchAutomationService:
             logger.error(f"Pipeline execution {execution_id} failed: {e}")
 
     async def _execute_pipeline_stage(
-        self, stage: Dict[str, Any], execution_id: str, parameters: Dict[str, Any]
+        self, stage: dict[str, Any], execution_id: str, parameters: dict[str, Any]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -434,7 +440,9 @@ class ResearchAutomationService:
         elif stage_type == "monitoring":
             await self._execute_monitoring_stage(stage_config, execution_id, parameters)
         elif stage_type == "optimization":
-            await self._execute_optimization_stage(stage_config, execution_id, parameters)
+            await self._execute_optimization_stage(
+                stage_config, execution_id, parameters
+            )
         elif stage_type == "reporting":
             await self._execute_reporting_stage(stage_config, execution_id, parameters)
         else:
@@ -449,7 +457,7 @@ class ResearchAutomationService:
 
         if config_path.exists():
             try:
-                with open(config_path, "r") as f:
+                with open(config_path) as f:
                     config = json.load(f)
 
                 # Load automation rules
@@ -532,7 +540,7 @@ class ResearchAutomationService:
         return False
 
     async def _execute_experiment_stage(
-        self, config: Dict[str, Any], execution_id: str, parameters: Dict[str, Any]
+        self, config: dict[str, Any], execution_id: str, parameters: dict[str, Any]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -541,7 +549,7 @@ class ResearchAutomationService:
         # Placeholder implementation
 
     async def _execute_analysis_stage(
-        self, config: Dict[str, Any], execution_id: str, parameters: Dict[str, Any]
+        self, config: dict[str, Any], execution_id: str, parameters: dict[str, Any]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -550,7 +558,7 @@ class ResearchAutomationService:
         # Placeholder implementation
 
     async def _execute_monitoring_stage(
-        self, config: Dict[str, Any], execution_id: str, parameters: Dict[str, Any]
+        self, config: dict[str, Any], execution_id: str, parameters: dict[str, Any]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -559,7 +567,7 @@ class ResearchAutomationService:
         # Placeholder implementation
 
     async def _execute_optimization_stage(
-        self, config: Dict[str, Any], execution_id: str, parameters: Dict[str, Any]
+        self, config: dict[str, Any], execution_id: str, parameters: dict[str, Any]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -568,7 +576,7 @@ class ResearchAutomationService:
         # Placeholder implementation
 
     async def _execute_reporting_stage(
-        self, config: Dict[str, Any], execution_id: str, parameters: Dict[str, Any]
+        self, config: dict[str, Any], execution_id: str, parameters: dict[str, Any]
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution

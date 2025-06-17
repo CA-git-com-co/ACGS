@@ -34,7 +34,7 @@ This document describes the integration of three Groq-hosted Llama models into t
 
 ### AlphaEvolve GS Engine Integration
 
-**File**: `src/alphaevolve_gs_engine/src/alphaevolve_gs_engine/services/llm_service.py`
+**File**: `integrations/alphaevolve-engine/integrations/alphaevolve-engine/services/llm_service.py`
 
 - Added `GroqLLMService` class with OpenAI-compatible API integration
 - Extended `get_llm_service()` factory function to support "groq" service type

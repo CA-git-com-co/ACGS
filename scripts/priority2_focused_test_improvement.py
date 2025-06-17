@@ -17,7 +17,6 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -33,7 +32,7 @@ class FocusedTestImprover:
         self.project_root = Path("/home/dislove/ACGS-1")
         self.target_coverage = 80.0
 
-    async def execute_focused_improvement(self) -> Dict:
+    async def execute_focused_improvement(self) -> dict:
         """Execute focused test improvement strategy."""
         logger.info("🎯 Starting ACGS-1 Focused Test Coverage Improvement")
         start_time = time.time()
@@ -90,7 +89,7 @@ class FocusedTestImprover:
             results["success"] = False
             return results
 
-    async def run_working_tests(self) -> Dict:
+    async def run_working_tests(self) -> dict:
         """Run only working tests to establish baseline coverage."""
         logger.info("🧪 Running working tests...")
 
@@ -140,7 +139,7 @@ class FocusedTestImprover:
             "test_results": results,
         }
 
-    async def create_service_tests(self) -> Dict:
+    async def create_service_tests(self) -> dict:
         """Create focused unit tests for core services."""
         logger.info("🔬 Creating service-specific tests...")
 
@@ -188,7 +187,7 @@ class FocusedTestImprover:
             "service_results": test_results,
         }
 
-    async def test_governance_endpoints(self) -> Dict:
+    async def test_governance_endpoints(self) -> dict:
         """Test governance workflow endpoints."""
         logger.info("🏛️ Testing governance endpoints...")
 
@@ -240,7 +239,7 @@ class FocusedTestImprover:
             "endpoint_results": endpoint_results,
         }
 
-    async def validate_quantumagi(self) -> Dict:
+    async def validate_quantumagi(self) -> dict:
         """Validate Quantumagi Solana integration."""
         logger.info("⚓ Validating Quantumagi integration...")
 
@@ -305,7 +304,7 @@ class FocusedTestImprover:
             "validation_results": validation_results,
         }
 
-    async def test_performance(self) -> Dict:
+    async def test_performance(self) -> dict:
         """Test system performance against targets."""
         logger.info("⚡ Testing performance...")
 
@@ -362,7 +361,7 @@ class FocusedTestImprover:
             "performance_results": performance_results,
         }
 
-    async def save_report(self, results: Dict) -> None:
+    async def save_report(self, results: dict) -> None:
         """Save focused improvement report."""
         report_file = f"priority2_focused_improvement_{int(time.time())}.json"
         report_path = self.project_root / "logs" / report_file

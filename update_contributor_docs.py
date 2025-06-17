@@ -64,7 +64,7 @@ ACGS-1/
    ```bash
    # Install Solana CLI
    sh -c "$(curl -sSfL https://release.solana.com/v1.18.22/install)"
-   
+
    # Install Anchor CLI
    cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
    avm install 0.29.0
@@ -473,8 +473,8 @@ This guide helps existing contributors adapt to the new blockchain-focused direc
 
 | Old Import | New Import |
 |------------|------------|
-| `from src.backend.shared` | `from services.shared` |
-| `from src.backend.ac_service` | `from services.core.constitutional_ai.ac_service` |
+| `from services.core.backend.shared` | `from services.shared` |
+| `from services.core.backend.ac_service` | `from services.core.constitutional_ai.ac_service` |
 | `from shared.models` | `from services.shared.models` |
 | `import src.backend.gs_service` | `import services.core.governance_synthesis.gs_service` |
 
@@ -514,8 +514,8 @@ cd ../..
 **Python Services**:
 ```python
 # Old
-from src.backend.shared.models import User
-from src.backend.ac_service.app.main import app
+from services.core.backend.shared.models import User
+from services.core.backend.ac_service.app.main import app
 
 # New
 from services.shared.models import User
@@ -609,7 +609,7 @@ npm start
 **Solution**: Update import statements to use new paths:
 ```python
 # Change this
-from src.backend.shared.models import User
+from services.core.backend.shared.models import User
 
 # To this
 from services.shared.models import User

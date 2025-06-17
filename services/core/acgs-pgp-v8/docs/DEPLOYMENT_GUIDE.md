@@ -132,13 +132,13 @@ docker run -d \
 
 ```bash
 # Start with docker-compose
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # View logs
 docker-compose logs -f acgs-pgp-v8
 
 # Stop services
-docker-compose down
+docker-compose -f infrastructure/docker/docker-compose.yml down
 ```
 
 ### 4. Automated Deployment
@@ -176,7 +176,7 @@ kubectl label namespace acgs-system name=acgs-system
 
 ```bash
 # Apply all configurations
-kubectl apply -f k8s/deployment.yaml
+kubectl apply -f infrastructure/kubernetes/deployment.yaml
 
 # Verify deployment
 kubectl get pods -n acgs-system -l app=acgs-pgp-v8
@@ -189,7 +189,7 @@ kubectl get svc -n acgs-system acgs-pgp-v8-service
 
 ```bash
 # Update ConfigMap
-kubectl apply -f k8s/deployment.yaml
+kubectl apply -f infrastructure/kubernetes/deployment.yaml
 
 # Update Secrets (use kubectl create secret or external secret management)
 kubectl create secret generic acgs-pgp-v8-secrets \
@@ -246,7 +246,7 @@ curl http://localhost:8010/metrics
 
 ```bash
 # Multi-zone deployment
-kubectl apply -f k8s/deployment.yaml
+kubectl apply -f infrastructure/kubernetes/deployment.yaml
 
 # Database clustering
 # - PostgreSQL with replication

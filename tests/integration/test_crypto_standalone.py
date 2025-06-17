@@ -5,7 +5,7 @@ Tests core cryptographic functions without database dependencies
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 # Test cryptography library availability
 try:
@@ -267,7 +267,7 @@ def test_digital_signature():
     is_invalid = crypto_service.verify_signature(wrong_data, signature, public_pem)
     assert not is_invalid
 
-    print(f"✓ Digital signature: Created and verified successfully")
+    print("✓ Digital signature: Created and verified successfully")
 
 
 def test_merkle_tree_construction():
@@ -309,7 +309,7 @@ def test_merkle_proof():
     assert is_valid
     assert len(proof) == 2
 
-    print(f"✓ Merkle proof: Generated and verified for leaf 0")
+    print("✓ Merkle proof: Generated and verified for leaf 0")
 
 
 def test_chain_integrity():
@@ -322,7 +322,7 @@ def test_chain_integrity():
     for i in range(5):
         entry_data = {
             "id": i + 1,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "service_name": "test_service",
             "action": f"ACTION_{i}",
             "user_id": "test_user",

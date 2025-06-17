@@ -6,7 +6,7 @@ for constitutional principles and compliance verification.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 from shared import get_config
@@ -37,8 +37,8 @@ class ACServiceClient:
         await self.client.aclose()
 
     async def get_constitutional_principles(
-        self, context: Optional[str] = None, scope: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
+        self, context: str | None = None, scope: str | None = None
+    ) -> list[dict[str, Any]]:
         """
         Get constitutional principles for EC oversight.
 
@@ -69,8 +69,8 @@ class ACServiceClient:
             raise
 
     async def verify_constitutional_compliance(
-        self, proposal: Dict[str, Any], principles: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, proposal: dict[str, Any], principles: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Verify constitutional compliance of an EC proposal.
 
@@ -98,7 +98,7 @@ class ACServiceClient:
             logger.error(f"Unexpected error in compliance verification: {e}")
             raise
 
-    async def get_fidelity_metrics(self) -> Dict[str, Any]:
+    async def get_fidelity_metrics(self) -> dict[str, Any]:
         """
         Get constitutional fidelity metrics.
 
@@ -119,8 +119,8 @@ class ACServiceClient:
             raise
 
     async def report_oversight_activity(
-        self, activity_type: str, details: Dict[str, Any], metrics: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, activity_type: str, details: dict[str, Any], metrics: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Report EC oversight activity to AC service.
 
@@ -140,7 +140,9 @@ class ACServiceClient:
                 "source": "ec_service",
             }
 
-            response = await self.client.post("/api/v1/fidelity/report-activity", json=request_data)
+            response = await self.client.post(
+                "/api/v1/fidelity/report-activity", json=request_data
+            )
             response.raise_for_status()
 
             return response.json()

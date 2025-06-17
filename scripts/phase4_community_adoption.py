@@ -21,7 +21,6 @@ import logging
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List
 
 import yaml
 
@@ -58,7 +57,7 @@ class CommunityAdoptionManager:
             },
         }
 
-    def create_technical_roadmap(self) -> Dict:
+    def create_technical_roadmap(self) -> dict:
         """Create comprehensive technical roadmap."""
         logger.info("Creating technical roadmap...")
 
@@ -162,12 +161,12 @@ class CommunityAdoptionManager:
         self.adoption_results["roadmap_creation"] = roadmap_results
         return roadmap_results
 
-    def _generate_roadmap_document(self, phases: List[Dict]) -> str:
+    def _generate_roadmap_document(self, phases: list[dict]) -> str:
         """Generate technical roadmap markdown document."""
         content = f"""# ACGS-1 Technical Roadmap
 
-**Last Updated**: {datetime.now().strftime('%B %d, %Y')}  
-**Status**: Community Review Phase  
+**Last Updated**: {datetime.now().strftime('%B %d, %Y')}
+**Status**: Community Review Phase
 **Next Review**: {(datetime.now() + timedelta(days=90)).strftime('%B %d, %Y')}
 
 ## 🎯 Vision Statement
@@ -178,10 +177,10 @@ ACGS-1 aims to become the premier constitutional governance framework for blockc
 
 """
 
-        for i, phase in enumerate(phases, 1):
+        for _i, phase in enumerate(phases, 1):
             content += f"""### {phase['phase']}
 
-**Timeline**: {phase['timeline']}  
+**Timeline**: {phase['timeline']}
 **Status**: Planning
 
 {phase['description']}
@@ -191,7 +190,7 @@ ACGS-1 aims to become the premier constitutional governance framework for blockc
             for feature in phase["features"]:
                 content += f"- {feature}\n"
 
-            content += f"""
+            content += """
 #### 🛠️ Technical Requirements
 """
             for requirement in phase["technical_requirements"]:
@@ -247,7 +246,7 @@ ACGS-1 aims to become the premier constitutional governance framework for blockc
 
         return content
 
-    def _setup_community_input(self) -> List[str]:
+    def _setup_community_input(self) -> list[str]:
         """Setup community input mechanisms."""
         mechanisms = []
 
@@ -315,7 +314,7 @@ How would this feature benefit the ACGS-1 community?
 
         return mechanisms
 
-    def setup_contributor_onboarding(self) -> Dict:
+    def setup_contributor_onboarding(self) -> dict:
         """Setup comprehensive contributor onboarding program."""
         logger.info("Setting up contributor onboarding program...")
 
@@ -345,7 +344,7 @@ How would this feature benefit the ACGS-1 community?
         self.adoption_results["onboarding_setup"] = onboarding_results
         return onboarding_results
 
-    def _create_good_first_issues(self) -> List[Dict]:
+    def _create_good_first_issues(self) -> list[dict]:
         """Create good first issues for new contributors."""
         issues = [
             {
@@ -428,7 +427,7 @@ How would this feature benefit the ACGS-1 community?
 
         return issues
 
-    def _create_github_issue_template(self, issue: Dict):
+    def _create_github_issue_template(self, issue: dict):
         """Create GitHub issue template for good first issue."""
         template_content = f"""---
 name: {issue['title']}
@@ -620,7 +619,7 @@ Browse [Good First Issues](https://github.com/CA-git-com-co/ACGS/labels/good%20f
         logger.info(f"Onboarding guide created: {guide_file}")
         return str(guide_file)
 
-    def _create_setup_automation(self) -> List[str]:
+    def _create_setup_automation(self) -> list[str]:
         """Create automated setup scripts."""
         scripts = []
 
@@ -698,7 +697,7 @@ echo "3. Pick your first issue: https://github.com/CA-git-com-co/ACGS/labels/goo
 
         return scripts
 
-    def _setup_mentorship_program(self) -> Dict:
+    def _setup_mentorship_program(self) -> dict:
         """Setup mentorship program configuration."""
         mentorship_config = {
             "program_structure": {
@@ -733,7 +732,7 @@ echo "3. Pick your first issue: https://github.com/CA-git-com-co/ACGS/labels/goo
         logger.info(f"Mentorship program configuration created: {config_file}")
         return mentorship_config
 
-    def run_full_setup(self) -> Dict:
+    def run_full_setup(self) -> dict:
         """Run complete community adoption setup."""
         logger.info("Starting full community adoption setup...")
 
@@ -759,7 +758,7 @@ echo "3. Pick your first issue: https://github.com/CA-git-com-co/ACGS/labels/goo
 
         return results
 
-    def _generate_adoption_report(self, results: Dict):
+    def _generate_adoption_report(self, results: dict):
         """Generate comprehensive community adoption report."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         report_file = self.project_root / f"community_adoption_report_{timestamp}.json"
@@ -775,12 +774,12 @@ echo "3. Pick your first issue: https://github.com/CA-git-com-co/ACGS/labels/goo
         print("=" * 60)
 
         roadmap_data = results["roadmap_creation"]
-        print(f"📋 Technical Roadmap:")
+        print("📋 Technical Roadmap:")
         print(f"   - Phases defined: {len(roadmap_data.get('phases_defined', []))}")
         print(f"   - Roadmap file: {roadmap_data.get('roadmap_file', 'N/A')}")
 
         onboarding_data = results["onboarding_setup"]
-        print(f"🚀 Contributor Onboarding:")
+        print("🚀 Contributor Onboarding:")
         print(
             f"   - Good first issues: {len(onboarding_data.get('good_first_issues', []))}"
         )

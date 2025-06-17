@@ -117,7 +117,9 @@ class DatalogEngine:
         facts = []
         for entity_type, attributes in context.items():
             if isinstance(attributes, dict):  # user, resource, action, environment
-                entity_id = attributes.get("id")  # Optional, action might not have an ID
+                entity_id = attributes.get(
+                    "id"
+                )  # Optional, action might not have an ID
                 for key, value in attributes.items():
                     if (
                         key == "id"
@@ -125,7 +127,9 @@ class DatalogEngine:
                         if (
                             entity_type != "action"
                         ):  # Action attributes are often direct, e.g. action_type('read')
-                            facts.append(f"+{entity_type}_id('{value}')")  # e.g. +user_id('alice')
+                            facts.append(
+                                f"+{entity_type}_id('{value}')"
+                            )  # e.g. +user_id('alice')
                     else:
                         if (
                             entity_id and entity_type != "action"
@@ -177,7 +181,9 @@ if __name__ == "__main__":
     # Query
     print("\nQuerying: can_read('alice', 'report123')")
     result1 = engine.query("can_read('alice', 'report123')")
-    print(f"Result: {result1} (Expected: [()] if true, indicating alice can read report123)")
+    print(
+        f"Result: {result1} (Expected: [()] if true, indicating alice can read report123)"
+    )
     assert result1 == [()]
 
     engine.clear_rules_and_facts()

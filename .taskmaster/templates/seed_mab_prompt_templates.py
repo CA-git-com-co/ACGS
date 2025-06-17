@@ -16,7 +16,7 @@ import asyncio
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import asyncpg
 
@@ -33,7 +33,7 @@ DEFAULT_TEMPLATES = [
     {
         "template_id": "constitutional_v1_0",
         "name": "Constitutional Compliance Template",
-        "template_content": """You are an AI assistant specialized in constitutional governance and policy synthesis. 
+        "template_content": """You are an AI assistant specialized in constitutional governance and policy synthesis.
 
 Your task is to generate policies that strictly adhere to constitutional principles while ensuring democratic legitimacy and rule of law.
 
@@ -242,8 +242,8 @@ async def seed_prompt_templates():
                     template["category"],
                     template["version"],
                     json.dumps(template["metadata_json"]),
-                    datetime.now(timezone.utc),
-                    datetime.now(timezone.utc),
+                    datetime.now(UTC),
+                    datetime.now(UTC),
                     0,  # total_uses
                     0.0,  # total_rewards
                     0,  # success_count

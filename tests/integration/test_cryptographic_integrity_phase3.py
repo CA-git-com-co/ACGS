@@ -5,7 +5,7 @@ Tests digital signatures, key management, Merkle trees, and RFC 3161 timestampin
 
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 # Add the src directory to Python path for imports
@@ -15,16 +15,22 @@ sys.path.insert(0, str(project_root / "src/backend"))
 
 # Import the services we're testing
 try:
-    from backend.integrity_service.app.models import AuditLog, CryptoKey, PolicyRule
-    from backend.integrity_service.app.services.crypto_service import (
+    from services.platform.integrity.integrity_service.app.models import (
+        AuditLog,
+        CryptoKey,
+        PolicyRule,
+    )
+    from services.platform.integrity.integrity_service.app.services.crypto_service import (
         crypto_service,
         merkle_service,
     )
-    from backend.integrity_service.app.services.integrity_verification import (
+    from services.platform.integrity.integrity_service.app.services.integrity_verification import (
         integrity_verifier,
     )
-    from backend.integrity_service.app.services.key_management import key_manager
-    from backend.integrity_service.app.services.timestamp_service import (
+    from services.platform.integrity.integrity_service.app.services.key_management import (
+        key_manager,
+    )
+    from services.platform.integrity.integrity_service.app.services.timestamp_service import (
         timestamp_manager,
     )
 except ImportError:
@@ -122,7 +128,7 @@ class TestCryptographicIntegrityPhase3:
         is_invalid = crypto_service.verify_signature(wrong_data, signature, public_pem)
         assert not is_invalid
 
-        print(f"✓ Digital signature: Created and verified successfully")
+        print("✓ Digital signature: Created and verified successfully")
 
     def test_merkle_tree_construction(self):
         """Test Merkle tree construction and verification"""
@@ -163,7 +169,7 @@ class TestCryptographicIntegrityPhase3:
         assert is_valid
         assert len(proof) == 2  # For 4 elements, proof length should be 2
 
-        print(f"✓ Merkle proof: Generated and verified for leaf 0")
+        print("✓ Merkle proof: Generated and verified for leaf 0")
 
     def test_timestamp_service_mock(self):
         """Test mock timestamp service"""
@@ -185,7 +191,7 @@ class TestCryptographicIntegrityPhase3:
         )
         assert is_valid
 
-        print(f"✓ Mock timestamp: Created and verified")
+        print("✓ Mock timestamp: Created and verified")
 
     def test_audit_log_timestamping(self):
         """Test audit log timestamping"""
@@ -198,7 +204,7 @@ class TestCryptographicIntegrityPhase3:
         assert "timestamp_token" in result
         assert "timestamp_value" in result
 
-        print(f"✓ Audit log timestamp: Created successfully")
+        print("✓ Audit log timestamp: Created successfully")
 
     def test_policy_rule_timestamping(self):
         """Test policy rule timestamping"""
@@ -212,7 +218,7 @@ class TestCryptographicIntegrityPhase3:
         assert "timestamp_token" in result
         assert "timestamp_value" in result
 
-        print(f"✓ Policy rule timestamp: Created successfully")
+        print("✓ Policy rule timestamp: Created successfully")
 
     def test_comprehensive_integrity_workflow(self):
         """Test complete integrity workflow"""
@@ -223,7 +229,7 @@ class TestCryptographicIntegrityPhase3:
         content = {
             "rule_content": self.test_data["policy_rule_content"],
             "version": 1,
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(UTC).isoformat(),
         }
         content_json = json.dumps(content, sort_keys=True, separators=(",", ":"))
 
@@ -253,7 +259,7 @@ class TestCryptographicIntegrityPhase3:
         )
         assert timestamp_valid
 
-        print(f"✓ Complete integrity workflow: All verifications passed")
+        print("✓ Complete integrity workflow: All verifications passed")
 
     def test_chain_integrity_simulation(self):
         """Test audit log chain integrity simulation"""
@@ -265,7 +271,7 @@ class TestCryptographicIntegrityPhase3:
             # Create log entry
             entry_data = {
                 "id": i + 1,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "service_name": "test_service",
                 "action": f"ACTION_{i}",
                 "user_id": "test_user",
@@ -307,7 +313,7 @@ class TestCryptographicIntegrityPhase3:
             log_data = {
                 "id": i + 1,
                 "action": f"ACTION_{i}",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
             log_json = json.dumps(log_data, sort_keys=True, separators=(",", ":"))
             log_hash = crypto_service.generate_sha3_hash(log_json)

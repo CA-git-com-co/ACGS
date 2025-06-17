@@ -55,7 +55,7 @@ Browse [Good First Issues](https://github.com/CA-git-com-co/ACGS/labels/good%20f
 
 **Getting Started**:
 1. Setup Node.js environment
-2. Review `applications/frontend/` directory
+2. Review `applications/applications/governance-dashboard/` directory
 3. Run frontend tests: `npm test`
 4. Pick up frontend-labeled issues
 

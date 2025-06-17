@@ -279,7 +279,7 @@ def print_executive_summary(report_data):
     print(f"🎯 Priority: {phase3['priority']}")
 
     print("\n🎯 Phase 3 Objectives:")
-    for obj_key, obj_data in phase3["phase_3_objectives"].items():
+    for _obj_key, obj_data in phase3["phase_3_objectives"].items():
         print(
             f"   • {obj_data['title']} ({obj_data['timeline']}, {obj_data['priority']} priority)"
         )

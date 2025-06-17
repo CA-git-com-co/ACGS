@@ -11,7 +11,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .smt_solver_integration import verify_rules_against_obligations
 
@@ -24,8 +24,8 @@ class VerificationTestCase:
 
     name: str
     description: str
-    rules: List[str]
-    obligations: List[str]
+    rules: list[str]
+    obligations: list[str]
     expected_result: str  # "verified", "failed", "inconclusive"
     test_type: str  # "positive", "negative", "boundary"
     rationale: str
@@ -40,8 +40,8 @@ class CompletenessTestResult:
     actual_result: str
     passed: bool
     execution_time_ms: int
-    counter_example: Optional[str]
-    error_message: Optional[str]
+    counter_example: str | None
+    error_message: str | None
 
 
 class VerificationCompletenessTester:
@@ -50,7 +50,7 @@ class VerificationCompletenessTester:
     def __init__(self):
         self.test_cases = self._create_test_cases()
 
-    def _create_test_cases(self) -> List[VerificationTestCase]:
+    def _create_test_cases(self) -> list[VerificationTestCase]:
         """Create comprehensive test cases for verification completeness."""
         return [
             # Positive cases (should verify)
@@ -170,7 +170,7 @@ class VerificationCompletenessTester:
             ),
         ]
 
-    async def run_completeness_tests(self) -> Dict[str, Any]:
+    async def run_completeness_tests(self) -> dict[str, Any]:
         """Run all completeness tests and return comprehensive results."""
         logger.info("Starting verification completeness testing")
         start_time = time.time()
@@ -320,7 +320,7 @@ class VerificationCompletenessTester:
             )
 
     def _calculate_completeness_score(
-        self, results: List[CompletenessTestResult]
+        self, results: list[CompletenessTestResult]
     ) -> float:
         """Calculate a completeness score based on test results."""
         if not results:
@@ -371,7 +371,7 @@ class VerificationCompletenessTester:
 
         return completeness_score
 
-    def _result_to_dict(self, result: CompletenessTestResult) -> Dict[str, Any]:
+    def _result_to_dict(self, result: CompletenessTestResult) -> dict[str, Any]:
         """Convert result to dictionary for JSON serialization."""
         return {
             "test_case_name": result.test_case_name,

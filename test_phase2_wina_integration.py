@@ -83,7 +83,7 @@ async def test_svd_transformation():
         assert result.rank_reduction > 0
         assert result.transformation_time > 0
 
-        print(f"✅ SVD Transformation successful:")
+        print("✅ SVD Transformation successful:")
         print(f"   - Original shape: {result.original_shape}")
         print(f"   - Rank reduction: {result.rank_reduction:.2%}")
         print(f"   - Transformation time: {result.transformation_time:.2f}s")
@@ -129,7 +129,7 @@ async def test_constitutional_integration():
         assert "efficiency_impact" in analysis
         assert "constitutional_compatibility" in analysis  # Corrected key name
 
-        print(f"✅ Constitutional Integration successful:")
+        print("✅ Constitutional Integration successful:")
         print(f"   - Optimization potential: {analysis['optimization_potential']:.2f}")
         print(f"   - Efficiency impact available: {'efficiency_impact' in analysis}")
         print(
@@ -170,7 +170,7 @@ async def test_performance_targets():
 
     all_targets_met = all(targets_met.values())
 
-    print(f"✅ Performance Target Results:")
+    print("✅ Performance Target Results:")
     for target, met in targets_met.items():
         status = "✅" if met else "❌"
         value = performance_results[target]

@@ -11,15 +11,11 @@ Tests cover:
 - Performance metrics and reporting
 """
 
-import asyncio
 import os
 
 # Import the module under test
 import sys
-import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import UTC, datetime
 
 import pytest
 
@@ -82,8 +78,8 @@ class TestConstitutionalPrinciple:
             category="governance",
             priority=9,
             constitutional_hash="cdd01ef066bc6cf2",
-            created_at=datetime.now(timezone.utc),
-            last_updated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_updated=datetime.now(UTC),
         )
 
         assert principle.principle_id == "PRIN-001"
@@ -107,8 +103,8 @@ class TestGovernanceRule:
             category="governance",
             policy_id="POL-001",
             enforcement_level="strict",
-            created_at=datetime.now(timezone.utc),
-            last_updated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_updated=datetime.now(UTC),
             usage_frequency=50,
         )
 
@@ -134,8 +130,8 @@ class TestPrincipleRuleRelationship:
             confidence=0.9,
             reasoning="Rule directly implements constitutional governance principle",
             evidence=["constitutional_review", "approval_process"],
-            created_at=datetime.now(timezone.utc),
-            last_validated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_validated=datetime.now(UTC),
         )
 
         assert relationship.principle_id == "PRIN-001"
@@ -174,8 +170,8 @@ class TestPrincipleTracer:
             category="test",
             priority=8,
             constitutional_hash="cdd01ef066bc6cf2",
-            created_at=datetime.now(timezone.utc),
-            last_updated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_updated=datetime.now(UTC),
         )
 
     @pytest.fixture
@@ -191,8 +187,8 @@ class TestPrincipleTracer:
             category="test",
             policy_id="POL-TEST-001",
             enforcement_level="moderate",
-            created_at=datetime.now(timezone.utc),
-            last_updated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_updated=datetime.now(UTC),
             usage_frequency=25,
         )
 
@@ -264,8 +260,8 @@ class TestPrincipleTracer:
             confidence=0.9,
             reasoning="Test relationship",
             evidence=["test_evidence"],
-            created_at=datetime.now(timezone.utc),
-            last_validated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_validated=datetime.now(UTC),
         )
 
         result = await tracer.add_relationship(relationship)
@@ -281,7 +277,10 @@ class TestPrincipleTracer:
         edge_data = tracer.traceability_graph.edges[
             sample_principle.principle_id, sample_rule.rule_id
         ]
-        assert edge_data["relationship_type"] == RelationshipType.DIRECT_IMPLEMENTATION.value
+        assert (
+            edge_data["relationship_type"]
+            == RelationshipType.DIRECT_IMPLEMENTATION.value
+        )
         assert edge_data["impact_score"] == 0.8
         assert edge_data["confidence"] == 0.9
 
@@ -301,8 +300,8 @@ class TestPrincipleTracer:
             confidence=0.9,
             reasoning="Test relationship",
             evidence=["test_evidence"],
-            created_at=datetime.now(timezone.utc),
-            last_validated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_validated=datetime.now(UTC),
         )
 
         result = await tracer.add_relationship(relationship)
@@ -323,7 +322,9 @@ class TestPrincipleTracer:
         )
 
         assert 0.0 <= impact_score <= 1.0
-        assert impact_score > 0.5  # Should be high due to high priority and direct implementation
+        assert (
+            impact_score > 0.5
+        )  # Should be high due to high priority and direct implementation
 
         # Test with low impact parameters
         low_impact_score = tracer.calculate_impact_score(
@@ -348,7 +349,9 @@ class TestPrincipleTracer:
         assert tracer.get_impact_level(0.1) == ImpactLevel.MINIMAL
 
     @pytest.mark.asyncio
-    async def test_analyze_principle_influence(self, tracer, sample_principle, sample_rule):
+    async def test_analyze_principle_influence(
+        self, tracer, sample_principle, sample_rule
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -365,13 +368,15 @@ class TestPrincipleTracer:
             confidence=0.9,
             reasoning="Test relationship",
             evidence=["test_evidence"],
-            created_at=datetime.now(timezone.utc),
-            last_validated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_validated=datetime.now(UTC),
         )
         await tracer.add_relationship(relationship)
 
         # Analyze influence
-        analysis = await tracer.analyze_principle_influence(sample_principle.principle_id)
+        analysis = await tracer.analyze_principle_influence(
+            sample_principle.principle_id
+        )
 
         assert analysis["principle_id"] == sample_principle.principle_id
         assert analysis["connected_rules_count"] == 1
@@ -408,8 +413,8 @@ class TestPrincipleTracer:
                 category="test",
                 priority=8,
                 constitutional_hash="cdd01ef066bc6cf2",
-                created_at=datetime.now(timezone.utc),
-                last_updated=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                last_updated=datetime.now(UTC),
             )
             principles.append(principle)
             await tracer.add_principle(principle)
@@ -422,8 +427,8 @@ class TestPrincipleTracer:
             category="governance",
             policy_id="POL-HIGH",
             enforcement_level="strict",
-            created_at=datetime.now(timezone.utc),
-            last_updated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_updated=datetime.now(UTC),
             usage_frequency=100,
         )
         await tracer.add_rule(high_impact_rule)
@@ -438,8 +443,8 @@ class TestPrincipleTracer:
                 confidence=0.9,
                 reasoning="High impact relationship",
                 evidence=["test"],
-                created_at=datetime.now(timezone.utc),
-                last_validated=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                last_validated=datetime.now(UTC),
             )
             await tracer.add_relationship(relationship)
 
@@ -453,7 +458,9 @@ class TestPrincipleTracer:
         assert high_impact_rules[0]["average_impact_score"] == 0.7
 
     @pytest.mark.asyncio
-    async def test_calculate_traceability_coverage(self, tracer, sample_principle, sample_rule):
+    async def test_calculate_traceability_coverage(
+        self, tracer, sample_principle, sample_rule
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -470,8 +477,8 @@ class TestPrincipleTracer:
             confidence=0.9,
             reasoning="Test relationship",
             evidence=["test"],
-            created_at=datetime.now(timezone.utc),
-            last_validated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_validated=datetime.now(UTC),
         )
         await tracer.add_relationship(relationship)
 
@@ -502,8 +509,8 @@ class TestPrincipleTracer:
             category="test",
             priority=5,
             constitutional_hash="cdd01ef066bc6cf2",
-            created_at=datetime.now(timezone.utc),
-            last_updated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_updated=datetime.now(UTC),
         )
         await tracer.add_principle(orphaned_principle)
 
@@ -515,8 +522,8 @@ class TestPrincipleTracer:
             category="test",
             policy_id="POL-ORPHAN",
             enforcement_level="advisory",
-            created_at=datetime.now(timezone.utc),
-            last_updated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_updated=datetime.now(UTC),
         )
         await tracer.add_rule(orphaned_rule)
 
@@ -562,8 +569,8 @@ class TestPrincipleTracerIntegration:
             category="test",
             priority=7,
             constitutional_hash="cdd01ef066bc6cf2",
-            created_at=datetime.now(timezone.utc),
-            last_updated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_updated=datetime.now(UTC),
         )
         await tracer.add_principle(principle)
 
@@ -574,8 +581,8 @@ class TestPrincipleTracerIntegration:
             category="test",
             policy_id="POL-REPORT",
             enforcement_level="moderate",
-            created_at=datetime.now(timezone.utc),
-            last_updated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_updated=datetime.now(UTC),
             usage_frequency=30,
         )
         await tracer.add_rule(rule)
@@ -588,8 +595,8 @@ class TestPrincipleTracerIntegration:
             confidence=0.85,
             reasoning="Report test relationship",
             evidence=["report_test"],
-            created_at=datetime.now(timezone.utc),
-            last_validated=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_validated=datetime.now(UTC),
         )
         await tracer.add_relationship(relationship)
 

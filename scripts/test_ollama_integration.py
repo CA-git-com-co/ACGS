@@ -16,8 +16,8 @@ import logging
 import os
 import sys
 import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+from typing import Any
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
@@ -38,10 +38,10 @@ class OllamaIntegrationTester:
     """Test suite for Ollama integration with ACGS-PGP."""
 
     def __init__(self):
-        self.test_results: List[Dict[str, Any]] = []
-        self.start_time = datetime.now(timezone.utc)
+        self.test_results: list[dict[str, Any]] = []
+        self.start_time = datetime.now(UTC)
 
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run all Ollama integration tests."""
         logger.info("🚀 Starting Ollama Integration Test Suite")
 
@@ -65,7 +65,7 @@ class OllamaIntegrationTester:
                         "success": result.get("success", False),
                         "details": result.get("details", ""),
                         "metrics": result.get("metrics", {}),
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                     }
                 )
                 status = "✅ PASSED" if result.get("success") else "❌ FAILED"
@@ -78,13 +78,13 @@ class OllamaIntegrationTester:
                         "success": False,
                         "details": f"Exception: {str(e)}",
                         "metrics": {},
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                     }
                 )
 
         return self.generate_report()
 
-    async def test_ollama_health(self) -> Dict[str, Any]:
+    async def test_ollama_health(self) -> dict[str, Any]:
         """Test Ollama server health and availability."""
         try:
             client = OllamaLLMClient()
@@ -112,7 +112,7 @@ class OllamaIntegrationTester:
         except Exception as e:
             return {"success": False, "details": f"Health check failed: {str(e)}"}
 
-    async def test_ollama_client(self) -> Dict[str, Any]:
+    async def test_ollama_client(self) -> dict[str, Any]:
         """Test basic Ollama client functionality."""
         try:
             client = await get_ollama_client()
@@ -151,7 +151,7 @@ class OllamaIntegrationTester:
         except Exception as e:
             return {"success": False, "details": f"Client test failed: {str(e)}"}
 
-    async def test_constitutional_prompting(self) -> Dict[str, Any]:
+    async def test_constitutional_prompting(self) -> dict[str, Any]:
         """Test constitutional prompting capabilities."""
         try:
             client = await get_ollama_client()
@@ -199,7 +199,7 @@ class OllamaIntegrationTester:
                 "details": f"Constitutional prompting test failed: {str(e)}",
             }
 
-    async def test_multi_model_manager(self) -> Dict[str, Any]:
+    async def test_multi_model_manager(self) -> dict[str, Any]:
         """Test MultiModelManager integration with Ollama."""
         try:
             manager = MultiModelManager()
@@ -232,7 +232,7 @@ class OllamaIntegrationTester:
                 "details": f"MultiModelManager test failed: {str(e)}",
             }
 
-    async def test_performance(self) -> Dict[str, Any]:
+    async def test_performance(self) -> dict[str, Any]:
         """Test Ollama performance metrics."""
         try:
             client = await get_ollama_client()
@@ -289,7 +289,7 @@ class OllamaIntegrationTester:
         except Exception as e:
             return {"success": False, "details": f"Performance test failed: {str(e)}"}
 
-    async def test_fallback_mechanism(self) -> Dict[str, Any]:
+    async def test_fallback_mechanism(self) -> dict[str, Any]:
         """Test fallback mechanism when Ollama is unavailable."""
         try:
             # This test simulates fallback behavior
@@ -323,7 +323,7 @@ class OllamaIntegrationTester:
         except Exception as e:
             return {"success": False, "details": f"Fallback test failed: {str(e)}"}
 
-    async def test_taskmaster_integration(self) -> Dict[str, Any]:
+    async def test_taskmaster_integration(self) -> dict[str, Any]:
         """Test TaskMaster AI integration with Ollama."""
         try:
             # Check TaskMaster configuration
@@ -332,7 +332,7 @@ class OllamaIntegrationTester:
             )
 
             if os.path.exists(config_path):
-                with open(config_path, "r") as f:
+                with open(config_path) as f:
                     config = json.load(f)
 
                 ollama_configured = (
@@ -367,9 +367,9 @@ class OllamaIntegrationTester:
                 "details": f"TaskMaster integration test failed: {str(e)}",
             }
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive test report."""
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
         duration = (end_time - self.start_time).total_seconds()
 
         total_tests = len(self.test_results)
@@ -389,7 +389,7 @@ class OllamaIntegrationTester:
             "recommendations": self._generate_recommendations(),
         }
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate recommendations based on test results."""
         recommendations = []
 

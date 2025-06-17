@@ -6,7 +6,7 @@ and constitutional compliance validation.
 """
 
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 import pytest
@@ -121,11 +121,13 @@ class TestFederatedEvaluationFramework:
             nodes[node_id] = FederatedNode(
                 node_id=node_id,
                 platform_type=(
-                    PlatformType.CLOUD_OPENAI if i % 2 == 0 else PlatformType.CLOUD_ANTHROPIC
+                    PlatformType.CLOUD_OPENAI
+                    if i % 2 == 0
+                    else PlatformType.CLOUD_ANTHROPIC
                 ),
                 endpoint_url=f"https://api.test{i}.com",
                 status="active",
-                last_heartbeat=datetime.now(timezone.utc),
+                last_heartbeat=datetime.now(UTC),
                 performance_metrics={
                     "success_rate": 0.95 - (i * 0.05),
                     "avg_response_time": 1000 + (i * 200),
@@ -146,10 +148,14 @@ class TestFederatedEvaluationFramework:
         # Mock database operations
         with (
             patch.object(federated_evaluator, "_store_evaluation_in_db") as mock_store,
-            patch.object(federated_evaluator, "_execute_federated_evaluation") as mock_execute,
+            patch.object(
+                federated_evaluator, "_execute_federated_evaluation"
+            ) as mock_execute,
         ):
 
-            task_id = await federated_evaluator.submit_evaluation(sample_evaluation_request)
+            task_id = await federated_evaluator.submit_evaluation(
+                sample_evaluation_request
+            )
 
             # Verify task was created
             assert task_id in federated_evaluator.active_evaluations
@@ -168,7 +174,7 @@ class TestFederatedEvaluationFramework:
         """Test optimal node selection algorithm."""
         federated_evaluator.nodes = mock_nodes
         federated_evaluator.node_load_balancer = {
-            "current_loads": {node_id: 0 for node_id in mock_nodes.keys()},
+            "current_loads": dict.fromkeys(mock_nodes.keys(), 0),
             "weights": {
                 node_id: node.performance_metrics["success_rate"]
                 for node_id, node in mock_nodes.items()
@@ -214,10 +220,14 @@ class TestFederatedEvaluationFramework:
         suspicious_node.average_response_time_ms = 15000  # Very slow
 
         with patch.object(federated_evaluator, "_quarantine_node") as mock_quarantine:
-            await federated_evaluator._check_node_performance_anomalies(suspicious_node_id)
+            await federated_evaluator._check_node_performance_anomalies(
+                suspicious_node_id
+            )
 
             # Verify quarantine was called for suspicious behavior
-            mock_quarantine.assert_called_once_with(suspicious_node_id, "performance_anomalies")
+            mock_quarantine.assert_called_once_with(
+                suspicious_node_id, "performance_anomalies"
+            )
 
     async def test_node_health_monitoring(self, federated_evaluator, mock_nodes):
         # requires: Valid input parameters
@@ -276,7 +286,9 @@ class TestFederatedEvaluationFramework:
 
         with (
             patch.object(federated_evaluator, "_select_optimal_nodes") as mock_select,
-            patch.object(federated_evaluator, "_execute_federated_evaluation") as mock_execute,
+            patch.object(
+                federated_evaluator, "_execute_federated_evaluation"
+            ) as mock_execute,
         ):
 
             mock_select.return_value = ["test_node_1", "test_node_2"]
@@ -295,7 +307,9 @@ class TestFederatedEvaluationFramework:
         # sha256: func_hash
         """Test integration with Constitutional Council for compliance validation."""
         # Mock constitutional validation
-        with patch("app.core.federated_evaluator.constitutional_validator") as mock_validator:
+        with patch(
+            "app.core.federated_evaluator.constitutional_validator"
+        ) as mock_validator:
             mock_validator.validate_policy_compliance.return_value = {
                 "compliance_score": 0.95,
                 "violations": [],
@@ -311,7 +325,9 @@ class TestFederatedEvaluationFramework:
             assert compliance_result["compliance_score"] >= 0.9
             assert len(compliance_result["violations"]) == 0
 
-    async def test_mab_integration(self, federated_evaluator, sample_evaluation_request):
+    async def test_mab_integration(
+        self, federated_evaluator, sample_evaluation_request
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -324,7 +340,9 @@ class TestFederatedEvaluationFramework:
                 "expected_performance": 0.92,
             }
 
-            mab_context = await federated_evaluator._get_mab_context(sample_evaluation_request)
+            mab_context = await federated_evaluator._get_mab_context(
+                sample_evaluation_request
+            )
 
             assert "template_id" in mab_context
             assert "confidence" in mab_context
@@ -395,13 +413,17 @@ class TestFederatedEvaluationFramework:
             patch.object(federated_evaluator, "_execute_federated_evaluation"),
         ):
 
-            task_id = await federated_evaluator.submit_evaluation(sample_evaluation_request)
+            task_id = await federated_evaluator.submit_evaluation(
+                sample_evaluation_request
+            )
 
         end_time = datetime.now()
         response_time_ms = (end_time - start_time).total_seconds() * 1000
 
         # Verify response time target
-        assert response_time_ms < 200, f"Response time {response_time_ms}ms exceeds 200ms target"
+        assert (
+            response_time_ms < 200
+        ), f"Response time {response_time_ms}ms exceeds 200ms target"
 
         # Verify task was created successfully
         assert task_id in federated_evaluator.active_evaluations
@@ -431,7 +453,8 @@ class TestFederatedEvaluationFramework:
 
             # Submit evaluations concurrently
             tasks = [
-                federated_evaluator.submit_evaluation(request) for request in evaluation_requests
+                federated_evaluator.submit_evaluation(request)
+                for request in evaluation_requests
             ]
 
             task_ids = await asyncio.gather(*tasks)

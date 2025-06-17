@@ -17,7 +17,7 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
-from src.config import DataSplitConfig
+from services.core.config import DataSplitConfig
 
 # ============================================================================
 # ENUMS (Shared between API and Database)

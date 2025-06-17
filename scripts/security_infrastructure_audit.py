@@ -9,7 +9,7 @@ import json
 import logging
 import sys
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -37,7 +37,7 @@ class ACGSSecurityAuditor:
         self.security_issues = []
         self.audit_results = {}
 
-    async def run_comprehensive_audit(self) -> Dict[str, Any]:
+    async def run_comprehensive_audit(self) -> dict[str, Any]:
         """Run comprehensive security audit."""
         logger.info("🔒 Starting ACGS-PGP Security Infrastructure Audit")
 
@@ -82,7 +82,7 @@ class ACGSSecurityAuditor:
 
         return self.generate_audit_report()
 
-    async def audit_authentication_security(self) -> Dict[str, Any]:
+    async def audit_authentication_security(self) -> dict[str, Any]:
         """Audit JWT authentication implementation."""
         logger.info("🔐 Auditing Authentication Security")
 
@@ -144,7 +144,7 @@ class ACGSSecurityAuditor:
             "issues": len([t for t in auth_tests.values() if t is False]),
         }
 
-    async def audit_authorization_rbac(self) -> Dict[str, Any]:
+    async def audit_authorization_rbac(self) -> dict[str, Any]:
         """Audit Role-Based Access Control implementation."""
         logger.info("👥 Auditing RBAC Authorization")
 
@@ -182,7 +182,7 @@ class ACGSSecurityAuditor:
             "issues": len([t for t in rbac_tests.values() if t is False]),
         }
 
-    async def audit_cryptographic_integrity(self) -> Dict[str, Any]:
+    async def audit_cryptographic_integrity(self) -> dict[str, Any]:
         """Audit PGP cryptographic integrity components."""
         logger.info("🔐 Auditing Cryptographic Integrity")
 
@@ -226,7 +226,7 @@ class ACGSSecurityAuditor:
             "issues": len([t for t in crypto_tests.values() if t is False]),
         }
 
-    async def audit_security_headers(self) -> Dict[str, Any]:
+    async def audit_security_headers(self) -> dict[str, Any]:
         """Audit security headers implementation."""
         logger.info("🛡️ Auditing Security Headers")
 
@@ -264,7 +264,7 @@ class ACGSSecurityAuditor:
             "total_issues": len(self.security_issues),
         }
 
-    async def audit_rate_limiting(self) -> Dict[str, Any]:
+    async def audit_rate_limiting(self) -> dict[str, Any]:
         """Audit rate limiting implementation."""
         logger.info("⏱️ Auditing Rate Limiting")
 
@@ -277,7 +277,7 @@ class ACGSSecurityAuditor:
                 login_data = {"username": "test", "password": "test"}
                 responses = []
 
-                for i in range(10):
+                for _i in range(10):
                     async with session.post(
                         f"{self.base_urls['auth']}/api/v1/auth/token", data=login_data
                     ) as response:
@@ -303,7 +303,7 @@ class ACGSSecurityAuditor:
             "issues": len([t for t in rate_limit_tests.values() if t is False]),
         }
 
-    async def audit_cors_configuration(self) -> Dict[str, Any]:
+    async def audit_cors_configuration(self) -> dict[str, Any]:
         """Audit CORS configuration."""
         logger.info("🌐 Auditing CORS Configuration")
 
@@ -339,7 +339,7 @@ class ACGSSecurityAuditor:
             "issues": len([t for t in cors_tests.values() if t is False]),
         }
 
-    async def audit_session_management(self) -> Dict[str, Any]:
+    async def audit_session_management(self) -> dict[str, Any]:
         """Audit session management security."""
         logger.info("🍪 Auditing Session Management")
 
@@ -347,7 +347,7 @@ class ACGSSecurityAuditor:
 
         return {"status": "completed", "tests": session_tests, "issues": 0}
 
-    async def audit_error_handling(self) -> Dict[str, Any]:
+    async def audit_error_handling(self) -> dict[str, Any]:
         """Audit error handling security."""
         logger.info("⚠️ Auditing Error Handling")
 
@@ -355,7 +355,7 @@ class ACGSSecurityAuditor:
 
         return {"status": "completed", "tests": error_tests, "issues": 0}
 
-    async def audit_input_validation(self) -> Dict[str, Any]:
+    async def audit_input_validation(self) -> dict[str, Any]:
         """Audit input validation security."""
         logger.info("📝 Auditing Input Validation")
 
@@ -363,7 +363,7 @@ class ACGSSecurityAuditor:
 
         return {"status": "completed", "tests": validation_tests, "issues": 0}
 
-    async def audit_logging_security(self) -> Dict[str, Any]:
+    async def audit_logging_security(self) -> dict[str, Any]:
         """Audit logging and monitoring security."""
         logger.info("📊 Auditing Logging Security")
 
@@ -371,7 +371,7 @@ class ACGSSecurityAuditor:
 
         return {"status": "completed", "tests": logging_tests, "issues": 0}
 
-    def generate_audit_report(self) -> Dict[str, Any]:
+    def generate_audit_report(self) -> dict[str, Any]:
         """Generate comprehensive audit report."""
         total_issues = len(self.security_issues)
         total_tests = sum(
@@ -415,7 +415,7 @@ class ACGSSecurityAuditor:
         else:
             return "F"
 
-    def generate_recommendations(self) -> List[str]:
+    def generate_recommendations(self) -> list[str]:
         """Generate security recommendations based on audit results."""
         recommendations = []
 

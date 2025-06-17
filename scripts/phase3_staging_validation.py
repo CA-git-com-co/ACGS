@@ -135,7 +135,7 @@ class StagingValidator:
         try:
             # Test policy decision latency
             start_time = time.time()
-            response = requests.post(
+            requests.post(
                 f"{self.base_urls['gs_service']}/api/v1/policies/synthesize",
                 json={"principles": ["test principle"], "context": "test context"},
                 timeout=5,
@@ -234,7 +234,7 @@ class StagingValidator:
                             f"✅ Load test latency: {load_results.get('avg_response_time_ms', 0)}ms"
                         )
                     else:
-                        self.error(f"❌ Load test latency exceeds target")
+                        self.error("❌ Load test latency exceeds target")
                         return False
 
                 except (json.JSONDecodeError, IndexError):

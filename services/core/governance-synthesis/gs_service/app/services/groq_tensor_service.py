@@ -17,14 +17,13 @@ Formal Verification Comments:
 # sha256: evolutionary_tensor_decomposition_groq_service_v1.0
 """
 
-import asyncio
 import json
 import logging
 import os
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import aiohttp
 import numpy as np
@@ -47,10 +46,10 @@ class GovernanceConstraints:
     """Governance constraints for tensor decomposition."""
 
     constitutional_hash: str
-    compliance_requirements: Dict[str, Any]
-    performance_targets: Dict[str, float]
+    compliance_requirements: dict[str, Any]
+    performance_targets: dict[str, float]
     policy_type: str
-    stakeholder_requirements: List[str]
+    stakeholder_requirements: list[str]
 
 
 @dataclass
@@ -59,12 +58,12 @@ class TensorDecomposition:
 
     decomposition_type: TensorDecompositionType
     algorithm_code: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     accuracy_estimate: float
     computational_complexity: str
     constitutional_compliance: bool
-    governance_metadata: Dict[str, Any]
-    error_bounds: Optional[Dict[str, float]] = None
+    governance_metadata: dict[str, Any]
+    error_bounds: dict[str, float] | None = None
 
 
 class CircuitBreakerState(Enum):
@@ -114,7 +113,7 @@ class GroqTensorService:
         self,
         policy_matrix: np.ndarray,
         governance_constraints: GovernanceConstraints,
-        decomposition_type: Optional[TensorDecompositionType] = None,
+        decomposition_type: TensorDecompositionType | None = None,
     ) -> TensorDecomposition:
         """
         Generate tensor decomposition algorithm for constitutional governance.
@@ -180,7 +179,9 @@ class GroqTensorService:
             self._update_metrics(latency_ms, success=True)
             self._reset_circuit_breaker()
 
-            logger.info(f"Generated {decomposition_type.value} decomposition in {latency_ms:.2f}ms")
+            logger.info(
+                f"Generated {decomposition_type.value} decomposition in {latency_ms:.2f}ms"
+            )
             return result
 
         except Exception as e:
@@ -193,7 +194,7 @@ class GroqTensorService:
                 policy_matrix, governance_constraints, decomposition_type
             )
 
-    def _analyze_policy_matrix(self, matrix: np.ndarray) -> Dict[str, Any]:
+    def _analyze_policy_matrix(self, matrix: np.ndarray) -> dict[str, Any]:
         """Analyze policy matrix properties for optimal decomposition selection."""
         return {
             "shape": matrix.shape,
@@ -211,7 +212,7 @@ class GroqTensorService:
         }
 
     def _select_optimal_decomposition(
-        self, matrix_analysis: Dict[str, Any], constraints: GovernanceConstraints
+        self, matrix_analysis: dict[str, Any], constraints: GovernanceConstraints
     ) -> TensorDecompositionType:
         """Select optimal tensor decomposition type based on matrix properties and constraints."""
         # Constitutional governance requires high accuracy
@@ -235,14 +236,19 @@ class GroqTensorService:
 
     async def _generate_algorithm(
         self,
-        matrix_analysis: Dict[str, Any],
+        matrix_analysis: dict[str, Any],
         constraints: GovernanceConstraints,
         decomposition_type: TensorDecompositionType,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate tensor decomposition algorithm using Groq LLM."""
-        prompt = self._create_algorithm_prompt(matrix_analysis, constraints, decomposition_type)
+        prompt = self._create_algorithm_prompt(
+            matrix_analysis, constraints, decomposition_type
+        )
 
-        headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
 
         payload = {
             "model": self.default_model,
@@ -261,43 +267,47 @@ class GroqTensorService:
         async with aiohttp.ClientSession(
             timeout=aiohttp.ClientTimeout(total=self.timeout_seconds)
         ) as session:
-            async with session.post(self.base_url, headers=headers, json=payload) as response:
+            async with session.post(
+                self.base_url, headers=headers, json=payload
+            ) as response:
                 if response.status != 200:
-                    raise Exception(f"Groq API error: {response.status} - {await response.text()}")
+                    raise Exception(
+                        f"Groq API error: {response.status} - {await response.text()}"
+                    )
 
                 result = await response.json()
                 return self._parse_algorithm_response(result)
 
     def _create_algorithm_prompt(
         self,
-        matrix_analysis: Dict[str, Any],
+        matrix_analysis: dict[str, Any],
         constraints: GovernanceConstraints,
         decomposition_type: TensorDecompositionType,
     ) -> str:
         """Create structured prompt for tensor decomposition algorithm generation."""
         return f"""
         Generate a {decomposition_type.value} tensor decomposition algorithm for constitutional governance.
-        
+
         MATRIX PROPERTIES:
         - Shape: {matrix_analysis['shape']}
         - Rank: {matrix_analysis['rank']}
         - Condition Number: {matrix_analysis['condition_number']:.2f}
         - Sparsity: {matrix_analysis['sparsity']:.2f}
         - Frobenius Norm: {matrix_analysis['frobenius_norm']:.2f}
-        
+
         GOVERNANCE CONSTRAINTS:
         - Constitutional Hash: {constraints.constitutional_hash}
         - Policy Type: {constraints.policy_type}
         - Performance Targets: {json.dumps(constraints.performance_targets)}
         - Compliance Requirements: {json.dumps(constraints.compliance_requirements)}
-        
+
         REQUIREMENTS:
         1. Accuracy: >95% decomposition accuracy
         2. Efficiency: <2s computation time for matrices up to 1000x1000
         3. Constitutional Compliance: 100% adherence to governance constraints
         4. Memory Efficiency: <512MB memory usage
         5. Numerical Stability: Robust to ill-conditioned matrices
-        
+
         Provide your response in the following JSON format:
         {{
             "code": "<Python implementation of the decomposition algorithm>",
@@ -309,7 +319,7 @@ class GroqTensorService:
         }}
         """
 
-    def _parse_algorithm_response(self, response: Dict[str, Any]) -> Dict[str, Any]:
+    def _parse_algorithm_response(self, response: dict[str, Any]) -> dict[str, Any]:
         """Parse Groq API response into structured algorithm result."""
         try:
             content = response["choices"][0]["message"]["content"]
@@ -325,10 +335,14 @@ class GroqTensorService:
                 return {
                     "code": algorithm_data.get("code", ""),
                     "parameters": algorithm_data.get("parameters", {}),
-                    "accuracy_estimate": float(algorithm_data.get("accuracy_estimate", 0.95)),
+                    "accuracy_estimate": float(
+                        algorithm_data.get("accuracy_estimate", 0.95)
+                    ),
                     "complexity": algorithm_data.get("complexity", "O(n^3)"),
                     "error_bounds": algorithm_data.get("error_bounds"),
-                    "compliance_notes": algorithm_data.get("constitutional_compliance_notes", ""),
+                    "compliance_notes": algorithm_data.get(
+                        "constitutional_compliance_notes", ""
+                    ),
                 }
             else:
                 raise ValueError("Could not parse JSON from response")
@@ -339,13 +353,15 @@ class GroqTensorService:
             return self._get_fallback_algorithm()
 
     def _validate_constitutional_compliance(
-        self, algorithm_result: Dict[str, Any], constraints: GovernanceConstraints
-    ) -> Dict[str, Any]:
+        self, algorithm_result: dict[str, Any], constraints: GovernanceConstraints
+    ) -> dict[str, Any]:
         """Validate algorithm compliance with constitutional governance requirements."""
         compliance_checks = {
             "accuracy_sufficient": algorithm_result["accuracy_estimate"] >= 0.95,
-            "constitutional_hash_valid": constraints.constitutional_hash == "cdd01ef066bc6cf2",
-            "code_quality": len(algorithm_result["code"]) > 100,  # Basic code quality check
+            "constitutional_hash_valid": constraints.constitutional_hash
+            == "cdd01ef066bc6cf2",
+            "code_quality": len(algorithm_result["code"])
+            > 100,  # Basic code quality check
             "parameters_valid": isinstance(algorithm_result["parameters"], dict),
         }
 
@@ -354,14 +370,15 @@ class GroqTensorService:
         return {
             "compliant": overall_compliant,
             "checks": compliance_checks,
-            "compliance_score": sum(compliance_checks.values()) / len(compliance_checks),
+            "compliance_score": sum(compliance_checks.values())
+            / len(compliance_checks),
         }
 
     async def _fallback_local_decomposition(
         self,
         matrix: np.ndarray,
         constraints: GovernanceConstraints,
-        decomposition_type: Optional[TensorDecompositionType],
+        decomposition_type: TensorDecompositionType | None,
     ) -> TensorDecomposition:
         """Fallback to local tensor decomposition when Groq API is unavailable."""
         logger.info("Using fallback local tensor decomposition")
@@ -399,7 +416,7 @@ def constitutional_svd_decomposition(matrix):
             },
         )
 
-    def _get_fallback_algorithm(self) -> Dict[str, Any]:
+    def _get_fallback_algorithm(self) -> dict[str, Any]:
         """Get fallback algorithm when parsing fails."""
         return {
             "code": "# Fallback SVD implementation\nimport numpy as np\nU, s, Vt = np.linalg.svd(matrix)",
@@ -454,7 +471,7 @@ def constitutional_svd_decomposition(matrix):
             (current_avg * (total_requests - 1)) + latency_ms
         ) / total_requests
 
-    def get_service_metrics(self) -> Dict[str, Any]:
+    def get_service_metrics(self) -> dict[str, Any]:
         """Get current service performance metrics."""
         total = self.metrics["total_requests"]
         success_rate = self.metrics["successful_requests"] / total if total > 0 else 0.0

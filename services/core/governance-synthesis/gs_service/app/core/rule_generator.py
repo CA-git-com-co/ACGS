@@ -1,6 +1,5 @@
 # backend/gs_service/app/core/rule_generator.py
 import logging  # Import the logging module
-from typing import Dict, List, Optional  # Ensure Dict is imported
 
 from ..schemas import (
     ACPrinciple,
@@ -23,10 +22,12 @@ def _format_atom_to_datalog(atom: LLMSuggestedAtom) -> str:
     return f"{negation_prefix}{atom.predicate_name}({args_str})"
 
 
-def _assemble_datalog_rule(suggested_rule: LLMSuggestedRule, source_principle_id: int) -> str:
+def _assemble_datalog_rule(
+    suggested_rule: LLMSuggestedRule, source_principle_id: int
+) -> str:
     head_str = _format_atom_to_datalog(suggested_rule.head)
 
-    body_atoms_str: List[str] = []
+    body_atoms_str: list[str] = []
     if suggested_rule.body:  # Ensure body is not None and is iterable
         body_atoms_str = [_format_atom_to_datalog(atom) for atom in suggested_rule.body]
 
@@ -50,13 +51,13 @@ def _assemble_datalog_rule(suggested_rule: LLMSuggestedRule, source_principle_id
 
 
 async def generate_rules_from_principles(
-    principles: List[ACPrinciple],
-    target_context: Optional[str] = None,
-    datalog_predicate_schema: Optional[Dict[str, str]] = None,  # Added from issue
-    few_shot_examples: Optional[List[Dict[str, str]]] = None,  # Added from issue
-) -> List[GeneratedRuleInfo]:
+    principles: list[ACPrinciple],
+    target_context: str | None = None,
+    datalog_predicate_schema: dict[str, str] | None = None,  # Added from issue
+    few_shot_examples: list[dict[str, str]] | None = None,  # Added from issue
+) -> list[GeneratedRuleInfo]:
 
-    all_generated_rules: List[GeneratedRuleInfo] = []
+    all_generated_rules: list[GeneratedRuleInfo] = []
 
     for principle in principles:
         llm_input = LLMInterpretationInput(
@@ -67,7 +68,9 @@ async def generate_rules_from_principles(
             few_shot_examples=few_shot_examples,  # Pass through
         )
 
-        llm_output: LLMStructuredOutput = await query_llm_for_structured_output(llm_input)
+        llm_output: LLMStructuredOutput = await query_llm_for_structured_output(
+            llm_input
+        )
 
         # Log LLM interaction details
         logger.info(
@@ -94,7 +97,9 @@ async def generate_rules_from_principles(
 
         for suggested_rule_structure in llm_output.interpretations:
             # Deterministic assembly from structured suggestion
-            datalog_rule_content = _assemble_datalog_rule(suggested_rule_structure, principle.id)
+            datalog_rule_content = _assemble_datalog_rule(
+                suggested_rule_structure, principle.id
+            )
 
             all_generated_rules.append(
                 GeneratedRuleInfo(

@@ -15,7 +15,7 @@ import asyncio
 import os
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 # Add backend path
 # sys.path.append(os.path.join(os.path.dirname(__file__), 'src', 'backend'))  # Removed during reorganization
@@ -38,11 +38,11 @@ class ParallelValidationBenchmark:
     """Performance benchmark for parallel validation pipeline."""
 
     def __init__(self):
-        self.results: List[BenchmarkResult] = []
+        self.results: list[BenchmarkResult] = []
 
     async def simulate_validation_task(
         self, task_id: int, processing_time_ms: float = 50
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Simulate a validation task with configurable processing time."""
         await asyncio.sleep(processing_time_ms / 1000)  # Convert ms to seconds
         return {
@@ -96,7 +96,7 @@ class ParallelValidationBenchmark:
 
         # Execute all tasks concurrently with limit
         tasks = [limited_task(i) for i in range(num_tasks)]
-        results = await asyncio.gather(*tasks)
+        await asyncio.gather(*tasks)
 
         end_time = time.time()
         total_time = end_time - start_time
@@ -141,7 +141,7 @@ class ParallelValidationBenchmark:
 
         # Execute all requests concurrently
         request_tasks = [process_request(i) for i in range(num_requests)]
-        results = await asyncio.gather(*request_tasks, return_exceptions=True)
+        await asyncio.gather(*request_tasks, return_exceptions=True)
 
         end_time = time.time()
         total_time = end_time - start_time
@@ -254,7 +254,7 @@ class ParallelValidationBenchmark:
             criteria_met += 1
         else:
             print(
-                f"❌ Concurrent Requests: Failed to handle 50+ requests with >95% success rate"
+                "❌ Concurrent Requests: Failed to handle 50+ requests with >95% success rate"
             )
 
         # Criterion 3: <100ms average response time under load
@@ -265,7 +265,7 @@ class ParallelValidationBenchmark:
             print(f"✅ Response Time: {min_latency:.2f}ms (Target: <100ms)")
             criteria_met += 1
         else:
-            print(f"❌ Response Time: Failed to achieve <100ms average latency")
+            print("❌ Response Time: Failed to achieve <100ms average latency")
 
         # Criterion 4: >95% success rate
         if all(r.success_rate >= 95 for r in self.results):

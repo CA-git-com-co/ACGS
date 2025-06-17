@@ -240,7 +240,7 @@ export PYTHONOPTIMIZE=1
 export PYTHONDONTWRITEBYTECODE=1
 
 # Limit container memory
-# In docker-compose.yml
+# In infrastructure/docker/docker-compose.yml
 services:
   ac_service:
     mem_limit: 2g
@@ -271,14 +271,14 @@ docker-compose logs -f --tail=100
 **Solutions:**
 ```bash
 # Restart networking
-docker-compose down
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml down
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # Check service discovery
-# Ensure services use correct hostnames in docker-compose.yml
+# Ensure services use correct hostnames in infrastructure/docker/docker-compose.yml
 
 # Add health checks
-# In docker-compose.yml
+# In infrastructure/docker/docker-compose.yml
 healthcheck:
   test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
   interval: 30s
@@ -415,13 +415,13 @@ output {
 ### Service Recovery
 ```bash
 # Emergency restart all services
-docker-compose down --remove-orphans
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml down --remove-orphans
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # Rollback to previous version
 git checkout previous-stable-tag
-docker-compose build
-docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml build
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 ### Data Recovery

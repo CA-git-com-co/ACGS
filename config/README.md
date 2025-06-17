@@ -6,12 +6,12 @@ This directory contains all configuration files for the AI Compliance Governance
 
 ### `docker/`
 Docker and Docker Compose configurations:
-- `docker-compose.yml` - Main development environment
+- `infrastructure/docker/docker-compose.yml` - Main development environment
 - `docker-compose.monitoring.yml` - Monitoring stack (Prometheus, Grafana)
 - `nginx.conf` - API gateway configuration
 - Service-specific Dockerfiles (if any)
 
-### `k8s/`
+### `infrastructure/kubernetes/`
 Kubernetes deployment manifests:
 - `deployment.yaml` - Main deployment configuration
 - `ac-service.yaml` - Audit & Compliance Service
@@ -41,7 +41,7 @@ Monitoring and alerting configurations:
 ### Development Environment
 1. Copy `.env.example` to `.env`
 2. Modify values for your local setup
-3. Use `docker-compose.yml` for local development
+3. Use `infrastructure/docker/docker-compose.yml` for local development
 
 ### Production Environment
 1. Use `.env.production` as template

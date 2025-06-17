@@ -14,7 +14,7 @@ Task 18.3: Structured Output Validation
 import re
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, validator
 
@@ -53,22 +53,26 @@ class ConstitutionalViolation(BaseModel):
     violation_type: ViolationType
     severity: float = Field(..., ge=0.0, le=1.0, description="Violation severity (0-1)")
     description: str
-    affected_principle_ids: List[int] = Field(default_factory=list)
-    suggested_fix: Optional[str] = None
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Detection confidence (0-1)")
+    affected_principle_ids: list[int] = Field(default_factory=list)
+    suggested_fix: str | None = None
+    confidence: float = Field(
+        ..., ge=0.0, le=1.0, description="Detection confidence (0-1)"
+    )
 
 
 class ConstitutionalFidelityScore(BaseModel):
     """Constitutional fidelity scoring for policy validation."""
 
-    overall_score: float = Field(..., ge=0.0, le=1.0, description="Overall fidelity score (0-1)")
+    overall_score: float = Field(
+        ..., ge=0.0, le=1.0, description="Overall fidelity score (0-1)"
+    )
     principle_coverage_score: float = Field(..., ge=0.0, le=1.0)
     logical_consistency_score: float = Field(..., ge=0.0, le=1.0)
     fairness_score: float = Field(..., ge=0.0, le=1.0)
     bias_mitigation_score: float = Field(..., ge=0.0, le=1.0)
 
     compliance_level: ConstitutionalComplianceLevel
-    violations: List[ConstitutionalViolation] = Field(default_factory=list)
+    violations: list[ConstitutionalViolation] = Field(default_factory=list)
 
     # Metadata
     evaluation_timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -102,13 +106,15 @@ class RegoPolicy(BaseModel):
 
     package_name: str = Field(..., description="Rego package name")
     policy_name: str = Field(..., description="Policy identifier")
-    rules: List[str] = Field(..., description="Rego rule statements")
-    imports: List[str] = Field(default_factory=list, description="Import statements")
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    rules: list[str] = Field(..., description="Rego rule statements")
+    imports: list[str] = Field(default_factory=list, description="Import statements")
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
     # Constitutional compliance
-    constitutional_fidelity: Optional[ConstitutionalFidelityScore] = None
-    source_principles: List[int] = Field(default_factory=list, description="Source principle IDs")
+    constitutional_fidelity: ConstitutionalFidelityScore | None = None
+    source_principles: list[int] = Field(
+        default_factory=list, description="Source principle IDs"
+    )
 
     @validator("package_name")
     def validate_package_name(cls, v):
@@ -133,8 +139,12 @@ class RegoPolicy(BaseModel):
             if not rule.strip():
                 raise ValueError("Empty rules are not allowed")
             # Basic Rego syntax check
-            if not any(keyword in rule for keyword in ["allow", "deny", "default", ":="]):
-                raise ValueError(f"Rule appears to be invalid Rego syntax: {rule[:50]}...")
+            if not any(
+                keyword in rule for keyword in ["allow", "deny", "default", ":="]
+            ):
+                raise ValueError(
+                    f"Rule appears to be invalid Rego syntax: {rule[:50]}..."
+                )
 
         return v
 
@@ -163,7 +173,7 @@ class RegoPolicy(BaseModel):
 class PolicySynthesisRequest(BaseModel):
     """Request for policy synthesis from constitutional principles."""
 
-    principle_ids: List[int] = Field(..., description="Constitutional principle IDs")
+    principle_ids: list[int] = Field(..., description="Constitutional principle IDs")
     context: str = Field(..., description="Policy context or scenario")
     policy_type: PolicyType = Field(default=PolicyType.REGO)
 
@@ -189,8 +199,8 @@ class PolicySynthesisResponse(BaseModel):
     success: bool
 
     # Generated policy
-    policy: Optional[RegoPolicy] = None
-    alternative_policies: List[RegoPolicy] = Field(default_factory=list)
+    policy: RegoPolicy | None = None
+    alternative_policies: list[RegoPolicy] = Field(default_factory=list)
 
     # Synthesis metadata
     model_used: str
@@ -198,15 +208,15 @@ class PolicySynthesisResponse(BaseModel):
     attempt_count: int = Field(default=1)
 
     # Quality metrics
-    constitutional_fidelity: Optional[ConstitutionalFidelityScore] = None
+    constitutional_fidelity: ConstitutionalFidelityScore | None = None
     synthesis_confidence: float = Field(..., ge=0.0, le=1.0)
 
     # Error handling
-    error_message: Optional[str] = None
+    error_message: str | None = None
     fallback_used: bool = Field(default=False)
 
     # Recommendations
-    improvement_suggestions: List[str] = Field(default_factory=list)
+    improvement_suggestions: list[str] = Field(default_factory=list)
 
     @property
     def meets_quality_threshold(self) -> bool:
@@ -228,11 +238,13 @@ class ModelSpecializationConfig(BaseModel):
     )
     policy_synthesis_model: str = Field(default="grok-3-mini")
     conflict_resolution_model: str = Field(default="gemini-2.0-flash")
-    bias_mitigation_model: str = Field(default="meta-llama/llama-4-maverick-17b-128e-instruct")
+    bias_mitigation_model: str = Field(
+        default="meta-llama/llama-4-maverick-17b-128e-instruct"
+    )
     fidelity_monitoring_model: str = Field(default="gemini-2.0-flash")
 
     # Model-specific parameters
-    temperature_settings: Dict[str, float] = Field(
+    temperature_settings: dict[str, float] = Field(
         default_factory=lambda: {
             "constitutional_prompting": 0.1,
             "policy_synthesis": 0.3,
@@ -243,7 +255,7 @@ class ModelSpecializationConfig(BaseModel):
     )
 
     # Fallback configuration
-    fallback_chains: Dict[str, List[str]] = Field(
+    fallback_chains: dict[str, list[str]] = Field(
         default_factory=lambda: {
             "constitutional_prompting": [
                 "meta-llama/llama-4-maverick-17b-128e-instruct",
@@ -281,17 +293,17 @@ class WorkflowState(BaseModel):
     current_step: str
 
     # Intermediate results
-    constitutional_analysis: Optional[Dict[str, Any]] = None
-    policy_draft: Optional[RegoPolicy] = None
-    fidelity_assessment: Optional[ConstitutionalFidelityScore] = None
+    constitutional_analysis: dict[str, Any] | None = None
+    policy_draft: RegoPolicy | None = None
+    fidelity_assessment: ConstitutionalFidelityScore | None = None
 
     # Workflow metadata
     workflow_id: str
     start_time: datetime = Field(default_factory=datetime.utcnow)
-    step_history: List[str] = Field(default_factory=list)
+    step_history: list[str] = Field(default_factory=list)
 
     # Error handling
-    errors: List[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
     retry_count: int = Field(default=0)
     max_retries: int = Field(default=3)
 

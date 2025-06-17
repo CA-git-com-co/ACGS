@@ -15,9 +15,9 @@ Classes:
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import and_, desc, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -65,13 +65,13 @@ class ViolationAnalytics:
     start_time: datetime
     end_time: datetime
     total_violations: int
-    violations_by_type: Dict[str, int]
-    violations_by_severity: Dict[str, int]
+    violations_by_type: dict[str, int]
+    violations_by_severity: dict[str, int]
     escalations_count: int
     resolution_rate: float
     average_resolution_time_minutes: float
-    top_violation_sources: List[Dict[str, Any]]
-    trend_analysis: Dict[str, Any]
+    top_violation_sources: list[dict[str, Any]]
+    trend_analysis: dict[str, Any]
 
 
 @dataclass
@@ -88,8 +88,8 @@ class ComplianceReport:
     compliance_score: float
     policy_adherence_rate: float
     escalation_effectiveness: float
-    recommendations: List[str]
-    detailed_metrics: Dict[str, Any]
+    recommendations: list[str]
+    detailed_metrics: dict[str, Any]
 
 
 class ViolationAuditService:
@@ -100,7 +100,7 @@ class ViolationAuditService:
     reporting for constitutional violations with GDPR/privacy compliance.
     """
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -123,9 +123,9 @@ class ViolationAuditService:
         self,
         event_type: AuditEventType,
         violation: ConstitutionalViolation,
-        user: Optional[User] = None,
-        additional_data: Optional[Dict[str, Any]] = None,
-        db: Optional[AsyncSession] = None,
+        user: User | None = None,
+        additional_data: dict[str, Any] | None = None,
+        db: AsyncSession | None = None,
     ) -> str:
         """
         Log a violation-related audit event.
@@ -153,7 +153,7 @@ class ViolationAuditService:
                 "violation_id": str(violation.id),
                 "violation_type": violation.violation_type,
                 "severity": violation.severity,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
             # Add user information (with privacy considerations)
@@ -196,7 +196,7 @@ class ViolationAuditService:
 
     async def get_violation_history(
         self, violation_id: str, db: AsyncSession
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Get complete audit history for a violation.
 
@@ -247,9 +247,9 @@ class ViolationAuditService:
     async def generate_analytics(
         self,
         period: AnalyticsPeriod,
-        start_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None,
-        db: Optional[AsyncSession] = None,
+        start_time: datetime | None = None,
+        end_time: datetime | None = None,
+        db: AsyncSession | None = None,
     ) -> ViolationAnalytics:
         """
         Generate violation analytics for specified period.
@@ -265,12 +265,14 @@ class ViolationAuditService:
         """
         if db is None:
             async for db_session in get_async_db():
-                return await self.generate_analytics(period, start_time, end_time, db_session)
+                return await self.generate_analytics(
+                    period, start_time, end_time, db_session
+                )
 
         try:
             # Set default time range
             if end_time is None:
-                end_time = datetime.now(timezone.utc)
+                end_time = datetime.now(UTC)
 
             if start_time is None:
                 start_time = self._get_period_start_time(period, end_time)
@@ -331,10 +333,14 @@ class ViolationAuditService:
             )
 
             # Get top violation sources (simplified)
-            top_sources = await self._get_top_violation_sources(start_time, end_time, db)
+            top_sources = await self._get_top_violation_sources(
+                start_time, end_time, db
+            )
 
             # Generate trend analysis
-            trend_analysis = await self._generate_trend_analysis(period, start_time, end_time, db)
+            trend_analysis = await self._generate_trend_analysis(
+                period, start_time, end_time, db
+            )
 
             return ViolationAnalytics(
                 period=period,
@@ -354,8 +360,8 @@ class ViolationAuditService:
             logger.error(f"Error generating violation analytics: {e}")
             return ViolationAnalytics(
                 period=period,
-                start_time=start_time or datetime.now(timezone.utc),
-                end_time=end_time or datetime.now(timezone.utc),
+                start_time=start_time or datetime.now(UTC),
+                end_time=end_time or datetime.now(UTC),
                 total_violations=0,
                 violations_by_type={},
                 violations_by_severity={},
@@ -370,7 +376,7 @@ class ViolationAuditService:
         self,
         start_time: datetime,
         end_time: datetime,
-        db: Optional[AsyncSession] = None,
+        db: AsyncSession | None = None,
     ) -> ComplianceReport:
         """
         Generate compliance report for specified period.
@@ -385,11 +391,15 @@ class ViolationAuditService:
         """
         if db is None:
             async for db_session in get_async_db():
-                return await self.generate_compliance_report(start_time, end_time, db_session)
+                return await self.generate_compliance_report(
+                    start_time, end_time, db_session
+                )
 
         try:
             # Generate analytics for the period
-            analytics = await self.generate_analytics(AnalyticsPeriod.DAY, start_time, end_time, db)
+            analytics = await self.generate_analytics(
+                AnalyticsPeriod.DAY, start_time, end_time, db
+            )
 
             # Calculate compliance metrics
             critical_violations = analytics.violations_by_severity.get("critical", 0)
@@ -405,7 +415,9 @@ class ViolationAuditService:
 
             # Calculate policy adherence rate
             policy_adherence_rate = 100 - (
-                analytics.total_violations / max(1, analytics.total_violations + 100) * 100
+                analytics.total_violations
+                / max(1, analytics.total_violations + 100)
+                * 100
             )
 
             # Calculate escalation effectiveness
@@ -431,7 +443,7 @@ class ViolationAuditService:
 
             return ComplianceReport(
                 report_id=report_id,
-                generated_at=datetime.now(timezone.utc),
+                generated_at=datetime.now(UTC),
                 period_start=start_time,
                 period_end=end_time,
                 total_violations=analytics.total_violations,
@@ -448,7 +460,7 @@ class ViolationAuditService:
             logger.error(f"Error generating compliance report: {e}")
             return ComplianceReport(
                 report_id=f"error_report_{int(time.time())}",
-                generated_at=datetime.now(timezone.utc),
+                generated_at=datetime.now(UTC),
                 period_start=start_time,
                 period_end=end_time,
                 total_violations=0,
@@ -466,8 +478,8 @@ class ViolationAuditService:
         start_time: datetime,
         end_time: datetime,
         format_type: str = "json",
-        db: Optional[AsyncSession] = None,
-    ) -> Dict[str, Any]:
+        db: AsyncSession | None = None,
+    ) -> dict[str, Any]:
         """
         Export audit trail for compliance reporting.
 
@@ -482,7 +494,9 @@ class ViolationAuditService:
         """
         if db is None:
             async for db_session in get_async_db():
-                return await self.export_audit_trail(start_time, end_time, format_type, db_session)
+                return await self.export_audit_trail(
+                    start_time, end_time, format_type, db_session
+                )
 
         try:
             # Get audit logs for the period
@@ -503,7 +517,7 @@ class ViolationAuditService:
             # Format export data
             export_data = {
                 "export_metadata": {
-                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                    "generated_at": datetime.now(UTC).isoformat(),
                     "period_start": start_time.isoformat(),
                     "period_end": end_time.isoformat(),
                     "total_records": len(audit_logs),
@@ -536,13 +550,13 @@ class ViolationAuditService:
             logger.error(f"Error exporting audit trail: {e}")
             return {
                 "export_metadata": {
-                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                    "generated_at": datetime.now(UTC).isoformat(),
                     "error": str(e),
                 },
                 "audit_records": [],
             }
 
-    def _apply_privacy_protection(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def _apply_privacy_protection(self, data: dict[str, Any]) -> dict[str, Any]:
         """Apply privacy protection to audit data."""
         if not self.anonymization_enabled:
             return data
@@ -564,7 +578,9 @@ class ViolationAuditService:
 
         return protected_data
 
-    def _get_period_start_time(self, period: AnalyticsPeriod, end_time: datetime) -> datetime:
+    def _get_period_start_time(
+        self, period: AnalyticsPeriod, end_time: datetime
+    ) -> datetime:
         """Get start time for analytics period."""
         if period == AnalyticsPeriod.HOUR:
             return end_time - timedelta(hours=1)
@@ -583,7 +599,7 @@ class ViolationAuditService:
 
     async def _get_top_violation_sources(
         self, start_time: datetime, end_time: datetime, db: AsyncSession
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get top sources of violations."""
         try:
             # This is a simplified implementation
@@ -624,7 +640,7 @@ class ViolationAuditService:
         start_time: datetime,
         end_time: datetime,
         db: AsyncSession,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate trend analysis for violations."""
         try:
             # This is a simplified trend analysis
@@ -650,8 +666,12 @@ class ViolationAuditService:
 
             # Calculate trend direction (simplified)
             if len(daily_counts) >= 2:
-                recent_avg = sum(d["count"] for d in daily_counts[-3:]) / min(3, len(daily_counts))
-                earlier_avg = sum(d["count"] for d in daily_counts[:3]) / min(3, len(daily_counts))
+                recent_avg = sum(d["count"] for d in daily_counts[-3:]) / min(
+                    3, len(daily_counts)
+                )
+                earlier_avg = sum(d["count"] for d in daily_counts[:3]) / min(
+                    3, len(daily_counts)
+                )
 
                 if recent_avg > earlier_avg * 1.1:
                     trend_direction = "increasing"
@@ -694,12 +714,14 @@ class ViolationAuditService:
 
     def _generate_compliance_recommendations(
         self, analytics: ViolationAnalytics, critical_violations: int
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate compliance recommendations based on analytics."""
         recommendations = []
 
         if critical_violations > 0:
-            recommendations.append(f"Address {critical_violations} critical violations immediately")
+            recommendations.append(
+                f"Address {critical_violations} critical violations immediately"
+            )
 
         if analytics.resolution_rate < 80:
             recommendations.append(
@@ -707,14 +729,20 @@ class ViolationAuditService:
             )
 
         if analytics.average_resolution_time_minutes > 60:
-            recommendations.append("Reduce average resolution time - currently exceeds 1 hour")
+            recommendations.append(
+                "Reduce average resolution time - currently exceeds 1 hour"
+            )
 
         if analytics.escalations_count > analytics.total_violations * 0.3:
-            recommendations.append("Review escalation thresholds - high escalation rate detected")
+            recommendations.append(
+                "Review escalation thresholds - high escalation rate detected"
+            )
 
         # Analyze violation types
         if analytics.violations_by_type:
-            most_common_type = max(analytics.violations_by_type.items(), key=lambda x: x[1])
+            most_common_type = max(
+                analytics.violations_by_type.items(), key=lambda x: x[1]
+            )
             if most_common_type[1] > analytics.total_violations * 0.4:
                 recommendations.append(
                     f"Focus on reducing {most_common_type[0]} violations - most common type"
@@ -725,7 +753,7 @@ class ViolationAuditService:
 
         return recommendations
 
-    def _get_default_config(self) -> Dict[str, Any]:
+    def _get_default_config(self) -> dict[str, Any]:
         """Get default configuration for audit service."""
         return {
             "retention_days": 2555,  # 7 years

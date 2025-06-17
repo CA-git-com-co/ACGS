@@ -237,7 +237,7 @@ Data Retention: 200h with lifecycle management
 ## 🔄 Next Steps & Recommendations
 
 ### **Immediate Actions** (Production Deployment Ready)
-1. **Start Monitoring Stack**: `cd monitoring && docker-compose up -d`
+1. **Start Monitoring Stack**: `cd monitoring && docker-compose -f infrastructure/docker/docker-compose.yml up -d`
 2. **Scale Testing**: Expand to full 1000+ concurrent user validation
 3. **Governance Workflow Testing**: End-to-end workflow validation
 4. **Performance Optimization**: Fine-tune for 1000+ concurrent target

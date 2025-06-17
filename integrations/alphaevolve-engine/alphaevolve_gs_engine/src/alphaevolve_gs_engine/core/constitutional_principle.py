@@ -10,7 +10,7 @@ Classes:
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class ConstitutionalPrinciple:
@@ -55,14 +55,14 @@ class ConstitutionalPrinciple:
         category: str,
         policy_code: str,  # Could be Rego, structured text, etc.
         version: int = 1,
-        metadata: Optional[Dict[str, Any]] = None,
-        dependencies: Optional[List[str]] = None,
+        metadata: dict[str, Any] | None = None,
+        dependencies: list[str] | None = None,
         # QEC-inspired enhancement fields
-        validation_criteria_structured: Optional[List[Dict[str, Any]]] = None,
-        distance_score: Optional[float] = None,
-        score_updated_at: Optional[datetime] = None,
-        error_prediction_metadata: Optional[Dict[str, Any]] = None,
-        recovery_strategies: Optional[List[str]] = None,
+        validation_criteria_structured: list[dict[str, Any]] | None = None,
+        distance_score: float | None = None,
+        score_updated_at: datetime | None = None,
+        error_prediction_metadata: dict[str, Any] | None = None,
+        recovery_strategies: list[str] | None = None,
     ):
         """
         Initializes a ConstitutionalPrinciple instance with QEC-inspired enhancements.
@@ -123,17 +123,17 @@ class ConstitutionalPrinciple:
 
     def update(
         self,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        category: Optional[str] = None,
-        policy_code: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        dependencies: Optional[List[str]] = None,
+        name: str | None = None,
+        description: str | None = None,
+        category: str | None = None,
+        policy_code: str | None = None,
+        metadata: dict[str, Any] | None = None,
+        dependencies: list[str] | None = None,
         # QEC enhancement fields
-        validation_criteria_structured: Optional[List[Dict[str, Any]]] = None,
-        distance_score: Optional[float] = None,
-        error_prediction_metadata: Optional[Dict[str, Any]] = None,
-        recovery_strategies: Optional[List[str]] = None,
+        validation_criteria_structured: list[dict[str, Any]] | None = None,
+        distance_score: float | None = None,
+        error_prediction_metadata: dict[str, Any] | None = None,
+        recovery_strategies: list[str] | None = None,
     ) -> None:
         """
         Updates the attributes of the principle and increments its version.
@@ -170,7 +170,7 @@ class ConstitutionalPrinciple:
         self.last_modified = datetime.now()
         print(f"Principle '{self.principle_id}' updated to version {self.version}.")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Serializes the principle object to a dictionary, including QEC enhancement fields.
         """
@@ -199,7 +199,7 @@ class ConstitutionalPrinciple:
         return result
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ConstitutionalPrinciple":
+    def from_dict(cls, data: dict[str, Any]) -> "ConstitutionalPrinciple":
         """
         Creates a ConstitutionalPrinciple instance from a dictionary, including QEC enhancement fields.
         """
@@ -240,7 +240,7 @@ if __name__ == "__main__":
 
     # Principle: Ensure AI actions do not result in harm to humans.
     default allow_action = false
-    
+
     allow_action {
         input.action.potential_harm_score < 0.1 # Example metric
         input.action.is_reviewed_by_human == true

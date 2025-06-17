@@ -21,16 +21,16 @@ import json
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from backend.pgc_service.app.core.manifest_manager import ManifestManager
+from services.platform.pgc.pgc_service.app.core.manifest_manager import ManifestManager
 
 # Import our enhanced components
-from backend.pgc_service.app.core.policy_format_router import (
+from services.platform.pgc.pgc_service.app.core.policy_format_router import (
     PolicyFormatRouter,
     PolicyFramework,
 )
@@ -63,7 +63,7 @@ class AuditComplianceValidator:
             "framework_breakdown": {},
         }
 
-    async def validate_dataset(self, dataset_path: str) -> Dict[str, Any]:
+    async def validate_dataset(self, dataset_path: str) -> dict[str, Any]:
         """
         Comprehensive validation of policy dataset.
 
@@ -120,7 +120,7 @@ class AuditComplianceValidator:
             logger.debug(f"Validating file: {file_path}")
 
             # Read file content
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Detect framework
@@ -189,7 +189,7 @@ class AuditComplianceValidator:
         empty_principle_count = 0
         total_records = 0
 
-        for line_num, line in enumerate(content.split("\n"), 1):
+        for _line_num, line in enumerate(content.split("\n"), 1):
             line = line.strip()
             if not line:
                 continue
@@ -212,7 +212,7 @@ class AuditComplianceValidator:
 
     async def convert_formats(
         self, dataset_path: str, target_format: str = "rego"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Convert policy files to target format.
 
@@ -263,7 +263,7 @@ class AuditComplianceValidator:
         self, file_path: Path, output_path: Path, target_format: str
     ) -> None:
         """Convert a single policy file"""
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         # Detect source framework
@@ -373,7 +373,7 @@ async def main():
 
     try:
         if args.action == "validate":
-            results = await validator.validate_dataset(args.dataset_path)
+            await validator.validate_dataset(args.dataset_path)
 
         elif args.action == "generate-manifest":
             manifest = validator.manifest_manager.generate_manifest(
@@ -384,7 +384,7 @@ async def main():
             print(f"Manifest generated: {manifest_path}")
 
         elif args.action == "convert-formats":
-            results = await validator.convert_formats(
+            await validator.convert_formats(
                 args.dataset_path, args.target_format
             )
 

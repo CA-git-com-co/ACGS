@@ -4,16 +4,13 @@ ACGS-1 Data Flywheel Integration Demo API
 A minimal working demonstration of the constitutional governance integration
 """
 
-import asyncio
-import json
 import logging
 import os
 from datetime import datetime
-from typing import Dict, List, Optional
 
 import httpx
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from pydantic import BaseModel
 
 # Configure logging
@@ -63,8 +60,8 @@ CONSTITUTIONAL_PRINCIPLES = [
 class ConstitutionalJobRequest(BaseModel):
     workload_id: str
     client_id: str = "acgs_governance"
-    constitutional_requirements: Optional[Dict] = None
-    governance_context: Optional[Dict] = None
+    constitutional_requirements: dict | None = None
+    governance_context: dict | None = None
 
 
 class JobResponse(BaseModel):
@@ -75,13 +72,13 @@ class JobResponse(BaseModel):
 
 class ACGSHealthResponse(BaseModel):
     overall_status: str
-    services: Dict[str, bool]
+    services: dict[str, bool]
     constitutional_validation_available: bool
     governance_workflows_operational: bool
 
 
 # Helper functions
-async def check_acgs_service_health() -> Dict[str, bool]:
+async def check_acgs_service_health() -> dict[str, bool]:
     """Check health of all ACGS-1 services"""
     health_status = {}
 

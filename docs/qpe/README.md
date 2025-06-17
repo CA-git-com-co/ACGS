@@ -62,7 +62,7 @@ Client Applications → QPE Service (port 8012) → PGC/OPA Service (port 8005)
 1. **Start QPE Service**:
    ```bash
    cd /home/dislove/ACGS-1
-   docker-compose up -d qpe_service
+   docker-compose -f infrastructure/docker/docker-compose.yml up -d qpe_service
    ```
 
 2. **Verify Health**:

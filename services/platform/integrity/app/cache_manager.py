@@ -2,7 +2,7 @@
 Cache Manager for integrity_service - ACGS-1 Phase A3 Advanced Caching
 """
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 import structlog
 
@@ -21,7 +21,7 @@ class Integrity_serviceCacheManager:
         # ensures: Correct function execution
         # sha256: func_hash
         self.service_name = "integrity_service"
-        self.redis_client: Optional[AdvancedRedisClient] = None
+        self.redis_client: AdvancedRedisClient | None = None
         self._initialized = False
 
     async def initialize(self):
@@ -46,7 +46,7 @@ class Integrity_serviceCacheManager:
             logger.error("Failed to initialize cache manager", error=str(e))
             raise
 
-    async def get_cache_metrics(self) -> Dict[str, Any]:
+    async def get_cache_metrics(self) -> dict[str, Any]:
         if not self.redis_client:
             await self.initialize()
 
@@ -61,7 +61,7 @@ class Integrity_serviceCacheManager:
         }
 
 
-_cache_manager: Optional[Integrity_serviceCacheManager] = None
+_cache_manager: Integrity_serviceCacheManager | None = None
 
 
 async def get_cache_manager() -> Integrity_serviceCacheManager:

@@ -18,7 +18,7 @@ import logging
 import os
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import psutil
 
@@ -64,7 +64,7 @@ class ACGSProductionInfrastructure:
         }
 
         self.results = {
-            "setup_start": datetime.now(timezone.utc).isoformat(),
+            "setup_start": datetime.now(UTC).isoformat(),
             "infrastructure_checks": {},
             "monitoring_setup": {},
             "security_hardening": {},
@@ -428,7 +428,7 @@ class ACGSProductionInfrastructure:
         import requests
 
         healthy_services = 0
-        for service_id, config in self.services.items():
+        for _service_id, config in self.services.items():
             try:
                 response = requests.get(
                     f"http://localhost:{config['port']}/health", timeout=5
@@ -613,7 +613,7 @@ class ACGSProductionInfrastructure:
 
     def save_final_report(self):
         """Save comprehensive production setup report."""
-        self.results["setup_end"] = datetime.now(timezone.utc).isoformat()
+        self.results["setup_end"] = datetime.now(UTC).isoformat()
 
         # Save detailed results to file
         report_file = f"logs/phase3_production_setup_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"

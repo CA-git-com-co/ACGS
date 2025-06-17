@@ -21,7 +21,6 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
 
 # Configure logging
 logging.basicConfig(
@@ -49,7 +48,7 @@ class SecurityAuditor:
             "recommendations": [],
         }
 
-    def find_requirements_files(self) -> List[Path]:
+    def find_requirements_files(self) -> list[Path]:
         """Find all requirements.txt files in the project."""
         requirements_files = []
 
@@ -66,12 +65,12 @@ class SecurityAuditor:
                     requirements_files.append(file_path)
 
         # Remove duplicates and sort
-        requirements_files = sorted(list(set(requirements_files)))
+        requirements_files = sorted(set(requirements_files))
         logger.info(f"Found {len(requirements_files)} requirements files")
 
         return requirements_files
 
-    def audit_licenses(self) -> Dict:
+    def audit_licenses(self) -> dict:
         """Audit licenses for all dependencies."""
         logger.info("Starting license compliance audit...")
 
@@ -150,7 +149,7 @@ class SecurityAuditor:
         self.audit_results["license_audit"] = license_results
         return license_results
 
-    def assess_cve_vulnerabilities(self) -> Dict:
+    def assess_cve_vulnerabilities(self) -> dict:
         """Assess CVE vulnerabilities in dependencies."""
         logger.info("Starting CVE vulnerability assessment...")
 
@@ -215,7 +214,7 @@ class SecurityAuditor:
         self.audit_results["cve_assessment"] = cve_results
         return cve_results
 
-    def _determine_severity(self, vulnerability: Dict) -> str:
+    def _determine_severity(self, vulnerability: dict) -> str:
         """Determine vulnerability severity based on available data."""
         advisory = vulnerability.get("advisory", "").lower()
 
@@ -233,7 +232,7 @@ class SecurityAuditor:
         else:
             return "LOW"
 
-    def scan_dependencies(self) -> Dict:
+    def scan_dependencies(self) -> dict:
         """Comprehensive dependency scanning."""
         logger.info("Starting comprehensive dependency scan...")
 
@@ -263,7 +262,7 @@ class SecurityAuditor:
         self.audit_results["dependency_scan"] = dependency_results
         return dependency_results
 
-    def generate_recommendations(self) -> List[str]:
+    def generate_recommendations(self) -> list[str]:
         """Generate security recommendations based on audit results."""
         recommendations = []
 
@@ -305,7 +304,7 @@ class SecurityAuditor:
         self.audit_results["recommendations"] = recommendations
         return recommendations
 
-    def generate_report(self, output_file: Optional[Path] = None) -> Path:
+    def generate_report(self, output_file: Path | None = None) -> Path:
         """Generate comprehensive security audit report."""
         if output_file is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -321,7 +320,7 @@ class SecurityAuditor:
         logger.info(f"Security audit report generated: {output_file}")
         return output_file
 
-    def run_full_audit(self) -> Dict:
+    def run_full_audit(self) -> dict:
         """Run complete security audit."""
         logger.info("Starting full security audit...")
 
@@ -347,13 +346,13 @@ class SecurityAuditor:
         # License summary
         license_data = self.audit_results["license_audit"]
         gpl_conflicts = len(license_data.get("gpl_conflicts", []))
-        print(f"📄 License Audit:")
+        print("📄 License Audit:")
         print(f"   - Files analyzed: {license_data.get('total_files', 0)}")
         print(f"   - GPL conflicts: {gpl_conflicts}")
 
         # CVE summary
         cve_data = self.audit_results["cve_assessment"]
-        print(f"🔒 CVE Assessment:")
+        print("🔒 CVE Assessment:")
         print(f"   - Critical: {cve_data.get('critical_count', 0)}")
         print(f"   - High: {cve_data.get('high_count', 0)}")
         print(f"   - Medium: {cve_data.get('medium_count', 0)}")

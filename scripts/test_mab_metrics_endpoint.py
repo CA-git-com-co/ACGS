@@ -13,7 +13,7 @@ import asyncio
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src", "backend"))
@@ -148,7 +148,7 @@ async def test_mab_api_endpoint_logic():
 
         # Construct response (simulating the API response)
         metrics_response = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "optimization_metrics": optimization_metrics,
             "integration_status": integration_status,
             "best_templates": best_templates,
@@ -232,25 +232,25 @@ async def test_mab_prometheus_metrics():
 
         # MAB system metrics
         prometheus_metrics.append(
-            f"# HELP mab_total_optimizations Total number of MAB optimizations"
+            "# HELP mab_total_optimizations Total number of MAB optimizations"
         )
-        prometheus_metrics.append(f"# TYPE mab_total_optimizations counter")
+        prometheus_metrics.append("# TYPE mab_total_optimizations counter")
         prometheus_metrics.append(
             f"mab_total_optimizations {metrics.get('total_optimizations', 0)}"
         )
 
         prometheus_metrics.append(
-            f"# HELP mab_template_count Number of registered templates"
+            "# HELP mab_template_count Number of registered templates"
         )
-        prometheus_metrics.append(f"# TYPE mab_template_count gauge")
+        prometheus_metrics.append("# TYPE mab_template_count gauge")
         prometheus_metrics.append(
             f"mab_template_count {metrics.get('template_count', 0)}"
         )
 
         prometheus_metrics.append(
-            f"# HELP mab_overall_success_rate Overall MAB success rate"
+            "# HELP mab_overall_success_rate Overall MAB success rate"
         )
-        prometheus_metrics.append(f"# TYPE mab_overall_success_rate gauge")
+        prometheus_metrics.append("# TYPE mab_overall_success_rate gauge")
         prometheus_metrics.append(
             f"mab_overall_success_rate {metrics.get('overall_success_rate', 0.0)}"
         )
@@ -265,7 +265,7 @@ async def test_mab_prometheus_metrics():
             prometheus_metrics.append(
                 f"# HELP mab_template_uses_total Total uses for template {template_name}"
             )
-            prometheus_metrics.append(f"# TYPE mab_template_uses_total counter")
+            prometheus_metrics.append("# TYPE mab_template_uses_total counter")
             prometheus_metrics.append(
                 f"mab_template_uses_total{{template_id=\"{template_id}\",template_name=\"{template_name}\"}} {template_data.get('total_uses', 0)}"
             )
@@ -273,7 +273,7 @@ async def test_mab_prometheus_metrics():
             prometheus_metrics.append(
                 f"# HELP mab_template_average_reward Average reward for template {template_name}"
             )
-            prometheus_metrics.append(f"# TYPE mab_template_average_reward gauge")
+            prometheus_metrics.append("# TYPE mab_template_average_reward gauge")
             prometheus_metrics.append(
                 f"mab_template_average_reward{{template_id=\"{template_id}\",template_name=\"{template_name}\"}} {template_data.get('average_reward', 0.0)}"
             )

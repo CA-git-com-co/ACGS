@@ -268,7 +268,7 @@ docker run -d --name acgs-pgp-v8 -p 8010:8010 acgs-pgp-v8:latest
 ### Production Deployment
 ```bash
 # Kubernetes deployment
-kubectl apply -f k8s/deployment.yaml
+kubectl apply -f infrastructure/kubernetes/deployment.yaml
 
 # Verify deployment
 kubectl get pods -n acgs-system -l app=acgs-pgp-v8

@@ -9,7 +9,7 @@ import json
 import logging
 import sys
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -102,8 +102,8 @@ class ServiceStackValidator:
         self.retry_delay = 5
 
     async def check_service_health(
-        self, service_name: str, service_config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, service_name: str, service_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check health of a single service."""
         logger.info(f"🔍 Checking {service_config['description']} ({service_name})")
 
@@ -150,7 +150,7 @@ class ServiceStackValidator:
                                 f"⚠️ {service_name} returned HTTP {response.status}"
                             )
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 result["error"] = "Timeout"
                 result["last_error_or_status"] = "Timeout"
                 logger.warning(f"⚠️ {service_name} health check timed out")
@@ -177,7 +177,7 @@ class ServiceStackValidator:
 
         return result
 
-    async def check_infrastructure_connectivity(self) -> Dict[str, bool]:
+    async def check_infrastructure_connectivity(self) -> dict[str, bool]:
         """Check connectivity to infrastructure services."""
         logger.info("🔍 Checking infrastructure service connectivity")
 
@@ -202,8 +202,8 @@ class ServiceStackValidator:
         return connectivity
 
     async def test_service_interactions(
-        self, healthy_services: List[str]
-    ) -> Dict[str, Any]:
+        self, healthy_services: list[str]
+    ) -> dict[str, Any]:
         """Test basic interactions between services."""
         logger.info("🔗 Testing service interactions")
 
@@ -273,7 +273,7 @@ class ServiceStackValidator:
 
         return interaction_results
 
-    async def validate_complete_stack(self) -> Dict[str, Any]:
+    async def validate_complete_stack(self) -> dict[str, Any]:
         """Validate the complete ACGS service stack."""
         logger.info("🚀 Starting ACGS service stack validation")
         logger.info("=" * 60)

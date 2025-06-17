@@ -19,8 +19,8 @@ SAMPLE_POLICY_REQUEST = {
     "context": {
         "domain": "data_protection",
         "jurisdiction": "federal",
-        "urgency": "normal"
-    }
+        "urgency": "normal",
+    },
 }
 
 SAMPLE_ERROR_DATA = {
@@ -28,10 +28,11 @@ SAMPLE_ERROR_DATA = {
     "context": {
         "service": "acgs-pgp-v8",
         "operation": "policy_generation",
-        "constitutional_hash": TEST_CONSTITUTIONAL_HASH
+        "constitutional_hash": TEST_CONSTITUTIONAL_HASH,
     },
-    "stack_trace": "Traceback (most recent call last)..."
+    "stack_trace": "Traceback (most recent call last)...",
 }
+
 
 # Test utilities
 def get_test_config():
@@ -42,5 +43,5 @@ def get_test_config():
         "database_url": TEST_DATABASE_URL,
         "gs_service_url": "http://localhost:8004",
         "pgc_service_url": "http://localhost:8005",
-        "auth_service_url": "http://localhost:8000"
+        "auth_service_url": "http://localhost:8000",
     }

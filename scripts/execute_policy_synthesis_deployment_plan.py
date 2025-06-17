@@ -22,9 +22,9 @@ import asyncio
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Import the deployment orchestrator
 sys.path.append(str(Path(__file__).parent))
@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 class DeploymentPlanExecutor:
     """Executes the Policy Synthesis Enhancement deployment plan with monitoring and reporting."""
 
-    def __init__(self, config_file: Optional[str] = None, dry_run: bool = False):
+    def __init__(self, config_file: str | None = None, dry_run: bool = False):
         self.project_root = Path.cwd()
         self.dry_run = dry_run
         self.config_file = config_file
@@ -63,7 +63,7 @@ class DeploymentPlanExecutor:
     def _load_configuration(self, config_file: str) -> None:
         """Load custom configuration from file."""
         try:
-            with open(config_file, "r") as f:
+            with open(config_file) as f:
                 config = json.load(f)
 
             # Update performance targets if provided
@@ -92,7 +92,7 @@ class DeploymentPlanExecutor:
             logger.error(f"Failed to load configuration: {e}")
             sys.exit(1)
 
-    async def execute_full_plan(self) -> Dict[str, Any]:
+    async def execute_full_plan(self) -> dict[str, Any]:
         """Execute the complete 10-week deployment plan."""
         logger.info(
             "🚀 Starting Policy Synthesis Enhancement Deployment Plan Execution"
@@ -119,10 +119,10 @@ class DeploymentPlanExecutor:
             return {
                 "success": False,
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
-    async def execute_specific_phase(self, phase_number: int) -> Dict[str, Any]:
+    async def execute_specific_phase(self, phase_number: int) -> dict[str, Any]:
         """Execute a specific phase of the deployment plan."""
         phase_map = {
             1: self.orchestrator.execute_phase_1_production_deployment,
@@ -156,10 +156,10 @@ class DeploymentPlanExecutor:
                 "success": False,
                 "phase": phase_number,
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
-    async def generate_status_report(self) -> Dict[str, Any]:
+    async def generate_status_report(self) -> dict[str, Any]:
         """Generate a status report of the current deployment state."""
         logger.info("📊 Generating deployment status report...")
 
@@ -174,7 +174,7 @@ class DeploymentPlanExecutor:
             performance_check = await self._check_performance_targets()
 
             report = {
-                "report_timestamp": datetime.now(timezone.utc).isoformat(),
+                "report_timestamp": datetime.now(UTC).isoformat(),
                 "system_status": system_status,
                 "deployment_metrics": metrics_analysis,
                 "performance_targets": performance_check,
@@ -196,7 +196,7 @@ class DeploymentPlanExecutor:
             logger.error(f"❌ Failed to generate status report: {e}")
             return {"error": str(e)}
 
-    async def _simulate_full_plan(self) -> Dict[str, Any]:
+    async def _simulate_full_plan(self) -> dict[str, Any]:
         """Simulate the full deployment plan execution."""
         logger.info("🎭 Simulating full deployment plan...")
 
@@ -213,7 +213,7 @@ class DeploymentPlanExecutor:
             "estimated_success_rate": 0.95,
         }
 
-    async def _simulate_phase(self, phase_number: int) -> Dict[str, Any]:
+    async def _simulate_phase(self, phase_number: int) -> dict[str, Any]:
         """Simulate execution of a specific phase."""
         phase_names = {
             1: "Production Deployment and Monitoring",
@@ -239,7 +239,7 @@ class DeploymentPlanExecutor:
             ],
         }
 
-    async def _check_system_status(self) -> Dict[str, Any]:
+    async def _check_system_status(self) -> dict[str, Any]:
         """Check the current status of the Policy Synthesis Enhancement system."""
         # This would check actual system status
         return {
@@ -250,7 +250,7 @@ class DeploymentPlanExecutor:
             "system_health": "healthy",
         }
 
-    async def _analyze_deployment_metrics(self) -> Dict[str, Any]:
+    async def _analyze_deployment_metrics(self) -> dict[str, Any]:
         """Analyze deployment metrics from the orchestrator."""
         if not self.orchestrator.deployment_metrics:
             return {"status": "no_metrics_available"}
@@ -274,7 +274,7 @@ class DeploymentPlanExecutor:
             ),
         }
 
-    async def _check_performance_targets(self) -> Dict[str, Any]:
+    async def _check_performance_targets(self) -> dict[str, Any]:
         """Check performance against defined targets."""
         targets = self.orchestrator.targets
 
@@ -305,7 +305,7 @@ class DeploymentPlanExecutor:
             "Implement automated performance optimization",
         ]
 
-    async def _generate_execution_report(self, result: Dict[str, Any]) -> None:
+    async def _generate_execution_report(self, result: dict[str, Any]) -> None:
         """Generate comprehensive execution report."""
         report_file = (
             self.project_root
@@ -318,7 +318,7 @@ class DeploymentPlanExecutor:
         logger.info(f"📋 Execution report saved to {report_file}")
 
     async def _generate_phase_report(
-        self, phase_number: int, result: Dict[str, Any]
+        self, phase_number: int, result: dict[str, Any]
     ) -> None:
         """Generate phase-specific report."""
         report_file = (
@@ -331,7 +331,7 @@ class DeploymentPlanExecutor:
 
         logger.info(f"📋 Phase {phase_number} report saved to {report_file}")
 
-    async def _send_completion_notifications(self, result: Dict[str, Any]) -> None:
+    async def _send_completion_notifications(self, result: dict[str, Any]) -> None:
         """Send completion notifications (placeholder for actual notification system)."""
         if result.get("success"):
             logger.info(

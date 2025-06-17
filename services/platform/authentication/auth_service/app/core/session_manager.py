@@ -2,8 +2,8 @@
 import hashlib
 import json
 import secrets
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from fastapi import Request
 from sqlalchemy import select
@@ -41,7 +41,7 @@ class SessionManager:
         return hashlib.sha256(fingerprint_str.encode()).hexdigest()[:16]
 
     def calculate_risk_score(
-        self, request: Request, user: User, existing_sessions: List[UserSession]
+        self, request: Request, user: User, existing_sessions: list[UserSession]
     ) -> int:
         """Calculate session risk score (0-100)"""
         risk_score = 0
@@ -54,13 +54,15 @@ class SessionManager:
 
         # Check for new device fingerprint
         current_fingerprint = self.generate_device_fingerprint(request)
-        known_fingerprints = {session.device_fingerprint for session in existing_sessions}
+        known_fingerprints = {
+            session.device_fingerprint for session in existing_sessions
+        }
         if current_fingerprint not in known_fingerprints:
             risk_score += 20
 
         # Check time since last login
         if user.last_login_at:
-            time_since_last = datetime.now(timezone.utc) - user.last_login_at
+            time_since_last = datetime.now(UTC) - user.last_login_at
             if time_since_last > timedelta(days=30):
                 risk_score += 25
             elif time_since_last > timedelta(days=7):
@@ -89,7 +91,9 @@ class SessionManager:
 
         return "unknown"
 
-    async def create_session(self, db: AsyncSession, user: User, request: Request) -> UserSession:
+    async def create_session(
+        self, db: AsyncSession, user: User, request: Request
+    ) -> UserSession:
         """Create new user session"""
         # Check concurrent session limit
         active_sessions = await self.get_active_sessions(db, user.id)
@@ -101,7 +105,7 @@ class SessionManager:
 
         # Calculate session expiration
         timeout_minutes = user.session_timeout_minutes or self.default_session_timeout
-        expires_at = datetime.now(timezone.utc) + timedelta(minutes=timeout_minutes)
+        expires_at = datetime.now(UTC) + timedelta(minutes=timeout_minutes)
 
         # Create session
         session = UserSession(
@@ -121,22 +125,26 @@ class SessionManager:
 
         return session
 
-    async def get_session(self, db: AsyncSession, session_id: str) -> Optional[UserSession]:
+    async def get_session(
+        self, db: AsyncSession, session_id: str
+    ) -> UserSession | None:
         """Get session by ID"""
         result = await db.execute(
             select(UserSession).where(
-                UserSession.session_id == session_id, UserSession.is_active == True
+                UserSession.session_id == session_id, UserSession.is_active
             )
         )
         return result.scalar_one_or_none()
 
-    async def get_active_sessions(self, db: AsyncSession, user_id: int) -> List[UserSession]:
+    async def get_active_sessions(
+        self, db: AsyncSession, user_id: int
+    ) -> list[UserSession]:
         """Get all active sessions for a user"""
         result = await db.execute(
             select(UserSession).where(
                 UserSession.user_id == user_id,
-                UserSession.is_active == True,
-                UserSession.expires_at > datetime.now(timezone.utc),
+                UserSession.is_active,
+                UserSession.expires_at > datetime.now(UTC),
             )
         )
         return result.scalars().all()
@@ -148,11 +156,11 @@ class SessionManager:
             return False
 
         # Check if session is expired
-        if session.expires_at <= datetime.now(timezone.utc):
+        if session.expires_at <= datetime.now(UTC):
             await self.terminate_session(db, session_id)
             return False
 
-        session.last_activity_at = datetime.now(timezone.utc)
+        session.last_activity_at = datetime.now(UTC)
         await db.commit()
         return True
 
@@ -177,11 +185,11 @@ class SessionManager:
         return True
 
     async def terminate_all_sessions(
-        self, db: AsyncSession, user_id: int, exclude_session_id: Optional[str] = None
+        self, db: AsyncSession, user_id: int, exclude_session_id: str | None = None
     ) -> int:
         """Terminate all sessions for a user (except optionally one)"""
         query = select(UserSession).where(
-            UserSession.user_id == user_id, UserSession.is_active == True
+            UserSession.user_id == user_id, UserSession.is_active
         )
 
         if exclude_session_id:
@@ -198,11 +206,11 @@ class SessionManager:
 
     async def cleanup_expired_sessions(self, db: AsyncSession) -> int:
         """Clean up expired sessions"""
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(UTC)
 
         result = await db.execute(
             select(UserSession).where(
-                UserSession.expires_at <= current_time, UserSession.is_active == True
+                UserSession.expires_at <= current_time, UserSession.is_active
             )
         )
         expired_sessions = result.scalars().all()
@@ -213,7 +221,9 @@ class SessionManager:
         await db.commit()
         return len(expired_sessions)
 
-    async def get_session_info(self, db: AsyncSession, session_id: str) -> Optional[Dict[str, Any]]:
+    async def get_session_info(
+        self, db: AsyncSession, session_id: str
+    ) -> dict[str, Any] | None:
         """Get detailed session information"""
         session = await self.get_session(db, session_id)
         if not session:
@@ -240,14 +250,14 @@ class SessionManager:
 
     async def validate_session(
         self, db: AsyncSession, session_id: str, request: Request
-    ) -> Optional[UserSession]:
+    ) -> UserSession | None:
         """Validate session and update activity"""
         session = await self.get_session(db, session_id)
         if not session:
             return None
 
         # Check expiration
-        if session.expires_at <= datetime.now(timezone.utc):
+        if session.expires_at <= datetime.now(UTC):
             await self.terminate_session(db, session_id)
             return None
 

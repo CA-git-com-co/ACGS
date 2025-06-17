@@ -1,5 +1,4 @@
 # Enterprise Multi-Factor Authentication API Endpoints
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
@@ -18,7 +17,7 @@ router = APIRouter()
 class MFASetupResponse(BaseModel):
     secret: str
     qr_code: str
-    backup_codes: List[str]
+    backup_codes: list[str]
     provisioning_uri: str
 
 
@@ -33,7 +32,7 @@ class MFAVerifyRequest(BaseModel):
 class MFAVerifyResponse(BaseModel):
     method: str
     valid: bool
-    remaining_codes: Optional[int] = None
+    remaining_codes: int | None = None
 
 
 class MFADisableRequest(BaseModel):
@@ -99,7 +98,9 @@ async def enable_mfa(
     Enable MFA for the current user after verifying TOTP code.
     """
     try:
-        success = await mfa_service.enable_mfa(db, current_user.id, mfa_request.totp_code)
+        success = await mfa_service.enable_mfa(
+            db, current_user.id, mfa_request.totp_code
+        )
 
         if success:
             await security_audit.log_event(
@@ -156,7 +157,9 @@ async def disable_mfa(
     Disable MFA for the current user after verification.
     """
     try:
-        success = await mfa_service.disable_mfa(db, current_user.id, mfa_request.verification_code)
+        success = await mfa_service.disable_mfa(
+            db, current_user.id, mfa_request.verification_code
+        )
 
         if success:
             await security_audit.log_event(
@@ -322,5 +325,7 @@ async def get_mfa_status(
     """
     return {
         "mfa_enabled": current_user.mfa_enabled,
-        "backup_codes_count": (len(current_user.backup_codes) if current_user.backup_codes else 0),
+        "backup_codes_count": (
+            len(current_user.backup_codes) if current_user.backup_codes else 0
+        ),
     }

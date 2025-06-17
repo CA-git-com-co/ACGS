@@ -119,7 +119,7 @@ Successfully implemented evolutionary tensor decomposition algorithm integration
 
 ### **Phase 5: Docker Environment Configuration** ✅
 
-**Location**: `infrastructure/docker/docker-compose.yml`
+**Location**: `infrastructure/docker/infrastructure/docker/docker-compose.yml`
 
 #### **Enhanced Environment Variables**
 ```yaml
@@ -190,7 +190,7 @@ Successfully implemented evolutionary tensor decomposition algorithm integration
 2. **Deploy Enhanced Services**:
    ```bash
    cd infrastructure/docker
-   docker-compose up -d --build
+   docker-compose -f infrastructure/docker/docker-compose.yml up -d --build
    ```
 
 3. **Verify Deployment**:

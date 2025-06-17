@@ -42,7 +42,7 @@ class DocumentationUpdater:
             logger.warning("Main README.md not found")
             return False
 
-        with open(readme_file, "r") as f:
+        with open(readme_file) as f:
             content = f.read()
 
         # Update path references
@@ -103,7 +103,7 @@ class DocumentationUpdater:
 
             for readme_file in readme_files:
                 try:
-                    with open(readme_file, "r") as f:
+                    with open(readme_file) as f:
                         content = f.read()
 
                     # Update path references
@@ -142,7 +142,7 @@ class DocumentationUpdater:
 
         for api_file in api_files:
             try:
-                with open(api_file, "r") as f:
+                with open(api_file) as f:
                     content = f.read()
 
                 # Update service endpoint references
@@ -189,7 +189,7 @@ class DocumentationUpdater:
 
         for deploy_file in deployment_files:
             try:
-                with open(deploy_file, "r") as f:
+                with open(deploy_file) as f:
                     content = f.read()
 
                 # Update Docker Compose references
@@ -236,14 +236,14 @@ class DocumentationUpdater:
 
         for dev_file in dev_files:
             try:
-                with open(dev_file, "r") as f:
+                with open(dev_file) as f:
                     content = f.read()
 
                 # Update development workflow instructions
                 workflow_updates = {
                     "cd src/backend/": "cd services/core/ # or services/platform/",
                     "python -m src.backend": "python -m services",
-                    "from src.backend": "from services",
+                    "from services.core.backend": "from services",
                     "import src.backend": "import services",
                 }
 
@@ -336,7 +336,7 @@ graph TB
     D --> E[Formal Verification:8004]
     E --> F[Integrity:8005]
     F --> G[Evolutionary Computation:8006]
-    
+
     H[Blockchain Programs] --> D
     I[Frontend Applications] --> A
     J[External Integrations] --> C

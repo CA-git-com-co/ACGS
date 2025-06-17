@@ -8,7 +8,7 @@ import logging
 import os
 import sys
 import time
-from typing import Any, Dict
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class AnthropicUpgradeValidator:
         if not self.api_key:
             logger.warning("⚠️ ANTHROPIC_API_KEY not found - some tests will be skipped")
 
-    def test_basic_import(self) -> Dict[str, Any]:
+    def test_basic_import(self) -> dict[str, Any]:
         """Test basic anthropic import and version"""
         logger.info("📦 Testing anthropic import...")
 
@@ -35,7 +35,7 @@ class AnthropicUpgradeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e), "import_successful": False}
 
-    def test_api_compatibility(self) -> Dict[str, Any]:
+    def test_api_compatibility(self) -> dict[str, Any]:
         """Test API compatibility with new version"""
         logger.info("🔌 Testing API compatibility...")
 
@@ -69,7 +69,7 @@ class AnthropicUpgradeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e), "error_type": type(e).__name__}
 
-    def test_bedrock_compatibility(self) -> Dict[str, Any]:
+    def test_bedrock_compatibility(self) -> dict[str, Any]:
         """Test Bedrock integration compatibility"""
         logger.info("☁️ Testing Bedrock compatibility...")
 
@@ -101,7 +101,7 @@ class AnthropicUpgradeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e), "error_type": type(e).__name__}
 
-    def test_vertex_ai_compatibility(self) -> Dict[str, Any]:
+    def test_vertex_ai_compatibility(self) -> dict[str, Any]:
         """Test Vertex AI integration compatibility"""
         logger.info("🔺 Testing Vertex AI compatibility...")
 
@@ -134,7 +134,7 @@ class AnthropicUpgradeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e), "error_type": type(e).__name__}
 
-    def test_dgm_agent_compatibility(self) -> Dict[str, Any]:
+    def test_dgm_agent_compatibility(self) -> dict[str, Any]:
         """Test DGM best SWE agent compatibility"""
         logger.info("🤖 Testing DGM agent compatibility...")
 
@@ -169,7 +169,7 @@ class AnthropicUpgradeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e), "error_type": type(e).__name__}
 
-    def test_cross_platform_adapter(self) -> Dict[str, Any]:
+    def test_cross_platform_adapter(self) -> dict[str, Any]:
         """Test cross-platform adapter compatibility"""
         logger.info("🔄 Testing cross-platform adapter...")
 
@@ -200,7 +200,7 @@ class AnthropicUpgradeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e), "import_failed": True}
 
-    def test_api_version_compatibility(self) -> Dict[str, Any]:
+    def test_api_version_compatibility(self) -> dict[str, Any]:
         """Test API version compatibility"""
         logger.info("📅 Testing API version compatibility...")
 
@@ -217,7 +217,7 @@ class AnthropicUpgradeValidator:
         for file_path in files_to_check:
             try:
                 if os.path.exists(file_path):
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read()
 
                     has_old_version = current_version in content
@@ -242,7 +242,7 @@ class AnthropicUpgradeValidator:
             "file_checks": version_check_results,
         }
 
-    def run_full_validation(self) -> Dict[str, Any]:
+    def run_full_validation(self) -> dict[str, Any]:
         """Run complete validation suite"""
         logger.info("🚀 Starting anthropic upgrade validation...")
         logger.warning(
@@ -282,7 +282,7 @@ class AnthropicUpgradeValidator:
         successful_tests = 0
         total_tests = 0
 
-        for test_name, test_result in validation_results["tests"].items():
+        for _test_name, test_result in validation_results["tests"].items():
             if test_result.get("status") != "skipped":
                 total_tests += 1
                 if test_result.get("status") == "success":

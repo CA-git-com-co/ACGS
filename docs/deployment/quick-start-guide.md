@@ -30,7 +30,7 @@ export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/acgs_lb
 
 ```bash
 # Start all services
-docker-compose -f infrastructure/docker/docker-compose.yml up -d
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up -d
 
 # Wait for services to start (30-60 seconds)
 sleep 60
@@ -251,7 +251,7 @@ docker exec acgs_redis redis-cli CONFIG SET maxmemory 2gb
 3. **Scale services**
 ```bash
 # Scale up services
-docker-compose up -d --scale gs_service=3 --scale auth_service=2
+docker-compose -f infrastructure/docker/docker-compose.yml up -d --scale gs_service=3 --scale auth_service=2
 ```
 
 ## 🛡️ Security
@@ -279,7 +279,7 @@ export HAPROXY_STATS_PASSWORD="your-secure-password"
 export GRAFANA_ADMIN_PASSWORD="your-secure-password"
 
 # Restart services
-docker-compose down && docker-compose up -d
+docker-compose -f infrastructure/docker/docker-compose.yml down && docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 ## 📚 Next Steps

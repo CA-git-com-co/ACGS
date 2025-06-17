@@ -7,7 +7,8 @@ event-driven development patterns.
 
 import functools
 import logging
-from typing import Any, Callable, Dict
+from collections.abc import Callable
+from typing import Any
 
 from .bus import get_event_bus
 from .types import EventPriority, EventType
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 def event_handler(
     event_type: EventType,
     priority: EventPriority = EventPriority.NORMAL,
-    filters: Dict[str, Any] = None,
+    filters: dict[str, Any] = None,
 ):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -167,7 +168,7 @@ def event_publisher(
     return decorator
 
 
-def on_event(event_type: EventType, filters: Dict[str, Any] = None):
+def on_event(event_type: EventType, filters: dict[str, Any] = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -201,7 +202,7 @@ def publish_event(event_type: EventType, source_service: str = None):
     return event_publisher(event_type, source_service=source_service)
 
 
-def event_listener(event_types: list, filters: Dict[str, Any] = None):
+def event_listener(event_types: list, filters: dict[str, Any] = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

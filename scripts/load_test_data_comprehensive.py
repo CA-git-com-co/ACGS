@@ -53,7 +53,7 @@ class TestDataLoader:
     async def load_test_users(self) -> bool:
         """Load test users with different roles."""
         try:
-            with open(self.data_dir / "test_users.json", "r") as f:
+            with open(self.data_dir / "test_users.json") as f:
                 data = json.load(f)
 
             users_loaded = 0
@@ -101,7 +101,7 @@ class TestDataLoader:
     async def load_test_principles(self) -> bool:
         """Load test principles with enhanced Phase 1 fields."""
         try:
-            with open(self.data_dir / "test_ac_principles.json", "r") as f:
+            with open(self.data_dir / "test_ac_principles.json") as f:
                 data = json.load(f)
 
             # Get admin user ID
@@ -157,7 +157,7 @@ class TestDataLoader:
     async def load_test_meta_rules(self) -> bool:
         """Load test meta-rules for constitutional governance."""
         try:
-            with open(self.data_dir / "test_ac_meta_rules.json", "r") as f:
+            with open(self.data_dir / "test_ac_meta_rules.json") as f:
                 data = json.load(f)
 
             # Get admin user ID
@@ -211,7 +211,7 @@ class TestDataLoader:
     async def load_test_environmental_factors(self) -> bool:
         """Load test environmental factors for contextual analysis."""
         try:
-            with open(self.data_dir / "test_environmental_factors.json", "r") as f:
+            with open(self.data_dir / "test_environmental_factors.json") as f:
                 data = json.load(f)
 
             factors_loaded = 0
@@ -286,8 +286,8 @@ class TestDataLoader:
             # Validate enhanced principle fields
             enhanced_principles = await self.connection.fetch(
                 """
-                SELECT title, priority_weight, scope, normative_statement 
-                FROM principles 
+                SELECT title, priority_weight, scope, normative_statement
+                FROM principles
                 WHERE priority_weight IS NOT NULL AND scope IS NOT NULL
             """
             )

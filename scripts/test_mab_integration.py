@@ -56,7 +56,6 @@ async def test_mab_prompt_optimizer():
         print("✅ MAB Optimizer initialized successfully")
 
         # Register a test template
-        from gs_service.app.core.mab_prompt_optimizer import PromptTemplate
 
         test_template = PromptTemplate(
             template_id="test_constitutional_v1",
@@ -158,17 +157,12 @@ async def test_mab_integration():
         print(f"✅ Integration status retrieved: {status['system_status']}")
 
         # Test constitutional synthesis with MAB
-        synthesis_input = ConstitutionalSynthesisInput(
+        ConstitutionalSynthesisInput(
             context="Test constitutional policy for access control",
             synthesis_request="Generate a constitutional access control policy",
             target_format="rego",
         )
 
-        context = {
-            "category": "constitutional",
-            "safety_level": "standard",
-            "auth_token": "test_token",
-        }
 
         # This would normally call LLM, but we'll test the MAB selection part
         print("✅ Constitutional synthesis input prepared")
@@ -199,8 +193,8 @@ async def test_database_connectivity():
         # Check MAB tables
         tables = await conn.fetch(
             """
-            SELECT table_name FROM information_schema.tables 
-            WHERE table_name LIKE '%prompt%' OR table_name LIKE '%mab%' 
+            SELECT table_name FROM information_schema.tables
+            WHERE table_name LIKE '%prompt%' OR table_name LIKE '%mab%'
             ORDER BY table_name
         """
         )
@@ -215,8 +209,8 @@ async def test_database_connectivity():
         if template_count > 0:
             templates = await conn.fetch(
                 """
-                SELECT template_id, name, category, total_uses, average_reward 
-                FROM prompt_templates 
+                SELECT template_id, name, category, total_uses, average_reward
+                FROM prompt_templates
                 ORDER BY template_id
             """
             )

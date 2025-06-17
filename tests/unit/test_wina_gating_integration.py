@@ -162,7 +162,7 @@ class TestWINAGatingIntegration:
 
             # Make multiple decisions to build compliance history
             decisions = []
-            for i in range(5):
+            for _i in range(5):
                 decision = runtime_gating.make_gating_decision(layer_name, wina_scores)
                 decisions.append(decision)
 
@@ -229,7 +229,7 @@ class TestWINAGatingIntegration:
         for case in test_cases:
             # Build some history to influence strategy selection
             for i in range(3):
-                decision = runtime_gating.make_gating_decision(
+                runtime_gating.make_gating_decision(
                     case["layer_name"], case["scores"]
                 )
 
@@ -274,7 +274,7 @@ class TestWINAGatingIntegration:
         layer_name = "memory_test_layer"
 
         # Generate many decisions to test memory management
-        for i in range(50):
+        for _i in range(50):
             wina_scores = self._generate_realistic_wina_scores(1024, layer_name)
             runtime_gating.make_gating_decision(layer_name, wina_scores)
 

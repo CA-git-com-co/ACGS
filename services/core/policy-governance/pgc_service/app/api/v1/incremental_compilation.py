@@ -6,7 +6,7 @@ and integration with constitutional amendment workflows.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -28,17 +28,21 @@ router = APIRouter()
 class PolicyDeploymentRequest(BaseModel):
     """Request model for policy deployment."""
 
-    policies: List[Dict[str, Any]] = Field(..., description="Policy rules to deploy")
-    amendment_id: Optional[int] = Field(None, description="Constitutional amendment ID")
-    force_hot_swap: bool = Field(False, description="Force hot-swap deployment strategy")
-    deployment_notes: Optional[str] = Field(None, description="Deployment notes")
+    policies: list[dict[str, Any]] = Field(..., description="Policy rules to deploy")
+    amendment_id: int | None = Field(None, description="Constitutional amendment ID")
+    force_hot_swap: bool = Field(
+        False, description="Force hot-swap deployment strategy"
+    )
+    deployment_notes: str | None = Field(None, description="Deployment notes")
 
 
 class PolicyRollbackRequest(BaseModel):
     """Request model for policy rollback."""
 
     policy_id: str = Field(..., description="Policy ID to rollback")
-    target_version: Optional[int] = Field(None, description="Target version (defaults to previous)")
+    target_version: int | None = Field(
+        None, description="Target version (defaults to previous)"
+    )
     rollback_reason: str = Field("Manual rollback", description="Reason for rollback")
 
 
@@ -46,23 +50,23 @@ class DeploymentStatusResponse(BaseModel):
     """Response model for deployment status."""
 
     success: bool
-    deployment_id: Optional[str] = None
-    policies_deployed: Optional[int] = None
-    deployment_time_ms: Optional[float] = None
-    deployment_strategy: Optional[str] = None
-    error: Optional[str] = None
-    health_status: Optional[Dict[str, bool]] = None
+    deployment_id: str | None = None
+    policies_deployed: int | None = None
+    deployment_time_ms: float | None = None
+    deployment_strategy: str | None = None
+    error: str | None = None
+    health_status: dict[str, bool] | None = None
 
 
 class RollbackStatusResponse(BaseModel):
     """Response model for rollback status."""
 
     success: bool
-    policy_id: Optional[str] = None
-    previous_version: Optional[int] = None
-    rollback_version: Optional[int] = None
-    rollback_time_ms: Optional[float] = None
-    error: Optional[str] = None
+    policy_id: str | None = None
+    previous_version: int | None = None
+    rollback_version: int | None = None
+    rollback_time_ms: float | None = None
+    error: str | None = None
 
 
 class CompilationMetricsResponse(BaseModel):
@@ -193,7 +197,9 @@ async def get_compilation_metrics(
     try:
         # Validate user permissions
         if current_user.role not in ["admin", "policy_manager", "auditor"]:
-            raise HTTPException(status_code=403, detail="Insufficient permissions to view metrics")
+            raise HTTPException(
+                status_code=403, detail="Insufficient permissions to view metrics"
+            )
 
         metrics = compiler.get_metrics()
 
@@ -208,7 +214,7 @@ async def get_compilation_metrics(
 async def get_deployment_status(
     current_user: User = Depends(get_current_user),
     compiler: IncrementalCompiler = Depends(get_incremental_compiler),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get current deployment status and active operations.
     """
@@ -239,7 +245,7 @@ async def get_deployment_status(
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, str]:
+async def health_check() -> dict[str, str]:
     """Health check endpoint for incremental compilation service."""
     return {
         "status": "healthy",

@@ -11,10 +11,11 @@ import re
 import secrets
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 import jwt
 import structlog
@@ -48,12 +49,12 @@ class SecurityEvent:
     """Security event for audit logging."""
 
     event_type: str
-    user_id: Optional[str]
+    user_id: str | None
     ip_address: str
     user_agent: str
     endpoint: str
     timestamp: datetime
-    details: Dict[str, Any]
+    details: dict[str, Any]
     severity: str  # low, medium, high, critical
     success: bool
 
@@ -124,7 +125,9 @@ class InputValidator:
         # Check XSS
         for pattern in cls.XSS_PATTERNS:
             if re.search(pattern, input_lower, re.IGNORECASE):
-                logger.warning("XSS attempt detected", input=input_data[:100], pattern=pattern)
+                logger.warning(
+                    "XSS attempt detected", input=input_data[:100], pattern=pattern
+                )
                 return False
 
         # Check command injection
@@ -146,12 +149,16 @@ class InputValidator:
         sanitized = input_data.replace("\x00", "Null")
 
         # Remove other control characters except newline and tab
-        sanitized = "".join(char for char in sanitized if ord(char) >= 32 or char in "\n\t")
+        sanitized = "".join(
+            char for char in sanitized if ord(char) >= 32 or char in "\n\t"
+        )
 
         # Limit length
         if len(sanitized) > 10000:
             sanitized = sanitized[:10000]
-            logger.warning("Input truncated due to length", original_length=len(input_data))
+            logger.warning(
+                "Input truncated due to length", original_length=len(input_data)
+            )
 
         return sanitized
 
@@ -163,8 +170,8 @@ class RateLimiter:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.requests: Dict[str, List[float]] = {}
-        self.blocked_ips: Dict[str, datetime] = {}
+        self.requests: dict[str, list[float]] = {}
+        self.blocked_ips: dict[str, datetime] = {}
         self._lock = threading.Lock()
 
     def is_allowed(
@@ -180,7 +187,9 @@ class RateLimiter:
                 if datetime.now() < self.blocked_ips[identifier]:
                     return RateLimitInfo(
                         requests=max_requests,
-                        window_start=datetime.fromtimestamp(current_time - window_seconds),
+                        window_start=datetime.fromtimestamp(
+                            current_time - window_seconds
+                        ),
                         blocked=True,
                         reset_time=self.blocked_ips[identifier],
                     )
@@ -202,7 +211,9 @@ class RateLimiter:
             # Check rate limit
             if len(self.requests[identifier]) >= max_requests:
                 # Block IP for lockout duration
-                lockout_duration = timedelta(minutes=SECURITY_CONFIG["lockout_duration_minutes"])
+                lockout_duration = timedelta(
+                    minutes=SECURITY_CONFIG["lockout_duration_minutes"]
+                )
                 self.blocked_ips[identifier] = datetime.now() + lockout_duration
 
                 logger.warning(
@@ -237,17 +248,17 @@ class AuditLogger:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.events: List[SecurityEvent] = []
+        self.events: list[SecurityEvent] = []
         self._lock = threading.Lock()
 
     def log_event(
         self,
         event_type: str,
-        user_id: Optional[str],
+        user_id: str | None,
         ip_address: str,
         user_agent: str,
         endpoint: str,
-        details: Dict[str, Any],
+        details: dict[str, Any],
         severity: str = "medium",
         success: bool = True,
     ):
@@ -291,20 +302,24 @@ class AuditLogger:
     def get_events(
         self,
         hours: int = 24,
-        severity: Optional[str] = None,
-        event_type: Optional[str] = None,
-    ) -> List[SecurityEvent]:
+        severity: str | None = None,
+        event_type: str | None = None,
+    ) -> list[SecurityEvent]:
         """Get security events with filtering."""
         cutoff_time = datetime.now() - timedelta(hours=hours)
 
         with self._lock:
-            filtered_events = [event for event in self.events if event.timestamp > cutoff_time]
+            filtered_events = [
+                event for event in self.events if event.timestamp > cutoff_time
+            ]
 
             if severity:
                 filtered_events = [e for e in filtered_events if e.severity == severity]
 
             if event_type:
-                filtered_events = [e for e in filtered_events if e.event_type == event_type]
+                filtered_events = [
+                    e for e in filtered_events if e.event_type == event_type
+                ]
 
             return filtered_events
 
@@ -324,8 +339,8 @@ class JWTManager:
     def create_token(
         self,
         user_id: str,
-        roles: List[str],
-        additional_claims: Optional[Dict[str, Any]] = None,
+        roles: list[str],
+        additional_claims: dict[str, Any] | None = None,
     ) -> str:
         """Create JWT token with user information."""
         now = datetime.utcnow()
@@ -344,7 +359,7 @@ class JWTManager:
         logger.info("JWT token created", user_id=user_id, roles=roles)
         return token
 
-    def verify_token(self, token: str) -> Dict[str, Any]:
+    def verify_token(self, token: str) -> dict[str, Any]:
         """Verify and decode JWT token."""
         try:
             # Validate token format first
@@ -400,7 +415,9 @@ class JWTManager:
             jti = payload.get("jti")
             if jti:
                 self.revoked_tokens.add(jti)
-                logger.info("JWT token revoked", jti=jti, user_id=payload.get("user_id"))
+                logger.info(
+                    "JWT token revoked", jti=jti, user_id=payload.get("user_id")
+                )
         except jwt.InvalidTokenError:
             logger.warning("Attempted to revoke invalid token")
 
@@ -412,10 +429,10 @@ class VulnerabilityScanner:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.scan_results: List[Dict[str, Any]] = []
-        self.last_scan_time: Optional[datetime] = None
+        self.scan_results: list[dict[str, Any]] = []
+        self.last_scan_time: datetime | None = None
 
-    async def run_security_scan(self) -> Dict[str, Any]:
+    async def run_security_scan(self) -> dict[str, Any]:
         """Run comprehensive security scan."""
         scan_start = datetime.now()
         vulnerabilities = []
@@ -432,9 +449,13 @@ class VulnerabilityScanner:
             "duration_seconds": (datetime.now() - scan_start).total_seconds(),
             "vulnerabilities": vulnerabilities,
             "total_issues": len(vulnerabilities),
-            "critical_issues": len([v for v in vulnerabilities if v["severity"] == "critical"]),
+            "critical_issues": len(
+                [v for v in vulnerabilities if v["severity"] == "critical"]
+            ),
             "high_issues": len([v for v in vulnerabilities if v["severity"] == "high"]),
-            "medium_issues": len([v for v in vulnerabilities if v["severity"] == "medium"]),
+            "medium_issues": len(
+                [v for v in vulnerabilities if v["severity"] == "medium"]
+            ),
             "low_issues": len([v for v in vulnerabilities if v["severity"] == "low"]),
         }
 
@@ -449,7 +470,7 @@ class VulnerabilityScanner:
 
         return scan_result
 
-    async def _check_dependency_vulnerabilities(self) -> List[Dict[str, Any]]:
+    async def _check_dependency_vulnerabilities(self) -> list[dict[str, Any]]:
         """Check for known dependency vulnerabilities."""
         vulnerabilities = []
 
@@ -458,7 +479,7 @@ class VulnerabilityScanner:
 
         return vulnerabilities
 
-    async def _check_configuration_security(self) -> List[Dict[str, Any]]:
+    async def _check_configuration_security(self) -> list[dict[str, Any]]:
         """Check security configuration."""
         vulnerabilities = []
 
@@ -488,7 +509,7 @@ class VulnerabilityScanner:
 
         return vulnerabilities
 
-    async def _check_input_validation(self) -> List[Dict[str, Any]]:
+    async def _check_input_validation(self) -> list[dict[str, Any]]:
         """Check input validation security."""
         vulnerabilities = []
 
@@ -516,7 +537,7 @@ class VulnerabilityScanner:
 
         return vulnerabilities
 
-    async def _check_authentication_security(self) -> List[Dict[str, Any]]:
+    async def _check_authentication_security(self) -> list[dict[str, Any]]:
         """Check authentication security."""
         vulnerabilities = []
 
@@ -594,7 +615,7 @@ class SecurityComplianceService:
 
     async def authenticate_request(
         self, credentials: HTTPAuthorizationCredentials = Depends(security)
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Authenticate request using JWT token."""
         try:
             payload = self.jwt_manager.verify_token(credentials.credentials)
@@ -607,7 +628,9 @@ class SecurityComplianceService:
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication failed"
             )
 
-    def authorize_request(self, user_payload: Dict[str, Any], required_roles: List[str]) -> bool:
+    def authorize_request(
+        self, user_payload: dict[str, Any], required_roles: list[str]
+    ) -> bool:
         """Authorize request based on user roles."""
         user_roles = user_payload.get("roles", [])
 
@@ -629,18 +652,21 @@ class SecurityComplianceService:
             return self.input_validator.sanitize_input(data)
 
         elif isinstance(data, dict):
-            return {key: self.validate_input_data(value, input_type) for key, value in data.items()}
+            return {
+                key: self.validate_input_data(value, input_type)
+                for key, value in data.items()
+            }
 
         elif isinstance(data, list):
             return [self.validate_input_data(item, input_type) for item in data]
 
         return data
 
-    async def run_security_scan(self) -> Dict[str, Any]:
+    async def run_security_scan(self) -> dict[str, Any]:
         """Run comprehensive security vulnerability scan."""
         return await self.vulnerability_scanner.run_security_scan()
 
-    def get_latest_scan_results(self) -> Optional[Dict[str, Any]]:
+    def get_latest_scan_results(self) -> dict[str, Any] | None:
         """Get latest security scan results."""
         if self.vulnerability_scanner.scan_results:
             return self.vulnerability_scanner.scan_results[-1]
@@ -666,7 +692,7 @@ class SecurityComplianceService:
         else:
             return 100.0
 
-    def get_security_summary(self) -> Dict[str, Any]:
+    def get_security_summary(self) -> dict[str, Any]:
         """Get security compliance summary."""
         recent_events = self.audit_logger.get_events(hours=24)
         latest_scan = self.get_latest_scan_results()
@@ -694,15 +720,19 @@ class SecurityComplianceService:
             ),
             "latest_vulnerability_scan": {
                 "timestamp": latest_scan["timestamp"] if latest_scan else None,
-                "total_vulnerabilities": (latest_scan["total_issues"] if latest_scan else 0),
-                "critical_vulnerabilities": (latest_scan["critical_issues"] if latest_scan else 0),
+                "total_vulnerabilities": (
+                    latest_scan["total_issues"] if latest_scan else 0
+                ),
+                "critical_vulnerabilities": (
+                    latest_scan["critical_issues"] if latest_scan else 0
+                ),
                 "scan_duration": latest_scan["duration_seconds"] if latest_scan else 0,
             },
         }
 
 
 # Global security service instance
-_security_service: Optional[SecurityComplianceService] = None
+_security_service: SecurityComplianceService | None = None
 
 
 def get_security_service() -> SecurityComplianceService:
@@ -714,7 +744,7 @@ def get_security_service() -> SecurityComplianceService:
     return _security_service
 
 
-def security_required(required_roles: List[str] = None):
+def security_required(required_roles: list[str] = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

@@ -24,9 +24,9 @@ StateGraph Nodes Tested:
 import asyncio
 import json
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any
 
 import httpx
 
@@ -106,7 +106,7 @@ class LangGraphAmendmentProcessingTests:
 
         print(f"  ✅ Test stakeholders registered: {len(test_stakeholders)}")
 
-    async def test_propose_amendment_node(self) -> Tuple[str, Dict[str, Any]]:
+    async def test_propose_amendment_node(self) -> tuple[str, dict[str, Any]]:
         """Test the propose_amendment StateGraph node."""
         print("\n📝 Testing propose_amendment Node...")
 
@@ -199,7 +199,7 @@ class LangGraphAmendmentProcessingTests:
             {
                 "from_node": "START",
                 "to_node": "propose_amendment",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "state_data": {"amendment_id": amendment_id},
             }
         )
@@ -208,7 +208,7 @@ class LangGraphAmendmentProcessingTests:
 
     async def test_gather_stakeholder_feedback_node(
         self, amendment_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test the gather_stakeholder_feedback StateGraph node."""
         print("\n👥 Testing gather_stakeholder_feedback Node...")
 
@@ -222,7 +222,7 @@ class LangGraphAmendmentProcessingTests:
                 "stakeholder_config": {
                     "notification_channels": ["email", "dashboard", "api"],
                     "response_deadline": (
-                        datetime.now(timezone.utc) + timedelta(hours=24)
+                        datetime.now(UTC) + timedelta(hours=24)
                     ).isoformat(),
                     "feedback_types": ["vote", "comments", "suggested_modifications"],
                     "enable_real_time_tracking": True,
@@ -303,7 +303,7 @@ class LangGraphAmendmentProcessingTests:
             {
                 "from_node": "propose_amendment",
                 "to_node": "gather_stakeholder_feedback",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "state_data": {"feedback_count": len(stakeholder_responses)},
             }
         )
@@ -312,7 +312,7 @@ class LangGraphAmendmentProcessingTests:
 
     async def test_analyze_constitutionality_node(
         self, amendment_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test the analyze_constitutionality StateGraph node with LLM integration."""
         print("\n🧠 Testing analyze_constitutionality Node...")
 
@@ -379,14 +379,14 @@ class LangGraphAmendmentProcessingTests:
             {
                 "from_node": "gather_stakeholder_feedback",
                 "to_node": "analyze_constitutionality",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "state_data": {"fidelity_score": fidelity_score},
             }
         )
 
         return analysis_result
 
-    async def test_conduct_voting_node(self, amendment_id: str) -> Dict[str, Any]:
+    async def test_conduct_voting_node(self, amendment_id: str) -> dict[str, Any]:
         """Test the conduct_voting StateGraph node with weighted voting."""
         print("\n🗳️  Testing conduct_voting Node...")
 
@@ -402,7 +402,7 @@ class LangGraphAmendmentProcessingTests:
                     "quorum_threshold": 0.6,
                     "approval_threshold": 0.7,
                     "voting_deadline": (
-                        datetime.now(timezone.utc) + timedelta(hours=48)
+                        datetime.now(UTC) + timedelta(hours=48)
                     ).isoformat(),
                     "enable_delegation": True,
                     "transparency_level": "full",
@@ -445,14 +445,14 @@ class LangGraphAmendmentProcessingTests:
             {
                 "from_node": "analyze_constitutionality",
                 "to_node": "conduct_voting",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "state_data": {"approval_rate": weighted_approval_rate},
             }
         )
 
         return voting_result
 
-    async def test_refine_amendment_node(self, amendment_id: str) -> Dict[str, Any]:
+    async def test_refine_amendment_node(self, amendment_id: str) -> dict[str, Any]:
         """Test the refine_amendment StateGraph node."""
         print("\n✨ Testing refine_amendment Node...")
 
@@ -500,7 +500,7 @@ class LangGraphAmendmentProcessingTests:
             {
                 "from_node": "conduct_voting",
                 "to_node": "refine_amendment",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "state_data": {"final_status": final_status},
             }
         )
@@ -574,12 +574,12 @@ class LangGraphAmendmentProcessingTests:
         finally:
             await self.client.aclose()
 
-    async def generate_langgraph_report(self, workflow_result: Dict[str, Any]):
+    async def generate_langgraph_report(self, workflow_result: dict[str, Any]):
         """Generate comprehensive LangGraph test report."""
         print("\n📊 Generating LangGraph Test Report...")
 
         report = {
-            "test_execution_timestamp": datetime.now(timezone.utc).isoformat(),
+            "test_execution_timestamp": datetime.now(UTC).isoformat(),
             "test_suite": "LangGraph Amendment Processing StateGraph",
             "workflow_result": workflow_result,
             "node_execution_metrics": self.node_execution_metrics,

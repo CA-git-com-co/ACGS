@@ -92,7 +92,7 @@ docker build -t acgs-haproxy:latest .
 
 # Deploy with Docker Compose
 cd ../../infrastructure/docker
-docker-compose -f infrastructure/docker/docker-compose.yml up -d
+docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up -d
 ```
 
 2. **Verify Deployment**

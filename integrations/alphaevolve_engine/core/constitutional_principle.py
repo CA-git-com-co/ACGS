@@ -5,26 +5,26 @@ Provides mock ConstitutionalPrinciple class for testing and fallback scenarios.
 """
 
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
+from typing import Any
 
 
 @dataclass
 class ConstitutionalPrinciple:
     """Mock ConstitutionalPrinciple for type compatibility."""
-    
+
     principle_id: str
     principle_text: str
     scope: str = "general"
     severity: str = "medium"
-    distance_score: Optional[float] = None
+    distance_score: float | None = None
     priority_weight: float = 1.0
-    constraints: Optional[Dict[str, Any]] = None
-    
+    constraints: dict[str, Any] | None = None
+
     def __post_init__(self):
         if self.constraints is None:
             self.constraints = {}
-    
-    def to_dict(self) -> Dict[str, Any]:
+
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "principle_id": self.principle_id,
@@ -33,11 +33,11 @@ class ConstitutionalPrinciple:
             "severity": self.severity,
             "distance_score": self.distance_score,
             "priority_weight": self.priority_weight,
-            "constraints": self.constraints
+            "constraints": self.constraints,
         }
-    
+
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ConstitutionalPrinciple":
+    def from_dict(cls, data: dict[str, Any]) -> "ConstitutionalPrinciple":
         """Create from dictionary representation."""
         return cls(
             principle_id=data.get("principle_id", ""),
@@ -46,5 +46,5 @@ class ConstitutionalPrinciple:
             severity=data.get("severity", "medium"),
             distance_score=data.get("distance_score"),
             priority_weight=data.get("priority_weight", 1.0),
-            constraints=data.get("constraints", {})
+            constraints=data.get("constraints", {}),
         )

@@ -27,7 +27,7 @@ async def test_direct_ollama():
                 "options": {"temperature": 0.3, "num_predict": 100},
             }
 
-            print(f"Sending request to: http://127.0.0.1:11434/api/generate")
+            print("Sending request to: http://127.0.0.1:11434/api/generate")
             print(f"Payload: {json.dumps(payload, indent=2)}")
 
             async with session.post(
@@ -112,7 +112,7 @@ async def test_model_availability():
                     )
                     model_names = [model["name"] for model in models]
 
-                    print(f"Model names:")
+                    print("Model names:")
                     for name in model_names:
                         print(f"  - {name}")
 

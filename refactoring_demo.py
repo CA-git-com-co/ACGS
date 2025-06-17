@@ -201,7 +201,7 @@ class RefactoringDemo:
         ac_client = self.service_mesh.get_client(ServiceType.AC)
         circuit_breaker = ac_client.circuit_breaker
 
-        print(f"\n   🔄 Circuit Breaker Status:")
+        print("\n   🔄 Circuit Breaker Status:")
         status = circuit_breaker.get_status()
         print(f"      State: {status['state']}")
         print(f"      Failure Count: {status['failure_count']}")
@@ -211,7 +211,7 @@ class RefactoringDemo:
         registry = self.service_mesh.registry
         env_info = registry.get_environment_info()
 
-        print(f"\n   📋 Service Registry:")
+        print("\n   📋 Service Registry:")
         print(f"      Environment: {env_info['environment']}")
         print(f"      Total Services: {env_info['total_services']}")
 
@@ -221,7 +221,7 @@ class RefactoringDemo:
         # Demonstrate metrics collection
         metrics = await self.service_mesh.get_all_metrics()
 
-        print(f"\n   📊 Service Metrics:")
+        print("\n   📊 Service Metrics:")
         for service, service_metrics in metrics.get("data", {}).items():
             print(f"      - {service}:")
             print(f"        Requests: {service_metrics['request_count']}")
@@ -266,7 +266,7 @@ class RefactoringDemo:
             message="User retrieved successfully",
         )
 
-        print(f"\n   📋 Standard Response Format:")
+        print("\n   📋 Standard Response Format:")
         print(f"      Status: {response['status']}")
         print(f"      Timestamp: {response['timestamp']}")
         print(f"      Data: {response['data']}")
@@ -277,7 +277,7 @@ class RefactoringDemo:
             items=sample_items, page=1, size=5, total_items=25
         )
 
-        print(f"\n   📋 Paginated List Response:")
+        print("\n   📋 Paginated List Response:")
         print(f"      Items: {len(list_response['data'])}")
         pagination = list_response["pagination"]
         print(f"      Page: {pagination['page']}/{pagination['total_pages']}")
@@ -292,7 +292,7 @@ class RefactoringDemo:
             dependencies={"database": "healthy", "redis": "healthy"},
         )
 
-        print(f"\n   📋 Health Check Response:")
+        print("\n   📋 Health Check Response:")
         health_data = health_response["data"]
         print(f"      Service: {health_data['service']}")
         print(f"      Status: {health_data['status']}")
@@ -312,45 +312,45 @@ class RefactoringDemo:
         print("REFACTORING SUMMARY")
         print("=" * 60)
 
-        print(f"\n📊 Demonstration Metrics:")
+        print("\n📊 Demonstration Metrics:")
         print(f"   - Duration: {duration:.2f} seconds")
         print(f"   - Requests Made: {self.metrics['requests_made']}")
         print(f"   - Errors Handled: {self.metrics['errors_handled']}")
         print(f"   - Services Tested: {len(self.metrics['services_called'])}")
 
-        print(f"\n🎯 Key Improvements Achieved:")
-        print(f"   ✅ Eliminated duplicate HTTP client implementations")
-        print(f"   ✅ Standardized validation across all services")
-        print(f"   ✅ Unified error handling and response formats")
-        print(f"   ✅ Implemented service mesh with circuit breakers")
-        print(f"   ✅ Centralized configuration management")
-        print(f"   ✅ Consistent logging and monitoring patterns")
+        print("\n🎯 Key Improvements Achieved:")
+        print("   ✅ Eliminated duplicate HTTP client implementations")
+        print("   ✅ Standardized validation across all services")
+        print("   ✅ Unified error handling and response formats")
+        print("   ✅ Implemented service mesh with circuit breakers")
+        print("   ✅ Centralized configuration management")
+        print("   ✅ Consistent logging and monitoring patterns")
 
-        print(f"\n📈 Quantified Benefits:")
-        print(f"   - Code duplication reduced by ~60%")
-        print(f"   - API response consistency improved to 100%")
-        print(f"   - Error handling standardized across all services")
-        print(f"   - Service communication reliability improved")
-        print(f"   - Development velocity increased through reusable components")
+        print("\n📈 Quantified Benefits:")
+        print("   - Code duplication reduced by ~60%")
+        print("   - API response consistency improved to 100%")
+        print("   - Error handling standardized across all services")
+        print("   - Service communication reliability improved")
+        print("   - Development velocity increased through reusable components")
 
-        print(f"\n🔧 Technical Debt Eliminated:")
-        print(f"   - Removed 15+ duplicate HTTP client implementations")
-        print(f"   - Consolidated 8+ validation pattern variations")
-        print(f"   - Unified 12+ different error response formats")
-        print(f"   - Eliminated circular dependencies between services")
-        print(f"   - Standardized configuration management")
+        print("\n🔧 Technical Debt Eliminated:")
+        print("   - Removed 15+ duplicate HTTP client implementations")
+        print("   - Consolidated 8+ validation pattern variations")
+        print("   - Unified 12+ different error response formats")
+        print("   - Eliminated circular dependencies between services")
+        print("   - Standardized configuration management")
 
-        print(f"\n🚀 Production Readiness:")
-        print(f"   - Maintained ≥90% test coverage requirement")
-        print(f"   - Preserved <50ms policy decision latency")
-        print(f"   - Enhanced monitoring and observability")
-        print(f"   - Improved system resilience and fault tolerance")
+        print("\n🚀 Production Readiness:")
+        print("   - Maintained ≥90% test coverage requirement")
+        print("   - Preserved <50ms policy decision latency")
+        print("   - Enhanced monitoring and observability")
+        print("   - Improved system resilience and fault tolerance")
 
-        print(f"\n✨ Developer Experience:")
-        print(f"   - Simplified service integration patterns")
-        print(f"   - Consistent API contracts across services")
-        print(f"   - Improved debugging and troubleshooting")
-        print(f"   - Reduced onboarding time for new developers")
+        print("\n✨ Developer Experience:")
+        print("   - Simplified service integration patterns")
+        print("   - Consistent API contracts across services")
+        print("   - Improved debugging and troubleshooting")
+        print("   - Reduced onboarding time for new developers")
 
 
 async def main():

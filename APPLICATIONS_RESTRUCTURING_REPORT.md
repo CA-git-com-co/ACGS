@@ -86,10 +86,10 @@ applications/
 ├── README.md
 ├── app/
 ├── components/          # Root-level shared components
-├── frontend/
+├── applications/governance-dashboard/
 ├── governance-dashboard/
 ├── hooks/              # Root-level shared hooks
-├── legacy-frontend/
+├── legacy-applications/governance-dashboard/
 ├── types/              # Root-level shared types
 ├── package.json
 ├── tsconfig.json
@@ -101,7 +101,7 @@ applications/
 applications/
 ├── README.md
 ├── app/
-├── frontend/
+├── applications/governance-dashboard/
 ├── governance-dashboard/
 │   ├── src/
 │   │   ├── components/
@@ -109,7 +109,7 @@ applications/
 │   │   └── pages/
 │   ├── public/
 │   └── package.json
-├── legacy-frontend/
+├── legacy-applications/governance-dashboard/
 │   ├── src/
 │   │   ├── components/
 │   │   ├── services/
@@ -133,7 +133,7 @@ applications/
 2. **✅ legacy-frontend directory exists** 
 3. **✅ shared directory exists**
 4. **✅ governance-dashboard/package.json exists**
-5. **✅ legacy-frontend/package.json exists**
+5. **✅ legacy-applications/governance-dashboard/package.json exists**
 
 ### Microservice Integration Verification
 

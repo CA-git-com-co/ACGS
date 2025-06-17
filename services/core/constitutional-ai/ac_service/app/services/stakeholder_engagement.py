@@ -13,11 +13,11 @@ with the Constitutional Council StateGraph to provide:
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import httpx
 from app import crud
@@ -79,13 +79,13 @@ class NotificationRecord:
     amendment_id: int
     channel: NotificationChannel
     status: NotificationStatus
-    content: Dict[str, Any]
-    sent_at: Optional[datetime] = None
-    delivered_at: Optional[datetime] = None
-    read_at: Optional[datetime] = None
-    error_message: Optional[str] = None
+    content: dict[str, Any]
+    sent_at: datetime | None = None
+    delivered_at: datetime | None = None
+    read_at: datetime | None = None
+    error_message: str | None = None
     retry_count: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -100,17 +100,17 @@ class FeedbackRecord:
     feedback_type: str  # "comment", "vote", "suggestion", "objection"
     status: FeedbackStatus
     submitted_at: datetime
-    reviewed_at: Optional[datetime] = None
-    reviewer_id: Optional[int] = None
-    incorporation_notes: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    reviewed_at: datetime | None = None
+    reviewer_id: int | None = None
+    incorporation_notes: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class StakeholderEngagementInput(BaseModel):
     """Input model for stakeholder engagement configuration."""
 
     amendment_id: int = Field(..., description="Amendment ID for engagement")
-    required_roles: List[StakeholderRole] = Field(
+    required_roles: list[StakeholderRole] = Field(
         default=[
             StakeholderRole.CONSTITUTIONAL_EXPERT,
             StakeholderRole.POLICY_ADMINISTRATOR,
@@ -119,7 +119,7 @@ class StakeholderEngagementInput(BaseModel):
         ],
         description="Required stakeholder roles for engagement",
     )
-    notification_channels: List[NotificationChannel] = Field(
+    notification_channels: list[NotificationChannel] = Field(
         default=[NotificationChannel.EMAIL, NotificationChannel.DASHBOARD],
         description="Notification channels to use",
     )
@@ -129,7 +129,7 @@ class StakeholderEngagementInput(BaseModel):
     require_all_stakeholders: bool = Field(
         default=False, description="Whether all stakeholder roles must provide feedback"
     )
-    reminder_intervals_hours: List[int] = Field(
+    reminder_intervals_hours: list[int] = Field(
         default=[24, 12, 2], description="Reminder intervals before deadline"
     )
 
@@ -156,8 +156,8 @@ class StakeholderEngagementStatus(BaseModel):
     is_deadline_passed: bool
     notifications_sent: int
     feedback_received: int
-    feedback_by_role: Dict[str, int]
-    status_by_stakeholder: Dict[int, Dict[str, Any]]
+    feedback_by_role: dict[str, int]
+    status_by_stakeholder: dict[int, dict[str, Any]]
     last_updated: datetime
 
 
@@ -175,10 +175,12 @@ class StakeholderNotificationService:
         # sha256: func_hash
         self.db = db
         self.config = config
-        self.notifications: Dict[str, NotificationRecord] = {}
-        self.feedback_records: Dict[str, FeedbackRecord] = {}
-        self.active_engagements: Dict[int, StakeholderEngagementStatus] = {}
-        self.websocket_connections: Dict[int, Set[Any]] = {}  # amendment_id -> websockets
+        self.notifications: dict[str, NotificationRecord] = {}
+        self.feedback_records: dict[str, FeedbackRecord] = {}
+        self.active_engagements: dict[int, StakeholderEngagementStatus] = {}
+        self.websocket_connections: dict[int, set[Any]] = (
+            {}
+        )  # amendment_id -> websockets
 
         # Notification templates
         self.notification_templates = {
@@ -225,13 +227,15 @@ class StakeholderNotificationService:
                 raise ValueError(f"Amendment {engagement_input.amendment_id} not found")
 
             # Get stakeholders by required roles
-            stakeholders = await self._get_stakeholders_by_roles(engagement_input.required_roles)
+            stakeholders = await self._get_stakeholders_by_roles(
+                engagement_input.required_roles
+            )
 
             if not stakeholders:
                 raise ValueError("No stakeholders found for required roles")
 
             # Calculate engagement deadline
-            deadline = datetime.now(timezone.utc) + timedelta(
+            deadline = datetime.now(UTC) + timedelta(
                 hours=engagement_input.engagement_period_hours
             )
 
@@ -246,9 +250,11 @@ class StakeholderNotificationService:
                 is_deadline_passed=False,
                 notifications_sent=0,
                 feedback_received=0,
-                feedback_by_role={role.value: 0 for role in engagement_input.required_roles},
+                feedback_by_role={
+                    role.value: 0 for role in engagement_input.required_roles
+                },
                 status_by_stakeholder={},
-                last_updated=datetime.now(timezone.utc),
+                last_updated=datetime.now(UTC),
             )
 
             # Store engagement status
@@ -268,11 +274,15 @@ class StakeholderNotificationService:
                     notification_tasks.append(task)
 
             # Execute notifications concurrently
-            notification_results = await asyncio.gather(*notification_tasks, return_exceptions=True)
+            notification_results = await asyncio.gather(
+                *notification_tasks, return_exceptions=True
+            )
 
             # Count successful notifications
             successful_notifications = sum(
-                1 for result in notification_results if not isinstance(result, Exception) and result
+                1
+                for result in notification_results
+                if not isinstance(result, Exception) and result
             )
             engagement_status.notifications_sent = successful_notifications
 
@@ -311,19 +321,25 @@ class StakeholderNotificationService:
             logger.error(f"Failed to initiate stakeholder engagement: {e}")
             raise
 
-    async def _get_stakeholders_by_roles(self, required_roles: List[StakeholderRole]) -> List[User]:
+    async def _get_stakeholders_by_roles(
+        self, required_roles: list[StakeholderRole]
+    ) -> list[User]:
         """Get users with required stakeholder roles."""
         try:
             # Convert enum values to strings for database query
             role_names = [role.value for role in required_roles]
 
             # Query users with required roles
-            query = select(User).where(and_(User.is_active == True, User.role.in_(role_names)))
+            query = select(User).where(
+                and_(User.is_active, User.role.in_(role_names))
+            )
 
             result = await self.db.execute(query)
             stakeholders = result.scalars().all()
 
-            logger.info(f"Found {len(stakeholders)} stakeholders for roles: {role_names}")
+            logger.info(
+                f"Found {len(stakeholders)} stakeholders for roles: {role_names}"
+            )
             return stakeholders
 
         except Exception as e:
@@ -359,9 +375,7 @@ class StakeholderNotificationService:
         """
         try:
             # Generate notification ID
-            notification_id = (
-                f"{amendment.id}_{stakeholder.id}_{channel.value}_{int(datetime.now().timestamp())}"
-            )
+            notification_id = f"{amendment.id}_{stakeholder.id}_{channel.value}_{int(datetime.now().timestamp())}"
 
             # Determine stakeholder role
             stakeholder_role = StakeholderRole(stakeholder.role)
@@ -403,7 +417,7 @@ class StakeholderNotificationService:
             # Update notification status
             if success:
                 notification_record.status = NotificationStatus.SENT
-                notification_record.sent_at = datetime.now(timezone.utc)
+                notification_record.sent_at = datetime.now(UTC)
                 logger.info(f"Notification sent successfully: {notification_id}")
             else:
                 notification_record.status = NotificationStatus.FAILED
@@ -423,13 +437,15 @@ class StakeholderNotificationService:
         notification_type: str,
         deadline: datetime,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create notification content based on type and context."""
         template_config = self.notification_templates.get(notification_type, {})
 
         # Base content structure
         content = {
-            "subject": template_config.get("subject", "Constitutional Amendment Notification"),
+            "subject": template_config.get(
+                "subject", "Constitutional Amendment Notification"
+            ),
             "template": template_config.get("template", "default_notification.html"),
             "stakeholder": {
                 "id": stakeholder.id,
@@ -442,12 +458,14 @@ class StakeholderNotificationService:
                 "title": amendment.title,
                 "description": amendment.description,
                 "proposed_by": amendment.proposed_by_user_id,
-                "created_at": (amendment.created_at.isoformat() if amendment.created_at else None),
+                "created_at": (
+                    amendment.created_at.isoformat() if amendment.created_at else None
+                ),
             },
             "engagement": {
                 "deadline": deadline.isoformat(),
                 "hours_remaining": int(
-                    (deadline - datetime.now(timezone.utc)).total_seconds() / 3600
+                    (deadline - datetime.now(UTC)).total_seconds() / 3600
                 ),
                 "notification_type": notification_type,
             },
@@ -465,7 +483,6 @@ class StakeholderNotificationService:
         """Send email notification."""
         try:
             # Email configuration (should be moved to environment variables)
-            smtp_server = "localhost"  # Configure based on environment
 
             # Create email message
             msg = MIMEMultipart()
@@ -502,7 +519,7 @@ class StakeholderNotificationService:
 
             # Mark as delivered (in real implementation, check SMTP response)
             notification.status = NotificationStatus.DELIVERED
-            notification.delivered_at = datetime.now(timezone.utc)
+            notification.delivered_at = datetime.now(UTC)
 
             return True
 
@@ -511,15 +528,19 @@ class StakeholderNotificationService:
             notification.error_message = str(e)
             return False
 
-    async def _send_dashboard_notification(self, notification: NotificationRecord) -> bool:
+    async def _send_dashboard_notification(
+        self, notification: NotificationRecord
+    ) -> bool:
         """Send dashboard notification."""
         try:
             # Dashboard notifications are stored for display in the user interface
-            logger.info(f"Dashboard notification created for user {notification.stakeholder_id}")
+            logger.info(
+                f"Dashboard notification created for user {notification.stakeholder_id}"
+            )
 
             # Mark as delivered immediately (dashboard notifications are always available)
             notification.status = NotificationStatus.DELIVERED
-            notification.delivered_at = datetime.now(timezone.utc)
+            notification.delivered_at = datetime.now(UTC)
 
             return True
 
@@ -528,7 +549,9 @@ class StakeholderNotificationService:
             notification.error_message = str(e)
             return False
 
-    async def _send_webhook_notification(self, notification: NotificationRecord) -> bool:
+    async def _send_webhook_notification(
+        self, notification: NotificationRecord
+    ) -> bool:
         """Send webhook notification."""
         try:
             # Webhook configuration (should be configurable per stakeholder)
@@ -547,7 +570,7 @@ class StakeholderNotificationService:
                 "amendment": notification.content["amendment"],
                 "engagement": notification.content["engagement"],
                 "actions": notification.content["actions"],
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
             # Send webhook request
@@ -562,7 +585,7 @@ class StakeholderNotificationService:
 
             logger.info(f"Webhook notification sent to {webhook_url}")
             notification.status = NotificationStatus.DELIVERED
-            notification.delivered_at = datetime.now(timezone.utc)
+            notification.delivered_at = datetime.now(UTC)
 
             return True
 
@@ -571,7 +594,9 @@ class StakeholderNotificationService:
             notification.error_message = str(e)
             return False
 
-    async def _send_websocket_notification(self, notification: NotificationRecord) -> bool:
+    async def _send_websocket_notification(
+        self, notification: NotificationRecord
+    ) -> bool:
         """Send WebSocket notification."""
         try:
             amendment_id = notification.amendment_id
@@ -580,7 +605,9 @@ class StakeholderNotificationService:
             connections = self.websocket_connections.get(amendment_id, set())
 
             if not connections:
-                logger.info(f"No active WebSocket connections for amendment {amendment_id}")
+                logger.info(
+                    f"No active WebSocket connections for amendment {amendment_id}"
+                )
                 return True  # Not an error - just no active connections
 
             # Prepare WebSocket message
@@ -590,7 +617,7 @@ class StakeholderNotificationService:
                 "stakeholder_id": notification.stakeholder_id,
                 "amendment_id": amendment_id,
                 "content": notification.content,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
             # Send to all active connections
@@ -605,9 +632,11 @@ class StakeholderNotificationService:
             # Remove disconnected connections
             connections -= disconnected_connections
 
-            logger.info(f"WebSocket notification sent to {len(connections)} connections")
+            logger.info(
+                f"WebSocket notification sent to {len(connections)} connections"
+            )
             notification.status = NotificationStatus.DELIVERED
-            notification.delivered_at = datetime.now(timezone.utc)
+            notification.delivered_at = datetime.now(UTC)
 
             return True
 
@@ -648,9 +677,7 @@ class StakeholderNotificationService:
             stakeholder_role = StakeholderRole(stakeholder.role)
 
             # Generate feedback ID
-            feedback_id = (
-                f"{amendment_id}_{stakeholder_id}_{feedback_type}_{int(datetime.now().timestamp())}"
-            )
+            feedback_id = f"{amendment_id}_{stakeholder_id}_{feedback_type}_{int(datetime.now().timestamp())}"
 
             # Create feedback record
             feedback_record = FeedbackRecord(
@@ -661,7 +688,7 @@ class StakeholderNotificationService:
                 feedback_content=feedback_content,
                 feedback_type=feedback_type,
                 status=FeedbackStatus.SUBMITTED,
-                submitted_at=datetime.now(timezone.utc),
+                submitted_at=datetime.now(UTC),
             )
 
             # Store feedback record
@@ -683,19 +710,27 @@ class StakeholderNotificationService:
             logger.error(f"Failed to collect stakeholder feedback: {e}")
             raise
 
-    async def _update_engagement_status(self, amendment_id: int, stakeholder_id: int) -> None:
+    async def _update_engagement_status(
+        self, amendment_id: int, stakeholder_id: int
+    ) -> None:
         """Update engagement status after feedback submission."""
         try:
             engagement_status = self.active_engagements.get(amendment_id)
             if not engagement_status:
-                logger.warning(f"No active engagement found for amendment {amendment_id}")
+                logger.warning(
+                    f"No active engagement found for amendment {amendment_id}"
+                )
                 return
 
             # Update stakeholder status
             if stakeholder_id in engagement_status.status_by_stakeholder:
-                stakeholder_status = engagement_status.status_by_stakeholder[stakeholder_id]
+                stakeholder_status = engagement_status.status_by_stakeholder[
+                    stakeholder_id
+                ]
                 stakeholder_status["feedback_submitted"] = True
-                stakeholder_status["last_activity"] = datetime.now(timezone.utc).isoformat()
+                stakeholder_status["last_activity"] = datetime.now(
+                    UTC
+                ).isoformat()
                 stakeholder_status["engagement_score"] = (
                     1.0  # Full engagement for feedback submission
                 )
@@ -709,12 +744,16 @@ class StakeholderNotificationService:
             )
 
             engagement_status.engaged_stakeholders = engaged_stakeholders
-            engagement_status.pending_stakeholders = total_stakeholders - engaged_stakeholders
+            engagement_status.pending_stakeholders = (
+                total_stakeholders - engaged_stakeholders
+            )
             engagement_status.engagement_rate = (
-                engaged_stakeholders / total_stakeholders if total_stakeholders > 0 else 0.0
+                engaged_stakeholders / total_stakeholders
+                if total_stakeholders > 0
+                else 0.0
             )
             engagement_status.feedback_received += 1
-            engagement_status.last_updated = datetime.now(timezone.utc)
+            engagement_status.last_updated = datetime.now(UTC)
 
             # Update feedback by role
             stakeholder_query = select(User).where(User.id == stakeholder_id)
@@ -759,7 +798,7 @@ class StakeholderNotificationService:
                     "is_deadline_passed": engagement_status.is_deadline_passed,
                     "last_updated": engagement_status.last_updated.isoformat(),
                 },
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
             # Send to all active connections
@@ -774,13 +813,15 @@ class StakeholderNotificationService:
             # Remove disconnected connections
             connections -= disconnected_connections
 
-            logger.info(f"Engagement update broadcasted to {len(connections)} connections")
+            logger.info(
+                f"Engagement update broadcasted to {len(connections)} connections"
+            )
 
         except Exception as e:
             logger.error(f"Failed to broadcast engagement update: {e}")
 
     async def _schedule_reminder_notifications(
-        self, amendment_id: int, reminder_intervals_hours: List[int], deadline: datetime
+        self, amendment_id: int, reminder_intervals_hours: list[int], deadline: datetime
     ) -> None:
         """Schedule reminder notifications before deadline."""
         try:
@@ -788,7 +829,7 @@ class StakeholderNotificationService:
                 reminder_time = deadline - timedelta(hours=hours_before)
 
                 # Only schedule if reminder time is in the future
-                if reminder_time > datetime.now(timezone.utc):
+                if reminder_time > datetime.now(UTC):
                     # In a production system, this would use a task queue like Celery
                     # For now, we'll log the scheduled reminder
                     logger.info(
@@ -801,13 +842,13 @@ class StakeholderNotificationService:
 
     async def get_engagement_status(
         self, amendment_id: int
-    ) -> Optional[StakeholderEngagementStatus]:
+    ) -> StakeholderEngagementStatus | None:
         """Get current engagement status for an amendment."""
         return self.active_engagements.get(amendment_id)
 
     async def get_stakeholder_notifications(
-        self, stakeholder_id: int, amendment_id: Optional[int] = None
-    ) -> List[NotificationRecord]:
+        self, stakeholder_id: int, amendment_id: int | None = None
+    ) -> list[NotificationRecord]:
         """Get notifications for a specific stakeholder."""
         notifications = []
 
@@ -818,15 +859,15 @@ class StakeholderNotificationService:
 
         # Sort by sent time (most recent first)
         notifications.sort(
-            key=lambda n: n.sent_at or datetime.min.replace(tzinfo=timezone.utc),
+            key=lambda n: n.sent_at or datetime.min.replace(tzinfo=UTC),
             reverse=True,
         )
 
         return notifications
 
     async def get_stakeholder_feedback(
-        self, amendment_id: int, stakeholder_id: Optional[int] = None
-    ) -> List[FeedbackRecord]:
+        self, amendment_id: int, stakeholder_id: int | None = None
+    ) -> list[FeedbackRecord]:
         """Get feedback records for an amendment."""
         feedback_records = []
 

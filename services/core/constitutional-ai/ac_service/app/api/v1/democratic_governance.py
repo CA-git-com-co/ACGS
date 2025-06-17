@@ -14,7 +14,6 @@ Key Features:
 """
 
 import logging
-from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -45,14 +44,14 @@ class ProposalCreateRequest(BaseModel):
     decision_type: str = Field(
         default="policy_modification", description="Type of governance decision"
     )
-    content: Dict = Field(default_factory=dict, description="Proposal content")
-    supporting_documents: List[Dict] = Field(
+    content: dict = Field(default_factory=dict, description="Proposal content")
+    supporting_documents: list[dict] = Field(
         default_factory=list, description="Supporting documents"
     )
-    stakeholder_groups: List[str] = Field(
+    stakeholder_groups: list[str] = Field(
         default_factory=list, description="Affected stakeholder groups"
     )
-    constitutional_implications: Dict = Field(
+    constitutional_implications: dict = Field(
         default_factory=dict, description="Constitutional implications"
     )
 
@@ -61,7 +60,9 @@ class StageAdvancementRequest(BaseModel):
     """Request model for advancing workflow stages."""
 
     target_stage: str = Field(..., description="Target workflow stage")
-    action_data: Dict = Field(default_factory=dict, description="Additional action data")
+    action_data: dict = Field(
+        default_factory=dict, description="Additional action data"
+    )
 
 
 class ApprovalRequest(BaseModel):
@@ -70,7 +71,9 @@ class ApprovalRequest(BaseModel):
     approval_level: str = Field(..., description="Level of approval")
     approved: bool = Field(..., description="Approval decision")
     rationale: str = Field(default="", description="Approval rationale")
-    supporting_data: Dict = Field(default_factory=dict, description="Supporting approval data")
+    supporting_data: dict = Field(
+        default_factory=dict, description="Supporting approval data"
+    )
 
 
 class FinalizationRequest(BaseModel):
@@ -110,7 +113,9 @@ async def create_proposal(
                 "current_stage": proposal.current_stage.value,
                 "created_at": proposal.created_at,
                 "integrity_hash": proposal.integrity_hash,
-                "required_approvals": [level.value for level in proposal.required_approvals],
+                "required_approvals": [
+                    level.value for level in proposal.required_approvals
+                ],
             },
         }
 
@@ -123,8 +128,8 @@ async def create_proposal(
 
 @router.get("/proposals")
 async def list_proposals(
-    decision_type: Optional[str] = Query(None, description="Filter by decision type"),
-    stage: Optional[str] = Query(None, description="Filter by current stage"),
+    decision_type: str | None = Query(None, description="Filter by decision type"),
+    stage: str | None = Query(None, description="Filter by current stage"),
     limit: int = Query(50, description="Maximum number of proposals to return"),
     offset: int = Query(0, description="Number of proposals to skip"),
 ):
@@ -214,9 +219,12 @@ async def get_proposal(proposal_id: str):
                 "constitutional_implications": proposal.constitutional_implications,
                 "workflow_history": proposal.workflow_history,
                 "current_approvals": {
-                    level.value: approved for level, approved in proposal.current_approvals.items()
+                    level.value: approved
+                    for level, approved in proposal.current_approvals.items()
                 },
-                "required_approvals": [level.value for level in proposal.required_approvals],
+                "required_approvals": [
+                    level.value for level in proposal.required_approvals
+                ],
                 "public_comments": proposal.public_comments,
                 "voting_sessions": proposal.voting_sessions,
                 "decision_rationale": proposal.decision_rationale,
@@ -400,7 +408,9 @@ async def get_workflow_templates():
                     {
                         "stage": stage_info["stage"].value,
                         "required_actions": stage_info["required_actions"],
-                        "participants": [role.value for role in stage_info["participants"]],
+                        "participants": [
+                            role.value for role in stage_info["participants"]
+                        ],
                         "duration_estimate_days": stage_info["duration_estimate"].days,
                     }
                     for stage_info in template["stages"]
@@ -417,7 +427,9 @@ async def get_workflow_templates():
                     [level.value for level in parallel_group]
                     for parallel_group in rule.parallel_approvals
                 ],
-                "sequential_approvals": [level.value for level in rule.sequential_approvals],
+                "sequential_approvals": [
+                    level.value for level in rule.sequential_approvals
+                ],
                 "timeout_rules": {
                     level.value: timeout.total_seconds()
                     for level, timeout in rule.timeout_rules.items()

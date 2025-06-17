@@ -1,5 +1,4 @@
 # Enterprise OAuth 2.0 and OpenID Connect API Endpoints
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel
@@ -19,7 +18,7 @@ initialize_oauth_providers()
 class OAuthAuthorizationRequest(BaseModel):
     provider: str
     redirect_uri: str
-    scopes: Optional[List[str]] = None
+    scopes: list[str] | None = None
 
 
 class OAuthAuthorizationResponse(BaseModel):
@@ -90,7 +89,9 @@ async def get_authorization_url(
             severity="info",
         )
 
-        return OAuthAuthorizationResponse(authorization_url=authorization_url, state=state)
+        return OAuthAuthorizationResponse(
+            authorization_url=authorization_url, state=state
+        )
 
     except HTTPException:
         await security_audit.log_event(

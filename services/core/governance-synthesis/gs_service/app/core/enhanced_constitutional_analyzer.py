@@ -23,24 +23,20 @@ Architecture Integration:
 """
 
 import asyncio
-import json
 import logging
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 import numpy as np
 
 from ...app.core.config import get_settings
-from ...app.schemas import gs_schemas
 
 # ACGS-1 Core Imports
 from ..workflows.multi_model_manager import ModelRole, MultiModelManager
 from .qwen3_embedding_client import (
-    EmbeddingRequest,
-    EmbeddingResponse,
     analyze_constitutional_principle_similarity,
     check_compliance_similarity,
     generate_policy_embedding,
@@ -89,8 +85,8 @@ class ConstitutionalPrinciple:
     priority_weight: float = 1.0
     source: str = "constitutional_framework"
     version: str = "v1.0.0"
-    embedding: Optional[List[float]] = None
-    metadata: Optional[Dict[str, Any]] = None
+    embedding: list[float] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -102,9 +98,9 @@ class PolicyRule:
     content: str
     rule_type: str
     enforcement_level: str = "mandatory"
-    embedding: Optional[List[float]] = None
-    constitutional_basis: Optional[List[str]] = None
-    metadata: Optional[Dict[str, Any]] = None
+    embedding: list[float] | None = None
+    constitutional_basis: list[str] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -118,8 +114,8 @@ class ConflictAnalysisResult:
     confidence_score: float
     similarity_score: float
     conflict_description: str
-    resolution_suggestions: List[str]
-    analysis_metadata: Dict[str, Any]
+    resolution_suggestions: list[str]
+    analysis_metadata: dict[str, Any]
 
 
 @dataclass
@@ -131,8 +127,8 @@ class ComplianceAnalysisResult:
     compliance_score: float
     confidence_score: float
     compliant: bool
-    violations: List[Dict[str, Any]]
-    supporting_principles: List[str]
+    violations: list[dict[str, Any]]
+    supporting_principles: list[str]
     analysis_timestamp: float
     processing_time_ms: float
 
@@ -142,8 +138,8 @@ class SemanticClusterResult:
     """Result of semantic clustering analysis."""
 
     cluster_id: str
-    principle_ids: List[str]
-    cluster_centroid: List[float]
+    principle_ids: list[str]
+    cluster_centroid: list[float]
     intra_cluster_similarity: float
     cluster_description: str
     representative_principle: str
@@ -173,7 +169,7 @@ class EnhancedConstitutionalAnalyzer:
         self.constitutional_hash = "cdd01ef066bc6cf2"  # Reference hash
 
         # Performance tracking
-        self._analysis_cache: Dict[str, Any] = {}
+        self._analysis_cache: dict[str, Any] = {}
         self._performance_metrics = {
             "total_analyses": 0,
             "cache_hits": 0,
@@ -245,9 +241,13 @@ class EnhancedConstitutionalAnalyzer:
 
             # Generate embeddings if not present
             if not principle1.embedding:
-                principle1.embedding = await generate_policy_embedding(principle1.content)
+                principle1.embedding = await generate_policy_embedding(
+                    principle1.content
+                )
             if not principle2.embedding:
-                principle2.embedding = await generate_policy_embedding(principle2.content)
+                principle2.embedding = await generate_policy_embedding(
+                    principle2.content
+                )
 
             # Calculate semantic similarity using Qwen3 embeddings
             similarity_score = await analyze_constitutional_principle_similarity(
@@ -255,13 +255,17 @@ class EnhancedConstitutionalAnalyzer:
             )
 
             # Determine conflict status based on similarity and content analysis
-            conflict_detected, severity, description = await self._analyze_potential_conflict(
-                principle1, principle2, similarity_score
+            conflict_detected, severity, description = (
+                await self._analyze_potential_conflict(
+                    principle1, principle2, similarity_score
+                )
             )
 
             # Generate resolution suggestions using multi-model manager
-            resolution_suggestions = await self._generate_conflict_resolution_suggestions(
-                principle1, principle2, conflict_detected, severity
+            resolution_suggestions = (
+                await self._generate_conflict_resolution_suggestions(
+                    principle1, principle2, conflict_detected, severity
+                )
             )
 
             # Calculate confidence score
@@ -283,7 +287,7 @@ class EnhancedConstitutionalAnalyzer:
                     "processing_time_ms": (time.time() - start_time) * 1000,
                     "constitutional_hash": self.constitutional_hash,
                     "model_used": "qwen3-embedding-8b",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 },
             )
 
@@ -316,7 +320,7 @@ class EnhancedConstitutionalAnalyzer:
     async def analyze_policy_compliance(
         self,
         policy: PolicyRule,
-        constitutional_principles: List[ConstitutionalPrinciple],
+        constitutional_principles: list[ConstitutionalPrinciple],
         use_cache: bool = True,
     ) -> ComplianceAnalysisResult:
         """
@@ -366,10 +370,14 @@ class EnhancedConstitutionalAnalyzer:
                     supporting_principles.append(principle.id)
 
             # Calculate overall compliance score
-            overall_compliance = np.mean(compliance_scores) if compliance_scores else 0.0
+            overall_compliance = (
+                np.mean(compliance_scores) if compliance_scores else 0.0
+            )
 
             # Determine compliance status
-            compliant = overall_compliance >= self.compliance_threshold and len(violations) == 0
+            compliant = (
+                overall_compliance >= self.compliance_threshold and len(violations) == 0
+            )
 
             # Calculate confidence score using multi-model consensus
             confidence_score = await self._calculate_compliance_confidence(
@@ -416,7 +424,7 @@ class EnhancedConstitutionalAnalyzer:
         principle1: ConstitutionalPrinciple,
         principle2: ConstitutionalPrinciple,
         similarity_score: float,
-    ) -> Tuple[bool, ConflictSeverity, str]:
+    ) -> tuple[bool, ConflictSeverity, str]:
         """
         Analyze potential conflicts between principles using multi-model analysis.
 
@@ -491,7 +499,7 @@ class EnhancedConstitutionalAnalyzer:
 
     def _heuristic_conflict_analysis(
         self, similarity_score: float
-    ) -> Tuple[bool, ConflictSeverity, str]:
+    ) -> tuple[bool, ConflictSeverity, str]:
         """
         Fallback heuristic conflict analysis based on similarity score.
 
@@ -538,7 +546,7 @@ class EnhancedConstitutionalAnalyzer:
         principle2: ConstitutionalPrinciple,
         conflict_detected: bool,
         severity: ConflictSeverity,
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Generate conflict resolution suggestions using multi-model analysis.
 
@@ -596,7 +604,7 @@ class EnhancedConstitutionalAnalyzer:
             logger.error(f"Error generating resolution suggestions: {e}")
             return self._default_resolution_suggestions(severity)
 
-    def _default_resolution_suggestions(self, severity: ConflictSeverity) -> List[str]:
+    def _default_resolution_suggestions(self, severity: ConflictSeverity) -> list[str]:
         """
         Provide default resolution suggestions based on conflict severity.
 
@@ -660,7 +668,9 @@ class EnhancedConstitutionalAnalyzer:
             metadata_quality = 0.1
 
         # Adjust based on content length (more content = higher confidence)
-        content_factor = min(1.0, (len(principle1.content) + len(principle2.content)) / 1000) * 0.1
+        content_factor = (
+            min(1.0, (len(principle1.content) + len(principle2.content)) / 1000) * 0.1
+        )
 
         return min(1.0, base_confidence + metadata_quality + content_factor)
 
@@ -669,7 +679,7 @@ class EnhancedConstitutionalAnalyzer:
         policy: PolicyRule,
         principle: ConstitutionalPrinciple,
         compliance_score: float,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Check if policy violates a specific constitutional principle.
 
@@ -726,7 +736,9 @@ class EnhancedConstitutionalAnalyzer:
                         "description": result.get(
                             "description", "Compliance score below threshold"
                         ),
-                        "remediation": result.get("remediation", "Review and revise policy"),
+                        "remediation": result.get(
+                            "remediation", "Review and revise policy"
+                        ),
                         "principle_id": principle.id,
                         "compliance_score": compliance_score,
                     }
@@ -757,7 +769,7 @@ class EnhancedConstitutionalAnalyzer:
     async def _calculate_compliance_confidence(
         self,
         policy: PolicyRule,
-        principles: List[ConstitutionalPrinciple],
+        principles: list[ConstitutionalPrinciple],
         compliance_score: float,
     ) -> float:
         """
@@ -793,7 +805,9 @@ class EnhancedConstitutionalAnalyzer:
         current_avg = self._performance_metrics["average_response_time"]
         total_analyses = self._performance_metrics["total_analyses"]
 
-        new_avg = ((current_avg * (total_analyses - 1)) + processing_time) / total_analyses
+        new_avg = (
+            (current_avg * (total_analyses - 1)) + processing_time
+        ) / total_analyses
         self._performance_metrics["average_response_time"] = new_avg
 
     # ========================================================================
@@ -803,8 +817,8 @@ class EnhancedConstitutionalAnalyzer:
     async def policy_creation_workflow_analysis(
         self,
         proposed_policy: PolicyRule,
-        constitutional_framework: List[ConstitutionalPrinciple],
-    ) -> Dict[str, Any]:
+        constitutional_framework: list[ConstitutionalPrinciple],
+    ) -> dict[str, Any]:
         """
         Analyze proposed policy for Policy Creation workflow.
 
@@ -863,7 +877,7 @@ class EnhancedConstitutionalAnalyzer:
                 "approval_score": approval_score,
                 "approved": approval_score >= 0.8,  # 80% threshold for approval
                 "processing_time_ms": (time.time() - start_time) * 1000,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
         except Exception as e:
@@ -881,7 +895,7 @@ class EnhancedConstitutionalAnalyzer:
         policy_id: str,
         policy_content: str,
         validation_type: str = "comprehensive",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Perform constitutional compliance analysis for Constitutional Compliance workflow.
 
@@ -921,7 +935,9 @@ class EnhancedConstitutionalAnalyzer:
             detailed_violations = []
             if not compliance_result.compliant:
                 for violation in compliance_result.violations:
-                    detailed_analysis = await self._analyze_violation_details(policy, violation)
+                    detailed_analysis = await self._analyze_violation_details(
+                        policy, violation
+                    )
                     detailed_violations.append(detailed_analysis)
 
             return {
@@ -935,7 +951,7 @@ class EnhancedConstitutionalAnalyzer:
                 "violations": detailed_violations,
                 "supporting_principles": compliance_result.supporting_principles,
                 "processing_time_ms": (time.time() - start_time) * 1000,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
         except Exception as e:
@@ -950,9 +966,9 @@ class EnhancedConstitutionalAnalyzer:
 
     async def wina_oversight_workflow_analysis(
         self,
-        governance_action: Dict[str, Any],
-        oversight_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        governance_action: dict[str, Any],
+        oversight_context: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Perform analysis for WINA Oversight workflow.
 
@@ -1012,7 +1028,7 @@ class EnhancedConstitutionalAnalyzer:
                 "recommendations": oversight_recommendations,
                 "oversight_required": oversight_score < 0.8,
                 "processing_time_ms": (time.time() - start_time) * 1000,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
         except Exception as e:
@@ -1033,8 +1049,8 @@ class EnhancedConstitutionalAnalyzer:
         self,
         policy: PolicyRule,
         compliance_result: ComplianceAnalysisResult,
-        conflict_analyses: List[ConflictAnalysisResult],
-    ) -> List[str]:
+        conflict_analyses: list[ConflictAnalysisResult],
+    ) -> list[str]:
         """Generate recommendations for policy improvement."""
         recommendations = []
 
@@ -1057,7 +1073,7 @@ class EnhancedConstitutionalAnalyzer:
     def _calculate_policy_approval_score(
         self,
         compliance_result: ComplianceAnalysisResult,
-        conflict_analyses: List[ConflictAnalysisResult],
+        conflict_analyses: list[ConflictAnalysisResult],
     ) -> float:
         """Calculate overall policy approval score."""
         # Base score from compliance
@@ -1075,7 +1091,7 @@ class EnhancedConstitutionalAnalyzer:
 
         return max(0.0, base_score - conflict_penalty)
 
-    async def _get_constitutional_framework(self) -> List[ConstitutionalPrinciple]:
+    async def _get_constitutional_framework(self) -> list[ConstitutionalPrinciple]:
         """Get constitutional framework (mock implementation)."""
         # In production, this would fetch from AC service
         return [
@@ -1103,8 +1119,8 @@ class EnhancedConstitutionalAnalyzer:
         ]
 
     async def _analyze_violation_details(
-        self, policy: PolicyRule, violation: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, policy: PolicyRule, violation: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze violation details for comprehensive reporting."""
         return {
             "violation_id": f"V_{policy.id}_{violation.get('principle_id', 'unknown')}",
@@ -1118,16 +1134,20 @@ class EnhancedConstitutionalAnalyzer:
 
     async def _generate_oversight_recommendations(
         self,
-        governance_action: Dict[str, Any],
+        governance_action: dict[str, Any],
         compliance_result: ComplianceAnalysisResult,
-        oversight_context: Dict[str, Any],
-    ) -> List[str]:
+        oversight_context: dict[str, Any],
+    ) -> list[str]:
         """Generate oversight recommendations for WINA workflow."""
         recommendations = []
 
         if not compliance_result.compliant:
-            recommendations.append("Immediate review required due to compliance violations")
-            recommendations.append("Suspend action until constitutional compliance achieved")
+            recommendations.append(
+                "Immediate review required due to compliance violations"
+            )
+            recommendations.append(
+                "Suspend action until constitutional compliance achieved"
+            )
 
         if compliance_result.compliance_score < 0.8:
             recommendations.append("Enhanced monitoring recommended")
@@ -1144,8 +1164,8 @@ class EnhancedConstitutionalAnalyzer:
     def _calculate_oversight_score(
         self,
         compliance_result: ComplianceAnalysisResult,
-        governance_action: Dict[str, Any],
-        oversight_context: Dict[str, Any],
+        governance_action: dict[str, Any],
+        oversight_context: dict[str, Any],
     ) -> float:
         """Calculate oversight score for governance action."""
         # Base score from compliance
@@ -1167,7 +1187,7 @@ class EnhancedConstitutionalAnalyzer:
 
         return max(0.0, min(1.0, base_score + risk_adjustment + confidence_factor))
 
-    async def get_performance_metrics(self) -> Dict[str, Any]:
+    async def get_performance_metrics(self) -> dict[str, Any]:
         """Get performance metrics for monitoring."""
         embedding_client = await get_qwen3_embedding_client()
         embedding_health = await embedding_client.health_check()
@@ -1184,7 +1204,7 @@ class EnhancedConstitutionalAnalyzer:
             "accuracy_target": ">95%",
         }
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform comprehensive health check."""
         try:
             # Check embedding client
@@ -1199,13 +1219,17 @@ class EnhancedConstitutionalAnalyzer:
             response_time_ok = avg_response_time < 0.5  # <500ms target
 
             overall_healthy = (
-                embedding_health["status"] == "healthy" and multi_model_healthy and response_time_ok
+                embedding_health["status"] == "healthy"
+                and multi_model_healthy
+                and response_time_ok
             )
 
             return {
                 "status": "healthy" if overall_healthy else "degraded",
                 "embedding_client": embedding_health["status"],
-                "multi_model_manager": ("healthy" if multi_model_healthy else "unavailable"),
+                "multi_model_manager": (
+                    "healthy" if multi_model_healthy else "unavailable"
+                ),
                 "average_response_time_ms": avg_response_time * 1000,
                 "response_time_target_met": response_time_ok,
                 "total_analyses": self._performance_metrics["total_analyses"],
@@ -1214,14 +1238,14 @@ class EnhancedConstitutionalAnalyzer:
                     / max(1, self._performance_metrics["total_analyses"])
                 ),
                 "constitutional_hash": self.constitutional_hash,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
         except Exception as e:
             return {
                 "status": "unhealthy",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
 
@@ -1230,7 +1254,7 @@ class EnhancedConstitutionalAnalyzer:
 # ============================================================================
 
 # Global analyzer instance for ACGS-1 integration
-_enhanced_analyzer: Optional[EnhancedConstitutionalAnalyzer] = None
+_enhanced_analyzer: EnhancedConstitutionalAnalyzer | None = None
 
 
 async def get_enhanced_constitutional_analyzer() -> EnhancedConstitutionalAnalyzer:
@@ -1307,7 +1331,7 @@ async def example_policy_creation_workflow():
         proposed_policy, constitutional_framework
     )
 
-    logger.info(f"Policy Creation Analysis Result:")
+    logger.info("Policy Creation Analysis Result:")
     logger.info(f"- Approved: {analysis_result['approved']}")
     logger.info(f"- Approval Score: {analysis_result['approval_score']:.3f}")
     logger.info(
@@ -1345,7 +1369,7 @@ async def example_constitutional_compliance_workflow():
         validation_type="comprehensive",
     )
 
-    logger.info(f"Constitutional Compliance Analysis:")
+    logger.info("Constitutional Compliance Analysis:")
     logger.info(f"- Compliant: {compliance_result['compliant']}")
     logger.info(f"- Compliance Score: {compliance_result['compliance_score']:.3f}")
     logger.info(f"- Confidence Score: {compliance_result['confidence_score']:.3f}")
@@ -1389,7 +1413,7 @@ async def example_wina_oversight_workflow():
         governance_action, oversight_context
     )
 
-    logger.info(f"WINA Oversight Analysis:")
+    logger.info("WINA Oversight Analysis:")
     logger.info(f"- Oversight Required: {oversight_result['oversight_required']}")
     logger.info(f"- Oversight Score: {oversight_result['oversight_score']:.3f}")
     logger.info(
@@ -1430,9 +1454,11 @@ async def example_semantic_similarity_analysis():
     )
 
     # Analyze similarity
-    similarity_result = await analyzer.analyze_principle_similarity(principle1, principle2)
+    similarity_result = await analyzer.analyze_principle_similarity(
+        principle1, principle2
+    )
 
-    logger.info(f"Principle Similarity Analysis:")
+    logger.info("Principle Similarity Analysis:")
     logger.info(f"- Similarity Score: {similarity_result.similarity_score:.3f}")
     logger.info(f"- Conflict Detected: {similarity_result.conflict_detected}")
     logger.info(f"- Severity: {similarity_result.severity.value}")
@@ -1458,7 +1484,7 @@ async def example_performance_monitoring():
     # Get performance metrics
     metrics = await analyzer.get_performance_metrics()
 
-    logger.info(f"Enhanced Constitutional Analyzer Performance:")
+    logger.info("Enhanced Constitutional Analyzer Performance:")
     logger.info(f"- Total Analyses: {metrics['analyzer_metrics']['total_analyses']}")
     logger.info(
         f"- Cache Hit Rate: {metrics['analyzer_metrics']['cache_hits'] / max(1, metrics['analyzer_metrics']['total_analyses']):.2%}"
@@ -1467,7 +1493,9 @@ async def example_performance_monitoring():
         f"- Average Response Time: {metrics['analyzer_metrics']['average_response_time'] * 1000:.2f}ms"
     )
     logger.info(f"- Error Count: {metrics['analyzer_metrics']['error_count']}")
-    logger.info(f"- Embedding Client Status: {metrics['embedding_client_health']['status']}")
+    logger.info(
+        f"- Embedding Client Status: {metrics['embedding_client_health']['status']}"
+    )
     logger.info(f"- Constitutional Hash: {metrics['constitutional_hash']}")
 
     # Health check
@@ -1486,8 +1514,8 @@ async def example_performance_monitoring():
 async def integrate_with_pgc_service(
     policy_id: str,
     policy_content: str,
-    enforcement_context: Dict[str, Any],
-) -> Dict[str, Any]:
+    enforcement_context: dict[str, Any],
+) -> dict[str, Any]:
     """
     Integration function for PGC service real-time enforcement.
 
@@ -1515,7 +1543,9 @@ async def integrate_with_pgc_service(
         # Generate enforcement recommendation
         enforcement_recommendation = {
             "policy_id": policy_id,
-            "enforcement_action": ("allow" if compliance_result["compliant"] else "block"),
+            "enforcement_action": (
+                "allow" if compliance_result["compliant"] else "block"
+            ),
             "compliance_score": compliance_result["compliance_score"],
             "confidence_score": compliance_result["confidence_score"],
             "violations": compliance_result["violations"],

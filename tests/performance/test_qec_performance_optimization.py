@@ -16,7 +16,7 @@ import asyncio
 import statistics
 import time
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 import psutil
 import pytest
@@ -426,7 +426,7 @@ class QECPerformanceOptimizer:
             "cpu": self.performance_metrics["cpu_usage"],
         }
 
-    def generate_performance_report(self) -> Dict[str, Any]:
+    def generate_performance_report(self) -> dict[str, Any]:
         """Generate comprehensive performance optimization report."""
 
         report = {
@@ -455,12 +455,12 @@ class QECPerformanceOptimizer:
             )
 
         # Generate recommendations
-        if report["target_compliance"].get("api_response_time", True) == False:
+        if not report["target_compliance"].get("api_response_time", True):
             report["optimization_recommendations"].append(
                 "Consider implementing additional caching layers for fidelity calculations"
             )
 
-        if report["target_compliance"].get("concurrent_users", True) == False:
+        if not report["target_compliance"].get("concurrent_users", True):
             report["optimization_recommendations"].append(
                 "Consider horizontal scaling with load balancing for higher concurrent capacity"
             )

@@ -9,7 +9,7 @@ import logging
 import subprocess
 import sys
 import time
-from typing import Any, Dict
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class PostMergeValidator:
             {"name": "pgc", "port": 8006},
         ]
 
-    def run_health_checks(self) -> Dict[str, Any]:
+    def run_health_checks(self) -> dict[str, Any]:
         """Run comprehensive health checks"""
         logger.info("🏥 Running health checks...")
 
@@ -49,7 +49,7 @@ class PostMergeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def run_security_scan(self) -> Dict[str, Any]:
+    def run_security_scan(self) -> dict[str, Any]:
         """Run security validation"""
         logger.info("🔒 Running security scan...")
 
@@ -70,7 +70,7 @@ class PostMergeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def run_bandit_scan(self) -> Dict[str, Any]:
+    def run_bandit_scan(self) -> dict[str, Any]:
         """Run bandit security scan"""
         logger.info("🛡️ Running bandit security scan...")
 
@@ -117,7 +117,7 @@ class PostMergeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def run_pytest_suite(self) -> Dict[str, Any]:
+    def run_pytest_suite(self) -> dict[str, Any]:
         """Run critical test suite"""
         logger.info("🧪 Running pytest suite...")
 
@@ -139,7 +139,7 @@ class PostMergeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def check_docker_compose_config(self) -> Dict[str, Any]:
+    def check_docker_compose_config(self) -> dict[str, Any]:
         """Validate docker-compose configuration"""
         logger.info("🐳 Checking docker-compose configuration...")
 
@@ -160,7 +160,7 @@ class PostMergeValidator:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def check_workflow_syntax(self) -> Dict[str, Any]:
+    def check_workflow_syntax(self) -> dict[str, Any]:
         """Check GitHub workflow syntax"""
         logger.info("⚙️ Checking workflow syntax...")
 
@@ -177,7 +177,7 @@ class PostMergeValidator:
                 # Basic YAML syntax check
                 import yaml
 
-                with open(workflow_file, "r") as f:
+                with open(workflow_file) as f:
                     yaml.safe_load(f)
 
                 workflow_results[workflow_file] = {
@@ -193,7 +193,7 @@ class PostMergeValidator:
 
         return {"status": "success", "workflow_checks": workflow_results}
 
-    def run_full_validation(self) -> Dict[str, Any]:
+    def run_full_validation(self) -> dict[str, Any]:
         """Run complete post-merge validation"""
         logger.info("🚀 Starting post-merge validation...")
 
@@ -217,7 +217,7 @@ class PostMergeValidator:
         successful_tests = 0
         total_tests = len(validation_results["tests"])
 
-        for test_name, test_result in validation_results["tests"].items():
+        for _test_name, test_result in validation_results["tests"].items():
             if test_result.get("status") in ["success", "completed"]:
                 successful_tests += 1
 

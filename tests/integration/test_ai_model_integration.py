@@ -114,7 +114,7 @@ class AIModelIntegrationTest:
         try:
             gemini_enabled = self.config.is_model_enabled("enable_gemini_2_5_flash")
             deepseek_enabled = self.config.is_model_enabled("enable_deepseek_r1")
-            bias_detection_enabled = self.config.is_model_enabled(
+            self.config.is_model_enabled(
                 "enable_bias_detection_llm"
             )
 
@@ -447,7 +447,7 @@ class AIModelIntegrationTest:
         overall_total = total_passed + total_failed
         success_rate = (total_passed / overall_total * 100) if overall_total > 0 else 0
 
-        print(f"\n🎯 OVERALL RESULTS:")
+        print("\n🎯 OVERALL RESULTS:")
         print(f"   Total Tests: {overall_total}")
         print(f"   Passed: {total_passed}")
         print(f"   Failed: {total_failed}")
@@ -457,7 +457,7 @@ class AIModelIntegrationTest:
         with open("ai_model_integration_test_results.json", "w") as f:
             json.dump(self.results, f, indent=2)
 
-        print(f"\n📄 Detailed results saved to: ai_model_integration_test_results.json")
+        print("\n📄 Detailed results saved to: ai_model_integration_test_results.json")
 
         return success_rate >= 80  # Consider successful if 80% or more tests pass
 

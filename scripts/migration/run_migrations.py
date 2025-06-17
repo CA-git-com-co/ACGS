@@ -5,9 +5,9 @@ This script runs Alembic migrations without Docker complexity
 """
 
 import os
+import subprocess
 import sys
 import time
-import subprocess
 from pathlib import Path
 
 
@@ -79,7 +79,7 @@ def wait_for_postgres(
                     conn.close()
                     print("✅ PostgreSQL is ready!")
                     return True
-                except Exception as e:
+                except Exception:
                     pass
 
         print(f"⏳ Attempt {attempt + 1}/{max_attempts} - PostgreSQL not ready yet...")

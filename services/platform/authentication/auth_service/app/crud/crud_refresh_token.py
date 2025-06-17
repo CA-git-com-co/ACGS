@@ -1,6 +1,5 @@
 # acgspcp-main/auth_service/app/crud/crud_refresh_token.py
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,7 +15,7 @@ async def create_refresh_token(
         token=token,
         jti=jti,
         expires_at=expires_at,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
         is_revoked=False,
     )
     db.add(db_refresh_token)
@@ -25,7 +24,9 @@ async def create_refresh_token(
     return db_refresh_token
 
 
-async def get_refresh_token_by_jti(db: AsyncSession, jti: str) -> Optional[RefreshToken]:
+async def get_refresh_token_by_jti(
+    db: AsyncSession, jti: str
+) -> RefreshToken | None:
     result = await db.execute(select(RefreshToken).filter(RefreshToken.jti == jti))
     return result.scalars().first()
 
@@ -41,13 +42,15 @@ async def is_valid_refresh_token(db: AsyncSession, user_id: int, jti: str) -> bo
     # Ensure both datetimes are timezone-aware for comparison
     expires_at = token.expires_at
     if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=timezone.utc)
-    if expires_at < datetime.now(timezone.utc):
+        expires_at = expires_at.replace(tzinfo=UTC)
+    if expires_at < datetime.now(UTC):
         return False
     return True
 
 
-async def revoke_refresh_token(db: AsyncSession, jti: str, user_id: Optional[int] = None):
+async def revoke_refresh_token(
+    db: AsyncSession, jti: str, user_id: int | None = None
+):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -63,7 +66,11 @@ async def revoke_all_refresh_tokens_for_user(db: AsyncSession, user_id: int):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
-    stmt = update(RefreshToken).where(RefreshToken.user_id == user_id).values(is_revoked=True)
+    stmt = (
+        update(RefreshToken)
+        .where(RefreshToken.user_id == user_id)
+        .values(is_revoked=True)
+    )
     await db.execute(stmt)
     await db.commit()
 
@@ -86,9 +93,13 @@ async def revoke_refresh_token_by_jti(db: AsyncSession, jti: str):
     await db.commit()
 
 
-async def get_active_refresh_token_by_jti(db: AsyncSession, jti: str) -> Optional[RefreshToken]:
+async def get_active_refresh_token_by_jti(
+    db: AsyncSession, jti: str
+) -> RefreshToken | None:
     """Get an active (non-revoked) refresh token by its JTI."""
     result = await db.execute(
-        select(RefreshToken).filter(RefreshToken.jti == jti, RefreshToken.is_revoked == False)
+        select(RefreshToken).filter(
+            RefreshToken.jti == jti, not RefreshToken.is_revoked
+        )
     )
     return result.scalars().first()

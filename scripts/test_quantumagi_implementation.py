@@ -10,7 +10,6 @@ import hashlib
 import json
 import logging
 from datetime import datetime
-from typing import Dict, List
 
 # Add the project root to the path
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # Removed during reorganization
@@ -81,17 +80,17 @@ class QuantumagiTestSuite:
             # Create constitutional document
             constitution_content = """
             Quantumagi Constitutional Framework v1.0
-            
+
             Article I: Fundamental Principles
             1. No unauthorized state mutations (PC-001)
             2. Governance approval required for critical operations
             3. Transparency in all policy decisions
-            
+
             Article II: AI Governance
             1. AI systems must operate within constitutional bounds
             2. Prompt governance compiler enforces real-time compliance
             3. Multi-model validation ensures policy reliability
-            
+
             Article III: Democratic Governance
             1. Policy proposals require community voting
             2. Constitutional amendments require supermajority
@@ -225,7 +224,7 @@ class QuantumagiTestSuite:
 
         try:
             # Test policy proposal
-            policy = (
+            (
                 self.policies[0]
                 if self.policies
                 else await self._mock_policy_synthesis(
@@ -386,7 +385,7 @@ class QuantumagiTestSuite:
             )
             raise
 
-    async def _mock_pgc_check(self, action: str, context: Dict) -> bool:
+    async def _mock_pgc_check(self, action: str, context: dict) -> bool:
         """Mock PGC compliance checking logic"""
 
         # PC-001: No unauthorized state mutations
@@ -526,7 +525,7 @@ class QuantumagiTestSuite:
         # Mock implementation - in real deployment would check HTTP endpoint
         return False  # Assume not available for testing
 
-    async def _mock_get_acgs_principles(self) -> List[Dict]:
+    async def _mock_get_acgs_principles(self) -> list[dict]:
         """Mock retrieval of constitutional principles from ACGS"""
         return [
             {"id": "CP-001", "title": "Safety First", "category": "safety"},
@@ -534,7 +533,7 @@ class QuantumagiTestSuite:
             {"id": "CP-003", "title": "Fairness", "category": "ethics"},
         ]
 
-    async def _mock_sync_policies(self) -> Dict:
+    async def _mock_sync_policies(self) -> dict:
         """Mock policy synchronization with ACGS"""
         return {"success": True, "count": 3, "timestamp": datetime.now().isoformat()}
 

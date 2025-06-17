@@ -11,7 +11,6 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List
 
 # Integration with existing ACGS framework
 
@@ -55,7 +54,7 @@ class SolanaPolicy:
     rule: str
     category: PolicyCategory
     priority: PolicyPriority
-    solana_instruction_data: Dict
+    solana_instruction_data: dict
     validation_score: float
     created_at: datetime
 
@@ -66,8 +65,8 @@ class PolicyValidationResult:
 
     is_valid: bool
     confidence_score: float
-    validation_details: Dict
-    suggested_improvements: List[str]
+    validation_details: dict
+    suggested_improvements: list[str]
 
 
 class QuantumagiGSEngine:
@@ -76,7 +75,7 @@ class QuantumagiGSEngine:
     Integrates with AlphaEvolve-ACGS for policy generation and validation
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: dict):
         self.config = config
         self.logger = logging.getLogger(__name__)
 
@@ -200,7 +199,7 @@ class QuantumagiGSEngine:
 
     async def _generate_solana_instruction_data(
         self, rule: str, category: PolicyCategory
-    ) -> Dict:
+    ) -> dict:
         """Generate Solana instruction data for policy deployment"""
 
         return {
@@ -325,7 +324,7 @@ class QuantumagiGSEngine:
         # In production, this would check against all active policies
         return 0.9  # Assume no conflicts for now
 
-    def _generate_improvement_suggestions(self, validation_details: Dict) -> List[str]:
+    def _generate_improvement_suggestions(self, validation_details: dict) -> list[str]:
         """Generate suggestions for improving policy"""
         suggestions = []
 

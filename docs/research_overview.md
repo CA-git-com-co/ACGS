@@ -45,7 +45,7 @@ This project explores several critical themes in AI governance and safety:
 1.  **Core Reading:** Begin with the [ACGS-PGP Framework Paper](../ACGS-pgp.md) for a foundational understanding. This single file currently contains material for both the general framework and the AlphaEvolve application.
 2.  **Evolutionary Governance Focus:** For specific details on the Evolutionary Computation application, refer to the latter sections of [ACGS-pgp.md](../ACGS-pgp.md) and the materials within the [AlphaEvolve-ACGS Integration System Directory](../AlphaEvolve-ACGS_Integration_System/).
 3.  **Core Engine:** To understand a key technical component used in the research for policy synthesis and validation, review the documentation for the `alphaevolve_gs_engine`:
-    *   [alphaevolve_gs_engine README](../alphaevolve_gs_engine/README.md)
+    *   [alphaevolve_gs_engine README](../integrations/alphaevolve-engine/README.md)
 4.  **Reproducibility:** For reproducing experiments related to AlphaEvolve, consult its specific:
     *   [Reproducibility Guide](../AlphaEvolve-ACGS_Integration_System/reproducibility_guide.md) (Note: This guide will be enhanced as part of this documentation update).
 5.  **System Architecture:** For the broader software system implementing these concepts, see:

@@ -1,7 +1,7 @@
 # Enterprise OAuth 2.0 and OpenID Connect Integration
 import secrets
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 from urllib.parse import urlencode
 
 import httpx
@@ -34,7 +34,9 @@ class OAuthProvider:
         self.token_url = token_url
         self.userinfo_url = userinfo_url
 
-    def generate_authorization_url(self, redirect_uri: str, state: str, scopes: list = None) -> str:
+    def generate_authorization_url(
+        self, redirect_uri: str, state: str, scopes: list = None
+    ) -> str:
         """Generate OAuth authorization URL"""
         if scopes is None:
             scopes = ["openid", "email", "profile"]
@@ -49,7 +51,9 @@ class OAuthProvider:
 
         return f"{self.authorize_url}?{urlencode(params)}"
 
-    async def exchange_code_for_token(self, code: str, redirect_uri: str) -> Dict[str, Any]:
+    async def exchange_code_for_token(
+        self, code: str, redirect_uri: str
+    ) -> dict[str, Any]:
         """Exchange authorization code for access token"""
         data = {
             "grant_type": "authorization_code",
@@ -64,7 +68,7 @@ class OAuthProvider:
             response.raise_for_status()
             return response.json()
 
-    async def get_user_info(self, access_token: str) -> Dict[str, Any]:
+    async def get_user_info(self, access_token: str) -> dict[str, Any]:
         """Get user information from OAuth provider"""
         headers = {"Authorization": f"Bearer {access_token}"}
 
@@ -124,7 +128,9 @@ class GitHubOAuthProvider(OAuthProvider):
             userinfo_url="https://api.github.com/user",
         )
 
-    async def exchange_code_for_token(self, code: str, redirect_uri: str) -> Dict[str, Any]:
+    async def exchange_code_for_token(
+        self, code: str, redirect_uri: str
+    ) -> dict[str, Any]:
         """GitHub-specific token exchange"""
         data = {
             "client_id": self.client_id,
@@ -147,8 +153,8 @@ class OAuthService:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.providers: Dict[str, OAuthProvider] = {}
-        self.state_store: Dict[str, Dict[str, Any]] = {}  # In production, use Redis
+        self.providers: dict[str, OAuthProvider] = {}
+        self.state_store: dict[str, dict[str, Any]] = {}  # In production, use Redis
 
     def register_provider(self, provider: OAuthProvider):
         # requires: Valid input parameters
@@ -163,18 +169,18 @@ class OAuthService:
         self.state_store[state] = {
             "provider": provider_name,
             "redirect_uri": redirect_uri,
-            "created_at": datetime.now(timezone.utc),
-            "expires_at": datetime.now(timezone.utc) + timedelta(minutes=10),
+            "created_at": datetime.now(UTC),
+            "expires_at": datetime.now(UTC) + timedelta(minutes=10),
         }
         return state
 
-    def verify_state(self, state: str) -> Optional[Dict[str, Any]]:
+    def verify_state(self, state: str) -> dict[str, Any] | None:
         """Verify OAuth state parameter"""
         state_data = self.state_store.get(state)
         if not state_data:
             return None
 
-        if datetime.now(timezone.utc) > state_data["expires_at"]:
+        if datetime.now(UTC) > state_data["expires_at"]:
             del self.state_store[state]
             return None
 
@@ -186,12 +192,16 @@ class OAuthService:
         """Get OAuth authorization URL"""
         provider = self.providers.get(provider_name)
         if not provider:
-            raise HTTPException(status_code=400, detail=f"Unknown OAuth provider: {provider_name}")
+            raise HTTPException(
+                status_code=400, detail=f"Unknown OAuth provider: {provider_name}"
+            )
 
         state = self.generate_state(provider_name, redirect_uri)
         return provider.generate_authorization_url(redirect_uri, state, scopes)
 
-    async def handle_callback(self, db: AsyncSession, code: str, state: str) -> Dict[str, Any]:
+    async def handle_callback(
+        self, db: AsyncSession, code: str, state: str
+    ) -> dict[str, Any]:
         """Handle OAuth callback and create/login user"""
         # Verify state
         state_data = self.verify_state(state)
@@ -206,7 +216,9 @@ class OAuthService:
 
         provider = self.providers.get(provider_name)
         if not provider:
-            raise HTTPException(status_code=400, detail=f"Unknown OAuth provider: {provider_name}")
+            raise HTTPException(
+                status_code=400, detail=f"Unknown OAuth provider: {provider_name}"
+            )
 
         try:
             # Exchange code for token
@@ -214,7 +226,9 @@ class OAuthService:
             access_token = token_data.get("access_token")
 
             if not access_token:
-                raise HTTPException(status_code=400, detail="Failed to obtain access token")
+                raise HTTPException(
+                    status_code=400, detail="Failed to obtain access token"
+                )
 
             # Get user info
             user_info = await provider.get_user_info(access_token)
@@ -222,7 +236,9 @@ class OAuthService:
             # Find or create user
             email = user_info.get("email")
             if not email:
-                raise HTTPException(status_code=400, detail="Email not provided by OAuth provider")
+                raise HTTPException(
+                    status_code=400, detail="Email not provided by OAuth provider"
+                )
 
             user = await crud_user.get_user_by_email(db, email=email)
 
@@ -232,7 +248,9 @@ class OAuthService:
                 full_name = user_info.get("name", "")
 
                 # Ensure username is unique
-                existing_user = await crud_user.get_user_by_username(db, username=username)
+                existing_user = await crud_user.get_user_by_username(
+                    db, username=username
+                )
                 if existing_user:
                     username = f"{username}_{secrets.token_hex(4)}"
 
@@ -240,7 +258,9 @@ class OAuthService:
                     "username": username,
                     "email": email,
                     "full_name": full_name,
-                    "hashed_password": secrets.token_hex(32),  # Random password for OAuth users
+                    "hashed_password": secrets.token_hex(
+                        32
+                    ),  # Random password for OAuth users
                     "is_active": True,
                     "role": "user",
                 }
@@ -248,7 +268,7 @@ class OAuthService:
                 user = await crud_user.create_user(db, user_data)
 
             # Update last login
-            user.last_login_at = datetime.now(timezone.utc)
+            user.last_login_at = datetime.now(UTC)
             await db.commit()
 
             # Create tokens
@@ -269,9 +289,13 @@ class OAuthService:
             }
 
         except httpx.HTTPError as e:
-            raise HTTPException(status_code=400, detail=f"OAuth provider error: {str(e)}")
+            raise HTTPException(
+                status_code=400, detail=f"OAuth provider error: {str(e)}"
+            )
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"OAuth authentication failed: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"OAuth authentication failed: {str(e)}"
+            )
 
 
 # Global OAuth service instance
@@ -290,7 +314,9 @@ def initialize_oauth_providers():
     google_client_id = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
     google_client_secret = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
     if google_client_id and google_client_secret:
-        oauth_service.register_provider(GoogleOAuthProvider(google_client_id, google_client_secret))
+        oauth_service.register_provider(
+            GoogleOAuthProvider(google_client_id, google_client_secret)
+        )
 
     # Microsoft OAuth
     microsoft_client_id = os.getenv("MICROSOFT_OAUTH_CLIENT_ID")
@@ -307,4 +333,6 @@ def initialize_oauth_providers():
     github_client_id = os.getenv("GITHUB_OAUTH_CLIENT_ID")
     github_client_secret = os.getenv("GITHUB_OAUTH_CLIENT_SECRET")
     if github_client_id and github_client_secret:
-        oauth_service.register_provider(GitHubOAuthProvider(github_client_id, github_client_secret))
+        oauth_service.register_provider(
+            GitHubOAuthProvider(github_client_id, github_client_secret)
+        )

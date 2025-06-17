@@ -14,7 +14,6 @@ Tests cross-service communication and health endpoints
 import asyncio
 import os
 from datetime import datetime
-from typing import Dict
 
 import aiohttp
 
@@ -42,7 +41,7 @@ class ServiceIntegrationTester:
         if self.session:
             await self.session.close()
 
-    async def test_service_health(self, service_name: str, config: Dict) -> bool:
+    async def test_service_health(self, service_name: str, config: dict) -> bool:
         """Test individual service health endpoint"""
         try:
             url = f"{config['url']}{config['health']}"
@@ -136,7 +135,7 @@ class ServiceIntegrationTester:
             print(f"❌ Database connectivity test failed: {str(e)}")
             return False
 
-    async def run_all_tests(self) -> Dict[str, bool]:
+    async def run_all_tests(self) -> dict[str, bool]:
         """Run comprehensive service integration tests"""
         print("🚀 ACGS-PGP Service Integration Test Suite")
         print("=" * 60)

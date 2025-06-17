@@ -16,8 +16,8 @@ Key Features:
 import json
 import logging
 from dataclasses import asdict
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from fastapi.responses import PlainTextResponse
@@ -44,9 +44,13 @@ logger = logging.getLogger(__name__)
 class MetricsTimeRangeRequest(BaseModel):
     """Request model for time-range based metrics queries."""
 
-    start_time: Optional[datetime] = Field(None, description="Start time for metrics query")
-    end_time: Optional[datetime] = Field(None, description="End time for metrics query")
-    component_types: Optional[List[str]] = Field(None, description="Filter by component types")
+    start_time: datetime | None = Field(
+        None, description="Start time for metrics query"
+    )
+    end_time: datetime | None = Field(None, description="End time for metrics query")
+    component_types: list[str] | None = Field(
+        None, description="Filter by component types"
+    )
 
     class Config:
         json_encoders = {datetime: lambda v: v.isoformat()}
@@ -55,8 +59,8 @@ class MetricsTimeRangeRequest(BaseModel):
 class PerformanceReportRequest(BaseModel):
     """Request model for performance report generation."""
 
-    start_time: Optional[datetime] = Field(None, description="Report start time")
-    end_time: Optional[datetime] = Field(None, description="Report end time")
+    start_time: datetime | None = Field(None, description="Report start time")
+    end_time: datetime | None = Field(None, description="Report end time")
     include_trends: bool = Field(True, description="Include trend analysis")
     include_recommendations: bool = Field(True, description="Include recommendations")
 
@@ -111,7 +115,7 @@ class ConstitutionalComplianceMetricsRequest(BaseModel):
     violations_detected: int = Field(..., ge=0)
     compliance_check_time_ms: float = Field(..., ge=0.0)
     constitutional_overhead_ratio: float = Field(..., ge=0.0)
-    principle_adherence_breakdown: Dict[str, float]
+    principle_adherence_breakdown: dict[str, float]
     remediation_actions_taken: int = Field(..., ge=0)
 
 
@@ -161,10 +165,10 @@ class MonitoringConfigurationRequest(BaseModel):
     monitoring_level: str = Field(
         ..., description="Monitoring level: basic, detailed, comprehensive, debug"
     )
-    collection_interval_seconds: Optional[int] = Field(None, ge=1, le=3600)
-    enable_prometheus: Optional[bool] = None
-    enable_real_time_alerts: Optional[bool] = None
-    alert_thresholds: Optional[Dict[str, float]] = None
+    collection_interval_seconds: int | None = Field(None, ge=1, le=3600)
+    enable_prometheus: bool | None = None
+    enable_real_time_alerts: bool | None = None
+    alert_thresholds: dict[str, float] | None = None
 
 
 # Router for WINA performance monitoring API
@@ -188,11 +192,15 @@ async def get_performance_collector() -> WINAPerformanceCollector:
     """Dependency to get the performance collector instance."""
     try:
         if _collector_getter is None:
-            raise HTTPException(status_code=503, detail="Performance monitoring not initialized")
+            raise HTTPException(
+                status_code=503, detail="Performance monitoring not initialized"
+            )
 
         collector = _collector_getter()
         if collector is None:
-            raise HTTPException(status_code=503, detail="Performance collector not available")
+            raise HTTPException(
+                status_code=503, detail="Performance collector not available"
+            )
 
         return collector
 
@@ -200,13 +208,15 @@ async def get_performance_collector() -> WINAPerformanceCollector:
         raise
     except Exception as e:
         logger.error(f"Failed to get performance collector: {e}")
-        raise HTTPException(status_code=500, detail="Performance monitoring service unavailable")
+        raise HTTPException(
+            status_code=500, detail="Performance monitoring service unavailable"
+        )
 
 
 @router.get("/health")
 async def get_health_status(
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get WINA performance monitoring system health status.
 
@@ -220,7 +230,7 @@ async def get_health_status(
 
         health_status = {
             "status": "healthy",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "monitoring_active": collector.monitoring_active,
             "monitoring_level": collector.monitoring_level.value,
             "system_health": system_health,
@@ -228,21 +238,26 @@ async def get_health_status(
                 "gflops_reduction_achieved": overall_performance.get(
                     "gflops_reduction_achieved", 0.0
                 ),
-                "accuracy_retention": overall_performance.get("accuracy_retention", 0.95),
+                "accuracy_retention": overall_performance.get(
+                    "accuracy_retention", 0.95
+                ),
                 "constitutional_compliance_rate": overall_performance.get(
                     "constitutional_compliance_rate", 0.95
                 ),
                 "performance_targets_met": overall_performance.get(
                     "performance_targets_met", False
                 ),
-                "optimization_status": overall_performance.get("optimization_status", "unknown"),
+                "optimization_status": overall_performance.get(
+                    "optimization_status", "unknown"
+                ),
             },
-            "components_monitored": len([comp for comp in WINAComponentType]),
+            "components_monitored": len(list(WINAComponentType)),
             "recent_alerts": len(
                 [
                     alert
                     for alert in collector.alerts_history
-                    if datetime.now(timezone.utc) - alert["timestamp"] < timedelta(hours=1)
+                    if datetime.now(UTC) - alert["timestamp"]
+                    < timedelta(hours=1)
                 ]
             ),
         }
@@ -259,13 +274,15 @@ async def get_health_status(
 
     except Exception as e:
         logger.error(f"Health status check failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Health status check failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Health status check failed: {str(e)}"
+        )
 
 
 @router.get("/metrics/realtime")
 async def get_realtime_metrics(
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get real-time WINA performance metrics.
 
@@ -276,7 +293,9 @@ async def get_realtime_metrics(
 
     except Exception as e:
         logger.error(f"Real-time metrics retrieval failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Real-time metrics retrieval failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Real-time metrics retrieval failed: {str(e)}"
+        )
 
 
 @router.get("/metrics/summary")
@@ -284,9 +303,9 @@ async def get_metrics_summary(
     time_range_hours: int = Query(
         24, ge=1, le=168, description="Time range in hours for metrics summary"
     ),
-    component_type: Optional[str] = Query(None, description="Filter by component type"),
+    component_type: str | None = Query(None, description="Filter by component type"),
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get summarized WINA performance metrics for a specified time range.
 
@@ -298,7 +317,7 @@ async def get_metrics_summary(
         Summarized performance metrics
     """
     try:
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
         start_time = end_time - timedelta(hours=time_range_hours)
 
         # Get performance report for the time range
@@ -332,7 +351,9 @@ async def get_metrics_summary(
 
     except Exception as e:
         logger.error(f"Metrics summary retrieval failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Metrics summary retrieval failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Metrics summary retrieval failed: {str(e)}"
+        )
 
 
 @router.post("/report/generate")
@@ -340,7 +361,7 @@ async def generate_performance_report(
     request: PerformanceReportRequest,
     background_tasks: BackgroundTasks,
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate comprehensive WINA performance report.
 
@@ -377,7 +398,7 @@ async def generate_performance_report(
 
         return {
             "report": report_dict,
-            "generation_timestamp": datetime.now(timezone.utc).isoformat(),
+            "generation_timestamp": datetime.now(UTC).isoformat(),
             "report_size": len(json.dumps(report_dict)),
             "status": "completed",
         }
@@ -405,15 +426,17 @@ async def get_prometheus_metrics(
 
     except Exception as e:
         logger.error(f"Prometheus metrics export failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Prometheus metrics export failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Prometheus metrics export failed: {str(e)}"
+        )
 
 
 @router.get("/alerts")
 async def get_recent_alerts(
     hours: int = Query(24, ge=1, le=168, description="Hours to look back for alerts"),
-    severity: Optional[str] = Query(None, description="Filter by alert severity"),
+    severity: str | None = Query(None, description="Filter by alert severity"),
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get recent performance alerts.
 
@@ -425,14 +448,18 @@ async def get_recent_alerts(
         Recent performance alerts
     """
     try:
-        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+        cutoff_time = datetime.now(UTC) - timedelta(hours=hours)
 
         recent_alerts = [
-            alert for alert in collector.alerts_history if alert["timestamp"] >= cutoff_time
+            alert
+            for alert in collector.alerts_history
+            if alert["timestamp"] >= cutoff_time
         ]
 
         if severity:
-            recent_alerts = [alert for alert in recent_alerts if alert.get("severity") == severity]
+            recent_alerts = [
+                alert for alert in recent_alerts if alert.get("severity") == severity
+            ]
 
         # Convert datetime objects to ISO strings
         for alert in recent_alerts:
@@ -443,7 +470,7 @@ async def get_recent_alerts(
             "total_count": len(recent_alerts),
             "time_range": {
                 "start_time": cutoff_time.isoformat(),
-                "end_time": datetime.now(timezone.utc).isoformat(),
+                "end_time": datetime.now(UTC).isoformat(),
                 "duration_hours": hours,
             },
             "severity_filter": severity,
@@ -451,7 +478,9 @@ async def get_recent_alerts(
 
     except Exception as e:
         logger.error(f"Alerts retrieval failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Alerts retrieval failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Alerts retrieval failed: {str(e)}"
+        )
 
 
 # Metrics recording endpoints
@@ -461,7 +490,7 @@ async def get_recent_alerts(
 async def record_neuron_activation_metrics(
     request: NeuronActivationMetricsRequest,
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Record neuron activation metrics."""
     try:
         metrics = WINANeuronActivationMetrics(
@@ -474,7 +503,7 @@ async def record_neuron_activation_metrics(
             activation_scores_std=request.activation_scores_std,
             performance_impact_ms=request.performance_impact_ms,
             energy_savings_ratio=request.energy_savings_ratio,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         await collector.record_neuron_activation_metrics(metrics)
@@ -486,14 +515,16 @@ async def record_neuron_activation_metrics(
 
     except Exception as e:
         logger.error(f"Neuron activation metrics recording failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Metrics recording failed: {str(e)}"
+        )
 
 
 @router.post("/metrics/svd-transformation")
 async def record_svd_transformation_metrics(
     request: SVDTransformationMetricsRequest,
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Record SVD transformation metrics."""
     try:
         metrics = WINASVDTransformationMetrics(
@@ -505,7 +536,7 @@ async def record_svd_transformation_metrics(
             reconstruction_error=request.reconstruction_error,
             compression_ratio=request.compression_ratio,
             memory_savings_mb=request.memory_savings_mb,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         await collector.record_svd_transformation_metrics(metrics)
@@ -517,14 +548,16 @@ async def record_svd_transformation_metrics(
 
     except Exception as e:
         logger.error(f"SVD transformation metrics recording failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Metrics recording failed: {str(e)}"
+        )
 
 
 @router.post("/metrics/dynamic-gating")
 async def record_dynamic_gating_metrics(
     request: DynamicGatingMetricsRequest,
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Record dynamic gating metrics."""
     try:
         metrics = WINADynamicGatingMetrics(
@@ -537,7 +570,7 @@ async def record_dynamic_gating_metrics(
             decision_latency_ms=request.decision_latency_ms,
             accuracy_impact=request.accuracy_impact,
             resource_savings=request.resource_savings,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         await collector.record_dynamic_gating_metrics(metrics)
@@ -549,14 +582,16 @@ async def record_dynamic_gating_metrics(
 
     except Exception as e:
         logger.error(f"Dynamic gating metrics recording failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Metrics recording failed: {str(e)}"
+        )
 
 
 @router.post("/metrics/constitutional-compliance")
 async def record_constitutional_compliance_metrics(
     request: ConstitutionalComplianceMetricsRequest,
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Record constitutional compliance metrics."""
     try:
         metrics = WINAConstitutionalComplianceMetrics(
@@ -568,7 +603,7 @@ async def record_constitutional_compliance_metrics(
             constitutional_overhead_ratio=request.constitutional_overhead_ratio,
             principle_adherence_breakdown=request.principle_adherence_breakdown,
             remediation_actions_taken=request.remediation_actions_taken,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         await collector.record_constitutional_compliance_metrics(metrics)
@@ -580,14 +615,16 @@ async def record_constitutional_compliance_metrics(
 
     except Exception as e:
         logger.error(f"Constitutional compliance metrics recording failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Metrics recording failed: {str(e)}"
+        )
 
 
 @router.post("/metrics/learning-feedback")
 async def record_learning_feedback_metrics(
     request: LearningFeedbackMetricsRequest,
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Record learning feedback metrics."""
     try:
         metrics = WINALearningFeedbackMetrics(
@@ -599,7 +636,7 @@ async def record_learning_feedback_metrics(
             model_update_size_mb=request.model_update_size_mb,
             convergence_rate=request.convergence_rate,
             feedback_quality_score=request.feedback_quality_score,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         await collector.record_learning_feedback_metrics(metrics)
@@ -611,14 +648,16 @@ async def record_learning_feedback_metrics(
 
     except Exception as e:
         logger.error(f"Learning feedback metrics recording failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Metrics recording failed: {str(e)}"
+        )
 
 
 @router.post("/metrics/integration")
 async def record_integration_metrics(
     request: IntegrationMetricsRequest,
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Record component integration metrics."""
     try:
         metrics = WINAIntegrationMetrics(
@@ -631,7 +670,7 @@ async def record_integration_metrics(
             integration_success_rate=request.integration_success_rate,
             error_count=request.error_count,
             performance_improvement_ratio=request.performance_improvement_ratio,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         await collector.record_integration_metrics(metrics)
@@ -643,14 +682,16 @@ async def record_integration_metrics(
 
     except Exception as e:
         logger.error(f"Integration metrics recording failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Metrics recording failed: {str(e)}"
+        )
 
 
 @router.post("/metrics/system-health")
 async def record_system_health_metrics(
     request: SystemHealthMetricsRequest,
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Record system health metrics."""
     try:
         metrics = WINASystemHealthMetrics(
@@ -662,7 +703,7 @@ async def record_system_health_metrics(
             availability_percent=request.availability_percent,
             response_time_p95_ms=request.response_time_p95_ms,
             concurrent_operations=request.concurrent_operations,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         await collector.record_system_health_metrics(metrics)
@@ -671,7 +712,9 @@ async def record_system_health_metrics(
 
     except Exception as e:
         logger.error(f"System health metrics recording failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Metrics recording failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Metrics recording failed: {str(e)}"
+        )
 
 
 # Configuration endpoints
@@ -680,7 +723,7 @@ async def record_system_health_metrics(
 @router.get("/config")
 async def get_monitoring_configuration(
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Get current monitoring configuration."""
     try:
         return {
@@ -702,14 +745,16 @@ async def get_monitoring_configuration(
 
     except Exception as e:
         logger.error(f"Configuration retrieval failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Configuration retrieval failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Configuration retrieval failed: {str(e)}"
+        )
 
 
 @router.post("/config")
 async def update_monitoring_configuration(
     request: MonitoringConfigurationRequest,
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Update monitoring configuration."""
     try:
         # Validate monitoring level
@@ -739,13 +784,15 @@ async def update_monitoring_configuration(
         raise
     except Exception as e:
         logger.error(f"Configuration update failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Configuration update failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Configuration update failed: {str(e)}"
+        )
 
 
 @router.post("/monitoring/start")
 async def start_monitoring(
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Start performance monitoring."""
     try:
         await collector.start_monitoring()
@@ -753,13 +800,15 @@ async def start_monitoring(
 
     except Exception as e:
         logger.error(f"Monitoring start failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Monitoring start failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Monitoring start failed: {str(e)}"
+        )
 
 
 @router.post("/monitoring/stop")
 async def stop_monitoring(
     collector: WINAPerformanceCollector = Depends(get_performance_collector),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Stop performance monitoring."""
     try:
         await collector.stop_monitoring()

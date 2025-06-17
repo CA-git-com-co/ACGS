@@ -17,7 +17,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 import yaml
 
@@ -45,10 +45,10 @@ class RecoveryConfig:
 
     strategy: RecoveryStrategy
     max_attempts: int
-    timeout_seconds: Optional[int] = None
-    fallback_strategy: Optional[RecoveryStrategy] = None
+    timeout_seconds: int | None = None
+    fallback_strategy: RecoveryStrategy | None = None
     success_threshold: float = 0.7
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -59,9 +59,9 @@ class RecoveryResult:
     success: bool
     attempts_made: int
     total_time_seconds: float
-    final_output: Optional[Any] = None
-    error_message: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    final_output: Any | None = None
+    error_message: str | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class RecoveryStrategyDispatcher:
@@ -72,7 +72,7 @@ class RecoveryStrategyDispatcher:
     attempts while maximizing success rate through intelligent strategy selection.
     """
 
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: str | None = None):
         """
         Initialize the recovery strategy dispatcher.
 
@@ -126,8 +126,8 @@ class RecoveryStrategyDispatcher:
         self,
         strategy: RecoveryStrategy,
         principle_id: str,
-        original_input: Dict[str, Any],
-        failure_context: Optional[Dict[str, Any]] = None,
+        original_input: dict[str, Any],
+        failure_context: dict[str, Any] | None = None,
     ) -> RecoveryResult:
         """
         Execute a recovery strategy.
@@ -186,7 +186,7 @@ class RecoveryStrategyDispatcher:
                 error_message=str(e),
             )
 
-    def get_strategy_performance(self) -> Dict[str, Dict[str, Any]]:
+    def get_strategy_performance(self) -> dict[str, dict[str, Any]]:
         """
         Get performance metrics for all recovery strategies.
 
@@ -222,7 +222,7 @@ class RecoveryStrategyDispatcher:
         self.strategies[failure_type] = config
         logger.info(f"Updated recovery strategy config for {failure_type.value}")
 
-    def clear_attempt_history(self, principle_id: Optional[str] = None) -> None:
+    def clear_attempt_history(self, principle_id: str | None = None) -> None:
         """
         Clear attempt history for a principle or all principles.
 
@@ -240,8 +240,8 @@ class RecoveryStrategyDispatcher:
         self,
         strategy: RecoveryStrategy,
         principle_id: str,
-        original_input: Dict[str, Any],
-        failure_context: Optional[Dict[str, Any]],
+        original_input: dict[str, Any],
+        failure_context: dict[str, Any] | None,
     ) -> RecoveryResult:
         """
         Execute the actual implementation of a recovery strategy.
@@ -276,7 +276,7 @@ class RecoveryStrategyDispatcher:
             return self._execute_default_strategy(original_input)
 
     def _execute_simplified_syntax_strategy(
-        self, original_input: Dict[str, Any]
+        self, original_input: dict[str, Any]
     ) -> RecoveryResult:
         """Execute simplified syntax prompt strategy."""
         # Simulate simplified syntax approach
@@ -292,7 +292,7 @@ class RecoveryStrategyDispatcher:
         )
 
     def _execute_disambiguation_strategy(
-        self, original_input: Dict[str, Any], failure_context: Optional[Dict[str, Any]]
+        self, original_input: dict[str, Any], failure_context: dict[str, Any] | None
     ) -> RecoveryResult:
         """Execute explicit disambiguation strategy."""
         # Simulate disambiguation approach
@@ -308,7 +308,7 @@ class RecoveryStrategyDispatcher:
         )
 
     def _execute_consensus_strategy(
-        self, original_input: Dict[str, Any]
+        self, original_input: dict[str, Any]
     ) -> RecoveryResult:
         """Execute multi-model consensus strategy."""
         # Simulate multi-model consensus
@@ -328,7 +328,7 @@ class RecoveryStrategyDispatcher:
         )
 
     def _execute_enhanced_context_strategy(
-        self, original_input: Dict[str, Any]
+        self, original_input: dict[str, Any]
     ) -> RecoveryResult:
         """Execute enhanced context prompt strategy."""
         # Simulate enhanced context approach
@@ -344,7 +344,7 @@ class RecoveryStrategyDispatcher:
         )
 
     def _execute_decomposition_strategy(
-        self, original_input: Dict[str, Any]
+        self, original_input: dict[str, Any]
     ) -> RecoveryResult:
         """Execute principle decomposition strategy."""
         # Simulate decomposition approach
@@ -360,7 +360,7 @@ class RecoveryStrategyDispatcher:
         )
 
     def _execute_human_clarification_strategy(
-        self, original_input: Dict[str, Any]
+        self, original_input: dict[str, Any]
     ) -> RecoveryResult:
         """Execute human clarification strategy."""
         # Simulate human clarification request
@@ -379,7 +379,7 @@ class RecoveryStrategyDispatcher:
         )
 
     def _execute_human_escalation_strategy(
-        self, original_input: Dict[str, Any]
+        self, original_input: dict[str, Any]
     ) -> RecoveryResult:
         """Execute human escalation strategy."""
         # Simulate human escalation
@@ -395,7 +395,7 @@ class RecoveryStrategyDispatcher:
         )
 
     def _execute_default_strategy(
-        self, original_input: Dict[str, Any]
+        self, original_input: dict[str, Any]
     ) -> RecoveryResult:
         """Execute default recovery strategy."""
         # Simulate default approach
@@ -411,8 +411,8 @@ class RecoveryStrategyDispatcher:
         )
 
     def _load_strategy_config(
-        self, config_path: Optional[str]
-    ) -> Dict[FailureType, RecoveryConfig]:
+        self, config_path: str | None
+    ) -> dict[FailureType, RecoveryConfig]:
         """
         Load recovery strategy configuration.
 
@@ -424,7 +424,7 @@ class RecoveryStrategyDispatcher:
         """
         if config_path:
             try:
-                with open(config_path, "r") as f:
+                with open(config_path) as f:
                     config_data = yaml.safe_load(f)
                 return self._parse_config_data(config_data)
             except Exception as e:
@@ -435,8 +435,8 @@ class RecoveryStrategyDispatcher:
         return self._get_default_strategy_config()
 
     def _parse_config_data(
-        self, config_data: Dict[str, Any]
-    ) -> Dict[FailureType, RecoveryConfig]:
+        self, config_data: dict[str, Any]
+    ) -> dict[FailureType, RecoveryConfig]:
         """Parse configuration data into RecoveryConfig objects."""
         strategies = {}
 
@@ -466,7 +466,7 @@ class RecoveryStrategyDispatcher:
 
         return strategies
 
-    def _get_default_strategy_config(self) -> Dict[FailureType, RecoveryConfig]:
+    def _get_default_strategy_config(self) -> dict[FailureType, RecoveryConfig]:
         """Get default recovery strategy configuration."""
         return {
             FailureType.SYNTAX_ERROR: RecoveryConfig(

@@ -166,7 +166,7 @@ docker run -p 8008:8008 acgs-governance-workflows
 ### Kubernetes
 ```bash
 # Deploy to Kubernetes
-kubectl apply -f k8s/deployment.yaml
+kubectl apply -f infrastructure/kubernetes/deployment.yaml
 ```
 
 ### Host-based

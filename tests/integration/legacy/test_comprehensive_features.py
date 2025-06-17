@@ -14,7 +14,6 @@ Tests all Phase 1-3 components with integration scenarios
 import asyncio
 import os
 from datetime import datetime
-from typing import Dict
 
 import aiohttp
 
@@ -342,7 +341,7 @@ class ComprehensiveFeatureTester:
             print(f"❌ Cryptographic integrity test failed: {str(e)}")
             return False
 
-    async def run_comprehensive_tests(self) -> Dict[str, bool]:
+    async def run_comprehensive_tests(self) -> dict[str, bool]:
         """Run all comprehensive feature tests"""
         print("🚀 ACGS-PGP Comprehensive Feature Test Suite")
         print("=" * 60)

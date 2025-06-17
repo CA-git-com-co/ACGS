@@ -18,13 +18,12 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime
+from typing import Any
 
-import asyncpg
 import redis.asyncio as redis
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import QueuePool
 
 logger = logging.getLogger(__name__)
@@ -69,7 +68,7 @@ class OptimizationConfig:
     performance_monitoring: bool = True
 
     # TTL policies for different data types
-    ttl_policies: Dict[str, int] = field(
+    ttl_policies: dict[str, int] = field(
         default_factory=lambda: {
             "user_sessions": 1800,  # 30 minutes
             "auth_tokens": 3600,  # 1 hour
@@ -93,7 +92,7 @@ class DatabasePerformanceOptimizer:
     to achieve <200ms query times and >99.5% cache hit rates.
     """
 
-    def __init__(self, config: Optional[OptimizationConfig] = None):
+    def __init__(self, config: OptimizationConfig | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -110,16 +109,16 @@ class DatabasePerformanceOptimizer:
 
         # Performance tracking
         self.metrics = PerformanceMetrics()
-        self.query_history: List[Dict[str, Any]] = []
-        self.slow_queries: List[Dict[str, Any]] = []
+        self.query_history: list[dict[str, Any]] = []
+        self.slow_queries: list[dict[str, Any]] = []
 
         # Optimization state
         self.running = False
-        self.optimization_tasks: List[asyncio.Task] = []
+        self.optimization_tasks: list[asyncio.Task] = []
 
         # Query cache for prepared statements
-        self.prepared_statements: Dict[str, str] = {}
-        self.query_plans: Dict[str, Dict[str, Any]] = {}
+        self.prepared_statements: dict[str, str] = {}
+        self.query_plans: dict[str, dict[str, Any]] = {}
 
     async def initialize(self):
         # requires: Valid input parameters
@@ -153,7 +152,9 @@ class DatabasePerformanceOptimizer:
         # ensures: Correct function execution
         # sha256: func_hash
         """Initialize optimized database connection."""
-        database_url = "postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_pgp_db"
+        database_url = (
+            "postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_pgp_db"
+        )
 
         self.db_engine = create_async_engine(
             database_url,
@@ -177,7 +178,7 @@ class DatabasePerformanceOptimizer:
 
         # Test connection
         async with self.db_engine.begin() as conn:
-            result = await conn.execute(text("SELECT 1"))
+            await conn.execute(text("SELECT 1"))
             logger.info("Database connection established successfully")
 
     async def _initialize_redis(self):
@@ -217,9 +218,9 @@ class DatabasePerformanceOptimizer:
     async def execute_query(
         self,
         query: str,
-        params: Optional[Dict[str, Any]] = None,
-        cache_key: Optional[str] = None,
-        ttl: Optional[int] = None,
+        params: dict[str, Any] | None = None,
+        cache_key: str | None = None,
+        ttl: int | None = None,
     ) -> Any:
         """
         Execute optimized database query with caching.
@@ -271,7 +272,7 @@ class DatabasePerformanceOptimizer:
             await self._update_query_metrics(query, query_time, params, error=str(e))
             raise
 
-    async def _get_cached_result(self, cache_key: str) -> Optional[Any]:
+    async def _get_cached_result(self, cache_key: str) -> Any | None:
         """Get cached result from Redis."""
         try:
             cached_data = await self.redis_client.get(cache_key)
@@ -284,7 +285,9 @@ class DatabasePerformanceOptimizer:
             logger.warning(f"Cache get error for key {cache_key}: {e}")
             return None
 
-    async def _cache_result(self, cache_key: str, result: Any, ttl: Optional[int] = None):
+    async def _cache_result(
+        self, cache_key: str, result: Any, ttl: int | None = None
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -307,8 +310,8 @@ class DatabasePerformanceOptimizer:
         self,
         query: str,
         query_time_ms: float,
-        params: Optional[Dict[str, Any]] = None,
-        error: Optional[str] = None,
+        params: dict[str, Any] | None = None,
+        error: str | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -337,7 +340,9 @@ class DatabasePerformanceOptimizer:
 
         total_cache_operations = self.metrics.cache_hits + self.metrics.cache_misses
         if total_cache_operations > 0:
-            self.metrics.cache_hit_rate = (self.metrics.cache_hits / total_cache_operations) * 100
+            self.metrics.cache_hit_rate = (
+                self.metrics.cache_hits / total_cache_operations
+            ) * 100
 
         self.metrics.last_updated = datetime.utcnow()
 
@@ -368,8 +373,8 @@ class DatabasePerformanceOptimizer:
                 result = await conn.execute(
                     text(
                         """
-                    SELECT count(*) as active_connections 
-                    FROM pg_stat_activity 
+                    SELECT count(*) as active_connections
+                    FROM pg_stat_activity
                     WHERE state = 'active'
                 """
                     )
@@ -381,10 +386,10 @@ class DatabasePerformanceOptimizer:
                     result = await conn.execute(
                         text(
                             """
-                        SELECT query, calls, total_time, mean_time 
-                        FROM pg_stat_statements 
-                        WHERE mean_time > :threshold 
-                        ORDER BY mean_time DESC 
+                        SELECT query, calls, total_time, mean_time
+                        FROM pg_stat_statements
+                        WHERE mean_time > :threshold
+                        ORDER BY mean_time DESC
                         LIMIT 10
                     """
                         ),
@@ -459,9 +464,9 @@ class DatabasePerformanceOptimizer:
         try:
             # Cache active constitutional principles
             principles_query = """
-                SELECT id, title, content, category, priority_weight 
-                FROM principles 
-                WHERE is_active = true 
+                SELECT id, title, content, category, priority_weight
+                FROM principles
+                WHERE is_active = true
                 ORDER BY priority_weight DESC
             """
 
@@ -485,8 +490,8 @@ class DatabasePerformanceOptimizer:
         try:
             # Cache system configuration
             config_query = """
-                SELECT key, value, category 
-                FROM system_configuration 
+                SELECT key, value, category
+                FROM system_configuration
                 WHERE is_active = true
             """
 
@@ -543,7 +548,9 @@ class DatabasePerformanceOptimizer:
                         plan = result.scalar()
 
                         # Store query plan for analysis
-                        query_hash = hashlib.md5(query.encode(), usedforsecurity=False).hexdigest()
+                        query_hash = hashlib.md5(
+                            query.encode(), usedforsecurity=False
+                        ).hexdigest()
                         self.query_plans[query_hash] = {
                             "query": query,
                             "plan": plan,
@@ -604,11 +611,13 @@ class DatabasePerformanceOptimizer:
             keys = await self.redis_client.keys(pattern)
             if keys:
                 await self.redis_client.delete(*keys)
-                logger.info(f"Invalidated {len(keys)} cache keys matching pattern: {pattern}")
+                logger.info(
+                    f"Invalidated {len(keys)} cache keys matching pattern: {pattern}"
+                )
         except Exception as e:
             logger.warning(f"Cache invalidation error for pattern {pattern}: {e}")
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get current performance metrics."""
         return {
             "query_metrics": {
@@ -662,11 +671,11 @@ class DatabasePerformanceOptimizer:
 
 
 # Global optimizer instance
-_optimizer: Optional[DatabasePerformanceOptimizer] = None
+_optimizer: DatabasePerformanceOptimizer | None = None
 
 
 async def get_performance_optimizer(
-    config: Optional[OptimizationConfig] = None,
+    config: OptimizationConfig | None = None,
 ) -> DatabasePerformanceOptimizer:
     """Get the global performance optimizer instance."""
     global _optimizer
@@ -710,8 +719,8 @@ class IntelligentCacheManager:
         self.config = config
 
         # Cache analytics
-        self.access_patterns: Dict[str, Dict[str, Any]] = {}
-        self.invalidation_history: List[Dict[str, Any]] = []
+        self.access_patterns: dict[str, dict[str, Any]] = {}
+        self.invalidation_history: list[dict[str, Any]] = []
 
         # Adaptive TTL settings
         self.min_ttl = 60  # 1 minute
@@ -723,7 +732,7 @@ class IntelligentCacheManager:
         key: str,
         value: Any,
         data_type: str = "default",
-        access_frequency: Optional[float] = None,
+        access_frequency: float | None = None,
     ) -> bool:
         """
         Set cache with intelligent TTL calculation.
@@ -756,7 +765,7 @@ class IntelligentCacheManager:
             logger.error(f"Smart cache set error for key {key}: {e}")
             return False
 
-    async def smart_cache_get(self, key: str) -> Optional[Any]:
+    async def smart_cache_get(self, key: str) -> Any | None:
         """
         Get cached value with access pattern tracking.
 
@@ -786,11 +795,13 @@ class IntelligentCacheManager:
             return None
 
     async def _calculate_adaptive_ttl(
-        self, key: str, data_type: str, access_frequency: Optional[float] = None
+        self, key: str, data_type: str, access_frequency: float | None = None
     ) -> int:
         """Calculate adaptive TTL based on access patterns and data type."""
         # Start with base TTL from policy
-        base_ttl = self.config.ttl_policies.get(data_type, self.config.default_ttl_seconds)
+        base_ttl = self.config.ttl_policies.get(
+            data_type, self.config.default_ttl_seconds
+        )
 
         # Get access pattern for this key
         pattern = self.access_patterns.get(key, {})
@@ -815,7 +826,9 @@ class IntelligentCacheManager:
         # Ensure TTL is within bounds
         return max(self.min_ttl, min(adjusted_ttl, self.max_ttl))
 
-    async def _update_access_pattern(self, key: str, operation: str, ttl: Optional[int] = None):
+    async def _update_access_pattern(
+        self, key: str, operation: str, ttl: int | None = None
+    ):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -849,7 +862,7 @@ class IntelligentCacheManager:
         time_diff = now - pattern["first_access"]
         pattern["time_span_hours"] = time_diff.total_seconds() / 3600
 
-    async def warm_cache_intelligent(self, warming_config: Dict[str, Any]):
+    async def warm_cache_intelligent(self, warming_config: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -875,7 +888,7 @@ class IntelligentCacheManager:
         except Exception as e:
             logger.error(f"Intelligent cache warming error: {e}")
 
-    def get_cache_analytics(self) -> Dict[str, Any]:
+    def get_cache_analytics(self) -> dict[str, Any]:
         """Get comprehensive cache analytics."""
         total_keys = len(self.access_patterns)
 
@@ -891,7 +904,9 @@ class IntelligentCacheManager:
 
         # Find most accessed keys
         top_keys = sorted(
-            self.access_patterns.items(), key=lambda x: x[1].get("hits", 0), reverse=True
+            self.access_patterns.items(),
+            key=lambda x: x[1].get("hits", 0),
+            reverse=True,
         )[:10]
 
         return {

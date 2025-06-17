@@ -1,5 +1,4 @@
 # Local authentication utilities to avoid shared module dependencies
-from typing import List
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel
@@ -10,7 +9,7 @@ class User(BaseModel):
     id: int = 1
     username: str = "mock_user"
     email: str = "mock@example.com"
-    roles: List[str] = ["user"]
+    roles: list[str] = ["user"]
     is_active: bool = True
 
 
@@ -25,13 +24,15 @@ async def get_current_active_user(user: User = None) -> User:
     if not user:
         user = User(roles=["admin", "fv_admin"])
     if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
+        )
     return user
 
 
 # Mock role checker class
 class RoleChecker:
-    def __init__(self, allowed_roles: List[str]):
+    def __init__(self, allowed_roles: list[str]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

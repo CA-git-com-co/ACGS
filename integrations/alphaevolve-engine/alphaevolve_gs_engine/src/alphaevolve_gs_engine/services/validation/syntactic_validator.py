@@ -9,7 +9,6 @@ Classes:
 """
 
 import subprocess  # For calling external linters/parsers like 'opa parse'
-from typing import Optional, Tuple
 
 from integrations.alphaevolve_engine.utils.logging_utils import setup_logger
 
@@ -65,8 +64,8 @@ class SyntacticValidator:
             )
 
     def validate_rego_policy(
-        self, policy_code: str, policy_id: Optional[str] = "UnknownPolicy"
-    ) -> Tuple[bool, str]:
+        self, policy_code: str, policy_id: str | None = "UnknownPolicy"
+    ) -> tuple[bool, str]:
         """
         Validates a Rego policy string for syntactic correctness using `opa parse`.
 
@@ -146,8 +145,8 @@ class SyntacticValidator:
             return False, f"An unexpected error occurred: {str(e)}"
 
     def validate(
-        self, policy_code: str, language: str = "rego", policy_id: Optional[str] = None
-    ) -> Tuple[bool, str]:
+        self, policy_code: str, language: str = "rego", policy_id: str | None = None
+    ) -> tuple[bool, str]:
         """
         Generic validation entry point. Currently only supports Rego.
 

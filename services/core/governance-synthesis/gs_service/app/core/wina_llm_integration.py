@@ -16,7 +16,7 @@ import logging  # Moved to top
 import os
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -45,22 +45,26 @@ try:
         LLMInterpretationInput,
         LLMStructuredOutput,
     )
-    from .llm_integration import GroqLLMClient  # Import specific client for type checking
-    from .llm_integration import RealLLMClient  # Import specific client for type checking
     from .llm_integration import (
+        GroqLLMClient,
+        RealLLMClient,
         get_llm_client,
         query_llm_for_constitutional_synthesis,
         query_llm_for_structured_output,
-    )
+    )  # Import specific client for type checking  # Import specific client for type checking
 
     GS_ENGINE_AVAILABLE = True
 except ImportError as e:
-    logger.warning(f"GS Engine components not available: {e}. Using mock implementations.")
+    logger.warning(
+        f"GS Engine components not available: {e}. Using mock implementations."
+    )
     GS_ENGINE_AVAILABLE = False
 
     # Mock implementations for testing
     class LLMInterpretationInput:
-        def __init__(self, principle_id, principle_text, context, environmental_factors=None):
+        def __init__(
+            self, principle_id, principle_text, context, environmental_factors=None
+        ):
             # requires: Valid input parameters
             # ensures: Correct function execution
             # sha256: func_hash
@@ -146,7 +150,7 @@ except ImportError:
         pass
 
 
-async def _retrieve_neuron_activations(text: str) -> Optional[Dict[str, List[float]]]:
+async def _retrieve_neuron_activations(text: str) -> dict[str, list[float]] | None:
     """Attempt to retrieve real neuron activations for the given text."""
     get_activations_error = ""
     try:
@@ -155,7 +159,7 @@ async def _retrieve_neuron_activations(text: str) -> Optional[Dict[str, List[flo
 
         model_name = os.getenv("HF_ACTIVATION_MODEL", "distilbert-base-uncased")
 
-        async def _worker() -> Dict[str, List[float]]:
+        async def _worker() -> dict[str, list[float]]:
             tokenizer = AutoTokenizer.from_pretrained(model_name)
             model = AutoModel.from_pretrained(model_name, output_hidden_states=True)
             model.eval()
@@ -177,9 +181,9 @@ async def _retrieve_neuron_activations(text: str) -> Optional[Dict[str, List[flo
 class WINAOptimizedSynthesisResult:
     """Result of WINA-optimized policy synthesis."""
 
-    original_result: Union[LLMStructuredOutput, ConstitutionalSynthesisOutput]
-    wina_optimization: Optional[WINAOptimizationResult]
-    performance_metrics: Dict[str, float]
+    original_result: LLMStructuredOutput | ConstitutionalSynthesisOutput
+    wina_optimization: WINAOptimizationResult | None
+    performance_metrics: dict[str, float]
     constitutional_compliance: bool
     optimization_applied: bool
     synthesis_time: float
@@ -208,14 +212,20 @@ class WINAOptimizedLLMClient:
         # Load WINA configuration
         if enable_wina:
             try:
-                self.wina_config, self.wina_integration_config = load_wina_config_from_env()
+                self.wina_config, self.wina_integration_config = (
+                    load_wina_config_from_env()
+                )
                 self.wina_integrator = WINAModelIntegrator(
                     self.wina_config, self.wina_integration_config
                 )
-                self.wina_core = WINACore(self.wina_config, self.wina_integration_config)
+                self.wina_core = WINACore(
+                    self.wina_config, self.wina_integration_config
+                )
                 logger.info("WINA optimization enabled for GS Engine LLM client")
             except Exception as e:
-                logger.warning(f"Failed to initialize WINA: {e}. Disabling WINA optimization.")
+                logger.warning(
+                    f"Failed to initialize WINA: {e}. Disabling WINA optimization."
+                )
                 self.enable_wina = False
 
         # Initialize constitutional prompting and reliability framework
@@ -223,7 +233,7 @@ class WINAOptimizedLLMClient:
         self.reliability_framework = EnhancedLLMReliabilityFramework()
 
         # Performance tracking
-        self._optimization_history: List[WINAOptimizedSynthesisResult] = []
+        self._optimization_history: list[WINAOptimizedSynthesisResult] = []
         self._performance_metrics = {
             "total_requests": 0,
             "wina_optimized_requests": 0,
@@ -233,7 +243,7 @@ class WINAOptimizedLLMClient:
         }
 
     async def get_structured_interpretation_optimized(
-        self, query: LLMInterpretationInput, apply_wina: Optional[bool] = None
+        self, query: LLMInterpretationInput, apply_wina: bool | None = None
     ) -> WINAOptimizedSynthesisResult:
         """
         Get structured interpretation with optional WINA optimization.
@@ -247,7 +257,7 @@ class WINAOptimizedLLMClient:
         """
         start_time = time.time()
         should_apply_wina = apply_wina if apply_wina is not None else self.enable_wina
-        gating_decision_applied: Optional[GatingDecision] = None
+        gating_decision_applied: GatingDecision | None = None
 
         try:
             logger.info(
@@ -260,19 +270,30 @@ class WINAOptimizedLLMClient:
             model_identifier = self._get_model_identifier(llm_client)
 
             # Apply WINA optimization if enabled
-            wina_optimization: Optional[WINAOptimizationResult] = None  # Ensure type hint
+            wina_optimization: WINAOptimizationResult | None = (
+                None  # Ensure type hint
+            )
             llm_call_kwargs = {}  # To pass gating info to LLM
 
-            if should_apply_wina and self.wina_integration_config.gs_engine_optimization:
+            if (
+                should_apply_wina
+                and self.wina_integration_config.gs_engine_optimization
+            ):
                 try:
                     # --- WINA Runtime Gating Integration START ---
-                    activations = await _retrieve_neuron_activations(query.principle_text)
+                    activations = await _retrieve_neuron_activations(
+                        query.principle_text
+                    )
                     if activations:
                         neuron_activation_input = NeuronActivationInput(
                             activations=activations, metadata={"source": "real"}
                         )
-                        analyzed_acts = await analyze_neuron_activations(neuron_activation_input)
-                        wina_weights_output = await calculate_wina_weights(analyzed_acts)
+                        analyzed_acts = await analyze_neuron_activations(
+                            neuron_activation_input
+                        )
+                        wina_weights_output = await calculate_wina_weights(
+                            analyzed_acts
+                        )
                         gating_config = GatingThresholdConfig(
                             threshold=0.5, default_gating_state=False
                         )
@@ -282,7 +303,9 @@ class WINAOptimizedLLMClient:
                         logger.info(
                             f"WINA Gating Mask for P{query.principle_id}: {gating_decision_applied.gating_mask}"
                         )
-                        llm_call_kwargs["wina_gating_mask"] = gating_decision_applied.gating_mask
+                        llm_call_kwargs["wina_gating_mask"] = (
+                            gating_decision_applied.gating_mask
+                        )
                     else:
                         logger.info("Neuron activations unavailable; skipping gating")
                     # --- WINA Runtime Gating Integration END ---
@@ -302,7 +325,9 @@ class WINAOptimizedLLMClient:
 
             # Perform the actual LLM query, passing the gating_mask if available
             if gating_decision_applied:
-                logger.info(f"Attempting LLM call with WINA gating mask for P{query.principle_id}")
+                logger.info(
+                    f"Attempting LLM call with WINA gating mask for P{query.principle_id}"
+                )
                 original_result = await query_llm_for_structured_output(
                     query, wina_gating_mask=gating_decision_applied.gating_mask
                 )
@@ -360,7 +385,7 @@ class WINAOptimizedLLMClient:
     async def get_constitutional_synthesis_optimized(
         self,
         synthesis_input: ConstitutionalSynthesisInput,
-        apply_wina: Optional[bool] = None,
+        apply_wina: bool | None = None,
     ) -> WINAOptimizedSynthesisResult:
         """
         Get constitutional synthesis with optional WINA optimization.
@@ -386,20 +411,31 @@ class WINAOptimizedLLMClient:
             model_identifier = self._get_model_identifier(llm_client)
 
             # Apply WINA optimization if enabled
-            wina_optimization: Optional[WINAOptimizationResult] = None  # Ensure type hint
-            gating_decision_applied: Optional[GatingDecision] = None
+            wina_optimization: WINAOptimizationResult | None = (
+                None  # Ensure type hint
+            )
+            gating_decision_applied: GatingDecision | None = None
             llm_call_kwargs = {}
 
-            if should_apply_wina and self.wina_integration_config.gs_engine_optimization:
+            if (
+                should_apply_wina
+                and self.wina_integration_config.gs_engine_optimization
+            ):
                 try:
                     # --- WINA Runtime Gating Integration START ---
-                    activations = await _retrieve_neuron_activations(synthesis_input.context)
+                    activations = await _retrieve_neuron_activations(
+                        synthesis_input.context
+                    )
                     if activations:
                         neuron_activation_input = NeuronActivationInput(
                             activations=activations, metadata={"source": "real"}
                         )
-                        analyzed_acts = await analyze_neuron_activations(neuron_activation_input)
-                        wina_weights_output = await calculate_wina_weights(analyzed_acts)
+                        analyzed_acts = await analyze_neuron_activations(
+                            neuron_activation_input
+                        )
+                        wina_weights_output = await calculate_wina_weights(
+                            analyzed_acts
+                        )
                         gating_config = GatingThresholdConfig(
                             threshold=0.5, default_gating_state=False
                         )
@@ -409,7 +445,9 @@ class WINAOptimizedLLMClient:
                         logger.info(
                             f"WINA Gating Mask for CS '{synthesis_input.context}': {gating_decision_applied.gating_mask}"
                         )
-                        llm_call_kwargs["wina_gating_mask"] = gating_decision_applied.gating_mask
+                        llm_call_kwargs["wina_gating_mask"] = (
+                            gating_decision_applied.gating_mask
+                        )
                     else:
                         logger.info("Neuron activations unavailable; skipping gating")
                     # --- WINA Runtime Gating Integration END ---
@@ -437,7 +475,9 @@ class WINAOptimizedLLMClient:
                     wina_gating_mask=gating_decision_applied.gating_mask,
                 )
             else:
-                original_result = await query_llm_for_constitutional_synthesis(synthesis_input)
+                original_result = await query_llm_for_constitutional_synthesis(
+                    synthesis_input
+                )
 
             # Calculate performance metrics
             synthesis_time = time.time() - start_time
@@ -481,7 +521,9 @@ class WINAOptimizedLLMClient:
         except Exception as e:
             logger.error(f"WINA-optimized constitutional synthesis failed: {e}")
             # Fallback to original implementation
-            original_result = await query_llm_for_constitutional_synthesis(synthesis_input)
+            original_result = await query_llm_for_constitutional_synthesis(
+                synthesis_input
+            )
             return WINAOptimizedSynthesisResult(
                 original_result=original_result,
                 wina_optimization=None,
@@ -494,10 +536,14 @@ class WINAOptimizedLLMClient:
     def _get_model_identifier(self, llm_client: Any) -> str:
         """Get model identifier from LLM client."""
         if isinstance(llm_client, GroqLLMClient):
-            return llm_client.model_name  # Specific model like 'llama-3.3-70b-versatile'
+            return (
+                llm_client.model_name
+            )  # Specific model like 'llama-3.3-70b-versatile'
         elif isinstance(llm_client, RealLLMClient):
             return llm_client.model_name  # Specific model like 'gpt-4'
-        elif hasattr(llm_client, "__class__") and "Mock" in llm_client.__class__.__name__:
+        elif (
+            hasattr(llm_client, "__class__") and "Mock" in llm_client.__class__.__name__
+        ):
             return "mock-model-large"
         else:
             logger.warning(
@@ -529,7 +575,9 @@ class WINAOptimizedLLMClient:
             model_type = "groq"
         elif isinstance(llm_client, RealLLMClient):
             model_type = self._detect_model_type(model_identifier)
-        elif hasattr(llm_client, "__class__") and "Mock" in llm_client.__class__.__name__:
+        elif (
+            hasattr(llm_client, "__class__") and "Mock" in llm_client.__class__.__name__
+        ):
             model_type = "mock"
         else:
             model_type = self._detect_model_type(model_identifier)
@@ -550,11 +598,11 @@ class WINAOptimizedLLMClient:
 
     def _calculate_performance_metrics(
         self,
-        wina_optimization: Optional[WINAOptimizationResult],  # SVD based
+        wina_optimization: WINAOptimizationResult | None,  # SVD based
         synthesis_time: float,
         output_count: int,
-        gating_decision: Optional[GatingDecision] = None,  # Gating based
-    ) -> Dict[str, float]:
+        gating_decision: GatingDecision | None = None,  # Gating based
+    ) -> dict[str, float]:
         """Calculate performance metrics for the synthesis operation."""
         metrics = {
             "synthesis_time": synthesis_time,
@@ -582,8 +630,12 @@ class WINAOptimizedLLMClient:
             gating_meta = gating_decision.metadata
             metrics.update(
                 {
-                    "gating_components_processed": gating_meta.get("num_components_processed", 0),
-                    "gating_components_activated": gating_meta.get("num_components_activated", 0),
+                    "gating_components_processed": gating_meta.get(
+                        "num_components_processed", 0
+                    ),
+                    "gating_components_activated": gating_meta.get(
+                        "num_components_activated", 0
+                    ),
                     # GFLOPs reduction from gating would need actual measurement or estimation
                     "gflops_reduction_gating_estimated": (
                         gating_meta.get("num_components_processed", 0)
@@ -599,8 +651,8 @@ class WINAOptimizedLLMClient:
         self,
         input_data: Any,
         output_data: Any,
-        wina_svd_optimization: Optional[WINAOptimizationResult],
-        gating_decision: Optional[GatingDecision] = None,
+        wina_svd_optimization: WINAOptimizationResult | None,
+        gating_decision: GatingDecision | None = None,
     ) -> bool:
         """Verify constitutional compliance of synthesis results."""
         try:
@@ -609,14 +661,20 @@ class WINAOptimizedLLMClient:
 
             # Check if WINA SVD optimization maintains constitutional compliance
             if wina_svd_optimization:
-                compliance_checks.append(wina_svd_optimization.constitutional_compliance)
+                compliance_checks.append(
+                    wina_svd_optimization.constitutional_compliance
+                )
 
             # Check if WINA Gating implies compliance (conceptual for now)
             if gating_decision:
                 # Assuming gating itself doesn't violate compliance if underlying model is compliant
                 # This might need more sophisticated checks based on what gating affects
-                num_activated = gating_decision.metadata.get("num_components_activated", 0)
-                num_processed = gating_decision.metadata.get("num_components_processed", 0)
+                num_activated = gating_decision.metadata.get(
+                    "num_components_activated", 0
+                )
+                num_processed = gating_decision.metadata.get(
+                    "num_components_processed", 0
+                )
 
                 if num_processed > 0 and num_activated == 0:
                     logger.warning(
@@ -655,7 +713,9 @@ class WINAOptimizedLLMClient:
 
             # Use reliability framework for additional validation
             if hasattr(self.reliability_framework, "validate_output"):
-                reliability_check = await self.reliability_framework.validate_output(output_data)
+                reliability_check = await self.reliability_framework.validate_output(
+                    output_data
+                )
                 compliance_checks.append(reliability_check)
 
             # All checks must pass for constitutional compliance
@@ -665,7 +725,9 @@ class WINAOptimizedLLMClient:
             logger.error(f"Constitutional compliance verification failed: {e}")
             return False
 
-    async def _update_performance_tracking(self, result: WINAOptimizedSynthesisResult) -> None:
+    async def _update_performance_tracking(
+        self, result: WINAOptimizedSynthesisResult
+    ) -> None:
         """Update performance tracking metrics."""
         try:
             self._optimization_history.append(result)
@@ -677,30 +739,34 @@ class WINAOptimizedLLMClient:
             # Update running averages
             if result.wina_optimization:
                 current_gflops = self._performance_metrics["average_gflops_reduction"]
-                current_accuracy = self._performance_metrics["average_accuracy_preservation"]
+                current_accuracy = self._performance_metrics[
+                    "average_accuracy_preservation"
+                ]
 
                 # Simple running average
                 n = self._performance_metrics["wina_optimized_requests"]
                 if n > 0:
                     self._performance_metrics["average_gflops_reduction"] = (
-                        current_gflops * (n - 1) + result.wina_optimization.gflops_reduction
+                        current_gflops * (n - 1)
+                        + result.wina_optimization.gflops_reduction
                     ) / n
                     self._performance_metrics["average_accuracy_preservation"] = (
-                        current_accuracy * (n - 1) + result.wina_optimization.accuracy_preservation
+                        current_accuracy * (n - 1)
+                        + result.wina_optimization.accuracy_preservation
                     ) / n
 
             # Update constitutional compliance rate
             compliant_requests = sum(
                 1 for r in self._optimization_history if r.constitutional_compliance
             )
-            self._performance_metrics["constitutional_compliance_rate"] = compliant_requests / len(
-                self._optimization_history
+            self._performance_metrics["constitutional_compliance_rate"] = (
+                compliant_requests / len(self._optimization_history)
             )
 
         except Exception as e:
             logger.error(f"Failed to update performance tracking: {e}")
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get performance summary of WINA-optimized operations."""
         return {
             "performance_metrics": self._performance_metrics.copy(),
@@ -713,7 +779,9 @@ class WINAOptimizedLLMClient:
             ),
         }
 
-    async def verify_computational_invariance_batch(self, test_cases: List[Any]) -> Dict[str, Any]:
+    async def verify_computational_invariance_batch(
+        self, test_cases: list[Any]
+    ) -> dict[str, Any]:
         """Verify computational invariance for a batch of test cases."""
         if not self.enable_wina:
             return {"message": "WINA not enabled", "invariance_maintained": True}
@@ -737,7 +805,7 @@ class WINAOptimizedLLMClient:
 
 
 # Global instance for easy access
-_wina_optimized_client: Optional[WINAOptimizedLLMClient] = None
+_wina_optimized_client: WINAOptimizedLLMClient | None = None
 
 
 def get_wina_optimized_llm_client(enable_wina: bool = True) -> WINAOptimizedLLMClient:
@@ -759,7 +827,7 @@ def get_wina_optimized_llm_client(enable_wina: bool = True) -> WINAOptimizedLLMC
 
 
 async def query_llm_with_wina_optimization(
-    input_data: LLMInterpretationInput, apply_wina: Optional[bool] = None
+    input_data: LLMInterpretationInput, apply_wina: bool | None = None
 ) -> WINAOptimizedSynthesisResult:
     """
     Helper function to query LLM with WINA optimization.
@@ -776,7 +844,7 @@ async def query_llm_with_wina_optimization(
 
 
 async def query_constitutional_synthesis_with_wina(
-    synthesis_input: ConstitutionalSynthesisInput, apply_wina: Optional[bool] = None
+    synthesis_input: ConstitutionalSynthesisInput, apply_wina: bool | None = None
 ) -> WINAOptimizedSynthesisResult:
     """
     Helper function to perform constitutional synthesis with WINA optimization.
@@ -789,4 +857,6 @@ async def query_constitutional_synthesis_with_wina(
         WINAOptimizedSynthesisResult
     """
     client = get_wina_optimized_llm_client()
-    return await client.get_constitutional_synthesis_optimized(synthesis_input, apply_wina)
+    return await client.get_constitutional_synthesis_optimized(
+        synthesis_input, apply_wina
+    )

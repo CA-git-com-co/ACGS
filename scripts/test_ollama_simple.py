@@ -102,7 +102,7 @@ async def test_taskmaster_config():
         )
 
         if os.path.exists(config_path):
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 config = json.load(f)
 
             # Check Ollama configuration

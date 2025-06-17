@@ -144,7 +144,9 @@ def test_token_with_non_ascii_subject():
 
 def test_token_expiry_edge_case():
     subject = "edgecase"
-    token = security.create_access_token(subject=subject, expires_delta=timedelta(seconds=1))
+    token = security.create_access_token(
+        subject=subject, expires_delta=timedelta(seconds=1)
+    )
     payload = security.verify_token(token)
     assert payload.sub == subject
     time.sleep(2)

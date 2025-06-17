@@ -6,7 +6,7 @@ integrating with the Constitutional Council and AC service for governance workfl
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -30,12 +30,14 @@ wina_analyzer = WINAConstitutionalPrincipleAnalyzer()
 wina_update_service = WINAConstitutionalUpdateService(analyzer=wina_analyzer)
 
 
-def _principle_to_dict(principle: Any) -> Dict[str, Any]:
+def _principle_to_dict(principle: Any) -> dict[str, Any]:
     """Convert a Principle ORM object to a dictionary for WINA analysis."""
-    dependencies: List[str] = []
+    dependencies: list[str] = []
     metadata = getattr(principle, "constitutional_metadata", None)
     if isinstance(metadata, dict):
-        dependencies = metadata.get("related_principles") or metadata.get("dependencies") or []
+        dependencies = (
+            metadata.get("related_principles") or metadata.get("dependencies") or []
+        )
 
     constraints = getattr(principle, "constraints", None)
     if not dependencies and isinstance(constraints, dict):
@@ -51,10 +53,10 @@ def _principle_to_dict(principle: Any) -> Dict[str, Any]:
     }
 
 
-@router.post("/analyze-principles", response_model=Dict[str, Any])
+@router.post("/analyze-principles", response_model=dict[str, Any])
 async def analyze_principles_for_wina_optimization(
-    principle_ids: Optional[List[str]] = None,
-    optimization_context: Optional[Dict[str, Any]] = None,
+    principle_ids: list[str] | None = None,
+    optimization_context: dict[str, Any] | None = None,
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(require_admin_role),
 ):
@@ -85,7 +87,9 @@ async def analyze_principles_for_wina_optimization(
             principles = [_principle_to_dict(p) for p in db_principles]
 
         if not principles:
-            raise HTTPException(status_code=404, detail="No principles found for analysis")
+            raise HTTPException(
+                status_code=404, detail="No principles found for analysis"
+            )
 
         # Set default optimization context
         if not optimization_context:
@@ -106,7 +110,9 @@ async def analyze_principles_for_wina_optimization(
                 analysis_results[principle["principle_id"]] = analysis
 
             except Exception as e:
-                logger.error(f"Error analyzing principle {principle['principle_id']}: {e}")
+                logger.error(
+                    f"Error analyzing principle {principle['principle_id']}: {e}"
+                )
                 analysis_results[principle["principle_id"]] = {
                     "error": str(e),
                     "optimization_potential": 0.0,
@@ -147,10 +153,10 @@ async def analyze_principles_for_wina_optimization(
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 
-@router.post("/propose-updates", response_model=Dict[str, Any])
+@router.post("/propose-updates", response_model=dict[str, Any])
 async def propose_constitutional_updates(
-    principle_ids: List[str],
-    optimization_context: Optional[Dict[str, Any]] = None,
+    principle_ids: list[str],
+    optimization_context: dict[str, Any] | None = None,
     background_tasks: BackgroundTasks = BackgroundTasks(),
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(require_admin_role),
@@ -236,10 +242,10 @@ async def propose_constitutional_updates(
         raise HTTPException(status_code=500, detail=f"Update proposal failed: {str(e)}")
 
 
-@router.post("/submit-for-approval/{principle_id}", response_model=Dict[str, Any])
+@router.post("/submit-for-approval/{principle_id}", response_model=dict[str, Any])
 async def submit_update_for_approval(
     principle_id: str,
-    approval_context: Optional[Dict[str, Any]] = None,
+    approval_context: dict[str, Any] | None = None,
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(require_constitutional_council_role),
 ):
@@ -296,10 +302,12 @@ async def submit_update_for_approval(
         raise
     except Exception as e:
         logger.error(f"Error submitting update for approval: {e}")
-        raise HTTPException(status_code=500, detail=f"Approval submission failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Approval submission failed: {str(e)}"
+        )
 
 
-@router.get("/pending-updates", response_model=Dict[str, Any])
+@router.get("/pending-updates", response_model=dict[str, Any])
 async def get_pending_updates(
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(require_admin_role),
@@ -314,7 +322,7 @@ async def get_pending_updates(
 
     try:
         pending_updates = []
-        for principle_id, update in wina_update_service.pending_updates.items():
+        for _principle_id, update in wina_update_service.pending_updates.items():
             pending_updates.append(
                 {
                     "principle_id": update.principle_id,
@@ -341,18 +349,26 @@ async def get_pending_updates(
             "pending_updates_count": len(pending_updates),
             "pending_updates": pending_updates,
             "summary": {
-                "high_risk": len([u for u in pending_updates if u["risk_level"] == "high"]),
-                "medium_risk": len([u for u in pending_updates if u["risk_level"] == "medium"]),
-                "low_risk": len([u for u in pending_updates if u["risk_level"] == "low"]),
+                "high_risk": len(
+                    [u for u in pending_updates if u["risk_level"] == "high"]
+                ),
+                "medium_risk": len(
+                    [u for u in pending_updates if u["risk_level"] == "medium"]
+                ),
+                "low_risk": len(
+                    [u for u in pending_updates if u["risk_level"] == "low"]
+                ),
             },
         }
 
     except Exception as e:
         logger.error(f"Error getting pending updates: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve pending updates: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to retrieve pending updates: {str(e)}"
+        )
 
 
-@router.get("/update-history", response_model=Dict[str, Any])
+@router.get("/update-history", response_model=dict[str, Any])
 async def get_update_history(
     limit: int = 50,
     db: AsyncSession = Depends(get_async_db),
@@ -389,4 +405,6 @@ async def get_update_history(
 
     except Exception as e:
         logger.error(f"Error getting update history: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve update history: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to retrieve update history: {str(e)}"
+        )

@@ -10,7 +10,7 @@ Usage:
 """
 
 import sys
-from typing import Any, Dict, Optional
+from typing import Any
 
 import requests
 
@@ -26,7 +26,7 @@ class ACGSTestClient:
         self.base_url = base_url
         self.auth_url = auth_url
         self.session = requests.Session()
-        self.auth_token: Optional[str] = None
+        self.auth_token: str | None = None
 
     def authenticate(self, username: str = "admin", password: str = "admin123") -> bool:
         """
@@ -48,7 +48,7 @@ class ACGSTestClient:
                     self.session.headers.update(
                         {"Authorization": f"Bearer {self.auth_token}"}
                     )
-                    print(f"✅ Authentication successful")
+                    print("✅ Authentication successful")
                     return True
 
             print(f"⚠️  Authentication failed: {auth_response.status_code}")
@@ -97,7 +97,7 @@ class ACGSTestClient:
             print(f"❌ Meta-rules list error: {e}")
             return False
 
-    def test_meta_rule_creation(self) -> Optional[Dict[str, Any]]:
+    def test_meta_rule_creation(self) -> dict[str, Any] | None:
         """Test creating a meta-rule."""
         if not self.auth_token:
             print("⚠️  Skipping meta-rule creation (no authentication)")

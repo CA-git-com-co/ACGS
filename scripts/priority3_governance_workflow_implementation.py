@@ -11,7 +11,6 @@ import logging
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -46,7 +45,7 @@ class GovernanceWorkflowImplementer:
             "human_review",
         ]
 
-    def execute_governance_implementation(self) -> Dict:
+    def execute_governance_implementation(self) -> dict:
         """Execute comprehensive governance workflow implementation."""
         logger.info("🏛️ Starting ACGS-1 Governance Workflow Implementation")
         start_time = time.time()
@@ -111,7 +110,7 @@ class GovernanceWorkflowImplementer:
             results["overall_success"] = False
             return results
 
-    def create_governance_endpoints(self) -> Dict:
+    def create_governance_endpoints(self) -> dict:
         """Create governance workflow API endpoints."""
         logger.info("📋 Creating governance workflow endpoints...")
 
@@ -181,15 +180,15 @@ async def initiate_policy_creation(
 ):
     """
     Initiate Policy Creation workflow with draft→review→voting→implementation pipeline.
-    
+
     Implements four-tier risk strategy selection based on policy complexity and impact.
     """
     workflow_id = f"PC-{int(time.time())}-{str(uuid4())[:8]}"
-    
+
     # Determine risk strategy based on policy characteristics
     risk_level = await determine_risk_level(request.title, request.description)
     selected_strategy = select_risk_strategy(risk_level, request.risk_strategy)
-    
+
     # Initialize workflow
     workflow_data = {
         "workflow_id": workflow_id,
@@ -213,10 +212,10 @@ async def initiate_policy_creation(
             {"name": "implementation", "status": "pending", "progress": 0}
         ]
     }
-    
+
     # Start background processing
     background_tasks.add_task(process_policy_creation_workflow, workflow_data)
-    
+
     return WorkflowResponse(
         workflow_id=workflow_id,
         workflow_type="policy_creation",
@@ -232,18 +231,18 @@ async def validate_constitutional_compliance(
 ):
     """
     Validate policy compliance against constitutional principles with >95% accuracy.
-    
+
     Integrates with Quantumagi smart contracts for on-chain enforcement validation.
     """
     validation_id = f"CV-{int(time.time())}-{str(uuid4())[:8]}"
-    
+
     # Perform constitutional compliance validation
     validation_results = await perform_compliance_validation(
         request.policy_id,
         request.validation_type,
         request.constitutional_principles
     )
-    
+
     return ComplianceValidationResponse(
         validation_id=validation_id,
         policy_id=request.policy_id,
@@ -262,7 +261,7 @@ async def initiate_policy_enforcement(
     Initiate Policy Enforcement workflow with monitoring→violation detection→remediation.
     """
     workflow_id = f"PE-{int(time.time())}-{str(uuid4())[:8]}"
-    
+
     enforcement_data = {
         "workflow_id": workflow_id,
         "policy_id": policy_id,
@@ -273,7 +272,7 @@ async def initiate_policy_enforcement(
         "violations_detected": 0,
         "remediation_actions": []
     }
-    
+
     return {
         "workflow_id": workflow_id,
         "status": "initiated",
@@ -289,7 +288,7 @@ async def initiate_wina_oversight(
     Initiate WINA Oversight workflow with performance monitoring→optimization→reporting.
     """
     workflow_id = f"WO-{int(time.time())}-{str(uuid4())[:8]}"
-    
+
     oversight_data = {
         "workflow_id": workflow_id,
         "oversight_type": oversight_type,
@@ -299,7 +298,7 @@ async def initiate_wina_oversight(
         "optimization_recommendations": [],
         "performance_trends": {}
     }
-    
+
     return {
         "workflow_id": workflow_id,
         "status": "initiated",
@@ -315,7 +314,7 @@ async def initiate_audit_transparency(
     Initiate Audit/Transparency workflow with data collection→analysis→public reporting.
     """
     workflow_id = f"AT-{int(time.time())}-{str(uuid4())[:8]}"
-    
+
     audit_data = {
         "workflow_id": workflow_id,
         "audit_scope": audit_scope,
@@ -326,7 +325,7 @@ async def initiate_audit_transparency(
         "analysis_progress": 0,
         "transparency_score": 0.0
     }
-    
+
     return {
         "workflow_id": workflow_id,
         "status": "initiated",
@@ -390,9 +389,9 @@ async def determine_risk_level(title: str, description: str) -> str:
     # Simple heuristic - in production, this would use NLP analysis
     high_risk_keywords = ["constitutional", "fundamental", "emergency", "critical"]
     medium_risk_keywords = ["governance", "compliance", "enforcement", "oversight"]
-    
+
     content = f"{title} {description}".lower()
-    
+
     if any(keyword in content for keyword in high_risk_keywords):
         return "high"
     elif any(keyword in content for keyword in medium_risk_keywords):
@@ -404,29 +403,29 @@ def select_risk_strategy(risk_level: str, requested_strategy: str) -> str:
     """Select appropriate risk strategy based on risk level and request."""
     strategy_mapping = {
         "low": "standard",
-        "medium": "enhanced_validation", 
+        "medium": "enhanced_validation",
         "high": "multi_model_consensus",
         "critical": "human_review"
     }
-    
+
     # Use the higher of risk-based or requested strategy
     risk_strategy = strategy_mapping.get(risk_level, "standard")
-    
+
     strategy_hierarchy = ["standard", "enhanced_validation", "multi_model_consensus", "human_review"]
     risk_index = strategy_hierarchy.index(risk_strategy)
     requested_index = strategy_hierarchy.index(requested_strategy) if requested_strategy in strategy_hierarchy else 0
-    
+
     return strategy_hierarchy[max(risk_index, requested_index)]
 
 async def process_policy_creation_workflow(workflow_data: Dict):
     """Background task to process policy creation workflow."""
     # Simulate workflow processing stages
     stages = ["draft_preparation", "stakeholder_review", "constitutional_validation", "voting_process", "implementation"]
-    
+
     for i, stage in enumerate(stages):
         # Simulate processing time
         await asyncio.sleep(2)
-        
+
         # Update workflow progress
         progress = ((i + 1) / len(stages)) * 100
         logger.info(f"Workflow {workflow_data['workflow_id']} - Stage: {stage}, Progress: {progress}%")
@@ -435,10 +434,10 @@ async def perform_compliance_validation(policy_id: str, validation_type: str, pr
     """Perform constitutional compliance validation."""
     # Simulate compliance validation
     await asyncio.sleep(1)
-    
+
     # Mock validation results
     compliance_score = 0.968  # 96.8% compliance
-    
+
     return {
         "compliance_score": compliance_score,
         "detailed_results": {
@@ -469,7 +468,7 @@ async def perform_compliance_validation(policy_id: str, validation_type: str, pr
             "workflows_implemented": self.workflows,
         }
 
-    def implement_policy_synthesis_engine(self) -> Dict:
+    def implement_policy_synthesis_engine(self) -> dict:
         """Implement Policy Synthesis Engine with four-tier risk strategy."""
         logger.info("🧠 Implementing Policy Synthesis Engine...")
 
@@ -479,7 +478,7 @@ Policy Synthesis Engine with Four-Tier Risk Strategy
 
 Implements advanced policy synthesis with risk-based strategy selection:
 - standard: Basic synthesis for low-risk policies
-- enhanced_validation: Additional validation for medium-risk policies  
+- enhanced_validation: Additional validation for medium-risk policies
 - multi_model_consensus: Consensus across multiple models for high-risk policies
 - human_review: Human oversight for critical policies
 """
@@ -502,7 +501,7 @@ class RiskStrategy(Enum):
 
 class PolicySynthesisEngine:
     """Advanced Policy Synthesis Engine with four-tier risk strategy."""
-    
+
     def __init__(self):
         self.initialized = False
         self.synthesis_metrics = {
@@ -511,22 +510,22 @@ class PolicySynthesisEngine:
             "avg_processing_time_ms": 0.0,
             "accuracy_score": 0.0
         }
-        
+
     async def initialize(self):
         """Initialize the Policy Synthesis Engine."""
         if self.initialized:
             return
-            
+
         logger.info("Initializing Policy Synthesis Engine...")
-        
+
         # Initialize synthesis components
         await self._initialize_synthesis_models()
         await self._initialize_validation_systems()
         await self._initialize_consensus_mechanisms()
-        
+
         self.initialized = True
         logger.info("Policy Synthesis Engine initialized successfully")
-    
+
     async def synthesize_policy(
         self,
         synthesis_request: Dict[str, Any],
@@ -534,23 +533,23 @@ class PolicySynthesisEngine:
     ) -> Dict[str, Any]:
         """
         Synthesize policy using specified risk strategy.
-        
+
         Args:
             synthesis_request: Policy synthesis request
             risk_strategy: Risk strategy to apply
-            
+
         Returns:
             Synthesis result with policy and metadata
         """
         if not self.initialized:
             await self.initialize()
-            
+
         start_time = time.time()
         synthesis_id = f"SYN-{int(time.time())}"
-        
+
         try:
             logger.info(f"Starting policy synthesis with strategy: {risk_strategy.value}")
-            
+
             # Apply risk strategy
             if risk_strategy == RiskStrategy.STANDARD:
                 result = await self._standard_synthesis(synthesis_request)
@@ -562,15 +561,15 @@ class PolicySynthesisEngine:
                 result = await self._human_review_synthesis(synthesis_request)
             else:
                 raise ValueError(f"Unknown risk strategy: {risk_strategy}")
-            
+
             processing_time = (time.time() - start_time) * 1000
-            
+
             # Update metrics
             self.synthesis_metrics["total_syntheses"] += 1
             self.synthesis_metrics["avg_processing_time_ms"] = (
                 self.synthesis_metrics["avg_processing_time_ms"] * 0.9 + processing_time * 0.1
             )
-            
+
             return {
                 "synthesis_id": synthesis_id,
                 "policy_content": result["policy_content"],
@@ -581,26 +580,26 @@ class PolicySynthesisEngine:
                 "recommendations": result.get("recommendations", []),
                 "timestamp": datetime.now().isoformat()
             }
-            
+
         except Exception as e:
             logger.error(f"Policy synthesis failed: {e}")
             raise
-    
+
     async def _standard_synthesis(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """Standard synthesis for low-risk policies."""
         await asyncio.sleep(0.5)  # Simulate processing
-        
+
         return {
             "policy_content": f"Standard policy synthesis for: {request.get('title', 'Untitled')}",
             "confidence_score": 0.85,
             "validation_results": {"basic_validation": "passed"},
             "recommendations": ["Review policy scope", "Validate stakeholder alignment"]
         }
-    
+
     async def _enhanced_validation_synthesis(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """Enhanced validation synthesis for medium-risk policies."""
         await asyncio.sleep(1.0)  # Simulate additional processing
-        
+
         return {
             "policy_content": f"Enhanced validated policy synthesis for: {request.get('title', 'Untitled')}",
             "confidence_score": 0.92,
@@ -615,17 +614,17 @@ class PolicySynthesisEngine:
                 "Validate constitutional alignment"
             ]
         }
-    
+
     async def _multi_model_consensus_synthesis(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """Multi-model consensus synthesis for high-risk policies."""
         await asyncio.sleep(2.0)  # Simulate consensus processing
-        
+
         return {
             "policy_content": f"Consensus-validated policy synthesis for: {request.get('title', 'Untitled')}",
             "confidence_score": 0.96,
             "validation_results": {
                 "basic_validation": "passed",
-                "enhanced_validation": "passed", 
+                "enhanced_validation": "passed",
                 "constitutional_check": "compliant",
                 "multi_model_consensus": "achieved",
                 "consensus_agreement": 0.94
@@ -636,18 +635,18 @@ class PolicySynthesisEngine:
                 "Ready for stakeholder review"
             ]
         }
-    
+
     async def _human_review_synthesis(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """Human review synthesis for critical policies."""
         await asyncio.sleep(3.0)  # Simulate human review process
-        
+
         return {
             "policy_content": f"Human-reviewed policy synthesis for: {request.get('title', 'Untitled')}",
             "confidence_score": 0.98,
             "validation_results": {
                 "basic_validation": "passed",
                 "enhanced_validation": "passed",
-                "constitutional_check": "compliant", 
+                "constitutional_check": "compliant",
                 "multi_model_consensus": "achieved",
                 "human_review": "approved",
                 "expert_validation": "confirmed"
@@ -658,22 +657,22 @@ class PolicySynthesisEngine:
                 "Ready for implementation"
             ]
         }
-    
+
     async def _initialize_synthesis_models(self):
         """Initialize synthesis models."""
         await asyncio.sleep(0.1)
         logger.info("Synthesis models initialized")
-    
+
     async def _initialize_validation_systems(self):
         """Initialize validation systems."""
         await asyncio.sleep(0.1)
         logger.info("Validation systems initialized")
-    
+
     async def _initialize_consensus_mechanisms(self):
         """Initialize consensus mechanisms."""
         await asyncio.sleep(0.1)
         logger.info("Consensus mechanisms initialized")
-    
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get synthesis engine metrics."""
         return self.synthesis_metrics.copy()
@@ -709,7 +708,7 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
             ],
         }
 
-    def create_consensus_engine(self) -> Dict:
+    def create_consensus_engine(self) -> dict:
         """Create Multi-Model Consensus Engine."""
         logger.info("🤝 Creating Multi-Model Consensus Engine...")
 
@@ -729,7 +728,7 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
             ],
         }
 
-    def implement_workflow_orchestration(self) -> Dict:
+    def implement_workflow_orchestration(self) -> dict:
         """Implement workflow orchestration pipeline."""
         logger.info("🔄 Implementing workflow orchestration...")
 
@@ -744,7 +743,7 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
             ],
         }
 
-    def implement_compliance_validation(self) -> Dict:
+    def implement_compliance_validation(self) -> dict:
         """Implement constitutional compliance validation."""
         logger.info("⚖️ Implementing compliance validation...")
 
@@ -761,12 +760,11 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
             "integration_status": "quantumagi_ready",
         }
 
-    def test_governance_endpoints(self) -> Dict:
+    def test_governance_endpoints(self) -> dict:
         """Test governance endpoints functionality."""
         logger.info("🧪 Testing governance endpoints...")
 
         # Simple endpoint availability test
-        import subprocess
 
         endpoints_tested = []
         for workflow in self.workflows:
@@ -782,7 +780,7 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
             "all_endpoints_functional": True,
         }
 
-    def evaluate_implementation_success(self, results: Dict) -> bool:
+    def evaluate_implementation_success(self, results: dict) -> bool:
         """Evaluate overall implementation success."""
         phases = results.get("implementation_phases", {})
 
@@ -795,7 +793,7 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
 
         return governance_success and synthesis_success and testing_success
 
-    def generate_implementation_summary(self, results: Dict) -> Dict:
+    def generate_implementation_summary(self, results: dict) -> dict:
         """Generate implementation summary."""
         phases = results.get("implementation_phases", {})
 
@@ -815,7 +813,7 @@ async def get_policy_synthesis_engine() -> PolicySynthesisEngine:
             "production_ready": True,
         }
 
-    def save_implementation_report(self, results: Dict) -> None:
+    def save_implementation_report(self, results: dict) -> None:
         """Save implementation report."""
         report_file = f"priority3_governance_implementation_{int(time.time())}.json"
         report_path = self.project_root / "logs" / report_file
@@ -838,7 +836,7 @@ def main():
         print("✅ Governance workflow implementation completed successfully!")
 
         summary = results.get("implementation_summary", {})
-        print(f"🏛️ Implementation Summary:")
+        print("🏛️ Implementation Summary:")
         print(f"  • Governance Endpoints: {summary.get('governance_endpoints', 0)}")
         print(f"  • Risk Strategies: {summary.get('risk_strategies', 0)}")
         print(f"  • Workflows Implemented: {summary.get('workflows_implemented', 0)}")
