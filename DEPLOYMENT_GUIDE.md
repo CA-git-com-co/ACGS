@@ -137,7 +137,7 @@ cd services/platform/authentication/auth_service
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 
 # 2. Constitutional AI Service (Port 8001)  
-cd services/core/constitutional-ai/ac_service
+cd services/core/constitutional-ai/constitutional-ai_service
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8001 --workers 4
 
 # 3. Integrity Service (Port 8002)
@@ -149,11 +149,11 @@ cd services/core/formal-verification/fv_service
 python -m uvicorn main:app --host 0.0.0.0 --port 8003 --workers 4
 
 # 5. Governance Synthesis Service (Port 8004)
-cd services/core/governance-synthesis/gs_service
+cd services/core/governance-synthesis/governance-synthesis_service
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8004 --workers 4
 
 # 6. Policy Governance Service (Port 8005)
-cd services/core/policy-governance/pgc_service
+cd services/core/policy-governance/policy-governance_service
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8005 --workers 4
 
 # 7. Evolutionary Computation Service (Port 8006)

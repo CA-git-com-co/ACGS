@@ -33,11 +33,11 @@ curl -s http://localhost:8004/health
 tail -f logs/fv_service.log
 
 # Check GS service logs  
-tail -f logs/gs_service.log
+tail -f logs/governance-synthesis_service.log
 
 # Check for recent errors in both logs
 grep -i "error\|exception\|failed" logs/fv_service.log | tail -10
-grep -i "error\|exception\|failed" logs/gs_service.log | tail -10
+grep -i "error\|exception\|failed" logs/governance-synthesis_service.log | tail -10
 ```
 
 ## 6. Confirm Constitutional Compliance Validation Workflows
@@ -58,7 +58,7 @@ curl -s http://localhost:8004/api/v1/performance | jq .
 ## 7. Verify PID Management
 ```bash
 # Check if PID files exist and processes are running
-ls -la pids/fv_service.pid pids/gs_service.pid
+ls -la pids/fv_service.pid pids/governance-synthesis_service.pid
 
 # Verify processes are actually running
 ps aux | grep -E "(fv_service|gs_service)" | grep -v grep
@@ -82,8 +82,8 @@ curl -s http://localhost:8004/ | jq .governance_workflows
 - GS Service (port 8004): `curl -f http://localhost:8004/health`
 
 ### ✅ Services are Properly Logged and PID-Tracked
-- Log files: `logs/fv_service.log`, `logs/gs_service.log`
-- PID files: `pids/fv_service.pid`, `pids/gs_service.pid`
+- Log files: `logs/fv_service.log`, `logs/governance-synthesis_service.log`
+- PID files: `pids/fv_service.pid`, `pids/governance-synthesis_service.pid`
 
 ### ✅ Constitutional Governance Workflows Operational
 - FV enterprise endpoints accessible
@@ -112,7 +112,7 @@ cd services/core/formal-verification/fv_service
 source /home/dislove/ACGS-1/venv/bin/activate
 uvicorn main:app --host 0.0.0.0 --port 8003
 
-cd /home/dislove/ACGS-1/services/core/governance-synthesis/gs_service
+cd /home/dislove/ACGS-1/services/core/governance-synthesis/governance-synthesis_service
 source /home/dislove/ACGS-1/venv/bin/activate
 uvicorn app.main:app --host 0.0.0.0 --port 8004
 ```

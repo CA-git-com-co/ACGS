@@ -77,7 +77,7 @@ python test_pgc_enhanced_integration.py
    - Restart the PGC service to load the new integration
 
    ```bash
-   cd services/core/policy-governance/pgc_service
+   cd services/core/policy-governance/policy-governance_service
    docker-compose -f infrastructure/docker/docker-compose.yml build
    docker-compose -f infrastructure/docker/docker-compose.yml up -d
    ```

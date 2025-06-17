@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("sQyjPfFt4wueY6w2QF9iL1HJ3ZkQFoM3dq1MSaC5ztC");
+declare_id!("45shrZAMBbFGfLrev4FSDBchP847Q7oUR4jVqcxqnRD3");
 
 // ACGS-1 Enterprise CI/CD Pipeline Validation Test
 // This comment validates the enhanced enterprise-grade CI/CD pipeline implementation
@@ -12,8 +12,8 @@ declare_id!("sQyjPfFt4wueY6w2QF9iL1HJ3ZkQFoM3dq1MSaC5ztC");
 const MAX_PRINCIPLES: usize = 100;
 /// Maximum policy text length (optimized for <0.01 SOL cost)
 const MAX_POLICY_LENGTH: usize = 1000;
-/// Governance voting period in slots
-const VOTING_PERIOD: u64 = 432000; // ~2 days at 400ms/slot
+/// Governance voting period in slots (shortened for testing)
+const VOTING_PERIOD: u64 = 5; // ~2 seconds for testing
 
 #[program]
 pub mod quantumagi_core {

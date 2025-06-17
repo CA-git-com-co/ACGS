@@ -183,7 +183,7 @@ cd services/platform/authentication/auth_service
 python -m uvicorn app.main:app --reload --port 8000
 
 # Start Constitutional AI Service (Port 8001)
-cd services/core/constitutional-ai/ac_service
+cd services/core/constitutional-ai/constitutional-ai_service
 python -m uvicorn app.main:app --reload --port 8001
 
 # Start Integrity Service (Port 8002)
@@ -195,11 +195,11 @@ cd services/core/formal-verification/fv_service
 python -m uvicorn main:app --reload --port 8003
 
 # Start Governance Synthesis Service (Port 8004)
-cd services/core/governance-synthesis/gs_service
+cd services/core/governance-synthesis/governance-synthesis_service
 python -m uvicorn app.main:app --reload --port 8004
 
 # Start Policy Governance Service (Port 8005)
-cd services/core/policy-governance/pgc_service
+cd services/core/policy-governance/policy-governance_service
 python -m uvicorn app.main:app --reload --port 8005
 
 # Start Evolutionary Computation Service (Port 8006)
@@ -250,7 +250,7 @@ python scripts/initialize_constitution.py
 - API key management and JWT token validation
 - Role-based access control (RBAC)
 
-**Constitutional AI Service** (Port 8001) - `services/core/constitutional-ai/ac_service/`
+**Constitutional AI Service** (Port 8001) - `services/core/constitutional-ai/constitutional-ai_service/`
 - Constitutional principle management and validation
 - Human-in-the-loop sampling for uncertainty resolution
 - Collective Constitutional AI integration
@@ -268,13 +268,13 @@ python scripts/initialize_constitution.py
 - Cross-domain testing and adversarial robustness
 - Parallel validation pipeline processing
 
-**Governance Synthesis Service** (Port 8004) - `services/core/governance-synthesis/gs_service/`
+**Governance Synthesis Service** (Port 8004) - `services/core/governance-synthesis/governance-synthesis_service/`
 - LLM-powered policy synthesis from constitutional principles
 - Multi-model validation with 99.92% reliability
 - QEC-inspired error correction and bias detection
 - AlphaEvolve integration for enhanced synthesis
 
-**Policy Governance Service** (Port 8005) - `services/core/policy-governance/pgc_service/`
+**Policy Governance Service** (Port 8005) - `services/core/policy-governance/policy-governance_service/`
 - Real-time policy enforcement using Open Policy Agent (OPA)
 - Sub-5ms policy decisions with hardware acceleration and incremental compilation
 - Constitutional amendment integration and workflow orchestration
@@ -291,7 +291,7 @@ python scripts/initialize_constitution.py
 ACGS-1 implements five comprehensive governance workflows that orchestrate constitutional AI governance:
 
 ### 1. Policy Creation Workflow
-**Implementation**: `services/core/policy-governance/pgc_service/app/api/v1/governance_workflows.py`
+**Implementation**: `services/core/policy-governance/policy-governance_service/app/api/v1/governance_workflows.py`
 - **Draft Preparation**: Initial policy drafting using GS service
 - **Stakeholder Review**: Coordinated review process with multiple stakeholders
 - **Constitutional Validation**: Validation against constitutional principles via AC service
@@ -299,25 +299,25 @@ ACGS-1 implements five comprehensive governance workflows that orchestrate const
 - **Implementation**: Policy activation and enforcement setup
 
 ### 2. Constitutional Compliance Workflow
-**Implementation**: `services/core/constitutional-ai/ac_service/app/workflows/`
+**Implementation**: `services/core/constitutional-ai/constitutional-ai_service/app/workflows/`
 - **Validation**: Constitutional principle compliance checking
 - **Assessment**: LLM-powered constitutional analysis and conflict detection
 - **Enforcement**: Automated compliance enforcement and remediation
 
 ### 3. Policy Enforcement Workflow
-**Implementation**: `services/core/policy-governance/pgc_service/app/main.py`
+**Implementation**: `services/core/policy-governance/policy-governance_service/app/main.py`
 - **Monitoring**: Real-time policy compliance monitoring
 - **Violation Detection**: Automated detection of policy violations
 - **Remediation**: Corrective actions and enforcement measures
 
 ### 4. WINA Oversight Workflow
-**Implementation**: `services/core/evolutionary-computation/ec_service/app/core/wina_oversight_coordinator.py`
+**Implementation**: `services/core/evolutionary-computation/evolutionary-computation_service/app/core/wina_oversight_coordinator.py`
 - **Performance Monitoring**: WINA-optimized governance performance tracking
 - **Optimization**: Evolutionary computation for governance improvement
 - **Reporting**: Comprehensive performance and compliance reporting
 
 ### 5. Audit/Transparency Workflow
-**Implementation**: `services/core/policy-governance/pgc_service/app/api/v1/governance_workflows.py`
+**Implementation**: `services/core/policy-governance/policy-governance_service/app/api/v1/governance_workflows.py`
 - **Data Collection**: Comprehensive governance data gathering
 - **Analysis**: Transparency analysis and audit trail generation
 - **Public Reporting**: Public transparency reports and accountability measures
@@ -348,7 +348,7 @@ cd blockchain && anchor test
 python -m pytest tests/ -v
 
 # Individual service tests
-cd services/core/constitutional-ai/ac_service && python -m pytest tests/
+cd services/core/constitutional-ai/constitutional-ai_service && python -m pytest tests/
 cd services/platform/integrity/integrity_service && python -m pytest tests/
 
 # Frontend tests
