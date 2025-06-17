@@ -17,6 +17,16 @@ import sys
 import time
 from contextlib import asynccontextmanager
 
+
+# Enhanced Security Middleware
+try:
+    from services.shared.security_headers_middleware import SecurityHeadersMiddleware
+    from services.shared.rate_limiting_middleware import RateLimitingMiddleware
+    from services.shared.input_validation_middleware import InputValidationMiddleware
+    SECURITY_MIDDLEWARE_AVAILABLE = True
+except ImportError:
+    SECURITY_MIDDLEWARE_AVAILABLE = False
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -156,6 +166,17 @@ app = FastAPI(
     openapi_url="/openapi.json",
     lifespan=lifespan,
 )
+
+# Apply enhanced security middleware
+if SECURITY_MIDDLEWARE_AVAILABLE:
+    app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(RateLimitingMiddleware, requests_per_minute=120, burst_limit=20)
+    app.add_middleware(InputValidationMiddleware)
+    print("✅ Enhanced security middleware applied")
+else:
+    print("⚠️ Security middleware not available")
+
+
 
 # Add security middleware
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
