@@ -57,10 +57,17 @@ scrape_configs:
     metrics_path: '/metrics'
     scrape_interval: 30s
 
+  # ACGS-PGP v8 Service
+  - job_name: 'acgs-pgp-v8-service'
+    static_configs:
+      - targets: ['host.docker.internal:8010']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
   # Data Flywheel API (when available)
   - job_name: 'acgs-flywheel-api'
     static_configs:
-      - targets: ['host.docker.internal:8010']
+      - targets: ['host.docker.internal:8011']
     metrics_path: '/metrics'
     scrape_interval: 15s
 

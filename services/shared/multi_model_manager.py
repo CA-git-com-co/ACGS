@@ -420,7 +420,7 @@ class MultiModelManager:
     async def optimized_multi_model_analysis(
         self,
         policy_content: str,
-        analysis_type: AnalysisType = AnalysisType.CONSTITUTIONAL_COMPLIANCE,
+        analysis_type: AnalysisType = AnalysisType.CONSTITUTIONAL_ALIGNMENT,
         context: Optional[Dict[str, Any]] = None,
         optimization_strategies: Optional[List[OptimizationStrategy]] = None,
     ) -> Dict[str, Any]:

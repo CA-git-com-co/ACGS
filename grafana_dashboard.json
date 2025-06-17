@@ -1,0 +1,89 @@
+{
+  "dashboard": {
+    "title": "ACGS-1 Constitutional Governance System",
+    "tags": [
+      "acgs",
+      "constitutional",
+      "governance"
+    ],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Service Availability",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_service_availability"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.95
+                },
+                {
+                  "color": "green",
+                  "value": 0.995
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Response Times",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs_service_response_time_seconds"
+          }
+        ],
+        "yAxes": [
+          {
+            "unit": "s"
+          }
+        ]
+      },
+      {
+        "title": "Constitutional Compliance",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_constitutional_compliance_score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.9
+                },
+                {
+                  "color": "green",
+                  "value": 0.95
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}

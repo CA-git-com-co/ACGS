@@ -1,0 +1,20 @@
+# ACGS-1 Automated Backup and Monitoring Cron Jobs
+# Add these to your crontab: crontab -e
+
+# Daily backup at 2:00 AM
+0 2 * * * cd /home/dislove/ACGS-1 && python3 scripts/simple_backup_recovery.py backup >> /home/dislove/ACGS-1/logs/daily_backup.log 2>&1
+
+# Hourly backup monitoring
+0 * * * * /home/dislove/ACGS-1/scripts/monitor_backups.sh
+
+# Health check every 15 minutes
+*/15 * * * * /home/dislove/ACGS-1/scripts/automated_health_check.sh
+
+# Weekly backup cleanup (Sundays at 3:00 AM)
+0 3 * * 0 /home/dislove/ACGS-1/scripts/cleanup_old_backups.sh
+
+# Daily log rotation (4:00 AM)
+0 4 * * * find /home/dislove/ACGS-1/logs -name "*.log" -size +100M -exec gzip {} \;
+
+# Constitution hash verification (every 6 hours)
+0 */6 * * * cd /home/dislove/ACGS-1 && curl -s http://localhost:8005/api/v1/constitutional/validate | grep -q "cdd01ef066bc6cf2" || echo "$(date): Constitution hash verification failed" >> /home/dislove/ACGS-1/logs/constitution_monitor.log

@@ -78,12 +78,13 @@ class PerformanceMonitor:
     def __init__(self):
         self.services = {
             8000: "Auth Service",
-            8001: "AC Service", 
+            8001: "AC Service",
             8002: "Integrity Service",
             8003: "FV Service",
             8004: "GS Service",
             8005: "PGC Service",
-            8006: "EC Service"
+            8006: "EC Service",
+            8010: "ACGS-PGP v8 Service"
         }
         
         # Performance tracking

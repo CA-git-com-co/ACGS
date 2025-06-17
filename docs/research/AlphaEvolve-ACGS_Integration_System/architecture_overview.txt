@@ -1,3 +1,0 @@
-PLACEHOLDER: AlphaEvolve-ACGS Architecture Overview
-This is a placeholder for the missing figure.
-The actual figure should be created with proper visualization tools.

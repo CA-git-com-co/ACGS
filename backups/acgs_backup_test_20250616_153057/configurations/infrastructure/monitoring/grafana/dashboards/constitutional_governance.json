@@ -1,0 +1,92 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Constitutional Governance Metrics",
+    "tags": [
+      "acgs",
+      "governance"
+    ],
+    "panels": [
+      {
+        "id": 1,
+        "title": "Policy Creation Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(acgs_policies_created_total[5m])",
+            "legendFormat": "Policies per second"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Constitutional Compliance Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs_constitutional_compliance_rate",
+            "legendFormat": "Compliance %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 90
+                },
+                {
+                  "color": "green",
+                  "value": 95
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Governance Action Costs (SOL)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "acgs_governance_action_cost_sol",
+            "legendFormat": "Cost per action"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "SOL",
+            "max": 0.01
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        }
+      }
+    ]
+  }
+}
