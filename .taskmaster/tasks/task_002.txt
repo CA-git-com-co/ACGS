@@ -1,0 +1,11 @@
+# Task ID: 2
+# Title: Implement Security Middleware
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Develop and integrate production-grade security middleware across all 7 core services to enhance overall system security.
+# Details:
+Implement security middleware using a robust framework like Django Security Middleware or Express.js Helmet. Key features to include: HTTPS enforcement, XSS protection, CSRF protection, Content Security Policy (CSP), and rate limiting. Use the latest stable versions of these libraries (e.g., Helmet v6.0.0 for Express.js). Ensure middleware is consistently applied across all 7 core services (Auth, AC, Integrity, FV, GS, PGC, EC).
+
+# Test Strategy:
+Develop unit tests for each middleware component. Perform integration testing to ensure middleware is correctly applied across all services. Conduct security penetration testing to validate the effectiveness of the implemented middleware.

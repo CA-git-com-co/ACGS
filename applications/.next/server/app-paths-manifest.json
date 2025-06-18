@@ -1,0 +1,7 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/(dashboard)/settings/page": "app/(dashboard)/settings/page.js",
+  "/(dashboard)/page": "app/(dashboard)/page.js",
+  "/(dashboard)/governance/page": "app/(dashboard)/governance/page.js",
+  "/(dashboard)/policies/page": "app/(dashboard)/policies/page.js"
+}
