@@ -84,8 +84,7 @@ processors:
           key: service.name
           values: [pgc_service, gs_service]
           invert_match: false
-        sampling_percentage: 50
-      
+
       # Sample critical operations at higher rate
       - name: critical-operations
         type: string_attribute
@@ -93,7 +92,6 @@ processors:
           key: operation.type
           values: [constitutional_validation, policy_synthesis, governance_workflow]
           invert_match: false
-        sampling_percentage: 30
       
       # Default sampling for other traces
       - name: default-policy
@@ -114,25 +112,7 @@ processors:
         from_attribute: service.version
         action: upsert
 
-  # Span processor for span enrichment
-  span:
-    name:
-      # Rename spans for better readability
-      to_attributes:
-        rules:
-          - key: http.method
-            pattern: ^(.*)$
-            name_pattern: "HTTP $1"
-      
-    # Add custom attributes
-    include:
-      match_type: regexp
-      services: [".*"]
-      span_names: [".*"]
-    
-    exclude:
-      match_type: strict
-      span_names: ["health_check", "metrics"]
+
 
   # Attributes processor for data enrichment
   attributes:
@@ -159,15 +139,9 @@ processors:
         action: delete
 
 exporters:
-  # Jaeger exporter
-  jaeger:
-    endpoint: jaeger-all-in-one:14250
-    tls:
-      insecure: true
-
   # OTLP exporter for Jaeger
   otlp/jaeger:
-    endpoint: http://jaeger-all-in-one:14268/api/traces
+    endpoint: http://jaeger-all-in-one:4317
     tls:
       insecure: true
 
@@ -221,8 +195,8 @@ service:
     # Traces pipeline
     traces:
       receivers: [otlp, jaeger, zipkin]
-      processors: [memory_limiter, resource, attributes, span, tail_sampling, batch]
-      exporters: [jaeger, otlp/jaeger, prometheus, logging]
+      processors: [memory_limiter, resource, attributes, tail_sampling, batch]
+      exporters: [otlp/jaeger, logging]
     
     # Metrics pipeline for trace-derived metrics
     metrics:
@@ -244,10 +218,7 @@ service:
       sampling:
         initial: 5
         thereafter: 200
-    
+
     metrics:
       level: "detailed"
       address: 0.0.0.0:8888
-    
-    traces:
-      processors: [batch]

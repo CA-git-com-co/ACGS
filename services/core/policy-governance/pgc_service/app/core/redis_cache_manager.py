@@ -28,9 +28,53 @@ from enum import Enum
 from typing import Any
 
 import redis.asyncio as redis
-from prometheus_client import Counter, Gauge, Histogram
+from prometheus_client import Counter, Gauge, Histogram, CollectorRegistry, REGISTRY
 
 logger = logging.getLogger(__name__)
+
+# Global metrics to prevent duplication
+_cache_metrics_initialized = False
+_cache_hit_counter = None
+_cache_miss_counter = None
+_cache_lookup_histogram = None
+_cache_size_gauge = None
+
+def _get_cache_metrics():
+    """Get or create singleton cache metrics to prevent duplication."""
+    global _cache_metrics_initialized, _cache_hit_counter, _cache_miss_counter, _cache_lookup_histogram, _cache_size_gauge
+
+    if not _cache_metrics_initialized:
+        try:
+            _cache_hit_counter = Counter(
+                "pgc_cache_hits_total", "Total cache hits", ["level"]
+            )
+            _cache_miss_counter = Counter(
+                "pgc_cache_misses_total", "Total cache misses"
+            )
+            _cache_lookup_histogram = Histogram(
+                "pgc_cache_lookup_duration_seconds",
+                "Cache lookup duration in seconds",
+                buckets=[0.001, 0.002, 0.005, 0.01, 0.025, 0.05, 0.1],
+            )
+            _cache_size_gauge = Gauge(
+                "pgc_cache_entries_total", "Total cache entries", ["level"]
+            )
+            _cache_metrics_initialized = True
+            logger.info("PGC cache metrics initialized successfully")
+        except ValueError as e:
+            if "Duplicated timeseries" in str(e):
+                # Metrics already exist, try to get them from registry
+                logger.warning(f"Cache metrics already exist, reusing: {e}")
+                # For now, set to None to disable metrics rather than crash
+                _cache_hit_counter = None
+                _cache_miss_counter = None
+                _cache_lookup_histogram = None
+                _cache_size_gauge = None
+                _cache_metrics_initialized = True
+            else:
+                raise
+
+    return _cache_hit_counter, _cache_miss_counter, _cache_lookup_histogram, _cache_size_gauge
 
 
 class CacheLevel(Enum):
@@ -128,21 +172,13 @@ class RedisCacheManager:
             "circuit_breaker_trips": 0,
         }
 
-        # Prometheus metrics
-        self.cache_hit_counter = Counter(
-            "pgc_cache_hits_total", "Total cache hits", ["level"]
-        )
-        self.cache_miss_counter = Counter(
-            "pgc_cache_misses_total", "Total cache misses"
-        )
-        self.cache_lookup_histogram = Histogram(
-            "pgc_cache_lookup_duration_seconds",
-            "Cache lookup duration in seconds",
-            buckets=[0.001, 0.002, 0.005, 0.01, 0.025, 0.05, 0.1],
-        )
-        self.cache_size_gauge = Gauge(
-            "pgc_cache_entries_total", "Total cache entries", ["level"]
-        )
+        # Prometheus metrics (singleton to prevent duplication)
+        (
+            self.cache_hit_counter,
+            self.cache_miss_counter,
+            self.cache_lookup_histogram,
+            self.cache_size_gauge,
+        ) = _get_cache_metrics()
 
     async def initialize(self) -> None:
         """Initialize Redis connection and validate configuration."""
@@ -195,7 +231,8 @@ class RedisCacheManager:
                 if self._is_entry_valid(entry):
                     if self._verify_integrity(entry):
                         self._update_access_stats(entry, CacheLevel.L1_MEMORY)
-                        self.cache_hit_counter.labels(level="l1").inc()
+                        if self.cache_hit_counter:
+                            self.cache_hit_counter.labels(level="l1").inc()
                         self.metrics["cache_hits"] += 1
                         self.metrics["l1_hits"] += 1
                         return entry.value
@@ -215,7 +252,8 @@ class RedisCacheManager:
                                 # Promote to L1 cache
                                 self._add_to_memory_cache(key, entry)
                                 self._update_access_stats(entry, CacheLevel.L2_REDIS)
-                                self.cache_hit_counter.labels(level="l2").inc()
+                                if self.cache_hit_counter:
+                                    self.cache_hit_counter.labels(level="l2").inc()
                                 self.metrics["cache_hits"] += 1
                                 self.metrics["l2_hits"] += 1
                                 return entry.value
@@ -229,13 +267,15 @@ class RedisCacheManager:
                     self._handle_circuit_breaker_failure()
 
             # Cache miss
-            self.cache_miss_counter.inc()
+            if self.cache_miss_counter:
+                self.cache_miss_counter.inc()
             self.metrics["cache_misses"] += 1
             return None
 
         finally:
             lookup_time = time.time() - start_time
-            self.cache_lookup_histogram.observe(lookup_time)
+            if self.cache_lookup_histogram:
+                self.cache_lookup_histogram.observe(lookup_time)
 
     async def put(
         self,
@@ -338,14 +378,16 @@ class RedisCacheManager:
             del self.memory_cache[oldest_key]
 
         # Update metrics
-        self.cache_size_gauge.labels(level="l1").set(len(self.memory_cache))
+        if self.cache_size_gauge:
+            self.cache_size_gauge.labels(level="l1").set(len(self.memory_cache))
 
     def _remove_from_memory_cache(self, key: str) -> None:
         """Remove entry from L1 memory cache."""
         if key in self.memory_cache:
             del self.memory_cache[key]
             self.memory_cache_order.remove(key)
-            self.cache_size_gauge.labels(level="l1").set(len(self.memory_cache))
+            if self.cache_size_gauge:
+                self.cache_size_gauge.labels(level="l1").set(len(self.memory_cache))
 
     def _serialize_cache_entry(self, entry: CacheEntry) -> str:
         """Serialize cache entry for Redis storage."""

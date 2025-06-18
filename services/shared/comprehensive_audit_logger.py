@@ -26,7 +26,14 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
 
-import aiofiles
+# Handle compatibility issues with optional dependencies
+try:
+    import aiofiles
+    AIOFILES_AVAILABLE = True
+except ImportError:
+    AIOFILES_AVAILABLE = False
+    aiofiles = None
+
 # Temporarily disable Redis for compatibility
 # try:
 #     import aioredis
@@ -162,7 +169,7 @@ class ComprehensiveAuditLogger:
         self,
         service_name: str,
         redis_url: str = "redis://localhost:6379",
-        log_directory: str = "/var/log/acgs/audit",
+        log_directory: str = "/home/dislove/ACGS-1/logs/audit",
         encryption_key: Optional[str] = None,
         integrity_key: Optional[str] = None,
     ):
@@ -375,19 +382,24 @@ class ComprehensiveAuditLogger:
     
     async def _store_in_file(self, audit_entry: AuditLogEntry):
         """Store audit log in local file system."""
-        
+
         # Create daily log file
         date_str = audit_entry.timestamp.strftime("%Y-%m-%d")
         log_file = f"{self.log_directory}/{self.service_name}-audit-{date_str}.jsonl"
-        
+
         log_line = json.dumps(audit_entry.dict(), default=str) + "\n"
-        
+
         # Encrypt if encryption is enabled
         if self.cipher:
             log_line = self.cipher.encrypt(log_line.encode()).decode() + "\n"
-        
-        async with aiofiles.open(log_file, "a") as f:
-            await f.write(log_line)
+
+        if AIOFILES_AVAILABLE and aiofiles is not None:
+            async with aiofiles.open(log_file, "a") as f:
+                await f.write(log_line)
+        else:
+            # Fallback to synchronous file writing
+            with open(log_file, "a") as f:
+                f.write(log_line)
     
     async def _store_in_database(self, audit_entry: AuditLogEntry):
         """Store audit log in database (placeholder for database integration)."""
@@ -571,11 +583,25 @@ async def log_security_violation(
 class AuditLoggingMiddleware:
     """Middleware to automatically log API requests and responses."""
 
-    def __init__(self, service_name: str):
+    def __init__(self, app, service_name: str):
+        self.app = app
         self.service_name = service_name
         self.audit_logger = None
 
-    async def __call__(self, request, call_next):
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        # Create a simple request-like object for logging
+        request_info = {
+            "method": scope.get("method", "UNKNOWN"),
+            "path": scope.get("path", "/"),
+            "query_string": scope.get("query_string", b"").decode(),
+            "client": scope.get("client"),
+            "headers": dict(scope.get("headers", [])),
+        }
+
         # Initialize audit logger if not done
         if not self.audit_logger:
             self.audit_logger = await get_audit_logger(self.service_name)
@@ -584,56 +610,29 @@ class AuditLoggingMiddleware:
         correlation_id = str(uuid4())
 
         # Log request
-        await self.audit_logger.log_audit_event(
-            event_type=AuditEventType.API_REQUEST,
-            operation=f"{request.method} {request.url.path}",
-            result_status="started",
-            correlation_id=correlation_id,
-            ip_address=request.client.host if request.client else None,
-            user_agent=request.headers.get("user-agent"),
-            resource_type="api_endpoint",
-            resource_id=request.url.path,
-            operation_data={
-                "method": request.method,
-                "path": request.url.path,
-                "query_params": str(request.query_params),
-            }
-        )
-
         try:
-            response = await call_next(request)
-            response_time = (time.time() - start_time) * 1000
-
-            # Log successful response
             await self.audit_logger.log_audit_event(
                 event_type=AuditEventType.API_REQUEST,
-                operation=f"{request.method} {request.url.path}",
-                result_status="success",
+                operation=f"{request_info['method']} {request_info['path']}",
+                result_status="started",
                 correlation_id=correlation_id,
-                response_time_ms=response_time,
+                ip_address=request_info["client"][0] if request_info["client"] else None,
+                user_agent=request_info["headers"].get(b"user-agent", b"").decode(),
+                resource_type="api_endpoint",
+                resource_id=request_info["path"],
                 operation_data={
-                    "status_code": response.status_code,
-                    "response_time_ms": response_time,
+                    "method": request_info["method"],
+                    "path": request_info["path"],
+                    "query_params": request_info["query_string"],
                 }
             )
-
-            return response
-
         except Exception as e:
-            response_time = (time.time() - start_time) * 1000
+            # Don't fail the request if audit logging fails
+            logger.warning(f"Audit logging failed: {e}")
 
-            # Log error response
-            await self.audit_logger.log_audit_event(
-                event_type=AuditEventType.API_REQUEST,
-                operation=f"{request.method} {request.url.path}",
-                result_status="error",
-                severity=AuditSeverity.HIGH,
-                correlation_id=correlation_id,
-                error_message=str(e),
-                response_time_ms=response_time,
-            )
+        # Call the next middleware/app
+        await self.app(scope, receive, send)
 
-            raise
 
 
 def apply_audit_logging_to_service(app, service_name: str):

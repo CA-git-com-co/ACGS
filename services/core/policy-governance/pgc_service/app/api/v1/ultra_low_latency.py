@@ -10,10 +10,8 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...core.auth import get_current_user_id
-from ...core.database import get_db
 from ...core.ultra_low_latency_optimizer import (
     CacheStrategy,
     OptimizationLevel,
@@ -93,7 +91,6 @@ class OptimizationReportResponse(BaseModel):
 async def optimize_policy_decision(
     request: PolicyDecisionRequest,
     current_user_id: str = Depends(get_current_user_id),
-    db: AsyncSession = Depends(get_db),
 ):
     """
     Perform ultra-low latency policy decision optimization.
@@ -140,7 +137,6 @@ async def optimize_policy_decision(
 @router.get("/metrics", response_model=PerformanceMetricsResponse)
 async def get_performance_metrics(
     current_user_id: str = Depends(get_current_user_id),
-    db: AsyncSession = Depends(get_db),
 ):
     """
     Get current performance metrics for ultra-low latency optimization.
@@ -175,7 +171,6 @@ async def get_performance_metrics(
 @router.get("/report", response_model=OptimizationReportResponse)
 async def get_optimization_report(
     current_user_id: str = Depends(get_current_user_id),
-    db: AsyncSession = Depends(get_db),
 ):
     """
     Get comprehensive optimization report.
@@ -210,7 +205,6 @@ async def get_optimization_report(
 @router.post("/adaptive-optimization")
 async def perform_adaptive_optimization(
     current_user_id: str = Depends(get_current_user_id),
-    db: AsyncSession = Depends(get_db),
 ):
     """
     Perform adaptive optimization based on current performance.
@@ -241,7 +235,6 @@ async def perform_adaptive_optimization(
 async def run_performance_benchmark(
     request: BenchmarkRequest,
     current_user_id: str = Depends(get_current_user_id),
-    db: AsyncSession = Depends(get_db),
 ):
     """
     Run performance benchmark with specified parameters.
@@ -273,7 +266,6 @@ async def run_performance_benchmark(
 @router.get("/optimization-levels")
 async def list_optimization_levels(
     current_user_id: str = Depends(get_current_user_id),
-    db: AsyncSession = Depends(get_db),
 ):
     """List available optimization levels and their characteristics."""
     try:
@@ -326,7 +318,6 @@ async def list_optimization_levels(
 @router.get("/cache-strategies")
 async def list_cache_strategies(
     current_user_id: str = Depends(get_current_user_id),
-    db: AsyncSession = Depends(get_db),
 ):
     """List available cache strategies and their TTL configurations."""
     try:

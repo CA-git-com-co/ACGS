@@ -6,7 +6,7 @@ Implements comprehensive input validation and sanitization.
 import re
 
 from fastapi import HTTPException, Request, status
-from fastapi.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
 class InputValidationMiddleware(BaseHTTPMiddleware):

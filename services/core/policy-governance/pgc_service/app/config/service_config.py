@@ -52,7 +52,7 @@ class ServiceConfig:
         },
         "telemetry": {
             "enabled": True,
-            "otlp_endpoint": "http://otel-collector:4317",
+            "otlp_endpoint": "http://localhost:4317",
             "otlp_version": "v1.37.0",  # Specified OpenTelemetry version
             "service_name": "pgc_service",
             "environment": "production",

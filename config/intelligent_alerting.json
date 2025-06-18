@@ -1,0 +1,190 @@
+{
+  "alert_retention_days": 30,
+  "max_escalation_level": 3,
+  "remediation_timeout": 300,
+  "notification_cooldown": 300,
+  "enable_automated_remediation": true,
+  "enable_ml_anomaly_detection": true,
+  "prometheus_pushgateway": "http://localhost:9091",
+  
+  "webhook_endpoints": {
+    "slack": "",
+    "pagerduty": "",
+    "custom": "http://localhost:8080/webhook/alerts"
+  },
+  
+  "notification_channels": {
+    "email": {
+      "enabled": true,
+      "smtp_server": "localhost",
+      "smtp_port": 587,
+      "smtp_tls": true,
+      "from_address": "acgs-alerts@acgs.ai",
+      "to_addresses": ["ops@acgs.ai", "admin@acgs.ai"]
+    },
+    "slack": {
+      "enabled": true,
+      "webhook_url": "",
+      "channel": "#acgs-alerts",
+      "mention_users": ["@ops-team"],
+      "mention_on_critical": true
+    },
+    "pagerduty": {
+      "enabled": false,
+      "integration_key": "",
+      "service_id": "acgs-constitutional-governance",
+      "escalation_policy": "acgs-ops-escalation"
+    },
+    "webhook": {
+      "enabled": true,
+      "url": "http://localhost:8080/webhook/alerts",
+      "timeout": 10,
+      "retry_count": 3
+    }
+  },
+  
+  "escalation_policies": {
+    "critical": {
+      "immediate": ["slack", "pagerduty"],
+      "5_minutes": ["email"],
+      "15_minutes": ["phone"],
+      "30_minutes": ["escalation_team"]
+    },
+    "high": {
+      "immediate": ["slack"],
+      "10_minutes": ["email"],
+      "30_minutes": ["pagerduty"]
+    },
+    "medium": {
+      "immediate": ["slack"],
+      "1_hour": ["email"]
+    },
+    "low": {
+      "immediate": ["slack"]
+    },
+    "info": {
+      "immediate": []
+    }
+  },
+  
+  "remediation_actions": {
+    "service_restart": {
+      "name": "service_restart",
+      "command": "python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py restart",
+      "timeout": 120,
+      "retry_count": 2,
+      "impact_level": "medium",
+      "requires_approval": false,
+      "conditions": ["service_down", "high_error_rate"]
+    },
+    "service_isolation": {
+      "name": "service_isolation",
+      "command": "python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py isolate --service {service}",
+      "timeout": 60,
+      "retry_count": 1,
+      "impact_level": "high",
+      "requires_approval": false,
+      "conditions": ["service_unresponsive", "security_breach"]
+    },
+    "health_check": {
+      "name": "health_check",
+      "command": "python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py health",
+      "timeout": 30,
+      "retry_count": 3,
+      "impact_level": "low",
+      "requires_approval": false,
+      "conditions": ["performance_degradation"]
+    },
+    "clear_cache": {
+      "name": "clear_cache",
+      "command": "redis-cli FLUSHALL",
+      "timeout": 30,
+      "retry_count": 1,
+      "impact_level": "medium",
+      "requires_approval": false,
+      "conditions": ["memory_pressure", "cache_corruption"]
+    },
+    "restart_database": {
+      "name": "restart_database",
+      "command": "sudo systemctl restart postgresql",
+      "timeout": 60,
+      "retry_count": 1,
+      "impact_level": "critical",
+      "requires_approval": true,
+      "conditions": ["database_connection_failure"]
+    },
+    "scale_service": {
+      "name": "scale_service",
+      "command": "docker-compose up --scale {service}=2",
+      "timeout": 120,
+      "retry_count": 1,
+      "impact_level": "medium",
+      "requires_approval": false,
+      "conditions": ["high_load", "performance_degradation"]
+    }
+  },
+  
+  "alert_rules": {
+    "service_down": {
+      "severity": "critical",
+      "remediation_action": "service_restart",
+      "auto_remediate": true,
+      "escalation_delay": 300
+    },
+    "high_response_time": {
+      "severity": "high",
+      "remediation_action": "health_check",
+      "auto_remediate": true,
+      "escalation_delay": 600
+    },
+    "database_connection_issues": {
+      "severity": "critical",
+      "remediation_action": "restart_database",
+      "auto_remediate": false,
+      "escalation_delay": 180
+    },
+    "high_memory_usage": {
+      "severity": "medium",
+      "remediation_action": "clear_cache",
+      "auto_remediate": true,
+      "escalation_delay": 900
+    },
+    "constitutional_compliance_failure": {
+      "severity": "critical",
+      "remediation_action": "service_restart",
+      "auto_remediate": true,
+      "escalation_delay": 120
+    },
+    "governance_workflow_failure": {
+      "severity": "high",
+      "remediation_action": "service_restart",
+      "auto_remediate": true,
+      "escalation_delay": 300
+    }
+  },
+  
+  "monitoring": {
+    "metrics_push_interval": 30,
+    "health_check_interval": 60,
+    "cleanup_interval": 3600,
+    "enable_performance_monitoring": true,
+    "enable_anomaly_detection": true
+  },
+  
+  "security": {
+    "enable_webhook_authentication": true,
+    "webhook_secret": "acgs-webhook-secret-2024",
+    "enable_rate_limiting": true,
+    "max_alerts_per_minute": 100,
+    "enable_alert_deduplication": true,
+    "deduplication_window": 300
+  },
+  
+  "logging": {
+    "level": "INFO",
+    "file": "/home/dislove/ACGS-1/logs/intelligent_alerting.log",
+    "max_size": "100MB",
+    "backup_count": 5,
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  }
+}

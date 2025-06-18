@@ -7,7 +7,7 @@ import time
 from collections import defaultdict, deque
 
 from fastapi import HTTPException, Request, status
-from fastapi.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
 class RateLimitingMiddleware(BaseHTTPMiddleware):

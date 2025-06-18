@@ -152,8 +152,8 @@ services:
   # ACGS Security Event Processor
   acgs-security-processor:
     build:
-      context: .
-      dockerfile: ./elk-config/security-processor/Dockerfile
+      context: ./elk-config/security-processor
+      dockerfile: Dockerfile
     container_name: acgs-security-processor
     environment:
       - ELASTICSEARCH_HOST=elasticsearch-security:9200
