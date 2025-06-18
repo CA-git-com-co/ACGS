@@ -131,7 +131,7 @@ jobs:
             --ignore=tests/unit/services/test_pgc_service_comprehensive.py
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results-${{ matrix.test-group }}
@@ -201,7 +201,7 @@ jobs:
             -m integration
 
       - name: Upload integration test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: integration-test-results
@@ -240,7 +240,7 @@ jobs:
           python scripts/run_comprehensive_tests.py --performance --json-report
           
       - name: Upload performance results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: performance-test-results
@@ -331,7 +331,7 @@ jobs:
           python -m semgrep --config=auto --json --output=semgrep-report.json services/ || true
 
       - name: Upload security reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-reports
@@ -415,7 +415,7 @@ jobs:
           echo "Constitutional Hash: $CONSTITUTIONAL_HASH" >> deployment-artifacts/deployment-ready.txt
 
       - name: Upload deployment artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: deployment-artifacts
           path: deployment-artifacts/
