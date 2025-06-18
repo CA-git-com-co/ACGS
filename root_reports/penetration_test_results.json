@@ -1,0 +1,93 @@
+{
+  "timestamp": "2025-06-17T23:40:57.147324",
+  "vulnerabilities": [
+    {
+      "severity": "HIGH",
+      "type": "SQL Injection",
+      "service": "auth",
+      "endpoint": "/api/search",
+      "payload": "' OR '1'='1",
+      "description": "Potential SQL injection vulnerability detected"
+    },
+    {
+      "severity": "HIGH",
+      "type": "SQL Injection",
+      "service": "auth",
+      "endpoint": "/api/search",
+      "payload": "'; DROP TABLE users; --",
+      "description": "Potential SQL injection vulnerability detected"
+    },
+    {
+      "severity": "HIGH",
+      "type": "SQL Injection",
+      "service": "auth",
+      "endpoint": "/api/search",
+      "payload": "1' UNION SELECT * FROM users --",
+      "description": "Potential SQL injection vulnerability detected"
+    },
+    {
+      "severity": "HIGH",
+      "type": "SQL Injection",
+      "service": "auth",
+      "endpoint": "/api/search",
+      "payload": "<script>alert('XSS')</script>",
+      "description": "Potential SQL injection vulnerability detected"
+    },
+    {
+      "severity": "HIGH",
+      "type": "SQL Injection",
+      "service": "auth",
+      "endpoint": "/api/search",
+      "payload": "javascript:alert('XSS')",
+      "description": "Potential SQL injection vulnerability detected"
+    },
+    {
+      "severity": "HIGH",
+      "type": "SQL Injection",
+      "service": "auth",
+      "endpoint": "/api/search",
+      "payload": "<img src=x onerror=alert('XSS')>",
+      "description": "Potential SQL injection vulnerability detected"
+    },
+    {
+      "severity": "HIGH",
+      "type": "Insecure CORS Configuration",
+      "service": "ac",
+      "description": "CORS allows any origin with credentials",
+      "headers": {
+        "access-control-allow-origin": "*",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": ""
+      }
+    },
+    {
+      "severity": "HIGH",
+      "type": "Insecure CORS Configuration",
+      "service": "integrity",
+      "description": "CORS allows any origin with credentials",
+      "headers": {
+        "access-control-allow-origin": "*",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": ""
+      }
+    },
+    {
+      "severity": "HIGH",
+      "type": "Insecure CORS Configuration",
+      "service": "ec",
+      "description": "CORS allows any origin with credentials",
+      "headers": {
+        "access-control-allow-origin": "*",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": ""
+      }
+    }
+  ],
+  "security_score": 0,
+  "tests_passed": -4,
+  "tests_failed": 9,
+  "critical_issues": 0,
+  "high_issues": 9,
+  "medium_issues": 0,
+  "low_issues": 0
+}

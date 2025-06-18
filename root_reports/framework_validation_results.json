@@ -1,0 +1,57 @@
+{
+  "framework_version": "1.0.0",
+  "validation_timestamp": 1750180770.6233368,
+  "service_url": "--help",
+  "tests": {
+    "Service Health": {
+      "passed": false,
+      "error": "Request URL is missing an 'http://' or 'https://' protocol."
+    },
+    "Constitutional Compliance": {
+      "passed": false,
+      "error": "Request URL is missing an 'http://' or 'https://' protocol."
+    },
+    "Performance Optimization": {
+      "passed": false,
+      "error": "Request URL is missing an 'http://' or 'https://' protocol."
+    },
+    "Monitoring Integration": {
+      "passed": false,
+      "error": "Request URL is missing an 'http://' or 'https://' protocol."
+    },
+    "Cache Functionality": {
+      "passed": true,
+      "cache_stats_available": false
+    },
+    "API Endpoints": {
+      "passed": false,
+      "endpoint_results": {
+        "/": {
+          "status_code": null,
+          "available": false,
+          "error": "Request URL is missing an 'http://' or 'https://' protocol."
+        },
+        "/health": {
+          "status_code": null,
+          "available": false,
+          "error": "Request URL is missing an 'http://' or 'https://' protocol."
+        },
+        "/docs": {
+          "status_code": null,
+          "available": false,
+          "error": "Request URL is missing an 'http://' or 'https://' protocol."
+        }
+      },
+      "available_endpoints": 0,
+      "total_endpoints": 3
+    },
+    "Error Handling": {
+      "passed": false,
+      "error": "Request URL is missing an 'http://' or 'https://' protocol."
+    }
+  },
+  "overall_status": "failed",
+  "success_rate": 0.14285714285714285,
+  "passed_tests": 1,
+  "total_tests": 7
+}

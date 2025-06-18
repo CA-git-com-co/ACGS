@@ -1,0 +1,190 @@
+{
+  "timestamp": 1750241556.8745818,
+  "summary": {
+    "success_rate": 100.0,
+    "avg_response_time": 2.194,
+    "performance_compliance": 100.0,
+    "all_functional": true,
+    "all_performant": true
+  },
+  "detailed_results": [
+    {
+      "workflow": "Policy Creation",
+      "status": "success",
+      "response_time_ms": 2.95,
+      "http_status": 200,
+      "data": {
+        "workflow_id": "WF-1750241556-d1807633",
+        "state": "initiated",
+        "policy_id": null,
+        "stakeholders": [],
+        "estimated_completion_time": 1750327956.8653786,
+        "next_step": "stakeholder_notification",
+        "processing_time_ms": 0.03,
+        "timestamp": 1750241556.865382
+      },
+      "meets_performance_target": true
+    },
+    {
+      "workflow": "Constitutional Compliance",
+      "status": "success",
+      "response_time_ms": 0.97,
+      "http_status": 200,
+      "data": {
+        "constitutional_hash": "cdd01ef066bc6cf2",
+        "validation_status": "valid",
+        "service": "gs_service",
+        "version": "3.0.0",
+        "timestamp": 1750241556.8665438,
+        "compliance_framework": {
+          "hash_algorithm": "SHA-256",
+          "validation_level": "enterprise",
+          "integrity_verified": true
+        },
+        "constitutional_state": {
+          "active": true,
+          "synthesis_engine": "operational",
+          "multi_model_consensus": true,
+          "constitutional_compliance": true
+        },
+        "governance_capabilities": {
+          "policy_synthesis": true,
+          "constitutional_synthesis": true,
+          "multi_model_coordination": true,
+          "workflow_orchestration": true
+        }
+      },
+      "meets_performance_target": true
+    },
+    {
+      "workflow": "Policy Enforcement",
+      "status": "success",
+      "response_time_ms": 5.72,
+      "http_status": 200,
+      "data": {
+        "workflow_id": "WF-1750241556-95c31667",
+        "state": "initiated",
+        "policy_id": null,
+        "stakeholders": [],
+        "estimated_completion_time": 1750327956.872187,
+        "next_step": "stakeholder_notification",
+        "processing_time_ms": 0.02,
+        "timestamp": 1750241556.8721886
+      },
+      "meets_performance_target": true
+    },
+    {
+      "workflow": "WINA Oversight",
+      "status": "success",
+      "response_time_ms": 0.52,
+      "http_status": 200,
+      "data": {
+        "timestamp": 1750241556.8730347,
+        "service": "gs_service_production",
+        "performance": {
+          "response_time_target": "<500ms for 95% requests",
+          "throughput_target": ">1000 concurrent actions",
+          "availability_target": ">99.9%"
+        },
+        "synthesis_performance": {
+          "status": "operational",
+          "response_time_ms": 50
+        }
+      },
+      "meets_performance_target": true
+    },
+    {
+      "workflow": "Audit/Transparency",
+      "status": "success",
+      "response_time_ms": 0.81,
+      "http_status": 200,
+      "data": {
+        "workflow_id": "WF-1750241556-AUDIT-1750241556",
+        "workflow_type": "audit_transparency",
+        "report_type": "comprehensive",
+        "time_range": {
+          "start": 1750155156.8738265,
+          "end": 1750241556.8738265
+        },
+        "audit_summary": {
+          "total_events": 6,
+          "immutable_records": 6,
+          "audit_metrics": {
+            "total_events": 6,
+            "policy_events": 0,
+            "workflow_events": 6,
+            "enforcement_events": 0,
+            "compliance_events": 0
+          }
+        },
+        "transparency_report": {
+          "metadata": {
+            "report_id": "TRANS-1750241556-comprehensive",
+            "report_type": "comprehensive",
+            "generated_at": 1750241556.873841,
+            "time_range": {
+              "start": 1750155156.8738265,
+              "end": 1750241556.8738265
+            },
+            "events_included": 6,
+            "generation_time_ms": 0.01,
+            "public_transparency": true,
+            "privacy_compliant": true
+          },
+          "report": {
+            "summary": {
+              "total_events": 6,
+              "policy_events": 0,
+              "workflow_events": 6,
+              "enforcement_events": 0,
+              "compliance_events": 0
+            },
+            "governance_activity": {
+              "policies_created": 0,
+              "workflows_initiated": 6,
+              "enforcement_actions": 0,
+              "compliance_checks": 0
+            },
+            "transparency_metrics": {
+              "public_events": 6,
+              "immutable_records": 6,
+              "blockchain_ready_events": 6
+            }
+          },
+          "audit_metrics": {
+            "total_events": 6,
+            "policy_events": 0,
+            "workflow_events": 6,
+            "enforcement_events": 0,
+            "compliance_events": 0
+          }
+        },
+        "compliance_report": {
+          "compliance_framework": "ACGS Constitutional Governance",
+          "reporting_period": {
+            "start": 1750155156.8738265,
+            "end": 1750241556.8738265
+          },
+          "compliance_status": "compliant",
+          "regulatory_requirements_met": true,
+          "audit_trail_complete": true,
+          "transparency_score": 0.98,
+          "report_timestamp": 1750241556.8738444
+        },
+        "blockchain_preparation": {
+          "records_prepared": 6,
+          "blockchain_ready": true,
+          "hash_verification": "passed",
+          "storage_format": "immutable_json",
+          "preparation_timestamp": 1750241556.873834
+        },
+        "public_transparency": true,
+        "immutable_storage": true,
+        "processing_time_ms": 0.02,
+        "performance_target": "<500ms",
+        "timestamp": 1750241556.873846
+      },
+      "meets_performance_target": true
+    }
+  ]
+}

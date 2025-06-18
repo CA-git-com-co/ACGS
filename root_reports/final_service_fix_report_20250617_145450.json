@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-06-17T14:54:50.943326",
+  "report_type": "Final Service Structure Fix",
+  "actions_performed": [
+    "[2025-06-17T14:54:50.942566] Requirements.txt already exists in constitutional-ai/ac_service",
+    "[2025-06-17T14:54:50.942619] Requirements.txt already exists in governance-synthesis/gs_service",
+    "[2025-06-17T14:54:50.942663] Requirements.txt already exists in formal-verification/fv_service",
+    "[2025-06-17T14:54:50.942705] Final validation \u2705 constitutional-ai",
+    "[2025-06-17T14:54:50.942747] Final validation \u2705 governance-synthesis",
+    "[2025-06-17T14:54:50.942777] Final validation \u2705 formal-verification",
+    "[2025-06-17T14:54:50.942809] Final validation \u2705 policy-governance",
+    "[2025-06-17T14:54:50.942865] Final validation \u2705 evolutionary-computation",
+    "[2025-06-17T14:54:50.942914] Final validation \u2705 self-evolving-ai",
+    "[2025-06-17T14:54:50.942964] Final validation \u2705 acgs-pgp-v8",
+    "[2025-06-17T14:54:50.943173] Created service health check script",
+    "[2025-06-17T14:54:50.943231] \u2705 constitution_data.json present",
+    "[2025-06-17T14:54:50.943253] \u2705 governance_accounts.json present",
+    "[2025-06-17T14:54:50.943266] \u2705 initial_policies.json present",
+    "[2025-06-17T14:54:50.943280] \u2705 complete_deployment.sh present",
+    "[2025-06-17T14:54:50.943317] \u2705 Constitutional hash cdd01ef066bc6cf2 verified"
+  ],
+  "summary": {
+    "total_actions": 16,
+    "fix_completed": true
+  }
+}

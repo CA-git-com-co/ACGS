@@ -1,0 +1,142 @@
+{
+  "timestamp": "2025-06-17T21:22:22.263312",
+  "system_optimization": {
+    "system_metrics": {
+      "cpu_percent": 9.3,
+      "memory_percent": 71.8,
+      "disk_percent": 4.3,
+      "available_memory_gb": 35.35
+    },
+    "optimizations": []
+  },
+  "caching_optimization": [
+    {
+      "type": "redis_performance",
+      "latency_ms": 6.35,
+      "status": "needs_optimization"
+    },
+    {
+      "type": "cache_warming",
+      "keys_warmed": 4,
+      "status": "completed"
+    }
+  ],
+  "database_optimization": [
+    {
+      "type": "connection_pooling",
+      "recommendation": "Implement connection pooling with min_size=10, max_size=50",
+      "status": "recommended"
+    },
+    {
+      "type": "query_optimization",
+      "recommendation": "Add indexes for constitutional_hash, policy_id, and timestamp columns",
+      "status": "recommended"
+    },
+    {
+      "type": "read_replicas",
+      "recommendation": "Configure read replicas for read-heavy operations",
+      "status": "recommended"
+    }
+  ],
+  "async_optimization": [
+    {
+      "type": "async_endpoints",
+      "recommendation": "Convert blocking I/O operations to async/await patterns",
+      "impact": "20-50% performance improvement",
+      "status": "recommended"
+    },
+    {
+      "type": "background_tasks",
+      "recommendation": "Implement background task processing for non-critical operations",
+      "impact": "Improved response times for user-facing endpoints",
+      "status": "recommended"
+    },
+    {
+      "type": "connection_pooling",
+      "recommendation": "Use aiohttp connection pooling for external API calls",
+      "impact": "Reduced connection overhead",
+      "status": "recommended"
+    }
+  ],
+  "service_metrics": {
+    "auth": {
+      "response_time_ms": 2.94,
+      "status_code": 200,
+      "status": "healthy",
+      "port": 8000
+    },
+    "ac": {
+      "response_time_ms": 2.12,
+      "status_code": 200,
+      "status": "healthy",
+      "port": 8001
+    },
+    "integrity": {
+      "response_time_ms": 1.69,
+      "status_code": 200,
+      "status": "healthy",
+      "port": 8002
+    },
+    "fv": {
+      "response_time_ms": 1.39,
+      "status_code": 200,
+      "status": "healthy",
+      "port": 8003
+    },
+    "gs": {
+      "status": "unavailable",
+      "error": "Cannot connect to host localhost:8004 ssl:default [Connect call failed ('127.0.0.1', 8004)]",
+      "port": 8004
+    },
+    "pgc": {
+      "status": "unavailable",
+      "error": "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]",
+      "port": 8005
+    },
+    "ec": {
+      "response_time_ms": 1.43,
+      "status_code": 200,
+      "status": "healthy",
+      "port": 8006
+    }
+  },
+  "recommendations": [
+    {
+      "category": "load_balancing",
+      "title": "HAProxy Circuit Breaker Enhancement",
+      "description": "Implement advanced circuit breaker patterns with automatic failover",
+      "priority": "medium",
+      "estimated_impact": "Improved fault tolerance and response times"
+    },
+    {
+      "category": "caching",
+      "title": "Multi-Layer Caching Strategy",
+      "description": "Implement L1 (in-memory), L2 (Redis), and L3 (database) caching layers",
+      "priority": "high",
+      "estimated_impact": "30-50% reduction in response times"
+    },
+    {
+      "category": "database",
+      "title": "Query Optimization and Indexing",
+      "description": "Add composite indexes for frequently queried columns",
+      "priority": "medium",
+      "estimated_impact": "20-30% improvement in database query performance"
+    },
+    {
+      "category": "monitoring",
+      "title": "Real-time Performance Dashboards",
+      "description": "Implement Grafana dashboards with real-time performance metrics",
+      "priority": "low",
+      "estimated_impact": "Better visibility into performance bottlenecks"
+    }
+  ],
+  "summary": {
+    "healthy_services": 5,
+    "total_services": 7,
+    "service_availability_percent": 71.43,
+    "average_response_time_ms": 1.91,
+    "performance_status": "excellent",
+    "high_priority_recommendations": 1,
+    "optimization_score": 88
+  }
+}

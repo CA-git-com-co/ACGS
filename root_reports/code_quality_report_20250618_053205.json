@@ -1,0 +1,48 @@
+{
+  "start_time": "2025-06-18T05:31:29.314251",
+  "formatting_results": {
+    "python": {
+      "black": false,
+      "isort": true,
+      "autoflake": true
+    },
+    "rust": {
+      "rustfmt": true,
+      "output": ""
+    }
+  },
+  "import_fixes": {
+    "files_fixed": 73
+  },
+  "error_handling_updates": {},
+  "dead_code_removal": {
+    "candidates": 619,
+    "preserved": 22
+  },
+  "preserved_components": [
+    "services/core/constitutional-ai/ac_service/app/services/advanced_democratic_participation.py:396: unused variable 'discussion_duration_hours' (100% confidence)",
+    "services/core/constitutional-ai/ac_service/app/services/advanced_democratic_participation.py:443: unused variable 'target_sample_size' (100% confidence)",
+    "services/core/constitutional-ai/ac_service/app/services/advanced_democratic_participation.py:444: unused variable 'geographic_targeting' (100% confidence)",
+    "services/core/constitutional-ai/ac_service/app/services/intelligent_conflict_detector.py:169: unused variable 'real_time_monitoring' (100% confidence)",
+    "services/core/evolutionary-computation/app/core/wina_oversight_coordinator.py:613: unreachable code after 'try' (100% confidence)",
+    "services/core/formal-verification/fv_service/app/core/constitutional_verification_engine.py:584: unused variable 'proofs_count' (100% confidence)",
+    "services/core/governance-synthesis/gs_service/app/core/llm_reliability_framework.py:2307: unused variable 'model_name_for_log' (100% confidence)",
+    "services/core/governance-synthesis/gs_service/app/services/constitutional_reporting_service.py:18: unused import 'MimeMultipart' (90% confidence)",
+    "services/core/governance-synthesis/gs_service/app/services/constitutional_reporting_service.py:19: unused import 'MimeText' (90% confidence)",
+    "services/core/governance-synthesis/gs_service/app/workflows/multi_model_manager.py:24: unused import 'AIMessage' (90% confidence)",
+    "services/core/governance-synthesis/gs_service/app/workflows/multi_model_manager.py:24: unused import 'HumanMessage' (90% confidence)",
+    "services/core/governance-synthesis/gs_service/app/workflows/multi_model_manager.py:71: unused import 'get_ollama_client' (90% confidence)",
+    "services/core/policy-governance/pgc_service/app/core/hardware_acceleration_manager.py:614: unused variable 'model_optimization_level' (100% confidence)",
+    "services/core/policy-governance/pgc_service/app/core/redis_cache_manager.py:222: unused variable 'verify_constitutional' (100% confidence)",
+    "services/core/policy-governance/pgc_service/app/main.py:60: unused import 'initialize_acgs_pgp_monitoring' (90% confidence)",
+    "services/core/policy-governance/pgc_service/app/main.py:93: unused variable 'defense_mechanism' (100% confidence)",
+    "services/core/policy-governance/pgc_service/app/main.py:1406: unsatisfiable 'if' condition (100% confidence)",
+    "services/core/policy-governance/pgc_service/app/main.py:1420: unsatisfiable 'if' condition (100% confidence)",
+    "services/core/policy-governance/pgc_service/app/monitoring/acgs_pgp_metrics.py:176: unused variable 'defense_mechanism' (100% confidence)",
+    "services/shared/di/interfaces.py:218: unused variable 'governance_data' (100% confidence)",
+    "services/shared/enhancement_framework/service_enhancer.py:179: unused variable 'constitutional_cache_ttl' (100% confidence)",
+    "services/shared/multi_model_manager.py:627: unreachable code after 'try' (100% confidence)"
+  ],
+  "end_time": "2025-06-18T05:32:05.324045",
+  "success": true
+}

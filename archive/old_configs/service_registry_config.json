@@ -1,0 +1,35 @@
+{
+  "services": {
+    "auth_service": {
+      "url": "http://localhost:8000",
+      "health_endpoint": "/health"
+    },
+    "ac_service": {
+      "url": "http://localhost:8001",
+      "health_endpoint": "/health"
+    },
+    "integrity_service": {
+      "url": "http://localhost:8002",
+      "health_endpoint": "/health"
+    },
+    "fv_service": {
+      "url": "http://localhost:8003",
+      "health_endpoint": "/health"
+    },
+    "gs_service": {
+      "url": "http://localhost:8004",
+      "health_endpoint": "/health"
+    },
+    "pgc_service": {
+      "url": "http://localhost:8005",
+      "health_endpoint": "/health"
+    },
+    "ec_service": {
+      "url": "http://localhost:8006",
+      "health_endpoint": "/health"
+    }
+  },
+  "environment": "development",
+  "discovery_enabled": true,
+  "health_check_interval": 30
+}

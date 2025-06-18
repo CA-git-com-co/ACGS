@@ -1,0 +1,86 @@
+{
+  "timestamp": "2025-06-17T14:34:31.477484",
+  "cleanup_validation": {
+    "core_services": {
+      "constitutional-ai": {
+        "exists": true,
+        "description": "Constitutional AI Service (AC)",
+        "has_main_app": false,
+        "has_config": false,
+        "has_requirements": false
+      },
+      "governance-synthesis": {
+        "exists": true,
+        "description": "Governance Synthesis Service (GS)",
+        "has_main_app": false,
+        "has_config": false,
+        "has_requirements": false
+      },
+      "formal-verification": {
+        "exists": true,
+        "description": "Formal Verification Service (FV)",
+        "has_main_app": false,
+        "has_config": true,
+        "has_requirements": false
+      },
+      "policy-governance": {
+        "exists": true,
+        "description": "Policy Governance Service (PGC)",
+        "has_main_app": true,
+        "has_config": false,
+        "has_requirements": false
+      },
+      "evolutionary-computation": {
+        "exists": true,
+        "description": "Evolutionary Computation Service (EC)",
+        "has_main_app": true,
+        "has_config": true,
+        "has_requirements": true
+      },
+      "self-evolving-ai": {
+        "exists": true,
+        "description": "Self-Evolving AI Service",
+        "has_main_app": true,
+        "has_config": true,
+        "has_requirements": true
+      },
+      "acgs-pgp-v8": {
+        "exists": true,
+        "description": "ACGS-PGP v8 Service",
+        "has_main_app": true,
+        "has_config": true,
+        "has_requirements": true
+      }
+    },
+    "critical_components": {},
+    "quantumagi_deployment": {
+      "exists": true,
+      "has_constitution_data": true,
+      "has_deployment_scripts": true,
+      "has_governance_accounts": true
+    },
+    "enhancement_framework": {
+      "exists": true,
+      "has_components": true,
+      "component_count": 6
+    },
+    "database_components": {
+      "alembic_exists": true,
+      "migrations_exist": true,
+      "models_exist": true
+    },
+    "blockchain_components": {
+      "programs_exist": true,
+      "anchor_config": true,
+      "cargo_config": true,
+      "program_count": 3
+    }
+  },
+  "summary": {
+    "total_validations": 6,
+    "passed_validations": 6,
+    "failed_validations": 0,
+    "overall_status": "PASSED",
+    "success_rate": "100.0%"
+  }
+}

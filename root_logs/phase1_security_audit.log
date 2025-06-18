@@ -1,0 +1,550 @@
+2025-06-07 21:49:44,135 - INFO - Starting full security audit...
+2025-06-07 21:49:44,136 - INFO - Starting license compliance audit...
+2025-06-07 21:49:47,082 - INFO - Found 32 requirements files
+2025-06-07 21:49:47,083 - INFO - Analyzing licenses in: backup_20250607_192350/quantumagi_core/gs_engine/requirements.txt
+2025-06-07 21:49:47,409 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/quantumagi_core/gs_engine/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:47,410 - INFO - Analyzing licenses in: backup_20250607_192350/src/alphaevolve_gs_engine/requirements.txt
+2025-06-07 21:49:47,626 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/alphaevolve_gs_engine/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:47,626 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/ac_service/requirements.txt
+2025-06-07 21:49:47,833 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/backend/ac_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:47,833 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/auth_service/requirements.txt
+2025-06-07 21:49:48,037 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/backend/auth_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:48,038 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/ec_service/requirements.txt
+2025-06-07 21:49:48,248 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/backend/ec_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:48,249 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/federated_service/requirements.txt
+2025-06-07 21:49:48,452 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/backend/federated_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:48,452 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/fv_service/requirements.txt
+2025-06-07 21:49:48,658 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/backend/fv_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:48,658 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/gs_service/requirements.txt
+2025-06-07 21:49:48,900 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/backend/gs_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:48,900 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/integrity_service/requirements.txt
+2025-06-07 21:49:49,117 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/backend/integrity_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:49,117 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/pgc_service/requirements.txt
+2025-06-07 21:49:49,325 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/backend/pgc_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:49,325 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/research_service/requirements.txt
+2025-06-07 21:49:49,538 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/backend/research_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:49,538 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/shared/requirements.txt
+2025-06-07 21:49:49,745 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/backend/shared/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:49,745 - INFO - Analyzing licenses in: backup_20250607_192350/src/dgm-best_swe_agent/requirements.txt
+2025-06-07 21:49:49,954 - ERROR - Error analyzing /home/dislove/ACGS-1/backup_20250607_192350/src/dgm-best_swe_agent/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:49,954 - INFO - Analyzing licenses in: data/principle-policy-corpus/requirements.txt
+2025-06-07 21:49:50,159 - ERROR - Error analyzing /home/dislove/ACGS-1/data/principle-policy-corpus/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:50,159 - INFO - Analyzing licenses in: integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt
+2025-06-07 21:49:50,372 - ERROR - Error analyzing /home/dislove/ACGS-1/integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:50,373 - INFO - Analyzing licenses in: integrations/quantumagi-bridge/gs_engine/requirements.txt
+2025-06-07 21:49:50,604 - ERROR - Error analyzing /home/dislove/ACGS-1/integrations/quantumagi-bridge/gs_engine/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:50,604 - INFO - Analyzing licenses in: requirements-dgm.txt
+2025-06-07 21:49:50,835 - ERROR - Error analyzing /home/dislove/ACGS-1/requirements-dgm.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:50,835 - INFO - Analyzing licenses in: requirements-requesty.txt
+2025-06-07 21:49:51,059 - ERROR - Error analyzing /home/dislove/ACGS-1/requirements-requesty.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:51,059 - INFO - Analyzing licenses in: requirements-test.txt
+2025-06-07 21:49:51,270 - ERROR - Error analyzing /home/dislove/ACGS-1/requirements-test.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:51,270 - INFO - Analyzing licenses in: services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-07 21:49:51,478 - ERROR - Error analyzing /home/dislove/ACGS-1/services/core/constitutional-ai/ac_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:51,479 - INFO - Analyzing licenses in: services/core/formal-verification/fv_service/requirements.txt
+2025-06-07 21:49:51,727 - ERROR - Error analyzing /home/dislove/ACGS-1/services/core/formal-verification/fv_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:51,728 - INFO - Analyzing licenses in: services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-07 21:49:51,935 - ERROR - Error analyzing /home/dislove/ACGS-1/services/core/governance-synthesis/gs_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:51,935 - INFO - Analyzing licenses in: services/core/policy-governance/pgc_service/requirements.txt
+2025-06-07 21:49:52,145 - ERROR - Error analyzing /home/dislove/ACGS-1/services/core/policy-governance/pgc_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:52,145 - INFO - Analyzing licenses in: services/platform/authentication/auth_service/requirements.txt
+2025-06-07 21:49:52,386 - ERROR - Error analyzing /home/dislove/ACGS-1/services/platform/authentication/auth_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:52,386 - INFO - Analyzing licenses in: services/platform/integrity/integrity_service/requirements.txt
+2025-06-07 21:49:52,595 - ERROR - Error analyzing /home/dislove/ACGS-1/services/platform/integrity/integrity_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:52,595 - INFO - Analyzing licenses in: services/research/federated-evaluation/federated_service/requirements.txt
+2025-06-07 21:49:52,802 - ERROR - Error analyzing /home/dislove/ACGS-1/services/research/federated-evaluation/federated_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:52,803 - INFO - Analyzing licenses in: services/research/research-platform/research_service/requirements.txt
+2025-06-07 21:49:53,005 - ERROR - Error analyzing /home/dislove/ACGS-1/services/research/research-platform/research_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:53,005 - INFO - Analyzing licenses in: services/shared/requirements.txt
+2025-06-07 21:49:53,220 - ERROR - Error analyzing /home/dislove/ACGS-1/services/shared/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:53,220 - INFO - Analyzing licenses in: src/backend/ec_service/requirements.txt
+2025-06-07 21:49:53,434 - ERROR - Error analyzing /home/dislove/ACGS-1/src/backend/ec_service/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:53,434 - INFO - Analyzing licenses in: src/backend/shared/requirements.txt
+2025-06-07 21:49:53,640 - ERROR - Error analyzing /home/dislove/ACGS-1/src/backend/shared/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:53,640 - INFO - Analyzing licenses in: src/dgm-best_swe_agent/requirements.txt
+2025-06-07 21:49:53,847 - ERROR - Error analyzing /home/dislove/ACGS-1/src/dgm-best_swe_agent/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:53,847 - INFO - Analyzing licenses in: tools/requirements.txt
+2025-06-07 21:49:54,046 - ERROR - Error analyzing /home/dislove/ACGS-1/tools/requirements.txt: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-licenses']' returned non-zero exit status 1.
+2025-06-07 21:49:54,046 - INFO - Starting CVE vulnerability assessment...
+2025-06-07 21:49:56,840 - INFO - Found 32 requirements files
+2025-06-07 21:49:56,841 - INFO - Scanning vulnerabilities in: backup_20250607_192350/quantumagi_core/gs_engine/requirements.txt
+2025-06-07 21:49:57,061 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/quantumagi_core/gs_engine/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:57,061 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/alphaevolve_gs_engine/requirements.txt
+2025-06-07 21:49:57,269 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/alphaevolve_gs_engine/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:57,269 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/ac_service/requirements.txt
+2025-06-07 21:49:57,486 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/backend/ac_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:57,487 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/auth_service/requirements.txt
+2025-06-07 21:49:57,704 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/backend/auth_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:57,704 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/ec_service/requirements.txt
+2025-06-07 21:49:57,920 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/backend/ec_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:57,920 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/federated_service/requirements.txt
+2025-06-07 21:49:58,133 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/backend/federated_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:58,133 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/fv_service/requirements.txt
+2025-06-07 21:49:58,351 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/backend/fv_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:58,351 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/gs_service/requirements.txt
+2025-06-07 21:49:58,561 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/backend/gs_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:58,561 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/integrity_service/requirements.txt
+2025-06-07 21:49:58,785 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/backend/integrity_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:58,785 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/pgc_service/requirements.txt
+2025-06-07 21:49:59,019 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/backend/pgc_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:59,019 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/research_service/requirements.txt
+2025-06-07 21:49:59,231 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/backend/research_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:59,231 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/shared/requirements.txt
+2025-06-07 21:49:59,446 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/backend/shared/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:59,446 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/dgm-best_swe_agent/requirements.txt
+2025-06-07 21:49:59,660 - ERROR - Error scanning /home/dislove/ACGS-1/backup_20250607_192350/src/dgm-best_swe_agent/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:59,660 - INFO - Scanning vulnerabilities in: data/principle-policy-corpus/requirements.txt
+2025-06-07 21:49:59,876 - ERROR - Error scanning /home/dislove/ACGS-1/data/principle-policy-corpus/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:49:59,876 - INFO - Scanning vulnerabilities in: integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt
+2025-06-07 21:50:00,092 - ERROR - Error scanning /home/dislove/ACGS-1/integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:00,093 - INFO - Scanning vulnerabilities in: integrations/quantumagi-bridge/gs_engine/requirements.txt
+2025-06-07 21:50:00,296 - ERROR - Error scanning /home/dislove/ACGS-1/integrations/quantumagi-bridge/gs_engine/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:00,296 - INFO - Scanning vulnerabilities in: requirements-dgm.txt
+2025-06-07 21:50:00,503 - ERROR - Error scanning /home/dislove/ACGS-1/requirements-dgm.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:00,504 - INFO - Scanning vulnerabilities in: requirements-requesty.txt
+2025-06-07 21:50:00,713 - ERROR - Error scanning /home/dislove/ACGS-1/requirements-requesty.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:00,713 - INFO - Scanning vulnerabilities in: requirements-test.txt
+2025-06-07 21:50:00,917 - ERROR - Error scanning /home/dislove/ACGS-1/requirements-test.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:00,917 - INFO - Scanning vulnerabilities in: services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-07 21:50:01,121 - ERROR - Error scanning /home/dislove/ACGS-1/services/core/constitutional-ai/ac_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:01,122 - INFO - Scanning vulnerabilities in: services/core/formal-verification/fv_service/requirements.txt
+2025-06-07 21:50:01,330 - ERROR - Error scanning /home/dislove/ACGS-1/services/core/formal-verification/fv_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:01,331 - INFO - Scanning vulnerabilities in: services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-07 21:50:01,540 - ERROR - Error scanning /home/dislove/ACGS-1/services/core/governance-synthesis/gs_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:01,540 - INFO - Scanning vulnerabilities in: services/core/policy-governance/pgc_service/requirements.txt
+2025-06-07 21:50:01,750 - ERROR - Error scanning /home/dislove/ACGS-1/services/core/policy-governance/pgc_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:01,750 - INFO - Scanning vulnerabilities in: services/platform/authentication/auth_service/requirements.txt
+2025-06-07 21:50:01,956 - ERROR - Error scanning /home/dislove/ACGS-1/services/platform/authentication/auth_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:01,956 - INFO - Scanning vulnerabilities in: services/platform/integrity/integrity_service/requirements.txt
+2025-06-07 21:50:02,163 - ERROR - Error scanning /home/dislove/ACGS-1/services/platform/integrity/integrity_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:02,163 - INFO - Scanning vulnerabilities in: services/research/federated-evaluation/federated_service/requirements.txt
+2025-06-07 21:50:02,373 - ERROR - Error scanning /home/dislove/ACGS-1/services/research/federated-evaluation/federated_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:02,373 - INFO - Scanning vulnerabilities in: services/research/research-platform/research_service/requirements.txt
+2025-06-07 21:50:02,579 - ERROR - Error scanning /home/dislove/ACGS-1/services/research/research-platform/research_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:02,579 - INFO - Scanning vulnerabilities in: services/shared/requirements.txt
+2025-06-07 21:50:02,786 - ERROR - Error scanning /home/dislove/ACGS-1/services/shared/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:02,786 - INFO - Scanning vulnerabilities in: src/backend/ec_service/requirements.txt
+2025-06-07 21:50:02,992 - ERROR - Error scanning /home/dislove/ACGS-1/src/backend/ec_service/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:02,992 - INFO - Scanning vulnerabilities in: src/backend/shared/requirements.txt
+2025-06-07 21:50:03,205 - ERROR - Error scanning /home/dislove/ACGS-1/src/backend/shared/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:03,205 - INFO - Scanning vulnerabilities in: src/dgm-best_swe_agent/requirements.txt
+2025-06-07 21:50:03,422 - ERROR - Error scanning /home/dislove/ACGS-1/src/dgm-best_swe_agent/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:03,423 - INFO - Scanning vulnerabilities in: tools/requirements.txt
+2025-06-07 21:50:03,633 - ERROR - Error scanning /home/dislove/ACGS-1/tools/requirements.txt for vulnerabilities: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'safety']' returned non-zero exit status 1.
+2025-06-07 21:50:03,633 - INFO - Starting comprehensive dependency scan...
+2025-06-07 21:50:03,838 - ERROR - Error running dependency scan: Command '['/usr/bin/python3', '-m', 'pip', 'install', 'pip-audit']' returned non-zero exit status 1.
+2025-06-07 21:50:03,838 - INFO - Security audit report generated: /home/dislove/ACGS-1/security_audit_report_20250607_215003.json
+2025-06-07 21:52:57,271 - INFO - Starting full security audit...
+2025-06-07 21:52:57,272 - INFO - Starting license compliance audit...
+2025-06-07 21:53:00,388 - INFO - Found 32 requirements files
+2025-06-07 21:53:00,389 - INFO - Analyzing licenses in: backup_20250607_192350/quantumagi_core/gs_engine/requirements.txt
+2025-06-07 21:53:00,951 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/quantumagi_core/gs_engine/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:00,951 - INFO - Analyzing licenses in: backup_20250607_192350/src/alphaevolve_gs_engine/requirements.txt
+2025-06-07 21:53:01,471 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/alphaevolve_gs_engine/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:01,471 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/ac_service/requirements.txt
+2025-06-07 21:53:02,004 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/backend/ac_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:02,004 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/auth_service/requirements.txt
+2025-06-07 21:53:02,527 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/backend/auth_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:02,527 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/ec_service/requirements.txt
+2025-06-07 21:53:03,048 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/backend/ec_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:03,048 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/federated_service/requirements.txt
+2025-06-07 21:53:03,597 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/backend/federated_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:03,597 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/fv_service/requirements.txt
+2025-06-07 21:53:04,129 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/backend/fv_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:04,130 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/gs_service/requirements.txt
+2025-06-07 21:53:04,664 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/backend/gs_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:04,664 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/integrity_service/requirements.txt
+2025-06-07 21:53:05,185 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/backend/integrity_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:05,185 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/pgc_service/requirements.txt
+2025-06-07 21:53:05,718 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/backend/pgc_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:05,718 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/research_service/requirements.txt
+2025-06-07 21:53:06,233 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/backend/research_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:06,233 - INFO - Analyzing licenses in: backup_20250607_192350/src/backend/shared/requirements.txt
+2025-06-07 21:53:06,744 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/backend/shared/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:06,744 - INFO - Analyzing licenses in: backup_20250607_192350/src/dgm-best_swe_agent/requirements.txt
+2025-06-07 21:53:07,262 - WARNING - Failed to analyze /home/dislove/ACGS-1/backup_20250607_192350/src/dgm-best_swe_agent/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:07,262 - INFO - Analyzing licenses in: data/principle-policy-corpus/requirements.txt
+2025-06-07 21:53:07,784 - WARNING - Failed to analyze /home/dislove/ACGS-1/data/principle-policy-corpus/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:07,784 - INFO - Analyzing licenses in: integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt
+2025-06-07 21:53:08,301 - WARNING - Failed to analyze /home/dislove/ACGS-1/integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:08,301 - INFO - Analyzing licenses in: integrations/quantumagi-bridge/gs_engine/requirements.txt
+2025-06-07 21:53:08,820 - WARNING - Failed to analyze /home/dislove/ACGS-1/integrations/quantumagi-bridge/gs_engine/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:08,821 - INFO - Analyzing licenses in: requirements-dgm.txt
+2025-06-07 21:53:09,381 - WARNING - Failed to analyze /home/dislove/ACGS-1/requirements-dgm.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:09,381 - INFO - Analyzing licenses in: requirements-requesty.txt
+2025-06-07 21:53:09,895 - WARNING - Failed to analyze /home/dislove/ACGS-1/requirements-requesty.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:09,896 - INFO - Analyzing licenses in: requirements-test.txt
+2025-06-07 21:53:10,442 - WARNING - Failed to analyze /home/dislove/ACGS-1/requirements-test.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:10,442 - INFO - Analyzing licenses in: services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-07 21:53:10,979 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/constitutional-ai/ac_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:10,979 - INFO - Analyzing licenses in: services/core/formal-verification/fv_service/requirements.txt
+2025-06-07 21:53:11,498 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/formal-verification/fv_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:11,498 - INFO - Analyzing licenses in: services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-07 21:53:12,014 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/governance-synthesis/gs_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:12,014 - INFO - Analyzing licenses in: services/core/policy-governance/pgc_service/requirements.txt
+2025-06-07 21:53:12,534 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/policy-governance/pgc_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:12,534 - INFO - Analyzing licenses in: services/platform/authentication/auth_service/requirements.txt
+2025-06-07 21:53:13,060 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/platform/authentication/auth_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:13,060 - INFO - Analyzing licenses in: services/platform/integrity/integrity_service/requirements.txt
+2025-06-07 21:53:13,588 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/platform/integrity/integrity_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:13,588 - INFO - Analyzing licenses in: services/research/federated-evaluation/federated_service/requirements.txt
+2025-06-07 21:53:14,100 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/research/federated-evaluation/federated_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:14,100 - INFO - Analyzing licenses in: services/research/research-platform/research_service/requirements.txt
+2025-06-07 21:53:14,612 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/research/research-platform/research_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:14,612 - INFO - Analyzing licenses in: services/shared/requirements.txt
+2025-06-07 21:53:15,121 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/shared/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:15,121 - INFO - Analyzing licenses in: src/backend/ec_service/requirements.txt
+2025-06-07 21:53:15,657 - WARNING - Failed to analyze /home/dislove/ACGS-1/src/backend/ec_service/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:15,657 - INFO - Analyzing licenses in: src/backend/shared/requirements.txt
+2025-06-07 21:53:16,181 - WARNING - Failed to analyze /home/dislove/ACGS-1/src/backend/shared/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:16,181 - INFO - Analyzing licenses in: src/dgm-best_swe_agent/requirements.txt
+2025-06-07 21:53:16,694 - WARNING - Failed to analyze /home/dislove/ACGS-1/src/dgm-best_swe_agent/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:16,694 - INFO - Analyzing licenses in: tools/requirements.txt
+2025-06-07 21:53:17,202 - WARNING - Failed to analyze /home/dislove/ACGS-1/tools/requirements.txt: /home/dislove/ACGS-1/venv/bin/python: No module named pip_licenses
+
+2025-06-07 21:53:17,202 - INFO - Starting CVE vulnerability assessment...
+2025-06-07 21:53:20,145 - INFO - Found 32 requirements files
+2025-06-07 21:53:20,146 - INFO - Scanning vulnerabilities in: backup_20250607_192350/quantumagi_core/gs_engine/requirements.txt
+2025-06-07 21:53:22,389 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/alphaevolve_gs_engine/requirements.txt
+2025-06-07 21:53:23,822 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/ac_service/requirements.txt
+2025-06-07 21:53:25,259 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/auth_service/requirements.txt
+2025-06-07 21:53:26,714 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/ec_service/requirements.txt
+2025-06-07 21:53:28,269 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/federated_service/requirements.txt
+2025-06-07 21:53:29,757 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/fv_service/requirements.txt
+2025-06-07 21:53:31,267 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/gs_service/requirements.txt
+2025-06-07 21:53:32,799 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/integrity_service/requirements.txt
+2025-06-07 21:53:34,346 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/pgc_service/requirements.txt
+2025-06-07 21:53:35,833 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/research_service/requirements.txt
+2025-06-07 21:53:37,367 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/backend/shared/requirements.txt
+2025-06-07 21:53:39,107 - INFO - Scanning vulnerabilities in: backup_20250607_192350/src/dgm-best_swe_agent/requirements.txt
+2025-06-07 21:53:40,596 - INFO - Scanning vulnerabilities in: data/principle-policy-corpus/requirements.txt
+2025-06-07 21:53:42,054 - INFO - Scanning vulnerabilities in: integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt
+2025-06-07 21:53:43,530 - INFO - Scanning vulnerabilities in: integrations/quantumagi-bridge/gs_engine/requirements.txt
+2025-06-07 21:53:45,064 - INFO - Scanning vulnerabilities in: requirements-dgm.txt
+2025-06-07 21:53:46,556 - INFO - Scanning vulnerabilities in: requirements-requesty.txt
+2025-06-07 21:53:48,014 - INFO - Scanning vulnerabilities in: requirements-test.txt
+2025-06-07 21:53:49,526 - INFO - Scanning vulnerabilities in: services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-07 21:53:51,073 - INFO - Scanning vulnerabilities in: services/core/formal-verification/fv_service/requirements.txt
+2025-06-07 21:53:52,647 - INFO - Scanning vulnerabilities in: services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-07 21:53:54,720 - INFO - Scanning vulnerabilities in: services/core/policy-governance/pgc_service/requirements.txt
+2025-06-07 21:53:56,217 - INFO - Scanning vulnerabilities in: services/platform/authentication/auth_service/requirements.txt
+2025-06-07 21:53:57,695 - INFO - Scanning vulnerabilities in: services/platform/integrity/integrity_service/requirements.txt
+2025-06-07 21:53:59,206 - INFO - Scanning vulnerabilities in: services/research/federated-evaluation/federated_service/requirements.txt
+2025-06-07 21:54:00,754 - INFO - Scanning vulnerabilities in: services/research/research-platform/research_service/requirements.txt
+2025-06-07 21:54:02,237 - INFO - Scanning vulnerabilities in: services/shared/requirements.txt
+2025-06-07 21:54:03,782 - INFO - Scanning vulnerabilities in: src/backend/ec_service/requirements.txt
+2025-06-07 21:54:05,302 - INFO - Scanning vulnerabilities in: src/backend/shared/requirements.txt
+2025-06-07 21:54:06,862 - INFO - Scanning vulnerabilities in: src/dgm-best_swe_agent/requirements.txt
+2025-06-07 21:54:08,380 - INFO - Scanning vulnerabilities in: tools/requirements.txt
+2025-06-07 21:54:09,875 - INFO - Starting comprehensive dependency scan...
+2025-06-07 21:54:13,380 - INFO - Security audit report generated: /home/dislove/ACGS-1/security_audit_report_20250607_215413.json
+2025-06-17 19:31:57,593 - INFO - Starting full security audit...
+2025-06-17 19:31:57,593 - INFO - Starting license compliance audit...
+2025-06-17 19:32:28,057 - INFO - Found 68 requirements files
+2025-06-17 19:32:28,057 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/acgs-pgp-v8/requirements.txt
+2025-06-17 19:32:28,722 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/acgs-pgp-v8/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:28,722 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-17 19:32:29,143 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/constitutional-ai/ac_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:29,143 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/constitutional_ai/ac_service/requirements.txt
+2025-06-17 19:32:29,570 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/constitutional_ai/ac_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:29,570 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/evolutionary-computation/requirements.txt
+2025-06-17 19:32:29,993 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/evolutionary-computation/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:29,993 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/evolutionary_computation/requirements.txt
+2025-06-17 19:32:30,408 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/evolutionary_computation/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:30,408 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/formal-verification/fv_service/requirements.txt
+2025-06-17 19:32:30,834 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/formal-verification/fv_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:30,834 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/formal_verification/fv_service/requirements.txt
+2025-06-17 19:32:31,260 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/formal_verification/fv_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:31,260 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/formal_verification_enhanced/requirements.txt
+2025-06-17 19:32:31,677 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/formal_verification_enhanced/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:31,678 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-17 19:32:32,100 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/governance-synthesis/gs_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:32,100 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/governance_synthesis/gs_service/requirements.txt
+2025-06-17 19:32:32,521 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/governance_synthesis/gs_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:32,521 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/hitl_safety/requirements.txt
+2025-06-17 19:32:32,945 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/hitl_safety/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:32,946 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/policy-governance/pgc_service/requirements.txt
+2025-06-17 19:32:33,357 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/policy-governance/pgc_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:33,357 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/policy_governance/pgc_service/requirements.txt
+2025-06-17 19:32:33,786 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/policy_governance/pgc_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:33,786 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/security_hardening/requirements.txt
+2025-06-17 19:32:34,231 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/security_hardening/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:34,231 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/self-evolving-ai/requirements.txt
+2025-06-17 19:32:34,659 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/self-evolving-ai/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:34,659 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142631/services/core/self_evolving_ai/requirements.txt
+2025-06-17 19:32:35,079 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142631/services/core/self_evolving_ai/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:35,079 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/acgs-pgp-v8/requirements.txt
+2025-06-17 19:32:35,493 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/acgs-pgp-v8/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:35,493 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-17 19:32:35,903 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/constitutional-ai/ac_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:35,903 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/constitutional_ai/ac_service/requirements.txt
+2025-06-17 19:32:36,314 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/constitutional_ai/ac_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:36,314 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/evolutionary-computation/requirements.txt
+2025-06-17 19:32:36,732 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/evolutionary-computation/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:36,732 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/evolutionary_computation/requirements.txt
+2025-06-17 19:32:37,146 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/evolutionary_computation/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:37,146 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/formal-verification/fv_service/requirements.txt
+2025-06-17 19:32:37,556 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/formal-verification/fv_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:37,556 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/formal_verification/fv_service/requirements.txt
+2025-06-17 19:32:37,972 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/formal_verification/fv_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:37,972 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/formal_verification_enhanced/requirements.txt
+2025-06-17 19:32:38,390 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/formal_verification_enhanced/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:38,390 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-17 19:32:38,796 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/governance-synthesis/gs_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:38,796 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/governance_synthesis/gs_service/requirements.txt
+2025-06-17 19:32:39,209 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/governance_synthesis/gs_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:39,209 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/hitl_safety/requirements.txt
+2025-06-17 19:32:39,627 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/hitl_safety/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:39,627 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/policy-governance/pgc_service/requirements.txt
+2025-06-17 19:32:40,035 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/policy-governance/pgc_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:40,035 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/policy_governance/pgc_service/requirements.txt
+2025-06-17 19:32:40,448 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/policy_governance/pgc_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:40,448 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/security_hardening/requirements.txt
+2025-06-17 19:32:40,861 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/security_hardening/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:40,861 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/self-evolving-ai/requirements.txt
+2025-06-17 19:32:41,280 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/self-evolving-ai/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:41,280 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_142749/services/core/self_evolving_ai/requirements.txt
+2025-06-17 19:32:41,698 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_142749/services/core/self_evolving_ai/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:41,699 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_143015/services/core/acgs-pgp-v8/requirements.txt
+2025-06-17 19:32:42,147 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015/services/core/acgs-pgp-v8/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:42,147 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_143015/services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-17 19:32:42,559 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015/services/core/constitutional-ai/ac_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:42,559 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_143015/services/core/evolutionary-computation/requirements.txt
+2025-06-17 19:32:42,969 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015/services/core/evolutionary-computation/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:42,969 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_143015/services/core/formal-verification/fv_service/requirements.txt
+2025-06-17 19:32:43,380 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015/services/core/formal-verification/fv_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:43,380 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_143015/services/core/formal_verification_enhanced/requirements.txt
+2025-06-17 19:32:43,792 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015/services/core/formal_verification_enhanced/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:43,793 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_143015/services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-17 19:32:44,207 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015/services/core/governance-synthesis/gs_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:44,208 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_143015/services/core/hitl_safety/requirements.txt
+2025-06-17 19:32:44,621 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015/services/core/hitl_safety/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:44,621 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_143015/services/core/policy-governance/pgc_service/requirements.txt
+2025-06-17 19:32:45,042 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015/services/core/policy-governance/pgc_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:45,042 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_143015/services/core/security_hardening/requirements.txt
+2025-06-17 19:32:45,460 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015/services/core/security_hardening/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:45,460 - INFO - Analyzing licenses in: backups/cleanup_backup_20250617_143015/services/core/self-evolving-ai/requirements.txt
+2025-06-17 19:32:45,866 - WARNING - Failed to analyze /home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015/services/core/self-evolving-ai/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:45,866 - INFO - Analyzing licenses in: integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt
+2025-06-17 19:32:46,278 - WARNING - Failed to analyze /home/dislove/ACGS-1/integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:46,279 - INFO - Analyzing licenses in: integrations/data-flywheel/requirements.txt
+2025-06-17 19:32:46,700 - WARNING - Failed to analyze /home/dislove/ACGS-1/integrations/data-flywheel/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:46,700 - INFO - Analyzing licenses in: integrations/quantumagi-bridge/gs_engine/requirements.txt
+2025-06-17 19:32:47,116 - WARNING - Failed to analyze /home/dislove/ACGS-1/integrations/quantumagi-bridge/gs_engine/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:47,116 - INFO - Analyzing licenses in: requirements-test.txt
+2025-06-17 19:32:47,528 - WARNING - Failed to analyze /home/dislove/ACGS-1/requirements-test.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:47,528 - INFO - Analyzing licenses in: requirements.txt
+2025-06-17 19:32:47,933 - WARNING - Failed to analyze /home/dislove/ACGS-1/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:47,933 - INFO - Analyzing licenses in: services/core/acgs-pgp-v8/requirements.txt
+2025-06-17 19:32:48,350 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/acgs-pgp-v8/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:48,351 - INFO - Analyzing licenses in: services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-17 19:32:48,782 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/constitutional-ai/ac_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:48,782 - INFO - Analyzing licenses in: services/core/constitutional-ai/requirements.txt
+2025-06-17 19:32:49,199 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/constitutional-ai/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:49,199 - INFO - Analyzing licenses in: services/core/evolutionary-computation/requirements.txt
+2025-06-17 19:32:49,628 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/evolutionary-computation/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:49,628 - INFO - Analyzing licenses in: services/core/formal-verification/fv_service/requirements.txt
+2025-06-17 19:32:50,037 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/formal-verification/fv_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:50,038 - INFO - Analyzing licenses in: services/core/formal-verification/requirements.txt
+2025-06-17 19:32:50,446 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/formal-verification/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:50,446 - INFO - Analyzing licenses in: services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-17 19:32:50,857 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/governance-synthesis/gs_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:50,857 - INFO - Analyzing licenses in: services/core/governance-synthesis/requirements.txt
+2025-06-17 19:32:51,278 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/governance-synthesis/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:51,278 - INFO - Analyzing licenses in: services/core/policy-governance/pgc_service/requirements.txt
+2025-06-17 19:32:51,685 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/policy-governance/pgc_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:51,685 - INFO - Analyzing licenses in: services/core/policy-governance/requirements.txt
+2025-06-17 19:32:52,108 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/policy-governance/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:52,108 - INFO - Analyzing licenses in: services/core/self-evolving-ai/requirements.txt
+2025-06-17 19:32:52,521 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/core/self-evolving-ai/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:52,521 - INFO - Analyzing licenses in: services/platform/authentication/auth_service/requirements.txt
+2025-06-17 19:32:52,935 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/platform/authentication/auth_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:52,935 - INFO - Analyzing licenses in: services/platform/integrity/integrity_service/requirements.txt
+2025-06-17 19:32:53,345 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/platform/integrity/integrity_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:53,345 - INFO - Analyzing licenses in: services/platform/nvidia-llm-router/requirements.txt
+2025-06-17 19:32:53,760 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/platform/nvidia-llm-router/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:53,760 - INFO - Analyzing licenses in: services/research/federated-evaluation/federated_service/requirements.txt
+2025-06-17 19:32:54,186 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/research/federated-evaluation/federated_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:54,186 - INFO - Analyzing licenses in: services/research/research-platform/research_service/requirements.txt
+2025-06-17 19:32:54,608 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/research/research-platform/research_service/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:54,609 - INFO - Analyzing licenses in: services/shared/requirements.txt
+2025-06-17 19:32:55,025 - WARNING - Failed to analyze /home/dislove/ACGS-1/services/shared/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:55,025 - INFO - Analyzing licenses in: tools/NeMo-Skills/requirements/code_execution.txt
+2025-06-17 19:32:55,442 - WARNING - Failed to analyze /home/dislove/ACGS-1/tools/NeMo-Skills/requirements/code_execution.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:55,443 - INFO - Analyzing licenses in: tools/NeMo-Skills/requirements/common-tests.txt
+2025-06-17 19:32:55,848 - WARNING - Failed to analyze /home/dislove/ACGS-1/tools/NeMo-Skills/requirements/common-tests.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:55,848 - INFO - Analyzing licenses in: tools/NeMo-Skills/requirements/main.txt
+2025-06-17 19:32:56,274 - WARNING - Failed to analyze /home/dislove/ACGS-1/tools/NeMo-Skills/requirements/main.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:56,274 - INFO - Analyzing licenses in: tools/requirements.txt
+2025-06-17 19:32:56,695 - WARNING - Failed to analyze /home/dislove/ACGS-1/tools/requirements.txt: /home/dislove/ACGS-1/.venv/bin/python3: No module named pip_licenses
+
+2025-06-17 19:32:56,696 - INFO - Starting CVE vulnerability assessment...
+2025-06-17 19:33:20,933 - INFO - Found 68 requirements files
+2025-06-17 19:33:20,933 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/acgs-pgp-v8/requirements.txt
+2025-06-17 19:33:22,596 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-17 19:33:23,852 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/constitutional_ai/ac_service/requirements.txt
+2025-06-17 19:33:25,094 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/evolutionary-computation/requirements.txt
+2025-06-17 19:33:26,400 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/evolutionary_computation/requirements.txt
+2025-06-17 19:33:27,719 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/formal-verification/fv_service/requirements.txt
+2025-06-17 19:33:28,992 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/formal_verification/fv_service/requirements.txt
+2025-06-17 19:33:30,253 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/formal_verification_enhanced/requirements.txt
+2025-06-17 19:33:31,482 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-17 19:33:32,725 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/governance_synthesis/gs_service/requirements.txt
+2025-06-17 19:33:34,034 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/hitl_safety/requirements.txt
+2025-06-17 19:33:35,378 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/policy-governance/pgc_service/requirements.txt
+2025-06-17 19:33:36,659 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/policy_governance/pgc_service/requirements.txt
+2025-06-17 19:33:37,909 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/security_hardening/requirements.txt
+2025-06-17 19:33:39,450 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/self-evolving-ai/requirements.txt
+2025-06-17 19:33:40,720 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142631/services/core/self_evolving_ai/requirements.txt
+2025-06-17 19:33:41,970 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/acgs-pgp-v8/requirements.txt
+2025-06-17 19:33:43,187 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-17 19:33:44,421 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/constitutional_ai/ac_service/requirements.txt
+2025-06-17 19:33:45,661 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/evolutionary-computation/requirements.txt
+2025-06-17 19:33:46,963 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/evolutionary_computation/requirements.txt
+2025-06-17 19:33:48,241 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/formal-verification/fv_service/requirements.txt
+2025-06-17 19:33:49,494 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/formal_verification/fv_service/requirements.txt
+2025-06-17 19:33:50,851 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/formal_verification_enhanced/requirements.txt
+2025-06-17 19:33:52,116 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-17 19:33:53,484 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/governance_synthesis/gs_service/requirements.txt
+2025-06-17 19:33:54,804 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/hitl_safety/requirements.txt
+2025-06-17 19:33:56,396 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/policy-governance/pgc_service/requirements.txt
+2025-06-17 19:33:57,699 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/policy_governance/pgc_service/requirements.txt
+2025-06-17 19:33:58,966 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/security_hardening/requirements.txt
+2025-06-17 19:34:00,243 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/self-evolving-ai/requirements.txt
+2025-06-17 19:34:01,456 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_142749/services/core/self_evolving_ai/requirements.txt
+2025-06-17 19:34:02,717 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_143015/services/core/acgs-pgp-v8/requirements.txt
+2025-06-17 19:34:03,964 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_143015/services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-17 19:34:05,253 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_143015/services/core/evolutionary-computation/requirements.txt
+2025-06-17 19:34:06,525 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_143015/services/core/formal-verification/fv_service/requirements.txt
+2025-06-17 19:34:07,797 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_143015/services/core/formal_verification_enhanced/requirements.txt
+2025-06-17 19:34:09,037 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_143015/services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-17 19:34:10,285 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_143015/services/core/hitl_safety/requirements.txt
+2025-06-17 19:34:11,535 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_143015/services/core/policy-governance/pgc_service/requirements.txt
+2025-06-17 19:34:13,022 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_143015/services/core/security_hardening/requirements.txt
+2025-06-17 19:34:14,348 - INFO - Scanning vulnerabilities in: backups/cleanup_backup_20250617_143015/services/core/self-evolving-ai/requirements.txt
+2025-06-17 19:34:15,611 - INFO - Scanning vulnerabilities in: integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt
+2025-06-17 19:34:17,001 - INFO - Scanning vulnerabilities in: integrations/data-flywheel/requirements.txt
+2025-06-17 19:34:18,336 - INFO - Scanning vulnerabilities in: integrations/quantumagi-bridge/gs_engine/requirements.txt
+2025-06-17 19:34:19,625 - INFO - Scanning vulnerabilities in: requirements-test.txt
+2025-06-17 19:34:20,948 - INFO - Scanning vulnerabilities in: requirements.txt
+2025-06-17 19:34:22,298 - INFO - Scanning vulnerabilities in: services/core/acgs-pgp-v8/requirements.txt
+2025-06-17 19:34:23,608 - INFO - Scanning vulnerabilities in: services/core/constitutional-ai/ac_service/requirements.txt
+2025-06-17 19:34:24,963 - INFO - Scanning vulnerabilities in: services/core/constitutional-ai/requirements.txt
+2025-06-17 19:34:26,255 - INFO - Scanning vulnerabilities in: services/core/evolutionary-computation/requirements.txt
+2025-06-17 19:34:27,549 - INFO - Scanning vulnerabilities in: services/core/formal-verification/fv_service/requirements.txt
+2025-06-17 19:34:29,104 - INFO - Scanning vulnerabilities in: services/core/formal-verification/requirements.txt
+2025-06-17 19:34:30,392 - INFO - Scanning vulnerabilities in: services/core/governance-synthesis/gs_service/requirements.txt
+2025-06-17 19:34:31,650 - INFO - Scanning vulnerabilities in: services/core/governance-synthesis/requirements.txt
+2025-06-17 19:34:32,902 - INFO - Scanning vulnerabilities in: services/core/policy-governance/pgc_service/requirements.txt
+2025-06-17 19:34:34,203 - INFO - Scanning vulnerabilities in: services/core/policy-governance/requirements.txt
+2025-06-17 19:34:35,441 - INFO - Scanning vulnerabilities in: services/core/self-evolving-ai/requirements.txt
+2025-06-17 19:34:36,675 - INFO - Scanning vulnerabilities in: services/platform/authentication/auth_service/requirements.txt
+2025-06-17 19:34:37,938 - INFO - Scanning vulnerabilities in: services/platform/integrity/integrity_service/requirements.txt
+2025-06-17 19:34:39,181 - INFO - Scanning vulnerabilities in: services/platform/nvidia-llm-router/requirements.txt
+2025-06-17 19:34:40,543 - INFO - Scanning vulnerabilities in: services/research/federated-evaluation/federated_service/requirements.txt
+2025-06-17 19:34:41,823 - INFO - Scanning vulnerabilities in: services/research/research-platform/research_service/requirements.txt
+2025-06-17 19:34:43,078 - INFO - Scanning vulnerabilities in: services/shared/requirements.txt
+2025-06-17 19:34:44,460 - INFO - Scanning vulnerabilities in: tools/NeMo-Skills/requirements/code_execution.txt
+2025-06-17 19:34:45,915 - INFO - Scanning vulnerabilities in: tools/NeMo-Skills/requirements/common-tests.txt
+2025-06-17 19:34:47,359 - INFO - Scanning vulnerabilities in: tools/NeMo-Skills/requirements/main.txt
+2025-06-17 19:34:48,604 - INFO - Scanning vulnerabilities in: tools/requirements.txt
+2025-06-17 19:34:49,872 - INFO - Starting comprehensive dependency scan...
+2025-06-17 19:34:58,122 - INFO - Security audit report generated: /home/dislove/ACGS-1/security_audit_report_20250617_193458.json

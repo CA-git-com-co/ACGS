@@ -1,0 +1,104 @@
+2025-06-11 07:07:04,236 - INFO - 🚀 Starting ACGS Phase 3 Comprehensive Health Check and Deployment
+2025-06-11 07:07:04,236 - INFO - ================================================================================
+2025-06-11 07:07:04,236 - INFO - ℹ️  Checking Docker Environment: 
+2025-06-11 07:07:04,273 - INFO - ℹ️  Docker Container Status: Current containers:
+NAMES                                                        STATUS
+crazy_noyce                                                  Up 5 minutes
+flamboyant_banach                                            Up 17 hours
+eloquent_babbage                                             Up 17 hours
+acgs_gs_service                                              Up 25 hours
+acgs_fv_service                                              Up 25 hours (unhealthy)
+acgs_ac_service                                              Up 25 hours
+acgs_integrity_service                                       Up 25 hours
+acgs_alembic_cache_integrated                                Exited (1) 25 hours ago
+acgs_langgraph_cache_integrated                              Up 25 hours (healthy)
+acgs_opa_cache_integrated                                    Up 25 hours (unhealthy)
+acgs_postgres_cache_integrated                               Up 25 hours (healthy)
+acgs_node_exporter                                           Created
+acgs_alertmanager                                            Created
+acgs_alembic_runner                                          Up 25 hours
+acgs-pgc-service-staging                                     Created
+acgs-gs-service-staging                                      Created
+acgs-fv-service-staging                                      Created
+acgs-ac-service-staging                                      Up 25 hours (healthy)
+acgs-integrity-service-staging                               Up 25 hours (unhealthy)
+acgs-postgres-staging                                        Up 25 hours (healthy)
+acgs-redis-staging                                           Up 25 hours (healthy)
+acgs-opa-staging                                             Up 25 hours (unhealthy)
+acgs_ac_service_temp                                         Created
+acgs_grafana                                                 Created
+acgs_frontend                                                Created
+acgs_nginx_gateway                                           Created
+acgs_research_service                                        Created
+acgs_prometheus                                              Created
+acgs_opa                                                     Up 25 hours (unhealthy)
+acgs_ec_service                                              Up 25 hours (healthy)
+acgs_pgc_service                                             Up 25 hours
+acgs_auth_service                                            Up 25 hours (unhealthy)
+acgs_postgres_db                                             Up 25 hours (healthy)
+acgs_langgraph_redis                                         Up 25 hours (healthy)
+acgs_redis                                                   Up 25 hours (healthy)
+gemini-fullstack-langgraph-quickstart-langgraph-postgres-1   Exited (0) 5 days ago
+gemini-fullstack-langgraph-quickstart-langgraph-api-1        Exited (0) 5 days ago
+gemini-fullstack-langgraph-quickstart-langgraph-redis-1      Exited (0) 5 days ago
+supabase_studio_htpa-supabase-1                              Up 25 hours (healthy)
+supabase_pg_meta_htpa-supabase-1                             Up 25 hours (healthy)
+supabase_storage_htpa-supabase-1                             Up 25 hours (healthy)
+supabase_rest_htpa-supabase-1                                Up 25 hours
+supabase_realtime_htpa-supabase-1                            Up 25 hours (healthy)
+supabase_inbucket_htpa-supabase-1                            Up 25 hours (healthy)
+supabase_auth_htpa-supabase-1                                Up 25 hours (healthy)
+supabase_kong_htpa-supabase-1                                Up 25 hours (healthy)
+supabase_vector_htpa-supabase-1                              Up 25 hours (healthy)
+supabase_analytics_htpa-supabase-1                           Up 25 hours (healthy)
+supabase_db_htpa-supabase-1                                  Up 25 hours (healthy)
+supabase_studio_htpa.ca                                      Up 25 hours (healthy)
+supabase_pg_meta_htpa.ca                                     Up 25 hours (healthy)
+supabase_storage_htpa.ca                                     Up 25 hours (healthy)
+supabase_rest_htpa.ca                                        Up 25 hours
+supabase_realtime_htpa.ca                                    Up 25 hours (healthy)
+supabase_inbucket_htpa.ca                                    Up 25 hours (healthy)
+supabase_auth_htpa.ca                                        Up 25 hours (healthy)
+supabase_kong_htpa.ca                                        Up 25 hours (healthy)
+supabase_vector_htpa.ca                                      Up 25 hours (healthy)
+supabase_analytics_htpa.ca                                   Up 25 hours (healthy)
+supabase_db_htpa.ca                                          Up 25 hours (healthy)
+compose-redis-commander-1                                    Up 25 hours (healthy)
+genspark-playwright-proxy                                    Up 25 hours
+genspark2api                                                 Up 25 hours
+nvaie-cluster-control-plane                                  Up 25 hours
+2025-06-11 07:07:04,274 - INFO - ℹ️  Infrastructure Health Assessment: 
+2025-06-11 07:07:04,336 - INFO - ✅ POSTGRES Health: Database accessible on port 5435
+2025-06-11 07:07:04,389 - INFO - ✅ REDIS Health: Cache accessible on port 6382
+2025-06-11 07:07:04,430 - INFO - ✅ OPA Health: Policy agent accessible on port 8191
+2025-06-11 07:07:04,430 - INFO - ℹ️  ACGS Services Health Assessment: 
+2025-06-11 07:07:04,437 - INFO - ✅ AC_SERVICE Health: Service healthy on port 8011 (6.54ms)
+2025-06-11 07:07:04,439 - ERROR - ❌ INTEGRITY_SERVICE Health: Server disconnected
+2025-06-11 07:07:04,439 - ERROR - ❌ FV_SERVICE Health: Cannot connect to host localhost:8013 ssl:default [Connect call failed ('127.0.0.1', 8013)]
+2025-06-11 07:07:04,439 - ERROR - ❌ GS_SERVICE Health: Cannot connect to host localhost:8014 ssl:default [Connect call failed ('127.0.0.1', 8014)]
+2025-06-11 07:07:04,440 - ERROR - ❌ PGC_SERVICE Health: Cannot connect to host localhost:8015 ssl:default [Connect call failed ('127.0.0.1', 8015)]
+2025-06-11 07:07:04,440 - INFO - 🔧 ACGS services need deployment...
+2025-06-11 07:07:04,440 - INFO - ℹ️  ACGS Services Deployment: Deploying services in order: ['ac_service', 'integrity_service', 'fv_service', 'gs_service', 'pgc_service']
+2025-06-11 07:07:04,440 - INFO - ℹ️  Deploying AC_SERVICE: 
+2025-06-11 07:07:04,441 - ERROR - ❌ AC_SERVICE Deployment: [Errno 2] No such file or directory: '/mnt/persist/workspace'
+2025-06-11 07:07:04,441 - INFO - ℹ️  Deploying INTEGRITY_SERVICE: 
+2025-06-11 07:07:04,441 - ERROR - ❌ INTEGRITY_SERVICE Deployment: [Errno 2] No such file or directory: '/mnt/persist/workspace'
+2025-06-11 07:07:04,441 - INFO - ℹ️  Deploying FV_SERVICE: 
+2025-06-11 07:07:04,442 - ERROR - ❌ FV_SERVICE Deployment: [Errno 2] No such file or directory: '/mnt/persist/workspace'
+2025-06-11 07:07:04,442 - INFO - ℹ️  Deploying GS_SERVICE: 
+2025-06-11 07:07:04,442 - ERROR - ❌ GS_SERVICE Deployment: [Errno 2] No such file or directory: '/mnt/persist/workspace'
+2025-06-11 07:07:04,442 - INFO - ℹ️  Deploying PGC_SERVICE: 
+2025-06-11 07:07:04,442 - ERROR - ❌ PGC_SERVICE Deployment: [Errno 2] No such file or directory: '/mnt/persist/workspace'
+2025-06-11 07:07:04,442 - INFO - ℹ️  ACGS Services Health Assessment: 
+2025-06-11 07:07:04,444 - INFO - ✅ AC_SERVICE Health: Service healthy on port 8011 (1.59ms)
+2025-06-11 07:07:04,444 - ERROR - ❌ INTEGRITY_SERVICE Health: [Errno 104] Connection reset by peer
+2025-06-11 07:07:04,445 - ERROR - ❌ FV_SERVICE Health: Cannot connect to host localhost:8013 ssl:default [Connect call failed ('127.0.0.1', 8013)]
+2025-06-11 07:07:04,445 - ERROR - ❌ GS_SERVICE Health: Cannot connect to host localhost:8014 ssl:default [Connect call failed ('127.0.0.1', 8014)]
+2025-06-11 07:07:04,445 - ERROR - ❌ PGC_SERVICE Health: Cannot connect to host localhost:8015 ssl:default [Connect call failed ('127.0.0.1', 8015)]
+2025-06-11 07:07:04,446 - INFO - ✅ Report Generation: Comprehensive report saved to phase3_health_deployment_report_20250611_070704.json
+2025-06-11 07:07:04,446 - INFO - ================================================================================
+2025-06-11 07:07:04,446 - INFO - 🎉 Phase 3 Health Check and Deployment Complete
+2025-06-11 07:07:04,446 - INFO - 📊 Report saved to: phase3_health_deployment_report_20250611_070704.json
+2025-06-11 07:07:04,446 - INFO - 📈 Overall Health: 60.0%
+2025-06-11 07:07:04,446 - INFO - 🔧 Services: 1/5 healthy
+2025-06-11 07:07:04,446 - INFO - 🏗️  Infrastructure: 3/3 healthy

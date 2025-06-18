@@ -1,0 +1,80 @@
+{
+  "timestamp": "2025-06-17T21:26:23.238441",
+  "metrics": {
+    "total_jobs": 5,
+    "jobs_processed": 5,
+    "jobs_failed": 0,
+    "success_rate": 100.0,
+    "average_processing_time": 0.23057880401611328,
+    "active_workers": 0,
+    "queue_size": 0
+  },
+  "jobs": [
+    {
+      "job_id": "78171170-4144-43d5-ba32-fbbe56243858",
+      "job_type": "constitutional_compliance_check",
+      "status": "completed",
+      "processing_time": 0.10045576095581055,
+      "result": {
+        "compliance_status": "compliant",
+        "confidence": 0.95,
+        "principles_checked": [
+          "transparency",
+          "accountability",
+          "fairness"
+        ],
+        "processing_type": "constitutional_compliance"
+      }
+    },
+    {
+      "job_id": "13e551dc-d4d7-4e63-bd07-362085de1831",
+      "job_type": "policy_synthesis",
+      "status": "completed",
+      "processing_time": 0.3009297847747803,
+      "result": {
+        "synthesized_policy": "Policy for AI governance",
+        "confidence": 0.88,
+        "processing_type": "policy_synthesis"
+      }
+    },
+    {
+      "job_id": "833867d3-cd08-4bff-9338-8b825860a9ad",
+      "job_type": "performance_monitoring",
+      "status": "completed",
+      "processing_time": 0.050151824951171875,
+      "result": {
+        "metrics_collected": true,
+        "service": "pgc_service",
+        "timestamp": "2025-06-17T21:26:22.287257",
+        "processing_type": "performance_monitoring"
+      }
+    },
+    {
+      "job_id": "648d5669-14c6-4d68-895f-5cfc76bb0c2c",
+      "job_type": "governance_workflow",
+      "status": "completed",
+      "processing_time": 0.20041584968566895,
+      "result": {
+        "workflow_status": "completed",
+        "steps_executed": [
+          "draft",
+          "review",
+          "approve"
+        ],
+        "processing_type": "governance_workflow"
+      }
+    },
+    {
+      "job_id": "e3f1fe3d-2e14-4cf2-bbf7-3545e62e8a60",
+      "job_type": "data_export",
+      "status": "completed",
+      "processing_time": 0.5009407997131348,
+      "result": {
+        "export_file": "export_1750209982.json",
+        "records_exported": 500,
+        "format": "json",
+        "processing_type": "data_export"
+      }
+    }
+  ]
+}

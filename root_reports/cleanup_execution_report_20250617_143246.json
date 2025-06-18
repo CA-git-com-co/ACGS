@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-06-17T14:32:46.812122",
+  "backup_location": "/home/dislove/ACGS-1/backups/cleanup_backup_20250617_143015",
+  "actions_performed": [
+    "[2025-06-17T14:30:23.091236] Backed up services/core",
+    "[2025-06-17T14:30:23.094856] Backed up services/shared/enhancement_framework",
+    "[2025-06-17T14:30:38.392252] Backed up blockchain/quantumagi-deployment",
+    "[2025-06-17T14:30:38.394197] Backed up blockchain/programs",
+    "[2025-06-17T14:30:38.396880] Backed up services/shared/alembic",
+    "[2025-06-17T14:30:38.399736] Backed up migrations",
+    "[2025-06-17T14:32:21.130307] Removed 119 cache/temp files",
+    "[2025-06-17T14:32:46.811980] Removed 91 old log/report files",
+    "[2025-06-17T14:32:46.812116] All critical services validated successfully"
+  ],
+  "removed_files_count": 0,
+  "consolidated_services": [],
+  "validation_passed": true,
+  "summary": {
+    "services_consolidated": 0,
+    "total_actions": 9
+  }
+}

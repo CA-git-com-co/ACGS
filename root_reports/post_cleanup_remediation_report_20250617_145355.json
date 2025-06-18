@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-06-17T14:53:55.719352",
+  "remediation_type": "Post-Cleanup Remediation",
+  "actions_performed": [
+    "[2025-06-17T14:53:55.697811] Created requirements.txt for constitutional-ai",
+    "[2025-06-17T14:53:55.697968] Created requirements.txt for governance-synthesis",
+    "[2025-06-17T14:53:55.698104] Created requirements.txt for formal-verification",
+    "[2025-06-17T14:53:55.698232] Created requirements.txt for policy-governance",
+    "[2025-06-17T14:53:55.698733] Removed redundant env file: .env.docker",
+    "[2025-06-17T14:53:55.698873] Removed redundant env file: .env.template",
+    "[2025-06-17T14:53:55.699039] Removed redundant env file: .env.prod",
+    "[2025-06-17T14:53:55.700239] Updated service references in security_remediation_report.md",
+    "[2025-06-17T14:53:55.700994] Updated service references in OPA_SCHRODINGER_QUANTUM_IMPLEMENTATION.md",
+    "[2025-06-17T14:53:55.701914] Updated service references in test_coverage_validation_report.md",
+    "[2025-06-17T14:53:55.704812] Updated service references in ACGS-1_Phase_A2_Completion_Report.md",
+    "[2025-06-17T14:53:55.705348] Updated service references in EVOLUTIONARY_TENSOR_DECOMPOSITION_IMPLEMENTATION.md",
+    "[2025-06-17T14:53:55.705718] Updated service references in ACGS-1_MIGRATION_PROCESS_DOCUMENTATION.md",
+    "[2025-06-17T14:53:55.707074] Updated service references in COMPREHENSIVE_CLEANUP_COMPLETION_REPORT.md",
+    "[2025-06-17T14:53:55.709293] Updated service references in Tasks_2025-06-15T19-19-35.md",
+    "[2025-06-17T14:53:55.709764] Updated service references in security_vulnerability_remediation_report.md",
+    "[2025-06-17T14:53:55.710573] Updated service references in FV_GS_RESTORATION_COMMANDS.md",
+    "[2025-06-17T14:53:55.711138] Updated service references in CI_CD_PIPELINE_COMPLETION_SUMMARY.md",
+    "[2025-06-17T14:53:55.711839] Updated service references in DEPLOYMENT_GUIDE.md",
+    "[2025-06-17T14:53:55.713346] Updated service references in ORGANIZE.md",
+    "[2025-06-17T14:53:55.713678] Updated service references in ENHANCED_CONSTITUTIONAL_ANALYZER_DEPLOYMENT_GUIDE.md",
+    "[2025-06-17T14:53:55.715502] Updated service references in DOCKER_CLEANUP_RESULTS.md",
+    "[2025-06-17T14:53:55.716980] Updated service references in README.md",
+    "[2025-06-17T14:53:55.718223] Updated service references in restart_gs_commands.txt",
+    "[2025-06-17T14:53:55.718532] Updated 17 documentation files",
+    "[2025-06-17T14:53:55.718668] Service validation \u274c constitutional-ai",
+    "[2025-06-17T14:53:55.719011] Service validation \u274c governance-synthesis",
+    "[2025-06-17T14:53:55.719088] Service validation \u274c formal-verification",
+    "[2025-06-17T14:53:55.719126] Service validation \u2705 policy-governance",
+    "[2025-06-17T14:53:55.719161] Service validation \u2705 evolutionary-computation",
+    "[2025-06-17T14:53:55.719196] Service validation \u2705 self-evolving-ai",
+    "[2025-06-17T14:53:55.719236] Service validation \u2705 acgs-pgp-v8",
+    "[2025-06-17T14:53:55.719340] \u2705 Constitutional hash cdd01ef066bc6cf2 preserved"
+  ],
+  "summary": {
+    "total_actions": 33,
+    "remediation_completed": true
+  }
+}

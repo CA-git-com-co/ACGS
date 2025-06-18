@@ -1,0 +1,367 @@
+2025-06-18 10:04:28,110 - INFO - Starting ACGS-1 root directory cleanup...
+2025-06-18 10:04:28,112 - INFO - Processing 366 items...
+2025-06-18 10:04:28,112 - INFO - Preserved: .pre-commit-config.yaml
+2025-06-18 10:04:28,113 - INFO - Moved: security_remediation_report.md -> root_reports/security_remediation_report.md
+2025-06-18 10:04:28,113 - INFO - Skipped directory: .codacy
+2025-06-18 10:04:28,113 - INFO - Moved: phase2_final_completion_report.py -> root_scripts/phase2_final_completion_report.py
+2025-06-18 10:04:28,113 - INFO - Moved: start_services_simple.sh -> root_scripts/start_services_simple.sh
+2025-06-18 10:04:28,113 - INFO - Skipped directory: .venv
+2025-06-18 10:04:28,114 - INFO - Moved: .windsurfrules -> archive/unclassified/.windsurfrules
+2025-06-18 10:04:28,114 - INFO - Moved: documentation_restructuring.py -> root_scripts/documentation_restructuring.py
+2025-06-18 10:04:28,114 - INFO - Skipped directory: .augment
+2025-06-18 10:04:28,114 - INFO - Moved: validate_phase3_monitoring.py -> root_scripts/validate_phase3_monitoring.py
+2025-06-18 10:04:28,114 - INFO - Preserved: LICENSE
+2025-06-18 10:04:28,114 - INFO - Moved: debug_gs_connectivity.py -> root_scripts/debug_gs_connectivity.py
+2025-06-18 10:04:28,114 - INFO - Moved: api_performance_results.json -> root_reports/api_performance_results.json
+2025-06-18 10:04:28,115 - INFO - Moved: comprehensive_validation.py -> root_scripts/comprehensive_validation.py
+2025-06-18 10:04:28,115 - INFO - Moved: acgs_cleanup_analysis_20250617_142444.json -> root_reports/acgs_cleanup_analysis_20250617_142444.json
+2025-06-18 10:04:28,115 - INFO - Moved: REVIEWER_CHECKLIST.md -> archive/unclassified/REVIEWER_CHECKLIST.md
+2025-06-18 10:04:28,115 - INFO - Moved: service_mesh_status.json -> archive/old_configs/service_mesh_status.json
+2025-06-18 10:04:28,115 - INFO - Moved: enhancement_readiness_validation.log -> root_logs/enhancement_readiness_validation.log
+2025-06-18 10:04:28,115 - INFO - Moved: audit_logging_deployment_report.json -> root_reports/audit_logging_deployment_report.json
+2025-06-18 10:04:28,116 - INFO - Moved: security_hardening.py -> root_scripts/security_hardening.py
+2025-06-18 10:04:28,116 - INFO - Skipped directory: .git
+2025-06-18 10:04:28,116 - INFO - Moved: OPA_SCHRODINGER_QUANTUM_IMPLEMENTATION.md -> archive/unclassified/OPA_SCHRODINGER_QUANTUM_IMPLEMENTATION.md
+2025-06-18 10:04:28,116 - INFO - Moved: phase2_demo.py -> root_scripts/phase2_demo.py
+2025-06-18 10:04:28,116 - INFO - Moved: run_tests.sh -> root_scripts/run_tests.sh
+2025-06-18 10:04:28,116 - INFO - Moved: OPERATIONAL_RUNBOOKS.md -> archive/unclassified/OPERATIONAL_RUNBOOKS.md
+2025-06-18 10:04:28,116 - INFO - Moved: extract_csrf.py -> root_scripts/extract_csrf.py
+2025-06-18 10:04:28,117 - INFO - Moved: deployment_automation.py -> root_scripts/deployment_automation.py
+2025-06-18 10:04:28,117 - INFO - Moved: post_cleanup_analysis_20250617_145255.json -> root_reports/post_cleanup_analysis_20250617_145255.json
+2025-06-18 10:04:28,117 - INFO - Skipped directory: .mypy_cache
+2025-06-18 10:04:28,117 - INFO - Moved: fix_critical_security_issues.py -> root_scripts/fix_critical_security_issues.py
+2025-06-18 10:04:28,117 - INFO - Moved: ACGS-1_IMPLEMENTATION_PLAN_SUMMARY.md -> root_reports/ACGS-1_IMPLEMENTATION_PLAN_SUMMARY.md
+2025-06-18 10:04:28,117 - INFO - Moved: .prettierrc -> archive/unclassified/.prettierrc
+2025-06-18 10:04:28,117 - INFO - Moved: test_infrastructure_reconstruction.py -> root_scripts/test_infrastructure_reconstruction.py
+2025-06-18 10:04:28,118 - INFO - Preserved: Makefile
+2025-06-18 10:04:28,118 - INFO - Moved: fix_python_imports.py -> root_scripts/fix_python_imports.py
+2025-06-18 10:04:28,118 - INFO - Preserved: requirements-security.txt
+2025-06-18 10:04:28,118 - INFO - Moved: test_enhanced_constitutional_analyzer.py -> root_scripts/test_enhanced_constitutional_analyzer.py
+2025-06-18 10:04:28,118 - INFO - Moved: post_cleanup_remediation.py -> root_scripts/post_cleanup_remediation.py
+2025-06-18 10:04:28,118 - INFO - Moved: POST_CLEANUP_COMPREHENSIVE_COMPLETION_REPORT.md -> root_reports/POST_CLEANUP_COMPREHENSIVE_COMPLETION_REPORT.md
+2025-06-18 10:04:28,118 - INFO - Moved: .secrets.baseline -> archive/unclassified/.secrets.baseline
+2025-06-18 10:04:28,119 - INFO - Moved: dependency_resolution_report_20250618_053010.json -> root_reports/dependency_resolution_report_20250618_053010.json
+2025-06-18 10:04:28,119 - INFO - Moved: .coverage -> archive/unclassified/.coverage
+2025-06-18 10:04:28,119 - INFO - Moved: acgs_health_report_20250618_060050.json -> root_reports/acgs_health_report_20250618_060050.json
+2025-06-18 10:04:28,119 - INFO - Moved: analyze_cleanup_results.py -> root_scripts/analyze_cleanup_results.py
+2025-06-18 10:04:28,119 - INFO - Moved: security_middleware_deployment_report.json -> root_reports/security_middleware_deployment_report.json
+2025-06-18 10:04:28,119 - INFO - Moved: dependency_resolution_20250618_052956.log -> root_logs/dependency_resolution_20250618_052956.log
+2025-06-18 10:04:28,120 - INFO - Moved: test_pgc_enhanced_integration.py -> root_scripts/test_pgc_enhanced_integration.py
+2025-06-18 10:04:28,120 - INFO - Moved: priority3_production_readiness.py -> root_scripts/priority3_production_readiness.py
+2025-06-18 10:04:28,120 - INFO - Moved: final_validation_and_performance_testing.py -> root_scripts/final_validation_and_performance_testing.py
+2025-06-18 10:04:28,120 - INFO - Moved: security_remediation_results.json -> root_reports/security_remediation_results.json
+2025-06-18 10:04:28,120 - INFO - Moved: acgs_health_report_20250617_214853.json -> root_reports/acgs_health_report_20250617_214853.json
+2025-06-18 10:04:28,120 - INFO - Moved: post_cleanup_validation_report.json -> root_reports/post_cleanup_validation_report.json
+2025-06-18 10:04:28,120 - INFO - Moved: penetration_test_focused.py -> root_scripts/penetration_test_focused.py
+2025-06-18 10:04:28,121 - INFO - Moved: security_assessment_results.json -> root_reports/security_assessment_results.json
+2025-06-18 10:04:28,121 - INFO - Moved: cleanup_validation_report_20250617_145457.json -> root_reports/cleanup_validation_report_20250617_145457.json
+2025-06-18 10:04:28,121 - INFO - Moved: comprehensive_codebase_reorganization.py -> root_scripts/comprehensive_codebase_reorganization.py
+2025-06-18 10:04:28,121 - INFO - Moved: configuration_consolidation.py -> root_scripts/configuration_consolidation.py
+2025-06-18 10:04:28,121 - INFO - Moved: analyze_security_issues.py -> root_scripts/analyze_security_issues.py
+2025-06-18 10:04:28,121 - INFO - Preserved: docker-compose.cache-integrated.yml
+2025-06-18 10:04:28,121 - INFO - Moved: prometheus_metrics.txt -> archive/unclassified/prometheus_metrics.txt
+2025-06-18 10:04:28,122 - INFO - Moved: start_integrity_service.py -> root_scripts/start_integrity_service.py
+2025-06-18 10:04:28,122 - INFO - Moved: REVIEW_COORDINATION.md -> archive/unclassified/REVIEW_COORDINATION.md
+2025-06-18 10:04:28,122 - INFO - Moved: coverage.json -> archive/old_configs/coverage.json
+2025-06-18 10:04:28,123 - INFO - Moved: testing_infrastructure_optimization.py -> root_scripts/testing_infrastructure_optimization.py
+2025-06-18 10:04:28,123 - INFO - Moved: update_documentation.py -> root_scripts/update_documentation.py
+2025-06-18 10:04:28,123 - INFO - Moved: final_service_fix_report_20250617_145450.json -> root_reports/final_service_fix_report_20250617_145450.json
+2025-06-18 10:04:28,124 - INFO - Moved: test_multi_provider_integration.sh -> root_scripts/test_multi_provider_integration.sh
+2025-06-18 10:04:28,124 - INFO - Moved: start_gs_service_host.py -> root_scripts/start_gs_service_host.py
+2025-06-18 10:04:28,124 - INFO - Moved: dependency_summary.json -> root_reports/dependency_summary.json
+2025-06-18 10:04:28,125 - INFO - Preserved: CHANGELOG.md
+2025-06-18 10:04:28,125 - INFO - Moved: validate_httpx_merge.py -> root_scripts/validate_httpx_merge.py
+2025-06-18 10:04:28,125 - INFO - Moved: performance_optimization.py -> root_scripts/performance_optimization.py
+2025-06-18 10:04:28,126 - INFO - Moved: SECURITY_COMPLIANCE_IMPLEMENTATION_SUMMARY.md -> root_reports/SECURITY_COMPLIANCE_IMPLEMENTATION_SUMMARY.md
+2025-06-18 10:04:28,126 - INFO - Moved: implement_enhanced_constitutional_analyzer.py -> root_scripts/implement_enhanced_constitutional_analyzer.py
+2025-06-18 10:04:28,126 - INFO - Moved: test_new_models.py -> root_scripts/test_new_models.py
+2025-06-18 10:04:28,127 - INFO - Moved: constitutional_compliance_report.json -> root_reports/constitutional_compliance_report.json
+2025-06-18 10:04:28,127 - INFO - Moved: validate_cicd_pipeline_fixes.py -> root_scripts/validate_cicd_pipeline_fixes.py
+2025-06-18 10:04:28,127 - INFO - Moved: fix_relative_imports.py -> root_scripts/fix_relative_imports.py
+2025-06-18 10:04:28,127 - INFO - Moved: dependency_cleanup_report.json -> root_reports/dependency_cleanup_report.json
+2025-06-18 10:04:28,127 - INFO - Moved: framework_validation_results.json -> root_reports/framework_validation_results.json
+2025-06-18 10:04:28,127 - INFO - Preserved: package.json
+2025-06-18 10:04:28,128 - INFO - Moved: start_pgc_service_host.py -> root_scripts/start_pgc_service_host.py
+2025-06-18 10:04:28,132 - INFO - Deleted: test-ledger
+2025-06-18 10:04:28,132 - INFO - Moved: test_coverage_validation_report.md -> root_reports/test_coverage_validation_report.md
+2025-06-18 10:04:28,133 - INFO - Moved: generate_test_token.py -> root_scripts/generate_test_token.py
+2025-06-18 10:04:28,133 - INFO - Moved: restart_gs_commands.txt -> archive/unclassified/restart_gs_commands.txt
+2025-06-18 10:04:28,133 - INFO - Moved: implement.ini -> archive/old_configs/implement.ini
+2025-06-18 10:04:28,133 - INFO - Moved: final_codebase_analysis_report.py -> root_scripts/final_codebase_analysis_report.py
+2025-06-18 10:04:28,133 - INFO - Moved: penetration_test_report.md -> root_reports/penetration_test_report.md
+2025-06-18 10:04:28,133 - INFO - Moved: gs_service_hotfix.py -> root_scripts/gs_service_hotfix.py
+2025-06-18 10:04:28,133 - INFO - Preserved: docker-compose.fixed.yml
+2025-06-18 10:04:28,133 - INFO - Moved: dependency_audit_and_update.py -> root_scripts/dependency_audit_and_update.py
+2025-06-18 10:04:28,133 - INFO - Skipped directory: .taskmaster
+2025-06-18 10:04:28,134 - INFO - Moved: test_end_to_end_governance_workflow.py -> root_scripts/test_end_to_end_governance_workflow.py
+2025-06-18 10:04:28,134 - INFO - Moved: validate_reorganization.py -> root_scripts/validate_reorganization.py
+2025-06-18 10:04:28,134 - INFO - Moved: quantumagi_an_on-chain_constitutional_governance_framework_for-solana.md -> archive/unclassified/quantumagi_an_on-chain_constitutional_governance_framework_for-solana.md
+2025-06-18 10:04:28,134 - INFO - Moved: compliance_assessment.py -> root_scripts/compliance_assessment.py
+2025-06-18 10:04:28,134 - INFO - Moved: comprehensive_cleanup_plan.py -> root_scripts/comprehensive_cleanup_plan.py
+2025-06-18 10:04:28,134 - INFO - Moved: final_cleanup.py -> root_scripts/final_cleanup.py
+2025-06-18 10:04:28,134 - INFO - Moved: ACGS-1_COMPREHENSIVE_CLEANUP_COMPLETION_REPORT.md -> root_reports/ACGS-1_COMPREHENSIVE_CLEANUP_COMPLETION_REPORT.md
+2025-06-18 10:04:28,135 - INFO - Moved: documentation_restructuring_20250618_053458.log -> root_logs/documentation_restructuring_20250618_053458.log
+2025-06-18 10:04:28,135 - INFO - Moved: documentation_compliance_update_results.json -> root_reports/documentation_compliance_update_results.json
+2025-06-18 10:04:28,135 - INFO - Moved: comprehensive_cleanup_analysis.py -> root_scripts/comprehensive_cleanup_analysis.py
+2025-06-18 10:04:28,135 - INFO - Moved: end_to_end_workflow_completion_1749380772.json -> archive/old_configs/end_to_end_workflow_completion_1749380772.json
+2025-06-18 10:04:28,135 - INFO - Moved: post_cleanup_remediation_report_20250617_145355.json -> root_reports/post_cleanup_remediation_report_20250617_145355.json
+2025-06-18 10:04:28,135 - INFO - Moved: Tasks_2025-06-15T13-10-10.md -> archive/unclassified/Tasks_2025-06-15T13-10-10.md
+2025-06-18 10:04:28,135 - INFO - Moved: focused_reorganization.py -> root_scripts/focused_reorganization.py
+2025-06-18 10:04:28,136 - INFO - Moved: cleanup_plan_20250618_063659.json -> archive/old_configs/cleanup_plan_20250618_063659.json
+2025-06-18 10:04:28,136 - INFO - Moved: code_quality_standardization_20250618_053129.log -> root_logs/code_quality_standardization_20250618_053129.log
+2025-06-18 10:04:28,136 - INFO - Moved: security_middleware_validation_report.json -> root_reports/security_middleware_validation_report.json
+2025-06-18 10:04:28,136 - INFO - Moved: documentation_restructuring_report_20250618_053509.json -> root_reports/documentation_restructuring_report_20250618_053509.json
+2025-06-18 10:04:28,136 - INFO - Moved: security_cleanup_report.json -> root_reports/security_cleanup_report.json
+2025-06-18 10:04:28,136 - INFO - Moved: ACGS-1_FINAL_VALIDATION_AND_PRODUCTION_DEPLOYMENT_PREP.md -> archive/unclassified/ACGS-1_FINAL_VALIDATION_AND_PRODUCTION_DEPLOYMENT_PREP.md
+2025-06-18 10:04:28,136 - INFO - Moved: acgs_health_report_20250617_215101.json -> root_reports/acgs_health_report_20250617_215101.json
+2025-06-18 10:04:28,136 - INFO - Moved: cleanup_validation_report_20250617_143432.json -> root_reports/cleanup_validation_report_20250617_143432.json
+2025-06-18 10:04:28,137 - INFO - Moved: set_service_env.sh -> root_scripts/set_service_env.sh
+2025-06-18 10:04:28,137 - INFO - Moved: post_cleanup_analysis_report_20250617_162049.json -> root_reports/post_cleanup_analysis_report_20250617_162049.json
+2025-06-18 10:04:28,137 - INFO - Moved: simple_performance_results.json -> root_reports/simple_performance_results.json
+2025-06-18 10:04:28,137 - INFO - Preserved: CONTRIBUTING.md
+2025-06-18 10:04:28,137 - INFO - Moved: ACGS-1_Phase_A2_Completion_Report.md -> archive/unclassified/ACGS-1_Phase_A2_Completion_Report.md
+2025-06-18 10:04:28,137 - INFO - Moved: update_cicd_pipelines.py -> root_scripts/update_cicd_pipelines.py
+2025-06-18 10:04:28,137 - INFO - Moved: comprehensive_cleanup_and_reorganization.py -> root_scripts/comprehensive_cleanup_and_reorganization.py
+2025-06-18 10:04:28,137 - INFO - Preserved: uv.lock
+2025-06-18 10:04:28,137 - INFO - Moved: SUBMODULE_REVIEW_ANALYSIS.md -> root_reports/SUBMODULE_REVIEW_ANALYSIS.md
+2025-06-18 10:04:28,137 - INFO - Moved: phase3_performance_optimization.log -> root_logs/phase3_performance_optimization.log
+2025-06-18 10:04:28,138 - INFO - Moved: phase3_deployment_log_staging_20250605_182756.json -> archive/old_configs/phase3_deployment_log_staging_20250605_182756.json
+2025-06-18 10:04:28,138 - INFO - Moved: EVOLUTIONARY_TENSOR_DECOMPOSITION_IMPLEMENTATION.md -> archive/unclassified/EVOLUTIONARY_TENSOR_DECOMPOSITION_IMPLEMENTATION.md
+2025-06-18 10:04:28,138 - INFO - Moved: enhanced_constitutional_analyzer_results.json -> root_reports/enhanced_constitutional_analyzer_results.json
+2025-06-18 10:04:28,138 - INFO - Moved: implement_governance_workflow_orchestration.py -> root_scripts/implement_governance_workflow_orchestration.py
+2025-06-18 10:04:28,138 - INFO - Moved: ACGS-1_MIGRATION_PROCESS_DOCUMENTATION.md -> archive/unclassified/ACGS-1_MIGRATION_PROCESS_DOCUMENTATION.md
+2025-06-18 10:04:28,138 - INFO - Moved: .env.audit -> archive/unclassified/.env.audit
+2025-06-18 10:04:28,138 - INFO - Preserved: pytest.ini
+2025-06-18 10:04:28,138 - INFO - Moved: requesty_api_integration.py -> root_scripts/requesty_api_integration.py
+2025-06-18 10:04:28,139 - INFO - Moved: final_cleanup_report_20250617_143337.json -> root_reports/final_cleanup_report_20250617_143337.json
+2025-06-18 10:04:28,139 - INFO - Moved: fix_test_imports.py -> root_scripts/fix_test_imports.py
+2025-06-18 10:04:28,139 - INFO - Moved: post_reorganization_validation_report.json -> root_reports/post_reorganization_validation_report.json
+2025-06-18 10:04:28,139 - INFO - Moved: .env.production -> archive/unclassified/.env.production
+2025-06-18 10:04:28,139 - INFO - Moved: production_config_setup.py -> root_scripts/production_config_setup.py
+2025-06-18 10:04:28,139 - INFO - Moved: security_fixes_summary.json -> root_reports/security_fixes_summary.json
+2025-06-18 10:04:28,139 - INFO - Moved: security_cleanup.py -> root_scripts/security_cleanup.py
+2025-06-18 10:04:28,139 - INFO - Moved: test_anthropic_upgrade.py -> root_scripts/test_anthropic_upgrade.py
+2025-06-18 10:04:28,139 - INFO - Moved: REPOSITORY_CLEANUP_REVIEW_ANALYSIS.md -> root_reports/REPOSITORY_CLEANUP_REVIEW_ANALYSIS.md
+2025-06-18 10:04:28,140 - INFO - Moved: update_monitoring_config.py -> root_scripts/update_monitoring_config.py
+2025-06-18 10:04:28,140 - INFO - Preserved: docker-compose-monitoring.yml
+2025-06-18 10:04:28,140 - INFO - Moved: execute_system_improvements.py -> root_scripts/execute_system_improvements.py
+2025-06-18 10:04:28,140 - INFO - Moved: REORGANIZATION_SUMMARY.md -> root_reports/REORGANIZATION_SUMMARY.md
+2025-06-18 10:04:28,140 - INFO - Moved: test_simple_model.py -> root_scripts/test_simple_model.py
+2025-06-18 10:04:28,140 - INFO - Moved: ENHANCEMENT_EXECUTION_GUIDE.md -> archive/unclassified/ENHANCEMENT_EXECUTION_GUIDE.md
+2025-06-18 10:04:28,140 - INFO - Moved: restructure_applications.py -> root_scripts/restructure_applications.py
+2025-06-18 10:04:28,140 - INFO - Moved: test_phase2_end_to_end_integration.py -> root_scripts/test_phase2_end_to_end_integration.py
+2025-06-18 10:04:28,140 - INFO - Moved: security_audit_bandit.json -> root_reports/security_audit_bandit.json
+2025-06-18 10:04:28,141 - INFO - Moved: simple_infrastructure_validation.sh -> root_scripts/simple_infrastructure_validation.sh
+2025-06-18 10:04:28,141 - INFO - Moved: .roomodes -> archive/unclassified/.roomodes
+2025-06-18 10:04:28,141 - INFO - Moved: configuration_consolidation_report_20250618_053324.json -> root_reports/configuration_consolidation_report_20250618_053324.json
+2025-06-18 10:04:28,141 - INFO - Moved: cron_jobs.txt -> archive/unclassified/cron_jobs.txt
+2025-06-18 10:04:28,141 - INFO - Deleted: __pycache__
+2025-06-18 10:04:28,142 - INFO - Moved: update_contributor_docs.py -> root_scripts/update_contributor_docs.py
+2025-06-18 10:04:28,142 - INFO - Moved: phase2_test_infrastructure.log -> root_logs/phase2_test_infrastructure.log
+2025-06-18 10:04:28,142 - INFO - Moved: acgs_enhancement_execution.log -> root_logs/acgs_enhancement_execution.log
+2025-06-18 10:04:28,142 - INFO - Moved: penetration_test_results.json -> root_reports/penetration_test_results.json
+2025-06-18 10:04:28,142 - INFO - Moved: acgs_health_report_20250618_055549.json -> root_reports/acgs_health_report_20250618_055549.json
+2025-06-18 10:04:28,142 - INFO - Moved: acgs_reorganization_20250618_052438.log -> root_logs/acgs_reorganization_20250618_052438.log
+2025-06-18 10:04:28,142 - INFO - Moved: test_mimesis_upgrade.py -> root_scripts/test_mimesis_upgrade.py
+2025-06-18 10:04:28,142 - INFO - Moved: phase3_deployment_health_check.log -> root_logs/phase3_deployment_health_check.log
+2025-06-18 10:04:28,142 - INFO - Moved: dependency_cleanup.py -> root_scripts/dependency_cleanup.py
+2025-06-18 10:04:28,143 - INFO - Moved: analyze_root_directory_structure.py -> root_scripts/analyze_root_directory_structure.py
+2025-06-18 10:04:28,143 - INFO - Moved: TOOLCHAIN_REMEDIATION_PLAN.md -> archive/unclassified/TOOLCHAIN_REMEDIATION_PLAN.md
+2025-06-18 10:04:28,143 - INFO - Moved: security_hardening_results.json -> root_reports/security_hardening_results.json
+2025-06-18 10:04:28,143 - INFO - Moved: verify_review_environment.py -> root_scripts/verify_review_environment.py
+2025-06-18 10:04:28,143 - INFO - Moved: requesty_example.py -> root_scripts/requesty_example.py
+2025-06-18 10:04:28,143 - INFO - Moved: fix_anchor_imports.py -> root_scripts/fix_anchor_imports.py
+2025-06-18 10:04:28,143 - INFO - Moved: post_cleanup_comprehensive_analysis.py -> root_scripts/post_cleanup_comprehensive_analysis.py
+2025-06-18 10:04:28,144 - INFO - Moved: deploy_phase2_services.py -> root_scripts/deploy_phase2_services.py
+2025-06-18 10:04:28,144 - INFO - Moved: compliance_assessment_results.json -> root_reports/compliance_assessment_results.json
+2025-06-18 10:04:28,144 - INFO - Moved: test_phase2_wina_integration.py -> root_scripts/test_phase2_wina_integration.py
+2025-06-18 10:04:28,144 - INFO - Moved: test_restructured_applications.py -> root_scripts/test_restructured_applications.py
+2025-06-18 10:04:28,144 - INFO - Moved: monitoring_report.json -> root_reports/monitoring_report.json
+2025-06-18 10:04:28,144 - INFO - Moved: post_cleanup_validation.py -> root_scripts/post_cleanup_validation.py
+2025-06-18 10:04:28,144 - INFO - Moved: governance_workflows_validation.json -> root_reports/governance_workflows_validation.json
+2025-06-18 10:04:28,144 - INFO - Preserved: pyproject.toml
+2025-06-18 10:04:28,145 - INFO - Moved: ENVIRONMENT_SETUP_UPDATES.md -> archive/unclassified/ENVIRONMENT_SETUP_UPDATES.md
+2025-06-18 10:04:28,145 - INFO - Moved: policy_synthesis_performance_results.json -> root_reports/policy_synthesis_performance_results.json
+2025-06-18 10:04:28,145 - INFO - Moved: COMPREHENSIVE_CLEANUP_COMPLETION_REPORT.md -> root_reports/COMPREHENSIVE_CLEANUP_COMPLETION_REPORT.md
+2025-06-18 10:04:28,145 - INFO - Moved: validate_cleanup_completion.py -> root_scripts/validate_cleanup_completion.py
+2025-06-18 10:04:28,145 - INFO - Moved: POST_REORGANIZATION_COMPLETION_REPORT.md -> root_reports/POST_REORGANIZATION_COMPLETION_REPORT.md
+2025-06-18 10:04:28,145 - INFO - Moved: check_service_health.py -> root_scripts/check_service_health.py
+2025-06-18 10:04:28,145 - INFO - Moved: fix_constitutional_compliance_auth.py -> root_scripts/fix_constitutional_compliance_auth.py
+2025-06-18 10:04:28,145 - INFO - Moved: testing_optimization_20250618_054032.log -> root_logs/testing_optimization_20250618_054032.log
+2025-06-18 10:04:28,146 - INFO - Moved: ACGS_PHASE_A_INFRASTRUCTURE_SECURITY_PLAN.md -> archive/unclassified/ACGS_PHASE_A_INFRASTRUCTURE_SECURITY_PLAN.md
+2025-06-18 10:04:28,146 - INFO - Skipped directory: .cursor
+2025-06-18 10:04:28,146 - INFO - Moved: constitutional_compliance_auth_config.json -> archive/old_configs/constitutional_compliance_auth_config.json
+2025-06-18 10:04:28,146 - INFO - Moved: reorganization_validation_report.json -> root_reports/reorganization_validation_report.json
+2025-06-18 10:04:28,146 - INFO - Moved: Tasks_2025-06-18T10-51-15.md -> archive/unclassified/Tasks_2025-06-18T10-51-15.md
+2025-06-18 10:04:28,146 - INFO - Moved: execute_alphaevolve_next_phase.py -> root_scripts/execute_alphaevolve_next_phase.py
+2025-06-18 10:04:28,146 - INFO - Moved: ACGS_ENHANCEMENT_IMPLEMENTATION_PLAN.md -> archive/unclassified/ACGS_ENHANCEMENT_IMPLEMENTATION_PLAN.md
+2025-06-18 10:04:28,146 - INFO - Moved: cleanup_execution_report_20250617_143246.json -> root_reports/cleanup_execution_report_20250617_143246.json
+2025-06-18 10:04:28,146 - INFO - Preserved: tsconfig.json
+2025-06-18 10:04:28,146 - INFO - Moved: root_cleanup_20250618_100428.log -> root_logs/root_cleanup_20250618_100428.log
+2025-06-18 10:04:28,147 - INFO - Moved: complete_reorganization.py -> root_scripts/complete_reorganization.py
+2025-06-18 10:04:28,147 - INFO - Preserved: requirements.txt
+2025-06-18 10:04:28,147 - INFO - Moved: validate_qec_error_correction.py -> root_scripts/validate_qec_error_correction.py
+2025-06-18 10:04:28,147 - INFO - Moved: acgs_health_report_20250617_094021.json -> root_reports/acgs_health_report_20250617_094021.json
+2025-06-18 10:04:28,147 - INFO - Moved: execute_critical_action_items.py -> root_scripts/execute_critical_action_items.py
+2025-06-18 10:04:28,147 - INFO - Moved: test_enhanced_multi_model_integration.py -> root_scripts/test_enhanced_multi_model_integration.py
+2025-06-18 10:04:28,147 - INFO - Moved: Tasks_2025-06-15T19-29-59.md -> archive/unclassified/Tasks_2025-06-15T19-29-59.md
+2025-06-18 10:04:28,147 - INFO - Moved: end_to_end_workflow_test_results_1749962754.json -> root_reports/end_to_end_workflow_test_results_1749962754.json
+2025-06-18 10:04:28,147 - INFO - Moved: post_cleanup_analysis.py -> root_scripts/post_cleanup_analysis.py
+2025-06-18 10:04:28,148 - INFO - Moved: system_deployment_production_readiness_results.json -> root_reports/system_deployment_production_readiness_results.json
+2025-06-18 10:04:28,148 - INFO - Moved: security_bandit_report.json -> root_reports/security_bandit_report.json
+2025-06-18 10:04:28,148 - INFO - Moved: cryptographic_upgrade.log -> root_logs/cryptographic_upgrade.log
+2025-06-18 10:04:28,148 - INFO - Moved: enhanced_constitutional_analyzer_fixes_summary.md -> archive/unclassified/enhanced_constitutional_analyzer_fixes_summary.md
+2025-06-18 10:04:28,148 - INFO - Moved: .env.example -> archive/unclassified/.env.example
+2025-06-18 10:04:28,148 - INFO - Moved: final_validation_report_20250618_055151.json -> root_reports/final_validation_report_20250618_055151.json
+2025-06-18 10:04:28,148 - INFO - Moved: CRITICAL_ACTION_ITEMS_IMPLEMENTATION.md -> archive/unclassified/CRITICAL_ACTION_ITEMS_IMPLEMENTATION.md
+2025-06-18 10:04:28,148 - INFO - Moved: code_quality_cleanup.py -> root_scripts/code_quality_cleanup.py
+2025-06-18 10:04:28,148 - INFO - Moved: security_fixes_report.json -> root_reports/security_fixes_report.json
+2025-06-18 10:04:28,149 - INFO - Moved: comprehensive_cleanup_execution.log -> root_logs/comprehensive_cleanup_execution.log
+2025-06-18 10:04:28,149 - INFO - Moved: restart_all_services.py -> root_scripts/restart_all_services.py
+2025-06-18 10:04:28,149 - INFO - Moved: post_merge_validation.py -> root_scripts/post_merge_validation.py
+2025-06-18 10:04:28,149 - INFO - Moved: refactoring_demo.py -> root_scripts/refactoring_demo.py
+2025-06-18 10:04:28,149 - INFO - Moved: vulnerability_scanner.log -> root_logs/vulnerability_scanner.log
+2025-06-18 10:04:28,149 - INFO - Moved: cryptographic_upgrade_report.json -> root_reports/cryptographic_upgrade_report.json
+2025-06-18 10:04:28,149 - INFO - Moved: security_scan_results.json -> root_reports/security_scan_results.json
+2025-06-18 10:04:28,149 - INFO - Moved: dependency_audit_summary.md -> archive/unclassified/dependency_audit_summary.md
+2025-06-18 10:04:28,150 - INFO - Moved: cleanup_root_directory.py -> root_scripts/cleanup_root_directory.py
+2025-06-18 10:04:28,150 - INFO - Moved: comprehensive_functionality_validation.py -> root_scripts/comprehensive_functionality_validation.py
+2025-06-18 10:04:28,150 - INFO - Moved: comprehensive_test_runner.py -> root_scripts/comprehensive_test_runner.py
+2025-06-18 10:04:28,150 - INFO - Moved: database_performance_analysis.json -> root_reports/database_performance_analysis.json
+2025-06-18 10:04:28,150 - INFO - Moved: temp_project_plan.prd -> archive/unclassified/temp_project_plan.prd
+2025-06-18 10:04:28,150 - INFO - Moved: README_DGM.md -> archive/unclassified/README_DGM.md
+2025-06-18 10:04:28,151 - INFO - Moved: emergency_rollback.py -> root_scripts/emergency_rollback.py
+2025-06-18 10:04:28,151 - INFO - Moved: compliance_standards_report.md -> root_reports/compliance_standards_report.md
+2025-06-18 10:04:28,151 - INFO - Moved: .gitmodules -> archive/unclassified/.gitmodules
+2025-06-18 10:04:28,151 - INFO - Moved: security_audit_report_20250617_193458.json -> root_reports/security_audit_report_20250617_193458.json
+2025-06-18 10:04:28,152 - INFO - Moved: security_verification_report.md -> root_reports/security_verification_report.md
+2025-06-18 10:04:28,152 - INFO - Moved: quick_workflow_validation.py -> root_scripts/quick_workflow_validation.py
+2025-06-18 10:04:28,152 - INFO - Moved: dependency_audit_report.json -> root_reports/dependency_audit_report.json
+2025-06-18 10:04:28,152 - INFO - Moved: Tasks_2025-06-15T19-19-35.md -> archive/unclassified/Tasks_2025-06-15T19-19-35.md
+2025-06-18 10:04:28,153 - INFO - Moved: security_vulnerability_remediation_report.md -> root_reports/security_vulnerability_remediation_report.md
+2025-06-18 10:04:28,153 - INFO - Preserved: docker-compose-test.yml
+2025-06-18 10:04:28,153 - INFO - Moved: simple_research_service.py -> root_scripts/simple_research_service.py
+2025-06-18 10:04:28,153 - INFO - Moved: service_stabilization_plan.py -> root_scripts/service_stabilization_plan.py
+2025-06-18 10:04:28,153 - INFO - Moved: reorganize_codebase.py -> root_scripts/reorganize_codebase.py
+2025-06-18 10:04:28,153 - INFO - Moved: test_simple.py -> root_scripts/test_simple.py
+2025-06-18 10:04:28,153 - INFO - Moved: comprehensive_security_analysis.json -> root_reports/comprehensive_security_analysis.json
+2025-06-18 10:04:28,154 - INFO - Preserved: requirements-test.txt
+2025-06-18 10:04:28,154 - INFO - Moved: comprehensive_cicd_pipeline_analysis.py -> root_scripts/comprehensive_cicd_pipeline_analysis.py
+2025-06-18 10:04:28,154 - INFO - Moved: fix_gs_service_dependencies.py -> root_scripts/fix_gs_service_dependencies.py
+2025-06-18 10:04:28,154 - INFO - Moved: test_basic_functionality.py -> root_scripts/test_basic_functionality.py
+2025-06-18 10:04:28,154 - INFO - Moved: QUANTUMAGI_DEPLOYMENT_STATUS.md -> archive/unclassified/QUANTUMAGI_DEPLOYMENT_STATUS.md
+2025-06-18 10:04:28,154 - INFO - Moved: complete_end_to_end_workflows.py -> root_scripts/complete_end_to_end_workflows.py
+2025-06-18 10:04:28,155 - INFO - Moved: end_to_end_workflow_test_results_1750167747.json -> root_reports/end_to_end_workflow_test_results_1750167747.json
+2025-06-18 10:04:28,155 - INFO - Moved: ACGS-1_COMPREHENSIVE_IMPLEMENTATION_PLAN.md -> archive/unclassified/ACGS-1_COMPREHENSIVE_IMPLEMENTATION_PLAN.md
+2025-06-18 10:04:28,155 - INFO - Preserved: docker-compose.acgs.yml
+2025-06-18 10:04:28,155 - INFO - Moved: final_security_validation_report.md -> root_reports/final_security_validation_report.md
+2025-06-18 10:04:28,155 - INFO - Skipped directory: .roo
+2025-06-18 10:04:28,155 - INFO - Moved: advanced_performance_optimization_results.json -> root_reports/advanced_performance_optimization_results.json
+2025-06-18 10:04:28,155 - INFO - Moved: test_remediation_coordinator.py -> root_scripts/test_remediation_coordinator.py
+2025-06-18 10:04:28,156 - INFO - Moved: FV_GS_RESTORATION_COMMANDS.md -> archive/unclassified/FV_GS_RESTORATION_COMMANDS.md
+2025-06-18 10:04:28,156 - INFO - Moved: end_to_end_workflow_test_results_1749962726.json -> root_reports/end_to_end_workflow_test_results_1749962726.json
+2025-06-18 10:04:28,156 - INFO - Preserved: Dockerfile.acgs
+2025-06-18 10:04:28,156 - INFO - Moved: configuration_consolidation_20250618_053324.log -> root_logs/configuration_consolidation_20250618_053324.log
+2025-06-18 10:04:28,156 - INFO - Moved: CI_CD_PIPELINE_COMPLETION_SUMMARY.md -> root_reports/CI_CD_PIPELINE_COMPLETION_SUMMARY.md
+2025-06-18 10:04:28,157 - INFO - Moved: phase2_final_execution_report.py -> root_scripts/phase2_final_execution_report.py
+2025-06-18 10:04:28,157 - INFO - Skipped directory: venv
+2025-06-18 10:04:28,157 - INFO - Moved: .env -> archive/unclassified/.env
+2025-06-18 10:04:28,157 - INFO - Moved: debug_csrf.py -> root_scripts/debug_csrf.py
+2025-06-18 10:04:28,157 - INFO - Moved: grafana_dashboard.json -> archive/old_configs/grafana_dashboard.json
+2025-06-18 10:04:28,157 - INFO - Moved: service_stabilization_report.json -> root_reports/service_stabilization_report.json
+2025-06-18 10:04:28,158 - INFO - Moved: governance_workflow_enhancement_results.json -> root_reports/governance_workflow_enhancement_results.json
+2025-06-18 10:04:28,158 - INFO - Moved: acgs_health_report_20250617_214806.json -> root_reports/acgs_health_report_20250617_214806.json
+2025-06-18 10:04:28,158 - INFO - Moved: performance_optimization_results.json -> root_reports/performance_optimization_results.json
+2025-06-18 10:04:28,158 - INFO - Moved: priority1_service_restoration.py -> root_scripts/priority1_service_restoration.py
+2025-06-18 10:04:28,158 - INFO - Moved: security_scan_dgm.json -> archive/old_configs/security_scan_dgm.json
+2025-06-18 10:04:28,159 - INFO - Moved: comprehensive_test_report.json -> root_reports/comprehensive_test_report.json
+2025-06-18 10:04:28,159 - INFO - Moved: comprehensive_integration_test_runner.py -> root_scripts/comprehensive_integration_test_runner.py
+2025-06-18 10:04:28,159 - INFO - Moved: comprehensive_system_health_check.py -> root_scripts/comprehensive_system_health_check.py
+2025-06-18 10:04:28,159 - INFO - Moved: service_mesh_health_check.py -> root_scripts/service_mesh_health_check.py
+2025-06-18 10:04:28,159 - INFO - Moved: enhance_acgs_pgp.sh -> root_scripts/enhance_acgs_pgp.sh
+2025-06-18 10:04:28,160 - INFO - Moved: COMPREHENSIVE_POST_CLEANUP_ANALYSIS_REPORT.md -> root_reports/COMPREHENSIVE_POST_CLEANUP_ANALYSIS_REPORT.md
+2025-06-18 10:04:28,160 - INFO - Moved: applications_validation_report.md -> root_reports/applications_validation_report.md
+2025-06-18 10:04:28,160 - INFO - Moved: constitutional_compliance_enhancement_1749381070.json -> archive/old_configs/constitutional_compliance_enhancement_1749381070.json
+2025-06-18 10:04:28,160 - INFO - Moved: enhance_constitutional_compliance.py -> root_scripts/enhance_constitutional_compliance.py
+2025-06-18 10:04:28,161 - INFO - Moved: validate_enhanced_constitutional_analyzer_integration.py -> root_scripts/validate_enhanced_constitutional_analyzer_integration.py
+2025-06-18 10:04:28,161 - INFO - Moved: DEPLOYMENT_GUIDE.md -> archive/unclassified/DEPLOYMENT_GUIDE.md
+2025-06-18 10:04:28,161 - INFO - Moved: phase2_execution_plan.py -> root_scripts/phase2_execution_plan.py
+2025-06-18 10:04:28,161 - INFO - Moved: security_audit_safety.json -> root_reports/security_audit_safety.json
+2025-06-18 10:04:28,161 - INFO - Moved: quick_service_fix.py -> root_scripts/quick_service_fix.py
+2025-06-18 10:04:28,162 - INFO - Moved: acgs_security_audit_20250610_021621.json -> root_reports/acgs_security_audit_20250610_021621.json
+2025-06-18 10:04:28,162 - INFO - Moved: validate_quantumagi_integration.py -> root_scripts/validate_quantumagi_integration.py
+2025-06-18 10:04:28,162 - INFO - Preserved: conftest.py
+2025-06-18 10:04:28,162 - INFO - Moved: acgs_cleanup.log -> root_logs/acgs_cleanup.log
+2025-06-18 10:04:28,162 - INFO - Moved: apply_security_hardening.py -> root_scripts/apply_security_hardening.py
+2025-06-18 10:04:28,162 - INFO - Preserved: .github
+2025-06-18 10:04:28,162 - INFO - Moved: run_formal_verification_red_team.py -> root_scripts/run_formal_verification_red_team.py
+2025-06-18 10:04:28,163 - INFO - Moved: acgs_health_report_20250617_054142.json -> root_reports/acgs_health_report_20250617_054142.json
+2025-06-18 10:04:28,163 - INFO - Moved: COMMUNITY_PROGRAM_LAUNCH_PLAN.md -> archive/unclassified/COMMUNITY_PROGRAM_LAUNCH_PLAN.md
+2025-06-18 10:04:28,163 - INFO - Moved: phase4_community_adoption.log -> root_logs/phase4_community_adoption.log
+2025-06-18 10:04:28,163 - INFO - Preserved: Cargo.toml
+2025-06-18 10:04:28,163 - INFO - Moved: docker_infrastructure_validation.sh -> root_scripts/docker_infrastructure_validation.sh
+2025-06-18 10:04:28,163 - INFO - Preserved: jest.config.js
+2025-06-18 10:04:28,163 - INFO - Moved: dependency_management_resolution.py -> root_scripts/dependency_management_resolution.py
+2025-06-18 10:04:28,164 - INFO - Moved: simple_async_test_results.json -> root_reports/simple_async_test_results.json
+2025-06-18 10:04:28,164 - INFO - Moved: ORGANIZE.md -> archive/unclassified/ORGANIZE.md
+2025-06-18 10:04:28,164 - INFO - Moved: code_quality_standardization.py -> root_scripts/code_quality_standardization.py
+2025-06-18 10:04:28,164 - INFO - Moved: bandit_security_report.json -> root_reports/bandit_security_report.json
+2025-06-18 10:04:28,164 - INFO - Moved: restart_gs_service.sh -> root_scripts/restart_gs_service.sh
+2025-06-18 10:04:28,165 - INFO - Moved: .coveragerc -> archive/unclassified/.coveragerc
+2025-06-18 10:04:28,165 - INFO - Moved: dependency_audit_post_remediation.json -> root_reports/dependency_audit_post_remediation.json
+2025-06-18 10:04:28,165 - INFO - Moved: integration_testing_validation_results.json -> root_reports/integration_testing_validation_results.json
+2025-06-18 10:04:28,165 - INFO - Moved: ENHANCED_CONSTITUTIONAL_ANALYZER_DEPLOYMENT_GUIDE.md -> archive/unclassified/ENHANCED_CONSTITUTIONAL_ANALYZER_DEPLOYMENT_GUIDE.md
+2025-06-18 10:04:28,165 - INFO - Moved: PRIORITY3_COMPLETION_REPORT.md -> root_reports/PRIORITY3_COMPLETION_REPORT.md
+2025-06-18 10:04:28,165 - INFO - Moved: CLAUDE.md -> archive/unclassified/CLAUDE.md
+2025-06-18 10:04:28,166 - INFO - Moved: final_validation_20250618_054345.log -> root_logs/final_validation_20250618_054345.log
+2025-06-18 10:04:28,166 - INFO - Preserved: docker-compose.ocr.yml
+2025-06-18 10:04:28,166 - INFO - Moved: direct_gs_service_fix.py -> root_scripts/direct_gs_service_fix.py
+2025-06-18 10:04:28,166 - INFO - Moved: DOCKER_CLEANUP_RESULTS.md -> archive/unclassified/DOCKER_CLEANUP_RESULTS.md
+2025-06-18 10:04:28,166 - INFO - Moved: ENTERPRISE_CICD_WORKFLOW_ENHANCEMENTS.md -> archive/unclassified/ENTERPRISE_CICD_WORKFLOW_ENHANCEMENTS.md
+2025-06-18 10:04:28,166 - INFO - Moved: security_verification_results.json -> root_reports/security_verification_results.json
+2025-06-18 10:04:28,166 - INFO - Moved: configuration_audit_and_consolidation.py -> root_scripts/configuration_audit_and_consolidation.py
+2025-06-18 10:04:28,167 - INFO - Moved: copilot-mcp-config.json -> archive/old_configs/copilot-mcp-config.json
+2025-06-18 10:04:28,167 - INFO - Skipped directory: .pytest_cache
+2025-06-18 10:04:28,167 - INFO - Moved: testing_optimization_report_20250618_054234.json -> root_reports/testing_optimization_report_20250618_054234.json
+2025-06-18 10:04:28,167 - INFO - Moved: system_improvements_execution_results.json -> root_reports/system_improvements_execution_results.json
+2025-06-18 10:04:28,167 - INFO - Moved: audit_logging_deployment.log -> root_logs/audit_logging_deployment.log
+2025-06-18 10:04:28,167 - INFO - Moved: security_middleware_deployment.log -> root_logs/security_middleware_deployment.log
+2025-06-18 10:04:28,167 - INFO - Preserved: package-lock.json
+2025-06-18 10:04:28,167 - INFO - Preserved: .gitleaks.toml
+2025-06-18 10:04:28,168 - INFO - Moved: chat_history.txt -> archive/unclassified/chat_history.txt
+2025-06-18 10:04:28,168 - INFO - Moved: PHASE_1_CRITICAL_ISSUES_FINAL_REPORT.md -> root_reports/PHASE_1_CRITICAL_ISSUES_FINAL_REPORT.md
+2025-06-18 10:04:28,168 - INFO - Moved: bandit_report.json -> root_reports/bandit_report.json
+2025-06-18 10:04:28,168 - INFO - Moved: acgs_health_report_20250618_061257.json -> root_reports/acgs_health_report_20250618_061257.json
+2025-06-18 10:04:28,168 - INFO - Moved: dgm_demo.py -> root_scripts/dgm_demo.py
+2025-06-18 10:04:28,168 - INFO - Preserved: docker-compose.staging.yml
+2025-06-18 10:04:28,168 - INFO - Moved: dgm_best_swe_agent.py -> root_scripts/dgm_best_swe_agent.py
+2025-06-18 10:04:28,169 - INFO - Moved: priority2_service_integration.py -> root_scripts/priority2_service_integration.py
+2025-06-18 10:04:28,169 - INFO - Preserved: README.md
+2025-06-18 10:04:28,169 - INFO - Moved: formal_verification_red_team_results.json -> root_reports/formal_verification_red_team_results.json
+2025-06-18 10:04:28,169 - INFO - Moved: execute_comprehensive_cleanup.py -> root_scripts/execute_comprehensive_cleanup.py
+2025-06-18 10:04:28,169 - INFO - Moved: phase1_security_audit.log -> root_logs/phase1_security_audit.log
+2025-06-18 10:04:28,169 - INFO - Moved: policy_synthesis_deployment_demo_results.json -> root_reports/policy_synthesis_deployment_demo_results.json
+2025-06-18 10:04:28,169 - INFO - Moved: COMPREHENSIVE_CLEANUP_COMPLETION_REPORT_UPDATED.md -> root_reports/COMPREHENSIVE_CLEANUP_COMPLETION_REPORT_UPDATED.md
+2025-06-18 10:04:28,170 - INFO - Moved: final_service_structure_fix.py -> root_scripts/final_service_structure_fix.py
+2025-06-18 10:04:28,170 - INFO - Moved: debug_service_startup.py -> root_scripts/debug_service_startup.py
+2025-06-18 10:04:28,170 - INFO - Moved: comprehensive_codebase_cleanup.py -> root_scripts/comprehensive_codebase_cleanup.py
+2025-06-18 10:04:28,170 - INFO - Moved: final_duplicate_cleanup.py -> root_scripts/final_duplicate_cleanup.py
+2025-06-18 10:04:28,170 - INFO - Moved: pip_audit_report.json -> root_reports/pip_audit_report.json
+2025-06-18 10:04:28,171 - INFO - Moved: multi_model_consensus_optimization_results.json -> root_reports/multi_model_consensus_optimization_results.json
+2025-06-18 10:04:28,171 - INFO - Moved: README.docker.md -> archive/unclassified/README.docker.md
+2025-06-18 10:04:28,171 - INFO - Moved: updated_bandit_scan.json -> archive/old_configs/updated_bandit_scan.json
+2025-06-18 10:04:28,171 - INFO - Moved: formal_verification_enhancement_results.json -> root_reports/formal_verification_enhancement_results.json
+2025-06-18 10:04:28,171 - INFO - Preserved: docker-compose.prod.yml
+2025-06-18 10:04:28,171 - INFO - Preserved: SECURITY.md
+2025-06-18 10:04:28,171 - INFO - Moved: validate_phase1_enhanced_synthesis.py -> root_scripts/validate_phase1_enhanced_synthesis.py
+2025-06-18 10:04:28,171 - INFO - Moved: .env.staging -> archive/unclassified/.env.staging
+2025-06-18 10:04:28,172 - INFO - Moved: code_quality_report_20250618_053205.json -> root_reports/code_quality_report_20250618_053205.json
+2025-06-18 10:04:28,172 - INFO - Moved: .dockerignore -> archive/unclassified/.dockerignore
+2025-06-18 10:04:28,172 - INFO - Moved: npm_audit_report.json -> root_reports/npm_audit_report.json
+2025-06-18 10:04:28,172 - INFO - Moved: .gitignore -> archive/unclassified/.gitignore
+2025-06-18 10:04:28,172 - INFO - Moved: .bandit -> archive/unclassified/.bandit
+2025-06-18 10:04:28,172 - INFO - Moved: bandit_security_scan.json -> archive/old_configs/bandit_security_scan.json
+2025-06-18 10:04:28,173 - INFO - Moved: service_registry_config.json -> archive/old_configs/service_registry_config.json
+2025-06-18 10:04:28,173 - INFO - Moved: system_deployment_production_readiness.py -> root_scripts/system_deployment_production_readiness.py
+2025-06-18 10:04:28,173 - INFO - Moved: cargo_audit_report.json -> root_reports/cargo_audit_report.json
+2025-06-18 10:04:28,175 - INFO - Cleanup report saved to: root_cleanup_report_20250618_100428.json

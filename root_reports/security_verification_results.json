@@ -1,0 +1,1030 @@
+{
+  "status": "success",
+  "vulnerabilities_found": [],
+  "security_improvements": [
+    {
+      "type": "secure_bind",
+      "line": 1274,
+      "code": "127.0.0.1"
+    },
+    {
+      "type": "proper_logging",
+      "line": 83,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 85,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 105,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 122,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 124,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 129,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 132,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 185,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 187,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 221,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 223,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 259,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 335,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 741,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 777,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 857,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 871,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 921,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 992,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1052,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1092,
+      "code": "logger.error"
+    },
+    {
+      "type": "json_usage",
+      "line": 60,
+      "code": "import JSON"
+    },
+    {
+      "type": "sha256_usage",
+      "line": 242,
+      "code": "hashlib.sha256("
+    },
+    {
+      "type": "sha256_usage",
+      "line": 767,
+      "code": "hashlib.sha256("
+    },
+    {
+      "type": "proper_logging",
+      "line": 506,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 508,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 538,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 563,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 628,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 657,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 681,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 710,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 733,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 756,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 795,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 816,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 899,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 911,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 916,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 923,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 959,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 964,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 973,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 990,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1007,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1024,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1041,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1058,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1075,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1142,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1268,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1309,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1319,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1331,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1339,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1345,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1356,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1366,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1370,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1376,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1391,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1394,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1399,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1406,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1412,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1455,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1515,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1527,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1555,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1563,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1617,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1628,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1654,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1661,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1696,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1721,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1733,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1750,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1758,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1766,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1780,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1797,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1834,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1848,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1911,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1944,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1958,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1964,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1980,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 1988,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2007,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2033,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2045,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2055,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2068,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2082,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2084,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2120,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2135,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2141,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2208,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2227,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2248,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2327,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2497,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2541,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2543,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2726,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2938,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2946,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 2948,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3059,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3127,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3268,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3284,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3321,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3329,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3345,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3458,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3465,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3545,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3550,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3556,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3569,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3578,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3583,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3595,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3661,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3665,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3690,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3695,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3702,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3709,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3751,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3775,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3785,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3794,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3802,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3816,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3841,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3850,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3853,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3870,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3898,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3911,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3922,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3951,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 3957,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 4075,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 4109,
+      "code": "logger.info"
+    },
+    {
+      "type": "json_usage",
+      "line": 12,
+      "code": "import json"
+    },
+    {
+      "type": "sha256_usage",
+      "line": 519,
+      "code": "hashlib.sha256("
+    },
+    {
+      "type": "sha256_usage",
+      "line": 1426,
+      "code": "hashlib.sha256("
+    },
+    {
+      "type": "sha256_usage",
+      "line": 3296,
+      "code": "hashlib.sha256("
+    },
+    {
+      "type": "getpass_usage",
+      "line": 1433,
+      "code": "getpass.getpass("
+    },
+    {
+      "type": "proper_logging",
+      "line": 44,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 144,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 150,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 223,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 300,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 303,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 316,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 318,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 338,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 340,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 355,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 358,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 373,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 423,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 435,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 457,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 665,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 667,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 673,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 679,
+      "code": "logger.info"
+    },
+    {
+      "type": "json_usage",
+      "line": 13,
+      "code": "import json"
+    },
+    {
+      "type": "sha256_usage",
+      "line": 162,
+      "code": "hashlib.sha256("
+    },
+    {
+      "type": "proper_logging",
+      "line": 227,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 247,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 332,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 358,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 372,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 385,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 392,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 419,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 424,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 436,
+      "code": "logger.warning"
+    },
+    {
+      "type": "proper_logging",
+      "line": 442,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 456,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 460,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 462,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 512,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 629,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 639,
+      "code": "logger.info"
+    },
+    {
+      "type": "proper_logging",
+      "line": 652,
+      "code": "logger.error"
+    },
+    {
+      "type": "proper_logging",
+      "line": 654,
+      "code": "logger.info"
+    },
+    {
+      "type": "json_usage",
+      "line": 12,
+      "code": "import json"
+    },
+    {
+      "type": "json_usage",
+      "line": 14,
+      "code": "import json"
+    },
+    {
+      "type": "sha256_usage",
+      "line": 87,
+      "code": "hashlib.sha256("
+    },
+    {
+      "type": "sha256_usage",
+      "line": 302,
+      "code": "hashlib.sha256("
+    },
+    {
+      "type": "security_config",
+      "description": "Security configuration framework created"
+    },
+    {
+      "type": "security_middleware",
+      "description": "Security middleware implemented"
+    },
+    {
+      "type": "security_requirements",
+      "description": "Security-focused requirements created"
+    },
+    {
+      "type": "elk_security_monitoring",
+      "description": "ELK security monitoring stack configured"
+    }
+  ],
+  "files_verified": 4,
+  "total_issues": 0,
+  "resolved_issues": 201
+}

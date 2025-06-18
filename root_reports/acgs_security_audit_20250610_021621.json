@@ -1,0 +1,196 @@
+{
+  "audit_timestamp": "2025-06-10T02:16:21.356098",
+  "security_score": 0,
+  "total_tests": 29,
+  "total_issues": 45,
+  "security_grade": "F",
+  "audit_results": {
+    "authentication": {
+      "status": "completed",
+      "tests": {
+        "invalid_jwt_rejection": false,
+        "missing_auth_rejection": false,
+        "invalid_login_rejection": false
+      },
+      "issues": 3
+    },
+    "authorization": {
+      "status": "completed",
+      "tests": {
+        "ac_protection": false,
+        "integrity_protection": false,
+        "fv_protection": false
+      },
+      "issues": 3
+    },
+    "cryptographic_integrity": {
+      "status": "completed",
+      "tests": {
+        "pgp_assurance_available": false,
+        "crypto_operations_available": false
+      },
+      "issues": 2
+    },
+    "input_validation": {
+      "status": "completed",
+      "tests": {
+        "placeholder": true
+      },
+      "issues": 0
+    },
+    "security_headers": {
+      "status": "completed",
+      "tests": {
+        "auth": {
+          "Content-Security-Policy": true,
+          "X-Content-Type-Options": true,
+          "X-Frame-Options": true,
+          "Strict-Transport-Security": true,
+          "Referrer-Policy": true
+        },
+        "ac": {
+          "Content-Security-Policy": false,
+          "X-Content-Type-Options": false,
+          "X-Frame-Options": false,
+          "Strict-Transport-Security": false,
+          "Referrer-Policy": false
+        },
+        "integrity": {
+          "Content-Security-Policy": false,
+          "X-Content-Type-Options": false,
+          "X-Frame-Options": false,
+          "Strict-Transport-Security": false,
+          "Referrer-Policy": false
+        },
+        "fv": {
+          "Content-Security-Policy": false,
+          "X-Content-Type-Options": false,
+          "X-Frame-Options": false,
+          "Strict-Transport-Security": false,
+          "Referrer-Policy": false
+        },
+        "gs": {
+          "Content-Security-Policy": false,
+          "X-Content-Type-Options": false,
+          "X-Frame-Options": false,
+          "Strict-Transport-Security": false,
+          "Referrer-Policy": false
+        },
+        "pgc": {
+          "Content-Security-Policy": false,
+          "X-Content-Type-Options": false,
+          "X-Frame-Options": false,
+          "Strict-Transport-Security": false,
+          "Referrer-Policy": false
+        },
+        "ec": {
+          "Content-Security-Policy": false,
+          "X-Content-Type-Options": false,
+          "X-Frame-Options": false,
+          "Strict-Transport-Security": false,
+          "Referrer-Policy": false
+        },
+        "research_error": "Cannot connect to host localhost:8007 ssl:default [Connect call failed ('127.0.0.1', 8007)]"
+      },
+      "total_issues": 45
+    },
+    "rate_limiting": {
+      "status": "completed",
+      "tests": {
+        "auth_rate_limiting": false
+      },
+      "issues": 1
+    },
+    "cors_configuration": {
+      "status": "completed",
+      "tests": {
+        "auth_cors_restricted": true,
+        "ac_cors_wildcard": false,
+        "integrity_cors_wildcard": false,
+        "fv_cors_restricted": true,
+        "gs_cors_wildcard": false,
+        "pgc_cors_wildcard": false,
+        "ec_cors_wildcard": false,
+        "research_error": "Cannot connect to host localhost:8007 ssl:default [Connect call failed ('127.0.0.1', 8007)]"
+      },
+      "issues": 5
+    },
+    "session_management": {
+      "status": "completed",
+      "tests": {
+        "placeholder": true
+      },
+      "issues": 0
+    },
+    "error_handling": {
+      "status": "completed",
+      "tests": {
+        "placeholder": true
+      },
+      "issues": 0
+    },
+    "logging_security": {
+      "status": "completed",
+      "tests": {
+        "placeholder": true
+      },
+      "issues": 0
+    }
+  },
+  "security_issues": [
+    "PGP Assurance service unavailable",
+    "Invalid JWT tokens accepted",
+    "ac endpoint not protected",
+    "Cryptographic operations unavailable",
+    "Missing authorization not enforced",
+    "ac endpoint not protected",
+    "integrity endpoint not protected",
+    "fv endpoint not protected",
+    "ac allows wildcard CORS",
+    "integrity allows wildcard CORS",
+    "Invalid login credentials accepted",
+    "gs allows wildcard CORS",
+    "Missing Content-Security-Policy in ac",
+    "Missing X-Content-Type-Options in ac",
+    "Missing X-Frame-Options in ac",
+    "Missing Strict-Transport-Security in ac",
+    "Missing Referrer-Policy in ac",
+    "Missing Content-Security-Policy in integrity",
+    "Missing X-Content-Type-Options in integrity",
+    "Missing X-Frame-Options in integrity",
+    "Missing Strict-Transport-Security in integrity",
+    "Missing Referrer-Policy in integrity",
+    "pgc allows wildcard CORS",
+    "Missing Content-Security-Policy in fv",
+    "Missing X-Content-Type-Options in fv",
+    "Missing X-Frame-Options in fv",
+    "Missing Strict-Transport-Security in fv",
+    "Missing Referrer-Policy in fv",
+    "ec allows wildcard CORS",
+    "Missing Content-Security-Policy in gs",
+    "Missing X-Content-Type-Options in gs",
+    "Missing X-Frame-Options in gs",
+    "Missing Strict-Transport-Security in gs",
+    "Missing Referrer-Policy in gs",
+    "Authentication rate limiting not enforced",
+    "Missing Content-Security-Policy in pgc",
+    "Missing X-Content-Type-Options in pgc",
+    "Missing X-Frame-Options in pgc",
+    "Missing Strict-Transport-Security in pgc",
+    "Missing Referrer-Policy in pgc",
+    "Missing Content-Security-Policy in ec",
+    "Missing X-Content-Type-Options in ec",
+    "Missing X-Frame-Options in ec",
+    "Missing Strict-Transport-Security in ec",
+    "Missing Referrer-Policy in ec"
+  ],
+  "recommendations": [
+    "Address identified security issues immediately",
+    "Implement comprehensive penetration testing",
+    "Enable security monitoring and alerting",
+    "Regular security audits and vulnerability assessments",
+    "Implement Web Application Firewall (WAF)",
+    "Enable comprehensive audit logging",
+    "Implement intrusion detection system (IDS)"
+  ]
+}

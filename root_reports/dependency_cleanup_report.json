@@ -1,0 +1,50 @@
+{
+  "requirements_files_processed": [
+    "/home/dislove/ACGS-1/requirements-dgm.txt",
+    "/home/dislove/ACGS-1/tools/requirements.txt",
+    "/home/dislove/ACGS-1/integrations/alphaevolve-engine/alphaevolve_gs_engine/requirements.txt",
+    "/home/dislove/ACGS-1/integrations/quantumagi-bridge/gs_engine/requirements.txt",
+    "/home/dislove/ACGS-1/services/shared/requirements.txt",
+    "/home/dislove/ACGS-1/services/core/evolutionary-computation/requirements.txt",
+    "/home/dislove/ACGS-1/services/platform/authentication/auth_service/requirements.txt",
+    "/home/dislove/ACGS-1/services/research/federated-evaluation/federated_service/requirements.txt",
+    "/home/dislove/ACGS-1/tools/dgm-best-swe-agent/requirements_dev.txt",
+    "/home/dislove/ACGS-1/data/principle-policy-corpus/requirements.txt"
+  ],
+  "package_json_files_processed": [
+    "/home/dislove/ACGS-1/blockchain/package.json",
+    "/home/dislove/ACGS-1/mcp-servers/mcp-server-browserbase/stagehand/package.json",
+    "/home/dislove/ACGS-1/mcp-servers/mcp-server-browserbase/browserbase/package.json",
+    "/home/dislove/ACGS-1/blockchain/quantumagi-deployment/package.json",
+    "/home/dislove/ACGS-1/applications/governance-dashboard/package.json",
+    "/home/dislove/ACGS-1/applications/legacy-frontend/package.json",
+    "/home/dislove/ACGS-1/data/principle-policy-corpus/azure-policy/package.json",
+    "/home/dislove/ACGS-1/data/principle-policy-corpus/gatekeeper-library/website/package.json"
+  ],
+  "cargo_toml_files_processed": [
+    "/home/dislove/ACGS-1/blockchain/Cargo.toml",
+    "/home/dislove/ACGS-1/blockchain/programs/logging/Cargo.toml",
+    "/home/dislove/ACGS-1/blockchain/programs/quantumagi-core/Cargo.toml",
+    "/home/dislove/ACGS-1/blockchain/programs/appeals/Cargo.toml"
+  ],
+  "duplicates_removed": [
+    "/home/dislove/ACGS-1/requirements-requesty.txt",
+    "/home/dislove/ACGS-1/requirements-test.txt",
+    "/home/dislove/ACGS-1/services/core/formal-verification/fv_service/requirements.txt",
+    "/home/dislove/ACGS-1/services/core/formal-verification/fv_service/requirements_staging.txt",
+    "/home/dislove/ACGS-1/services/core/formal-verification/fv_service/requirements_simple.txt",
+    "/home/dislove/ACGS-1/services/core/policy-governance/pgc_service/requirements_staging.txt",
+    "/home/dislove/ACGS-1/services/core/policy-governance/pgc_service/requirements_simple.txt",
+    "/home/dislove/ACGS-1/services/core/policy-governance/pgc_service/requirements.txt",
+    "/home/dislove/ACGS-1/services/core/governance-synthesis/gs_service/requirements.txt",
+    "/home/dislove/ACGS-1/services/core/governance-synthesis/gs_service/requirements_staging.txt",
+    "/home/dislove/ACGS-1/services/core/governance-synthesis/gs_service/app/shared/requirements_monitoring.txt",
+    "/home/dislove/ACGS-1/services/core/constitutional-ai/ac_service/requirements.txt",
+    "/home/dislove/ACGS-1/services/platform/authentication/auth_service/requirements_simple.txt",
+    "/home/dislove/ACGS-1/services/platform/integrity/integrity_service/requirements.txt",
+    "/home/dislove/ACGS-1/services/research/research-platform/research_service/requirements.txt",
+    "/home/dislove/ACGS-1/tools/dgm-best-swe-agent/requirements.txt"
+  ],
+  "conflicts_resolved": [],
+  "errors": []
+}

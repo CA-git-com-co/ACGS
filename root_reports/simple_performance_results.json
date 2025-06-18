@@ -1,0 +1,85 @@
+{
+  "timestamp": 1750123333.718044,
+  "test_results": {
+    "redis": {
+      "available": true,
+      "ping_time_ms": 1.6369819641113281,
+      "set_time_ms": 1.0190010070800781,
+      "get_time_ms": 0.11229515075683594,
+      "value_correct": true
+    },
+    "Constitutional Validation": {
+      "success_rate": 0.0,
+      "avg_response_time_ms": 0.0,
+      "p95_response_time_ms": 0.0,
+      "total_requests": 100,
+      "successful_requests": 0,
+      "failed_requests": 100,
+      "error_count": 100,
+      "sample_errors": [
+        "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]",
+        "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]",
+        "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]"
+      ]
+    },
+    "Policy Validation": {
+      "success_rate": 0.0,
+      "avg_response_time_ms": 0.0,
+      "p95_response_time_ms": 0.0,
+      "total_requests": 75,
+      "successful_requests": 0,
+      "failed_requests": 75,
+      "error_count": 75,
+      "sample_errors": [
+        "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]",
+        "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]",
+        "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]"
+      ]
+    },
+    "Constitutional Council": {
+      "success_rate": 100.0,
+      "avg_response_time_ms": 18.54069232940674,
+      "p95_response_time_ms": 19.79081630706787,
+      "total_requests": 50,
+      "successful_requests": 50,
+      "failed_requests": 0,
+      "error_count": 0,
+      "sample_errors": []
+    },
+    "Voting Mechanisms": {
+      "success_rate": 100.0,
+      "avg_response_time_ms": 12.417001724243164,
+      "p95_response_time_ms": 13.516557216644287,
+      "total_requests": 50,
+      "successful_requests": 50,
+      "failed_requests": 0,
+      "error_count": 0,
+      "sample_errors": []
+    },
+    "PGC Health Check": {
+      "success_rate": 0.0,
+      "avg_response_time_ms": 0.0,
+      "p95_response_time_ms": 0.0,
+      "total_requests": 25,
+      "successful_requests": 0,
+      "failed_requests": 25,
+      "error_count": 25,
+      "sample_errors": [
+        "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]",
+        "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]",
+        "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]"
+      ]
+    }
+  },
+  "performance_summary": {
+    "grade": "F",
+    "score": 55,
+    "targets_met": false,
+    "avg_success_rate": 40.0,
+    "avg_p95_response_time": 6.661474704742432,
+    "issues": [
+      "Average success rate 40.0% < 99.5% target",
+      "Tests with <95% success rate: Constitutional Validation, Policy Validation, PGC Health Check"
+    ]
+  }
+}

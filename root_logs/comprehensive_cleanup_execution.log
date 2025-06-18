@@ -1,0 +1,3 @@
+2025-06-18 06:36:59,430 - INFO - Starting comprehensive cleanup and reorganization process...
+2025-06-18 06:36:59,430 - INFO - === Phase 1: Analysis ===
+2025-06-18 06:36:59,430 - INFO - Running command: /usr/bin/python3 comprehensive_cleanup_and_reorganization.py --output cleanup_plan_20250618_063659.json
