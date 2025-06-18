@@ -794,7 +794,7 @@ jobs:
           fetch-depth: 0  # Full history for comprehensive secret detection
 
       - name: Run TruffleHog for secret detection
-        uses: trufflesecurity/trufflehog@v3.63.2
+        uses: trufflesecurity/trufflehog@v3.89.2
         with:
           path: ./
           base: main
