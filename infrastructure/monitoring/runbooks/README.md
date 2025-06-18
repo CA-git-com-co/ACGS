@@ -24,6 +24,18 @@ This directory contains comprehensive runbooks for responding to alerts in the A
 - **Infrastructure Issues**: Infrastructure team
 - **Governance Workflow Issues**: Governance team
 
+## Core Operational Runbooks
+
+### 🚨 Critical Incident Response
+- **[Service Down Runbook](service_down_runbook.md)** - Complete service outage response procedures
+- **[Constitutional Compliance Failure](constitutional_compliance_runbook.md)** - Governance compliance issues and remediation
+- **[Database Issues Runbook](database_issues_runbook.md)** - PostgreSQL connectivity, performance, and recovery
+- **[Incident Response Playbook](incident_response_playbook.md)** - Comprehensive incident management framework
+
+### ⚠️ Performance and Operational Issues
+- **[High Response Time Runbook](high_response_time_runbook.md)** - Performance degradation investigation and optimization
+- **[Change Management Runbook](change_management_runbook.md)** - Safe change deployment and rollback procedures
+
 ## Runbook Categories
 
 ### Service-Specific Runbooks

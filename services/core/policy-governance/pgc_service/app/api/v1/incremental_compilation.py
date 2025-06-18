@@ -11,8 +11,11 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from services.shared.auth import get_current_user
-from services.shared.models import User
+# Fix import path for shared modules
+import sys
+sys.path.append('/home/dislove/ACGS-1/services/shared')
+
+from auth import get_current_user, User
 
 from ...core.incremental_compiler import IncrementalCompiler, get_incremental_compiler
 from ...services.integrity_client import IntegrityPolicyRule

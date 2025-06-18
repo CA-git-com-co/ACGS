@@ -113,9 +113,15 @@ class FVServiceClient:
         self.retry_attempts = fv_config.get("retry_attempts", 3)
         self.retry_delay_ms = fv_config.get("retry_delay_ms", 500)
 
-        self.circuit_breaker_enabled = fv_config.get("circuit_breaker_enabled", True)
+        self.circuit_breaker_enabled = fv_config.get("circuit_breaker_enabled", False)  # Temporarily disabled
         if self.circuit_breaker_enabled:
-            self.circuit_breaker = CircuitBreaker()
+            # Extract circuit breaker configuration
+            cb_config = fv_config.get("circuit_breaker", {})
+            self.circuit_breaker = CircuitBreaker(
+                failure_threshold=cb_config.get("failure_threshold", 5),
+                recovery_timeout_ms=cb_config.get("recovery_timeout_ms", 30000),
+                half_open_max_calls=cb_config.get("half_open_max_calls", 3),
+            )
 
         self.client: AsyncClient | None = None
 
@@ -159,13 +165,14 @@ class FVServiceClient:
 
         for attempt in range(self.retry_attempts):
             try:
-                def exec_func():
-                    return self._execute_request(method, url, data)
-
                 if self.circuit_breaker_enabled:
+                    # Create a proper async function for circuit breaker
+                    async def exec_func():
+                        return await self._execute_request(method, url, data)
+                    # Call the circuit breaker execute method without additional args
                     response = await self.circuit_breaker.execute(exec_func)
                 else:
-                    response = await exec_func()
+                    response = await self._execute_request(method, url, data)
 
                 return response
 

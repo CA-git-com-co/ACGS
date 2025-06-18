@@ -22,7 +22,9 @@ logger = logging.getLogger(__name__)
 
 # Import authentication dependencies
 try:
-    from services.shared.auth import (
+    import sys
+    sys.path.append('/home/dislove/ACGS-1/services/shared')
+    from auth import (
         User,
         get_current_active_user,
         get_current_user_from_token,

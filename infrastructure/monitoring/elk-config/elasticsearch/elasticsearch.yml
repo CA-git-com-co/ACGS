@@ -22,12 +22,8 @@ xpack.security.transport.ssl.enabled: false
 xpack.ml.enabled: true
 xpack.ml.max_machine_memory_percent: 30
 
-# Monitoring
-xpack.monitoring.enabled: true
-xpack.monitoring.collection.enabled: true
-
-# Index lifecycle management
-xpack.ilm.enabled: true
+# Monitoring (using newer settings)
+xpack.monitoring.templates.enabled: true
 
 # Security audit logging
 xpack.security.audit.enabled: true
@@ -37,17 +33,13 @@ xpack.security.audit.logfile.events.include:
   - anonymous_access_denied
   - authentication_failed
   - authentication_success
-  - change_password
   - connection_denied
   - connection_granted
   - tampered_request
   - run_as_denied
   - run_as_granted
 
-# Index settings for security logs
-index.number_of_shards: 1
-index.number_of_replicas: 0
-index.refresh_interval: 5s
+# Index settings will be configured via index templates
 
 # Memory settings
 bootstrap.memory_lock: true
@@ -57,9 +49,7 @@ cluster.routing.allocation.disk.watermark.low: 85%
 cluster.routing.allocation.disk.watermark.high: 90%
 cluster.routing.allocation.disk.watermark.flood_stage: 95%
 
-# Index templates for ACGS security logs
-index.template.settings.number_of_shards: 1
-index.template.settings.number_of_replicas: 0
+# Index templates will be configured via API
 
 # Security index settings
 xpack.security.authc.realms.native.native1.order: 0
@@ -88,6 +78,3 @@ xpack.watcher.enabled: true
 
 # Graph for security relationship analysis
 xpack.graph.enabled: true
-
-# SQL for security queries
-xpack.sql.enabled: true

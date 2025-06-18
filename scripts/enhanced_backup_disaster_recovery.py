@@ -13,8 +13,17 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-import aiofiles
-import psutil
+try:
+    import aiofiles
+    AIOFILES_AVAILABLE = True
+except ImportError:
+    AIOFILES_AVAILABLE = False
+
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
 
 # Configure logging
 logging.basicConfig(
@@ -137,8 +146,12 @@ class ACGSBackupRecoverySystem:
             backup_manifest["size_mb"] = self._calculate_backup_size(backup_dir)
 
             manifest_path = backup_dir / "backup_manifest.json"
-            async with aiofiles.open(manifest_path, "w") as f:
-                await f.write(json.dumps(backup_manifest, indent=2))
+            if AIOFILES_AVAILABLE:
+                async with aiofiles.open(manifest_path, "w") as f:
+                    await f.write(json.dumps(backup_manifest, indent=2))
+            else:
+                with open(manifest_path, "w") as f:
+                    f.write(json.dumps(backup_manifest, indent=2))
 
             # 7. Create backup checksum
             await self._create_backup_checksum(backup_dir)
@@ -326,8 +339,12 @@ class ACGSBackupRecoverySystem:
 
             # Save service states
             states_file = service_backup_dir / "service_states.json"
-            async with aiofiles.open(states_file, "w") as f:
-                await f.write(json.dumps(service_states, indent=2))
+            if AIOFILES_AVAILABLE:
+                async with aiofiles.open(states_file, "w") as f:
+                    await f.write(json.dumps(service_states, indent=2))
+            else:
+                with open(states_file, "w") as f:
+                    f.write(json.dumps(service_states, indent=2))
 
             return {
                 "status": "success",
@@ -361,8 +378,12 @@ class ACGSBackupRecoverySystem:
             }
 
             state_file = blockchain_backup_dir / "quantumagi_state.json"
-            async with aiofiles.open(state_file, "w") as f:
-                await f.write(json.dumps(quantumagi_state, indent=2))
+            if AIOFILES_AVAILABLE:
+                async with aiofiles.open(state_file, "w") as f:
+                    await f.write(json.dumps(quantumagi_state, indent=2))
+            else:
+                with open(state_file, "w") as f:
+                    f.write(json.dumps(quantumagi_state, indent=2))
 
             return {
                 "status": "success",
@@ -378,10 +399,17 @@ class ACGSBackupRecoverySystem:
     def _is_service_running(self, port: int) -> bool:
         """Check if service is running on given port"""
         try:
-            for conn in psutil.net_connections():
-                if conn.laddr.port == port and conn.status == "LISTEN":
-                    return True
-            return False
+            if PSUTIL_AVAILABLE:
+                for conn in psutil.net_connections():
+                    if conn.laddr.port == port and conn.status == "LISTEN":
+                        return True
+                return False
+            else:
+                # Fallback using netstat
+                result = subprocess.run(
+                    ["netstat", "-ln"], capture_output=True, text=True
+                )
+                return f":{port} " in result.stdout
         except:
             return False
 
@@ -406,8 +434,12 @@ class ACGSBackupRecoverySystem:
                 if result.returncode == 0:
                     checksums.append(result.stdout.strip())
 
-        async with aiofiles.open(checksum_file, "w") as f:
-            await f.write("\n".join(checksums))
+        if AIOFILES_AVAILABLE:
+            async with aiofiles.open(checksum_file, "w") as f:
+                await f.write("\n".join(checksums))
+        else:
+            with open(checksum_file, "w") as f:
+                f.write("\n".join(checksums))
 
     async def _compress_backup(self, backup_dir: Path) -> Path:
         """Compress backup directory"""
@@ -452,8 +484,12 @@ class ACGSBackupRecoverySystem:
             if not manifest_path.exists():
                 raise Exception("Backup manifest not found")
 
-            async with aiofiles.open(manifest_path) as f:
-                manifest = json.loads(await f.read())
+            if AIOFILES_AVAILABLE:
+                async with aiofiles.open(manifest_path) as f:
+                    manifest = json.loads(await f.read())
+            else:
+                with open(manifest_path) as f:
+                    manifest = json.loads(f.read())
 
             restore_result = {
                 "backup_id": manifest["backup_id"],

@@ -107,10 +107,10 @@ inhibit_rules:
 
 # Receiver definitions with escalation procedures
 receivers:
-  # Default receiver for unmatched alerts
+  # Default receiver for unmatched alerts with automated remediation
   - name: 'default-receiver'
     webhook_configs:
-      - url: 'http://localhost:9093/webhook/default'
+      - url: 'http://localhost:8080/webhook/alerts'
         send_resolved: true
         title: 'ACGS-1 Alert: {{ .GroupLabels.alertname }}'
         text: |
@@ -121,6 +121,8 @@ receivers:
           Service: {{ .Labels.service }}
           Time: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
           {{ end }}
+      - url: 'http://localhost:9093/webhook/default'
+        send_resolved: true
 
   # Critical escalation with multiple channels
   - name: 'critical-escalation'
@@ -162,6 +164,10 @@ receivers:
         send_resolved: true
     
     webhook_configs:
+      - url: 'http://localhost:8080/webhook/alerts'
+        send_resolved: true
+        http_config:
+          bearer_token: '${WEBHOOK_TOKEN}'
       - url: 'http://localhost:8080/api/v1/alerts/critical'
         send_resolved: true
         http_config:

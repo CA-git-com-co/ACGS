@@ -174,7 +174,7 @@
     
     "audit_log_destinations": {
       "local_files": {
-        "path": "/var/log/acgs/audit/",
+        "path": "/home/dislove/ACGS-1/logs/audit/",
         "rotation": "daily",
         "compression": "gzip",
         "max_size": "100MB"
