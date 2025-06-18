@@ -4,7 +4,8 @@ from datetime import UTC, datetime, timedelta
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+import jwt
+from jwt import InvalidTokenError as JWTError
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 

@@ -208,7 +208,7 @@ class AdversarialDefenseSystem:
 
         # Create event record
         event = AdversarialEvent(
-            event_id=f"ADV-{int(time.time())}-{hashlib.sha256(input_text.encode()).hexdigest()[:8]}",
+            event_id=f"ADV-{int(time.time())}-{hashlib.sha256(input_text.encode()).hexdigest()[:32]}",
             attack_type=attack_type,
             detected=is_adversarial,
             severity=self._classify_severity(confidence, attack_type),
@@ -249,8 +249,8 @@ class AdversarialDefenseSystem:
 
             for feature_id, feature in self.refusal_features.items():
                 # Simulate feature activation
-                text_hash = hashlib.md5(
-                    input_text.encode(), usedforsecurity=False
+                text_hash = hashlib.sha256(
+                    input_text.encode()
                 ).hexdigest()
                 activation = abs(hash(text_hash + feature_id) % 100) / 100.0
 
@@ -415,7 +415,7 @@ class AdversarialDefenseSystem:
 
             for validator in self.consensus_validators:
                 # Simulate model evaluation
-                model_hash = hashlib.md5(
+                model_hash = hashlib.sha256(
                     (input_text + validator["model_id"]).encode(), usedforsecurity=False
                 ).hexdigest()
                 score = abs(hash(model_hash) % 100) / 100.0

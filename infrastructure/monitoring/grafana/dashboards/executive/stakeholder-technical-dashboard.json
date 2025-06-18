@@ -1,0 +1,473 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "acgs-stakeholder-technical",
+    "title": "ACGS-1 Technical Stakeholder Dashboard",
+    "description": "Technical stakeholder dashboard with detailed service metrics, performance analysis, and operational insights for development and operations teams",
+    "tags": ["acgs", "technical", "stakeholder", "operations", "development", "detailed"],
+    "timezone": "browser",
+    "refresh": "15s",
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "service",
+          "type": "query",
+          "query": "label_values(acgs_http_requests_total, service)",
+          "datasource": "ACGS-Prometheus",
+          "multi": true,
+          "includeAll": true,
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          }
+        },
+        {
+          "name": "environment",
+          "type": "custom",
+          "query": "production,staging,development",
+          "current": {
+            "text": "production",
+            "value": "production"
+          }
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Matrix",
+        "description": "Real-time health status of all ACGS services with drill-down capabilities",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=~\"acgs-.*-service\", service=~\"$service\"}",
+            "legendFormat": "{{service}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "DOWN"}}, "type": "value"},
+              {"options": {"1": {"text": "UP"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Request Rate by Service",
+        "description": "Requests per second for each service with trend analysis",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(acgs_http_requests_total{service=~\"$service\"}[5m])) by (service)",
+            "legendFormat": "{{service}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "reqps",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "spanNulls": false,
+              "pointSize": 5,
+              "stacking": {
+                "mode": "none",
+                "group": "A"
+              }
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6}
+      },
+      {
+        "id": 3,
+        "title": "Response Time Distribution",
+        "description": "P50, P95, P99 response times across services",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(acgs_http_request_duration_seconds_bucket{service=~\"$service\"}[5m])) by (le, service))",
+            "legendFormat": "P50 - {{service}}",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(acgs_http_request_duration_seconds_bucket{service=~\"$service\"}[5m])) by (le, service))",
+            "legendFormat": "P95 - {{service}}",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(acgs_http_request_duration_seconds_bucket{service=~\"$service\"}[5m])) by (le, service))",
+            "legendFormat": "P99 - {{service}}",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "ms",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "fillOpacity": 0,
+              "gradientMode": "none"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6}
+      },
+      {
+        "id": 4,
+        "title": "Error Rate Analysis",
+        "description": "Error rates by service and error type with alerting thresholds",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(acgs_errors_total{service=~\"$service\"}[5m])) by (service, error_type)",
+            "legendFormat": "{{service}} - {{error_type}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "eps",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 0.01},
+                {"color": "red", "value": 0.1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 14}
+      },
+      {
+        "id": 5,
+        "title": "Database Performance Metrics",
+        "description": "Database connection pool utilization, query performance, and transaction rates",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "acgs:database_connection_utilization",
+            "legendFormat": "Connection Pool Utilization %",
+            "refId": "A"
+          },
+          {
+            "expr": "acgs:database_query_rate",
+            "legendFormat": "Query Rate (qps)",
+            "refId": "B"
+          },
+          {
+            "expr": "avg(acgs_database_query_duration_seconds{quantile=\"0.95\"})",
+            "legendFormat": "P95 Query Duration",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Connection Pool Utilization %"},
+              "properties": [
+                {"id": "unit", "value": "percent"},
+                {"id": "max", "value": 100}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Query Rate (qps)"},
+              "properties": [
+                {"id": "unit", "value": "qps"}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "P95 Query Duration"},
+              "properties": [
+                {"id": "unit", "value": "ms"}
+              ]
+            }
+          ]
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 14}
+      },
+      {
+        "id": 6,
+        "title": "Cache Performance Analysis",
+        "description": "Redis cache hit rates, memory utilization, and performance metrics",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs:redis_hit_rate",
+            "legendFormat": "Cache Hit Rate",
+            "refId": "A"
+          },
+          {
+            "expr": "acgs:redis_memory_utilization",
+            "legendFormat": "Memory Utilization",
+            "refId": "B"
+          },
+          {
+            "expr": "rate(acgs_redis_operations_total[5m])",
+            "legendFormat": "Operations/sec",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 80},
+                {"color": "green", "value": 95}
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Cache Hit Rate"},
+              "properties": [
+                {"id": "unit", "value": "percent"}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Memory Utilization"},
+              "properties": [
+                {"id": "unit", "value": "percent"}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Operations/sec"},
+              "properties": [
+                {"id": "unit", "value": "ops"}
+              ]
+            }
+          ]
+        },
+        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 22}
+      },
+      {
+        "id": 7,
+        "title": "Load Balancer Performance",
+        "description": "HAProxy backend utilization, session distribution, and health check status",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "acgs:load_balancer_backend_utilization",
+            "legendFormat": "{{backend}} Utilization",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(acgs_haproxy_backend_current_sessions) by (backend)",
+            "legendFormat": "{{backend}} Sessions",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byRegexp", "options": ".*Utilization"},
+              "properties": [
+                {"id": "unit", "value": "percent"},
+                {"id": "max", "value": 100}
+              ]
+            },
+            {
+              "matcher": {"id": "byRegexp", "options": ".*Sessions"},
+              "properties": [
+                {"id": "unit", "value": "short"}
+              ]
+            }
+          ]
+        },
+        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 22}
+      },
+      {
+        "id": 8,
+        "title": "Resource Utilization by Service",
+        "description": "CPU and memory utilization across all services with capacity planning insights",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "acgs:cpu_utilization_by_service{service=~\"$service\"}",
+            "legendFormat": "CPU - {{service}}",
+            "refId": "A",
+            "format": "table"
+          },
+          {
+            "expr": "acgs:memory_utilization_by_service{service=~\"$service\"}",
+            "legendFormat": "Memory - {{service}}",
+            "refId": "B",
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 70},
+                {"color": "red", "value": 85}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 28}
+      },
+      {
+        "id": 9,
+        "title": "Constitutional Governance Metrics",
+        "description": "Technical metrics for constitutional compliance and governance workflows",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs:constitutional_hash_integrity",
+            "legendFormat": "Hash Integrity",
+            "refId": "A"
+          },
+          {
+            "expr": "acgs:multi_model_consensus_agreement_rate",
+            "legendFormat": "Consensus Rate",
+            "refId": "B"
+          },
+          {
+            "expr": "acgs:pgc_latency_optimization_target",
+            "legendFormat": "PGC Latency (ms)",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 95},
+                {"color": "green", "value": 99}
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Hash Integrity"},
+              "properties": [
+                {"id": "unit", "value": "percent"}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Consensus Rate"},
+              "properties": [
+                {"id": "unit", "value": "percent"}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "PGC Latency (ms)"},
+              "properties": [
+                {"id": "unit", "value": "ms"},
+                {"id": "thresholds", "value": {
+                  "steps": [
+                    {"color": "green", "value": 0},
+                    {"color": "yellow", "value": 25},
+                    {"color": "red", "value": 50}
+                  ]
+                }}
+              ]
+            }
+          ]
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 28}
+      },
+      {
+        "id": 10,
+        "title": "Alert Status and Incident Tracking",
+        "description": "Current alerts, incident status, and escalation tracking",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "ALERTS{alertstate=\"firing\", service=~\"$service\"}",
+            "legendFormat": "{{alertname}} - {{service}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 5}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 36}
+      }
+    ],
+    "links": [
+      {
+        "title": "Executive Overview",
+        "url": "/d/acgs-executive-overview/acgs-executive-overview-dashboard",
+        "type": "dashboards"
+      },
+      {
+        "title": "Service Deep Dive",
+        "url": "/d/acgs-service-detail/service-detail-dashboard?var-service=$service",
+        "type": "dashboards"
+      },
+      {
+        "title": "Performance Analysis",
+        "url": "/d/acgs-performance/performance-analysis-dashboard",
+        "type": "dashboards"
+      }
+    ]
+  },
+  "overwrite": true,
+  "folderId": 1,
+  "folderTitle": "Executive Dashboard"
+}

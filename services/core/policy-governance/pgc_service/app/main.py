@@ -14,6 +14,39 @@ try:
 except ImportError:
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
+
+# Import production security middleware
+try:
+    import sys
+    sys.path.append('/home/dislove/ACGS-1/services/shared')
+    from security_middleware import apply_production_security_middleware, create_security_config
+    SECURITY_MIDDLEWARE_AVAILABLE = True
+    print("✅ Production security middleware loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Production security middleware not available: {e}")
+    SECURITY_MIDDLEWARE_AVAILABLE = False
+
+
+# Import comprehensive audit logging
+try:
+    import sys
+    sys.path.append('/home/dislove/ACGS-1/services/shared')
+    from comprehensive_audit_logger import (
+        apply_audit_logging_to_service,
+        get_audit_logger,
+        log_user_login,
+        log_constitutional_validation,
+        log_security_violation,
+        AuditEventType,
+        AuditSeverity,
+        ComplianceFramework
+    )
+    AUDIT_LOGGING_AVAILABLE = True
+    print("✅ Comprehensive audit logging loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Comprehensive audit logging not available: {e}")
+    AUDIT_LOGGING_AVAILABLE = False
+
 from fastapi import FastAPI, HTTPException
 
 # Local implementations to avoid shared module dependencies
@@ -1366,15 +1399,57 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+# Apply comprehensive audit logging
+if AUDIT_LOGGING_AVAILABLE:
+    apply_audit_logging_to_service(app, "pgc_service")
+    print(f"✅ Comprehensive audit logging applied to pgc service")
+    print("🔒 Audit features enabled:")
+    print("   - Tamper-proof logs with cryptographic integrity")
+    print("   - Compliance tracking (SOC 2, ISO 27001, NIST)")
+    print("   - Real-time security event monitoring")
+    print("   - Constitutional governance audit trail")
+    print("   - Automated log retention and archival")
+    print("   - Performance metrics and alerting")
+else:
+    print(f"⚠️ Audit logging not available for pgc service")
+
+# Apply production-grade security middleware
+if SECURITY_MIDDLEWARE_AVAILABLE:
+    security_config = create_security_config(
+        max_request_size=10 * 1024 * 1024,  # 10MB
+        rate_limit_requests=120,
+        rate_limit_window=60,
+        enable_threat_detection=True
+    )
+    apply_production_security_middleware(app, "pgc_service", security_config)
+    print(f"✅ Production security middleware applied to pgc service")
+else:
+    print(f"⚠️ Security middleware not available for pgc service")
+
 
 # Apply enhanced security middleware
-if SECURITY_MIDDLEWARE_AVAILABLE:
+try:
+    from services.shared.security.security_middleware import SecurityMiddleware, SecurityConfig
+
+    # Configure security for PGC service
+    security_config = SecurityConfig()
+    security_config.rate_limit_requests = 100
+    security_config.enable_csrf_protection = True
+    security_config.enable_rate_limiting = True
+    security_config.enable_https_only = True
+
+    app.add_middleware(SecurityMiddleware, config=security_config)
+    print("✅ Enhanced security middleware applied to PGC service")
+    SECURITY_MIDDLEWARE_AVAILABLE = True
+except ImportError as e:
+    print(f"⚠️ Security middleware not available: {e}")
+    SECURITY_MIDDLEWARE_AVAILABLE = False
+
+# Fallback security middleware if available
+if SECURITY_MIDDLEWARE_AVAILABLE and 'SecurityHeadersMiddleware' in globals():
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(RateLimitingMiddleware, requests_per_minute=120, burst_limit=20)
     app.add_middleware(InputValidationMiddleware)
-    print("✅ Enhanced security middleware applied")
-else:
-    print("⚠️ Security middleware not available")
 
 
 # Initialize OpenTelemetry instrumentation (disabled for minimal startup)

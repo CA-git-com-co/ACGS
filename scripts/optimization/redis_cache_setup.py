@@ -121,7 +121,7 @@ class ACGSRedisCache:
         else:
             sorted_data = str(data)
 
-        return hashlib.md5(sorted_data.encode()).hexdigest()[:16]
+        return hashlib.sha256(sorted_data.encode()).hexdigest()[:32]
 
     def get(self, service: str, data_type: str, identifier: str) -> Any | None:
         """Get data from cache."""

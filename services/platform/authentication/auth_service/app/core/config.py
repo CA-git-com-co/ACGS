@@ -7,16 +7,13 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
-    # IMPORTANT: This key is loaded from the environment variable SECRET_KEY.
-    # Ensure it is set to a strong, unique value in your environment.
-    # For local development, you can set it in a .env file.
-    SECRET_KEY: str = os.getenv(
-        "SECRET_KEY",
-        "acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing",
-    )
 
-    # 60 minutes * 24 hours * 8 days = 8 days
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+    # SECURITY: JWT secret key MUST be loaded from environment variable
+    # NEVER use default values in production - will raise error if not set
+    SECRET_KEY: str
+
+    # SECURITY: Reduced token lifetime from 8 days to 30 minutes for security
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ALGORITHM: str = "HS256"
 
     # Refresh Token settings

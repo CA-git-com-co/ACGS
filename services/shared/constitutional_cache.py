@@ -127,7 +127,7 @@ class ConstitutionalCache:
         }
 
         key_string = json.dumps(key_data, sort_keys=True)
-        return hashlib.sha256(key_string.encode()).hexdigest()[:16]
+        return hashlib.sha256(key_string.encode()).hexdigest()[:32]
 
     def _hash_content(self, data: dict[str, Any]) -> str:
         """Generate hash of content for cache key."""
@@ -139,7 +139,7 @@ class ConstitutionalCache:
                 content_items.append(f"{key}:{data[key]}")
 
         content_string = "|".join(content_items)
-        return hashlib.md5(content_string.encode()).hexdigest()[:8]
+        return hashlib.sha256(content_string.encode()).hexdigest()[:32]
 
     async def invalidate_cache(self, pattern: str = None):
         """

@@ -1430,7 +1430,7 @@ class EnhancedMultiModelValidator:
         principle_text = principle.text
         synthesis_context = context
 
-        input_data = LLMInterpretationInput(
+        input_data = LLMInterpretationgetpass.getpass(
             principle_id=principle.id,
             principle_content=principle.text,
             target_context=getattr(context, "domain", None),
@@ -1871,7 +1871,7 @@ class EnhancedMultiModelValidator:
                 f"Respond ONLY with a JSON object containing 'faithful' (string), 'consistent' (string), 'score' (float), and 'justification' (string)."
             )
 
-            validation_input = LLMInterpretationInput(
+            validation_input = LLMIntegrationInput(
                 principle_id=f"validation_{request_id}_{synthesizer_model_name}_by_{validator_model_name}",
                 principle_text=validation_prompt_text,
                 context={
@@ -1955,7 +1955,7 @@ class EnhancedMultiModelValidator:
                         "justification": "Extracted score via regex after JSON parse failure.",
                     }
                 except ValueError:
-                    pass  # Score not a float
+                    logger.warning("Exception caught and ignored")  # Score not a float
             return {
                 "score": 0.0,
                 "justification": "Could not parse validation response.",

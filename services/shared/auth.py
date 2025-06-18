@@ -10,7 +10,8 @@ from datetime import UTC, datetime, timedelta  # Added timedelta
 import httpx
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+import jwt
+from jwt import InvalidTokenError as JWTError
 from pydantic import BaseModel
 
 # Environment variables
