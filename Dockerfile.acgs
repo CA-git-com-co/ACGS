@@ -5,7 +5,7 @@
 # =============================================================================
 # Stage 1: Base System Dependencies
 # =============================================================================
-FROM ubuntu:22.04 as acgs-base
+FROM ubuntu:24.04 as acgs-base
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
