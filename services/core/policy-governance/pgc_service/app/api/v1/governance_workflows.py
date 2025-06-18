@@ -23,7 +23,8 @@ logger = logging.getLogger(__name__)
 # Import authentication dependencies
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from auth import (
         User,
         get_current_active_user,
@@ -65,15 +66,12 @@ try:
 
     from enhanced_constitutional_analyzer import (
         AnalysisType,
-        ConstitutionalFramework,
-        PolicyRule,
         get_enhanced_constitutional_analyzer,
         integrate_with_pgc_service,
     )
 
     # from multi_model_manager import ConsensusStrategy, get_multi_model_manager
     # Temporarily disabled due to import conflicts
-
     # Create fallback classes for multi_model_manager
     class ConsensusStrategy:
         WEIGHTED_AVERAGE = "weighted_average"

@@ -23,11 +23,12 @@ from typing import Any
 
 import httpx
 
-from .common_types import ServiceType
 from services.shared.service_mesh.discovery import ServiceDiscovery
+from services.shared.service_mesh.registry import get_service_registry
+
+from .common_types import ServiceType
 from .failover_circuit_breaker import FailoverConfig, FailoverManager, FailoverStrategy
 from .performance_monitor import PerformanceMonitor, get_performance_monitor
-from services.shared.service_mesh.registry import get_service_registry
 
 logger = logging.getLogger(__name__)
 
@@ -402,7 +403,6 @@ class EnhancedServiceStabilizer:
         """Collect performance metrics from all services."""
         # This would integrate with the performance monitor
         # to collect CPU, memory, response times, etc.
-        pass
 
     async def _predictive_analysis_loop(self):
         # requires: Valid input parameters

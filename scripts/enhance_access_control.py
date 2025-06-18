@@ -5,14 +5,15 @@ Improves Access Control domain score from 5.4/10 to 8+/10
 """
 
 import asyncio
-import aiohttp
 import json
 import logging
 import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
+import aiohttp
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -779,7 +780,9 @@ if __name__ == "__main__":
         
         try:
             # Run the enterprise compliance scorer
-            from infrastructure.security.enterprise_compliance_scorer import compliance_scorer
+            from infrastructure.security.enterprise_compliance_scorer import (
+                compliance_scorer,
+            )
             
             report = await compliance_scorer.assess_compliance()
             access_control_score = report.domain_scores.get("ACCESS_CONTROL", 0.0)

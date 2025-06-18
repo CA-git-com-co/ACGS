@@ -31,8 +31,13 @@ except ImportError:
 # Import production security middleware
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
-    from security_middleware import apply_production_security_middleware, create_security_config
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    from security_middleware import (
+        apply_production_security_middleware,
+        create_security_config,
+    )
+
     SECURITY_MIDDLEWARE_AVAILABLE = True
     print("✅ Production security middleware loaded successfully")
 except ImportError as e:
@@ -43,17 +48,9 @@ except ImportError as e:
 # Import comprehensive audit logging
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
-    from comprehensive_audit_logger import (
-        apply_audit_logging_to_service,
-        get_audit_logger,
-        log_user_login,
-        log_constitutional_validation,
-        log_security_violation,
-        AuditEventType,
-        AuditSeverity,
-        ComplianceFramework
-    )
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+
     AUDIT_LOGGING_AVAILABLE = True
     print("✅ Comprehensive audit logging loaded successfully")
 except ImportError as e:
@@ -119,29 +116,29 @@ PolicySynthesisWorkflow = None
 SecurityMiddleware = None
 
 try:
-    from app.api.v1.alphaevolve_integration import router as alphaevolve_router
-    from app.api.v1.constitutional_synthesis import (
+    from .api.v1.alphaevolve_integration import router as alphaevolve_router
+    from .api.v1.constitutional_synthesis import (
         router as constitutional_synthesis_router,
     )
-    from app.api.v1.enhanced_synthesis import router as enhanced_synthesis_router
+    from .api.v1.enhanced_synthesis import router as enhanced_synthesis_router
 
     # Import Phase A3 governance workflows router
-    from app.api.v1.governance_workflows import router as governance_workflows_router
-    from app.api.v1.mab_optimization import router as mab_router
-    from app.api.v1.multi_model_synthesis import router as multi_model_synthesis_router
+    from .api.v1.governance_workflows import router as governance_workflows_router
+    from .api.v1.mab_optimization import router as mab_router
+    from .api.v1.multi_model_synthesis import router as multi_model_synthesis_router
 
     # Import Phase A3 production synthesis router
-    from app.api.v1.phase_a3_synthesis import router as phase_a3_synthesis_router
-    from app.api.v1.policy_management import router as policy_management_router
-    from app.api.v1.reliability_metrics import router as reliability_metrics_router
-    from app.api.v1.synthesize import router as synthesize_router
-    from app.api.v1.wina_rego_synthesis import router as wina_rego_router
-    from app.core.multi_model_coordinator import MultiModelCoordinator
-    from app.middleware.enhanced_security import SecurityMiddleware
+    from .api.v1.phase_a3_synthesis import router as phase_a3_synthesis_router
+    from .api.v1.policy_management import router as policy_management_router
+    from .api.v1.reliability_metrics import router as reliability_metrics_router
+    from .api.v1.synthesize import router as synthesize_router
+    from .api.v1.wina_rego_synthesis import router as wina_rego_router
+    from .core.multi_model_coordinator import MultiModelCoordinator
+    from .middleware.enhanced_security import SecurityMiddleware
 
     # Import core services
-    from app.services.enhanced_governance_synthesis import EnhancedGovernanceSynthesis
-    from app.workflows.policy_synthesis_workflow import PolicySynthesisWorkflow
+    from .services.enhanced_governance_synthesis import EnhancedGovernanceSynthesis
+    from .workflows.policy_synthesis_workflow import PolicySynthesisWorkflow
 
     ROUTERS_AVAILABLE = True
     logger.info(
@@ -156,6 +153,7 @@ enhanced_synthesis_service = None
 multi_model_coordinator = None
 policy_workflow = None
 
+
 # Temporary fix: Create mock services for enhanced capabilities
 class MockEnhancedSynthesis:
     def __init__(self):
@@ -167,6 +165,7 @@ class MockEnhancedSynthesis:
     async def get_performance_metrics(self):
         return {"status": "operational", "response_time_ms": 50}
 
+
 class MockMultiModelCoordinator:
     def __init__(self):
         self.status = "operational"
@@ -174,9 +173,11 @@ class MockMultiModelCoordinator:
     async def initialize(self):
         pass
 
+
 class MockPolicyWorkflow:
     def __init__(self):
         self.status = "operational"
+
 
 # Initialize mock services to enable enhanced features
 if not ROUTERS_AVAILABLE:
@@ -256,7 +257,7 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         max_request_size=10 * 1024 * 1024,  # 10MB
         rate_limit_requests=120,
         rate_limit_window=60,
-        enable_threat_detection=True
+        enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "gs_service", security_config)
     print(f"✅ Production security middleware applied to gs service")
@@ -266,10 +267,15 @@ else:
 
 # Apply enhanced security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
-    app.add_middleware(SecurityHeadersMiddleware)
-    app.add_middleware(RateLimitingMiddleware, requests_per_minute=120, burst_limit=20)
-    app.add_middleware(InputValidationMiddleware)
-    print("✅ Enhanced security middleware applied")
+    try:
+        app.add_middleware(SecurityHeadersMiddleware)
+        app.add_middleware(
+            RateLimitingMiddleware, requests_per_minute=120, burst_limit=20
+        )
+        app.add_middleware(InputValidationMiddleware)
+        print("✅ Enhanced security middleware applied")
+    except NameError as e:
+        print(f"⚠️ Some security middleware not available: {e}")
 else:
     print("⚠️ Security middleware not available")
 

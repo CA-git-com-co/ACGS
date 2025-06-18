@@ -20,7 +20,6 @@ from typing import Any
 
 from bson import ObjectId
 from celery import Celery, chain, group, signals
-
 from services.core.api.db import init_db
 from services.core.api.db_manager import TaskDBManager, get_db_manager
 from services.core.api.models import (

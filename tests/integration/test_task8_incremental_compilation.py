@@ -722,7 +722,6 @@ class Task8IntegrationTester:
                 headers={"Authorization": "Bearer test_token"},
             )
 
-
             if response.status_code == 200:
                 metrics_data = response.json()
 
@@ -770,7 +769,6 @@ class Task8IntegrationTester:
                 f"{PGC_SERVICE_URL}/api/v1/incremental/status",
                 headers={"Authorization": "Bearer test_token"},
             )
-
 
             if response.status_code == 200:
                 status_data = response.json()

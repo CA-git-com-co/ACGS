@@ -33,7 +33,7 @@ SERVICE_PHASE = "Phase A3 - Production Implementation"
 # Global service state
 service_start_time = time.time()
 
-from app.core.config import settings
+from .core.config import settings
 
 # Enhanced Security Middleware
 try:
@@ -49,8 +49,13 @@ except ImportError:
 # Import production security middleware
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
-    from security_middleware import apply_production_security_middleware, create_security_config
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    from security_middleware import (
+        apply_production_security_middleware,
+        create_security_config,
+    )
+
     SECURITY_MIDDLEWARE_AVAILABLE = True
     print("✅ Production security middleware loaded successfully")
 except ImportError as e:
@@ -61,17 +66,12 @@ except ImportError as e:
 # Import comprehensive audit logging
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from comprehensive_audit_logger import (
         apply_audit_logging_to_service,
-        get_audit_logger,
-        log_user_login,
-        log_constitutional_validation,
-        log_security_violation,
-        AuditEventType,
-        AuditSeverity,
-        ComplianceFramework
     )
+
     AUDIT_LOGGING_AVAILABLE = True
     print("✅ Comprehensive audit logging loaded successfully")
 except ImportError as e:
@@ -130,14 +130,14 @@ except ImportError:
 
     security_config = {}
 
-from app.api.v1.api_keys import router as api_keys_router
+from .api.v1.api_keys import router as api_keys_router
 
 # Import the auth router directly from endpoints to avoid double prefix issue
-from app.api.v1.endpoints import router as auth_router
+from .api.v1.endpoints import router as auth_router
 
 # Import enterprise authentication routers
-from app.api.v1.mfa import router as mfa_router
-from app.api.v1.oauth import router as oauth_router
+from .api.v1.mfa import router as mfa_router
+from .api.v1.oauth import router as oauth_router
 
 # Configure structured logging
 logging.basicConfig(
@@ -197,7 +197,7 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         max_request_size=10 * 1024 * 1024,  # 10MB
         rate_limit_requests=120,
         rate_limit_window=60,
-        enable_threat_detection=True
+        enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "auth_service", security_config)
     print(f"✅ Production security middleware applied to auth service")
@@ -207,7 +207,10 @@ else:
 
 # Apply enhanced security middleware
 try:
-    from services.shared.security.security_middleware import SecurityMiddleware, SecurityConfig
+    from services.shared.security.security_middleware import (
+        SecurityConfig,
+        SecurityMiddleware,
+    )
 
     # Configure security for Auth service
     security_config = SecurityConfig()
@@ -224,7 +227,7 @@ except ImportError as e:
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
 # Fallback security middleware if available
-if SECURITY_MIDDLEWARE_AVAILABLE and 'SecurityHeadersMiddleware' in globals():
+if SECURITY_MIDDLEWARE_AVAILABLE and "SecurityHeadersMiddleware" in globals():
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(RateLimitingMiddleware, requests_per_minute=120, burst_limit=20)
     app.add_middleware(InputValidationMiddleware)
@@ -309,8 +312,8 @@ async def lifespan(app: FastAPI):
 add_security_middleware(app)
 
 # Enterprise intrusion detection middleware - temporarily commented out for basic functionality
-# from app.core.intrusion_detection import ids
-# from app.core.session_manager import session_manager
+# from .core.intrusion_detection import ids
+# from .core.session_manager import session_manager
 
 # @app.middleware("http")
 # async def enterprise_security_middleware(request: Request, call_next):
@@ -320,7 +323,7 @@ add_security_middleware(app)
 #     """Enterprise security middleware with intrusion detection"""
 #     try:
 #         # Get database session for security logging
-#         from app.db.session import get_async_db
+#         from .db.session import get_async_db
 #         db_gen = get_async_db()
 #         db = await db_gen.__anext__()
 #
@@ -351,10 +354,10 @@ add_security_middleware(app)
 
 # Import API routers
 try:
-    from app.api.v1.api_keys import router as api_keys_router
-    from app.api.v1.endpoints import router as auth_router
-    from app.api.v1.mfa import router as mfa_router
-    from app.api.v1.oauth import router as oauth_router
+    from .api.v1.api_keys import router as api_keys_router
+    from .api.v1.endpoints import router as auth_router
+    from .api.v1.mfa import router as mfa_router
+    from .api.v1.oauth import router as oauth_router
 
     ROUTERS_AVAILABLE = True
     logger.info("All API routers imported successfully")
@@ -412,9 +415,9 @@ if not ROUTERS_AVAILABLE:
 
 # Enterprise authentication features are included above with error handling
 
-# If api_v1_router from app.api.v1.api_router.py was for other general v1 routes,
+# If api_v1_router from .api.v1.api_router.py was for other general v1 routes,
 # it could be included as well, e.g.:
-# from app.api.v1.api_router import api_router as other_v1_router
+# from .api.v1.api_router import api_router as other_v1_router
 # app.include_router(other_v1_router, prefix=settings.API_V1_STR)
 # For this task, we are focusing on the auth_router.
 # The original line was: app.include_router(api_v1_router, prefix=settings.API_V1_STR)

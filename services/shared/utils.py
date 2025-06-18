@@ -321,9 +321,7 @@ class ACGSConfig:
     Handles environment variables, service URLs, and cross-service communication settings.
     """
 
-    def __init__(
-        self, env_file: str | None = None, environment: str | None = None
-    ):
+    def __init__(self, env_file: str | None = None, environment: str | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

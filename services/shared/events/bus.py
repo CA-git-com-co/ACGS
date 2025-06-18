@@ -17,6 +17,7 @@ from typing import Any
 
 from services.shared.common.error_handling import ACGSException, handle_service_error
 from services.shared.di.interfaces import EventBusInterface
+
 from .store import EventStore, InMemoryEventStore
 from .types import EventData, EventMetadata, EventPriority, EventStatus, EventType
 

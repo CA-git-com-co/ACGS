@@ -7,7 +7,8 @@ from typing import Any
 # Enhanced Security Middleware
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from input_validation_middleware import InputValidationMiddleware
     from rate_limiting_middleware import RateLimitingMiddleware
     from security_headers_middleware import SecurityHeadersMiddleware
@@ -20,8 +21,13 @@ except ImportError:
 # Import production security middleware
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
-    from security_middleware import apply_production_security_middleware, create_security_config
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    from security_middleware import (
+        apply_production_security_middleware,
+        create_security_config,
+    )
+
     SECURITY_MIDDLEWARE_AVAILABLE = True
     print("✅ Production security middleware loaded successfully")
 except ImportError as e:
@@ -32,17 +38,12 @@ except ImportError as e:
 # Import comprehensive audit logging
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from comprehensive_audit_logger import (
         apply_audit_logging_to_service,
-        get_audit_logger,
-        log_user_login,
-        log_constitutional_validation,
-        log_security_violation,
-        AuditEventType,
-        AuditSeverity,
-        ComplianceFramework
     )
+
     AUDIT_LOGGING_AVAILABLE = True
     print("✅ Comprehensive audit logging loaded successfully")
 except ImportError as e:
@@ -56,7 +57,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # ACGS-PGP Metrics Integration
 try:
-    from app.monitoring.acgs_pgp_metrics import (
+    from .monitoring.acgs_pgp_metrics import (
         initialize_acgs_pgp_monitoring,
         metrics_collector,
     )
@@ -176,7 +177,7 @@ def create_metrics_endpoint():
 
 # Import core components with error handling
 try:
-    from app.core.policy_manager import policy_manager
+    from .core.policy_manager import policy_manager
 
     POLICY_MANAGER_AVAILABLE = True
 except ImportError as e:
@@ -194,7 +195,7 @@ except ImportError as e:
     policy_manager = MockPolicyManager()
 
 try:
-    from app.services.integrity_client import integrity_service_client
+    from .services.integrity_client import integrity_service_client
 
     INTEGRITY_CLIENT_AVAILABLE = True
 except ImportError as e:
@@ -213,7 +214,7 @@ except ImportError as e:
 
 # Import API routers with error handling
 try:
-    from app.api.v1.enforcement import router as enforcement_router
+    from .api.v1.enforcement import router as enforcement_router
 except ImportError as e:
     print(f"Warning: Enforcement router not available: {e}")
     from fastapi import APIRouter
@@ -221,7 +222,7 @@ except ImportError as e:
     enforcement_router = APIRouter()
 
 try:
-    from app.api.v1.alphaevolve_enforcement import (
+    from .api.v1.alphaevolve_enforcement import (
         router as alphaevolve_enforcement_router,
     )
 except ImportError as e:
@@ -231,7 +232,7 @@ except ImportError as e:
     alphaevolve_enforcement_router = APIRouter()
 
 try:
-    from app.api.v1.incremental_compilation import (
+    from .api.v1.incremental_compilation import (
         router as incremental_compilation_router,
     )
 except ImportError as e:
@@ -241,7 +242,7 @@ except ImportError as e:
     incremental_compilation_router = APIRouter()
 
 try:
-    from app.api.v1.ultra_low_latency import router as ultra_low_latency_router
+    from .api.v1.ultra_low_latency import router as ultra_low_latency_router
 except ImportError as e:
     print(f"Warning: Ultra low latency router not available: {e}")
     from fastapi import APIRouter
@@ -249,7 +250,7 @@ except ImportError as e:
     ultra_low_latency_router = APIRouter()
 
 try:
-    from app.api.v1.governance_workflows import router as governance_workflows_router
+    from .api.v1.governance_workflows import router as governance_workflows_router
 
     print("✅ Governance workflows router enabled")
 except ImportError as e:
@@ -1349,14 +1350,14 @@ audit_trail = AuditTrail()
 governance_monitor = GovernanceMonitor()
 
 # Import PGC service configuration
-from app.config.service_config import get_service_config
+from .config.service_config import get_service_config
 
 # Import OpenTelemetry instrumentation
-# from app.telemetry import get_telemetry_manager  # Disabled for minimal startup
+# from .telemetry import get_telemetry_manager  # Disabled for minimal startup
 
 # Import FV service client
 try:
-    from app.services.fv_client import get_fv_service_client
+    from .services.fv_client import get_fv_service_client
 
     FV_CLIENT_AVAILABLE = True
 except ImportError as e:
@@ -1421,7 +1422,7 @@ if False:  # SECURITY_MIDDLEWARE_AVAILABLE:
         max_request_size=10 * 1024 * 1024,  # 10MB
         rate_limit_requests=120,
         rate_limit_window=60,
-        enable_threat_detection=True
+        enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "pgc_service", security_config)
     print(f"✅ Production security middleware applied to pgc service")
@@ -1432,8 +1433,9 @@ else:
 # Apply enhanced security middleware
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
-    from security.security_middleware import SecurityMiddleware, SecurityConfig
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    from security.security_middleware import SecurityConfig, SecurityMiddleware
 
     # Configure security for PGC service
     security_config = SecurityConfig()
@@ -1450,7 +1452,7 @@ except ImportError as e:
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
 # Fallback security middleware if available
-if SECURITY_MIDDLEWARE_AVAILABLE and 'SecurityHeadersMiddleware' in globals():
+if SECURITY_MIDDLEWARE_AVAILABLE and "SecurityHeadersMiddleware" in globals():
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(RateLimitingMiddleware, requests_per_minute=120, burst_limit=20)
     app.add_middleware(InputValidationMiddleware)
@@ -1504,7 +1506,7 @@ except Exception as e:
 # Add constitutional validation middleware for enterprise compliance (disabled for now)
 try:
     # Temporarily disabled to fix startup issues
-    # from app.middleware.constitutional_validation import ConstitutionalValidationMiddleware
+    # from .middleware.constitutional_validation import ConstitutionalValidationMiddleware
     # app.add_middleware(
     #     ConstitutionalValidationMiddleware,
     #     constitutional_hash="cdd01ef066bc6cf2",
@@ -1539,7 +1541,7 @@ try:
 
             # Apply cache settings if enabled
             if optimizations.get("caching", {}).get("enabled", False):
-                from app.core.ultra_low_latency_optimizer import enable_advanced_caching
+                from .core.ultra_low_latency_optimizer import enable_advanced_caching
 
                 enable_advanced_caching(
                     fragment_cache_ttl=optimizations.get("caching", {})
@@ -1602,7 +1604,9 @@ async def on_startup():
 
     # Initialize the PolicyManager: fetch initial set of policies (temporarily disabled for debugging)
     # This ensures that the service has policies loaded when it starts serving requests.
-    print("PGC Service startup: Policy Manager initialization temporarily disabled for debugging...")
+    print(
+        "PGC Service startup: Policy Manager initialization temporarily disabled for debugging..."
+    )
     # if POLICY_MANAGER_AVAILABLE:
     #     try:
     #         await policy_manager.get_active_rules(force_refresh=True)
@@ -1629,6 +1633,7 @@ async def on_startup():
         except Exception as e:
             print(f"❌ PGC Service: FV Service client initialization failed: {e}")
             import traceback
+
             traceback.print_exc()
     else:
         print("⚠️ PGC Service: Using mock FV Service client.")
@@ -1849,9 +1854,7 @@ async def health_check():
 
         # Check Integrity Service connectivity
         try:
-            integrity_url = os.getenv(
-                "INTEGRITY_SERVICE_URL", "http://localhost:8002"
-            )
+            integrity_url = os.getenv("INTEGRITY_SERVICE_URL", "http://localhost:8002")
             async with httpx.AsyncClient(timeout=5.0) as client:
                 integrity_response = await client.get(f"{integrity_url}/health")
                 health_status["dependencies"]["integrity_service"] = {
@@ -3156,7 +3159,7 @@ async def validate_constitutional_hash_endpoint(
     # sha256: constitutional_hash_validation_endpoint_v1.0_acgs1
     """
     try:
-        from app.core.constitutional_hash_validator import (
+        from .core.constitutional_hash_validator import (
             ConstitutionalContext,
             ConstitutionalHashValidator,
             ConstitutionalValidationLevel,
@@ -3217,8 +3220,8 @@ async def get_constitutional_state_endpoint():
     # sha256: constitutional_state_endpoint_v1.0_acgs1
     """
     try:
-        from app.core.constitutional_hash_validator import ConstitutionalHashValidator
-        from app.core.redis_cache_manager import get_cache_manager
+        from .core.constitutional_hash_validator import ConstitutionalHashValidator
+        from .core.redis_cache_manager import get_cache_manager
 
         # Get validator state
         validator = ConstitutionalHashValidator(
@@ -3267,7 +3270,7 @@ async def validate_policy_constitutional_compliance_endpoint(
     # sha256: policy_constitutional_validation_endpoint_v1.0_acgs1
     """
     try:
-        from app.core.constitutional_hash_validator import (
+        from .core.constitutional_hash_validator import (
             ConstitutionalContext,
             ConstitutionalHashValidator,
             ConstitutionalValidationLevel,

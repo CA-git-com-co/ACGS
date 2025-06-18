@@ -21,6 +21,8 @@ from enum import Enum
 from typing import Any
 
 from services.shared.service_mesh.discovery import ServiceDiscovery
+from services.shared.service_mesh.registry import ServiceType, get_service_registry
+
 from .enhanced_service_stabilizer import (
     EnhancedServiceStabilizer,
     StabilizationConfig,
@@ -29,7 +31,6 @@ from .enhanced_service_stabilizer import (
 from .failover_circuit_breaker import FailoverManager
 from .load_balancer import LoadBalancer, LoadBalancingStrategy
 from .performance_monitor import get_performance_monitor
-from services.shared.service_mesh.registry import ServiceType, get_service_registry
 
 logger = logging.getLogger(__name__)
 
@@ -449,7 +450,6 @@ class ACGSServiceOrchestrator:
         # - Optimizing circuit breaker thresholds
         # - Triggering service scaling
         # - Optimizing caching strategies
-        pass
 
     async def _auto_scaling_loop(self):
         # requires: Valid input parameters
@@ -472,7 +472,6 @@ class ACGSServiceOrchestrator:
         # sha256: func_hash
         """Evaluate if services need scaling up or down."""
         # Future implementation for auto-scaling
-        pass
 
     def _register_alert_handlers(self):
         # requires: Valid input parameters

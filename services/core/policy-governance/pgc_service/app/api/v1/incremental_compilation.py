@@ -6,16 +6,17 @@ and integration with constitutional amendment workflows.
 """
 
 import logging
+
+# Fix import path for shared modules
+import sys
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-# Fix import path for shared modules
-import sys
-sys.path.append('/home/dislove/ACGS-1/services/shared')
+sys.path.append("/home/dislove/ACGS-1/services/shared")
 
-from auth import get_current_user, User
+from auth import User, get_current_user
 
 from ...core.incremental_compiler import IncrementalCompiler, get_incremental_compiler
 from ...services.integrity_client import IntegrityPolicyRule

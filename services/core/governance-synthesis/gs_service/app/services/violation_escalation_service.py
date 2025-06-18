@@ -18,19 +18,19 @@ from datetime import UTC, datetime, timedelta
 from enum import Enum
 from typing import Any
 
-from sqlalchemy import and_, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 # Import Constitutional Council integration
-from app.core.constitutional_council_scalability import (
+from .core.constitutional_council_scalability import (
     ConstitutionalCouncilScalabilityFramework,
 )
 
 # Import notification services
-from app.services.stakeholder_engagement import (
+from .services.stakeholder_engagement import (
     NotificationChannel,
     StakeholderNotificationService,
 )
+from sqlalchemy import and_, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from services.shared.database import get_async_db
 from services.shared.models import (
     ConstitutionalViolation,
@@ -329,9 +329,7 @@ class ViolationEscalationService:
             elif rule.trigger_type == EscalationTrigger.VIOLATION_COUNT:
                 # Count recent violations of same type
                 time_window = conditions.get("time_window_hours", 1)
-                threshold_time = datetime.now(UTC) - timedelta(
-                    hours=time_window
-                )
+                threshold_time = datetime.now(UTC) - timedelta(hours=time_window)
 
                 result = await db.execute(
                     select(func.count(ConstitutionalViolation.id)).where(

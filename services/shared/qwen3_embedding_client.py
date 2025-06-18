@@ -31,7 +31,7 @@ import numpy as np
 # ACGS-1 imports
 try:
     from .constitutional_metrics import get_constitutional_metrics
-    from .langgraph_config import ModelRole, get_langgraph_config
+    from .langgraph_config import get_langgraph_config
     from .redis_cache import get_cache
 except ImportError:
     # Fallback for testing

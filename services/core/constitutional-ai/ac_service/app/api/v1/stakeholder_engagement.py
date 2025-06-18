@@ -26,11 +26,12 @@ async def get_current_active_user_placeholder() -> User:
     )
 
 
-from app.services.stakeholder_engagement import (
+from .services.stakeholder_engagement import (
     StakeholderEngagementInput,
     StakeholderEngagementStatus,
     get_stakeholder_engagement_service,
 )
+
 from services.shared.langgraph_config import ConstitutionalCouncilConfig
 
 logger = logging.getLogger(__name__)
@@ -88,7 +89,11 @@ async def initiate_stakeholder_engagement(
     """
     try:
         # Check permissions (admin or constitutional council member)
-        if current_user.role not in ["admin", "constitutional_expert", "policy_administrator"]:
+        if current_user.role not in [
+            "admin",
+            "constitutional_expert",
+            "policy_administrator",
+        ]:
             raise HTTPException(
                 status_code=403,
                 detail="Insufficient permissions to initiate stakeholder engagement",
@@ -265,7 +270,11 @@ async def get_amendment_feedback(
     """Get all feedback for an amendment (admin/council members only)."""
     try:
         # Check permissions
-        if current_user.role not in ["admin", "constitutional_expert", "policy_administrator"]:
+        if current_user.role not in [
+            "admin",
+            "constitutional_expert",
+            "policy_administrator",
+        ]:
             raise HTTPException(
                 status_code=403, detail="Insufficient permissions to view all feedback"
             )

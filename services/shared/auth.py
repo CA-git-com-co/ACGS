@@ -8,9 +8,9 @@ import uuid  # Added uuid
 from datetime import UTC, datetime, timedelta  # Added timedelta
 
 import httpx
+import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-import jwt
 from jwt import InvalidTokenError as JWTError
 from pydantic import BaseModel
 

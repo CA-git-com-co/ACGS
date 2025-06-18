@@ -24,7 +24,11 @@ from services.shared.common.error_handling import (
 from services.shared.common.formatting import format_response
 from services.shared.common.validation import validate_response
 from services.shared.service_mesh.circuit_breaker import CircuitBreaker
-from services.shared.service_mesh.registry import ServiceRegistry, ServiceType, get_service_registry
+from services.shared.service_mesh.registry import (
+    ServiceRegistry,
+    ServiceType,
+    get_service_registry,
+)
 
 logger = logging.getLogger(__name__)
 

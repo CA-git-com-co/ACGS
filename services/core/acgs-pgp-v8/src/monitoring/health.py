@@ -338,9 +338,7 @@ class HealthMonitor:
             },
         }
 
-    async def get_component_health(
-        self, component_name: str
-    ) -> dict[str, Any] | None:
+    async def get_component_health(self, component_name: str) -> dict[str, Any] | None:
         """Get health status for a specific component."""
         if component_name not in self.health_results:
             return None
@@ -357,9 +355,7 @@ class HealthMonitor:
             "constitutional_hash": self.constitutional_hash,
         }
 
-    async def perform_immediate_check(
-        self, component_name: str
-    ) -> HealthResult | None:
+    async def perform_immediate_check(self, component_name: str) -> HealthResult | None:
         """Perform immediate health check for a component."""
         if component_name not in self.health_checks:
             return None

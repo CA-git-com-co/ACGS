@@ -1,20 +1,17 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app import schemas
-from app.core.auth import (
+from .core.auth import (
     User,
     get_current_active_user_placeholder,
     require_admin_role,
     require_constitutional_council_role,
 )
-from app.core.constitutional_council_scalability import (
+from .core.constitutional_council_scalability import (
     ConstitutionalCouncilScalabilityFramework,
     ScalabilityConfig,
 )
-from app.crud import (
+from .crud import (
     create_ac_amendment,
     create_ac_amendment_comment,
     create_ac_amendment_vote,
@@ -32,7 +29,10 @@ from app.crud import (
     update_ac_conflict_resolution,
     update_ac_meta_rule,
 )
-from app.workflows.constitutional_council_graph import ConstitutionalCouncilGraph
+from .workflows.constitutional_council_graph import ConstitutionalCouncilGraph
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from services.shared.database import get_async_db
 
 router = APIRouter()
@@ -360,7 +360,7 @@ async def transition_amendment_state_endpoint(
             raise HTTPException(status_code=404, detail="Amendment not found")
 
         # Initialize state machine and trigger transition
-        from app.core.amendment_state_machine import (
+        from .core.amendment_state_machine import (
             AmendmentEvent,
             AmendmentState,
             WorkflowContext,

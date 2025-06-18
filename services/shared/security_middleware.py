@@ -23,15 +23,14 @@ Key Features:
 
 import hashlib
 import hmac
-import json
 import logging
 import os
 import re
 import secrets
 import time
-from datetime import UTC, datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import unquote, urlparse
+from datetime import UTC, datetime
+from typing import Any, Dict, List
+from urllib.parse import unquote
 
 from fastapi import Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -65,14 +64,10 @@ except ImportError:
 # Import enhanced authentication
 try:
     from .enhanced_auth import (
-        ConstitutionalPermission,
         PermissionChecker,
         ServiceAuthManager,
-        ServicePermission,
-        UserRole,
         enhanced_auth_service,
     )
-    from .service_auth_config import ACGSService, ServiceAuthConfig
 
     ENHANCED_AUTH_AVAILABLE = True
 except ImportError:
@@ -414,8 +409,15 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
 
     def __init__(self, app, secret_key: str = None, exempt_paths: List[str] = None):
         super().__init__(app)
-        self.secret_key = secret_key or os.environ.get("CSRF_SECRET_KEY", secrets.token_urlsafe(32))
-        self.exempt_paths = exempt_paths or ["/health", "/docs", "/openapi.json", "/metrics"]
+        self.secret_key = secret_key or os.environ.get(
+            "CSRF_SECRET_KEY", secrets.token_urlsafe(32)
+        )
+        self.exempt_paths = exempt_paths or [
+            "/health",
+            "/docs",
+            "/openapi.json",
+            "/metrics",
+        ]
         self.logger = logging.getLogger(__name__)
 
     async def dispatch(self, request: Request, call_next):
@@ -426,7 +428,9 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         # Validate CSRF token for state-changing operations
-        csrf_token = request.headers.get("X-CSRF-Token") or request.cookies.get("csrf_token")
+        csrf_token = request.headers.get("X-CSRF-Token") or request.cookies.get(
+            "csrf_token"
+        )
 
         if not csrf_token or not self._validate_csrf_token(csrf_token):
             self.logger.warning(f"CSRF token validation failed for {request.url.path}")
@@ -434,8 +438,8 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
                 status_code=status.HTTP_403_FORBIDDEN,
                 content={
                     "error": "CSRF token validation failed",
-                    "detail": "Valid CSRF token required for this operation"
-                }
+                    "detail": "Valid CSRF token required for this operation",
+                },
             )
 
         response = await call_next(request)
@@ -448,7 +452,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
             httponly=True,
             secure=True,
             samesite="strict",
-            max_age=3600
+            max_age=3600,
         )
         response.headers["X-CSRF-Token"] = new_token
 
@@ -459,9 +463,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
         timestamp = str(int(time.time()))
         message = f"{timestamp}:{secrets.token_urlsafe(16)}"
         signature = hmac.new(
-            self.secret_key.encode(),
-            message.encode(),
-            hashlib.sha256
+            self.secret_key.encode(), message.encode(), hashlib.sha256
         ).hexdigest()
         return f"{message}:{signature}"
 
@@ -477,9 +479,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
 
             # Check signature
             expected_signature = hmac.new(
-                self.secret_key.encode(),
-                message.encode(),
-                hashlib.sha256
+                self.secret_key.encode(), message.encode(), hashlib.sha256
             ).hexdigest()
 
             if not hmac.compare_digest(signature, expected_signature):
@@ -975,9 +975,15 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
     def _is_development_mode(self) -> bool:
         """Check if running in development mode."""
-        return os.environ.get("ENVIRONMENT", "development").lower() in ["development", "dev", "local"]
+        return os.environ.get("ENVIRONMENT", "development").lower() in [
+            "development",
+            "dev",
+            "local",
+        ]
 
-    def _create_https_redirect_response(self, request: Request, correlation_id: str) -> Response:
+    def _create_https_redirect_response(
+        self, request: Request, correlation_id: str
+    ) -> Response:
         """Create HTTPS redirect response."""
         https_url = request.url.replace(scheme="https")
 
@@ -986,12 +992,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             content={
                 "error": "HTTPS required",
                 "redirect_url": str(https_url),
-                "correlation_id": correlation_id
+                "correlation_id": correlation_id,
             },
-            headers={
-                "Location": str(https_url),
-                "X-Correlation-ID": correlation_id
-            }
+            headers={"Location": str(https_url), "X-Correlation-ID": correlation_id},
         )
 
     def _detect_sql_injection(self, request: Request) -> List[str]:
@@ -1062,7 +1065,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
         # HSTS (HTTP Strict Transport Security)
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains; preload"
+        )
 
         # Content Security Policy (CSP) - Enhanced for XSS protection
         csp_policy = (
@@ -1105,13 +1110,18 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         response.headers["X-Security-Framework"] = "ACGS-1-Enterprise"
 
         # Cache control for sensitive responses
-        if any(path in str(response.headers.get("content-type", "")) for path in ["application/json", "text/html"]):
+        if any(
+            path in str(response.headers.get("content-type", ""))
+            for path in ["application/json", "text/html"]
+        ):
             response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
             response.headers["Pragma"] = "no-cache"
             response.headers["Expires"] = "0"
 
 
-def apply_production_security_middleware(app, service_name: str, config: SecurityConfig = None):
+def apply_production_security_middleware(
+    app, service_name: str, config: SecurityConfig = None
+):
     """
     Apply comprehensive production-grade security middleware to FastAPI application.
 
@@ -1176,7 +1186,8 @@ def apply_production_security_middleware(app, service_name: str, config: Securit
         secret_key=os.environ.get("SESSION_SECRET_KEY", secrets.token_urlsafe(32)),
         max_age=3600,  # 1 hour
         same_site="strict",
-        https_only=not os.environ.get("ENVIRONMENT", "development").lower() in ["development", "dev"],
+        https_only=not os.environ.get("ENVIRONMENT", "development").lower()
+        in ["development", "dev"],
         domain=None,  # Use default domain
     )
 

@@ -8,13 +8,12 @@ viewing performance metrics, and configuring optimization parameters.
 import logging
 from typing import Any
 
+# Fix the import paths to use the full package path
+from .core.mab_integration import MABIntegratedGSService
+from .core.mab_prompt_optimizer import MABAlgorithm, MABConfig, PromptTemplate
+from .schemas import ConstitutionalSynthesisInput
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel
-
-# Fix the import paths to use the full package path
-from app.core.mab_integration import MABIntegratedGSService
-from app.core.mab_prompt_optimizer import MABAlgorithm, MABConfig, PromptTemplate
-from app.schemas import ConstitutionalSynthesisInput
 
 logger = logging.getLogger(__name__)
 

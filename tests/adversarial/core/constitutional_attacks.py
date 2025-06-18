@@ -337,9 +337,7 @@ class ConstitutionalAttackTester:
                                                     ],
                                                     cvss_score=8.0,
                                                     execution_time_ms=execution_time,
-                                                    timestamp=datetime.now(
-                                                        UTC
-                                                    ),
+                                                    timestamp=datetime.now(UTC),
                                                 )
                                             )
 

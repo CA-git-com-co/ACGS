@@ -770,9 +770,7 @@ class RuntimeGating:
                 if layer_decisions
                 else 0.0
             ),
-            "strategies_used": list(
-                {d.strategy_used.value for d in layer_decisions}
-            ),
+            "strategies_used": list({d.strategy_used.value for d in layer_decisions}),
         }
 
     def get_performance_metrics(self) -> GatingPerformance:

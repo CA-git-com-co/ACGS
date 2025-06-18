@@ -5,13 +5,14 @@ Addresses PGC service OPA dependency failures
 """
 
 import asyncio
-import aiohttp
 import json
 import logging
 import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
+
+import aiohttp
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

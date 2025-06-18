@@ -67,7 +67,8 @@ class KeyManagementService:
             a ^ b
             for a, b in zip(
                 key_bytes,
-                (self.encryption_key * ((len(key_bytes) // 32) + 1))[: len(key_bytes)], strict=False,
+                (self.encryption_key * ((len(key_bytes) // 32) + 1))[: len(key_bytes)],
+                strict=False,
             )
         )
         return encrypted
@@ -89,7 +90,8 @@ class KeyManagementService:
                 encrypted_key,
                 (self.encryption_key * ((len(encrypted_key) // 32) + 1))[
                     : len(encrypted_key)
-                ], strict=False,
+                ],
+                strict=False,
             )
         )
         return decrypted.decode("utf-8")

@@ -24,7 +24,7 @@ from typing import Any
 
 # ACGS-1 imports
 try:
-    from .ai_model_service import ModelRole, get_ai_model_service
+    from .ai_model_service import get_ai_model_service
     from .constitutional_metrics import get_constitutional_metrics
     from .enhanced_constitutional_analyzer import (
         AnalysisType,

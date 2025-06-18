@@ -340,9 +340,7 @@ class AdvancedRedisClient:
             )
             return False
 
-    async def invalidate_pattern(
-        self, pattern: str, prefix: str | None = None
-    ) -> int:
+    async def invalidate_pattern(self, pattern: str, prefix: str | None = None) -> int:
         """Invalidate keys matching pattern."""
         full_pattern = self._generate_key(pattern, prefix)
 

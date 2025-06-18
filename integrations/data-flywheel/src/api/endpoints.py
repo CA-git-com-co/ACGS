@@ -16,7 +16,6 @@ from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
-
 from services.core.api.db import get_db
 from services.core.api.job_service import cancel_job, delete_job, get_job_details
 from services.core.api.models import FlywheelRun

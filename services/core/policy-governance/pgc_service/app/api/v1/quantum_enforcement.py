@@ -18,12 +18,11 @@ import time
 from typing import Any
 
 import grpc
+from .core.config import settings
+from .core.opa_client import get_opa_client
+from .services.qpe_client import QPEClient
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-
-from app.core.config import settings
-from app.core.opa_client import get_opa_client
-from app.services.qpe_client import QPEClient
 
 logger = logging.getLogger(__name__)
 
@@ -439,7 +438,7 @@ async def _fallback_opa_evaluation(policy_id: str, context: dict[str, Any]) -> b
         opa_client = await get_opa_client()
 
         # Create basic OPA evaluation request
-        from app.core.opa_client import PolicyEvaluationRequest
+        from .core.opa_client import PolicyEvaluationRequest
 
         request = PolicyEvaluationRequest(
             query="data.acgs.authz.allow",

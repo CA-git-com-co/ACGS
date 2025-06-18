@@ -4,12 +4,16 @@ import logging
 import time
 from typing import Any
 
-
 # Import production security middleware
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
-    from security_middleware import apply_production_security_middleware, create_security_config
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    from security_middleware import (
+        apply_production_security_middleware,
+        create_security_config,
+    )
+
     SECURITY_MIDDLEWARE_AVAILABLE = True
     print("✅ Production security middleware loaded successfully")
 except ImportError as e:
@@ -20,17 +24,12 @@ except ImportError as e:
 # Import comprehensive audit logging
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from comprehensive_audit_logger import (
         apply_audit_logging_to_service,
-        get_audit_logger,
-        log_user_login,
-        log_constitutional_validation,
-        log_security_violation,
-        AuditEventType,
-        AuditSeverity,
-        ComplianceFramework
     )
+
     AUDIT_LOGGING_AVAILABLE = True
     print("✅ Comprehensive audit logging loaded successfully")
 except ImportError as e:
@@ -50,7 +49,7 @@ logger = logging.getLogger("ACGS-1 Enhanced FV Service")
 
 # Import advanced verification components (with error handling)
 try:
-    from app.core.smt_solver_integration import smt_solver_client
+    from .core.smt_solver_integration import smt_solver_client
 
     SMT_AVAILABLE = True
     logger.info("Z3 SMT Solver integration loaded successfully")
@@ -60,7 +59,7 @@ except ImportError as e:
     SMT_AVAILABLE = False
 
 try:
-    from app.middleware.enhanced_security import add_enhanced_security_middleware
+    from .middleware.enhanced_security import add_enhanced_security_middleware
 
     SECURITY_MIDDLEWARE_AVAILABLE = True
     logger.info("Enhanced security middleware loaded successfully")
@@ -102,7 +101,7 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         max_request_size=10 * 1024 * 1024,  # 10MB
         rate_limit_requests=120,
         rate_limit_window=60,
-        enable_threat_detection=True
+        enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "fv_service", security_config)
     print(f"✅ Production security middleware applied to fv service")

@@ -7,12 +7,11 @@ import base64
 from datetime import UTC, datetime
 from typing import Any
 
+from .database import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_async_db
-
-# from app.core.auth import require_internal_service, User
+# from .core.auth import require_internal_service, User
 
 
 # Local auth stubs
@@ -27,7 +26,7 @@ def require_internal_service():
     return User()
 
 
-from app.schemas import (
+from .schemas import (
     CryptoKey,
     CryptoKeyCreate,
     CryptoKeyList,
@@ -45,9 +44,9 @@ from app.schemas import (
     TimestampVerification,
     TimestampVerificationResult,
 )
-from app.services.crypto_service import crypto_service, merkle_service
-from app.services.key_management import key_manager
-from app.services.timestamp_service import timestamp_manager
+from .services.crypto_service import crypto_service, merkle_service
+from .services.key_management import key_manager
+from .services.timestamp_service import timestamp_manager
 
 router = APIRouter()
 

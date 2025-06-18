@@ -264,9 +264,7 @@ class ConstitutionalCryptoSigner:
                     {
                         "signature": sig.dict(),
                         "verified": is_valid,
-                        "verification_timestamp": datetime.now(
-                            UTC
-                        ).isoformat(),
+                        "verification_timestamp": datetime.now(UTC).isoformat(),
                     }
                 )
 

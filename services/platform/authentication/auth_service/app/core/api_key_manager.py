@@ -213,9 +213,7 @@ class ApiKeyManager:
 
         # Find API key by prefix
         result = await db.execute(
-            select(ApiKey).where(
-                and_(ApiKey.key_prefix == prefix, ApiKey.is_active)
-            )
+            select(ApiKey).where(and_(ApiKey.key_prefix == prefix, ApiKey.is_active))
         )
         api_key_obj = result.scalar_one_or_none()
 
@@ -227,9 +225,7 @@ class ApiKeyManager:
             return None
 
         # Check expiration
-        if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(
-            UTC
-        ):
+        if api_key_obj.expires_at and api_key_obj.expires_at <= datetime.now(UTC):
             return None
 
         # Check scopes if required

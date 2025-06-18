@@ -500,9 +500,7 @@ class SecurityManager:
                         [
                             event
                             for event in self.security_events
-                            if (
-                                datetime.now(UTC) - event.timestamp
-                            ).total_seconds()
+                            if (datetime.now(UTC) - event.timestamp).total_seconds()
                             < 3600
                         ]
                     ),

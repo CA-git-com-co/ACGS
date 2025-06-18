@@ -10,6 +10,7 @@ from abc import ABC, abstractmethod
 from typing import Any, TypeVar
 
 from services.shared.common.error_handling import ACGSException
+
 from .interfaces import CacheInterface, DatabaseInterface
 
 logger = logging.getLogger(__name__)
@@ -146,9 +147,7 @@ class CacheProvider(ServiceProvider):
             async def get(self, key: str) -> Any | None:
                 return self._cache.get(key)
 
-            async def set(
-                self, key: str, value: Any, ttl: int | None = None
-            ) -> bool:
+            async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
                 self._cache[key] = value
                 return True
 

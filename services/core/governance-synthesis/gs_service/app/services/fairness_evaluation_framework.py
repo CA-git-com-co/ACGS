@@ -392,10 +392,26 @@ class FairnessEvaluationFramework:
             group_true = [ground_truth[i] for i in group_indices]
 
             # Calculate TPR and FPR
-            tp = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 1 and t == 1)
-            fp = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 1 and t == 0)
-            tn = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 0 and t == 0)
-            fn = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 0 and t == 1)
+            tp = sum(
+                1
+                for p, t in zip(group_pred, group_true, strict=False)
+                if p == 1 and t == 1
+            )
+            fp = sum(
+                1
+                for p, t in zip(group_pred, group_true, strict=False)
+                if p == 1 and t == 0
+            )
+            tn = sum(
+                1
+                for p, t in zip(group_pred, group_true, strict=False)
+                if p == 0 and t == 0
+            )
+            fn = sum(
+                1
+                for p, t in zip(group_pred, group_true, strict=False)
+                if p == 0 and t == 1
+            )
 
             tpr = tp / (tp + fn) if (tp + fn) > 0 else 0
             fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
@@ -439,7 +455,9 @@ class FairnessEvaluationFramework:
             group_pred = [predictions[i] for i in group_indices]
             group_true = [ground_truth[i] for i in group_indices]
 
-            correct = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == t)
+            correct = sum(
+                1 for p, t in zip(group_pred, group_true, strict=False) if p == t
+            )
             accuracy = correct / len(group_pred) if group_pred else 0
             accuracy_by_group[group] = accuracy
 
@@ -475,8 +493,16 @@ class FairnessEvaluationFramework:
             group_pred = [predictions[i] for i in group_indices]
             group_true = [ground_truth[i] for i in group_indices]
 
-            tp = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 1 and t == 1)
-            fp = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 1 and t == 0)
+            tp = sum(
+                1
+                for p, t in zip(group_pred, group_true, strict=False)
+                if p == 1 and t == 1
+            )
+            fp = sum(
+                1
+                for p, t in zip(group_pred, group_true, strict=False)
+                if p == 1 and t == 0
+            )
 
             ppv = tp / (tp + fp) if (tp + fp) > 0 else 0
             ppv_by_group[group] = ppv
@@ -513,8 +539,16 @@ class FairnessEvaluationFramework:
             group_pred = [predictions[i] for i in group_indices]
             group_true = [ground_truth[i] for i in group_indices]
 
-            fp = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 1 and t == 0)
-            fn = sum(1 for p, t in zip(group_pred, group_true, strict=False) if p == 0 and t == 1)
+            fp = sum(
+                1
+                for p, t in zip(group_pred, group_true, strict=False)
+                if p == 1 and t == 0
+            )
+            fn = sum(
+                1
+                for p, t in zip(group_pred, group_true, strict=False)
+                if p == 0 and t == 1
+            )
 
             ratio = fn / fp if fp > 0 else float("inf") if fn > 0 else 0
             fn_fp_ratio_by_group[group] = ratio

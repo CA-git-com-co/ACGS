@@ -431,8 +431,7 @@ class MetricsCollector:
             recent_metrics = [
                 m
                 for m in self.metrics_buffer
-                if (datetime.now(UTC) - m.timestamp).total_seconds()
-                < 3600  # Last hour
+                if (datetime.now(UTC) - m.timestamp).total_seconds() < 3600  # Last hour
             ]
 
             # Group metrics by type

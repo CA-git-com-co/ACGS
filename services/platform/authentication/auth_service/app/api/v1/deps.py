@@ -18,7 +18,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 # Re-export get_current_active_user from security.py for direct use in endpoints.
-# This avoids endpoints having to import from app.core.security directly,
+# This avoids endpoints having to import from .core.security directly,
 # if that is the preferred style.
 # Example of creating a pre-defined dependency for even cleaner use in endpoints:
 # current_active_user_dependency = Depends(get_current_active_user)

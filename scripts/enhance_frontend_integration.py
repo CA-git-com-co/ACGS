@@ -9,14 +9,15 @@ Completes blockchain-frontend integration for E2E validation
 """
 
 import asyncio
-import aiohttp
 import json
 import logging
 import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
+import aiohttp
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

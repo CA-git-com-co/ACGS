@@ -19,22 +19,21 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from fastapi.websockets import WebSocketState
-from pydantic import BaseModel
-
-from app.services.qec_error_correction_service import (
+from .services.qec_error_correction_service import (
     QECErrorCorrectionService,
 )
 
 # Import violation detection services
-from app.services.violation_escalation_service import (
+from .services.violation_escalation_service import (
     EscalationResult,
 )
-from app.workflows.multi_model_manager import get_multi_model_manager
-from app.workflows.structured_output_models import (
+from .workflows.multi_model_manager import get_multi_model_manager
+from .workflows.structured_output_models import (
     ConstitutionalFidelityScore,
 )
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi.websockets import WebSocketState
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

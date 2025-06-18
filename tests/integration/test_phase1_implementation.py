@@ -83,7 +83,9 @@ async def test_constitutional_prompting():
         from services.core.governance_synthesis.gs_service.app.core.constitutional_prompting import (
             constitutional_prompt_builder,
         )
-        from services.core.governance_synthesis.gs_service.app.schemas import ConstitutionalSynthesisInput
+        from services.core.governance_synthesis.gs_service.app.schemas import (
+            ConstitutionalSynthesisInput,
+        )
 
         print("✓ Testing constitutional prompt builder...")
 
@@ -250,7 +252,9 @@ async def test_integration():
         from services.core.governance_synthesis.gs_service.app.core.llm_integration import (
             query_llm_for_constitutional_synthesis,
         )
-        from services.core.governance_synthesis.gs_service.app.schemas import ConstitutionalSynthesisInput
+        from services.core.governance_synthesis.gs_service.app.schemas import (
+            ConstitutionalSynthesisInput,
+        )
 
         print("✓ Testing integrated constitutional synthesis...")
 

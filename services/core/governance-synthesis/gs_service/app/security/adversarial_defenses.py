@@ -249,9 +249,7 @@ class AdversarialDefenseSystem:
 
             for feature_id, feature in self.refusal_features.items():
                 # Simulate feature activation
-                text_hash = hashlib.sha256(
-                    input_text.encode()
-                ).hexdigest()
+                text_hash = hashlib.sha256(input_text.encode()).hexdigest()
                 activation = abs(hash(text_hash + feature_id) % 100) / 100.0
 
                 activations[feature_id] = activation

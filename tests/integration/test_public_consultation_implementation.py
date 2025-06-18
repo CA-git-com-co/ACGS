@@ -355,7 +355,9 @@ def main():
     passed_tests = sum(test_results)
     total_tests = len(test_results)
 
-    for i, (test_name, result) in enumerate(zip(test_names, test_results, strict=False)):
+    for i, (test_name, result) in enumerate(
+        zip(test_names, test_results, strict=False)
+    ):
         status = "✅ PASS" if result else "❌ FAIL"
         print(f"{i+1}. {test_name}: {status}")
 

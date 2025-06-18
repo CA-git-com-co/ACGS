@@ -167,9 +167,7 @@ class MemoryOptimizer:
     - Process restart recommendations
     """
 
-    def __init__(
-        self, service_name: str, thresholds: MemoryThresholds | None = None
-    ):
+    def __init__(self, service_name: str, thresholds: MemoryThresholds | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

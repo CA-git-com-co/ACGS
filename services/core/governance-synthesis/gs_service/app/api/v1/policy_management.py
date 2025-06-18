@@ -12,16 +12,20 @@ from ...crud_gs import (
     create_direct_policy,
     create_policy_from_template_logic,
     create_policy_template,
+)
+from ...crud_gs import delete_policy as delete_policy_crud
+from ...crud_gs import (
     delete_policy_template,
     get_policies,
     get_policy,
     get_policy_template,
     get_policy_templates,
-    update_policy_template,
 )
-from ...crud_gs import delete_policy as delete_policy_crud
 from ...crud_gs import (
     update_policy as update_policy_crud,  # Goes up 3 levels from v1 to app for crud_gs
+)
+from ...crud_gs import (
+    update_policy_template,
 )
 
 # from services.shared.models import User # For auth dependency if needed

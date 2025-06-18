@@ -319,9 +319,7 @@ class AlertManager:
 
         logger.info(f"Alert suppressed: {alert_id} for {duration_minutes} minutes")
 
-    def get_active_alerts(
-        self, severity: AlertSeverity | None = None
-    ) -> list[Alert]:
+    def get_active_alerts(self, severity: AlertSeverity | None = None) -> list[Alert]:
         """Get list of active alerts, optionally filtered by severity."""
         alerts = list(self.active_alerts.values())
 

@@ -544,15 +544,12 @@ class ViolationDetectionService:
             # Check if cache needs refresh (refresh every 5 minutes)
             if (
                 self.cache_updated_at is None
-                or (datetime.now(UTC) - self.cache_updated_at).total_seconds()
-                > 300
+                or (datetime.now(UTC) - self.cache_updated_at).total_seconds() > 300
             ):
 
                 async for db in get_async_db():
                     result = await db.execute(
-                        select(ViolationThreshold).where(
-                            ViolationThreshold.enabled
-                        )
+                        select(ViolationThreshold).where(ViolationThreshold.enabled)
                     )
                     thresholds = result.scalars().all()
 

@@ -51,7 +51,6 @@ class BaseValidator(ABC):
         self, policy_data: dict, context: GovernanceContext
     ) -> ValidationResult:
         """Validate policy data against governance context."""
-        pass
 
 
 class PrimaryValidator(BaseValidator):

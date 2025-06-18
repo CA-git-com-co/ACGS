@@ -112,7 +112,7 @@ def test_service_imports():
 
             # Try to import main module
             try:
-                from app.main import app
+                from .main import app
 
                 import_time = time.time() - start_time
                 print(f"  ✅ SUCCESS - Imported in {import_time:.2f}s")

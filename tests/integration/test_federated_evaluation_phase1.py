@@ -18,7 +18,7 @@ def test_federated_evaluator_import():
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
-        from app.core.federated_evaluator import (
+        from .core.federated_evaluator import (
             EvaluationStatus,
             PlatformType,
         )
@@ -45,7 +45,7 @@ def test_secure_aggregation_import():
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
-        from app.core.secure_aggregation import (
+        from .core.secure_aggregation import (
             AggregationMethod,
         )
 
@@ -68,7 +68,7 @@ def test_privacy_metrics_import():
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
-        from app.core.privacy_metrics import (
+        from .core.privacy_metrics import (
             PrivacyMechanism,
         )
 
@@ -105,7 +105,7 @@ async def test_federated_evaluator_initialization():
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
-        from app.core.federated_evaluator import FederatedEvaluator
+        from .core.federated_evaluator import FederatedEvaluator
 
         # Create evaluator instance
         evaluator = FederatedEvaluator()
@@ -145,7 +145,7 @@ async def test_secure_aggregator_initialization():
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
-        from app.core.secure_aggregation import SecureAggregator
+        from .core.secure_aggregation import SecureAggregator
 
         # Create aggregator instance
         aggregator = SecureAggregator()
@@ -179,7 +179,7 @@ async def test_privacy_manager_initialization():
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
-        from app.core.privacy_metrics import DifferentialPrivacyManager
+        from .core.privacy_metrics import DifferentialPrivacyManager
 
         # Create privacy manager instance
         privacy_manager = DifferentialPrivacyManager(epsilon=1.0, delta=1e-5)
@@ -215,7 +215,7 @@ async def test_mock_federated_evaluation():
 
         # sys.path.append(os.path.join(os.path.dirname(__file__), '../../src/backend/federated_service'))  # Removed during reorganization
 
-        from app.core.federated_evaluator import FederatedEvaluator, PlatformType
+        from .core.federated_evaluator import FederatedEvaluator, PlatformType
 
         # Create and initialize evaluator
         evaluator = FederatedEvaluator()

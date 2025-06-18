@@ -19,7 +19,7 @@ sys.path.append(
 )
 
 try:
-    from sla_monitor import ACGSSLAMonitor, SLAStatus
+    from sla_monitor import ACGSSLAMonitor
 except ImportError:
     print("❌ Could not import SLA monitoring service")
     print("Please ensure the sla_monitor.py is available")

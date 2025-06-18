@@ -6,16 +6,15 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
-
-from app.services.pgp_assurance import (
+from .services.pgp_assurance import (
     HashAlgorithm,
     PGPAssuranceService,
     SignatureAlgorithm,
 )
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 
-# from app.core.auth import require_integrity_admin, require_internal_service, User
+# from .core.auth import require_integrity_admin, require_internal_service, User
 
 
 # Local auth stubs
@@ -319,7 +318,7 @@ async def verify_timestamp(
         # Reconstruct timestamp token from info
         import json
 
-        from app.services.pgp_assurance import TimestampToken
+        from .services.pgp_assurance import TimestampToken
 
         timestamp_token = TimestampToken(
             timestamp=datetime.fromisoformat(timestamp_info["timestamp"]),

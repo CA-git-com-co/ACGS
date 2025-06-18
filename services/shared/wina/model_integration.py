@@ -42,9 +42,7 @@ class ModelWeightInfo:
     layer_type: str  # 'attention', 'mlp', 'embedding', etc.
     matrix_type: str  # 'W_k', 'W_gate', 'W_q', 'W_v', etc.
     original_shape: tuple[int, ...]
-    extraction_timestamp: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
-    )
+    extraction_timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 @dataclass

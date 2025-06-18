@@ -138,9 +138,7 @@ class ExecutionResultCache:
 
         return success
 
-    async def get_performance_metrics(
-        self, execution_id: str
-    ) -> dict[str, Any] | None:
+    async def get_performance_metrics(self, execution_id: str) -> dict[str, Any] | None:
         """
         Retrieve cached performance metrics.
 

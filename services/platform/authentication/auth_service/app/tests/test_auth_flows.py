@@ -169,7 +169,7 @@ async def test_login_inactive_user(client: AsyncClient):
     # or assume it would be tested if such an endpoint existed.
     # For a full integration test, one might directly manipulate the DB here if using a test DB session.
     # from sqlalchemy.ext.asyncio import AsyncSession
-    # from app.api.v1.deps import get_db # This would be the overridden one
+    # from .api.v1.deps import get_db # This would be the overridden one
     # from services.shared.models import User as UserModel
     # from sqlalchemy import update
     # async for db_session in fastapi_app.dependency_overrides[get_db](): # Get the overridden session
@@ -229,9 +229,7 @@ async def test_refresh_token_success(client: AsyncClient):
         "username": user_data["username"],
         "password": user_data["password"],
     }
-    await client.post(
-        f"{API_V1_AUTH_PREFIX}/token", data=login_payload
-    )
+    await client.post(f"{API_V1_AUTH_PREFIX}/token", data=login_payload)
     initial_access_cookie_value = client.cookies.get("access_token_cookie")
     initial_refresh_cookie_value = client.cookies.get("refresh_token_cookie")
     csrf_token = client.cookies.get(

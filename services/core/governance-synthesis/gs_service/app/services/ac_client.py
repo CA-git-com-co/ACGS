@@ -59,9 +59,7 @@ class ACServiceClient:
             print(f"Unexpected error fetching principle {principle_id}: {str(e)}")
             return None
 
-    async def list_principles(
-        self, auth_token: str | None = None
-    ) -> list[ACPrinciple]:
+    async def list_principles(self, auth_token: str | None = None) -> list[ACPrinciple]:
         """
         Fetches all principles from the AC Service.
         """

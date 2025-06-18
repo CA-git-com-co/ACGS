@@ -59,9 +59,7 @@ class APIKeyManager:
     - Environment variable fallbacks
     """
 
-    def __init__(
-        self, encryption_key: str | None = None, redis_url: str | None = None
-    ):
+    def __init__(self, encryption_key: str | None = None, redis_url: str | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

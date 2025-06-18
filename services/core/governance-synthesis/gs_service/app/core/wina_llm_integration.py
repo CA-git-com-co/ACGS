@@ -45,13 +45,13 @@ try:
         LLMInterpretationInput,
         LLMStructuredOutput,
     )
-    from .llm_integration import (
+    from .llm_integration import (  # Import specific client for type checking  # Import specific client for type checking
         GroqLLMClient,
         RealLLMClient,
         get_llm_client,
         query_llm_for_constitutional_synthesis,
         query_llm_for_structured_output,
-    )  # Import specific client for type checking  # Import specific client for type checking
+    )
 
     GS_ENGINE_AVAILABLE = True
 except ImportError as e:
@@ -270,9 +270,7 @@ class WINAOptimizedLLMClient:
             model_identifier = self._get_model_identifier(llm_client)
 
             # Apply WINA optimization if enabled
-            wina_optimization: WINAOptimizationResult | None = (
-                None  # Ensure type hint
-            )
+            wina_optimization: WINAOptimizationResult | None = None  # Ensure type hint
             llm_call_kwargs = {}  # To pass gating info to LLM
 
             if (
@@ -411,9 +409,7 @@ class WINAOptimizedLLMClient:
             model_identifier = self._get_model_identifier(llm_client)
 
             # Apply WINA optimization if enabled
-            wina_optimization: WINAOptimizationResult | None = (
-                None  # Ensure type hint
-            )
+            wina_optimization: WINAOptimizationResult | None = None  # Ensure type hint
             gating_decision_applied: GatingDecision | None = None
             llm_call_kwargs = {}
 

@@ -9,15 +9,15 @@ and status management.
 import logging
 from typing import Any
 
+from .workflows.constitutional_council_graph import (
+    AmendmentProposalInput,
+    execute_constitutional_council_workflow,
+)
+from .workflows.workflow_manager import get_workflow_manager
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.workflows.constitutional_council_graph import (
-    AmendmentProposalInput,
-    execute_constitutional_council_workflow,
-)
-from app.workflows.workflow_manager import get_workflow_manager
 from services.shared.auth import get_current_active_user as get_current_user
 from services.shared.database import get_async_db
 from services.shared.models import User
@@ -447,7 +447,7 @@ async def get_constitutional_council_workflow_state(
         Current workflow state
     """
     try:
-        from app.workflows.constitutional_council_graph import (
+        from .workflows.constitutional_council_graph import (
             create_constitutional_council_graph,
         )
 

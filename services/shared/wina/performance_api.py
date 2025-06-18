@@ -256,8 +256,7 @@ async def get_health_status(
                 [
                     alert
                     for alert in collector.alerts_history
-                    if datetime.now(UTC) - alert["timestamp"]
-                    < timedelta(hours=1)
+                    if datetime.now(UTC) - alert["timestamp"] < timedelta(hours=1)
                 ]
             ),
         }

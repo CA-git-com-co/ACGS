@@ -1,4 +1,3 @@
-
 import numpy as np  # Added for type hinting and example matrix
 
 from .models import AnalyzedNeuronActivation, NeuronActivationInput, WINAWeightOutput

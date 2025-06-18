@@ -105,9 +105,7 @@ class AuditLogList(BaseModel):
 class AppealBase(BaseModel):
     decision_id: str = Field(..., description="ID of the decision being appealed")
     appeal_reason: str = Field(..., description="Reason for the appeal")
-    evidence: str | None = Field(
-        None, description="Supporting evidence for the appeal"
-    )
+    evidence: str | None = Field(None, description="Supporting evidence for the appeal")
     requested_remedy: str = Field(..., description="What remedy is being requested")
     appellant_contact: str | None = Field(
         None, description="Contact information for the appellant"
@@ -281,9 +279,7 @@ class CryptoKeyList(BaseModel):
 
 class SignatureRequest(BaseModel):
     data: str = Field(..., description="Data to sign")
-    key_id: str | None = Field(
-        None, description="Specific key ID to use for signing"
-    )
+    key_id: str | None = Field(None, description="Specific key ID to use for signing")
     purpose: str = Field(default="signing", description="Key purpose")
 
 

@@ -523,9 +523,9 @@ class PolicyValidationEngine:
 
         # Calculate weighted average
         if sum(weights) > 0:
-            return sum(score * weight for score, weight in zip(scores, weights, strict=False)) / sum(
-                weights
-            )
+            return sum(
+                score * weight for score, weight in zip(scores, weights, strict=False)
+            ) / sum(weights)
         return 0.0
 
     def _update_metrics(self, latency_ms: float, success: bool):

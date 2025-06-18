@@ -44,6 +44,7 @@ try:
     from services.core.governance_synthesis.app.services.lipschitz_estimator import (
         LipschitzEstimator,
     )
+
     from services.platform.integrity.app.services.crypto_service import (
         CryptographicIntegrityService,
     )
