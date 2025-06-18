@@ -34,18 +34,24 @@ TEST_DB_URL = os.getenv(
 )
 
 # Initialize async components only if dependencies are available
-if ASYNC_DEPS_AVAILABLE:
-    async_test_engine = create_async_engine(TEST_DB_URL, echo=False)
-    AsyncTestSessionFactory = sessionmaker(
-        bind=async_test_engine,
-        class_=AsyncSession,
-        expire_on_commit=False,
-        autocommit=False,
-        autoflush=False,
-    )
-else:
+try:
+    if ASYNC_DEPS_AVAILABLE:
+        async_test_engine = create_async_engine(TEST_DB_URL, echo=False)
+        AsyncTestSessionFactory = sessionmaker(
+            bind=async_test_engine,
+            class_=AsyncSession,
+            expire_on_commit=False,
+            autocommit=False,
+            autoflush=False,
+        )
+    else:
+        async_test_engine = None
+        AsyncTestSessionFactory = None
+except Exception:
+    # Fallback if aiosqlite or other dependencies are missing
     async_test_engine = None
     AsyncTestSessionFactory = None
+    ASYNC_DEPS_AVAILABLE = False
 
 
 @pytest.fixture(scope="session")

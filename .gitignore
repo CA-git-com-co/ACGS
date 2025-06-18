@@ -403,3 +403,11 @@ performance_data/
 # Cache directories
 .cache/
 cache/
+# Project-specific directories
+/backups
+/blockchain/target
+/blockchain/quantumagi-deployment
+/.cursor
+/.roo
+/.taskmaster
+/blockchain/node_modules
