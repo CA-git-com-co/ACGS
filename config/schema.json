@@ -1,0 +1,283 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ACGS-1 Configuration Schema",
+  "description": "JSON Schema for validating ACGS-1 configuration files",
+  "type": "object",
+  "properties": {
+    "environment": {
+      "type": "string",
+      "enum": ["development", "staging", "production"],
+      "description": "Deployment environment"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Configuration version"
+    },
+    "database": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "Database host"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Database port"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Database name"
+        },
+        "user": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Database user"
+        },
+        "ssl_mode": {
+          "type": "string",
+          "enum": ["disable", "require", "verify-full"],
+          "description": "SSL mode for database connection"
+        },
+        "pool_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Connection pool size"
+        },
+        "max_overflow": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200,
+          "description": "Maximum overflow connections"
+        }
+      },
+      "required": ["host", "port", "name", "user", "ssl_mode"],
+      "additionalProperties": true
+    },
+    "redis": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "Redis host"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Redis port"
+        },
+        "db": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15,
+          "description": "Redis database number"
+        },
+        "ssl": {
+          "type": "boolean",
+          "description": "Enable SSL for Redis connection"
+        }
+      },
+      "required": ["host", "port", "db"],
+      "additionalProperties": true
+    },
+    "services": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Service display name"
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 65535,
+              "description": "Service port"
+            },
+            "host": {
+              "type": "string",
+              "description": "Service host"
+            },
+            "health_path": {
+              "type": "string",
+              "pattern": "^/.*",
+              "description": "Health check endpoint path"
+            },
+            "debug": {
+              "type": "boolean",
+              "description": "Enable debug mode"
+            }
+          },
+          "required": ["name", "port", "host", "health_path"],
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "logging": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+          "description": "Logging level"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["json", "detailed", "simple"],
+          "description": "Log format"
+        },
+        "output": {
+          "type": "string",
+          "enum": ["console", "file", "both"],
+          "description": "Log output destination"
+        },
+        "structured": {
+          "type": "boolean",
+          "description": "Enable structured logging"
+        }
+      },
+      "required": ["level", "format", "output"],
+      "additionalProperties": true
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "jwt_secret": {
+          "type": "string",
+          "minLength": 1,
+          "description": "JWT secret key"
+        },
+        "encryption_key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Encryption key"
+        },
+        "ssl_enabled": {
+          "type": "boolean",
+          "description": "Enable SSL/TLS"
+        },
+        "cors_origins": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": "Allowed CORS origins"
+        },
+        "rate_limiting": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "requests_per_minute": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": ["enabled"],
+          "additionalProperties": true
+        }
+      },
+      "required": ["jwt_secret", "encryption_key", "ssl_enabled"],
+      "additionalProperties": true
+    },
+    "quantumagi": {
+      "type": "object",
+      "properties": {
+        "constitution_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{16}$",
+          "description": "Constitution hash (16 hex characters)"
+        },
+        "solana_network": {
+          "type": "string",
+          "enum": ["devnet", "testnet", "mainnet"],
+          "description": "Solana network"
+        },
+        "rpc_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Solana RPC URL"
+        },
+        "commitment": {
+          "type": "string",
+          "enum": ["processed", "confirmed", "finalized"],
+          "description": "Transaction commitment level"
+        },
+        "max_retries": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "description": "Maximum retry attempts"
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300,
+          "description": "Request timeout in seconds"
+        }
+      },
+      "required": ["constitution_hash", "solana_network", "rpc_url"],
+      "additionalProperties": true
+    },
+    "monitoring": {
+      "type": "object",
+      "properties": {
+        "metrics_enabled": {
+          "type": "boolean",
+          "description": "Enable metrics collection"
+        },
+        "tracing_enabled": {
+          "type": "boolean",
+          "description": "Enable distributed tracing"
+        },
+        "health_check_interval": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300,
+          "description": "Health check interval in seconds"
+        },
+        "prometheus_port": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 65535,
+          "description": "Prometheus metrics port"
+        }
+      },
+      "additionalProperties": true
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "hot_reload": {
+          "type": "boolean",
+          "description": "Enable hot reload"
+        },
+        "debug_mode": {
+          "type": "boolean",
+          "description": "Enable debug mode"
+        },
+        "test_mode": {
+          "type": "boolean",
+          "description": "Enable test mode"
+        },
+        "mock_external_services": {
+          "type": "boolean",
+          "description": "Mock external services"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "required": ["environment", "version", "database", "services", "quantumagi"],
+  "additionalProperties": true
+}

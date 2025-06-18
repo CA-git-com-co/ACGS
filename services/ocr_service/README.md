@@ -2,6 +2,8 @@
 
 A comprehensive Python client library and command-line interface for the ACGS OCR (Optical Character Recognition) service, which uses the Nanonets OCR model through vLLM.
 
+**Note**: This is the client library for consuming OCR services. The OCR service backend is located in `services/ocr-service/` and provides the actual OCR processing capabilities via Docker deployment.
+
 ## Features
 
 - Extract text from images using state-of-the-art OCR

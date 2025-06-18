@@ -17,18 +17,15 @@ class IntegrityServiceClient:
         # sha256: func_hash
         self.base_url = base_url
         timeout_config = httpx.Timeout(10.0, connect=5.0)
-        # Handle SSL verification issues for development/testing
-        try:
-            self.client = httpx.AsyncClient(
-                base_url=self.base_url, timeout=timeout_config
-            )
-        except Exception as e:
-            print(f"Warning: SSL configuration issue, using verify=False: {e}")
-            self.client = httpx.AsyncClient(
-                base_url=self.base_url,
-                timeout=timeout_config,
-                verify=True,  # Enable SSL verification for security
-            )
+        # Initialize HTTP client with secure SSL verification
+        # For development with self-signed certificates, set INTEGRITY_SERVICE_VERIFY_SSL=false
+        verify_ssl = os.getenv("INTEGRITY_SERVICE_VERIFY_SSL", "true").lower() == "true"
+
+        self.client = httpx.AsyncClient(
+            base_url=self.base_url,
+            timeout=timeout_config,
+            verify=verify_ssl,  # Secure by default, configurable for development
+        )
 
     async def list_verified_policy_rules(
         self, auth_token: str | None = None

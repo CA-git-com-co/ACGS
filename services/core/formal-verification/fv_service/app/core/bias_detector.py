@@ -4,6 +4,7 @@ Integrates bias detection algorithms from AlphaEvolve system
 """
 
 import logging
+import secrets
 import time
 from typing import Any
 
@@ -227,7 +228,8 @@ class BiasDetector:
         # Extract protected attribute values
         if not protected_attributes or protected_attributes[0] not in df.columns:
             # Use a synthetic protected attribute for demonstration
-            sensitive_features = np.random.choice(["group_a", "group_b"], size=len(df))
+            secure_random = secrets.SystemRandom()
+            sensitive_features = [secure_random.choice(["group_a", "group_b"]) for _ in range(len(df))]
         else:
             sensitive_features = df[protected_attributes[0]].values
 
@@ -266,17 +268,18 @@ class BiasDetector:
         In real implementation, this would execute the actual policy rule.
         """
         rule_content = rule.rule_content.lower()
+        secure_random = secrets.SystemRandom()
 
         # Simple heuristic based on rule content
         if "allow" in rule_content or "permit" in rule_content:
             # More permissive rule
-            return np.random.choice([0, 1], size=len(df), p=[0.3, 0.7])
+            return secure_random.choices([0, 1], weights=[0.3, 0.7], k=len(df))
         elif "deny" in rule_content or "restrict" in rule_content:
             # More restrictive rule
-            return np.random.choice([0, 1], size=len(df), p=[0.7, 0.3])
+            return secure_random.choices([0, 1], weights=[0.7, 0.3], k=len(df))
         else:
             # Balanced rule
-            return np.random.choice([0, 1], size=len(df), p=[0.5, 0.5])
+            return secure_random.choices([0, 1], weights=[0.5, 0.5], k=len(df))
 
     async def _heuristic_bias_detection(
         self,

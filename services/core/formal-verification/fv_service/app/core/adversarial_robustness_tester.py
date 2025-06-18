@@ -9,6 +9,7 @@ Based on AlphaEvolve-ACGS Integration System research paper improvements.
 
 import logging
 import random
+import secrets
 import time
 from dataclasses import dataclass
 from enum import Enum
@@ -295,27 +296,30 @@ class BoundaryConditionTester:
     ) -> bool:
         """Simulate boundary condition test."""
         # Simplified simulation - in practice would execute actual rule
+        secure_random = secrets.SystemRandom()
         if boundary_val == float("inf") or boundary_val == float("-inf"):
-            return random.random() > 0.3  # 70% chance of handling infinity correctly
-        return random.random() > 0.1  # 90% chance of passing normal boundary tests
+            return secure_random.random() > 0.3  # 70% chance of handling infinity correctly
+        return secure_random.random() > 0.1  # 90% chance of passing normal boundary tests
 
     async def _simulate_string_boundary_test(
         self, rule: PolicyRule, test_string: str
     ) -> bool:
         """Simulate string boundary test."""
+        secure_random = secrets.SystemRandom()
         if len(test_string) == 0:
-            return random.random() > 0.2  # 80% chance of handling empty strings
+            return secure_random.random() > 0.2  # 80% chance of handling empty strings
         elif len(test_string) > 5000:
-            return random.random() > 0.4  # 60% chance of handling very long strings
+            return secure_random.random() > 0.4  # 60% chance of handling very long strings
         elif "\x00" in test_string:
-            return random.random() > 0.5  # 50% chance of handling null bytes
-        return random.random() > 0.1  # 90% chance for normal strings
+            return secure_random.random() > 0.5  # 50% chance of handling null bytes
+        return secure_random.random() > 0.1  # 90% chance for normal strings
 
     async def _simulate_logical_boundary_test(
         self, rule: PolicyRule, positive: str, negative: str
     ) -> bool:
         """Simulate logical boundary test."""
-        return random.random() > 0.15  # 85% chance of passing logical tests
+        secure_random = secrets.SystemRandom()
+        return secure_random.random() > 0.15  # 85% chance of passing logical tests
 
 
 class MutationTester:
@@ -371,23 +375,24 @@ class MutationTester:
     def _generate_mutations(self, rule_content: str) -> list[str]:
         """Generate mutations of rule content."""
         mutations = []
+        secure_random = secrets.SystemRandom()
 
         # Character substitution mutations
         for i in range(min(10, len(rule_content))):
-            if random.random() < self.config.mutation_rate:
+            if secure_random.random() < self.config.mutation_rate:
                 mutated = list(rule_content)
                 mutated[i] = chr(ord(mutated[i]) + 1) if mutated[i] != "z" else "a"
                 mutations.append("".join(mutated))
 
         # Character deletion mutations
         for i in range(min(5, len(rule_content))):
-            if random.random() < self.config.mutation_rate:
+            if secure_random.random() < self.config.mutation_rate:
                 mutated = rule_content[:i] + rule_content[i + 1 :]
                 mutations.append(mutated)
 
         # Character insertion mutations
         for i in range(min(5, len(rule_content))):
-            if random.random() < self.config.mutation_rate:
+            if secure_random.random() < self.config.mutation_rate:
                 mutated = rule_content[:i] + "X" + rule_content[i:]
                 mutations.append(mutated)
 
@@ -401,14 +406,15 @@ class MutationTester:
         similarity = self._calculate_similarity(
             original_rule.rule_content, mutated_content
         )
+        secure_random = secrets.SystemRandom()
 
         # Rules should be robust to small changes
         if similarity > 0.9:
-            return random.random() > 0.1  # 90% chance of passing for small changes
+            return secure_random.random() > 0.1  # 90% chance of passing for small changes
         elif similarity > 0.7:
-            return random.random() > 0.3  # 70% chance for medium changes
+            return secure_random.random() > 0.3  # 70% chance for medium changes
         else:
-            return random.random() > 0.6  # 40% chance for large changes
+            return secure_random.random() > 0.6  # 40% chance for large changes
 
     def _calculate_similarity(self, original: str, mutated: str) -> float:
         """Calculate similarity between original and mutated content."""

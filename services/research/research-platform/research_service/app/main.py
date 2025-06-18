@@ -138,4 +138,11 @@ async def global_exception_handler(request, exc):
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8007, reload=True, log_level="info")
+    import os
+    uvicorn.run(
+        "main:app",
+        host=os.getenv("HOST", "127.0.0.1"),  # Secure by default, configurable for production
+        port=int(os.getenv("PORT", "8007")),
+        reload=os.getenv("RELOAD", "true").lower() == "true",
+        log_level=os.getenv("LOG_LEVEL", "info"),
+    )

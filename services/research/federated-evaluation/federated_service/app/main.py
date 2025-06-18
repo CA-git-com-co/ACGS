@@ -155,8 +155,13 @@ async def root():
 
 
 if __name__ == "__main__":
+    import os
     import uvicorn
 
     uvicorn.run(
-        "app.main:app", host="0.0.0.0", port=8006, reload=True, log_level="info"
+        "app.main:app",
+        host=os.getenv("HOST", "127.0.0.1"),  # Secure by default, configurable for production
+        port=int(os.getenv("PORT", "8006")),
+        reload=os.getenv("RELOAD", "true").lower() == "true",
+        log_level=os.getenv("LOG_LEVEL", "info"),
     )

@@ -1,34 +1,127 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# ACGS-1 Dependabot Configuration
+# Automated dependency management for constitutional governance system
+# Enhanced configuration for comprehensive security and maintenance
 
 version: 2
 updates:
-  # Python (pip)
+  # Python dependencies - Root level
   - package-ecosystem: "pip"
-    directory: "/"                  # Root directory (adjust if requirements.txt or pyproject.toml is elsewhere)
+    directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+      time: "06:00"
+      timezone: "UTC"
+    groups:
+      pip:
+        patterns: ["*"]
     open-pull-requests-limit: 10
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+      - "security"
 
-  # Python (pip) in subdirectories (optional, add if you have requirements in subfolders)
-  # - package-ecosystem: "pip"
-  #   directory: "/subfolder/"
-  #   schedule:
-  #     interval: "weekly"
-
-  # JavaScript (npm or yarn)
+  # Node.js dependencies - Applications
   - package-ecosystem: "npm"
-    directory: "/"                  # Root directory (adjust if package.json is elsewhere)
+    directory: "/applications"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+      time: "06:00"
+      timezone: "UTC"
+    groups:
+      npm-applications:
+        patterns: ["*"]
     open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "javascript"
+      - "frontend"
 
-  # C/C++ (GitHub Actions, for actions or tools defined in workflows)
-  - package-ecosystem: "github-actions"
-    directory: "/"                  # Always "/"
+  # Node.js dependencies - Blockchain
+  - package-ecosystem: "npm"
+    directory: "/blockchain"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "blockchain"
+      - "solana"
 
-  # (Add more package-ecosystems if you use other tools, like Docker, Maven, etc.)
+  # Node.js dependencies - Tools
+  - package-ecosystem: "npm"
+    directory: "/tools/mcp-inspector"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "tools"
+
+  # Rust dependencies - Blockchain programs
+  - package-ecosystem: "cargo"
+    directory: "/blockchain"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "rust"
+      - "blockchain"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "thursday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "ci-cd"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "infrastructure"

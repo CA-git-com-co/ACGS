@@ -262,7 +262,13 @@ async def background_monitoring():
 
 
 app = FastAPI(
-    title="ACGS-PGP Evolutionary Computation (EC)
+    title="ACGS-PGP Evolutionary Computation (EC) Service",
+    description="WINA-optimized oversight and governance for evolutionary computation systems",
+    version=config.get("api_version", "v1"),
+    debug=config.get("debug", False),
+    lifespan=lifespan,
+)
+
 # Apply comprehensive audit logging
 if AUDIT_LOGGING_AVAILABLE:
     apply_audit_logging_to_service(app, "ec_service")
@@ -289,12 +295,6 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
     print(f"✅ Production security middleware applied to ec service")
 else:
     print(f"⚠️ Security middleware not available for ec service")
- Service",
-    description="WINA-optimized oversight and governance for evolutionary computation systems",
-    version=config.get("api_version", "v1"),
-    debug=config.get("debug", False),
-    lifespan=lifespan,
-)
 
 # Initialize metrics for EC service
 metrics = get_metrics("ec_service")
@@ -484,12 +484,13 @@ def get_wina_performance_collector():
 
 
 if __name__ == "__main__":
+    import os
     import uvicorn
 
     uvicorn.run(
         "app.main:app",
-        host="0.0.0.0",
-        port=8006,  # EC service port (matches documented port mapping)
-        reload=True,
-        log_level="info",
+        host=os.getenv("HOST", "127.0.0.1"),  # Secure by default, configurable for production
+        port=int(os.getenv("PORT", "8006")),  # EC service port (matches documented port mapping)
+        reload=os.getenv("RELOAD", "true").lower() == "true",
+        log_level=os.getenv("LOG_LEVEL", "info"),
     )
