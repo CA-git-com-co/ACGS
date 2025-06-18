@@ -7,12 +7,14 @@ on:
     branches: [ main, master ]
   schedule:
     - cron: '0 2 * * *'  # Daily at 2 AM for comprehensive testing
+  workflow_dispatch:  # Allow manual triggering for testing
 
 permissions:
   contents: read
   packages: write
   security-events: write
   actions: read
+  id-token: write  # Required for MSDO and advanced security scanning
 
 env:
   REGISTRY: ghcr.io
@@ -24,10 +26,16 @@ env:
   # Enterprise Performance Targets
   ENTERPRISE_BUILD_TARGET_MINUTES: 5
   ENTERPRISE_AVAILABILITY_TARGET: 99.5
-  # Enhanced Caching Configuration
+  # Enhanced Caching Configuration for Enterprise Performance
   CARGO_INCREMENTAL: 1  # Enable incremental compilation for development
   CARGO_NET_RETRY: 10
   CARGO_NET_GIT_FETCH_WITH_CLI: true
+  # Workspace-level caching optimization
+  CARGO_TARGET_DIR: blockchain/target
+  RUSTC_WRAPPER: sccache  # Enable distributed compilation caching
+  # Circuit breaker configuration
+  MAX_RETRY_ATTEMPTS: 3
+  CIRCUIT_BREAKER_TIMEOUT: 300
 
 jobs:
   # Enterprise Performance Monitoring Job
