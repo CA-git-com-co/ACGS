@@ -141,8 +141,8 @@ async def test_acgs_service_health_checks(acgs_service_urls):
 async def test_federated_evaluation_acgs_integration():
     """Test federated evaluation integration with ACGS-PGP services."""
     try:
-        from app.core.cross_platform_coordinator import CrossPlatformCoordinator
-        from app.core.federated_evaluator import FederatedEvaluator, PlatformType
+        from .core.cross_platform_coordinator import CrossPlatformCoordinator
+        from .core.federated_evaluator import FederatedEvaluator, PlatformType
 
         # Create federated evaluator
         evaluator = FederatedEvaluator()
@@ -286,7 +286,7 @@ async def test_cross_service_communication_validation():
 async def test_platform_adapter_configuration(mock_api_keys):
     """Test platform adapter configuration with mock API keys."""
     try:
-        from app.core.cross_platform_adapters import (
+        from .core.cross_platform_adapters import (
             AdapterStatus,
             AnthropicPlatformAdapter,
             CoherePlatformAdapter,
@@ -337,7 +337,7 @@ async def test_platform_adapter_configuration(mock_api_keys):
 async def test_concurrent_federated_evaluations():
     """Test concurrent federated evaluations for load testing."""
     try:
-        from app.core.federated_evaluator import FederatedEvaluator, PlatformType
+        from .core.federated_evaluator import FederatedEvaluator, PlatformType
 
         # Create evaluator
         evaluator = FederatedEvaluator()
@@ -421,8 +421,8 @@ async def test_concurrent_federated_evaluations():
 async def test_byzantine_fault_tolerance_under_load():
     """Test Byzantine fault tolerance under high load conditions."""
     try:
-        from app.core.cross_platform_adapters import PlatformType
-        from app.core.cross_platform_coordinator import CrossPlatformCoordinator
+        from .core.cross_platform_adapters import PlatformType
+        from .core.cross_platform_coordinator import CrossPlatformCoordinator
 
         coordinator = CrossPlatformCoordinator()
 
@@ -505,7 +505,7 @@ async def test_resource_utilization_monitoring():
     """Test resource utilization monitoring during federated evaluation."""
     try:
         import psutil
-        from app.core.federated_evaluator import FederatedEvaluator, PlatformType
+        from .core.federated_evaluator import FederatedEvaluator, PlatformType
 
         # Create evaluator
         evaluator = FederatedEvaluator()
@@ -604,7 +604,7 @@ async def test_monitoring_integration():
                     }
 
         # Test federated evaluation metrics collection
-        from app.core.federated_evaluator import FederatedEvaluator
+        from .core.federated_evaluator import FederatedEvaluator
 
         evaluator = FederatedEvaluator()
         await evaluator.initialize()
@@ -647,7 +647,7 @@ async def test_real_world_api_validation():
     try:
         import os
 
-        from app.core.cross_platform_adapters import (
+        from .core.cross_platform_adapters import (
             AnthropicPlatformAdapter,
             CoherePlatformAdapter,
             EvaluationMode,
@@ -789,7 +789,7 @@ async def test_real_world_api_validation():
 async def test_cost_estimation_accuracy():
     """Test cost estimation accuracy and token usage tracking."""
     try:
-        from app.core.cross_platform_adapters import (
+        from .core.cross_platform_adapters import (
             AnthropicPlatformAdapter,
             CoherePlatformAdapter,
             GroqPlatformAdapter,

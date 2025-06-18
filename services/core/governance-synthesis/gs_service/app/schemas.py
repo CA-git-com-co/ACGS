@@ -376,9 +376,7 @@ class ECProposal(BaseModel):
     fitness_context: dict[str, Any] = Field(
         ..., description="Context for fitness evaluation"
     )
-    metadata: dict[str, Any] | None = Field(
-        None, description="Additional EC metadata"
-    )
+    metadata: dict[str, Any] | None = Field(None, description="Additional EC metadata")
 
 
 class ECGovernanceDecision(BaseModel):

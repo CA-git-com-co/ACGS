@@ -8,7 +8,7 @@ dependency injection framework.
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Union, Optional, Dict, List, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

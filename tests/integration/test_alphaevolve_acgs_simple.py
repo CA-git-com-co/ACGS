@@ -263,6 +263,7 @@ def test_integration_framework_compatibility():
         from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
             LipschitzEstimator,
         )
+
         from services.platform.pgc.pgc_service.app.core.proactive_fairness_generator import (
             ProactiveFairnessGenerator,
         )

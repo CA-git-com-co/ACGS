@@ -6,7 +6,7 @@ from freezegun import freeze_time
 from ..core import security  # Assuming your security functions are here
 from ..core.config import settings
 
-# from app.schemas.token import TokenPayload # Unused, adjust if needed
+# from .schemas.token import TokenPayload # Unused, adjust if needed
 
 
 def test_create_access_token():

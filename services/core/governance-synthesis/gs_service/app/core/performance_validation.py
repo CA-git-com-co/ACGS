@@ -599,9 +599,7 @@ class PerformanceValidator:
             "report_generated": datetime.now(UTC).isoformat(),
             "validation_period": {
                 "start_time": self.start_time.isoformat(),
-                "duration_hours": (
-                    datetime.now(UTC) - self.start_time
-                ).total_seconds()
+                "duration_hours": (datetime.now(UTC) - self.start_time).total_seconds()
                 / 3600,
             },
             "summary_statistics": summary_stats,

@@ -426,9 +426,7 @@ class ViolationConfigManager:
 
         return configs
 
-    def _load_environment_config(
-        self, threshold_name: str
-    ) -> ThresholdConfig | None:
+    def _load_environment_config(self, threshold_name: str) -> ThresholdConfig | None:
         """Load specific threshold configuration from environment variables."""
         env_configs = self._load_environment_configs()
         return env_configs.get(threshold_name)

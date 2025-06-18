@@ -39,7 +39,7 @@ class ResearchDataExport:
     pass
 
 
-from app.services.pgp_assurance import PGPAssuranceService
+from .services.pgp_assurance import PGPAssuranceService
 
 logger = logging.getLogger(__name__)
 

@@ -53,7 +53,9 @@ class PolicySynthesisInput:
         synthesis_goal: str,
         policy_type: str,  # "constitutional_principle" or "operational_rule"
         desired_format: str = "rego",
-        existing_policies: list[ConstitutionalPrinciple | OperationalRule] | None = None,
+        existing_policies: (
+            list[ConstitutionalPrinciple | OperationalRule] | None
+        ) = None,
         constraints: list[str] | None = None,
         context_data: dict[str, Any] | None = None,
         target_id: str | None = None,

@@ -15,9 +15,10 @@ from typing import Any
 
 import aioredis
 import jwt
-from jwt import InvalidTokenError as JWTError, ExpiredSignatureError
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jwt import ExpiredSignatureError
+from jwt import InvalidTokenError as JWTError
 from passlib.context import CryptContext
 
 logger = logging.getLogger(__name__)
@@ -158,9 +159,7 @@ class User:
 
     # Security features
     mfa_enabled: bool = False
-    password_changed_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
-    )
+    password_changed_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     failed_login_attempts: int = 0
 
     def to_dict(self) -> dict[str, Any]:
@@ -241,13 +240,11 @@ class UserSession:
 class AuthenticationError(Exception):
     """Authentication related errors."""
 
-    pass
 
 
 class AuthorizationError(Exception):
     """Authorization related errors."""
 
-    pass
 
 
 class EnhancedAuthService:
@@ -452,9 +449,7 @@ class EnhancedAuthService:
 
                 # Lock account if too many failures
                 if user.failed_login_attempts >= self.max_login_attempts:
-                    user.locked_until = (
-                        datetime.now(UTC) + self.lockout_duration
-                    )
+                    user.locked_until = datetime.now(UTC) + self.lockout_duration
                     logger.warning(
                         f"Account {username} locked due to too many failed attempts"
                     )
@@ -549,9 +544,7 @@ class EnhancedAuthService:
         if expires_delta:
             expire = datetime.now(UTC) + expires_delta
         else:
-            expire = datetime.now(UTC) + timedelta(
-                minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-            )
+            expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
         # Generate unique JWT ID
         jti = secrets.token_urlsafe(16)
@@ -865,9 +858,7 @@ class ServiceAuthManager:
         if permissions is None:
             permissions = ["internal_service"]
 
-        expire = datetime.now(UTC) + timedelta(
-            minutes=SERVICE_TOKEN_EXPIRE_MINUTES
-        )
+        expire = datetime.now(UTC) + timedelta(minutes=SERVICE_TOKEN_EXPIRE_MINUTES)
         jti = secrets.token_urlsafe(16)
 
         payload = {

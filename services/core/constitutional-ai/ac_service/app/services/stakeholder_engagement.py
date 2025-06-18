@@ -21,7 +21,7 @@ from typing import Any
 
 import httpx
 from app import crud
-from app.models import ACAmendment
+from .models import ACAmendment
 from pydantic import BaseModel, Field, validator
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -330,9 +330,7 @@ class StakeholderNotificationService:
             role_names = [role.value for role in required_roles]
 
             # Query users with required roles
-            query = select(User).where(
-                and_(User.is_active, User.role.in_(role_names))
-            )
+            query = select(User).where(and_(User.is_active, User.role.in_(role_names)))
 
             result = await self.db.execute(query)
             stakeholders = result.scalars().all()
@@ -728,9 +726,7 @@ class StakeholderNotificationService:
                     stakeholder_id
                 ]
                 stakeholder_status["feedback_submitted"] = True
-                stakeholder_status["last_activity"] = datetime.now(
-                    UTC
-                ).isoformat()
+                stakeholder_status["last_activity"] = datetime.now(UTC).isoformat()
                 stakeholder_status["engagement_score"] = (
                     1.0  # Full engagement for feedback submission
                 )

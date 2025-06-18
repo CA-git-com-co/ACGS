@@ -62,9 +62,7 @@ class CastVoteRequest(BaseModel):
     """Request model for casting a vote."""
 
     vote: VoteType = Field(..., description="Vote choice")
-    reasoning: str | None = Field(
-        default=None, description="Optional vote reasoning"
-    )
+    reasoning: str | None = Field(default=None, description="Optional vote reasoning")
     signature: str | None = Field(
         default=None, description="Optional cryptographic signature"
     )

@@ -15,22 +15,30 @@ services:
               count: all
               capabilities: [gpu]
     volumes:
-      - ~/.cache/huggingface:/root/.cache/huggingface
+      - ${HOME:-~}/.cache/huggingface:/root/.cache/huggingface
     environment:
       - MODEL_NAME=nanonets/Nanonets-OCR-s
+      - PORT=8666
+      - HEALTH_PORT=8667
       - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
     ports:
       - "8666:8666"
+      - "8667:8667"
     ipc: host
     restart: unless-stopped
     networks:
       - acgs_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8666/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8667/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 60s
+      start_period: 120s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   acgs_network:

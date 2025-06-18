@@ -349,8 +349,7 @@ class PerformanceMonitor:
             recent_metrics = [
                 m
                 for m in self.performance_metrics
-                if (datetime.now(UTC) - m.timestamp).total_seconds()
-                < 3600  # Last hour
+                if (datetime.now(UTC) - m.timestamp).total_seconds() < 3600  # Last hour
             ]
 
             # Calculate averages
@@ -817,8 +816,7 @@ class PerformanceMonitor:
                 "availability": availability_stats,
                 "metrics_count": len(metrics),
                 "monitoring_duration_minutes": (
-                    (datetime.now(UTC) - session["started_at"]).total_seconds()
-                    / 60
+                    (datetime.now(UTC) - session["started_at"]).total_seconds() / 60
                 ),
             }
 

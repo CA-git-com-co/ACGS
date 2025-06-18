@@ -14,6 +14,8 @@ from typing import Any
 import httpx
 
 from services.shared.common.error_handling import ServiceUnavailableError
+from services.shared.service_mesh.registry import get_service_registry
+
 from .common_types import (
     LoadBalancingStrategy,
     ServiceInstance,
@@ -31,7 +33,6 @@ from .performance_monitor import (
     PerformanceMonitor,
     get_performance_monitor,
 )
-from services.shared.service_mesh.registry import get_service_registry
 
 logger = logging.getLogger(__name__)
 

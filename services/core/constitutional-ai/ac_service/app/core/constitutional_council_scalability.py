@@ -175,9 +175,7 @@ class RapidCoEvolutionHandler:
         )
 
         # Initialize rapid voting process
-        await self._initialize_rapid_voting(
-            db, amendment, urgency_level
-        )
+        await self._initialize_rapid_voting(db, amendment, urgency_level)
 
         # Monitor and optimize performance
         if self.config.performance_monitoring_enabled:

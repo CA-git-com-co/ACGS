@@ -96,9 +96,7 @@ class PrincipleUpdate(BaseModel):
     rationale: str | None = Field(
         None, description="Detailed rationale and justification"
     )
-    keywords: list[str] | None = Field(
-        None, description="Keywords for categorization"
-    )
+    keywords: list[str] | None = Field(None, description="Keywords for categorization")
     category: str | None = Field(
         None, max_length=100, description="Category classification"
     )
@@ -671,9 +669,7 @@ class HITLFeedbackRequest(BaseModel):
     agreed_with_assessment: bool = Field(
         ..., description="Whether human agreed with AI assessment"
     )
-    reasoning: str | None = Field(
-        None, description="Human reasoning for the decision"
-    )
+    reasoning: str | None = Field(None, description="Human reasoning for the decision")
     quality_score: float | None = Field(
         0.8, ge=0.0, le=1.0, description="Quality score for the decision"
     )

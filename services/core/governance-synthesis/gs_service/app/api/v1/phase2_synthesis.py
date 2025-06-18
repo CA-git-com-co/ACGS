@@ -133,9 +133,7 @@ class PerformanceTargetsRequest(BaseModel):
 
     target_gflops_reduction: float | None = Field(default=None, ge=0.0, le=1.0)
     target_accuracy_retention: float | None = Field(default=None, ge=0.0, le=1.0)
-    target_constitutional_compliance: float | None = Field(
-        default=None, ge=0.0, le=1.0
-    )
+    target_constitutional_compliance: float | None = Field(default=None, ge=0.0, le=1.0)
     optimization_strategy: str | None = Field(default=None)
 
 

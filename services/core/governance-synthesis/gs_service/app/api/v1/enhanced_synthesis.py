@@ -37,9 +37,7 @@ class ConstitutionalPrincipleAPI(BaseModel):
         ..., description="Type of principle (e.g., fairness, transparency)"
     )
     category: str | None = Field(None, description="Category of the principle")
-    weight: float | None = Field(
-        1.0, description="Weight/importance of the principle"
-    )
+    weight: float | None = Field(1.0, description="Weight/importance of the principle")
 
 
 class EnhancedSynthesisRequestAPI(BaseModel):

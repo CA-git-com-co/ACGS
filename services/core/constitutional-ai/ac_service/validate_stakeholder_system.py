@@ -163,7 +163,7 @@ def validate_constitutional_council_integration():
 
         # Check for stakeholder engagement imports and usage
         required_imports = [
-            "from app.services.stakeholder_engagement import",
+            "from .services.stakeholder_engagement import",
             "StakeholderNotificationService",
             "StakeholderEngagementInput",
         ]

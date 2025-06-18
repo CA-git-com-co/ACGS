@@ -284,9 +284,7 @@ class ReliabilityMetrics:
     failure_modes: dict[CriticalFailureMode, int] = field(default_factory=dict)
 
     # Timestamp and metadata
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     request_id: str | None = None
     model_versions: dict[str, str] = field(default_factory=dict)
     model_failures_total: dict[str, int] = field(
@@ -322,9 +320,7 @@ class UltraReliableResult:
     synthesis_details: dict[str, Any] | None = None
     validation_details: dict[str, Any] | None = None
     formal_verification_status: dict[str, Any] | None = None
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     status: str | None = None  # Added status field
     performance_metrics_details: dict[str, Any] | None = (
         None  # New field for detailed performance metrics
@@ -3280,7 +3276,9 @@ class EnhancedLLMReliabilityFramework:
         self.multi_model_validator.active_models = list(
             self.multi_model_validator.models.keys()
         )
-        self.multi_model_validator.model_failure_counts = dict.fromkeys(self.multi_model_validator.active_models, 0)
+        self.multi_model_validator.model_failure_counts = dict.fromkeys(
+            self.multi_model_validator.active_models, 0
+        )
         logger.info("Enhanced LLM Reliability Framework fully initialized")
 
     async def process_with_reliability(

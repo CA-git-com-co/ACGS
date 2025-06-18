@@ -216,9 +216,7 @@ class ConflictResolutionOrchestrator:
 
             if escalation_request:
                 # Trigger escalation
-                await self.trigger_escalation(
-                    db, escalation_request, user_id
-                )
+                await self.trigger_escalation(db, escalation_request, user_id)
 
                 # Update conflict status to escalated
                 await self._update_conflict_status(
@@ -462,7 +460,6 @@ class ConflictResolutionOrchestrator:
                 current_metrics.auto_resolution_rate
                 / (self.auto_resolution_target * 100)
             ) * 100
-
 
             report = {
                 "timestamp": datetime.now().isoformat(),

@@ -384,9 +384,7 @@ async def main():
             print(f"Manifest generated: {manifest_path}")
 
         elif args.action == "convert-formats":
-            await validator.convert_formats(
-                args.dataset_path, args.target_format
-            )
+            await validator.convert_formats(args.dataset_path, args.target_format)
 
     except Exception as e:
         logger.error(f"Validation failed: {e}")

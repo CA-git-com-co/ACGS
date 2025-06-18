@@ -119,15 +119,15 @@ async def evaluate_policy_query(
     import re
 
     # Validate user_id format (alphanumeric and underscores only)
-    if not re.match(r'^[a-zA-Z0-9_]+$', user_id):
+    if not re.match(r"^[a-zA-Z0-9_]+$", user_id):
         raise HTTPException(status_code=400, detail="Invalid user_id format")
 
     # Validate action_type format (alphanumeric and underscores only)
-    if not re.match(r'^[a-zA-Z0-9_]+$', action_type):
+    if not re.match(r"^[a-zA-Z0-9_]+$", action_type):
         raise HTTPException(status_code=400, detail="Invalid action_type format")
 
     # Validate resource_id format (alphanumeric, underscores, and hyphens only)
-    if not re.match(r'^[a-zA-Z0-9_-]+$', resource_id):
+    if not re.match(r"^[a-zA-Z0-9_-]+$", resource_id):
         raise HTTPException(status_code=400, detail="Invalid resource_id format")
 
     # Example target query: is 'allow(user_id, action_type, resource_id)' derivable?

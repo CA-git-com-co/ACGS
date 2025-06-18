@@ -458,9 +458,7 @@ class Phase3SecurityTester:
         with open("phase3_security_test_results.json", "w") as f:
             json.dump(self.results, f, indent=2)
 
-        logger.info(
-            "\n📄 Detailed results saved to: phase3_security_test_results.json"
-        )
+        logger.info("\n📄 Detailed results saved to: phase3_security_test_results.json")
 
 
 async def main():

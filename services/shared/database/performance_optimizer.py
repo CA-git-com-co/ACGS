@@ -285,9 +285,7 @@ class DatabasePerformanceOptimizer:
             logger.warning(f"Cache get error for key {cache_key}: {e}")
             return None
 
-    async def _cache_result(
-        self, cache_key: str, result: Any, ttl: int | None = None
-    ):
+    async def _cache_result(self, cache_key: str, result: Any, ttl: int | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -548,9 +546,7 @@ class DatabasePerformanceOptimizer:
                         plan = result.scalar()
 
                         # Store query plan for analysis
-                        query_hash = hashlib.sha256(
-                            query.encode()
-                        ).hexdigest()
+                        query_hash = hashlib.sha256(query.encode()).hexdigest()
                         self.query_plans[query_hash] = {
                             "query": query,
                             "plan": plan,

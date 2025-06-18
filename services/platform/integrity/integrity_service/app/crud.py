@@ -24,9 +24,7 @@ async def create_policy_rule(
     return db_policy_rule
 
 
-async def get_policy_rule(
-    db: AsyncSession, rule_id: int
-) -> models.PolicyRule | None:
+async def get_policy_rule(db: AsyncSession, rule_id: int) -> models.PolicyRule | None:
     result = await db.execute(
         select(models.PolicyRule).filter(models.PolicyRule.id == rule_id)
     )

@@ -4,14 +4,14 @@ Comprehensive security middleware for all services
 """
 
 import logging
-import time
-from typing import Dict, Any, Callable
-from functools import wraps
-import hashlib
-import secrets
 import re
+import secrets
+import time
+from functools import wraps
+from typing import Any, Callable, Dict
 
 logger = logging.getLogger(__name__)
+
 
 class SecurityMiddleware:
     """Comprehensive security middleware for ACGS-1"""
@@ -57,7 +57,8 @@ class SecurityMiddleware:
 
         # Clean old requests
         self.rate_limits[identifier] = [
-            req_time for req_time in self.rate_limits[identifier]
+            req_time
+            for req_time in self.rate_limits[identifier]
             if current_time - req_time < 60
         ]
 
@@ -80,27 +81,36 @@ class SecurityMiddleware:
     def hash_password(self, password: str) -> str:
         """Hash password securely"""
         import bcrypt
-        return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
     def verify_password(self, password: str, hashed: str) -> bool:
         """Verify password"""
         import bcrypt
-        return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+
+        return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
+
 
 def security_required(f: Callable) -> Callable:
     """Decorator for security-required endpoints"""
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         # Add security checks here
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 def rate_limited(limit: int = 60):
     """Rate limiting decorator"""
+
     def decorator(f: Callable) -> Callable:
         @wraps(f)
         def decorated_function(*args, **kwargs):
             # Add rate limiting logic here
             return f(*args, **kwargs)
+
         return decorated_function
+
     return decorator

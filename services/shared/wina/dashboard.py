@@ -820,8 +820,7 @@ class WINADashboard:
             recent_metrics = [
                 m
                 for m in component_metrics
-                if current_time
-                - m.get("timestamp", datetime.min.replace(tzinfo=UTC))
+                if current_time - m.get("timestamp", datetime.min.replace(tzinfo=UTC))
                 < timedelta(hours=1)
             ]
 

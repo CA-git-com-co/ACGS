@@ -237,9 +237,7 @@ class TestEnhancedDynamicGating:
 
         # Simulate multiple gating decisions to build history
         for _i in range(5):
-            runtime_gating.make_gating_decision(
-                layer_name, sample_wina_scores
-            )
+            runtime_gating.make_gating_decision(layer_name, sample_wina_scores)
 
             # Verify history is being maintained
             assert layer_name in runtime_gating.constitutional_compliance_history

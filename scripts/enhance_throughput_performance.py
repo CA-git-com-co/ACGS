@@ -9,20 +9,24 @@ Increases throughput from 1505 RPS to 2000+ RPS
 """
 
 import asyncio
-import aiohttp
 import json
 import logging
+
+import aiohttp
+
 <<<<<<< HEAD
 import statistics
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 =======
+import statistics
 import time
 from datetime import datetime
-from typing import Dict, List, Any
-import statistics
+from typing import Any, Dict, List
+
 >>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
 
 logging.basicConfig(level=logging.INFO)

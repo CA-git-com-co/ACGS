@@ -12,13 +12,13 @@ import logging
 import sys
 from pathlib import Path
 
-from app.core.crypto_benchmarking import CryptoBenchmarkConfig, CryptoBenchmarker
-from app.core.verification_completeness_tester import VerificationCompletenessTester
-from app.services.fairness_evaluation_framework import (
+from .core.crypto_benchmarking import CryptoBenchmarkConfig, CryptoBenchmarker
+from .core.verification_completeness_tester import VerificationCompletenessTester
+from .services.fairness_evaluation_framework import (
     DomainType,
     FairnessEvaluationFramework,
 )
-from app.services.lipschitz_estimator import LipschitzEstimator
+from .services.lipschitz_estimator import LipschitzEstimator
 
 # Add backend paths to Python path
 # sys.path.append(str(Path(__file__).parent.parent / "backend" / "gs_service"))  # Removed during reorganization

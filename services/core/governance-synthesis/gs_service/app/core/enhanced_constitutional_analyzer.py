@@ -45,7 +45,7 @@ from .qwen3_embedding_client import (
 
 # External service clients
 try:
-    import httpx
+    pass
 
     HTTP_CLIENT_AVAILABLE = True
 except ImportError:

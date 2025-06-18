@@ -114,9 +114,7 @@ class AIModelIntegrationTest:
         try:
             gemini_enabled = self.config.is_model_enabled("enable_gemini_2_5_flash")
             deepseek_enabled = self.config.is_model_enabled("enable_deepseek_r1")
-            self.config.is_model_enabled(
-                "enable_bias_detection_llm"
-            )
+            self.config.is_model_enabled("enable_bias_detection_llm")
 
             # Test TaskMaster configuration
             taskmaster_config = self.config.get_model_config_for_taskmaster()

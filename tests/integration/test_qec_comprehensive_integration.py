@@ -46,7 +46,7 @@ except ImportError:
 
 # Service imports with fallbacks
 try:
-    from app.services.qec_conflict_resolver import QECConflictResolver
+    from .services.qec_conflict_resolver import QECConflictResolver
 
     SERVICE_AVAILABLE = True
 except ImportError:
@@ -833,9 +833,7 @@ class TestQECComprehensiveIntegration:
         )
 
         # Calculate average resolution time (simulated)
-        statistics.mean(
-            [r["processing_time"] for r in workflow_result["results"]]
-        )
+        statistics.mean([r["processing_time"] for r in workflow_result["results"]])
 
         # Validate against targets
         target_validations = {

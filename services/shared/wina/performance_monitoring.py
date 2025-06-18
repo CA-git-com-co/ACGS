@@ -738,10 +738,7 @@ class WINAPerformanceCollector:
                 m.performance_improvement_ratio for m in recent_metrics
             ),
             "integration_pairs": len(
-                {
-                    f"{m.source_component}->{m.target_component}"
-                    for m in recent_metrics
-                }
+                {f"{m.source_component}->{m.target_component}" for m in recent_metrics}
             ),
         }
 

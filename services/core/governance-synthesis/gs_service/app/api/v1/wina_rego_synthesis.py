@@ -37,9 +37,7 @@ class ConstitutionalPrincipleModel(BaseModel):
     description: str = Field(
         ..., description="Description of the constitutional principle"
     )
-    type: str | None = Field(
-        default="governance_rule", description="Type of principle"
-    )
+    type: str | None = Field(default="governance_rule", description="Type of principle")
     priority: float | None = Field(default=1.0, description="Priority weight")
     scope: str | None = Field(default="general", description="Scope of application")
 

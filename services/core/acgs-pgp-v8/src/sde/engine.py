@@ -14,7 +14,6 @@ import httpx
 
 # Optional ML dependencies
 try:
-    import numpy as np
     from sklearn.ensemble import IsolationForest
     from sklearn.feature_extraction.text import TfidfVectorizer
 

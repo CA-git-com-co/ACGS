@@ -9,15 +9,14 @@ import logging
 from datetime import UTC, datetime
 from typing import Any
 
+from .database import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_async_db
-
 # from services.shared.models import ResearchDataExport
-# from app.core.auth import require_integrity_admin, require_internal_service, User
+# from .core.auth import require_integrity_admin, require_internal_service, User
 
 
 # Local auth stubs and model stubs
@@ -44,7 +43,7 @@ class ResearchDataExport:
     pass
 
 
-from app.services.research_data_pipeline import (
+from .services.research_data_pipeline import (
     AnonymizationConfig,
     AnonymizationMethod,
     research_data_pipeline,

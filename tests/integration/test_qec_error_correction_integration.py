@@ -45,6 +45,7 @@ try:
     from services.core.governance_synthesis.gs_service.app.models.reliability_models import (
         ConstitutionalPrinciple,
     )
+
     from services.shared.models import Policy
 except ImportError:
     # Mock ConstitutionalPrinciple for testing

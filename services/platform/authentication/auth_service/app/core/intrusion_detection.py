@@ -138,9 +138,7 @@ class IntrusionDetectionSystem:
             return True
         return False
 
-    def detect_rate_limiting_violation(
-        self, ip_address: str
-    ) -> SecurityThreat | None:
+    def detect_rate_limiting_violation(self, ip_address: str) -> SecurityThreat | None:
         """Detect rate limiting violations"""
         current_time = time.time()
         minute_ago = current_time - 60
@@ -202,9 +200,7 @@ class IntrusionDetectionSystem:
 
         return None
 
-    def detect_suspicious_user_agent(
-        self, request: Request
-    ) -> SecurityThreat | None:
+    def detect_suspicious_user_agent(self, request: Request) -> SecurityThreat | None:
         """Detect suspicious user agents"""
         user_agent = request.headers.get("user-agent", "").lower()
         ip_address = self.get_client_ip(request)
@@ -248,9 +244,7 @@ class IntrusionDetectionSystem:
 
         return None
 
-    def detect_sql_injection_attempt(
-        self, request: Request
-    ) -> SecurityThreat | None:
+    def detect_sql_injection_attempt(self, request: Request) -> SecurityThreat | None:
         """Detect potential SQL injection attempts"""
         ip_address = self.get_client_ip(request)
 

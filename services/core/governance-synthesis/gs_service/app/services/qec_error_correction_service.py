@@ -25,17 +25,17 @@ from datetime import UTC, datetime
 from enum import Enum
 from typing import Any
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 # Import existing services
-from app.services.violation_detection_service import (
+from .services.violation_detection_service import (
     ViolationSeverity,
 )
-from app.services.violation_escalation_service import (
+from .services.violation_escalation_service import (
     EscalationLevel,
     ViolationEscalationService,
 )
-from app.workflows.multi_model_manager import MultiModelManager
+from .workflows.multi_model_manager import MultiModelManager
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from integrations.alphaevolve_engine.services.qec_enhancement.constitutional_distance_calculator import (
     ConstitutionalDistanceCalculator,
 )
@@ -1338,9 +1338,7 @@ class ParallelConflictProcessor:
                 pattern_key = self._generate_pattern_key(conflict)
 
                 # Add timestamp for cache expiry
-                result.correction_metadata["cached_at"] = datetime.now(
-                    UTC
-                ).isoformat()
+                result.correction_metadata["cached_at"] = datetime.now(UTC).isoformat()
                 self.pattern_cache[pattern_key] = result
 
         # Clean up old cache entries

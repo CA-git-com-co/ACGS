@@ -157,9 +157,7 @@ class WINASVDIntegrationTester:
                 extraction_results[model_id] = {
                     "weights_extracted": len(weight_infos),
                     "layer_types": list({info.layer_type for info in weight_infos}),
-                    "matrix_types": list(
-                        {info.matrix_type for info in weight_infos}
-                    ),
+                    "matrix_types": list({info.matrix_type for info in weight_infos}),
                     "total_parameters": sum(
                         info.weight_matrix.numel() for info in weight_infos
                     ),

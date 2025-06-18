@@ -473,7 +473,6 @@ class WINAECOversightCoordinator:
             import httpx
 
             # Prepare integration request
-
             # Call PGC service governance status endpoint
             async with httpx.AsyncClient(timeout=5.0) as client:
                 response = await client.get(f"{self.pgc_service_url}/governance/status")

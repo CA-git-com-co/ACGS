@@ -2,9 +2,9 @@
 import uuid
 from datetime import UTC, datetime, timedelta
 
+import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
-import jwt
 from jwt import InvalidTokenError as JWTError
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,7 +41,7 @@ class TokenPayload(BaseModel):
     jti: str  # JWT ID
 
 
-# Password hashing functions are now imported from app.core.password module
+# Password hashing functions are now imported from .core.password module
 
 # --- JWT Creation & Revocation (Access Token JTI Blacklist) ---
 # For production, use a persistent store like Redis for the JTI blacklist.

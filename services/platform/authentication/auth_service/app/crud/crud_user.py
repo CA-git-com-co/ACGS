@@ -1,4 +1,3 @@
-
 # Create simple schemas locally since shared ones are not available
 from pydantic import BaseModel
 

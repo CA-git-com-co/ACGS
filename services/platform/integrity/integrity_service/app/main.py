@@ -18,12 +18,16 @@ import sys
 import time
 from contextlib import asynccontextmanager
 
-
 # Import production security middleware
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
-    from security_middleware import apply_production_security_middleware, create_security_config
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
+    from security_middleware import (
+        apply_production_security_middleware,
+        create_security_config,
+    )
+
     SECURITY_MIDDLEWARE_AVAILABLE = True
     print("✅ Production security middleware loaded successfully")
 except ImportError as e:
@@ -34,17 +38,12 @@ except ImportError as e:
 # Import comprehensive audit logging
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from comprehensive_audit_logger import (
         apply_audit_logging_to_service,
-        get_audit_logger,
-        log_user_login,
-        log_constitutional_validation,
-        log_security_violation,
-        AuditEventType,
-        AuditSeverity,
-        ComplianceFramework
     )
+
     AUDIT_LOGGING_AVAILABLE = True
     print("✅ Comprehensive audit logging loaded successfully")
 except ImportError as e:
@@ -152,7 +151,7 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         max_request_size=10 * 1024 * 1024,  # 10MB
         rate_limit_requests=120,
         rate_limit_window=60,
-        enable_threat_detection=True
+        enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "integrity_service", security_config)
     print(f"✅ Production security middleware applied to integrity service")
@@ -162,7 +161,10 @@ else:
 
 # Add enhanced security middleware
 try:
-    from services.shared.security.security_middleware import SecurityMiddleware, SecurityConfig
+    from services.shared.security.security_middleware import (
+        SecurityConfig,
+        SecurityMiddleware,
+    )
 
     # Configure security for Integrity service
     security_config = SecurityConfig()
@@ -246,10 +248,10 @@ for exc_type, handler in exception_handlers.items():
 
 # Import API routers
 try:
-    from app.api.v1.appeals import router as appeals_router
-    from app.api.v1.crypto import router as crypto_router
-    from app.api.v1.integrity import router as integrity_router
-    from app.api.v1.research_data import router as research_router
+    from .api.v1.appeals import router as appeals_router
+    from .api.v1.crypto import router as crypto_router
+    from .api.v1.integrity import router as integrity_router
+    from .api.v1.research_data import router as research_router
 
     ROUTERS_AVAILABLE = True
     logger.info("All API routers imported successfully")

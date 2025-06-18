@@ -621,9 +621,7 @@ class UltraLowLatencyOptimizer:
                 "target_achievement": metrics.avg_latency <= self.target_latency,
             },
             "adjustments_made": adjustments,
-            "next_review": (
-                datetime.now(UTC) + timedelta(minutes=15)
-            ).isoformat(),
+            "next_review": (datetime.now(UTC) + timedelta(minutes=15)).isoformat(),
             "timestamp": datetime.now(UTC).isoformat(),
         }
 

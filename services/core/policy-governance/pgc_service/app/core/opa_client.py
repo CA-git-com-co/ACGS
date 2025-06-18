@@ -217,7 +217,11 @@ class OPAClient:
         explanation = ["Fallback policy evaluation - OPA unavailable"]
 
         # Check for sensitive operations that should be denied by default
-        if input_data.get("action", {}).get("type") in ["delete", "admin", "modify_constitution"]:
+        if input_data.get("action", {}).get("type") in [
+            "delete",
+            "admin",
+            "modify_constitution",
+        ]:
             allow = False
             explanation.append("Sensitive operation denied in fallback mode")
 

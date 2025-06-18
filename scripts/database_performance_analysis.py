@@ -8,29 +8,37 @@ import asyncio
 import json
 import logging
 import subprocess
-import time
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class DatabasePerformanceAnalyzer:
     """Comprehensive database performance analyzer for ACGS-1."""
-    
+
     def __init__(self):
         self.db_container = "acgs_postgres_db"
         self.db_user = "acgs_user"
         self.db_name = "acgs_pgp_db"
         self.analysis_results = {}
-        
+
     def execute_db_query(self, query: str) -> Optional[str]:
         """Execute a database query and return results."""
         try:
             cmd = [
-                "docker", "exec", self.db_container,
-                "psql", "-U", self.db_user, "-d", self.db_name,
-                "-t", "-c", query
+                "docker",
+                "exec",
+                self.db_container,
+                "psql",
+                "-U",
+                self.db_user,
+                "-d",
+                self.db_name,
+                "-t",
+                "-c",
+                query,
             ]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             if result.returncode == 0:
@@ -41,17 +49,17 @@ class DatabasePerformanceAnalyzer:
         except Exception as e:
             logger.error(f"Database query error: {e}")
             return None
-    
+
     def analyze_database_size_and_structure(self) -> Dict[str, Any]:
         """Analyze database size and table structure."""
         logger.info("📊 Analyzing database size and structure...")
-        
+
         # Database size
         db_size_query = """
         SELECT pg_size_pretty(pg_database_size(current_database())) as database_size;
         """
         db_size = self.execute_db_query(db_size_query)
-        
+
         # Table count and sizes
         table_sizes_query = """
         SELECT 
@@ -65,7 +73,7 @@ class DatabasePerformanceAnalyzer:
         LIMIT 10;
         """
         table_sizes = self.execute_db_query(table_sizes_query)
-        
+
         # Index usage statistics
         index_usage_query = """
         SELECT 
@@ -80,27 +88,27 @@ class DatabasePerformanceAnalyzer:
         LIMIT 10;
         """
         index_usage = self.execute_db_query(index_usage_query)
-        
+
         return {
             "database_size": db_size,
             "table_sizes": table_sizes,
             "index_usage": index_usage,
-            "analysis_timestamp": datetime.now().isoformat()
+            "analysis_timestamp": datetime.now().isoformat(),
         }
-    
+
     def analyze_query_performance(self) -> Dict[str, Any]:
         """Analyze query performance using pg_stat_statements."""
         logger.info("⚡ Analyzing query performance...")
-        
+
         # Check if pg_stat_statements is available
         extension_check = self.execute_db_query(
             "SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements';"
         )
-        
+
         if not extension_check:
             logger.warning("pg_stat_statements extension not available")
             return {"error": "pg_stat_statements not available"}
-        
+
         # Top slow queries
         slow_queries_query = """
         SELECT 
@@ -116,7 +124,7 @@ class DatabasePerformanceAnalyzer:
         LIMIT 10;
         """
         slow_queries = self.execute_db_query(slow_queries_query)
-        
+
         # Most called queries
         frequent_queries_query = """
         SELECT 
@@ -130,7 +138,7 @@ class DatabasePerformanceAnalyzer:
         LIMIT 10;
         """
         frequent_queries = self.execute_db_query(frequent_queries_query)
-        
+
         # Query statistics summary
         query_stats_query = """
         SELECT 
@@ -142,18 +150,18 @@ class DatabasePerformanceAnalyzer:
         FROM pg_stat_statements;
         """
         query_stats = self.execute_db_query(query_stats_query)
-        
+
         return {
             "slow_queries": slow_queries,
             "frequent_queries": frequent_queries,
             "query_statistics": query_stats,
-            "analysis_timestamp": datetime.now().isoformat()
+            "analysis_timestamp": datetime.now().isoformat(),
         }
-    
+
     def analyze_connection_and_activity(self) -> Dict[str, Any]:
         """Analyze database connections and activity."""
         logger.info("🔗 Analyzing connections and activity...")
-        
+
         # Current connections
         connections_query = """
         SELECT 
@@ -164,7 +172,7 @@ class DatabasePerformanceAnalyzer:
         GROUP BY state;
         """
         connections = self.execute_db_query(connections_query)
-        
+
         # Long running queries
         long_queries_query = """
         SELECT 
@@ -177,7 +185,7 @@ class DatabasePerformanceAnalyzer:
         AND state = 'active';
         """
         long_queries = self.execute_db_query(long_queries_query)
-        
+
         # Database activity statistics
         activity_stats_query = """
         SELECT 
@@ -195,18 +203,18 @@ class DatabasePerformanceAnalyzer:
         WHERE datname = current_database();
         """
         activity_stats = self.execute_db_query(activity_stats_query)
-        
+
         return {
             "connections": connections,
             "long_running_queries": long_queries,
             "activity_statistics": activity_stats,
-            "analysis_timestamp": datetime.now().isoformat()
+            "analysis_timestamp": datetime.now().isoformat(),
         }
-    
+
     def analyze_cache_performance(self) -> Dict[str, Any]:
         """Analyze database cache performance."""
         logger.info("💾 Analyzing cache performance...")
-        
+
         # Buffer cache hit ratio
         cache_hit_query = """
         SELECT 
@@ -218,7 +226,7 @@ class DatabasePerformanceAnalyzer:
         WHERE blks_read > 0;
         """
         cache_hit_ratio = self.execute_db_query(cache_hit_query)
-        
+
         # Table cache statistics
         table_cache_query = """
         SELECT 
@@ -236,7 +244,7 @@ class DatabasePerformanceAnalyzer:
         LIMIT 10;
         """
         table_cache = self.execute_db_query(table_cache_query)
-        
+
         # Index cache statistics
         index_cache_query = """
         SELECT 
@@ -255,18 +263,18 @@ class DatabasePerformanceAnalyzer:
         LIMIT 10;
         """
         index_cache = self.execute_db_query(index_cache_query)
-        
+
         return {
             "buffer_cache_hit_ratio": cache_hit_ratio,
             "table_cache_performance": table_cache,
             "index_cache_performance": index_cache,
-            "analysis_timestamp": datetime.now().isoformat()
+            "analysis_timestamp": datetime.now().isoformat(),
         }
-    
+
     def analyze_locks_and_blocking(self) -> Dict[str, Any]:
         """Analyze database locks and blocking queries."""
         logger.info("🔒 Analyzing locks and blocking...")
-        
+
         # Current locks
         locks_query = """
         SELECT 
@@ -277,7 +285,7 @@ class DatabasePerformanceAnalyzer:
         ORDER BY lock_count DESC;
         """
         locks = self.execute_db_query(locks_query)
-        
+
         # Blocking queries
         blocking_query = """
         SELECT 
@@ -304,144 +312,174 @@ class DatabasePerformanceAnalyzer:
         WHERE NOT blocked_locks.granted;
         """
         blocking = self.execute_db_query(blocking_query)
-        
+
         return {
             "current_locks": locks,
             "blocking_queries": blocking,
-            "analysis_timestamp": datetime.now().isoformat()
+            "analysis_timestamp": datetime.now().isoformat(),
         }
-    
+
     def generate_optimization_recommendations(self) -> List[Dict[str, Any]]:
         """Generate optimization recommendations based on analysis."""
         logger.info("💡 Generating optimization recommendations...")
-        
+
         recommendations = []
-        
+
         # Analyze cache hit ratio
         cache_analysis = self.analysis_results.get("cache_performance", {})
         cache_hit_ratio = cache_analysis.get("buffer_cache_hit_ratio", "")
-        
+
         if cache_hit_ratio and "%" in str(cache_hit_ratio):
             try:
                 ratio = float(cache_hit_ratio.split()[-1].replace("%", ""))
                 if ratio < 95:
-                    recommendations.append({
-                        "category": "memory",
-                        "priority": "high",
-                        "title": "Increase Shared Buffers",
-                        "description": f"Cache hit ratio is {ratio}%. Consider increasing shared_buffers.",
-                        "action": "ALTER SYSTEM SET shared_buffers = '1GB';"
-                    })
+                    recommendations.append(
+                        {
+                            "category": "memory",
+                            "priority": "high",
+                            "title": "Increase Shared Buffers",
+                            "description": f"Cache hit ratio is {ratio}%. Consider increasing shared_buffers.",
+                            "action": "ALTER SYSTEM SET shared_buffers = '1GB';",
+                        }
+                    )
             except:
                 pass
-        
+
         # Check for slow queries
         query_analysis = self.analysis_results.get("query_performance", {})
         if query_analysis.get("query_statistics"):
-            recommendations.append({
-                "category": "performance",
-                "priority": "medium",
-                "title": "Query Optimization",
-                "description": "Review slow queries and consider adding indexes or rewriting queries.",
-                "action": "Analyze EXPLAIN plans for slow queries"
-            })
-        
+            recommendations.append(
+                {
+                    "category": "performance",
+                    "priority": "medium",
+                    "title": "Query Optimization",
+                    "description": "Review slow queries and consider adding indexes or rewriting queries.",
+                    "action": "Analyze EXPLAIN plans for slow queries",
+                }
+            )
+
         # Connection optimization
         connection_analysis = self.analysis_results.get("connection_activity", {})
         if connection_analysis.get("connections"):
-            recommendations.append({
-                "category": "connections",
-                "priority": "medium",
-                "title": "Connection Pool Optimization",
-                "description": "Monitor connection usage and optimize pool settings.",
-                "action": "Review connection pool configuration"
-            })
-        
+            recommendations.append(
+                {
+                    "category": "connections",
+                    "priority": "medium",
+                    "title": "Connection Pool Optimization",
+                    "description": "Monitor connection usage and optimize pool settings.",
+                    "action": "Review connection pool configuration",
+                }
+            )
+
         # General maintenance recommendations
-        recommendations.extend([
-            {
-                "category": "maintenance",
-                "priority": "low",
-                "title": "Regular VACUUM and ANALYZE",
-                "description": "Schedule regular maintenance operations.",
-                "action": "Set up automated VACUUM and ANALYZE jobs"
-            },
-            {
-                "category": "monitoring",
-                "priority": "medium",
-                "title": "Performance Monitoring",
-                "description": "Implement continuous performance monitoring.",
-                "action": "Set up Prometheus metrics and Grafana dashboards"
-            }
-        ])
-        
+        recommendations.extend(
+            [
+                {
+                    "category": "maintenance",
+                    "priority": "low",
+                    "title": "Regular VACUUM and ANALYZE",
+                    "description": "Schedule regular maintenance operations.",
+                    "action": "Set up automated VACUUM and ANALYZE jobs",
+                },
+                {
+                    "category": "monitoring",
+                    "priority": "medium",
+                    "title": "Performance Monitoring",
+                    "description": "Implement continuous performance monitoring.",
+                    "action": "Set up Prometheus metrics and Grafana dashboards",
+                },
+            ]
+        )
+
         return recommendations
-    
+
     async def run_comprehensive_analysis(self):
         """Run comprehensive database performance analysis."""
         logger.info("🚀 Starting comprehensive database performance analysis")
-        
+
         try:
             # Run all analyses
-            self.analysis_results["database_structure"] = self.analyze_database_size_and_structure()
-            self.analysis_results["query_performance"] = self.analyze_query_performance()
-            self.analysis_results["connection_activity"] = self.analyze_connection_and_activity()
-            self.analysis_results["cache_performance"] = self.analyze_cache_performance()
+            self.analysis_results["database_structure"] = (
+                self.analyze_database_size_and_structure()
+            )
+            self.analysis_results["query_performance"] = (
+                self.analyze_query_performance()
+            )
+            self.analysis_results["connection_activity"] = (
+                self.analyze_connection_and_activity()
+            )
+            self.analysis_results["cache_performance"] = (
+                self.analyze_cache_performance()
+            )
             self.analysis_results["locks_blocking"] = self.analyze_locks_and_blocking()
-            
+
             # Generate recommendations
-            self.analysis_results["recommendations"] = self.generate_optimization_recommendations()
-            
+            self.analysis_results["recommendations"] = (
+                self.generate_optimization_recommendations()
+            )
+
             # Add summary
             self.analysis_results["analysis_summary"] = {
                 "timestamp": datetime.now().isoformat(),
                 "database": self.db_name,
                 "container": self.db_container,
-                "analyses_completed": len([k for k in self.analysis_results.keys() if k != "analysis_summary"]),
-                "recommendations_count": len(self.analysis_results.get("recommendations", []))
+                "analyses_completed": len(
+                    [k for k in self.analysis_results.keys() if k != "analysis_summary"]
+                ),
+                "recommendations_count": len(
+                    self.analysis_results.get("recommendations", [])
+                ),
             }
-            
+
         except Exception as e:
             logger.error(f"Analysis failed: {e}")
             self.analysis_results["error"] = str(e)
-    
+
     def print_results(self):
         """Print formatted analysis results."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("📊 ACGS-1 DATABASE PERFORMANCE ANALYSIS RESULTS")
-        print("="*80)
-        
+        print("=" * 80)
+
         summary = self.analysis_results.get("analysis_summary", {})
         print(f"\n📋 Analysis Summary:")
         print(f"Database: {summary.get('database', 'unknown')}")
         print(f"Analyses Completed: {summary.get('analyses_completed', 0)}")
         print(f"Recommendations: {summary.get('recommendations_count', 0)}")
         print(f"Timestamp: {summary.get('timestamp', 'unknown')}")
-        
+
         # Database structure
         structure = self.analysis_results.get("database_structure", {})
         if structure.get("database_size"):
             print(f"\n💾 Database Size: {structure['database_size']}")
-        
+
         # Cache performance
         cache = self.analysis_results.get("cache_performance", {})
         if cache.get("buffer_cache_hit_ratio"):
             print(f"📈 Buffer Cache Hit Ratio: {cache['buffer_cache_hit_ratio']}")
-        
+
         # Recommendations
         recommendations = self.analysis_results.get("recommendations", [])
         if recommendations:
             print(f"\n💡 Top Recommendations:")
             print("-" * 50)
             for i, rec in enumerate(recommendations[:5], 1):
-                priority_icon = "🔴" if rec["priority"] == "high" else "🟡" if rec["priority"] == "medium" else "🟢"
+                priority_icon = (
+                    "🔴"
+                    if rec["priority"] == "high"
+                    else "🟡" if rec["priority"] == "medium" else "🟢"
+                )
                 print(f"{i}. {priority_icon} {rec['title']} ({rec['category']})")
                 print(f"   {rec['description']}")
-        
+
         # Performance assessment
-        if cache.get("buffer_cache_hit_ratio") and "%" in str(cache["buffer_cache_hit_ratio"]):
+        if cache.get("buffer_cache_hit_ratio") and "%" in str(
+            cache["buffer_cache_hit_ratio"]
+        ):
             try:
-                ratio = float(str(cache["buffer_cache_hit_ratio"]).split()[-1].replace("%", ""))
+                ratio = float(
+                    str(cache["buffer_cache_hit_ratio"]).split()[-1].replace("%", "")
+                )
                 if ratio >= 95:
                     print("\n🎉 EXCELLENT: Database cache performance is optimal!")
                 elif ratio >= 90:
@@ -452,12 +490,13 @@ class DatabasePerformanceAnalyzer:
                 print("\n📊 Database analysis completed successfully")
         else:
             print("\n📊 Database analysis completed successfully")
-    
+
     def save_results(self, filename: str = "database_performance_analysis.json"):
         """Save analysis results to file."""
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             json.dump(self.analysis_results, f, indent=2, default=str)
         logger.info(f"Analysis results saved to {filename}")
+
 
 async def main():
     """Main function to run database performance analysis."""
@@ -465,6 +504,7 @@ async def main():
     await analyzer.run_comprehensive_analysis()
     analyzer.print_results()
     analyzer.save_results()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

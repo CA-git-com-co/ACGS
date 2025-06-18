@@ -144,9 +144,7 @@ class ModelPerformanceTracker:
         self.last_failure_time: datetime | None = None
         self.circuit_breaker_open = False
 
-    def record_success(
-        self, response_time: float, quality_score: float | None = None
-    ):
+    def record_success(self, response_time: float, quality_score: float | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

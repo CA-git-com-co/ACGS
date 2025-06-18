@@ -84,9 +84,7 @@ class PolicyGenerationCache:
 
         return success
 
-    async def get_policy_generation(
-        self, generation_id: str
-    ) -> dict[str, Any] | None:
+    async def get_policy_generation(self, generation_id: str) -> dict[str, Any] | None:
         """
         Retrieve cached policy generation result.
 
@@ -221,9 +219,7 @@ class PolicyGenerationCache:
 
         return success
 
-    async def get_representation_set(
-        self, request_hash: str
-    ) -> dict[str, Any] | None:
+    async def get_representation_set(self, request_hash: str) -> dict[str, Any] | None:
         """
         Retrieve cached representation set.
 

@@ -185,7 +185,7 @@ class EnhancedSecurityMiddleware:
         for service_name, service_path in service_paths.items():
             patches[service_name] = {
                 "path": service_path,
-                "middleware_import": "from app.middleware.enhanced_security import EnhancedSecurityMiddleware",
+                "middleware_import": "from .middleware.enhanced_security import EnhancedSecurityMiddleware",
                 "middleware_registration": "app.add_middleware(EnhancedSecurityMiddleware)",
             }
 

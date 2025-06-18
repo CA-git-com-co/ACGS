@@ -10,10 +10,10 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from app.core.wina_oversight_coordinator import WINAECOversightCoordinator
-from app.services.ac_client import ac_service_client
-from app.services.gs_client import gs_service_client
-from app.services.pgc_client import pgc_service_client
+from .core.wina_oversight_coordinator import WINAECOversightCoordinator
+from .services.ac_client import ac_service_client
+from .services.gs_client import gs_service_client
+from .services.pgc_client import pgc_service_client
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
@@ -129,7 +129,7 @@ class ECOptimizationResponse(BaseModel):
 
 def get_wina_coordinator() -> WINAECOversightCoordinator:
     """Dependency to get WINA oversight coordinator."""
-    from app.main import get_wina_coordinator
+    from .main import get_wina_coordinator
 
     return get_wina_coordinator()
 

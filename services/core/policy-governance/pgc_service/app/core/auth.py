@@ -1,12 +1,11 @@
 # Import shared authentication utilities
 import sys
-sys.path.append('/home/dislove/ACGS-1/services/shared')
+
+sys.path.append("/home/dislove/ACGS-1/services/shared")
 from auth import (
     RoleChecker,
-    User,
     get_current_active_user,
     get_current_user_from_token,
-    get_current_user_id,
     require_pgc_admin,
 )
 

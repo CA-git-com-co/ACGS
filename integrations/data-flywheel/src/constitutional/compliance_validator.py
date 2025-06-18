@@ -294,7 +294,9 @@ class ConstitutionalComplianceValidator:
         validation_scores = {}
         workflow_steps = workflow_config.get("validation_steps", [])
 
-        for _i, (step, output) in enumerate(zip(workflow_steps, model_outputs, strict=False)):
+        for _i, (step, output) in enumerate(
+            zip(workflow_steps, model_outputs, strict=False)
+        ):
             try:
                 # Use PGC Service for workflow validation
                 async with httpx.AsyncClient() as client:

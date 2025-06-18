@@ -34,16 +34,17 @@ except ImportError:
     Send = None
     MemorySaver = None
 
-# Import stakeholder engagement system
-from pydantic import BaseModel, Field, ValidationError
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.services.stakeholder_engagement import (
+from .services.stakeholder_engagement import (
     NotificationChannel,
     StakeholderEngagementInput,
     StakeholderNotificationService,
     StakeholderRole,
 )
+
+# Import stakeholder engagement system
+from pydantic import BaseModel, Field, ValidationError
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from services.shared.langgraph_config import (
     ConstitutionalCouncilConfig,
     ModelRole,
@@ -952,7 +953,7 @@ class ConstitutionalCouncilGraph:
                 }
 
             # Process through amendment state machine
-            from app.core.amendment_state_machine import (
+            from .core.amendment_state_machine import (
                 AmendmentEvent,
                 WorkflowContext,
                 amendment_state_machine,
@@ -1213,7 +1214,7 @@ class ConstitutionalCouncilGraph:
 
             if amendment_id:
                 # Attempt to rollback amendment to previous state
-                from app.core.amendment_state_machine import (
+                from .core.amendment_state_machine import (
                     AmendmentEvent,
                     WorkflowContext,
                     amendment_state_machine,
@@ -1443,7 +1444,7 @@ class ConstitutionalCouncilGraph:
             )
 
             # Import state machine components
-            from app.core.amendment_state_machine import (
+            from .core.amendment_state_machine import (
                 AmendmentEvent,
                 WorkflowContext,
                 amendment_state_machine,

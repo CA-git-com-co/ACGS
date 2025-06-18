@@ -402,9 +402,7 @@ class PolisIntegration:
         final_report_data = {
             "conversation_id": conversation_id,
             "topic": conversation.topic,
-            "duration": (
-                datetime.now(UTC) - conversation.created_at
-            ).total_seconds(),
+            "duration": (datetime.now(UTC) - conversation.created_at).total_seconds(),
             "final_metrics": final_metrics.__dict__,
             "consensus_statements": [ci.content for ci in consensus_inputs],
             "total_participants": final_metrics.total_participants,

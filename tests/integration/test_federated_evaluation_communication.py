@@ -43,7 +43,6 @@ except ImportError:
 
     def serve_agent():
         """Mock agent server function"""
-        pass
 
     FEDERATED_AVAILABLE = False
 

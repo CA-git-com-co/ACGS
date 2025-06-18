@@ -1,7 +1,10 @@
 # acgs-pgp/auth_service/app/tests/conftest.py
 import asyncio
 import os
-from collections.abc import AsyncGenerator, Generator  # AsyncGenerator for async fixture
+from collections.abc import (  # AsyncGenerator for async fixture
+    AsyncGenerator,
+    Generator,
+)
 
 import pytest
 

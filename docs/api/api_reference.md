@@ -1,24 +1,26 @@
-## API Reference
+# ACGS-1 API Reference
 
-### Authentication
-All endpoints require valid JWT authentication unless otherwise specified.
+Complete API documentation for all ACGS-1 services.
 
-### Error Responses
-All endpoints return standardized error responses:
+## Core Services APIs
 
-```json
-{
-  "error": "error_type",
-  "message": "Human-readable error message",
-  "details": {
-    "field": "specific_error_details"
-  },
-  "timestamp": "2024-12-05T18:00:00Z"
-}
-```
+### Auth Service (Port 8000)
+- `POST /auth/login` - User authentication
+- `POST /auth/register` - User registration
+- `GET /auth/me` - Get current user
 
-### Rate Limiting
-- Default: 100 requests per minute per user
-- Burst: 200 requests per minute
-- Headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`
+### Constitutional AI Service (Port 8001)
+- `GET /api/constitutional-ai/principles` - Get principles
+- `POST /api/constitutional-ai/principles` - Create principle
+- `GET /api/constitutional-ai/compliance` - Check compliance
+
+### Governance Synthesis Service (Port 8004)
+- `POST /api/governance-synthesis/synthesize` - Synthesize policy
+- `GET /api/governance-synthesis/policies` - Get policies
+- `POST /api/governance-synthesis/validate` - Validate policy
+
+### Policy Governance & Compliance Service (Port 8005)
+- `POST /api/pgc/enforce` - Enforce policy
+- `GET /api/pgc/compliance` - Check compliance
+- `GET /api/pgc/workflows` - Get governance workflows
 

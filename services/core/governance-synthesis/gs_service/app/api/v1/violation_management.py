@@ -11,33 +11,33 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
-from sqlalchemy import and_, desc, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
-
 # Import WebSocket broadcasting
-from app.api.v1.fidelity_monitoring_websocket import ViolationAlert as WSViolationAlert
-from app.api.v1.fidelity_monitoring_websocket import (
+from .api.v1.fidelity_monitoring_websocket import ViolationAlert as WSViolationAlert
+from .api.v1.fidelity_monitoring_websocket import (
     monitoring_manager,
 )
-from app.core.violation_config import (
+from .core.violation_config import (
     get_violation_config_manager,
 )
-from app.services.violation_audit_service import (
+from .services.violation_audit_service import (
     AnalyticsPeriod,
     AuditEventType,
     ViolationAuditService,
 )
 
 # Import violation services
-from app.services.violation_detection_service import (
+from .services.violation_detection_service import (
     ViolationDetectionService,
 )
-from app.services.violation_escalation_service import (
+from .services.violation_escalation_service import (
     EscalationLevel,
     ViolationEscalationService,
 )
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from sqlalchemy import and_, desc, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
 from services.shared.auth import get_current_active_user
 from services.shared.database import get_async_db
 from services.shared.models import (
@@ -736,7 +736,7 @@ async def update_violation_threshold(
         config_manager = get_violation_config_manager()
 
         # Create ThresholdConfig object
-        from app.core.violation_config import ThresholdConfig, ThresholdType
+        from .core.violation_config import ThresholdConfig, ThresholdType
 
         config = ThresholdConfig(
             name=threshold_name,

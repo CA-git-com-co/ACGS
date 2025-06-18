@@ -24,9 +24,7 @@ async def create_refresh_token(
     return db_refresh_token
 
 
-async def get_refresh_token_by_jti(
-    db: AsyncSession, jti: str
-) -> RefreshToken | None:
+async def get_refresh_token_by_jti(db: AsyncSession, jti: str) -> RefreshToken | None:
     result = await db.execute(select(RefreshToken).filter(RefreshToken.jti == jti))
     return result.scalars().first()
 
@@ -48,9 +46,7 @@ async def is_valid_refresh_token(db: AsyncSession, user_id: int, jti: str) -> bo
     return True
 
 
-async def revoke_refresh_token(
-    db: AsyncSession, jti: str, user_id: int | None = None
-):
+async def revoke_refresh_token(db: AsyncSession, jti: str, user_id: int | None = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

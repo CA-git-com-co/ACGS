@@ -11,7 +11,11 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from services.shared.service_mesh.circuit_breaker import CircuitBreaker, CircuitBreakerState
+from services.shared.service_mesh.circuit_breaker import (
+    CircuitBreaker,
+    CircuitBreakerState,
+)
+
 from .common_types import ServiceInstance, ServiceType
 
 logger = logging.getLogger(__name__)
@@ -47,9 +51,7 @@ class FailoverCircuitBreaker:
     and service degradation for high availability.
     """
 
-    def __init__(
-        self, service_type: ServiceType, config: FailoverConfig | None = None
-    ):
+    def __init__(self, service_type: ServiceType, config: FailoverConfig | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

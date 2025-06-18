@@ -18,18 +18,21 @@ import logging
 from contextlib import asynccontextmanager
 from datetime import datetime
 
-from app.api.v1.advanced_wina_oversight import router as advanced_wina_oversight_router
-from app.api.v1.alphaevolve import router as alphaevolve_router
-from app.api.v1.monitoring import router as monitoring_router
-from app.api.v1.oversight import router as oversight_router
-from app.api.v1.reporting import router as reporting_router
-from app.api.v1.wina_oversight import router as wina_oversight_router
+from .api.v1.advanced_wina_oversight import router as advanced_wina_oversight_router
+from .api.v1.alphaevolve import router as alphaevolve_router
+from .api.v1.monitoring import router as monitoring_router
+from .api.v1.oversight import router as oversight_router
+from .api.v1.reporting import router as reporting_router
+from .api.v1.wina_oversight import router as wina_oversight_router
 
 # Import production security middleware
 try:
     import sys
     sys.path.append('/home/dislove/ACGS-1/services/shared')
-    from security_middleware import apply_production_security_middleware, create_security_config
+    from security_middleware import (
+        apply_production_security_middleware,
+        create_security_config,
+    )
     SECURITY_MIDDLEWARE_AVAILABLE = True
     print("✅ Production security middleware loaded successfully")
 except ImportError as e:
@@ -42,14 +45,14 @@ try:
     import sys
     sys.path.append('/home/dislove/ACGS-1/services/shared')
     from comprehensive_audit_logger import (
-        apply_audit_logging_to_service,
-        get_audit_logger,
-        log_user_login,
-        log_constitutional_validation,
-        log_security_violation,
         AuditEventType,
         AuditSeverity,
-        ComplianceFramework
+        ComplianceFramework,
+        apply_audit_logging_to_service,
+        get_audit_logger,
+        log_constitutional_validation,
+        log_security_violation,
+        log_user_login,
     )
     AUDIT_LOGGING_AVAILABLE = True
     print("✅ Comprehensive audit logging loaded successfully")
@@ -166,10 +169,10 @@ except ImportError:
         pass
 
 
-from app.core.wina_oversight_coordinator import WINAECOversightCoordinator
-from app.services.ac_client import ac_service_client
-from app.services.gs_client import gs_service_client
-from app.services.pgc_client import pgc_service_client
+from .core.wina_oversight_coordinator import WINAECOversightCoordinator
+from .services.ac_client import ac_service_client
+from .services.gs_client import gs_service_client
+from .services.pgc_client import pgc_service_client
 
 # Load centralized configuration
 config = get_config()

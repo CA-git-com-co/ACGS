@@ -446,9 +446,7 @@ class ACGS24PointValidator:
                 async with aiohttp.ClientSession(
                     timeout=aiohttp.ClientTimeout(total=5)
                 ) as session:
-                    async with session.get(
-                        f"http://localhost:{config['port']}/health"
-                    ):
+                    async with session.get(f"http://localhost:{config['port']}/health"):
                         response_time = (time.time() - start_time) * 1000
                         if response_time > 500:  # 500ms threshold
                             response_time_success = False

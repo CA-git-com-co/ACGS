@@ -1,6 +1,7 @@
 # Enterprise Security Event Model
 from datetime import UTC, datetime
 
+from .db.base_class import Base
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -12,8 +13,6 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.orm import relationship
-
-from app.db.base_class import Base
 
 
 class SecurityEvent(Base):

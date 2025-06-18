@@ -31,7 +31,7 @@ except ImportError:
     MODELS_AVAILABLE = False
 
 try:
-    from app.services.qec_conflict_resolver import QECConflictResolver
+    from .services.qec_conflict_resolver import QECConflictResolver
 
     QEC_RESOLVER_AVAILABLE = True
 except ImportError:

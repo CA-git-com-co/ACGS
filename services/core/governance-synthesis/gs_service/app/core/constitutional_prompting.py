@@ -445,7 +445,10 @@ Step 3: PROACTIVE COMPLIANCE
             relevant_precedents = []
             context_keywords = context.lower().split()
 
-            for _precedent_key, precedent_data in self.constitutional_precedents.items():
+            for (
+                _precedent_key,
+                precedent_data,
+            ) in self.constitutional_precedents.items():
                 # Check if precedent is relevant to current context
                 if any(
                     keyword in precedent_data.get("keywords", [])

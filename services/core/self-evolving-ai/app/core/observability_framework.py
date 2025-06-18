@@ -727,9 +727,7 @@ class ObservabilityFramework:
         try:
             for alert_id, alert in list(self.active_alerts.items()):
                 # Auto-resolve alerts older than 1 hour (simplified logic)
-                if (
-                    datetime.now(UTC) - alert.triggered_at
-                ).total_seconds() > 3600:
+                if (datetime.now(UTC) - alert.triggered_at).total_seconds() > 3600:
                     await self.resolve_alert(alert_id)
 
         except Exception as e:
@@ -742,10 +740,7 @@ class ObservabilityFramework:
                 # Escalate critical alerts that have been active for more than 15 minutes
                 if (
                     alert.alert_level == AlertLevel.CRITICAL
-                    and (
-                        datetime.now(UTC) - alert.triggered_at
-                    ).total_seconds()
-                    > 900
+                    and (datetime.now(UTC) - alert.triggered_at).total_seconds() > 900
                 ):
 
                     logger.critical(

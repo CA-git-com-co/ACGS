@@ -28,7 +28,7 @@ from enum import Enum
 from typing import Any
 
 import redis.asyncio as redis
-from prometheus_client import Counter, Gauge, Histogram, CollectorRegistry, REGISTRY
+from prometheus_client import Counter, Gauge, Histogram
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,7 @@ _cache_hit_counter = None
 _cache_miss_counter = None
 _cache_lookup_histogram = None
 _cache_size_gauge = None
+
 
 def _get_cache_metrics():
     """Get or create singleton cache metrics to prevent duplication."""
@@ -74,7 +75,12 @@ def _get_cache_metrics():
             else:
                 raise
 
-    return _cache_hit_counter, _cache_miss_counter, _cache_lookup_histogram, _cache_size_gauge
+    return (
+        _cache_hit_counter,
+        _cache_miss_counter,
+        _cache_lookup_histogram,
+        _cache_size_gauge,
+    )
 
 
 class CacheLevel(Enum):

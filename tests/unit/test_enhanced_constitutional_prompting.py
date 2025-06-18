@@ -38,7 +38,7 @@ sys.modules["services.shared.wina.constitutional_integration"] = MagicMock()
 
 # Import the module directly
 sys.path.insert(0, "services/core/governance-synthesis/gs_service")
-from app.core.constitutional_prompting import ConstitutionalPromptBuilder
+from .core.constitutional_prompting import ConstitutionalPromptBuilder
 
 
 class TestEnhancedConstitutionalPrompting:

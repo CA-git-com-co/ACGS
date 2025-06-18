@@ -19,9 +19,9 @@ from fastapi.testclient import TestClient
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'backend', 'shared'))  # Removed during reorganization
 
 try:
-    from app.api.v1.conflict_resolution import router
-    from app.main import app
-    from app.services.qec_conflict_resolver import QECConflictResolver
+    from .api.v1.conflict_resolution import router
+    from .main import app
+    from .services.qec_conflict_resolver import QECConflictResolver
     from models import ACConflictResolution, ACPrinciple
 except ImportError:
     # Fallback for testing without full service setup

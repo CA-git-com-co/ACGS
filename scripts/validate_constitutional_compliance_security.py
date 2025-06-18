@@ -574,7 +574,6 @@ class ConstitutionalComplianceSecurityValidator:
         if self.fix_issues:
             logger.info("🔧 Fixing identified security issues...")
             # Implementation would go here
-            pass
 
     def _generate_security_report(self) -> dict:
         """Generate comprehensive security report."""

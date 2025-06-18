@@ -187,9 +187,7 @@ class ConstitutionalComplianceInfo(BaseModel):
     compliance_score: float = Field(ge=0.0, le=1.0)
     violations: list[str] = Field(default_factory=list)
     recommendations: list[str] = Field(default_factory=list)
-    validation_timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(UTC)
-    )
+    validation_timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class PerformanceMetrics(BaseModel):

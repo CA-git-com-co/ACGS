@@ -71,9 +71,7 @@ class StructuredTestLogger:
             "Test session started", extra={"structured_data": session_data}
         )
 
-    def start_test(
-        self, test_name: str, test_metadata: dict[str, Any] | None = None
-    ):
+    def start_test(self, test_name: str, test_metadata: dict[str, Any] | None = None):
         """Start logging for a specific test."""
         self.current_test = test_name
         self.test_start_time = time.time()
@@ -250,9 +248,7 @@ class JSONFormatter(logging.Formatter):
 
     def format(self, record):
         log_entry = {
-            "timestamp": datetime.fromtimestamp(
-                record.created, UTC
-            ).isoformat(),
+            "timestamp": datetime.fromtimestamp(record.created, UTC).isoformat(),
             "level": record.levelname,
             "logger": record.name,
             "message": record.getMessage(),

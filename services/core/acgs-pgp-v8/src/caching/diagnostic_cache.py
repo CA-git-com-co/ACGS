@@ -77,9 +77,7 @@ class DiagnosticDataCache:
 
         return success
 
-    async def get_diagnostic_result(
-        self, diagnostic_id: str
-    ) -> dict[str, Any] | None:
+    async def get_diagnostic_result(self, diagnostic_id: str) -> dict[str, Any] | None:
         """
         Retrieve cached diagnostic result.
 

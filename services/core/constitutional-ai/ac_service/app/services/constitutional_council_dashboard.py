@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from typing import Any
 from uuid import uuid4
 
-from app.models import ACAmendment, ACAmendmentComment, ACAmendmentVote
+from .models import ACAmendment, ACAmendmentComment, ACAmendmentVote
 from fastapi import WebSocket, WebSocketDisconnect
 from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession

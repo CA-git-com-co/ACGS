@@ -349,8 +349,7 @@ class ACGSPGPMetricsCollector:
                     e
                     for e in self.enforcement_history
                     if (
-                        datetime.now(UTC)
-                        - datetime.fromisoformat(e["timestamp"])
+                        datetime.now(UTC) - datetime.fromisoformat(e["timestamp"])
                     ).seconds
                     < 60
                 ]

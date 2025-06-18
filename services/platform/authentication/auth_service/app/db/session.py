@@ -1,9 +1,7 @@
-
+from .core.config import settings
+from .db.base_class import Base  # Import Base for metadata
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-
-from app.core.config import settings
-from app.db.base_class import Base  # Import Base for metadata
 
 # Determine which database URL to use
 db_url_to_use: str | None = settings.SQLALCHEMY_DATABASE_URI

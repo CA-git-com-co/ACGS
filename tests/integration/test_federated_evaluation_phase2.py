@@ -34,7 +34,7 @@ async def integration_test_cleanup():
 def test_cross_platform_adapters_import():
     """Test that cross-platform adapters can be imported."""
     try:
-        from app.core.cross_platform_adapters import (
+        from .core.cross_platform_adapters import (
             AdapterStatus,
             EvaluationMode,
         )
@@ -71,7 +71,7 @@ def test_cross_platform_coordinator_import():
 async def test_platform_adapter_initialization():
     """Test platform adapter initialization without API keys."""
     try:
-        from app.core.cross_platform_adapters import (
+        from .core.cross_platform_adapters import (
             AdapterStatus,
             AnthropicPlatformAdapter,
             CoherePlatformAdapter,
@@ -104,7 +104,7 @@ async def test_platform_adapter_initialization():
 async def test_cross_platform_coordinator_initialization():
     """Test cross-platform coordinator initialization."""
     try:
-        from app.core.cross_platform_coordinator import CrossPlatformCoordinator
+        from .core.cross_platform_coordinator import CrossPlatformCoordinator
 
         # Create coordinator instance
         coordinator = CrossPlatformCoordinator()
@@ -143,7 +143,7 @@ async def test_cross_platform_coordinator_initialization():
 async def test_evaluation_request_response_models():
     """Test evaluation request and response data models."""
     try:
-        from app.core.cross_platform_adapters import (
+        from .core.cross_platform_adapters import (
             EvaluationMode,
             EvaluationRequest,
             EvaluationResponse,
@@ -195,8 +195,8 @@ async def test_evaluation_request_response_models():
 async def test_byzantine_fault_tolerance_logic():
     """Test Byzantine fault tolerance detection logic."""
     try:
-        from app.core.cross_platform_adapters import PlatformType
-        from app.core.cross_platform_coordinator import CrossPlatformCoordinator
+        from .core.cross_platform_adapters import PlatformType
+        from .core.cross_platform_coordinator import CrossPlatformCoordinator
 
         coordinator = CrossPlatformCoordinator()
 
@@ -245,7 +245,7 @@ async def test_byzantine_fault_tolerance_logic():
 async def test_secure_aggregation_logic():
     """Test secure aggregation of cross-platform results."""
     try:
-        from app.core.cross_platform_coordinator import CrossPlatformCoordinator
+        from .core.cross_platform_coordinator import CrossPlatformCoordinator
 
         coordinator = CrossPlatformCoordinator()
 
@@ -297,8 +297,8 @@ async def test_secure_aggregation_logic():
 async def test_mock_cross_platform_evaluation():
     """Test mock cross-platform evaluation workflow."""
     try:
-        from app.core.cross_platform_adapters import EvaluationMode, PlatformType
-        from app.core.cross_platform_coordinator import (
+        from .core.cross_platform_adapters import EvaluationMode, PlatformType
+        from .core.cross_platform_coordinator import (
             CrossPlatformCoordinator,
             CrossPlatformEvaluationRequest,
         )

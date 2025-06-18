@@ -16,10 +16,9 @@ import logging
 import sys
 from datetime import UTC, datetime
 
+from .database import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.database import get_async_db
 
 # Import shared validation components
 sys.path.append("/home/dislove/ACGS-1/services/shared")
@@ -53,8 +52,8 @@ def require_auditor():
 
 
 try:
-    from app.schemas import IntegrityReport
-    from app.services.integrity_verification import integrity_verifier
+    from .schemas import IntegrityReport
+    from .services.integrity_verification import integrity_verifier
 
     SERVICES_AVAILABLE = True
 except ImportError:
@@ -321,9 +320,8 @@ async def verify_audit_log_chain_integrity(
 ):
     """Verify chain integrity of audit logs within a range"""
     try:
+        from .models import AuditLog
         from sqlalchemy import select
-
-        from app.models import AuditLog
 
         # Build query for audit log range
         stmt = select(AuditLog)
@@ -407,9 +405,8 @@ async def generate_system_integrity_report(
 
         # Policy rules integrity check
         if include_policy_rules:
+            from .models import PolicyRule
             from sqlalchemy import select
-
-            from app.models import PolicyRule
 
             # Get sample of policy rules
             stmt = select(PolicyRule).order_by(PolicyRule.id.desc()).limit(sample_size)
@@ -454,7 +451,7 @@ async def generate_system_integrity_report(
 
         # Audit logs integrity check
         if include_audit_logs:
-            from app.models import AuditLog
+            from .models import AuditLog
 
             # Get sample of audit logs
             stmt = select(AuditLog).order_by(AuditLog.id.desc()).limit(sample_size)

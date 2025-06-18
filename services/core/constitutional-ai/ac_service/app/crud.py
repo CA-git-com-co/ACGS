@@ -24,18 +24,14 @@ async def create_principle(
     return db_principle
 
 
-async def get_principle(
-    db: AsyncSession, principle_id: int
-) -> models.Principle | None:
+async def get_principle(db: AsyncSession, principle_id: int) -> models.Principle | None:
     result = await db.execute(
         select(models.Principle).filter(models.Principle.id == principle_id)
     )
     return result.scalars().first()
 
 
-async def get_principle_by_name(
-    db: AsyncSession, name: str
-) -> models.Principle | None:
+async def get_principle_by_name(db: AsyncSession, name: str) -> models.Principle | None:
     # This simple version gets the first principle with this name.
     # For versioning, you might want the latest version or a specific one.
     result = await db.execute(

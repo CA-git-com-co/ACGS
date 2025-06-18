@@ -382,9 +382,7 @@ class TelemetryManager:
         if self.validation_duration_histogram:
             self.validation_duration_histogram.record(duration_ms, attributes)
 
-    def create_span(
-        self, name: str, attributes: dict[str, Any] | None = None
-    ) -> Any:
+    def create_span(self, name: str, attributes: dict[str, Any] | None = None) -> Any:
         """Create a new span.
 
         Args:

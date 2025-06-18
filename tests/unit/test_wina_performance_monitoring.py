@@ -214,9 +214,7 @@ class TestWINAPerformanceCollector:
     async def test_metrics_cleanup(self, collector):
         """Test automatic cleanup of old metrics."""
         # Create old metrics
-        old_timestamp = datetime.now(UTC) - timedelta(
-            hours=25
-        )  # Older than retention
+        old_timestamp = datetime.now(UTC) - timedelta(hours=25)  # Older than retention
         old_metrics = WINANeuronActivationMetrics(
             timestamp=old_timestamp,
             component_id="old_component",

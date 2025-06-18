@@ -351,7 +351,9 @@ class LLMBiasReviewer(BiasValidator):
         policy_code: str,
         policy_id: str,
         metrics: list[BiasMetric],
-        dataset: list[dict[str, Any]] | None = None,  # Dataset not typically used by LLM reviewer
+        dataset: (
+            list[dict[str, Any]] | None
+        ) = None,  # Dataset not typically used by LLM reviewer
         policy_language: str = "rego",
     ) -> list[tuple[str, bool, str, float | None]]:
         results: list[tuple[str, bool, str, float | None]] = []

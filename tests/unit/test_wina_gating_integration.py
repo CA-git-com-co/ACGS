@@ -229,9 +229,7 @@ class TestWINAGatingIntegration:
         for case in test_cases:
             # Build some history to influence strategy selection
             for i in range(3):
-                runtime_gating.make_gating_decision(
-                    case["layer_name"], case["scores"]
-                )
+                runtime_gating.make_gating_decision(case["layer_name"], case["scores"])
 
                 # Simulate varying compliance for testing
                 if i == 0:

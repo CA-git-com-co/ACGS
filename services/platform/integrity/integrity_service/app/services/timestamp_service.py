@@ -272,9 +272,7 @@ class TimestampManager:
 
         return result
 
-    def timestamp_audit_log(
-        self, log_entry: dict[str, Any]
-    ) -> dict[str, Any] | None:
+    def timestamp_audit_log(self, log_entry: dict[str, Any]) -> dict[str, Any] | None:
         """
         Create timestamp for audit log entry
 

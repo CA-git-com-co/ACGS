@@ -12,15 +12,15 @@ This script performs a comprehensive restructuring of the ACGS-1 applications di
 7. Validates the restructured applications
 """
 
+import json
+import logging
 import os
 import re
-import sys
 import shutil
-import logging
-import json
 import subprocess
+import sys
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Any
+from typing import Any, Dict, List, Set, Tuple
 
 # Configure logging
 logging.basicConfig(

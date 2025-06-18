@@ -9,17 +9,21 @@ Improves cache hit rate from 1.0% to 85%+ target
 """
 
 import asyncio
-import aioredis
 import json
 import logging
 import time
+
+import aioredis
+
 <<<<<<< HEAD
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 =======
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 >>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
 
 logging.basicConfig(level=logging.INFO)

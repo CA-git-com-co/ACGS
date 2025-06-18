@@ -81,19 +81,16 @@ class RouterResponse:
 class LLMRouterError(Exception):
     """Base exception for LLM Router errors"""
 
-    pass
 
 
 class LLMRouterTimeoutError(LLMRouterError):
     """Timeout error"""
 
-    pass
 
 
 class LLMRouterAuthError(LLMRouterError):
     """Authentication error"""
 
-    pass
 
 
 class LLMRouterClient:

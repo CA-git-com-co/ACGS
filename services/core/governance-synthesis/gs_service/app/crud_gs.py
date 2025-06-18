@@ -1,8 +1,9 @@
 from datetime import UTC, datetime  # For setting timestamps
 from typing import Any
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete
 from sqlalchemy import func as sql_func
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.models import Policy, PolicyTemplate

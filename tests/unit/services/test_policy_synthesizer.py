@@ -244,7 +244,6 @@ class TestLLMPolicyGenerator(unittest.TestCase):
         if not ALPHAEVOLVE_AVAILABLE:
             self.skipTest("AlphaEvolve engine not available")
 
-
         class FailingLLM(LLMService):  # Minimal LLMService that always fails
             def generate_text(
                 self,

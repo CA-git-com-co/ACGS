@@ -1,12 +1,11 @@
 from datetime import datetime
 
+from app import crud, schemas  # Fixed import
+from .database import get_async_db  # Local database import
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession  # Changed
 
-from app import crud, schemas  # Fixed import
-from app.database import get_async_db  # Local database import
-
-# from app.core.auth import require_internal_service, require_auditor, User # Fixed import
+# from .core.auth import require_internal_service, require_auditor, User # Fixed import
 
 
 # Local auth stubs to avoid shared module dependencies
