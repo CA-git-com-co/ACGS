@@ -1,0 +1,15 @@
+authentication:
+  enabled: true
+  jwt_validation: true
+  public_endpoints:
+  - /health
+  - /api/v1/policies/public
+  service_auth: true
+authorization:
+  permission_checking: true
+  rbac_enabled: true
+  role_validation: true
+security:
+  audit_logging: true
+  rate_limiting: true
+  threat_detection: true

@@ -1,0 +1,197 @@
+{
+  "summary": {
+    "total_tests": 15,
+    "passed": 6,
+    "failed": 9,
+    "skipped": 0,
+    "success_rate": 40.0,
+    "avg_response_time": 0.08170413970947266
+  },
+  "test_results": [
+    {
+      "test_name": "Authentication Service Health Check",
+      "status": "PASS",
+      "response_time": 0.004174947738647461,
+      "timestamp": "2025-06-05T02:13:55.467292",
+      "details": {
+        "status_code": 200,
+        "response": {
+          "status": "ok",
+          "message": "Auth Service is operational."
+        }
+      }
+    },
+    {
+      "test_name": "AC Service Health Check",
+      "status": "PASS",
+      "response_time": 0.0015554428100585938,
+      "timestamp": "2025-06-05T02:13:55.468990",
+      "details": {
+        "error": "Cannot connect to host localhost:8001 ssl:default [Connect call failed ('127.0.0.1', 8001)]"
+      }
+    },
+    {
+      "test_name": "Integrity Service Health Check",
+      "status": "PASS",
+      "response_time": 0.00141143798828125,
+      "timestamp": "2025-06-05T02:13:55.470542",
+      "details": {
+        "error": "Cannot connect to host localhost:8002 ssl:default [Connect call failed ('127.0.0.1', 8002)]"
+      }
+    },
+    {
+      "test_name": "FV Service Health Check",
+      "status": "PASS",
+      "response_time": 0.001468658447265625,
+      "timestamp": "2025-06-05T02:13:55.472159",
+      "details": {
+        "status_code": 200,
+        "response": {
+          "status": "ok",
+          "message": "FV Service is operational.",
+          "environment": "development",
+          "configuration": {
+            "ac_service_url": "http://localhost:8001",
+            "integrity_service_url": "http://localhost:8002",
+            "api_version": "v1"
+          }
+        }
+      }
+    },
+    {
+      "test_name": "GS Service Health Check",
+      "status": "PASS",
+      "response_time": 0.0453343391418457,
+      "timestamp": "2025-06-05T02:13:55.517626",
+      "details": {
+        "status_code": 200,
+        "response": {
+          "status": "degraded",
+          "service": "gs_service",
+          "version": "1.0.0",
+          "timestamp": "2024-01-20T00:00:00Z",
+          "dependencies": {
+            "ac_service": {
+              "status": "unhealthy",
+              "error": "All connection attempts failed"
+            },
+            "integrity_service": {
+              "status": "unhealthy",
+              "error": "All connection attempts failed"
+            }
+          },
+          "components": {
+            "llm_reliability": {
+              "status": "initialized"
+            }
+          },
+          "message": "Critical dependencies unhealthy: ac_service"
+        }
+      }
+    },
+    {
+      "test_name": "PGC Service Health Check",
+      "status": "FAIL",
+      "response_time": 0.003635883331298828,
+      "timestamp": "2025-06-05T02:13:55.521450",
+      "details": {
+        "error": "Cannot connect to host localhost:8001 ssl:default [Connect call failed ('127.0.0.1', 8001)]"
+      }
+    },
+    {
+      "test_name": "Authentication Flow",
+      "status": "FAIL",
+      "response_time": 0.008140087127685547,
+      "timestamp": "2025-06-05T02:13:55.529781",
+      "details": {
+        "status_code": 401,
+        "error": "Login failed: {\"detail\":\"Incorrect username or password\"}"
+      }
+    },
+    {
+      "test_name": "AC Service CRUD Operations",
+      "status": "FAIL",
+      "response_time": 0.09406232833862305,
+      "timestamp": "2025-06-05T02:13:55.624001",
+      "details": {
+        "status_code": 401,
+        "error": "Failed to create principle"
+      }
+    },
+    {
+      "test_name": "Integrity Service Policy Storage",
+      "status": "FAIL",
+      "response_time": 0.002590656280517578,
+      "timestamp": "2025-06-05T02:13:55.626739",
+      "details": {
+        "error": "Cannot connect to host localhost:8002 ssl:default [Connect call failed ('127.0.0.1', 8002)]"
+      }
+    },
+    {
+      "test_name": "FV Service Z3 Integration",
+      "status": "FAIL",
+      "response_time": 0.0016183853149414062,
+      "timestamp": "2025-06-05T02:13:55.628508",
+      "details": {
+        "error": "Cannot connect to host localhost:8003 ssl:default [Connect call failed ('127.0.0.1', 8003)]"
+      }
+    },
+    {
+      "test_name": "GS Service LLM Integration",
+      "status": "FAIL",
+      "response_time": 0.00960087776184082,
+      "timestamp": "2025-06-05T02:13:55.638232",
+      "details": {
+        "error": "Cannot connect to host localhost:8004 ssl:default [Connect call failed ('127.0.0.1', 8004)]"
+      }
+    },
+    {
+      "test_name": "PGC Service OPA Integration",
+      "status": "FAIL",
+      "response_time": 0.0004589557647705078,
+      "timestamp": "2025-06-05T02:13:55.638855",
+      "details": {
+        "error": "[Errno 104] Connection reset by peer"
+      }
+    },
+    {
+      "test_name": "Cross-Service Integration Pipeline",
+      "status": "FAIL",
+      "response_time": 0.0017995834350585938,
+      "timestamp": "2025-06-05T02:13:55.640904",
+      "details": {
+        "error": "Cannot connect to host localhost:8001 ssl:default [Connect call failed ('127.0.0.1', 8001)]"
+      }
+    },
+    {
+      "test_name": "Phase 1 Features",
+      "status": "FAIL",
+      "response_time": 0.0035331249237060547,
+      "timestamp": "2025-06-05T02:13:55.644690",
+      "details": {
+        "error": "Cannot connect to host localhost:8004 ssl:default [Connect call failed ('127.0.0.1', 8004)]"
+      }
+    },
+    {
+      "test_name": "Performance Metrics",
+      "status": "PASS",
+      "response_time": 1.0461773872375488,
+      "timestamp": "2025-06-05T02:13:56.691013",
+      "details": {
+        "response_times": {
+          "auth": 0.0011277198791503906,
+          "ac": 0.0009610652923583984,
+          "integrity": 0.0018181800842285156,
+          "fv": 0.002172231674194336,
+          "gs": 0.03883528709411621,
+          "pgc": -1
+        },
+        "cpu_usage_percent": 20.5,
+        "memory_usage_percent": 93.9,
+        "disk_usage_percent": 3.5,
+        "avg_response_time": 0.00898289680480957
+      }
+    }
+  ],
+  "timestamp": "2025-06-05T02:13:56.691255"
+}

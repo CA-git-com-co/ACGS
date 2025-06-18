@@ -1,0 +1,1 @@
+{"timestamp":"2025-06-18T00:55:12-04:00","level":"INFO","service":"pgc_service","message":"Test log entry for ELK aggregation","trace_id":"test-trace-123"}

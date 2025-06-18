@@ -1,0 +1,357 @@
+# ACGS-1 Green Environment Deployment
+# Complete green environment for zero-downtime deployments
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-green-config
+  namespace: acgs-green
+  labels:
+    app: acgs
+    environment: green
+data:
+  environment: "green"
+  constitutional-hash: "cdd01ef066bc6cf2"
+  database-url: "postgresql://acgs_user:acgs_password@acgs-postgres.acgs-shared.svc.cluster.local:5432/acgs_db"
+  redis-url: "redis://acgs-redis.acgs-shared.svc.cluster.local:6379"
+  prometheus-url: "http://acgs-prometheus.acgs-shared.svc.cluster.local:9090"
+
+---
+# Auth Service - Green
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acgs-auth-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-auth-service
+    environment: green
+    service: auth
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: acgs-auth-service
+      environment: green
+  template:
+    metadata:
+      labels:
+        app: acgs-auth-service
+        environment: green
+        service: auth
+    spec:
+      containers:
+      - name: auth-service
+        image: acgs/auth-service:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: SERVICE_NAME
+          value: "auth_service"
+        - name: SERVICE_PORT
+          value: "8000"
+        - name: ENVIRONMENT
+          value: "green"
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-green-config
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-green-config
+              key: redis-url
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-green-config
+              key: constitutional-hash
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: acgs-secrets
+              key: jwt-secret-key
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "300m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acgs-auth-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-auth-service
+    environment: green
+spec:
+  selector:
+    app: acgs-auth-service
+    environment: green
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http
+  type: ClusterIP
+
+---
+# AC Service - Green
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acgs-ac-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-ac-service
+    environment: green
+    service: constitutional-ai
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: acgs-ac-service
+      environment: green
+  template:
+    metadata:
+      labels:
+        app: acgs-ac-service
+        environment: green
+        service: constitutional-ai
+    spec:
+      containers:
+      - name: ac-service
+        image: acgs/ac-service:latest
+        ports:
+        - containerPort: 8001
+          name: http
+        env:
+        - name: SERVICE_NAME
+          value: "ac_service"
+        - name: SERVICE_PORT
+          value: "8001"
+        - name: ENVIRONMENT
+          value: "green"
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-green-config
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-green-config
+              key: redis-url
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-green-config
+              key: constitutional-hash
+        - name: AUTH_SERVICE_URL
+          value: "http://acgs-auth-service-green:8000"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acgs-ac-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-ac-service
+    environment: green
+spec:
+  selector:
+    app: acgs-ac-service
+    environment: green
+  ports:
+  - port: 8001
+    targetPort: 8001
+    name: http
+  type: ClusterIP
+
+---
+# PGC Service - Green
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acgs-pgc-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-pgc-service
+    environment: green
+    service: policy-governance
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: acgs-pgc-service
+      environment: green
+  template:
+    metadata:
+      labels:
+        app: acgs-pgc-service
+        environment: green
+        service: policy-governance
+    spec:
+      containers:
+      - name: pgc-service
+        image: acgs/pgc-service:latest
+        ports:
+        - containerPort: 8005
+          name: http
+        env:
+        - name: SERVICE_NAME
+          value: "pgc_service"
+        - name: SERVICE_PORT
+          value: "8005"
+        - name: ENVIRONMENT
+          value: "green"
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-green-config
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-green-config
+              key: redis-url
+        - name: CONSTITUTIONAL_HASH
+          valueFrom:
+            configMapKeyRef:
+              name: acgs-green-config
+              key: constitutional-hash
+        - name: AUTH_SERVICE_URL
+          value: "http://acgs-auth-service-green:8000"
+        - name: AC_SERVICE_URL
+          value: "http://acgs-ac-service-green:8001"
+        - name: SOLANA_RPC_URL
+          value: "https://api.devnet.solana.com"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8005
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8005
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acgs-pgc-service-green
+  namespace: acgs-green
+  labels:
+    app: acgs-pgc-service
+    environment: green
+spec:
+  selector:
+    app: acgs-pgc-service
+    environment: green
+  ports:
+  - port: 8005
+    targetPort: 8005
+    name: http
+  type: ClusterIP
+
+---
+# Green Environment Health Check
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: acgs-green-health-check
+  namespace: acgs-green
+  labels:
+    app: acgs-health-check
+    environment: green
+spec:
+  schedule: "*/1 * * * *"  # Every minute
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: health-checker
+            image: acgs/health-checker:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Checking green environment health..."
+              
+              # Check all services
+              services="auth-service:8000 ac-service:8001 pgc-service:8005"
+              
+              for service in $services; do
+                name=$(echo $service | cut -d: -f1)
+                port=$(echo $service | cut -d: -f2)
+                
+                if curl -f http://acgs-$name-green:$port/health; then
+                  echo "✅ $name is healthy"
+                else
+                  echo "❌ $name is unhealthy"
+                  exit 1
+                fi
+              done
+              
+              # Check constitutional compliance
+              if curl -f http://acgs-pgc-service-green:8005/api/v1/governance/compliance/status; then
+                echo "✅ Constitutional compliance verified"
+              else
+                echo "❌ Constitutional compliance failed"
+                exit 1
+              fi
+              
+              echo "🟩 Green environment is healthy"
+            env:
+            - name: CONSTITUTIONAL_HASH
+              value: "cdd01ef066bc6cf2"
+          restartPolicy: OnFailure

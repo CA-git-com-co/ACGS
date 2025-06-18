@@ -1,0 +1,403 @@
+{
+  "version": "2.0",
+  "updated": "2025-06-17",
+  "description": "ACGS-1 Enterprise Incident Response Configuration",
+  
+  "escalation_policies": {
+    "critical": {
+      "description": "Critical incidents affecting constitutional governance or system availability",
+      "initial_response_time": 120,
+      "sla_target": "2 minutes",
+      "escalation_levels": [
+        {
+          "level": 1,
+          "time": 300,
+          "description": "Initial escalation to operations team",
+          "contacts": [
+            "ops-team@constitutional-governance.ai",
+            "sre-oncall@constitutional-governance.ai"
+          ],
+          "notification_methods": ["email", "slack", "webhook"]
+        },
+        {
+          "level": 2,
+          "time": 600,
+          "description": "Escalation to senior engineering leadership",
+          "contacts": [
+            "sre-lead@constitutional-governance.ai",
+            "engineering-manager@constitutional-governance.ai"
+          ],
+          "notification_methods": ["email", "slack", "pagerduty"]
+        },
+        {
+          "level": 3,
+          "time": 900,
+          "description": "Executive escalation for business-critical issues",
+          "contacts": [
+            "cto@constitutional-governance.ai",
+            "ceo@constitutional-governance.ai"
+          ],
+          "notification_methods": ["email", "phone", "pagerduty"]
+        }
+      ]
+    },
+    "high": {
+      "description": "High-impact incidents affecting performance or functionality",
+      "initial_response_time": 300,
+      "sla_target": "5 minutes",
+      "escalation_levels": [
+        {
+          "level": 1,
+          "time": 900,
+          "description": "Escalation to operations team",
+          "contacts": [
+            "ops-team@constitutional-governance.ai"
+          ],
+          "notification_methods": ["email", "slack"]
+        },
+        {
+          "level": 2,
+          "time": 1800,
+          "description": "Escalation to engineering leadership",
+          "contacts": [
+            "sre-lead@constitutional-governance.ai"
+          ],
+          "notification_methods": ["email", "slack"]
+        }
+      ]
+    },
+    "medium": {
+      "description": "Medium-impact incidents with degraded performance",
+      "initial_response_time": 900,
+      "sla_target": "15 minutes",
+      "escalation_levels": [
+        {
+          "level": 1,
+          "time": 3600,
+          "description": "Standard escalation to operations team",
+          "contacts": [
+            "ops-team@constitutional-governance.ai"
+          ],
+          "notification_methods": ["email"]
+        }
+      ]
+    },
+    "low": {
+      "description": "Low-impact incidents for informational purposes",
+      "initial_response_time": 3600,
+      "sla_target": "1 hour",
+      "escalation_levels": [
+        {
+          "level": 1,
+          "time": 14400,
+          "description": "Daily review escalation",
+          "contacts": [
+            "ops-team@constitutional-governance.ai"
+          ],
+          "notification_methods": ["email"]
+        }
+      ]
+    }
+  },
+  
+  "automated_remediation": {
+    "enabled": true,
+    "description": "Automated remediation actions for common incident types",
+    "actions": {
+      "service_restart": {
+        "enabled": true,
+        "description": "Automatically restart failed services",
+        "applicable_alerts": ["ServiceDown", "service_unavailable"],
+        "max_attempts": 3,
+        "cooldown_minutes": 5,
+        "services": [
+          "auth_service",
+          "ac_service", 
+          "integrity_service",
+          "fv_service",
+          "gs_service",
+          "pgc_service",
+          "ec_service"
+        ]
+      },
+      "cache_clear": {
+        "enabled": true,
+        "description": "Clear Redis cache for performance issues",
+        "applicable_alerts": ["HighResponseTime", "response_time_sla_breach"],
+        "max_attempts": 2,
+        "cooldown_minutes": 10
+      },
+      "database_connection_reset": {
+        "enabled": true,
+        "description": "Reset database connection pools",
+        "applicable_alerts": ["DatabaseConnectionPoolHigh", "database_errors"],
+        "max_attempts": 2,
+        "cooldown_minutes": 15
+      },
+      "load_balancer_health_check": {
+        "enabled": true,
+        "description": "Trigger load balancer health checks",
+        "applicable_alerts": ["LoadBalancerBackendDown", "capacity_utilization_high"],
+        "max_attempts": 1,
+        "cooldown_minutes": 5
+      },
+      "constitutional_service_restart": {
+        "enabled": true,
+        "description": "Restart constitutional governance services",
+        "applicable_alerts": ["ConstitutionalComplianceFailure", "constitutional_hash_mismatch"],
+        "max_attempts": 2,
+        "cooldown_minutes": 5,
+        "services": ["pgc_service", "gs_service"]
+      }
+    }
+  },
+  
+  "notification_channels": {
+    "email": {
+      "enabled": true,
+      "description": "Email notifications for incident alerts",
+      "smtp_server": "localhost",
+      "smtp_port": 587,
+      "username": "acgs-alerts@constitutional-governance.ai",
+      "password": "${SMTP_PASSWORD}",
+      "use_tls": true,
+      "templates": {
+        "critical": "critical_incident_template.html",
+        "high": "high_incident_template.html",
+        "medium": "medium_incident_template.html",
+        "escalation": "escalation_template.html"
+      }
+    },
+    "slack": {
+      "enabled": false,
+      "description": "Slack notifications for real-time alerts",
+      "webhook_url": "${SLACK_WEBHOOK_URL}",
+      "channels": {
+        "critical": "#acgs-critical-alerts",
+        "high": "#acgs-alerts",
+        "medium": "#acgs-monitoring",
+        "low": "#acgs-info"
+      },
+      "mention_policies": {
+        "critical": "@channel",
+        "high": "@here",
+        "medium": "",
+        "low": ""
+      }
+    },
+    "pagerduty": {
+      "enabled": false,
+      "description": "PagerDuty integration for critical incidents",
+      "integration_key": "${PAGERDUTY_INTEGRATION_KEY}",
+      "service_keys": {
+        "critical": "${PAGERDUTY_CRITICAL_SERVICE_KEY}",
+        "high": "${PAGERDUTY_HIGH_SERVICE_KEY}"
+      },
+      "escalation_policies": {
+        "critical": "P1-Critical-Escalation",
+        "high": "P2-High-Escalation"
+      }
+    },
+    "webhook": {
+      "enabled": true,
+      "description": "Webhook notifications for external integrations",
+      "endpoints": [
+        {
+          "url": "http://localhost:9093/webhook/incident",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer ${WEBHOOK_TOKEN}"
+          },
+          "timeout": 10
+        }
+      ],
+      "retry_policy": {
+        "max_retries": 3,
+        "retry_delay": 5,
+        "backoff_multiplier": 2
+      }
+    },
+    "teams": {
+      "enabled": false,
+      "description": "Microsoft Teams notifications",
+      "webhook_url": "${TEAMS_WEBHOOK_URL}",
+      "channels": {
+        "critical": "ACGS Critical Alerts",
+        "high": "ACGS Alerts"
+      }
+    }
+  },
+  
+  "incident_classification": {
+    "severity_mapping": {
+      "critical": {
+        "keywords": ["down", "unavailable", "critical", "constitutional_failure", "security_breach"],
+        "services": ["pgc_service", "gs_service"],
+        "metrics": {
+          "availability": "<99.0%",
+          "response_time": ">2000ms",
+          "error_rate": ">10%"
+        }
+      },
+      "high": {
+        "keywords": ["high", "warning", "degraded", "performance"],
+        "metrics": {
+          "availability": "<99.9%",
+          "response_time": ">500ms",
+          "error_rate": ">5%"
+        }
+      },
+      "medium": {
+        "keywords": ["medium", "info", "capacity"],
+        "metrics": {
+          "availability": "<99.95%",
+          "response_time": ">200ms",
+          "error_rate": ">1%"
+        }
+      }
+    },
+    "business_impact_assessment": {
+      "critical": {
+        "description": "Complete system unavailability or constitutional governance failure",
+        "examples": [
+          "All services down",
+          "Constitutional compliance system failure",
+          "Security breach affecting governance",
+          "Data corruption or loss"
+        ]
+      },
+      "high": {
+        "description": "Significant functionality degradation affecting user experience",
+        "examples": [
+          "Major service degradation",
+          "Performance below SLA thresholds",
+          "Partial system functionality loss"
+        ]
+      },
+      "medium": {
+        "description": "Minor functionality issues with workarounds available",
+        "examples": [
+          "Single service performance issues",
+          "Non-critical feature unavailability",
+          "Capacity warnings"
+        ]
+      }
+    }
+  },
+  
+  "runbook_automation": {
+    "enabled": true,
+    "description": "Automated runbook execution for common incidents",
+    "runbooks": {
+      "service_down": {
+        "steps": [
+          "Check service health endpoint",
+          "Restart service if unhealthy",
+          "Verify service recovery",
+          "Check dependent services",
+          "Update incident status"
+        ],
+        "automation_level": "full"
+      },
+      "high_response_time": {
+        "steps": [
+          "Check system load",
+          "Clear application cache",
+          "Reset database connections",
+          "Monitor performance metrics",
+          "Escalate if no improvement"
+        ],
+        "automation_level": "partial"
+      },
+      "constitutional_compliance_failure": {
+        "steps": [
+          "Verify constitutional hash integrity",
+          "Restart PGC service",
+          "Validate compliance endpoints",
+          "Check Quantumagi integration",
+          "Manual review required"
+        ],
+        "automation_level": "assisted"
+      }
+    }
+  },
+  
+  "metrics_and_reporting": {
+    "incident_metrics": {
+      "mttr_target": {
+        "critical": 900,
+        "high": 1800,
+        "medium": 3600
+      },
+      "mtta_target": {
+        "critical": 120,
+        "high": 300,
+        "medium": 900
+      }
+    },
+    "reporting": {
+      "daily_summary": {
+        "enabled": true,
+        "recipients": ["ops-team@constitutional-governance.ai"],
+        "time": "09:00"
+      },
+      "weekly_analysis": {
+        "enabled": true,
+        "recipients": ["sre-lead@constitutional-governance.ai", "engineering-manager@constitutional-governance.ai"],
+        "day": "monday",
+        "time": "10:00"
+      },
+      "monthly_review": {
+        "enabled": true,
+        "recipients": ["cto@constitutional-governance.ai"],
+        "day": 1,
+        "time": "14:00"
+      }
+    }
+  },
+  
+  "integration_settings": {
+    "prometheus": {
+      "url": "http://localhost:9090",
+      "query_timeout": 30,
+      "metrics_retention": "30d"
+    },
+    "grafana": {
+      "url": "http://localhost:3000",
+      "api_key": "${GRAFANA_API_KEY}",
+      "dashboard_links": {
+        "system_overview": "/d/acgs-executive-overview",
+        "service_details": "/d/acgs-stakeholder-technical",
+        "business_metrics": "/d/acgs-stakeholder-business"
+      }
+    },
+    "alertmanager": {
+      "url": "http://localhost:9093",
+      "api_timeout": 10
+    }
+  },
+  
+  "security_settings": {
+    "encryption": {
+      "enabled": false,
+      "algorithm": "AES-256-GCM",
+      "key_rotation_days": 90
+    },
+    "access_control": {
+      "enabled": true,
+      "allowed_ips": [],
+      "api_key_required": true,
+      "rate_limiting": {
+        "enabled": true,
+        "requests_per_minute": 100
+      }
+    },
+    "audit_logging": {
+      "enabled": true,
+      "log_level": "INFO",
+      "retention_days": 365,
+      "log_file": "logs/incident_response_audit.log"
+    }
+  }
+}

@@ -1,0 +1,835 @@
+{
+  "version": "0.1.0",
+  "name": "logging",
+  "instructions": [
+    {
+      "name": "logEvent",
+      "docs": [
+        "Log a general governance event"
+      ],
+      "accounts": [
+        {
+          "name": "logEntry",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "logger",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "eventType",
+          "type": {
+            "defined": "EventType"
+          }
+        },
+        {
+          "name": "metadata",
+          "type": "string"
+        },
+        {
+          "name": "sourceProgram",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "emitMetadataLog",
+      "docs": [
+        "Log policy compliance check metadata"
+      ],
+      "accounts": [
+        {
+          "name": "metadataLog",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "checker",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "policyId",
+          "type": "u64"
+        },
+        {
+          "name": "actionHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "complianceResult",
+          "type": {
+            "defined": "ComplianceResult"
+          }
+        },
+        {
+          "name": "confidenceScore",
+          "type": "u8"
+        },
+        {
+          "name": "processingTimeMs",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "logPerformanceMetrics",
+      "docs": [
+        "Log system performance metrics"
+      ],
+      "accounts": [
+        {
+          "name": "performanceLog",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reporter",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "metrics",
+          "type": {
+            "defined": "PerformanceMetrics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "logSecurityAlert",
+      "docs": [
+        "Log security alert"
+      ],
+      "accounts": [
+        {
+          "name": "securityLog",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reporter",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "alertType",
+          "type": {
+            "defined": "SecurityAlertType"
+          }
+        },
+        {
+          "name": "severity",
+          "type": {
+            "defined": "AlertSeverity"
+          }
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "affectedPolicyId",
+          "type": {
+            "option": "u64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "acknowledgeSecurityAlert",
+      "docs": [
+        "Acknowledge a security alert"
+      ],
+      "accounts": [
+        {
+          "name": "securityLog",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "acknowledger",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "acknowledgmentNote",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "getLoggingStats",
+      "docs": [
+        "Get logging statistics"
+      ],
+      "accounts": [
+        {
+          "name": "loggingStats",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "LogEntry",
+      "docs": [
+        "General event log entry"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "eventType",
+            "type": {
+              "defined": "EventType"
+            }
+          },
+          {
+            "name": "metadata",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "sourceProgram",
+            "type": "publicKey"
+          },
+          {
+            "name": "blockHeight",
+            "type": "u64"
+          },
+          {
+            "name": "logger",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MetadataLog",
+      "docs": [
+        "Compliance check metadata log"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "policyId",
+            "type": "u64"
+          },
+          {
+            "name": "actionHash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "complianceResult",
+            "type": {
+              "defined": "ComplianceResult"
+            }
+          },
+          {
+            "name": "confidenceScore",
+            "type": "u8"
+          },
+          {
+            "name": "processingTimeMs",
+            "type": "u32"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "blockHeight",
+            "type": "u64"
+          },
+          {
+            "name": "checker",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PerformanceLog",
+      "docs": [
+        "Performance metrics log"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "metrics",
+            "type": {
+              "defined": "PerformanceMetrics"
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "blockHeight",
+            "type": "u64"
+          },
+          {
+            "name": "reporter",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SecurityLog",
+      "docs": [
+        "Security alert log"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "alertType",
+            "type": {
+              "defined": "SecurityAlertType"
+            }
+          },
+          {
+            "name": "severity",
+            "type": {
+              "defined": "AlertSeverity"
+            }
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "affectedPolicyId",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "blockHeight",
+            "type": "u64"
+          },
+          {
+            "name": "reporter",
+            "type": "publicKey"
+          },
+          {
+            "name": "acknowledged",
+            "type": "bool"
+          },
+          {
+            "name": "acknowledgedAt",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "acknowledgedBy",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
+            "name": "acknowledgmentNote",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoggingStats",
+      "docs": [
+        "Logging statistics"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "totalEventsLogged",
+            "type": "u64"
+          },
+          {
+            "name": "complianceChecksLogged",
+            "type": "u64"
+          },
+          {
+            "name": "securityAlertsLogged",
+            "type": "u64"
+          },
+          {
+            "name": "performanceLogsCount",
+            "type": "u64"
+          },
+          {
+            "name": "averageLogProcessingTime",
+            "type": "u32"
+          },
+          {
+            "name": "lastUpdated",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "PerformanceMetrics",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "avgComplianceCheckTime",
+            "type": "u32"
+          },
+          {
+            "name": "totalPoliciesActive",
+            "type": "u32"
+          },
+          {
+            "name": "complianceSuccessRate",
+            "type": "u8"
+          },
+          {
+            "name": "systemLoadPercentage",
+            "type": "u8"
+          },
+          {
+            "name": "memoryUsageMb",
+            "type": "u32"
+          },
+          {
+            "name": "cpuUsagePercentage",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EventType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "ConstitutionInitialized"
+          },
+          {
+            "name": "ConstitutionUpdated"
+          },
+          {
+            "name": "PolicyProposed"
+          },
+          {
+            "name": "PolicyEnacted"
+          },
+          {
+            "name": "PolicyDeactivated"
+          },
+          {
+            "name": "VoteCast"
+          },
+          {
+            "name": "ComplianceCheckPerformed"
+          },
+          {
+            "name": "AppealSubmitted"
+          },
+          {
+            "name": "AppealResolved"
+          },
+          {
+            "name": "SecurityAlert"
+          },
+          {
+            "name": "SystemMaintenance"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ComplianceResult",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Compliant"
+          },
+          {
+            "name": "NonCompliant"
+          },
+          {
+            "name": "RequiresReview"
+          },
+          {
+            "name": "Error"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SecurityAlertType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "UnauthorizedAccess"
+          },
+          {
+            "name": "PolicyViolation"
+          },
+          {
+            "name": "SystemAnomaly"
+          },
+          {
+            "name": "PerformanceDegradation"
+          },
+          {
+            "name": "DataIntegrityIssue"
+          },
+          {
+            "name": "ConstitutionalViolation"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AlertSeverity",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Low"
+          },
+          {
+            "name": "Medium"
+          },
+          {
+            "name": "High"
+          },
+          {
+            "name": "Critical"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "GovernanceEventLogged",
+      "fields": [
+        {
+          "name": "logId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "eventType",
+          "type": {
+            "defined": "EventType"
+          },
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "sourceProgram",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "blockHeight",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "ComplianceCheckLogged",
+      "fields": [
+        {
+          "name": "logId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "policyId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "actionHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          },
+          "index": false
+        },
+        {
+          "name": "complianceResult",
+          "type": {
+            "defined": "ComplianceResult"
+          },
+          "index": false
+        },
+        {
+          "name": "confidenceScore",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "processingTimeMs",
+          "type": "u32",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "checker",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "PerformanceMetricsLogged",
+      "fields": [
+        {
+          "name": "logId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "avgComplianceCheckTime",
+          "type": "u32",
+          "index": false
+        },
+        {
+          "name": "totalPoliciesActive",
+          "type": "u32",
+          "index": false
+        },
+        {
+          "name": "complianceSuccessRate",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "systemLoadPercentage",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "SecurityAlertLogged",
+      "fields": [
+        {
+          "name": "logId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "alertType",
+          "type": {
+            "defined": "SecurityAlertType"
+          },
+          "index": false
+        },
+        {
+          "name": "severity",
+          "type": {
+            "defined": "AlertSeverity"
+          },
+          "index": false
+        },
+        {
+          "name": "affectedPolicyId",
+          "type": {
+            "option": "u64"
+          },
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "reporter",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "SecurityAlertAcknowledged",
+      "fields": [
+        {
+          "name": "logId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "acknowledgedBy",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "acknowledgedAt",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "LoggingStatsEvent",
+      "fields": [
+        {
+          "name": "totalEventsLogged",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "complianceChecksLogged",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "securityAlertsLogged",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "performanceLogsCount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "averageLogProcessingTime",
+          "type": "u32",
+          "index": false
+        },
+        {
+          "name": "lastUpdated",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "MetadataTooLong",
+      "msg": "Metadata is too long."
+    },
+    {
+      "code": 6001,
+      "name": "DescriptionTooLong",
+      "msg": "Description is too long."
+    },
+    {
+      "code": 6002,
+      "name": "AckNoteTooLong",
+      "msg": "Acknowledgment note is too long."
+    },
+    {
+      "code": 6003,
+      "name": "InvalidConfidenceScore",
+      "msg": "Invalid confidence score. Must be 0-100."
+    },
+    {
+      "code": 6004,
+      "name": "AlreadyAcknowledged",
+      "msg": "Security alert has already been acknowledged."
+    }
+  ],
+  "metadata": {
+    "address": "yAfEigJebmeuEWrkfMiPZcAPcoiMJ3kPHvMT6LTqecG"
+  }
+}

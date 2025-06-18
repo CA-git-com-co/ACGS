@@ -1,0 +1,213 @@
+---
+# Kubernetes Service for PGC Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgc-service
+  labels:
+    app: pgc-service
+    service: pgc-service
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "8005"
+spec:
+  ports:
+  - port: 8005
+    name: http
+    targetPort: 8005
+  selector:
+    app: pgc-service
+
+---
+# Deployment for PGC Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgc-service
+  labels:
+    app: pgc-service
+    version: v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pgc-service
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: pgc-service
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+      - name: pgc-service
+        image: acgs/pgc-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8005
+        env:
+        - name: PGC_SERVICE_PORT
+          value: "8005"
+        - name: PGC_INTEGRATIONS_FV_SERVICE_URL
+          value: "http://fv-service:8083"
+        - name: PGC_TELEMETRY_ENABLED
+          value: "true"
+        - name: PGC_TELEMETRY_OTLP_ENDPOINT
+          value: "http://otel-collector:4317"
+        - name: PGC_TELEMETRY_OTLP_VERSION
+          value: "v1.37.0"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8005
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8005
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: pgc-service-config
+
+---
+# Service Account for PGC Service
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pgc-service
+  labels:
+    account: pgc-service
+
+---
+# Istio Service Entry for External Services
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: external-services
+spec:
+  hosts:
+  - "api.devnet.solana.com"
+  location: MESH_EXTERNAL
+  ports:
+  - number: 443
+    name: https
+    protocol: HTTPS
+  resolution: DNS
+
+---
+# Istio Virtual Service for PGC Service
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: pgc-service-vs
+spec:
+  hosts:
+  - pgc-service
+  http:
+  - match:
+    - uri:
+        prefix: /api/v1/enforcement
+    route:
+    - destination:
+        host: pgc-service
+        port:
+          number: 8005
+    timeout: 0.5s  # 500ms timeout for enforcement endpoint
+    retries:
+      attempts: 3
+      perTryTimeout: 0.1s
+      retryOn: gateway-error,connect-failure,refused-stream
+  - route:
+    - destination:
+        host: pgc-service
+        port:
+          number: 8005
+    timeout: 5s  # Default timeout for other endpoints
+
+---
+# Istio Destination Rule for PGC Service
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: pgc-service-dr
+spec:
+  host: pgc-service
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 200
+      http:
+        http1MaxPendingRequests: 100
+        maxRequestsPerConnection: 10
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+
+---
+# Istio PeerAuthentication for mTLS
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: pgc-service-mtls
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: pgc-service
+  mtls:
+    mode: STRICT
+
+---
+# ConfigMap for PGC Service
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgc-service-config
+data:
+  service_config.yaml: |
+    service:
+      name: pgc_service
+      port: 8005
+      workers: 4
+      log_level: INFO
+    
+    integrations:
+      fv_service:
+        url: http://fv-service:8083
+        timeout_ms: 5000
+        circuit_breaker_enabled: true
+    
+    telemetry:
+      enabled: true
+      otlp_endpoint: http://otel-collector:4317
+      otlp_version: v1.37.0
+    
+    performance:
+      p99_latency_target_ms: 500
+      p95_latency_target_ms: 25
+      enable_optimizations: true
+      
+    security:
+      enable_mtls: true
