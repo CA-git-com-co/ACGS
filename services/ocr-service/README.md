@@ -1,6 +1,8 @@
-# OCR Service for ACGS-1
+# OCR Service Backend for ACGS-1
 
-This service provides Optical Character Recognition (OCR) capabilities to the ACGS-1 system using the Nanonets OCR model through vLLM.
+This service provides the backend OCR (Optical Character Recognition) processing capabilities to the ACGS-1 system using the Nanonets OCR model through vLLM.
+
+**Note**: This is the OCR service backend for Docker deployment. The Python client library for consuming this service is located in `services/ocr_service/` (note the underscore).
 
 ## Features
 

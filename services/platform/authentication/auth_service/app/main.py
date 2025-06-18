@@ -525,15 +525,16 @@ async def shutdown_event():
 
 
 if __name__ == "__main__":
+    import os
     import uvicorn
 
     # Production-grade server configuration
     config = {
-        "host": "0.0.0.0",
-        "port": SERVICE_PORT,
-        "log_level": "info",
-        "access_log": True,
-        "workers": 1,  # Single worker for development, increase for production
+        "host": os.getenv("HOST", "127.0.0.1"),  # Secure by default, configurable for production
+        "port": int(os.getenv("PORT", str(SERVICE_PORT))),
+        "log_level": os.getenv("LOG_LEVEL", "info"),
+        "access_log": os.getenv("ACCESS_LOG", "true").lower() == "true",
+        "workers": int(os.getenv("WORKERS", "1")),  # Single worker for development, increase for production
         "loop": "asyncio",
         "http": "httptools",
         "lifespan": "on",

@@ -64,7 +64,7 @@ class CacheConfig:
     """Cache configuration."""
 
     redis_url: str = "redis://localhost:6379/0"
-    redis_password: str = "acgs_redis_production_2024_secure_cache_key"
+    redis_password: str = ""  # Use environment variable REDIS_PASSWORD
     max_connections: int = 20
     socket_timeout: int = 5
     socket_connect_timeout: int = 5

@@ -5,6 +5,7 @@ Implements service-specific caching strategies for authentication operations
 
 import hashlib
 import json
+import os
 from datetime import datetime
 from typing import Any
 
@@ -44,10 +45,10 @@ class AuthCacheManager:
         try:
             # Configure Redis for auth service
             config = CacheConfig(
-                redis_url="redis://localhost:6379/1",  # Use DB 1 for auth
-                redis_password="acgs_redis_production_2024_secure_cache_key",
-                max_connections=10,
-                health_check_interval=30,
+                redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/1"),  # Use DB 1 for auth
+                redis_password=os.getenv("REDIS_PASSWORD", ""),
+                max_connections=int(os.getenv("REDIS_MAX_CONNECTIONS", "10")),
+                health_check_interval=int(os.getenv("REDIS_HEALTH_CHECK_INTERVAL", "30")),
             )
 
             self.redis_client = await get_redis_client(self.service_name, config)

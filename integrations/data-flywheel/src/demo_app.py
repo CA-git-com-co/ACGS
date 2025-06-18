@@ -82,8 +82,8 @@ async def check_acgs_service_health() -> dict[str, bool]:
     """Check health of all ACGS-1 services"""
     health_status = {}
 
-    # Disable SSL verification for local connections
-    async with httpx.AsyncClient(verify=False) as client:
+    # Use secure SSL verification for all connections
+    async with httpx.AsyncClient(verify=True) as client:
         for service_name, service_url in ACGS_SERVICES.items():
             try:
                 response = await client.get(f"{service_url}/health", timeout=5.0)
