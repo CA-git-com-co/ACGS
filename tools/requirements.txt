@@ -4,7 +4,7 @@
 #
 #    pip-compile --generate-hashes --output-file=requirements.temp.txt requirements.txt
 #
-alembic==1.16.1
+alembic==1.16.2
 # via -r requirements.txt
 greenlet==3.2.3
 # via
