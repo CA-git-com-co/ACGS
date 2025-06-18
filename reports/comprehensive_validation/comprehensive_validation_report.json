@@ -1,0 +1,15 @@
+{
+  "status": "FAILED",
+  "error": "Object of type bool is not JSON serializable",
+  "timestamp": "2025-06-17T10:55:03.213887+00:00",
+  "partial_results": {
+    "gsm8k_benchmark": {
+      "timestamp": "2025-06-17T10:52:00.328844+00:00",
+      "total_problems": 100,
+      "correct_answers": 90,
+      "accuracy_percentage": 90.0,
+      "target_accuracy": 85.0,
+      "accuracy_target_met": true,
+      "average_response_time_ms": 100.17682790756226,
+      "target_response_time_ms": 2000.0,
+      "response_time_target_met": 

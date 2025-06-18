@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-06-17T10:55:03.153876+00:00",
+  "test_duration_seconds": 0.0986788272857666,
+  "total_tests_executed": 4,
+  "total_vulnerabilities_found": 0,
+  "security_score": 100.0,
+  "vulnerability_summary": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "component_analysis": {},
+  "security_assessment": {
+    "zero_critical_vulnerabilities": true,
+    "acceptable_risk_level": true,
+    "production_ready": true,
+    "overall_security_status": "PASS"
+  },
+  "detailed_vulnerabilities": []
+}

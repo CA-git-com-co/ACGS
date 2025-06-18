@@ -1,0 +1,61 @@
+{
+  "test_id": "1b76bc61-7437-4803-90f7-03757bf36960",
+  "timestamp": "2025-06-17T10:55:03.049668+00:00",
+  "test_duration_seconds": 182.58132004737854,
+  "configuration": {
+    "max_concurrent_users": 1000,
+    "target_response_time_ms": 500.0,
+    "target_availability_percent": 99.9,
+    "target_sol_cost": 0.01
+  },
+  "overall_metrics": {
+    "total_requests": 169074,
+    "successful_requests": 24715,
+    "failed_requests": 144359,
+    "success_rate_percent": 14.617859635425908,
+    "requests_per_second": 926.020251995804,
+    "avg_response_time_ms": 155.6274398724222,
+    "p95_response_time_ms": 1292.4809694290154,
+    "p99_response_time_ms": 1751.5748786926279,
+    "avg_sol_cost": 0.010005079212204502
+  },
+  "service_metrics": {
+    "auth": {
+      "total_requests": 16704,
+      "success_rate": 21.180555555555554,
+      "avg_response_time_ms": 2.3307698537159127
+    },
+    "ac": {
+      "total_requests": 29699,
+      "success_rate": 11.82868110037375,
+      "avg_response_time_ms": 1.8111321106956042
+    },
+    "integrity": {
+      "total_requests": 29396,
+      "success_rate": 11.698870594638725,
+      "avg_response_time_ms": 1.5450736470401338
+    },
+    "fv": {
+      "total_requests": 23319,
+      "success_rate": 15.03495004073931,
+      "avg_response_time_ms": 1.7247565188410618
+    },
+    "gs": {
+      "total_requests": 17046,
+      "success_rate": 20.82600023465916,
+      "avg_response_time_ms": 1.6770117719408493
+    },
+    "pgc": {
+      "total_requests": 29681,
+      "success_rate": 12.24015363363768,
+      "avg_response_time_ms": 1048.1764584443406
+    },
+    "ec": {
+      "total_requests": 23229,
+      "success_rate": 15.222351371130912,
+      "avg_response_time_ms": 1.805553069481483
+    }
+  },
+  "performance_assessment": {
+    "concurrent_users_target": true,
+    "response_time_target": 
