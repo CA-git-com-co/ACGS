@@ -295,7 +295,7 @@ class EnterpriseHAManager:
         self, instances: list[ServiceInstance], key: str
     ) -> ServiceInstance:
         """Consistent hash selection for session affinity"""
-        hash_value = int(hashlib.md5(key.encode()).hexdigest(), 16)
+        hash_value = int(hashlib.sha256(key.encode()).hexdigest(), 16)
         return instances[hash_value % len(instances)]
 
     def _resource_based_selection(

@@ -113,6 +113,22 @@ async def evaluate_policy_query(
     resource_id = policy_query_payload.context.resource.get("id", "_")
     action_type = policy_query_payload.context.action.get("type", "_")
 
+    # SECURITY: Validate and sanitize inputs before constructing Datalog query
+    # Prevent injection attacks by validating input format
+    import re
+
+    # Validate user_id format (alphanumeric and underscores only)
+    if not re.match(r'^[a-zA-Z0-9_]+$', user_id):
+        raise HTTPException(status_code=400, detail="Invalid user_id format")
+
+    # Validate action_type format (alphanumeric and underscores only)
+    if not re.match(r'^[a-zA-Z0-9_]+$', action_type):
+        raise HTTPException(status_code=400, detail="Invalid action_type format")
+
+    # Validate resource_id format (alphanumeric, underscores, and hyphens only)
+    if not re.match(r'^[a-zA-Z0-9_-]+$', resource_id):
+        raise HTTPException(status_code=400, detail="Invalid resource_id format")
+
     # Example target query: is 'allow(user_id, action_type, resource_id)' derivable?
     # This query structure must align with how your Datalog rules are written.
     # E.g., a rule might be: allow(U, A, R) <= user_role(U, 'admin') & action_requires_admin(A) & resource_type(R, 'sensitive').

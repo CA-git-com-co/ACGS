@@ -10,7 +10,8 @@ Phase 3: Performance Optimization and Security Compliance
 import asyncio
 import hashlib
 import json
-import pickle
+# import pickle  # SECURITY: Replaced with json for safety
+import json
 import threading
 from collections import OrderedDict
 from collections.abc import Callable
@@ -432,7 +433,7 @@ class RedisCache:
             try:
                 await self._invalidation_task
             except asyncio.CancelledError:
-                pass
+                logger.warning("Exception caught and ignored")
 
         if self._pubsub:
             await self._pubsub.unsubscribe(self.invalidation_channel)

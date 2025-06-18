@@ -1,0 +1,25 @@
+# PgBouncer User Authentication File
+# Format: "username" "password_hash"
+# Use md5 hashes for passwords
+
+# Main ACGS user
+"acgs_user" "md5a6b8b3f8c2d4e5f6a7b8c9d0e1f2a3b4"
+
+# PostgreSQL superuser
+"postgres" "md5b7c9d4f9d3e5f6a8b9c0d1e2f3a4b5c6"
+
+# Service-specific users (for future implementation)
+"auth_service" "md5c8d0e5f0e4f6a9c0d1e2f3a4b5c6d7e8"
+"ac_service" "md5d9e1f6f1f5a7b0d1e2f3a4b5c6d7e8f9"
+"integrity_service" "md5e0f2a7a2a6b8c1e2f3a4b5c6d7e8f9a0"
+"fv_service" "md5f1a3b8b3b7c9d2f3a4b5c6d7e8f9a0b1"
+"gs_service" "md5a2b4c9c4c8d0e3a4b5c6d7e8f9a0b1c2"
+"pgc_service" "md5b3c5d0d5d9e1f4b5c6d7e8f9a0b1c2d3"
+"ec_service" "md5c4d6e1e6e0f2a5c6d7e8f9a0b1c2d3e4"
+
+# Read-only users
+"acgs_readonly" "md5d5e7f2f7f1a3b6d7e8f9a0b1c2d3e4f5"
+
+# Monitoring users
+"pgbouncer_monitor" "md5e6f8a3a8a2b4c7e8f9a0b1c2d3e4f5a6"
+"prometheus_user" "md5f7a9b4b9b3c5d8f9a0b1c2d3e4f5a6b7"

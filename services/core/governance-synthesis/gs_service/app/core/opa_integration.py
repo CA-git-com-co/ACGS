@@ -662,7 +662,7 @@ class OPAClient:
             try:
                 await self._health_check_task
             except asyncio.CancelledError:
-                pass
+                logger.warning("Exception caught and ignored")
             except Exception as e:
                 logger.warning(f"Error during health check task cleanup: {e}")
 

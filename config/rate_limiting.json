@@ -1,0 +1,28 @@
+{
+  "default_limits": {
+    "requests_per_minute": 100,
+    "requests_per_hour": 1000,
+    "burst_limit": 20
+  },
+  "service_specific_limits": {
+    "auth": {
+      "login_attempts": 5,
+      "token_requests": 10,
+      "window_minutes": 15
+    },
+    "ac": {
+      "compliance_checks": 50,
+      "principle_queries": 100
+    },
+    "pgc": {
+      "governance_actions": 30,
+      "policy_submissions": 10
+    }
+  },
+  "ip_whitelist": [
+    "127.0.0.1",
+    "localhost",
+    "::1"
+  ],
+  "blocked_ips": []
+}

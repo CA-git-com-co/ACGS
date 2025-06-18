@@ -1,0 +1,504 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "acgs-stakeholder-business",
+    "title": "ACGS-1 Business Stakeholder Dashboard",
+    "description": "Business-focused dashboard with ROI metrics, user engagement, governance effectiveness, and strategic business insights for business stakeholders and decision makers",
+    "tags": ["acgs", "business", "stakeholder", "roi", "governance", "strategic", "kpi"],
+    "timezone": "browser",
+    "refresh": "1m",
+    "time": {
+      "from": "now-7d",
+      "to": "now"
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "time_period",
+          "type": "custom",
+          "query": "1h,6h,24h,7d,30d",
+          "current": {
+            "text": "7d",
+            "value": "7d"
+          }
+        },
+        {
+          "name": "governance_workflow",
+          "type": "custom",
+          "query": "policy_creation,constitutional_compliance,policy_enforcement,wina_oversight,audit_transparency",
+          "multi": true,
+          "includeAll": true,
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          }
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Business Value Metrics",
+        "description": "Key business value indicators including governance effectiveness and user satisfaction",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs:governance_workflow_completion_rate",
+            "legendFormat": "Workflow Success Rate",
+            "refId": "A"
+          },
+          {
+            "expr": "acgs:constitutional_compliance_rate",
+            "legendFormat": "Constitutional Compliance",
+            "refId": "B"
+          },
+          {
+            "expr": "acgs:policy_synthesis_success_rate",
+            "legendFormat": "Policy Success Rate",
+            "refId": "C"
+          },
+          {
+            "expr": "acgs:authentication_success_rate",
+            "legendFormat": "User Access Success",
+            "refId": "D"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 90},
+                {"color": "green", "value": 95}
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "User Engagement Trends",
+        "description": "User activity, session duration, and engagement patterns over time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "acgs:concurrent_user_capacity",
+            "legendFormat": "Active Users",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(acgs_governance_workflows_total[$time_period])) * 3600",
+            "legendFormat": "Governance Actions/Hour",
+            "refId": "B"
+          },
+          {
+            "expr": "avg(acgs_session_duration_seconds) / 60",
+            "legendFormat": "Avg Session Duration (min)",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Active Users"},
+              "properties": [
+                {"id": "unit", "value": "short"}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Governance Actions/Hour"},
+              "properties": [
+                {"id": "unit", "value": "short"}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Avg Session Duration (min)"},
+              "properties": [
+                {"id": "unit", "value": "m"}
+              ]
+            }
+          ]
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 3,
+        "title": "Governance Effectiveness Score",
+        "description": "Composite score measuring governance system effectiveness and decision quality",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "(acgs:constitutional_compliance_rate * 0.4 + acgs:policy_synthesis_success_rate * 0.3 + acgs:governance_workflow_completion_rate * 0.2 + acgs:multi_model_consensus_agreement_rate * 0.1)",
+            "legendFormat": "Governance Effectiveness",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 80},
+                {"color": "green", "value": 95}
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "displayName": "Effectiveness Score"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Cost Efficiency Metrics",
+        "description": "Operational costs, blockchain transaction costs, and cost per governance action",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs:solana_transaction_cost_avg",
+            "legendFormat": "Avg Transaction Cost (SOL)",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(acgs:solana_transaction_cost_avg * rate(acgs_solana_transactions_total[$time_period])) * 3600 * 24",
+            "legendFormat": "Daily Blockchain Cost (SOL)",
+            "refId": "B"
+          },
+          {
+            "expr": "acgs:solana_transaction_cost_avg / (acgs:governance_workflow_completion_rate / 100)",
+            "legendFormat": "Cost per Successful Action",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 0.005},
+                {"color": "red", "value": 0.01}
+              ]
+            },
+            "unit": "short",
+            "decimals": 6
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Daily Blockchain Cost (SOL)"},
+              "properties": [
+                {"id": "unit", "value": "short"},
+                {"id": "decimals", "value": 4}
+              ]
+            }
+          ]
+        },
+        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "System Reliability & SLA Compliance",
+        "description": "Service level agreement compliance and system reliability metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "acgs:enterprise_availability_sla",
+            "legendFormat": "Availability SLA (99.9% target)",
+            "refId": "A"
+          },
+          {
+            "expr": "acgs:enterprise_response_time_sla",
+            "legendFormat": "Response Time SLA (500ms target)",
+            "refId": "B"
+          },
+          {
+            "expr": "acgs:enterprise_user_capacity_ratio",
+            "legendFormat": "Capacity Utilization (1000 user target)",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "lineWidth": 2
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Availability SLA (99.9% target)"},
+              "properties": [
+                {"id": "unit", "value": "percent"},
+                {"id": "min", "value": 99},
+                {"id": "max", "value": 100}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Response Time SLA (500ms target)"},
+              "properties": [
+                {"id": "unit", "value": "ms"},
+                {"id": "max", "value": 1000}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Capacity Utilization (1000 user target)"},
+              "properties": [
+                {"id": "unit", "value": "percent"},
+                {"id": "max", "value": 100}
+              ]
+            }
+          ]
+        },
+        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Governance Workflow Performance",
+        "description": "Performance breakdown by governance workflow type with business impact analysis",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "acgs:policy_creation_workflow_duration",
+            "legendFormat": "Policy Creation",
+            "refId": "A",
+            "format": "table"
+          },
+          {
+            "expr": "acgs:constitutional_compliance_workflow_duration",
+            "legendFormat": "Constitutional Compliance",
+            "refId": "B",
+            "format": "table"
+          },
+          {
+            "expr": "acgs:policy_enforcement_workflow_duration",
+            "legendFormat": "Policy Enforcement",
+            "refId": "C",
+            "format": "table"
+          },
+          {
+            "expr": "acgs:wina_oversight_workflow_duration",
+            "legendFormat": "WINA Oversight",
+            "refId": "D",
+            "format": "table"
+          },
+          {
+            "expr": "acgs:audit_transparency_workflow_duration",
+            "legendFormat": "Audit Transparency",
+            "refId": "E",
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 500},
+                {"color": "red", "value": 1000}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 22}
+      },
+      {
+        "id": 7,
+        "title": "Risk & Compliance Dashboard",
+        "description": "Security incidents, compliance violations, and risk assessment metrics",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs:security_incident_rate",
+            "legendFormat": "Security Incidents/Hour",
+            "refId": "A"
+          },
+          {
+            "expr": "acgs:constitutional_drift_detection",
+            "legendFormat": "Constitutional Drift Events",
+            "refId": "B"
+          },
+          {
+            "expr": "100 - acgs:constitutional_compliance_rate",
+            "legendFormat": "Compliance Gap %",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 5}
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Compliance Gap %"},
+              "properties": [
+                {"id": "unit", "value": "percent"},
+                {"id": "thresholds", "value": {
+                  "steps": [
+                    {"color": "green", "value": 0},
+                    {"color": "yellow", "value": 2},
+                    {"color": "red", "value": 5}
+                  ]
+                }}
+              ]
+            }
+          ]
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 22}
+      },
+      {
+        "id": 8,
+        "title": "Business Growth Indicators",
+        "description": "User growth, feature adoption, and system scaling metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "acgs:concurrent_user_trend",
+            "legendFormat": "User Growth Rate",
+            "refId": "A"
+          },
+          {
+            "expr": "increase(acgs_governance_workflows_total[$time_period])",
+            "legendFormat": "Governance Activity Growth",
+            "refId": "B"
+          },
+          {
+            "expr": "acgs:scaling_recommendation_score",
+            "legendFormat": "Scaling Priority Score",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 15
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 30}
+      },
+      {
+        "id": 9,
+        "title": "ROI and Value Realization",
+        "description": "Return on investment metrics and business value realization indicators",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "acgs:governance_workflow_completion_rate * acgs:concurrent_user_capacity / 100",
+            "legendFormat": "Effective User Capacity",
+            "refId": "A"
+          },
+          {
+            "expr": "(acgs:constitutional_compliance_rate + acgs:policy_synthesis_success_rate) / 2",
+            "legendFormat": "Governance Quality Score",
+            "refId": "B"
+          },
+          {
+            "expr": "acgs:enterprise_availability_sla * acgs:enterprise_response_time_sla / 10000",
+            "legendFormat": "Service Quality Index",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 80},
+                {"color": "green", "value": 95}
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Effective User Capacity"},
+              "properties": [
+                {"id": "unit", "value": "short"}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Governance Quality Score"},
+              "properties": [
+                {"id": "unit", "value": "percent"}
+              ]
+            },
+            {
+              "matcher": {"id": "byName", "options": "Service Quality Index"},
+              "properties": [
+                {"id": "unit", "value": "short"}
+              ]
+            }
+          ]
+        },
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 38}
+      }
+    ],
+    "links": [
+      {
+        "title": "Executive Overview",
+        "url": "/d/acgs-executive-overview/acgs-executive-overview-dashboard",
+        "type": "dashboards"
+      },
+      {
+        "title": "Technical Details",
+        "url": "/d/acgs-stakeholder-technical/acgs-stakeholder-technical-dashboard",
+        "type": "dashboards"
+      },
+      {
+        "title": "Financial Analysis",
+        "url": "/d/acgs-financial/financial-analysis-dashboard",
+        "type": "dashboards"
+      }
+    ]
+  },
+  "overwrite": true,
+  "folderId": 1,
+  "folderTitle": "Executive Dashboard"
+}

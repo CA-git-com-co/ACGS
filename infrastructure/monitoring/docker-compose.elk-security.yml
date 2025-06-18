@@ -1,0 +1,191 @@
+version: '3.8'
+
+# ACGS-1 Comprehensive Security Monitoring with ELK Stack
+# Enterprise-grade security monitoring, SIEM capabilities, and threat detection
+# Target: Real-time security monitoring, automated alerting, comprehensive audit logging
+
+services:
+  # Elasticsearch for security log storage and indexing
+  elasticsearch-security:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
+    container_name: acgs-elasticsearch-security
+    environment:
+      - node.name=acgs-security-node
+      - cluster.name=acgs-security-cluster
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.enrollment.enabled=true
+      - ELASTIC_PASSWORD=acgs_security_2024
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.ml.enabled=true
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
+      - cluster.routing.allocation.disk.watermark.low=85%
+      - cluster.routing.allocation.disk.watermark.high=90%
+      - cluster.routing.allocation.disk.watermark.flood_stage=95%
+    ports:
+      - "9201:9200"
+      - "9301:9300"
+    volumes:
+      - acgs_elasticsearch_security_data:/usr/share/elasticsearch/data
+      - ./elk-config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - acgs-security-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -u elastic:acgs_security_2024 -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Logstash for log processing and enrichment
+  logstash-security:
+    image: docker.elastic.co/logstash/logstash:8.12.2
+    container_name: acgs-logstash-security
+    environment:
+      - xpack.monitoring.enabled=true
+      - xpack.monitoring.elasticsearch.hosts=["http://elasticsearch-security:9200"]
+      - xpack.monitoring.elasticsearch.username=elastic
+      - xpack.monitoring.elasticsearch.password=acgs_security_2024
+      - LS_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "5044:5044"  # Beats input
+      - "5000:5000"  # TCP input
+      - "9600:9600"  # Logstash monitoring API
+    volumes:
+      - ./elk-config/logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./elk-config/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./elk-config/logstash/patterns:/usr/share/logstash/patterns:ro
+      - /var/log/acgs:/var/log/acgs:ro
+    depends_on:
+      - elasticsearch-security
+    networks:
+      - acgs-security-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9600 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Kibana for security dashboards and visualization
+  kibana-security:
+    image: docker.elastic.co/kibana/kibana:8.12.2
+    container_name: acgs-kibana-security
+    environment:
+      - SERVERNAME=acgs-kibana-security
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-security:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=acgs_security_2024
+      - xpack.security.enabled=true
+      - xpack.encryptedSavedObjects.encryptionKey=acgs_security_encryption_key_32_chars
+      - xpack.reporting.encryptionKey=acgs_reporting_encryption_key_32_chars
+      - xpack.security.encryptionKey=acgs_kibana_encryption_key_32_chars
+      - xpack.ml.enabled=true
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./elk-config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+      - acgs_kibana_security_data:/usr/share/kibana/data
+    depends_on:
+      - elasticsearch-security
+    networks:
+      - acgs-security-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Filebeat for log shipping
+  filebeat-security:
+    image: docker.elastic.co/beats/filebeat:8.12.2
+    container_name: acgs-filebeat-security
+    user: root
+    environment:
+      - setup.kibana.host=kibana-security:5601
+      - output.elasticsearch.hosts=["elasticsearch-security:9200"]
+      - output.elasticsearch.username=elastic
+      - output.elasticsearch.password=acgs_security_2024
+    volumes:
+      - ./elk-config/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/log/acgs:/var/log/acgs:ro
+      - /var/log/auth.log:/var/log/auth.log:ro
+      - /var/log/syslog:/var/log/syslog:ro
+      - /var/log/nginx:/var/log/nginx:ro
+      - filebeat_data:/usr/share/filebeat/data
+    depends_on:
+      - elasticsearch-security
+      - logstash-security
+    networks:
+      - acgs-security-network
+    restart: unless-stopped
+
+  # Metricbeat for system metrics
+  metricbeat-security:
+    image: docker.elastic.co/beats/metricbeat:8.12.2
+    container_name: acgs-metricbeat-security
+    user: root
+    environment:
+      - setup.kibana.host=kibana-security:5601
+      - output.elasticsearch.hosts=["elasticsearch-security:9200"]
+      - output.elasticsearch.username=elastic
+      - output.elasticsearch.password=acgs_security_2024
+    volumes:
+      - ./elk-config/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+      - /:/hostfs:ro
+      - metricbeat_data:/usr/share/metricbeat/data
+    depends_on:
+      - elasticsearch-security
+    networks:
+      - acgs-security-network
+    restart: unless-stopped
+
+  # ACGS Security Event Processor
+  acgs-security-processor:
+    build:
+      context: .
+      dockerfile: ./elk-config/security-processor/Dockerfile
+    container_name: acgs-security-processor
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch-security:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=acgs_security_2024
+      - PROMETHEUS_HOST=prometheus:9090
+      - ALERT_WEBHOOK_URL=${SECURITY_ALERT_WEBHOOK_URL:-}
+    volumes:
+      - ./elk-config/security-processor:/app
+      - /var/log/acgs:/var/log/acgs:ro
+    depends_on:
+      - elasticsearch-security
+      - kibana-security
+    networks:
+      - acgs-security-network
+      - acgs-monitoring
+    restart: unless-stopped
+
+volumes:
+  acgs_elasticsearch_security_data:
+    driver: local
+  acgs_kibana_security_data:
+    driver: local
+  filebeat_data:
+    driver: local
+  metricbeat_data:
+    driver: local
+
+networks:
+  acgs-security-network:
+    driver: bridge
+    name: acgs-security-network
+  acgs-monitoring:
+    external: true
+    name: acgs-monitoring

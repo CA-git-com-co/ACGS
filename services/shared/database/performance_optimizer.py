@@ -548,8 +548,8 @@ class DatabasePerformanceOptimizer:
                         plan = result.scalar()
 
                         # Store query plan for analysis
-                        query_hash = hashlib.md5(
-                            query.encode(), usedforsecurity=False
+                        query_hash = hashlib.sha256(
+                            query.encode()
                         ).hexdigest()
                         self.query_plans[query_hash] = {
                             "query": query,
@@ -600,7 +600,7 @@ class DatabasePerformanceOptimizer:
         key_parts.extend(f"{k}:{v}" for k, v in sorted(kwargs.items()))
 
         key_string = ":".join(key_parts)
-        return hashlib.md5(key_string.encode(), usedforsecurity=False).hexdigest()[:16]
+        return hashlib.sha256(key_string.encode()).hexdigest()[:32]
 
     async def invalidate_cache_pattern(self, pattern: str):
         # requires: Valid input parameters

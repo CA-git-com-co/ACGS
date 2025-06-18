@@ -120,11 +120,14 @@ services:
 
 # Security Configuration
 security:
-  jwt_secret_key: "acgs-pgp-v8-secret-key-2024"
+  jwt_secret_key: "${JWT_SECRET_KEY}"  # SECURITY: Load from environment variable
   jwt_algorithm: "HS256"
   jwt_expiration_minutes: 30
   cors_enabled: true
-  cors_origins: ["*"]
+  cors_origins:
+    - "https://acgs.constitutional.gov"
+    - "https://api.acgs.constitutional.gov"
+    - "http://localhost:3000"  # Development only
   rate_limiting_enabled: true
   rate_limit_requests_per_minute: 100
 

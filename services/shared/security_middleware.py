@@ -1,27 +1,37 @@
 """
-ACGS-1 Phase A3: Production-Grade Security Middleware
+ACGS-1 Production-Grade Security Middleware
 
-Enhanced security middleware with comprehensive rate limiting, threat detection,
-input validation, security headers, and audit logging for all ACGS-1 services.
+Comprehensive security middleware implementing enterprise-grade security controls
+for all 7 core ACGS-1 services with HTTPS enforcement, XSS protection, CSRF protection,
+rate limiting, input validation, and threat detection.
 
 Key Features:
+- HTTPS enforcement with HSTS
+- XSS protection with CSP headers
+- CSRF protection with token validation
 - Redis-backed rate limiting with adaptive limits
 - Real-time threat detection and analysis
 - Input validation and sanitization
-- Security headers injection
+- Security headers injection (OWASP recommended)
 - Request size validation
 - Audit logging for security events
 - IP-based blocking for abuse prevention
+- JWT token validation
+- SQL injection detection
+- Path traversal protection
 """
 
+import hashlib
+import hmac
+import json
 import logging
 import os
 import re
 import secrets
 import time
-from datetime import UTC, datetime
-from typing import Any
-from urllib.parse import unquote
+from datetime import UTC, datetime, timedelta
+from typing import Any, Dict, List, Optional, Tuple
+from urllib.parse import unquote, urlparse
 
 from fastapi import Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -395,17 +405,110 @@ class ThreatDetector:
         return threats
 
 
+class CSRFProtectionMiddleware(BaseHTTPMiddleware):
+    """
+    CSRF Protection Middleware for ACGS-1 services.
+
+    Implements CSRF token validation for state-changing operations.
+    """
+
+    def __init__(self, app, secret_key: str = None, exempt_paths: List[str] = None):
+        super().__init__(app)
+        self.secret_key = secret_key or os.environ.get("CSRF_SECRET_KEY", secrets.token_urlsafe(32))
+        self.exempt_paths = exempt_paths or ["/health", "/docs", "/openapi.json", "/metrics"]
+        self.logger = logging.getLogger(__name__)
+
+    async def dispatch(self, request: Request, call_next):
+        # Skip CSRF protection for safe methods and exempt paths
+        if request.method in ["GET", "HEAD", "OPTIONS"] or any(
+            request.url.path.startswith(path) for path in self.exempt_paths
+        ):
+            return await call_next(request)
+
+        # Validate CSRF token for state-changing operations
+        csrf_token = request.headers.get("X-CSRF-Token") or request.cookies.get("csrf_token")
+
+        if not csrf_token or not self._validate_csrf_token(csrf_token):
+            self.logger.warning(f"CSRF token validation failed for {request.url.path}")
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content={
+                    "error": "CSRF token validation failed",
+                    "detail": "Valid CSRF token required for this operation"
+                }
+            )
+
+        response = await call_next(request)
+
+        # Add new CSRF token to response
+        new_token = self._generate_csrf_token()
+        response.set_cookie(
+            "csrf_token",
+            new_token,
+            httponly=True,
+            secure=True,
+            samesite="strict",
+            max_age=3600
+        )
+        response.headers["X-CSRF-Token"] = new_token
+
+        return response
+
+    def _generate_csrf_token(self) -> str:
+        """Generate a new CSRF token."""
+        timestamp = str(int(time.time()))
+        message = f"{timestamp}:{secrets.token_urlsafe(16)}"
+        signature = hmac.new(
+            self.secret_key.encode(),
+            message.encode(),
+            hashlib.sha256
+        ).hexdigest()
+        return f"{message}:{signature}"
+
+    def _validate_csrf_token(self, token: str) -> bool:
+        """Validate CSRF token."""
+        try:
+            parts = token.split(":")
+            if len(parts) != 3:
+                return False
+
+            timestamp, nonce, signature = parts
+            message = f"{timestamp}:{nonce}"
+
+            # Check signature
+            expected_signature = hmac.new(
+                self.secret_key.encode(),
+                message.encode(),
+                hashlib.sha256
+            ).hexdigest()
+
+            if not hmac.compare_digest(signature, expected_signature):
+                return False
+
+            # Check timestamp (token valid for 1 hour)
+            token_time = int(timestamp)
+            current_time = int(time.time())
+            return current_time - token_time < 3600
+
+        except (ValueError, TypeError):
+            return False
+
+
 class SecurityMiddleware(BaseHTTPMiddleware):
     """
     Comprehensive security middleware for ACGS-1 services.
 
     Features:
+    - HTTPS enforcement with HSTS
     - Rate limiting with Redis backend
     - Threat detection and analysis
     - Input validation and sanitization
-    - Security headers injection
+    - Security headers injection (OWASP recommended)
     - Request size validation
     - Audit logging for security events
+    - SQL injection detection
+    - Path traversal protection
+    - JWT token validation
     """
 
     def __init__(
@@ -496,11 +599,39 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 if content_type_check:
                     return content_type_check
 
-            # 6. Process request
+            # 6. HTTPS enforcement
+            if not self._is_https_request(request) and not self._is_development_mode():
+                return self._create_https_redirect_response(request, correlation_id)
+
+            # 7. SQL injection detection
+            sql_injection_check = self._detect_sql_injection(request)
+            if sql_injection_check:
+                await self._log_security_event(
+                    request, "sql_injection_attempt", {"patterns": sql_injection_check}
+                )
+                return self._create_security_error_response(
+                    "Request blocked due to security policy",
+                    correlation_id,
+                    status.HTTP_403_FORBIDDEN,
+                )
+
+            # 8. Path traversal detection
+            path_traversal_check = self._detect_path_traversal(request)
+            if path_traversal_check:
+                await self._log_security_event(
+                    request, "path_traversal_attempt", {"path": request.url.path}
+                )
+                return self._create_security_error_response(
+                    "Request blocked due to security policy",
+                    correlation_id,
+                    status.HTTP_403_FORBIDDEN,
+                )
+
+            # 9. Process request
             response = await call_next(request)
 
-            # 6. Add security headers
-            self._add_security_headers(response)
+            # 10. Add comprehensive security headers (OWASP recommended)
+            self._add_enhanced_security_headers(response, correlation_id)
 
             # 7. Add rate limit headers (if available)
             if rate_limit_info:
@@ -827,3 +958,291 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             return request.client.host
 
         return "unknown"
+
+    def _is_https_request(self, request: Request) -> bool:
+        """Check if request is using HTTPS."""
+        # Check scheme
+        if request.url.scheme == "https":
+            return True
+
+        # Check forwarded headers (behind proxy)
+        forwarded_proto = request.headers.get("X-Forwarded-Proto")
+        if forwarded_proto and forwarded_proto.lower() == "https":
+            return True
+
+        # Check if request is secure (Starlette/FastAPI)
+        return getattr(request, "is_secure", False)
+
+    def _is_development_mode(self) -> bool:
+        """Check if running in development mode."""
+        return os.environ.get("ENVIRONMENT", "development").lower() in ["development", "dev", "local"]
+
+    def _create_https_redirect_response(self, request: Request, correlation_id: str) -> Response:
+        """Create HTTPS redirect response."""
+        https_url = request.url.replace(scheme="https")
+
+        return JSONResponse(
+            status_code=status.HTTP_301_MOVED_PERMANENTLY,
+            content={
+                "error": "HTTPS required",
+                "redirect_url": str(https_url),
+                "correlation_id": correlation_id
+            },
+            headers={
+                "Location": str(https_url),
+                "X-Correlation-ID": correlation_id
+            }
+        )
+
+    def _detect_sql_injection(self, request: Request) -> List[str]:
+        """Detect potential SQL injection patterns."""
+        sql_patterns = [
+            r"(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION)\b)",
+            r"(\b(OR|AND)\s+\d+\s*=\s*\d+)",
+            r"(\b(OR|AND)\s+['\"]?\w+['\"]?\s*=\s*['\"]?\w+['\"]?)",
+            r"(--|#|/\*|\*/)",
+            r"(\bUNION\s+(ALL\s+)?SELECT\b)",
+            r"(\b(EXEC|EXECUTE)\s+\w+)",
+            r"(\bINTO\s+(OUTFILE|DUMPFILE)\b)",
+            r"(\bLOAD_FILE\s*\()",
+            r"(\bSCRIPT\s*>)",
+            r"(\b(WAITFOR|DELAY)\s+)",
+        ]
+
+        detected_patterns = []
+
+        # Check URL path and query parameters
+        full_url = str(request.url)
+        for pattern in sql_patterns:
+            if re.search(pattern, full_url, re.IGNORECASE):
+                detected_patterns.append(pattern)
+
+        # Check headers for injection attempts
+        for header_name, header_value in request.headers.items():
+            for pattern in sql_patterns:
+                if re.search(pattern, header_value, re.IGNORECASE):
+                    detected_patterns.append(f"header_{header_name}:{pattern}")
+
+        return detected_patterns
+
+    def _detect_path_traversal(self, request: Request) -> bool:
+        """Detect path traversal attempts."""
+        path_traversal_patterns = [
+            r"\.\./",
+            r"\.\.\\",
+            r"%2e%2e%2f",
+            r"%2e%2e%5c",
+            r"..%2f",
+            r"..%5c",
+            r"%252e%252e%252f",
+            r"....//",
+            r"....\\\\",
+        ]
+
+        # Check URL path
+        url_path = unquote(request.url.path)
+        for pattern in path_traversal_patterns:
+            if re.search(pattern, url_path, re.IGNORECASE):
+                return True
+
+        # Check query parameters
+        query_string = str(request.url.query)
+        for pattern in path_traversal_patterns:
+            if re.search(pattern, query_string, re.IGNORECASE):
+                return True
+
+        return False
+
+    def _add_enhanced_security_headers(self, response: Response, correlation_id: str):
+        """Add comprehensive OWASP-recommended security headers."""
+        # Basic security headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+
+        # HSTS (HTTP Strict Transport Security)
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+
+        # Content Security Policy (CSP) - Enhanced for XSS protection
+        csp_policy = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data: https:; "
+            "font-src 'self' https:; "
+            "connect-src 'self' https:; "
+            "frame-ancestors 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self'; "
+            "upgrade-insecure-requests"
+        )
+        response.headers["Content-Security-Policy"] = csp_policy
+
+        # Permissions Policy (formerly Feature Policy)
+        permissions_policy = (
+            "geolocation=(), "
+            "microphone=(), "
+            "camera=(), "
+            "payment=(), "
+            "usb=(), "
+            "magnetometer=(), "
+            "gyroscope=(), "
+            "speaker=()"
+        )
+        response.headers["Permissions-Policy"] = permissions_policy
+
+        # Additional security headers
+        response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+        response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+
+        # ACGS-1 specific headers
+        response.headers["X-ACGS-Service"] = self.service_name
+        response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
+        response.headers["X-Correlation-ID"] = correlation_id
+        response.headers["X-Security-Framework"] = "ACGS-1-Enterprise"
+
+        # Cache control for sensitive responses
+        if any(path in str(response.headers.get("content-type", "")) for path in ["application/json", "text/html"]):
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+
+
+def apply_production_security_middleware(app, service_name: str, config: SecurityConfig = None):
+    """
+    Apply comprehensive production-grade security middleware to FastAPI application.
+
+    This function applies all security middleware in the correct order for maximum protection:
+    1. CORS with secure settings
+    2. Trusted Host validation
+    3. Session middleware with secure settings
+    4. CSRF protection
+    5. Comprehensive security middleware (rate limiting, threat detection, etc.)
+    6. Security headers middleware
+
+    Args:
+        app: FastAPI application instance
+        service_name: Name of the service for logging and monitoring
+        config: Optional security configuration
+    """
+    if not config:
+        config = SecurityConfig()
+
+    # 1. CORS Configuration with enhanced security
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "https://localhost:3000",
+            "https://127.0.0.1:3000",
+            "https://*.acgs.local",
+            "https://*.acgs.com",
+        ],
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=[
+            "Authorization",
+            "Content-Type",
+            "X-Request-ID",
+            "X-Correlation-ID",
+            "X-CSRF-Token",
+        ],
+        expose_headers=[
+            "X-Request-ID",
+            "X-Correlation-ID",
+            "X-Response-Time",
+            "X-CSRF-Token",
+            "X-Constitutional-Hash",
+        ],
+    )
+
+    # 2. Trusted Host Middleware
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=[
+            "localhost",
+            "127.0.0.1",
+            "*.acgs.local",
+            "*.acgs.com",
+            "*.quantumagi.org",
+        ],
+    )
+
+    # 3. Session Middleware with secure settings
+    app.add_middleware(
+        SessionMiddleware,
+        secret_key=os.environ.get("SESSION_SECRET_KEY", secrets.token_urlsafe(32)),
+        max_age=3600,  # 1 hour
+        same_site="strict",
+        https_only=not os.environ.get("ENVIRONMENT", "development").lower() in ["development", "dev"],
+        domain=None,  # Use default domain
+    )
+
+    # 4. CSRF Protection Middleware
+    csrf_exempt_paths = [
+        "/health",
+        "/metrics",
+        "/docs",
+        "/openapi.json",
+        "/api/v1/auth/login",
+        "/api/v1/auth/register",
+    ]
+    app.add_middleware(
+        CSRFProtectionMiddleware,
+        secret_key=os.environ.get("CSRF_SECRET_KEY", secrets.token_urlsafe(32)),
+        exempt_paths=csrf_exempt_paths,
+    )
+
+    # 5. Comprehensive Security Middleware
+    app.add_middleware(
+        SecurityMiddleware,
+        service_name=service_name,
+        redis_url=os.environ.get("REDIS_URL", "redis://localhost:6379"),
+        config=config,
+    )
+
+    logger.info(f"✅ Production security middleware applied to {service_name}")
+    logger.info("🔒 Security features enabled:")
+    logger.info("   - HTTPS enforcement with HSTS")
+    logger.info("   - XSS protection with CSP headers")
+    logger.info("   - CSRF protection with token validation")
+    logger.info("   - Rate limiting with Redis backend")
+    logger.info("   - SQL injection detection")
+    logger.info("   - Path traversal protection")
+    logger.info("   - Comprehensive security headers (OWASP)")
+    logger.info("   - Threat detection and analysis")
+    logger.info("   - Audit logging for security events")
+
+
+def create_security_config(
+    max_request_size: int = 10 * 1024 * 1024,  # 10MB
+    rate_limit_requests: int = 100,
+    rate_limit_window: int = 60,
+    enable_threat_detection: bool = True,
+    custom_headers: Dict[str, str] = None,
+) -> SecurityConfig:
+    """
+    Create a security configuration for ACGS-1 services.
+
+    Args:
+        max_request_size: Maximum request size in bytes
+        rate_limit_requests: Number of requests allowed per window
+        rate_limit_window: Rate limiting window in seconds
+        enable_threat_detection: Enable threat detection
+        custom_headers: Additional custom security headers
+
+    Returns:
+        SecurityConfig instance
+    """
+    config = SecurityConfig()
+    config.max_request_size = max_request_size
+    config.rate_limit_requests = rate_limit_requests
+    config.rate_limit_window = rate_limit_window
+    config.enable_threat_detection = enable_threat_detection
+
+    if custom_headers:
+        config.security_headers.update(custom_headers)
+
+    return config

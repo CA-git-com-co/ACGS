@@ -15,6 +15,7 @@ from typing import Any
 
 import aioredis
 import jwt
+from jwt import InvalidTokenError as JWTError, ExpiredSignatureError
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
@@ -39,11 +40,11 @@ SERVICE_SECRET_KEY = os.environ.get(
 )
 SERVICE_TOKEN_EXPIRE_MINUTES = int(os.environ.get("SERVICE_TOKEN_EXPIRE_MINUTES", "60"))
 
-# Password hashing with optimized rounds
+# Password hashing with enhanced security rounds
 pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto",
-    bcrypt__rounds=12,  # Optimized for performance vs security
+    bcrypt__rounds=15,  # SECURITY: Increased from 12 to 15 for enhanced security
 )
 
 # Security scheme
@@ -637,9 +638,9 @@ class EnhancedAuthService:
 
             return token_data
 
-        except jwt.ExpiredSignatureError:
+        except ExpiredSignatureError:
             raise AuthenticationError("Token has expired")
-        except jwt.JWTError as e:
+        except JWTError as e:
             raise AuthenticationError(f"Invalid token: {str(e)}")
 
     def _update_auth_metrics(self, response_time: float, success: bool):

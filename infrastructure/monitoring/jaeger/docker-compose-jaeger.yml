@@ -1,0 +1,113 @@
+version: '3.8'
+
+# ACGS-1 Distributed Tracing Infrastructure
+# Jaeger deployment with OpenTelemetry Collector for comprehensive tracing
+# Target: <1% performance overhead, full request tracing across 7 services
+
+services:
+  # Jaeger All-in-One for development and testing
+  jaeger-all-in-one:
+    image: jaegertracing/all-in-one:1.52
+    container_name: acgs-jaeger
+    restart: unless-stopped
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14268:14268"  # Jaeger HTTP collector
+      - "14250:14250"  # Jaeger gRPC collector
+      - "6831:6831/udp"  # Jaeger agent UDP
+      - "6832:6832/udp"  # Jaeger agent UDP
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - SPAN_STORAGE_TYPE=memory
+      - MEMORY_MAX_TRACES=50000
+      - QUERY_BASE_PATH=/jaeger
+    networks:
+      - acgs-tracing
+    volumes:
+      - jaeger-data:/tmp
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:16686/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # OpenTelemetry Collector for advanced trace processing
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.91.0
+    container_name: acgs-otel-collector
+    restart: unless-stopped
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+      - "8888:8888"   # Prometheus metrics
+      - "8889:8889"   # Prometheus exporter metrics
+      - "13133:13133" # Health check
+    depends_on:
+      jaeger-all-in-one:
+        condition: service_healthy
+    networks:
+      - acgs-tracing
+    environment:
+      - JAEGER_ENDPOINT=http://jaeger-all-in-one:14268/api/traces
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:13133/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Zipkin for alternative tracing backend (optional)
+  zipkin:
+    image: openzipkin/zipkin:2.24
+    container_name: acgs-zipkin
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+    environment:
+      - STORAGE_TYPE=mem
+      - JAVA_OPTS=-Xms512m -Xmx512m
+    networks:
+      - acgs-tracing
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9411/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Tempo for long-term trace storage (optional)
+  tempo:
+    image: grafana/tempo:2.3.1
+    container_name: acgs-tempo
+    restart: unless-stopped
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/tmp/tempo
+    ports:
+      - "3200:3200"   # Tempo HTTP
+      - "4317:4317"   # OTLP gRPC (alternative)
+    networks:
+      - acgs-tracing
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3200/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  acgs-tracing:
+    driver: bridge
+    name: acgs-tracing-network
+
+volumes:
+  jaeger-data:
+    driver: local
+  tempo-data:
+    driver: local

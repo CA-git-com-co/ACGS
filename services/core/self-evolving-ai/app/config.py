@@ -7,6 +7,7 @@ settings, security configurations, and integration parameters for all ACGS-1 ser
 
 from functools import lru_cache
 
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
@@ -21,8 +22,8 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
 
-    # Security Configuration
-    SECRET_KEY: str = "acgs-self-evolving-ai-secret-key-2024"
+    # Security Configuration - MUST be loaded from environment variables
+    SECRET_KEY: str = Field(description="JWT secret key from environment")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 

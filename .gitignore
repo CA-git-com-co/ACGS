@@ -314,3 +314,20 @@ alembic.ini
 migrations/backups
 **/migrations/backups
 backups
+
+# Added by Task Master AI
+logs
+dev-debug.log
+# Dependency directories
+# Environment variables
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# Task files
+tasks.json
+tasks/ 
