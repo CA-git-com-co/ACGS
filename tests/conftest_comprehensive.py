@@ -29,6 +29,32 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "services" / "shared"))
 
+# Add service directories with both hyphen and underscore variants
+service_paths = [
+    PROJECT_ROOT / "services" / "core",
+    PROJECT_ROOT / "services" / "platform",
+    PROJECT_ROOT / "services" / "research",
+    PROJECT_ROOT / "services" / "core" / "constitutional-ai",
+    PROJECT_ROOT / "services" / "core" / "constitutional_ai",
+    PROJECT_ROOT / "services" / "core" / "governance-synthesis",
+    PROJECT_ROOT / "services" / "core" / "governance_synthesis",
+    PROJECT_ROOT / "services" / "core" / "formal-verification",
+    PROJECT_ROOT / "services" / "core" / "formal_verification",
+    PROJECT_ROOT / "services" / "core" / "policy-governance-compliance",
+    PROJECT_ROOT / "services" / "core" / "policy_governance_compliance",
+    PROJECT_ROOT / "services" / "platform" / "pgc",
+    PROJECT_ROOT / "services" / "platform" / "authentication",
+    PROJECT_ROOT / "services" / "platform" / "integrity",
+    PROJECT_ROOT / "integrations",
+    PROJECT_ROOT / "integrations" / "alphaevolve-engine",
+]
+
+for path in service_paths:
+    if path.exists():
+        path_str = str(path.absolute())
+        if path_str not in sys.path:
+            sys.path.insert(0, path_str)
+
 # Test database configuration
 TEST_DB_URL = "sqlite+aiosqlite:///./test_acgs.db"
 

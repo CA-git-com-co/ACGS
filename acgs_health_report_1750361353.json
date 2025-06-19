@@ -1,0 +1,190 @@
+{
+  "overall_status": "unhealthy",
+  "total_services": 7,
+  "healthy_services": 5,
+  "degraded_services": 0,
+  "unhealthy_services": 0,
+  "unreachable_services": 2,
+  "service_results": [
+    {
+      "service_name": "Auth Service",
+      "port": 8000,
+      "status": "healthy",
+      "response_time_ms": 7.141351699829102,
+      "http_status": 200,
+      "health_data": {
+        "status": "ok",
+        "message": "Auth Service is operational."
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:29:13.586975"
+    },
+    {
+      "service_name": "AC Service",
+      "port": 8001,
+      "status": "healthy",
+      "response_time_ms": 4.994630813598633,
+      "http_status": 200,
+      "health_data": {
+        "status": "healthy",
+        "service": "ac_service_production",
+        "version": "3.0.0",
+        "port": 8001,
+        "timestamp": 1750361353.5854776,
+        "enhanced_services": false,
+        "services": {
+          "compliance_engine": false,
+          "violation_detector": false,
+          "audit_logger": false,
+          "fv_client": false
+        },
+        "performance": {
+          "response_time_target": "<100ms for compliance checks",
+          "accuracy_target": ">99% constitutional compliance detection",
+          "availability_target": ">99.9%"
+        }
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:29:13.586270"
+    },
+    {
+      "service_name": "Integrity Service",
+      "port": 8002,
+      "status": "healthy",
+      "response_time_ms": 4.461765289306641,
+      "http_status": 200,
+      "health_data": {
+        "status": "healthy",
+        "timestamp": "2025-06-19T19:29:13.585445",
+        "version": "8.0.0",
+        "service": "generation-engine"
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:29:13.586160"
+    },
+    {
+      "service_name": "FV Service",
+      "port": 8003,
+      "status": "healthy",
+      "response_time_ms": 4.440784454345703,
+      "http_status": 200,
+      "health_data": {
+        "status": "healthy",
+        "service": "enhanced_fv_service",
+        "version": "2.0.0",
+        "port": 8003,
+        "enterprise_features_enabled": true,
+        "components": {
+          "z3_smt_solver": "unavailable",
+          "tiered_validation": "operational",
+          "parallel_pipeline": "operational",
+          "cryptographic_validation": "operational",
+          "blockchain_audit": "operational",
+          "ac_integration": "operational"
+        },
+        "performance_metrics": {
+          "target_response_time": "<500ms",
+          "availability_target": ">99.9%",
+          "concurrent_verification_support": ">100 tasks"
+        }
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:29:13.586340"
+    },
+    {
+      "service_name": "GS Service",
+      "port": 8004,
+      "status": "unreachable",
+      "response_time_ms": 2.959012985229492,
+      "http_status": null,
+      "health_data": null,
+      "error_message": "Cannot connect to host localhost:8004 ssl:default [Connect call failed ('127.0.0.1', 8004)]",
+      "timestamp": "2025-06-19T15:29:13.585154"
+    },
+    {
+      "service_name": "PGC Service",
+      "port": 8005,
+      "status": "unreachable",
+      "response_time_ms": 1.4939308166503906,
+      "http_status": null,
+      "health_data": null,
+      "error_message": "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]",
+      "timestamp": "2025-06-19T15:29:13.583960"
+    },
+    {
+      "service_name": "EC Service",
+      "port": 8006,
+      "status": "healthy",
+      "response_time_ms": 4.382848739624023,
+      "http_status": 200,
+      "health_data": {
+        "status": "healthy",
+        "service": "evolutionary_computation",
+        "timestamp": "2025-06-19T19:29:13.586569",
+        "version": "v1",
+        "wina_coordinator": "disabled",
+        "features": {
+          "wina_optimization": false,
+          "constitutional_oversight": true,
+          "alphaevolve_integration": true,
+          "performance_monitoring": true,
+          "wina_performance_api": true,
+          "real_time_metrics": true,
+          "performance_dashboard": true
+        },
+        "performance_monitoring": {
+          "collector_available": false,
+          "monitoring_active": false,
+          "monitoring_level": "unknown"
+        }
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:29:13.587289"
+    }
+  ],
+  "performance_metrics": {
+    "response_time_metrics": {
+      "average_ms": 4.27,
+      "maximum_ms": 7.14,
+      "target_ms": 2000,
+      "meets_target": true
+    },
+    "availability_metrics": {
+      "current_percentage": 71.43,
+      "target_percentage": 99.5,
+      "meets_target": false
+    },
+    "service_distribution": {
+      "healthy": 5,
+      "total": 7,
+      "degraded": 0,
+      "unhealthy": 0,
+      "unreachable": 2
+    }
+  },
+  "constitutional_compliance_status": {
+    "status": "error",
+    "ac_service_available": true,
+    "pgc_service_available": false,
+    "compliance_checks_active": true,
+    "last_validation": null,
+    "error_message": "Cannot connect to host localhost:8005 ssl:default [Connect call failed ('127.0.0.1', 8005)]"
+  },
+  "wina_oversight_status": {
+    "status": "partial",
+    "ec_service_available": true,
+    "oversight_coordination_active": false,
+    "wina_optimization_enabled": false,
+    "performance_monitoring_active": true,
+    "error_message": null
+  },
+  "recommendations": [
+    "\ud83d\udea8 CRITICAL: GS Service is unreachable - check service status and restart if needed",
+    "\ud83d\udea8 CRITICAL: PGC Service is unreachable - check service status and restart if needed",
+    "\ud83d\udea8 HIGH: Service availability below target (71.43% < 99.5%)",
+    "\ud83d\udea8 HIGH: Constitutional compliance validation has errors - check service logs",
+    "\u26a0\ufe0f LOW: WINA oversight operations are partially active - monitor performance"
+  ],
+  "timestamp": "2025-06-19T15:29:13.590609",
+  "execution_time_ms": 10.98
+}

@@ -6,7 +6,9 @@ circuit breaker patterns, and integration with ACGS-1 infrastructure.
 """
 
 import asyncio
+import json
 import logging
+import os
 import time
 from collections.abc import Callable
 from contextlib import asynccontextmanager
@@ -14,11 +16,13 @@ from datetime import datetime
 from typing import Any
 
 import asyncpg
+import docker
 import httpx
 import psutil
 import redis.asyncio as redis
 
-from .models import StabilizerResult, StabilizerStatus, SyndromeVector
+from ..generation_engine.models import LogicalSemanticUnit
+from .models import Stabilizer, StabilizerResult, StabilizerStatus, SyndromeVector
 
 logger = logging.getLogger(__name__)
 
@@ -108,9 +112,14 @@ class StabilizerExecutionEnvironment:
         self.redis_pool: redis.Redis | None = None
         self.postgres_pool: asyncpg.Pool | None = None
         self.http_client: httpx.AsyncClient | None = None
+        self.docker_client: docker.DockerClient | None = None
 
         # Circuit breakers
         self.circuit_breakers: dict[str, CircuitBreaker] = {}
+
+        # Stabilizer registry
+        self.stabilizer_registry: dict[str, Stabilizer] = {}
+        self.stabilizer_registry_path = "services/core/acgs-pgp-v8/stabilizers"
 
         # Execution tracking
         self.active_executions: dict[str, StabilizerResult] = {}
@@ -150,6 +159,9 @@ class StabilizerExecutionEnvironment:
                 limits=httpx.Limits(max_connections=100, max_keepalive_connections=20),
             )
 
+            # Initialize Docker client
+            self.docker_client = docker.from_env()
+
             # Initialize circuit breakers
             if self.enable_circuit_breaker:
                 self.circuit_breakers = {
@@ -158,7 +170,11 @@ class StabilizerExecutionEnvironment:
                         failure_threshold=3, recovery_timeout=30.0
                     ),
                     "http": CircuitBreaker(failure_threshold=5, recovery_timeout=60.0),
+                    "docker": CircuitBreaker(failure_threshold=3, recovery_timeout=60.0),
                 }
+
+            # Load stabilizer registry
+            await self._load_stabilizer_registry()
 
             logger.info("Stabilizer Execution Environment fully initialized")
 
@@ -341,6 +357,152 @@ class StabilizerExecutionEnvironment:
         )
 
         return [p1, p2, p3]
+
+    async def _load_stabilizer_registry(self) -> None:
+        """Load stabilizers from registry directory."""
+        try:
+            if not os.path.exists(self.stabilizer_registry_path):
+                os.makedirs(self.stabilizer_registry_path, exist_ok=True)
+                logger.info(f"Created stabilizer registry directory: {self.stabilizer_registry_path}")
+                return
+
+            for filename in os.listdir(self.stabilizer_registry_path):
+                if filename.endswith(".json"):
+                    filepath = os.path.join(self.stabilizer_registry_path, filename)
+                    try:
+                        with open(filepath, 'r') as f:
+                            stabilizer_data = json.load(f)
+                            stabilizer = Stabilizer(**stabilizer_data)
+                            self.stabilizer_registry[stabilizer.id] = stabilizer
+                            logger.info(f"Loaded stabilizer: {stabilizer.id}")
+                    except Exception as e:
+                        logger.warning(f"Failed to load stabilizer from {filename}: {e}")
+
+            logger.info(f"Loaded {len(self.stabilizer_registry)} stabilizers from registry")
+
+        except Exception as e:
+            logger.error(f"Failed to load stabilizer registry: {e}")
+
+    async def execute_stabilizer(
+        self,
+        stabilizer_id: str,
+        lsu: LogicalSemanticUnit
+    ) -> StabilizerResult:
+        """Execute a stabilizer against an LSU in an isolated container."""
+        if stabilizer_id not in self.stabilizer_registry:
+            raise ValueError(f"Stabilizer {stabilizer_id} not found in registry")
+
+        stabilizer = self.stabilizer_registry[stabilizer_id]
+        execution_id = f"stab_{int(time.time())}_{stabilizer_id}_{lsu.id}"
+
+        # Create execution result
+        result = StabilizerResult(
+            execution_id=execution_id,
+            status=StabilizerStatus.INITIALIZING,
+            constitutional_hash=self.constitutional_hash,
+            metadata={"stabilizer_id": stabilizer_id, "lsu_id": lsu.id}
+        )
+
+        try:
+            result.status = StabilizerStatus.EXECUTING
+            start_time = time.time()
+
+            # Prepare container environment
+            container_env = {
+                "LSU_DATA": json.dumps(lsu.dict()),
+                "STABILIZER_CONFIG": json.dumps(stabilizer.config),
+                "CONSTITUTIONAL_HASH": self.constitutional_hash,
+            }
+
+            # Run container with circuit breaker protection
+            if self.enable_circuit_breaker:
+                container_result = await self.circuit_breakers["docker"].call(
+                    self._run_stabilizer_container,
+                    stabilizer,
+                    container_env
+                )
+            else:
+                container_result = await self._run_stabilizer_container(stabilizer, container_env)
+
+            # Process results
+            execution_time_ms = (time.time() - start_time) * 1000
+            result.execution_time_ms = execution_time_ms
+            result.result_data = container_result
+            result.status = StabilizerStatus.COMPLETED
+
+            # Validate constitutional compliance
+            if not stabilizer.validate_constitutional_compliance(self.constitutional_hash):
+                result.status = StabilizerStatus.FAILED
+                result.add_log("Constitutional compliance validation failed", "ERROR")
+
+            result.add_log(f"Stabilizer execution completed in {execution_time_ms:.2f}ms")
+            return result
+
+        except Exception as e:
+            result.status = StabilizerStatus.FAILED
+            result.add_log(f"Stabilizer execution failed: {str(e)}", "ERROR")
+            logger.error(f"Stabilizer execution failed: {execution_id} - {e}")
+            raise
+
+    async def _run_stabilizer_container(
+        self,
+        stabilizer: Stabilizer,
+        environment: dict[str, str]
+    ) -> dict[str, Any]:
+        """Run stabilizer in Docker container."""
+        try:
+            # Run container with timeout
+            container = self.docker_client.containers.run(
+                stabilizer.image,
+                detach=True,
+                environment=environment,
+                mem_limit=f"{stabilizer.get_memory_limit_mb()}m",
+                cpu_quota=int(stabilizer.get_cpu_limit() * 100000),
+                cpu_period=100000,
+                remove=True,
+                network_mode="none"  # Isolated network for security
+            )
+
+            # Wait for completion with timeout
+            exit_code = container.wait(timeout=stabilizer.timeout)
+            logs = container.logs().decode('utf-8')
+
+            if exit_code['StatusCode'] == 0:
+                # Parse JSON output from stabilizer
+                try:
+                    return json.loads(logs)
+                except json.JSONDecodeError:
+                    return {"success": True, "output": logs, "details": {}}
+            else:
+                return {
+                    "success": False,
+                    "error": f"Container exited with code {exit_code['StatusCode']}",
+                    "logs": logs
+                }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Container execution failed: {str(e)}",
+                "details": {}
+            }
+
+    async def execute_all_stabilizers(self, lsu: LogicalSemanticUnit) -> list[StabilizerResult]:
+        """Execute all applicable stabilizers for an LSU."""
+        results = []
+
+        for stabilizer_id, stabilizer in self.stabilizer_registry.items():
+            if not stabilizer.enabled:
+                continue
+
+            if stabilizer.is_applicable_to_domain(lsu.domain.value):
+                try:
+                    result = await self.execute_stabilizer(stabilizer_id, lsu)
+                    results.append(result)
+                except Exception as e:
+                    logger.warning(f"Failed to execute stabilizer {stabilizer_id}: {e}")
+
+        return results
 
     async def cache_get(self, key: str) -> str | None:
         """Get value from Redis cache with circuit breaker protection."""

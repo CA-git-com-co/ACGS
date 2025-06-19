@@ -1,0 +1,247 @@
+{
+  "overall_status": "degraded",
+  "total_services": 7,
+  "healthy_services": 5,
+  "degraded_services": 1,
+  "unhealthy_services": 1,
+  "unreachable_services": 0,
+  "service_results": [
+    {
+      "service_name": "Auth Service",
+      "port": 8000,
+      "status": "healthy",
+      "response_time_ms": 4.5146942138671875,
+      "http_status": 200,
+      "health_data": {
+        "status": "ok",
+        "message": "Auth Service is operational."
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:32:47.811322"
+    },
+    {
+      "service_name": "AC Service",
+      "port": 8001,
+      "status": "healthy",
+      "response_time_ms": 3.6852359771728516,
+      "http_status": 200,
+      "health_data": {
+        "status": "healthy",
+        "service": "ac_service_production",
+        "version": "3.0.0",
+        "port": 8001,
+        "timestamp": 1750361567.8103397,
+        "enhanced_services": false,
+        "services": {
+          "compliance_engine": false,
+          "violation_detector": false,
+          "audit_logger": false,
+          "fv_client": false
+        },
+        "performance": {
+          "response_time_target": "<100ms for compliance checks",
+          "accuracy_target": ">99% constitutional compliance detection",
+          "availability_target": ">99.9%"
+        }
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:32:47.811221"
+    },
+    {
+      "service_name": "Integrity Service",
+      "port": 8002,
+      "status": "healthy",
+      "response_time_ms": 2.8314590454101562,
+      "http_status": 200,
+      "health_data": {
+        "status": "healthy",
+        "timestamp": "2025-06-19T19:32:47.810270",
+        "version": "8.0.0",
+        "service": "generation-engine"
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:32:47.810633"
+    },
+    {
+      "service_name": "FV Service",
+      "port": 8003,
+      "status": "healthy",
+      "response_time_ms": 2.733469009399414,
+      "http_status": 200,
+      "health_data": {
+        "status": "healthy",
+        "service": "enhanced_fv_service",
+        "version": "2.0.0",
+        "port": 8003,
+        "enterprise_features_enabled": true,
+        "components": {
+          "z3_smt_solver": "unavailable",
+          "tiered_validation": "operational",
+          "parallel_pipeline": "operational",
+          "cryptographic_validation": "operational",
+          "blockchain_audit": "operational",
+          "ac_integration": "operational"
+        },
+        "performance_metrics": {
+          "target_response_time": "<500ms",
+          "availability_target": ">99.9%",
+          "concurrent_verification_support": ">100 tasks"
+        }
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:32:47.810743"
+    },
+    {
+      "service_name": "GS Service",
+      "port": 8004,
+      "status": "unhealthy",
+      "response_time_ms": 2.7005672454833984,
+      "http_status": 403,
+      "health_data": null,
+      "error_message": "HTTP 403",
+      "timestamp": "2025-06-19T15:32:47.810876"
+    },
+    {
+      "service_name": "PGC Service",
+      "port": 8005,
+      "status": "degraded",
+      "response_time_ms": 62.15715408325195,
+      "http_status": 200,
+      "health_data": {
+        "status": "degraded",
+        "service": "pgc_service_production",
+        "version": "3.0.0",
+        "timestamp": 1750361567.8103232,
+        "port": 8005,
+        "phase": "Phase 3 - Production Implementation",
+        "enhanced_governance": true,
+        "dependencies": {
+          "opa": {
+            "status": "healthy",
+            "response_time_ms": 7.2940000000000005
+          },
+          "integrity_service": {
+            "status": "healthy",
+            "response_time_ms": 1.424
+          },
+          "fv_service": {
+            "status": "healthy",
+            "response_time_ms": 1.252
+          }
+        },
+        "components": {
+          "policy_manager": {
+            "status": "degraded",
+            "policies_loaded": false,
+            "message": "Policies have not been loaded yet"
+          }
+        },
+        "governance_services": {
+          "policy_lifecycle_manager": true,
+          "workflow_orchestrator": true,
+          "enforcement_engine": true,
+          "stakeholder_manager": true,
+          "audit_trail": true,
+          "governance_monitor": true
+        },
+        "integrations": {
+          "fv_service": true,
+          "integrity_service": true,
+          "opentelemetry": true,
+          "service_mesh": true
+        },
+        "performance": {
+          "p99_latency_target": "<500ms",
+          "p95_latency_target": "<25ms",
+          "response_time_target": "<100ms for governance operations",
+          "workflow_processing_target": "<500ms for workflow steps",
+          "enforcement_target": "<50ms for policy enforcement",
+          "availability_target": ">99.9%"
+        },
+        "telemetry": {
+          "enabled": true,
+          "otlp_version": "v1.37.0",
+          "service_name": "pgc_service",
+          "environment": "production"
+        },
+        "message": "PGC Service operational but policies not loaded"
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:32:47.870514"
+    },
+    {
+      "service_name": "EC Service",
+      "port": 8006,
+      "status": "healthy",
+      "response_time_ms": 2.153158187866211,
+      "http_status": 200,
+      "health_data": {
+        "status": "healthy",
+        "service": "evolutionary_computation",
+        "timestamp": "2025-06-19T19:32:47.810381",
+        "version": "v1",
+        "wina_coordinator": "disabled",
+        "features": {
+          "wina_optimization": false,
+          "constitutional_oversight": true,
+          "alphaevolve_integration": true,
+          "performance_monitoring": true,
+          "wina_performance_api": true,
+          "real_time_metrics": true,
+          "performance_dashboard": true
+        },
+        "performance_monitoring": {
+          "collector_available": false,
+          "monitoring_active": false,
+          "monitoring_level": "unknown"
+        }
+      },
+      "error_message": null,
+      "timestamp": "2025-06-19T15:32:47.810820"
+    }
+  ],
+  "performance_metrics": {
+    "response_time_metrics": {
+      "average_ms": 11.54,
+      "maximum_ms": 62.16,
+      "target_ms": 2000,
+      "meets_target": true
+    },
+    "availability_metrics": {
+      "current_percentage": 71.43,
+      "target_percentage": 99.5,
+      "meets_target": false
+    },
+    "service_distribution": {
+      "healthy": 5,
+      "total": 7,
+      "degraded": 1,
+      "unhealthy": 1,
+      "unreachable": 0
+    }
+  },
+  "constitutional_compliance_status": {
+    "status": "active",
+    "ac_service_available": true,
+    "pgc_service_available": true,
+    "compliance_checks_active": true,
+    "last_validation": null,
+    "error_message": null
+  },
+  "wina_oversight_status": {
+    "status": "partial",
+    "ec_service_available": true,
+    "oversight_coordination_active": false,
+    "wina_optimization_enabled": false,
+    "performance_monitoring_active": true,
+    "error_message": null
+  },
+  "recommendations": [
+    "\u26a0\ufe0f HIGH: GS Service is unhealthy - investigate logs and service configuration",
+    "\u26a0\ufe0f MEDIUM: PGC Service is degraded - monitor performance and dependencies",
+    "\ud83d\udea8 HIGH: Service availability below target (71.43% < 99.5%)",
+    "\u26a0\ufe0f LOW: WINA oversight operations are partially active - monitor performance"
+  ],
+  "timestamp": "2025-06-19T15:32:47.874995",
+  "execution_time_ms": 68.37
+}

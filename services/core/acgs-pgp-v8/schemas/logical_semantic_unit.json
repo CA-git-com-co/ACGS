@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Logical Semantic Unit",
+  "type": "object",
+  "required": ["id", "description", "domain", "constraints"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^LSU-[0-9]{6}$",
+      "description": "Unique LSU identifier in format LSU-XXXXXX"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500,
+      "description": "Human-readable description of the semantic unit"
+    },
+    "domain": {
+      "type": "string",
+      "enum": ["governance", "policy", "security", "compliance", "operations"],
+      "description": "Domain category for the semantic unit"
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "value"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["temporal", "logical", "security", "performance"],
+            "description": "Type of constraint"
+          },
+          "value": {
+            "type": "string",
+            "description": "Constraint value or expression"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable constraint description"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional constraint metadata"
+          }
+        }
+      },
+      "description": "Validation constraints for the semantic unit"
+    },
+    "content": {
+      "type": "object",
+      "description": "Semantic content of the unit",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Textual content"
+        },
+        "structured_data": {
+          "type": "object",
+          "description": "Structured semantic data"
+        },
+        "embeddings": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Semantic embeddings vector"
+        }
+      }
+    },
+    "semantic_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{16}$",
+      "description": "16-character hex hash of semantic content"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Creation timestamp in ISO 8601 format"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp in ISO 8601 format"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Version number of the LSU"
+    },
+    "constitutional_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{16}$",
+      "default": "cdd01ef066bc6cf2",
+      "description": "Constitutional hash for compliance validation"
+    },
+    "compliance_validated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether constitutional compliance has been validated"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 
 # Base schema for Principle attributes
@@ -57,8 +57,8 @@ class PrincipleCreate(PrincipleBase):
     # version and status will have default values in the model
     # created_by_user_id will be passed from the request context (e.g., authenticated user)
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "Data Privacy Protection",
                 "description": "Ensure user data privacy and protection",
@@ -68,6 +68,7 @@ class PrincipleCreate(PrincipleBase):
                 "category": "Privacy",
             }
         }
+    )
 
 
 # Schema for updating an existing principle
@@ -121,8 +122,7 @@ class Principle(PrincipleBase):
         None  # Made optional if user can be anonymous or system-created
     )
 
-    class Config:
-        from_attributes = True  # For SQLAlchemy model compatibility (Pydantic v2)
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Optional: Schema for a list of principles for responses
@@ -167,8 +167,8 @@ class ACMetaRuleBase(BaseModel):
 
 class ACMetaRuleCreate(ACMetaRuleBase):
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "rule_type": "voting_threshold",
                 "name": "Constitutional Amendment Threshold",
@@ -178,6 +178,7 @@ class ACMetaRuleCreate(ACMetaRuleBase):
                 "decision_mechanism": "supermajority_vote",
             }
         }
+    )
 
 
 class ACMetaRuleUpdate(BaseModel):
@@ -200,8 +201,7 @@ class ACMetaRule(ACMetaRuleBase):
     updated_at: datetime
     created_by_user_id: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Amendment schemas with enhanced Pydantic v2.0+ validation
@@ -254,7 +254,7 @@ class ACAmendmentCreate(ACAmendmentBase):
     )
     public_comment_enabled: bool = Field(True, description="Enable public comments")
     stakeholder_groups: list[str] | None = Field(
-        None, description="Stakeholder groups to invite", max_items=20
+        None, description="Stakeholder groups to invite", max_length=20
     )
 
     # Enhanced validation for co-evolution
@@ -352,8 +352,7 @@ class ACAmendment(ACAmendmentBase):
         None, description="History of state transitions"
     )
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Amendment vote schemas
@@ -372,8 +371,7 @@ class ACAmendmentVote(ACAmendmentVoteBase):
     voter_id: int
     voted_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Amendment comment schemas
@@ -407,8 +405,7 @@ class ACAmendmentComment(ACAmendmentCommentBase):
     is_moderated: bool = False
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Conflict resolution schemas
@@ -471,8 +468,7 @@ class ACConflictResolution(ACConflictResolutionBase):
     updated_at: datetime
     identified_by_user_id: int | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Human-in-the-Loop Sampling Schemas

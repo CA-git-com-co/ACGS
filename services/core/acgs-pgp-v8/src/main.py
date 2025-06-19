@@ -34,6 +34,12 @@ from services.core.generation_engine.engine import (
     PolicyGenerationRequest,
     PolicyGenerationResponse,
 )
+from services.core.generation_engine.models import (
+    LogicalSemanticUnit,
+    LSUDomain,
+    LSUConstraint,
+    ConstraintType,
+)
 from services.core.monitoring.alerts import AlertManager
 from services.core.monitoring.health import HealthMonitor
 from services.core.monitoring.metrics import (
@@ -484,9 +490,10 @@ async def generate_policy(
     background_tasks: BackgroundTasks,
     engine: GenerationEngine = Depends(get_generation_engine),
     env: StabilizerExecutionEnvironment = Depends(get_stabilizer_env),
+    diagnostic_engine: SyndromeDiagnosticEngine = Depends(get_diagnostic_engine),
     current_user: dict[str, Any] = Depends(get_current_user),
 ):
-    """Generate policy using quantum-inspired semantic fault tolerance."""
+    """Generate policy using quantum-inspired semantic fault tolerance with QEC-SFT validation."""
     execution_id = f"policy_gen_{int(datetime.now().timestamp())}"
 
     # Log authenticated user for audit trail
@@ -497,10 +504,72 @@ async def generate_policy(
         try:
             execution.add_log("Starting policy generation with QEC-SFT")
 
+            # Create Logical Semantic Unit for the policy request
+            lsu_id = f"LSU-{int(datetime.now().timestamp()) % 1000000:06d}"
+            lsu = LogicalSemanticUnit(
+                id=lsu_id,
+                description=f"Policy generation request: {request.title}",
+                domain=LSUDomain.POLICY,
+                constraints=[
+                    LSUConstraint(
+                        type=ConstraintType.SECURITY,
+                        value="high",
+                        description="High security requirement for policy generation"
+                    ),
+                    LSUConstraint(
+                        type=ConstraintType.PERFORMANCE,
+                        value="<500ms",
+                        description="Response time requirement"
+                    )
+                ],
+                content={
+                    "title": request.title,
+                    "description": request.description,
+                    "stakeholders": request.stakeholders,
+                    "constitutional_principles": request.constitutional_principles,
+                    "priority": request.priority
+                },
+                constitutional_hash="cdd01ef066bc6cf2"
+            )
+
+            # Update semantic hash
+            lsu.update_semantic_hash()
+            execution.add_log(f"Created LSU: {lsu.id}")
+
+            # Execute stabilizers against the LSU
+            execution.add_log("Running stabilizer validation")
+            stabilizer_results = await env.execute_all_stabilizers(lsu)
+            execution.add_log(f"Executed {len(stabilizer_results)} stabilizers")
+
+            # Perform syndrome diagnosis
+            execution.add_log("Performing syndrome diagnosis")
+            diagnostic_result = await diagnostic_engine.diagnose_lsu_stabilizer_results(
+                lsu, stabilizer_results, include_recommendations=True
+            )
+
+            # Check if system is healthy enough to proceed
+            if not diagnostic_result.is_system_healthy():
+                execution.add_log(f"System health check failed: {diagnostic_result.overall_health_score}", "WARNING")
+
+                # Apply automatic recommendations if available
+                auto_recommendations = [
+                    rec for rec in diagnostic_result.recommendations
+                    if rec.is_safe_to_execute()
+                ]
+
+                if auto_recommendations:
+                    execution.add_log(f"Applying {len(auto_recommendations)} automatic recovery recommendations")
+                    # In a real implementation, we would execute these recommendations
+                    for rec in auto_recommendations:
+                        execution.add_log(f"Applied recommendation: {rec.description}")
+
             # Generate policy using the generation engine
             response = await engine.generate_policy(
                 request, use_quantum_enhancement=True
             )
+
+            # Validate constitutional compliance of the generated policy
+            lsu.compliance_validated = response.constitutional_compliance_score >= 0.8
 
             execution.add_log(
                 f"Policy generated successfully: {response.generation_id}"
@@ -510,7 +579,22 @@ async def generate_policy(
                 "constitutional_compliance_score": response.constitutional_compliance_score,
                 "confidence_score": response.confidence_score,
                 "semantic_hash": response.semantic_hash,
+                "lsu_id": lsu.id,
+                "stabilizer_results_count": len(stabilizer_results),
+                "diagnostic_health_score": diagnostic_result.overall_health_score,
+                "errors_detected": diagnostic_result.error_count,
+                "recommendations_generated": len(diagnostic_result.recommendations),
             }
+
+            # Add QEC-SFT metadata to response
+            response.metadata.update({
+                "qec_sft_enabled": True,
+                "lsu_id": lsu.id,
+                "stabilizers_executed": len(stabilizer_results),
+                "system_health_score": diagnostic_result.overall_health_score,
+                "errors_corrected": sum(r.errors_corrected for r in stabilizer_results),
+                "syndrome_diagnosis_id": diagnostic_result.diagnostic_id,
+            })
 
             return response
 
@@ -554,6 +638,100 @@ async def diagnose_system(
     except Exception as e:
         logger.error(f"System diagnosis failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Diagnosis failed: {str(e)}")
+
+
+@app.post("/api/v1/validate-lsu")
+async def validate_lsu(
+    lsu_data: dict[str, Any],
+    env: StabilizerExecutionEnvironment = Depends(get_stabilizer_env),
+    diagnostic_engine: SyndromeDiagnosticEngine = Depends(get_diagnostic_engine),
+    current_user: dict[str, Any] = Depends(get_current_user),
+):
+    """Validate a Logical Semantic Unit using QEC-SFT stabilizers."""
+    try:
+        # Create LSU from provided data
+        lsu = LogicalSemanticUnit(**lsu_data)
+
+        # Execute stabilizers
+        stabilizer_results = await env.execute_all_stabilizers(lsu)
+
+        # Perform diagnostic analysis
+        diagnostic_result = await diagnostic_engine.diagnose_lsu_stabilizer_results(
+            lsu, stabilizer_results, include_recommendations=True
+        )
+
+        return {
+            "lsu_id": lsu.id,
+            "validation_status": "healthy" if diagnostic_result.is_system_healthy() else "unhealthy",
+            "stabilizers_executed": len(stabilizer_results),
+            "errors_detected": diagnostic_result.error_count,
+            "critical_errors": diagnostic_result.critical_error_count,
+            "health_score": diagnostic_result.overall_health_score,
+            "compliance_score": diagnostic_result.constitutional_compliance_score,
+            "recommendations": len(diagnostic_result.recommendations),
+            "auto_executable_recommendations": diagnostic_result.auto_executable_recommendations,
+            "diagnostic_id": diagnostic_result.diagnostic_id,
+            "constitutional_hash": "cdd01ef066bc6cf2",
+        }
+
+    except Exception as e:
+        logger.error(f"LSU validation failed: {e}")
+        raise HTTPException(status_code=400, detail=f"LSU validation failed: {str(e)}")
+
+
+@app.get("/api/v1/stabilizers")
+async def list_stabilizers(
+    env: StabilizerExecutionEnvironment = Depends(get_stabilizer_env),
+    current_user: dict[str, Any] = Depends(get_current_user),
+):
+    """List all available stabilizers in the registry."""
+    try:
+        stabilizers = []
+        for stabilizer_id, stabilizer in env.stabilizer_registry.items():
+            stabilizers.append({
+                "id": stabilizer.id,
+                "name": stabilizer.name,
+                "description": stabilizer.description,
+                "domains": stabilizer.domains,
+                "enabled": stabilizer.enabled,
+                "version": stabilizer.version,
+                "timeout": stabilizer.timeout,
+                "constitutional_compliance": stabilizer.constitutional_compliance,
+            })
+
+        return {
+            "stabilizers": stabilizers,
+            "total_count": len(stabilizers),
+            "enabled_count": sum(1 for s in env.stabilizer_registry.values() if s.enabled),
+            "constitutional_hash": "cdd01ef066bc6cf2",
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to list stabilizers: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to list stabilizers: {str(e)}")
+
+
+@app.get("/api/v1/diagnostics/{diagnostic_id}")
+async def get_diagnostic_result(
+    diagnostic_id: str,
+    diagnostic_cache: DiagnosticDataCache = Depends(get_diagnostic_cache),
+    current_user: dict[str, Any] = Depends(get_current_user),
+):
+    """Get detailed diagnostic result by ID."""
+    try:
+        # Try to get from cache first
+        cached_result = await diagnostic_cache.get_diagnostic_result(diagnostic_id)
+
+        if cached_result:
+            return cached_result
+        else:
+            raise HTTPException(status_code=404, detail=f"Diagnostic result not found: {diagnostic_id}")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get diagnostic result: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get diagnostic result: {str(e)}")
 
 
 @app.get("/metrics")

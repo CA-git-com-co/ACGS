@@ -71,7 +71,7 @@ class CoEvolutionMetrics:
     bottleneck_indicators: list[str]  # Identified bottlenecks
 
 
-class RapidCoEvolutionHandler:
+class RapidAmendmentHandler:
     """Handles rapid co-evolution scenarios for Constitutional Council."""
 
     def __init__(self, config: ScalabilityConfig):
@@ -721,7 +721,7 @@ class ConstitutionalCouncilScalabilityFramework:
         # ensures: Correct function execution
         # sha256: func_hash
         self.config = config or ScalabilityConfig()
-        self.rapid_handler = RapidCoEvolutionHandler(self.config)
+        self.rapid_handler = RapidAmendmentHandler(self.config)
         self.async_voting_manager = AsyncVotingManager(self.config)
         self.performance_metrics = []
 

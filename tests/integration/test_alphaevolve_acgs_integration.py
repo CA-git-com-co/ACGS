@@ -15,26 +15,33 @@ from pathlib import Path
 
 import pytest
 
-# Add the src directory to Python path for imports
+# Add the service directories to Python path for imports
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
-sys.path.insert(0, str(project_root / "src"))
-sys.path.insert(0, str(project_root / "src/backend"))
-sys.path.insert(0, str(project_root / "src/alphaevolve_gs_engine/src"))
+sys.path.insert(0, str(project_root / "services"))
+sys.path.insert(0, str(project_root / "services/core"))
 
-# Ensure shared module can be found by adding backend directory to path
-backend_path = str(project_root / "src" / "backend")
-if backend_path not in sys.path:
-    sys.path.insert(0, backend_path)
+# Add specific service directories
+service_dirs = [
+    "services/core/governance-synthesis",
+    "services/core/constitutional-ai",
+    "services/core/formal-verification",
+    "services/core/policy-governance",
+]
+
+for service_dir in service_dirs:
+    full_path = str(project_root / service_dir)
+    if full_path not in sys.path:
+        sys.path.insert(0, full_path)
 
 # Import the enhanced components with fallback
 try:
-    from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
+    from gs_service.app.core.llm_reliability_framework import (
         LLMReliabilityConfig,
         LLMReliabilityFramework,
         ReliabilityLevel,
     )
-    from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
+    from gs_service.app.services.lipschitz_estimator import (
         LipschitzEstimationConfig,
         LipschitzEstimationResult,
         LipschitzEstimator,
@@ -55,7 +62,7 @@ except ImportError as e:
     LIPSCHITZ_AVAILABLE = False
 
 try:
-    from services.core.constitutional_ai.ac_service.app.core.constitutional_council_scalability import (
+    from ac_service.app.core.constitutional_council_scalability import (
         CoEvolutionMode,
         ConstitutionalCouncilScalabilityFramework,
         ScalabilityConfig,
@@ -73,7 +80,7 @@ except ImportError as e:
     CONSTITUTIONAL_COUNCIL_AVAILABLE = False
 
 try:
-    from services.core.formal_verification.fv_service.app.core.adversarial_robustness_tester import (
+    from fv_service.app.core.adversarial_robustness_tester import (
         AdversarialRobustnessTester,
         AdversarialTestConfig,
         AdversarialTestType,
@@ -91,7 +98,7 @@ except ImportError as e:
     ADVERSARIAL_AVAILABLE = False
 
 try:
-    from services.core.policy_governance.pgc_service.app.core.proactive_fairness_generator import (
+    from pgc_service.app.core.proactive_fairness_generator import (
         FairnessGenerationConfig,
         FairnessMetric,
         ProactiveFairnessGenerator,

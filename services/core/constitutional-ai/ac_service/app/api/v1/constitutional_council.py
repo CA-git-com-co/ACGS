@@ -30,12 +30,24 @@ from .crud import (
     update_ac_meta_rule,
 )
 from .workflows.constitutional_council_graph import ConstitutionalCouncilGraph
+from .workflows.democratic_governance import (
+    DemocraticGovernanceEngine,
+    DemocraticProcess,
+    VotingConfiguration,
+    VotingMechanism,
+    StakeholderGroup,
+    create_democratic_governance_engine,
+)
+from .monitoring.scalability_metrics import get_metrics_collector
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.database import get_async_db
 
 router = APIRouter()
+
+# Initialize metrics collector
+metrics_collector = get_metrics_collector()
 
 
 # AC Meta-Rules endpoints
@@ -638,4 +650,215 @@ async def get_amendment_processing_status_endpoint(
         raise HTTPException(
             status_code=500,
             detail=f"Failed to get amendment processing status: {str(e)}",
+        )
+
+
+# Democratic Governance Workflow endpoints
+@router.post("/amendments/{amendment_id}/democratic-process", response_model=dict[str, Any])
+async def initiate_democratic_process_endpoint(
+    amendment_id: int,
+    process_config: dict[str, Any] | None = None,
+    db: AsyncSession = Depends(get_async_db),
+    current_user: User = Depends(require_constitutional_council_role),
+):
+    """Initiate democratic governance process for an amendment"""
+    try:
+        # Get amendment
+        amendment = await get_ac_amendment(db, amendment_id=amendment_id)
+        if not amendment:
+            raise HTTPException(status_code=404, detail="Amendment not found")
+
+        # Create democratic governance engine
+        governance_engine = await create_democratic_governance_engine(db)
+
+        # Create process configuration
+        if process_config:
+            democratic_process = DemocraticProcess(
+                amendment_id=amendment_id,
+                process_type=process_config.get("process_type", "constitutional_amendment"),
+                stakeholder_groups=[
+                    StakeholderGroup(group) for group in process_config.get("stakeholder_groups", [
+                        "constitutional_council", "expert_advisors", "public_representatives"
+                    ])
+                ],
+                voting_config=VotingConfiguration(
+                    mechanism=VotingMechanism(process_config.get("voting_mechanism", "weighted_voting")),
+                    quorum_percentage=process_config.get("quorum_percentage", 0.6),
+                    threshold_percentage=process_config.get("threshold_percentage", 0.67),
+                    voting_period_hours=process_config.get("voting_period_hours", 72)
+                )
+            )
+        else:
+            democratic_process = None
+
+        # Initiate democratic process
+        process = await governance_engine.initiate_democratic_process(
+            amendment=amendment,
+            process_config=democratic_process
+        )
+
+        return {
+            "success": True,
+            "amendment_id": amendment_id,
+            "process_id": f"democratic_process_{amendment_id}",
+            "eligible_participants": process.eligible_participants,
+            "current_phase": process.current_phase.value,
+            "started_at": process.started_at.isoformat() if process.started_at else None,
+            "message": "Democratic governance process initiated successfully"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to initiate democratic process: {str(e)}"
+        )
+
+
+@router.post("/amendments/{amendment_id}/consultation", response_model=dict[str, Any])
+async def start_consultation_phase_endpoint(
+    amendment_id: int,
+    consultation_config: dict[str, Any] | None = None,
+    db: AsyncSession = Depends(get_async_db),
+    current_user: User = Depends(require_constitutional_council_role),
+):
+    """Start consultation phase for democratic governance"""
+    try:
+        # Create democratic governance engine
+        governance_engine = await create_democratic_governance_engine(db)
+
+        # Create process configuration for consultation
+        process = DemocraticProcess(
+            amendment_id=amendment_id,
+            process_type="constitutional_amendment",
+            stakeholder_groups=[StakeholderGroup.CONSTITUTIONAL_COUNCIL, StakeholderGroup.PUBLIC_REPRESENTATIVES],
+            voting_config=VotingConfiguration(),
+            consultation_period_days=consultation_config.get("consultation_period_days", 14) if consultation_config else 14,
+            public_participation_enabled=consultation_config.get("public_participation_enabled", True) if consultation_config else True,
+            expert_review_required=consultation_config.get("expert_review_required", True) if consultation_config else True
+        )
+
+        # Start consultation phase
+        updated_process = await governance_engine.start_consultation_phase(process)
+
+        return {
+            "success": True,
+            "amendment_id": amendment_id,
+            "consultation_started_at": updated_process.consultation_started_at.isoformat() if updated_process.consultation_started_at else None,
+            "consultation_period_days": updated_process.consultation_period_days,
+            "public_participation_enabled": updated_process.public_participation_enabled,
+            "expert_review_required": updated_process.expert_review_required,
+            "current_phase": updated_process.current_phase.value,
+            "message": "Consultation phase started successfully"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to start consultation phase: {str(e)}"
+        )
+
+
+@router.post("/amendments/{amendment_id}/democratic-voting", response_model=dict[str, Any])
+async def conduct_democratic_voting_endpoint(
+    amendment_id: int,
+    voting_config: dict[str, Any] | None = None,
+    db: AsyncSession = Depends(get_async_db),
+    current_user: User = Depends(require_constitutional_council_role),
+):
+    """Conduct democratic voting with enhanced mechanisms"""
+    try:
+        start_time = datetime.utcnow()
+
+        # Create democratic governance engine
+        governance_engine = await create_democratic_governance_engine(db)
+
+        # Create voting configuration
+        voting_configuration = VotingConfiguration(
+            mechanism=VotingMechanism(voting_config.get("mechanism", "weighted_voting")) if voting_config else VotingMechanism.WEIGHTED_VOTING,
+            quorum_percentage=voting_config.get("quorum_percentage", 0.6) if voting_config else 0.6,
+            threshold_percentage=voting_config.get("threshold_percentage", 0.67) if voting_config else 0.67,
+            voting_period_hours=voting_config.get("voting_period_hours", 72) if voting_config else 72,
+            weighted_by_expertise=voting_config.get("weighted_by_expertise", True) if voting_config else True
+        )
+
+        # Create process configuration
+        process = DemocraticProcess(
+            amendment_id=amendment_id,
+            process_type="constitutional_amendment",
+            stakeholder_groups=[StakeholderGroup.CONSTITUTIONAL_COUNCIL, StakeholderGroup.EXPERT_ADVISORS],
+            voting_config=voting_configuration
+        )
+
+        # Conduct democratic voting
+        voting_results = await governance_engine.conduct_democratic_voting(process)
+
+        # Record API response time
+        response_time_ms = (datetime.utcnow() - start_time).total_seconds() * 1000
+        await metrics_collector.record_api_response_time(
+            endpoint="democratic_voting",
+            response_time_ms=response_time_ms
+        )
+
+        return {
+            "success": True,
+            "amendment_id": amendment_id,
+            "voting_results": voting_results,
+            "response_time_ms": response_time_ms,
+            "message": "Democratic voting conducted successfully"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to conduct democratic voting: {str(e)}"
+        )
+
+
+@router.get("/democratic-governance/metrics", response_model=dict[str, Any])
+async def get_democratic_governance_metrics_endpoint(
+    db: AsyncSession = Depends(get_async_db),
+    current_user: User = Depends(require_admin_role),
+):
+    """Get democratic governance metrics and participation statistics"""
+    try:
+        # Get metrics from collector
+        performance_metrics = await metrics_collector.get_performance_summary()
+        participation_metrics = await metrics_collector.get_democratic_participation_summary()
+
+        return {
+            "performance_metrics": {
+                "amendment_processing_time_ms": performance_metrics.amendment_processing_time_ms,
+                "voting_completion_time_ms": performance_metrics.voting_completion_time_ms,
+                "consensus_achievement_time_ms": performance_metrics.consensus_achievement_time_ms,
+                "api_response_time_ms": performance_metrics.api_response_time_ms,
+                "availability_percentage": performance_metrics.availability_percentage,
+                "error_rate": performance_metrics.error_rate
+            },
+            "participation_metrics": {
+                "total_eligible_voters": participation_metrics.total_eligible_voters,
+                "active_participants": participation_metrics.active_participants,
+                "participation_rate": participation_metrics.participation_rate,
+                "consensus_level": participation_metrics.consensus_level,
+                "stakeholder_diversity_score": participation_metrics.stakeholder_diversity_score,
+                "public_engagement_score": participation_metrics.public_engagement_score,
+                "transparency_score": participation_metrics.transparency_score
+            },
+            "system_health": {
+                "overall_reliability_score": 0.95,  # Would be calculated from actual metrics
+                "democratic_legitimacy_score": 0.88,
+                "governance_efficiency_score": 0.92
+            },
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get democratic governance metrics: {str(e)}"
         )

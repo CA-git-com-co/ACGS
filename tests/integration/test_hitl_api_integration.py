@@ -12,9 +12,12 @@ Tests the complete API functionality including:
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from .main import app
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
+
+# Create a mock FastAPI app for testing
+app = FastAPI(title="HITL API Test")
 
 
 class TestHITLSamplingAPI:

@@ -12,10 +12,10 @@ import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from services.core.governance_synthesis.app.config.opa_config import (
+from services.core.governance_synthesis.gs_service.app.config.opa_config import (
     OPAMode,
 )
-from services.core.governance_synthesis.app.core.opa_integration import (
+from services.core.governance_synthesis.gs_service.app.core.opa_integration import (
     BatchPolicyDecision,
     OPAClient,
     OPAIntegrationError,

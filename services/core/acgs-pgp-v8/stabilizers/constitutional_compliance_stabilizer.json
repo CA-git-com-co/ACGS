@@ -1,0 +1,67 @@
+{
+  "id": "STAB-CONST001",
+  "name": "Constitutional Compliance Stabilizer",
+  "description": "Validates semantic units against constitutional principles and governance requirements",
+  "image": "acgs/constitutional-compliance-stabilizer:latest",
+  "version": "1.0.0",
+  "domains": ["governance", "policy", "compliance"],
+  "timeout": 60,
+  "config": {
+    "memory_limit": "512MB",
+    "cpu_limit": 1.0,
+    "environment_variables": {
+      "COMPLIANCE_THRESHOLD": "0.8",
+      "VALIDATION_MODE": "strict"
+    },
+    "validation_rules": [
+      {
+        "rule_type": "constitutional",
+        "rule_expression": "constitutional_hash == 'cdd01ef066bc6cf2'",
+        "severity": "critical"
+      },
+      {
+        "rule_type": "semantic",
+        "rule_expression": "transparency_score >= 0.7",
+        "severity": "high"
+      },
+      {
+        "rule_type": "semantic",
+        "rule_expression": "accountability_score >= 0.7",
+        "severity": "high"
+      }
+    ]
+  },
+  "error_patterns": [
+    {
+      "pattern_id": "CONST_HASH_MISMATCH",
+      "pattern_regex": "constitutional.*hash.*mismatch",
+      "error_type": "constitutional_violation",
+      "correction_strategy": "manual_intervention"
+    },
+    {
+      "pattern_id": "TRANSPARENCY_VIOLATION",
+      "pattern_regex": "transparency.*violation",
+      "error_type": "constitutional_violation",
+      "correction_strategy": "fallback_mode"
+    },
+    {
+      "pattern_id": "ACCOUNTABILITY_VIOLATION",
+      "pattern_regex": "accountability.*violation",
+      "error_type": "constitutional_violation",
+      "correction_strategy": "fallback_mode"
+    }
+  ],
+  "constitutional_compliance": {
+    "required_hash": "cdd01ef066bc6cf2",
+    "compliance_checks": [
+      "transparency",
+      "accountability",
+      "democratic_participation",
+      "rule_of_law"
+    ],
+    "minimum_compliance_score": 0.8
+  },
+  "created_at": "2024-01-01T00:00:00Z",
+  "updated_at": "2024-01-01T00:00:00Z",
+  "enabled": true
+}

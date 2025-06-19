@@ -23,6 +23,8 @@ except ImportError:
     IsolationForest = None
     TfidfVectorizer = None
 
+from ..generation_engine.models import LogicalSemanticUnit
+from ..see.models import StabilizerResult
 from .models import (
     DiagnosticMetrics,
     DiagnosticResult,
@@ -601,6 +603,197 @@ class SyndromeDiagnosticEngine:
                 "average_diagnostic_time_ms": self.metrics.average_diagnostic_time_ms,
             },
         }
+
+    async def diagnose_lsu_stabilizer_results(
+        self,
+        lsu: LogicalSemanticUnit,
+        stabilizer_results: list[StabilizerResult],
+        include_recommendations: bool = True,
+    ) -> DiagnosticResult:
+        """
+        Diagnose LSU based on stabilizer execution results.
+
+        Args:
+            lsu: The Logical Semantic Unit that was validated
+            stabilizer_results: Results from stabilizer executions
+            include_recommendations: Whether to generate recovery recommendations
+
+        Returns:
+            DiagnosticResult with comprehensive analysis
+        """
+        start_time = time.time()
+        diagnostic_id = f"lsu_diag_{int(start_time)}_{lsu.id}"
+
+        logger.info(f"Starting LSU diagnosis: {diagnostic_id} for {lsu.id}")
+
+        try:
+            # Create diagnostic result
+            result = DiagnosticResult(
+                diagnostic_id=diagnostic_id,
+                target_system=f"LSU-{lsu.id}",
+                constitutional_hash=self.constitutional_hash,
+            )
+
+            result.audit_trail.append(f"Started LSU diagnosis for {lsu.id}")
+
+            # Analyze stabilizer results
+            for stabilizer_result in stabilizer_results:
+                errors = await self._analyze_stabilizer_result(stabilizer_result, lsu)
+                for error in errors:
+                    result.add_error(error)
+
+            # Analyze LSU semantic integrity
+            semantic_errors = await self._analyze_lsu_semantic_integrity(lsu)
+            for error in semantic_errors:
+                result.add_error(error)
+
+            # Generate recovery recommendations if requested
+            if include_recommendations and result.errors_detected:
+                recommendations = await self._generate_lsu_recommendations(
+                    lsu, result.errors_detected, stabilizer_results
+                )
+                for recommendation in recommendations:
+                    result.add_recommendation(recommendation)
+
+            # Calculate diagnostic duration
+            diagnostic_duration = (time.time() - start_time) * 1000
+            result.diagnostic_duration_ms = diagnostic_duration
+
+            # Update metrics
+            self.metrics.total_diagnostics += 1
+            self.metrics.total_errors_detected += result.error_count
+            self.metrics.critical_errors_detected += result.critical_error_count
+            self.metrics.total_recommendations += len(result.recommendations)
+
+            if result.is_system_healthy():
+                self.metrics.successful_diagnostics += 1
+
+            # Update average metrics
+            self._update_average_metrics(result)
+
+            result.audit_trail.append(
+                f"LSU diagnosis completed in {diagnostic_duration:.2f}ms"
+            )
+            logger.info(f"LSU diagnosis completed: {diagnostic_id}")
+
+            return result
+
+        except Exception as e:
+            logger.error(f"LSU diagnosis failed: {diagnostic_id} - {str(e)}")
+            raise RuntimeError(f"LSU diagnosis failed: {str(e)}")
+
+    async def _analyze_stabilizer_result(
+        self,
+        stabilizer_result: StabilizerResult,
+        lsu: LogicalSemanticUnit
+    ) -> list[ErrorClassification]:
+        """Analyze a single stabilizer result for errors."""
+        errors = []
+
+        # Check for execution failures
+        if stabilizer_result.status.value in ["failed", "degraded"]:
+            error = ErrorClassification(
+                error_id="",
+                severity=ErrorSeverity.HIGH,
+                category=ErrorCategory.LOGIC_ERROR,
+                confidence_score=0.9,
+                constitutional_impact=True,
+                error_message=f"Stabilizer execution failed: {stabilizer_result.execution_id}",
+                error_context={
+                    "stabilizer_id": stabilizer_result.metadata.get("stabilizer_id"),
+                    "lsu_id": lsu.id,
+                    "execution_time_ms": stabilizer_result.execution_time_ms,
+                    "status": stabilizer_result.status.value,
+                },
+                constitutional_hash=self.constitutional_hash,
+            )
+            errors.append(error)
+
+        # Check for performance issues
+        if stabilizer_result.execution_time_ms > 5000:  # 5 second threshold
+            error = ErrorClassification(
+                error_id="",
+                severity=ErrorSeverity.MEDIUM,
+                category=ErrorCategory.PERFORMANCE_DEGRADATION,
+                confidence_score=0.8,
+                constitutional_impact=False,
+                error_message=f"Stabilizer execution exceeded time threshold: {stabilizer_result.execution_time_ms}ms",
+                error_context={
+                    "stabilizer_id": stabilizer_result.metadata.get("stabilizer_id"),
+                    "execution_time_ms": stabilizer_result.execution_time_ms,
+                    "threshold_ms": 5000,
+                },
+                constitutional_hash=self.constitutional_hash,
+            )
+            errors.append(error)
+
+        # Check for constitutional compliance violations
+        if not stabilizer_result.compliance_validated:
+            error = ErrorClassification(
+                error_id="",
+                severity=ErrorSeverity.CRITICAL,
+                category=ErrorCategory.CONSTITUTIONAL_VIOLATION,
+                confidence_score=1.0,
+                constitutional_impact=True,
+                error_message="Constitutional compliance validation failed",
+                error_context={
+                    "stabilizer_id": stabilizer_result.metadata.get("stabilizer_id"),
+                    "compliance_score": stabilizer_result.compliance_score,
+                    "constitutional_hash": stabilizer_result.constitutional_hash,
+                },
+                constitutional_hash=self.constitutional_hash,
+            )
+            errors.append(error)
+
+        return errors
+
+    async def _analyze_lsu_semantic_integrity(
+        self, lsu: LogicalSemanticUnit
+    ) -> list[ErrorClassification]:
+        """Analyze LSU for semantic integrity issues."""
+        errors = []
+
+        # Check constitutional compliance
+        if not lsu.compliance_validated:
+            error = ErrorClassification(
+                error_id="",
+                severity=ErrorSeverity.CRITICAL,
+                category=ErrorCategory.CONSTITUTIONAL_VIOLATION,
+                confidence_score=1.0,
+                constitutional_impact=True,
+                error_message="LSU constitutional compliance not validated",
+                error_context={
+                    "lsu_id": lsu.id,
+                    "constitutional_hash": lsu.constitutional_hash,
+                    "domain": lsu.domain.value,
+                },
+                constitutional_hash=self.constitutional_hash,
+            )
+            errors.append(error)
+
+        return errors
+
+    def _update_average_metrics(self, result: DiagnosticResult) -> None:
+        """Update running average metrics."""
+        total_diagnostics = max(1, self.metrics.total_diagnostics)
+
+        # Update average diagnostic time
+        current_avg = self.metrics.average_diagnostic_time_ms
+        new_avg = ((current_avg * (total_diagnostics - 1)) + result.diagnostic_duration_ms) / total_diagnostics
+        self.metrics.average_diagnostic_time_ms = new_avg
+
+        # Update average health score
+        current_health_avg = self.metrics.average_health_score
+        new_health_avg = ((current_health_avg * (total_diagnostics - 1)) + result.overall_health_score) / total_diagnostics
+        self.metrics.average_health_score = new_health_avg
+
+        # Update average compliance score
+        current_compliance_avg = self.metrics.average_compliance_score
+        new_compliance_avg = ((current_compliance_avg * (total_diagnostics - 1)) + result.constitutional_compliance_score) / total_diagnostics
+        self.metrics.average_compliance_score = new_compliance_avg
+
+        # Update last updated timestamp
+        self.metrics.last_updated = datetime.now()
 
     async def cleanup(self) -> None:
         """Clean up resources."""

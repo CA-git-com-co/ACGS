@@ -1,0 +1,66 @@
+{
+  "id": "STAB-SEMAN001",
+  "name": "Semantic Validation Stabilizer",
+  "description": "Validates semantic consistency and logical coherence of policy content",
+  "image": "acgs/semantic-validation-stabilizer:latest",
+  "version": "1.0.0",
+  "domains": ["policy", "governance", "operations"],
+  "timeout": 45,
+  "config": {
+    "memory_limit": "1GB",
+    "cpu_limit": 1.5,
+    "environment_variables": {
+      "SEMANTIC_MODEL": "bert-base-uncased",
+      "COHERENCE_THRESHOLD": "0.75",
+      "CONSISTENCY_CHECK": "enabled"
+    },
+    "validation_rules": [
+      {
+        "rule_type": "semantic",
+        "rule_expression": "coherence_score >= 0.75",
+        "severity": "high"
+      },
+      {
+        "rule_type": "semantic",
+        "rule_expression": "consistency_score >= 0.8",
+        "severity": "medium"
+      },
+      {
+        "rule_type": "logical",
+        "rule_expression": "logical_contradictions == 0",
+        "severity": "critical"
+      }
+    ]
+  },
+  "error_patterns": [
+    {
+      "pattern_id": "SEMANTIC_INCOHERENCE",
+      "pattern_regex": "semantic.*incoherent|coherence.*low",
+      "error_type": "semantic_error",
+      "correction_strategy": "automatic_retry"
+    },
+    {
+      "pattern_id": "LOGICAL_CONTRADICTION",
+      "pattern_regex": "logical.*contradiction|contradictory.*statement",
+      "error_type": "semantic_error",
+      "correction_strategy": "manual_intervention"
+    },
+    {
+      "pattern_id": "CONSISTENCY_VIOLATION",
+      "pattern_regex": "consistency.*violation|inconsistent.*content",
+      "error_type": "semantic_error",
+      "correction_strategy": "fallback_mode"
+    }
+  ],
+  "constitutional_compliance": {
+    "required_hash": "cdd01ef066bc6cf2",
+    "compliance_checks": [
+      "logical_consistency",
+      "semantic_coherence"
+    ],
+    "minimum_compliance_score": 0.7
+  },
+  "created_at": "2024-01-01T00:00:00Z",
+  "updated_at": "2024-01-01T00:00:00Z",
+  "enabled": true
+}

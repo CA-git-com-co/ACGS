@@ -15,6 +15,72 @@ from pydantic import BaseModel, Field
 logger = logging.getLogger(__name__)
 
 
+class Stabilizer(BaseModel):
+    """
+    Stabilizer definition for semantic fault tolerance.
+
+    Represents a containerized validation component that can be executed
+    against Logical Semantic Units for error detection and correction.
+    """
+
+    id: str = Field(..., pattern=r"^STAB-[A-Z0-9]{8}$", description="Stabilizer identifier")
+    name: str = Field(..., min_length=3, max_length=100, description="Stabilizer name")
+    description: str = Field(default="", max_length=500, description="Stabilizer description")
+    image: str = Field(..., description="Docker image for execution")
+    version: str = Field(default="1.0.0", description="Stabilizer version")
+
+    # Execution configuration
+    domains: list[str] = Field(default_factory=list, description="Applicable domains")
+    timeout: int = Field(default=30, ge=1, le=300, description="Timeout in seconds")
+    config: dict[str, Any] = Field(default_factory=dict, description="Configuration parameters")
+
+    # Error detection patterns
+    error_patterns: list[dict[str, Any]] = Field(default_factory=list, description="Error patterns")
+
+    # Constitutional compliance
+    constitutional_compliance: dict[str, Any] = Field(
+        default_factory=lambda: {
+            "required_hash": "cdd01ef066bc6cf2",
+            "compliance_checks": [],
+            "minimum_compliance_score": 0.8
+        },
+        description="Constitutional compliance requirements"
+    )
+
+    # Metadata
+    created_at: datetime = Field(default_factory=datetime.now, description="Creation timestamp")
+    updated_at: datetime = Field(default_factory=datetime.now, description="Update timestamp")
+    enabled: bool = Field(default=True, description="Whether stabilizer is enabled")
+
+    class Config:
+        arbitrary_types_allowed = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+        }
+
+    def is_applicable_to_domain(self, domain: str) -> bool:
+        """Check if stabilizer is applicable to a specific domain."""
+        return not self.domains or domain in self.domains
+
+    def get_memory_limit_mb(self) -> int:
+        """Get memory limit in MB from configuration."""
+        memory_limit = self.config.get("memory_limit", "512MB")
+        if memory_limit.endswith("GB"):
+            return int(memory_limit[:-2]) * 1024
+        elif memory_limit.endswith("MB"):
+            return int(memory_limit[:-2])
+        return 512  # Default
+
+    def get_cpu_limit(self) -> float:
+        """Get CPU limit from configuration."""
+        return self.config.get("cpu_limit", 1.0)
+
+    def validate_constitutional_compliance(self, constitutional_hash: str) -> bool:
+        """Validate constitutional compliance requirements."""
+        required_hash = self.constitutional_compliance.get("required_hash", "cdd01ef066bc6cf2")
+        return constitutional_hash == required_hash
+
+
 class StabilizerStatus(Enum):
     """Enumeration of stabilizer execution states."""
 
