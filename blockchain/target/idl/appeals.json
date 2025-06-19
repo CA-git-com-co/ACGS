@@ -761,8 +761,5 @@
       "name": "CannotResolve",
       "msg": "Appeal cannot be resolved in its current status."
     }
-  ],
-  "metadata": {
-    "address": "BdtZvaArJJsPne9o2CXuJ14mwztGzAAydR1bCKucubpi"
-  }
+  ]
 }

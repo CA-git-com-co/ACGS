@@ -828,8 +828,5 @@
       "name": "AlreadyAcknowledged",
       "msg": "Security alert has already been acknowledged."
     }
-  ],
-  "metadata": {
-    "address": "yAfEigJebmeuEWrkfMiPZcAPcoiMJ3kPHvMT6LTqecG"
-  }
+  ]
 }

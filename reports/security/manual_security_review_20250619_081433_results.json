@@ -1,0 +1,725 @@
+{
+  "review_id": "manual_security_review_20250619_081433",
+  "timestamp": "2025-06-19T12:14:33.829437+00:00",
+  "project_root": "/home/dislove/ACGS-1",
+  "reviews": {
+    "authentication": {
+      "status": "SUCCESS",
+      "files_reviewed": 3,
+      "findings_count": 30,
+      "findings": [
+        {
+          "file": "services/shared/auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 160,
+          "code": "detail=f\"User does not have the required roles: {', '.join(self.allowed_roles)}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 230,
+          "code": "return {\"Authorization\": f\"Bearer {service_token}\"}",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 233,
+          "code": "token = f\"Bearer {token}\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 255,
+          "code": "headers = {\"Authorization\": f\"Bearer {token}\"}",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/auth.py",
+          "type": "weak_jwt_algorithm",
+          "severity": "MEDIUM",
+          "line": "N/A",
+          "issue": "Using symmetric JWT algorithm (HS256) instead of asymmetric",
+          "recommendation": "Consider using RS256 for better security"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 301,
+          "code": "logger.warning(f\"Failed to initialize Redis for auth service: {e}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 374,
+          "code": "logger.info(f\"Loaded {len(user_keys)} users from cache\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 377,
+          "code": "logger.error(f\"Failed to load users from cache: {e}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 388,
+          "code": "user_key = f\"user:{username}\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 399,
+          "code": "logger.error(f\"Failed to cache user {username}: {e}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 443,
+          "code": "raise AuthenticationError(f\"Account locked until {user.locked_until}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 454,
+          "code": "f\"Account {username} locked due to too many failed attempts\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 481,
+          "code": "logger.error(f\"Authentication error for {username}: {e}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 491,
+          "code": "user_key = f\"user:{username}\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 501,
+          "code": "logger.debug(f\"Cache lookup failed for {username}: {e}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 526,
+          "code": "session_key = f\"session:{session_id}\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 533,
+          "code": "logger.error(f\"Failed to cache session: {e}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 570,
+          "code": "token_key = f\"token:{jti}\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 584,
+          "code": "logger.error(f\"Failed to cache token: {e}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 603,
+          "code": "token_key = f\"token:{jti}\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 610,
+          "code": "logger.debug(f\"Token cache lookup failed: {e}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 637,
+          "code": "raise AuthenticationError(f\"Invalid token: {str(e)}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 811,
+          "code": "detail=f\"Insufficient permissions. Required: {permission.value}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 830,
+          "code": "detail=f\"Insufficient permissions. Required any of: {', '.join(permission_names)}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 844,
+          "code": "detail=f\"Insufficient role. Required: {role.value}, Current: {current_user.role.value}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "weak_jwt_algorithm",
+          "severity": "MEDIUM",
+          "line": "N/A",
+          "issue": "Using symmetric JWT algorithm (HS256) instead of asymmetric",
+          "recommendation": "Consider using RS256 for better security"
+        },
+        {
+          "file": "services/platform/authentication/auth_service/app/core/security.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 207,
+          "code": "detail=f\"User does not have required role(s): {', '.join(required_roles)}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/platform/authentication/auth_service/app/core/security.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 236,
+          "code": "tokenUrl=f\"{settings.API_V1_STR}/auth/token\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/platform/authentication/auth_service/app/core/security.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 328,
+          "code": "detail=f\"Missing required permissions: {', '.join(missing_permissions)}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/enhanced_auth.py",
+          "type": "insecure_session_config",
+          "severity": "MEDIUM",
+          "line": "N/A",
+          "issue": "Session configuration may lack security flags",
+          "recommendation": "Ensure sessions use Secure and HttpOnly flags"
+        }
+      ],
+      "timestamp": "2025-06-19T12:14:33.853922+00:00"
+    },
+    "security_middleware": {
+      "status": "SUCCESS",
+      "files_reviewed": 3,
+      "findings_count": 20,
+      "findings": [
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 156,
+          "code": "logger.info(f\"Production security middleware added to {service_name}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 329,
+          "code": "\"description\": f\"URL length ({len(url)}) exceeds limit\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 330,
+          "code": "\"pattern\": f\"Length: {len(url)}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 347,
+          "code": "\"description\": f\"Suspicious {threat_type} pattern in URL\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 365,
+          "code": "\"description\": f\"Total header size ({total_header_size}) exceeds limit\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 366,
+          "code": "\"pattern\": f\"Size: {total_header_size}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 395,
+          "code": "\"description\": f\"Blocked user agent detected: {blocked_agent}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 436,
+          "code": "self.logger.warning(f\"CSRF token validation failed for {request.url.path}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 464,
+          "code": "message = f\"{timestamp}:{secrets.token_urlsafe(16)}\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 468,
+          "code": "return f\"{message}:{signature}\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 478,
+          "code": "message = f\"{timestamp}:{nonce}\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 653,
+          "code": "f\"Security middleware error: {e}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 672,
+          "code": "f\"Request size ({size} bytes) exceeds limit ({self.config.max_request_size} bytes)\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 688,
+          "code": "f\"Content type '{content_type}' not allowed\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 813,
+          "code": "logger.warning(f\"Security event: {event_type}\", extra=event)",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 1027,
+          "code": "detected_patterns.append(f\"header_{header_name}:{pattern}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 1217,
+          "code": "logger.info(f\"\u2705 Production security middleware applied to {service_name}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "path_traversal",
+          "severity": "HIGH",
+          "line": 1041,
+          "code": "r\"....//\",",
+          "pattern": "\\.\\.\\/",
+          "issue": "Potential path traversal detected",
+          "recommendation": "Validate and sanitize file paths"
+        },
+        {
+          "file": "services/shared/security_middleware.py",
+          "type": "path_traversal",
+          "severity": "HIGH",
+          "line": 1042,
+          "code": "r\"....\\\\\\\\\",",
+          "pattern": "\\.\\.\\\\",
+          "issue": "Potential path traversal detected",
+          "recommendation": "Validate and sanitize file paths"
+        },
+        {
+          "file": "services/shared/middleware/security.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 46,
+          "code": "logger.warning(f\"Dangerous pattern detected: {pattern}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        }
+      ],
+      "timestamp": "2025-06-19T12:14:33.873128+00:00"
+    },
+    "input_validation": {
+      "status": "SUCCESS",
+      "files_reviewed": 3,
+      "findings_count": 9,
+      "findings": [
+        {
+          "file": "services/shared/input_validation.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 20,
+          "code": "status_code=400, detail=f\"Input too long (max {max_length})\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/validation_helpers.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 101,
+          "code": "f\"Validation error in {service_name}: {e}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/validation_helpers.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 135,
+          "code": "\"message\": f\"Unknown query parameter: {param_name}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/validation_helpers.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 166,
+          "code": "\"message\": f\"Invalid type for parameter {param_name}: expected {expected_type.__name__}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/validation_helpers.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 220,
+          "code": "detail=f\"Page size must be <= {max_size}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/validation_helpers.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 261,
+          "code": "detail=f\"Date range cannot exceed {max_range_days} days\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/validation_helpers.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 294,
+          "code": "detail=f\"Input text exceeds maximum length of {max_length} characters\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/validation_helpers.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 331,
+          "code": "detail=f\"File size ({file_size_mb:.2f}MB) exceeds maximum allowed size ({max_size_mb}MB)\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/validation_helpers.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 354,
+          "code": "detail=f\"File type not allowed. Allowed types: {', '.join(allowed_types)}\",",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        }
+      ],
+      "timestamp": "2025-06-19T12:14:33.879811+00:00"
+    },
+    "database": {
+      "status": "SUCCESS",
+      "files_reviewed": 1,
+      "findings_count": 2,
+      "findings": [
+        {
+          "file": "services/shared/database.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 85,
+          "code": "print(f\"ERROR creating declarative_base: {e}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/database.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 136,
+          "code": "print(f\"Database tables checked/created for {DATABASE_URL}\")",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        }
+      ],
+      "timestamp": "2025-06-19T12:14:33.881316+00:00"
+    },
+    "cryptography": {
+      "status": "SUCCESS",
+      "files_reviewed": 1,
+      "findings_count": 2,
+      "findings": [
+        {
+          "file": "services/shared/security_config.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 107,
+          "code": "f\"Security configuration loaded - Environment: {self.environment}, Rate limit: {self.thresholds.rate_limit_requests_per_minute}\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        },
+        {
+          "file": "services/shared/security_config.py",
+          "type": "sql_injection",
+          "severity": "HIGH",
+          "line": 240,
+          "code": "f\"Password should not contain common patterns like '{pattern}'\"",
+          "pattern": "f['\\\"].*\\{.*\\}.*['\\\"]",
+          "issue": "Potential sql injection detected",
+          "recommendation": "Use parameterized queries or ORM"
+        }
+      ],
+      "timestamp": "2025-06-19T12:14:33.883789+00:00"
+    },
+    "configuration": {
+      "status": "SUCCESS",
+      "files_reviewed": 1,
+      "findings_count": 0,
+      "findings": [],
+      "timestamp": "2025-06-19T12:14:33.884787+00:00"
+    }
+  },
+  "summary": {
+    "critical_findings": 0,
+    "high_findings": 60,
+    "medium_findings": 3,
+    "low_findings": 0,
+    "total_findings": 63,
+    "files_reviewed": 12
+  },
+  "compliance_status": "NON_COMPLIANT_HIGH",
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "action": "Address 60 high-severity security findings",
+      "timeline": "Within 1 week",
+      "impact": "Significant security risk"
+    },
+    {
+      "priority": "HIGH",
+      "action": "Review and fix authentication security issues",
+      "timeline": "Within 1 week",
+      "impact": "Security vulnerabilities in authentication components"
+    },
+    {
+      "priority": "HIGH",
+      "action": "Review and fix security_middleware security issues",
+      "timeline": "Within 1 week",
+      "impact": "Security vulnerabilities in security_middleware components"
+    },
+    {
+      "priority": "HIGH",
+      "action": "Review and fix input_validation security issues",
+      "timeline": "Within 1 week",
+      "impact": "Security vulnerabilities in input_validation components"
+    },
+    {
+      "priority": "HIGH",
+      "action": "Review and fix database security issues",
+      "timeline": "Within 1 week",
+      "impact": "Security vulnerabilities in database components"
+    },
+    {
+      "priority": "HIGH",
+      "action": "Review and fix cryptography security issues",
+      "timeline": "Within 1 week",
+      "impact": "Security vulnerabilities in cryptography components"
+    }
+  ]
+}

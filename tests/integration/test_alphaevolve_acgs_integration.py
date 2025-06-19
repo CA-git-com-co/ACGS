@@ -29,19 +29,20 @@ if backend_path not in sys.path:
 
 # Import the enhanced components with fallback
 try:
-    from services.core.governance_synthesis.app.core.llm_reliability_framework import (
+    from services.core.governance_synthesis.gs_service.app.core.llm_reliability_framework import (
         LLMReliabilityConfig,
         LLMReliabilityFramework,
         ReliabilityLevel,
     )
-    from services.core.governance_synthesis.app.services.lipschitz_estimator import (
+    from services.core.governance_synthesis.gs_service.app.services.lipschitz_estimator import (
         LipschitzEstimationConfig,
         LipschitzEstimationResult,
         LipschitzEstimator,
     )
 
     LIPSCHITZ_AVAILABLE = True
-except ImportError:
+except ImportError as e:
+    print(f"Lipschitz components import failed: {e}")
     # Mock Lipschitz components when not available
     from unittest.mock import Mock
 
@@ -54,14 +55,15 @@ except ImportError:
     LIPSCHITZ_AVAILABLE = False
 
 try:
-    from services.core.constitutional_ai.app.core.constitutional_council_scalability import (
+    from services.core.constitutional_ai.ac_service.app.core.constitutional_council_scalability import (
         CoEvolutionMode,
         ConstitutionalCouncilScalabilityFramework,
         ScalabilityConfig,
     )
 
     CONSTITUTIONAL_COUNCIL_AVAILABLE = True
-except ImportError:
+except ImportError as e:
+    print(f"Constitutional Council components import failed: {e}")
     # Mock Constitutional Council components when not available
     from unittest.mock import Mock
 
@@ -71,14 +73,15 @@ except ImportError:
     CONSTITUTIONAL_COUNCIL_AVAILABLE = False
 
 try:
-    from services.core.formal_verification.app.core.adversarial_robustness_tester import (
+    from services.core.formal_verification.fv_service.app.core.adversarial_robustness_tester import (
         AdversarialRobustnessTester,
         AdversarialTestConfig,
         AdversarialTestType,
     )
 
     ADVERSARIAL_AVAILABLE = True
-except ImportError:
+except ImportError as e:
+    print(f"Adversarial components import failed: {e}")
     # Mock Adversarial components when not available
     from unittest.mock import Mock
 
@@ -88,14 +91,15 @@ except ImportError:
     ADVERSARIAL_AVAILABLE = False
 
 try:
-    from services.core.policy_governance.app.core.proactive_fairness_generator import (
+    from services.core.policy_governance.pgc_service.app.core.proactive_fairness_generator import (
         FairnessGenerationConfig,
         FairnessMetric,
         ProactiveFairnessGenerator,
     )
 
     FAIRNESS_AVAILABLE = True
-except ImportError:
+except ImportError as e:
+    print(f"Fairness components import failed: {e}")
     # Mock Fairness components when not available
     from unittest.mock import Mock
 
@@ -207,7 +211,7 @@ class TestLLMReliabilityEnhancements:
 
         # Mock LLM input
         try:
-            from services.core.governance_synthesis.app.schemas import (
+            from services.core.governance_synthesis.gs_service.app.schemas import (
                 LLMInterpretationInput,
             )
 

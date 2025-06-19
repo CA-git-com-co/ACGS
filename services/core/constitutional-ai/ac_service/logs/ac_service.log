@@ -2093,3 +2093,27 @@ AttributeError: 'str' object has no attribute 'get'
 2025-06-18 13:22:29,269 - app.main - WARNING - ⚠️ Prometheus metrics not available: No module named 'services'
 2025-06-18 13:22:29,271 - app.main - INFO - 🚀 Starting ACGS-1 Phase 3 Production AC Service
 2025-06-18 13:22:29,271 - app.main - INFO - ⚠️ Running with basic constitutional compliance
+2025-06-19 12:31:38,150 - app.main - INFO - 🔄 Shutting down AC service
+2025-06-19 12:31:38,609 - app.main - WARNING - Enhanced services not available: No module named 'app.services.audit_logging_service'. Running with basic compliance.
+2025-06-19 12:31:38,610 - app.main - WARNING - ⚠️ Security middleware not available: No module named 'services'
+2025-06-19 12:31:38,610 - app.main - WARNING - ⚠️ Prometheus metrics not available: No module named 'services'
+2025-06-19 12:31:38,613 - app.main - INFO - 🚀 Starting ACGS-1 Phase 3 Production AC Service
+2025-06-19 12:31:38,613 - app.main - INFO - ⚠️ Running with basic constitutional compliance
+2025-06-19 12:32:16,782 - app.main - INFO - 🔄 Shutting down AC service
+2025-06-19 12:32:17,141 - app.main - WARNING - Enhanced services not available: No module named 'app.services.audit_logging_service'. Running with basic compliance.
+2025-06-19 12:32:17,142 - app.main - WARNING - ⚠️ Security middleware not available: No module named 'services'
+2025-06-19 12:32:17,142 - app.main - WARNING - ⚠️ Prometheus metrics not available: No module named 'services'
+2025-06-19 12:32:17,145 - app.main - INFO - 🚀 Starting ACGS-1 Phase 3 Production AC Service
+2025-06-19 12:32:17,145 - app.main - INFO - ⚠️ Running with basic constitutional compliance
+2025-06-19 12:32:41,085 - app.main - INFO - 🔄 Shutting down AC service
+2025-06-19 12:32:41,468 - app.main - WARNING - Enhanced services not available: No module named 'app.services.audit_logging_service'. Running with basic compliance.
+2025-06-19 12:32:41,469 - app.main - WARNING - ⚠️ Security middleware not available: No module named 'services'
+2025-06-19 12:32:41,469 - app.main - WARNING - ⚠️ Prometheus metrics not available: No module named 'services'
+2025-06-19 12:32:41,473 - app.main - INFO - 🚀 Starting ACGS-1 Phase 3 Production AC Service
+2025-06-19 12:32:41,473 - app.main - INFO - ⚠️ Running with basic constitutional compliance
+2025-06-19 12:38:19,059 - app.main - INFO - 🔄 Shutting down AC service
+2025-06-19 12:38:19,414 - app.main - WARNING - Enhanced services not available: No module named 'app.services.audit_logging_service'. Running with basic compliance.
+2025-06-19 12:38:19,414 - app.main - WARNING - ⚠️ Security middleware not available: No module named 'services'
+2025-06-19 12:38:19,414 - app.main - WARNING - ⚠️ Prometheus metrics not available: No module named 'services'
+2025-06-19 12:38:19,417 - app.main - INFO - 🚀 Starting ACGS-1 Phase 3 Production AC Service
+2025-06-19 12:38:19,417 - app.main - INFO - ⚠️ Running with basic constitutional compliance

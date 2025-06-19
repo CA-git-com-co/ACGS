@@ -4,3 +4,15 @@
 2025-06-18 05:59:11,575 - gs_service_phase_a3 - ERROR - ❌ Failed to include some API routers: name 'governance_workflows_router' is not defined - <module>:751
 2025-06-18 05:59:11,575 - gs_service_phase_a3 - INFO - 🚀 Starting ACGS-1 Phase 3 Production GS Service - lifespan:200
 2025-06-18 05:59:11,575 - gs_service_phase_a3 - INFO - ⚠️ Running in minimal mode - some services unavailable - lifespan:219
+2025-06-19 10:06:33,450 - gs_service_phase_a3 - WARNING - Some routers not available: No module named 'app'. Running in minimal mode. - <module>:148
+2025-06-19 10:06:33,451 - gs_service_phase_a3 - INFO - ✅ Mock enhanced services initialized - enhanced capabilities enabled - <module>:189
+2025-06-19 10:06:33,451 - gs_service_phase_a3 - WARNING - ⚠️ Prometheus metrics not available: attempted relative import with no known parent package - <module>:388
+2025-06-19 10:06:33,453 - gs_service_phase_a3 - ERROR - ❌ Failed to include some API routers: name 'governance_workflows_router' is not defined - <module>:801
+2025-06-19 10:06:33,453 - gs_service_phase_a3 - INFO - 🚀 Starting ACGS-1 Phase 3 Production GS Service - lifespan:200
+2025-06-19 10:06:33,453 - gs_service_phase_a3 - INFO - ⚠️ Running in minimal mode - some services unavailable - lifespan:219
+2025-06-19 11:32:41,335 - gs_service_phase_a3 - WARNING - Some routers not available: No module named 'app'. Running in minimal mode. - <module>:148
+2025-06-19 11:32:41,335 - gs_service_phase_a3 - INFO - ✅ Mock enhanced services initialized - enhanced capabilities enabled - <module>:189
+2025-06-19 11:32:41,336 - gs_service_phase_a3 - WARNING - ⚠️ Prometheus metrics not available: attempted relative import with no known parent package - <module>:388
+2025-06-19 11:32:41,337 - gs_service_phase_a3 - ERROR - ❌ Failed to include some API routers: name 'governance_workflows_router' is not defined - <module>:801
+2025-06-19 11:32:41,338 - gs_service_phase_a3 - INFO - 🚀 Starting ACGS-1 Phase 3 Production GS Service - lifespan:200
+2025-06-19 11:32:41,338 - gs_service_phase_a3 - INFO - ⚠️ Running in minimal mode - some services unavailable - lifespan:219

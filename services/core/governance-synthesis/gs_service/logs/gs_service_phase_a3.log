@@ -8939,3 +8939,4 @@
 2025-06-18 09:34:41,575 - gs_service_phase_a3 - ERROR - ❌ Failed to include some API routers: name 'governance_workflows_router' is not defined - <module>:751
 2025-06-18 09:34:41,576 - gs_service_phase_a3 - INFO - 🚀 Starting ACGS-1 Phase 3 Production GS Service - lifespan:200
 2025-06-18 09:34:41,576 - gs_service_phase_a3 - INFO - ⚠️ Running in minimal mode - some services unavailable - lifespan:219
+2025-06-19 08:38:19,137 - gs_service_phase_a3 - INFO - 🔄 Shutting down GS service - lifespan:227

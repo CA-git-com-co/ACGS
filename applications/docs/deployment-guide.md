@@ -217,7 +217,7 @@ CMD ["node", "server.js"]
 
 ### Docker Compose for Development
 ```yaml
-# infrastructure/docker/docker-compose.yml
+# docker-compose.yml
 version: '3.8'
 
 services:

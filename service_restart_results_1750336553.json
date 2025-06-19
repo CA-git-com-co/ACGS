@@ -1,0 +1,205 @@
+{
+  "timestamp": 1750336538.4146776,
+  "initial_health": {
+    "auth_service": {
+      "service": "auth_service",
+      "port": 8000,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 7.41,
+      "reachable": true
+    },
+    "ac_service": {
+      "service": "ac_service",
+      "port": 8001,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 3.07,
+      "reachable": true
+    },
+    "integrity_service": {
+      "service": "integrity_service",
+      "port": 8002,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 2.61,
+      "reachable": true
+    },
+    "fv_service": {
+      "service": "fv_service",
+      "port": 8003,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 2.23,
+      "reachable": true
+    },
+    "gs_service": {
+      "service": "gs_service",
+      "port": 8004,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 6.17,
+      "reachable": true
+    },
+    "pgc_service": {
+      "service": "pgc_service",
+      "port": 8005,
+      "status": "unreachable",
+      "error": "All connection attempts failed",
+      "reachable": false
+    },
+    "ec_service": {
+      "service": "ec_service",
+      "port": 8006,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 3.97,
+      "reachable": true
+    }
+  },
+  "docker_containers": {
+    "acgs_haproxy_ssl": {
+      "status": "hours",
+      "line": "111b181c70e6   haproxy:2.8-alpine                                      \"docker-entrypoint.s\u2026\"    35 hours ago     Up 35 hours                                                                                                                                                                                                                                                                                       acgs_haproxy_ssl"
+    },
+    "acgs_pgp_scaffold-generation-engine-1": {
+      "status": "2",
+      "line": "b3206bfb58bc   acgs_pgp_scaffold-generation-engine                     \"uvicorn app.api:app\u2026\"    2 days ago       Up 2 days (healthy)             0.0.0.0:8002->8002/tcp, [::]:8002->8002/tcp                                                                                                                                                                                                                       acgs_pgp_scaffold-generation-engine-1"
+    },
+    "acgs_node_exporter": {
+      "status": "2",
+      "line": "2576620d9b52   prom/node-exporter:latest                               \"/bin/node_exporter \u2026\"    2 days ago       Up 2 days                       0.0.0.0:9100->9100/tcp, [::]:9100->9100/tcp                                                                                                                                                                                                                       acgs_node_exporter"
+    },
+    "acgs_grafana": {
+      "status": "days",
+      "line": "79d64007ef7d   grafana/grafana:9.3.8                                   \"/run.sh\"                  7 days ago       Up 4 days (healthy)             0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp                                                                                                                                                                                                                       acgs_grafana"
+    },
+    "acgs_redis_exporter": {
+      "status": "7",
+      "line": "87a5be3707b0   oliver006/redis_exporter:latest                         \"/redis_exporter --r\u2026\"    7 days ago       Up 4 days                       0.0.0.0:9121->9121/tcp, [::]:9121->9121/tcp                                                                                                                                                                                                                       acgs_redis_exporter"
+    },
+    "acgs_postgres_exporter": {
+      "status": "days",
+      "line": "b39bad60feea   prometheuscommunity/postgres-exporter:latest            \"/bin/postgres_expor\u2026\"    7 days ago       Up 4 days                       0.0.0.0:9187->9187/tcp, [::]:9187->9187/tcp                                                                                                                                                                                                                       acgs_postgres_exporter"
+    },
+    "acgs_grafana_renderer": {
+      "status": "node",
+      "line": "48a52f3e7893   grafana/grafana-image-renderer:latest                   \"dumb-init -- node b\u2026\"    7 days ago       Up 4 days                       0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp                                                                                                                                                                                                                       acgs_grafana_renderer"
+    },
+    "acgs_alertmanager": {
+      "status": "7",
+      "line": "16ba1b17f291   prom/alertmanager:v0.25.0                               \"/bin/alertmanager -\u2026\"    7 days ago       Up 4 days (healthy)             0.0.0.0:9093->9093/tcp, [::]:9093->9093/tcp                                                                                                                                                                                                                       acgs_alertmanager"
+    },
+    "acgs_prometheus": {
+      "status": "7",
+      "line": "960702ce991b   prom/prometheus:v2.40.7                                 \"/bin/prometheus --c\u2026\"    7 days ago       Up 4 days (healthy)             0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp                                                                                                                                                                                                                       acgs_prometheus"
+    },
+    "acgs_langgraph_cache_integrated": {
+      "status": "days",
+      "line": "425e7f657524   redis:6                                                 \"docker-entrypoint.s\u2026\"    9 days ago       Up 4 days (healthy)             0.0.0.0:6383->6379/tcp, [::]:6383->6379/tcp                                                                                                                                                                                                                       acgs_langgraph_cache_integrated"
+    },
+    "acgs_postgres_cache_integrated": {
+      "status": "days",
+      "line": "ef26f5d60776   postgres:15-alpine                                      \"docker-entrypoint.s\u2026\"    9 days ago       Up 4 days (healthy)             0.0.0.0:5434->5432/tcp, [::]:5434->5432/tcp                                                                                                                                                                                                                       acgs_postgres_cache_integrated"
+    },
+    "acgs_opa": {
+      "status": "days",
+      "line": "35c1a048e216   openpolicyagent/opa:0.58.0-envoy                        \"./opa_envoy_linux_a\u2026\"    13 days ago      Up 4 days (unhealthy)           0.0.0.0:8181->8181/tcp, [::]:8181->8181/tcp                                                                                                                                                                                                                       acgs_opa"
+    },
+    "acgs_ec_service": {
+      "status": "13",
+      "line": "b8e429802231   docker-ec_service                                       \"uvicorn app.main:ap\u2026\"    13 days ago      Up 4 days (healthy)             0.0.0.0:8006->8006/tcp, [::]:8006->8006/tcp                                                                                                                                                                                                                       acgs_ec_service"
+    },
+    "acgs_auth_service": {
+      "status": "13",
+      "line": "8fc3ae077163   docker-auth_service                                     \"uvicorn app.main:ap\u2026\"    13 days ago      Up 4 days (unhealthy)           0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp                                                                                                                                                                                                                       acgs_auth_service"
+    },
+    "acgs_postgres_db": {
+      "status": "days",
+      "line": "6580eee7de83   postgres:15-alpine                                      \"docker-entrypoint.s\u2026\"    13 days ago      Up 4 days (healthy)             0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp                                                                                                                                                                                                                       acgs_postgres_db"
+    },
+    "acgs_langgraph_redis": {
+      "status": "days",
+      "line": "e270bf4c7c62   redis:6                                                 \"docker-entrypoint.s\u2026\"    13 days ago      Up 4 days (healthy)             0.0.0.0:6381->6379/tcp, [::]:6381->6379/tcp                                                                                                                                                                                                                       acgs_langgraph_redis"
+    },
+    "acgs_redis": {
+      "status": "days",
+      "line": "df5b5c5418d2   redis:7-alpine                                          \"docker-entrypoint.s\u2026\"    13 days ago      Up 4 days (healthy)             0.0.0.0:6380->6379/tcp, [::]:6380->6379/tcp                                                                                                                                                                                                                       acgs_redis"
+    }
+  },
+  "restart_results": {
+    "acgs_ac_service": false,
+    "acgs_integrity_service": false,
+    "acgs_fv_service": false,
+    "acgs_gs_service": false
+  },
+  "final_health": {
+    "auth_service": {
+      "service": "auth_service",
+      "port": 8000,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 3.68,
+      "reachable": true
+    },
+    "ac_service": {
+      "service": "ac_service",
+      "port": 8001,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 2.2,
+      "reachable": true
+    },
+    "integrity_service": {
+      "service": "integrity_service",
+      "port": 8002,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 1.96,
+      "reachable": true
+    },
+    "fv_service": {
+      "service": "fv_service",
+      "port": 8003,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 1.96,
+      "reachable": true
+    },
+    "gs_service": {
+      "service": "gs_service",
+      "port": 8004,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 2.67,
+      "reachable": true
+    },
+    "pgc_service": {
+      "service": "pgc_service",
+      "port": 8005,
+      "status": "unreachable",
+      "error": "All connection attempts failed",
+      "reachable": false
+    },
+    "ec_service": {
+      "service": "ec_service",
+      "port": 8006,
+      "status": "healthy",
+      "status_code": 200,
+      "response_time_ms": 2.84,
+      "reachable": true
+    }
+  },
+  "summary": {
+    "total_services": 7,
+    "healthy_services": 6,
+    "unhealthy_services": 0,
+    "unreachable_services": 1,
+    "availability_percentage": 85.7,
+    "meets_target": false,
+    "critical_services_down": true,
+    "timestamp": 1750336553.7778754
+  },
+  "success": true,
+  "improvement": 0
+}

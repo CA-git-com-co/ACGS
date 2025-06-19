@@ -51,6 +51,15 @@ from .core.observability_framework import ObservabilityFramework
 from .core.policy_orchestrator import PolicyOrchestrator
 from .core.security_manager import SecurityManager
 from .dependencies import (
+
+# Enhanced Security Middleware
+try:
+    from services.shared.security_middleware import apply_production_security_middleware, SecurityConfig
+    SECURITY_MIDDLEWARE_AVAILABLE = True
+except ImportError:
+    SECURITY_MIDDLEWARE_AVAILABLE = False
+    logger.warning("Enhanced security middleware not available")
+
     set_background_processor,
     set_evolution_engine,
     set_observability_framework,
@@ -226,6 +235,65 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    """Add comprehensive OWASP-recommended security headers."""
+    response = await call_next(request)
+    
+    # Core security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    
+    # HSTS (HTTP Strict Transport Security)
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    
+    # Content Security Policy (CSP) - Enhanced for XSS protection
+    csp_policy = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https:; "
+        "font-src 'self' https:; "
+        "connect-src 'self' https:; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
+    response.headers["Content-Security-Policy"] = csp_policy
+    
+    # Permissions Policy
+    permissions_policy = (
+        "geolocation=(), microphone=(), camera=(), "
+        "payment=(), usb=(), magnetometer=(), gyroscope=()"
+    )
+    response.headers["Permissions-Policy"] = permissions_policy
+    
+    # Additional security headers
+    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+    response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+    
+    # ACGS-1 specific headers
+    response.headers["X-ACGS-Security"] = "enabled"
+    response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
+    
+    return response
+
+
+
+# Apply enhanced security middleware
+if SECURITY_MIDDLEWARE_AVAILABLE:
+    security_config = SecurityConfig()
+    apply_production_security_middleware(app, "ec_service", security_config)
+    logger.info("✅ Enhanced security middleware applied")
+else:
+    logger.warning("⚠️ Running without enhanced security middleware")
+
 
 # Add middleware
 settings = get_settings()

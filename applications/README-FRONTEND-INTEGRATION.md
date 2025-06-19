@@ -14,7 +14,7 @@ This repository contains comprehensive documentation and tools for integrating f
 This repository contains two frontend applications:
 
 - **`governance-dashboard/`** - Modern React application with TypeScript
-- **`legacy-applications/governance-dashboard/`** - Legacy React application for backward compatibility
+- **`legacy-frontend/`** - Legacy React application for backward compatibility
 
 ### 2. Run the Setup Script
 

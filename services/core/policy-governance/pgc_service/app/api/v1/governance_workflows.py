@@ -300,7 +300,7 @@ async def initiate_policy_enforcement(
     """
     workflow_id = f"PE-{int(time.time())}-{str(uuid4())[:8]}"
 
-    {
+    workflow_data = {
         "workflow_id": workflow_id,
         "policy_id": policy_id,
         "enforcement_type": enforcement_type,
@@ -309,13 +309,21 @@ async def initiate_policy_enforcement(
         "monitoring_active": True,
         "violations_detected": 0,
         "remediation_actions": [],
+        "stages": [
+            {"name": "monitoring_setup", "status": "active", "progress": 10},
+            {"name": "violation_detection", "status": "pending", "progress": 0},
+            {"name": "remediation_execution", "status": "pending", "progress": 0},
+        ]
     }
 
-    return {
-        "workflow_id": workflow_id,
-        "status": "initiated",
-        "message": f"Policy enforcement monitoring started for policy {policy_id}",
-    }
+    return WorkflowResponse(
+        workflow_id=workflow_id,
+        workflow_type="policy_enforcement",
+        status="initiated",
+        created_at=workflow_data["created_at"],
+        current_stage="monitoring_setup",
+        progress_percent=10,
+    )
 
 
 @router.post("/wina-oversight")
@@ -332,7 +340,7 @@ async def initiate_wina_oversight(
     """
     workflow_id = f"WO-{int(time.time())}-{str(uuid4())[:8]}"
 
-    {
+    workflow_data = {
         "workflow_id": workflow_id,
         "oversight_type": oversight_type,
         "target_metrics": target_metrics or ["response_time", "accuracy", "compliance"],
@@ -340,13 +348,21 @@ async def initiate_wina_oversight(
         "created_at": datetime.now().isoformat(),
         "optimization_recommendations": [],
         "performance_trends": {},
+        "stages": [
+            {"name": "performance_monitoring", "status": "active", "progress": 10},
+            {"name": "optimization_analysis", "status": "pending", "progress": 0},
+            {"name": "reporting_generation", "status": "pending", "progress": 0},
+        ]
     }
 
-    return {
-        "workflow_id": workflow_id,
-        "status": "initiated",
-        "message": f"WINA oversight monitoring started for {oversight_type}",
-    }
+    return WorkflowResponse(
+        workflow_id=workflow_id,
+        workflow_type="wina_oversight",
+        status="initiated",
+        created_at=workflow_data["created_at"],
+        current_stage="performance_monitoring",
+        progress_percent=10,
+    )
 
 
 @router.post("/audit-transparency")
@@ -363,7 +379,7 @@ async def initiate_audit_transparency(
     """
     workflow_id = f"AT-{int(time.time())}-{str(uuid4())[:8]}"
 
-    {
+    workflow_data = {
         "workflow_id": workflow_id,
         "audit_scope": audit_scope,
         "reporting_level": reporting_level,
@@ -372,13 +388,21 @@ async def initiate_audit_transparency(
         "data_sources": ["governance_logs", "policy_decisions", "compliance_records"],
         "analysis_progress": 0,
         "transparency_score": 0.0,
+        "stages": [
+            {"name": "data_collection", "status": "active", "progress": 10},
+            {"name": "analysis_processing", "status": "pending", "progress": 0},
+            {"name": "public_reporting", "status": "pending", "progress": 0},
+        ]
     }
 
-    return {
-        "workflow_id": workflow_id,
-        "status": "initiated",
-        "message": f"Audit and transparency process started for {audit_scope}",
-    }
+    return WorkflowResponse(
+        workflow_id=workflow_id,
+        workflow_type="audit_transparency",
+        status="initiated",
+        created_at=workflow_data["created_at"],
+        current_stage="data_collection",
+        progress_percent=10,
+    )
 
 
 # Enhanced Constitutional Analysis Endpoints
@@ -536,6 +560,173 @@ async def pgc_enforcement_integration(
         raise HTTPException(
             status_code=500, detail=f"PGC enforcement integration failed: {str(e)}"
         )
+
+
+# Policy Creation Workflow Stage Endpoints
+
+@router.post("/policy-creation/{workflow_id}/advance-stage")
+async def advance_policy_creation_stage(
+    workflow_id: str,
+    stage_data: dict[str, Any],
+    current_user: User = Depends(get_current_user_from_token),
+):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
+    """
+    Advance Policy Creation workflow to next stage.
+
+    Supports: draft_preparation → stakeholder_review → constitutional_validation → voting_process → implementation
+    """
+    try:
+        current_stage = stage_data.get("current_stage")
+        action = stage_data.get("action", "advance")
+
+        # Validate workflow exists (in production, this would check database)
+        if not workflow_id.startswith("PC-"):
+            raise HTTPException(status_code=404, detail="Policy Creation workflow not found")
+
+        # Define stage transitions
+        stage_transitions = {
+            "draft_preparation": {
+                "next_stage": "stakeholder_review",
+                "required_actions": ["draft_completed", "constitutional_check"],
+                "estimated_duration_hours": 24
+            },
+            "stakeholder_review": {
+                "next_stage": "constitutional_validation",
+                "required_actions": ["stakeholder_approval", "review_completed"],
+                "estimated_duration_hours": 72
+            },
+            "constitutional_validation": {
+                "next_stage": "voting_process",
+                "required_actions": ["constitutional_compliance", "validation_passed"],
+                "estimated_duration_hours": 12
+            },
+            "voting_process": {
+                "next_stage": "implementation",
+                "required_actions": ["voting_completed", "majority_approval"],
+                "estimated_duration_hours": 168  # 1 week
+            },
+            "implementation": {
+                "next_stage": "completed",
+                "required_actions": ["policy_deployed", "enforcement_active"],
+                "estimated_duration_hours": 48
+            }
+        }
+
+        if current_stage not in stage_transitions:
+            raise HTTPException(status_code=400, detail=f"Invalid current stage: {current_stage}")
+
+        transition = stage_transitions[current_stage]
+        next_stage = transition["next_stage"]
+
+        # Simulate stage advancement processing
+        processing_result = {
+            "workflow_id": workflow_id,
+            "previous_stage": current_stage,
+            "current_stage": next_stage,
+            "status": "advanced" if next_stage != "completed" else "completed",
+            "progress_percent": {
+                "stakeholder_review": 25,
+                "constitutional_validation": 50,
+                "voting_process": 75,
+                "implementation": 90,
+                "completed": 100
+            }.get(next_stage, 10),
+            "estimated_completion": datetime.now().isoformat(),
+            "required_actions": transition["required_actions"],
+            "next_steps": transition["required_actions"] if next_stage != "completed" else ["workflow_complete"],
+            "timestamp": datetime.now().isoformat()
+        }
+
+        logger.info(f"Policy Creation workflow {workflow_id} advanced from {current_stage} to {next_stage}")
+
+        return processing_result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error advancing policy creation stage: {e}")
+        raise HTTPException(status_code=500, detail=f"Stage advancement failed: {str(e)}")
+
+
+@router.get("/policy-creation/{workflow_id}/status")
+async def get_policy_creation_status(
+    workflow_id: str,
+    current_user: User = Depends(get_current_user_from_token),
+):
+    # requires: Valid input parameters
+    # ensures: Correct function execution
+    # sha256: func_hash
+    """Get detailed status of Policy Creation workflow."""
+    try:
+        if not workflow_id.startswith("PC-"):
+            raise HTTPException(status_code=404, detail="Policy Creation workflow not found")
+
+        # Simulate workflow status (in production, this would query database)
+        workflow_status = {
+            "workflow_id": workflow_id,
+            "workflow_type": "policy_creation",
+            "status": "in_progress",
+            "current_stage": "stakeholder_review",
+            "progress_percent": 25,
+            "created_at": datetime.now().isoformat(),
+            "estimated_completion": datetime.now().isoformat(),
+            "stages": [
+                {
+                    "name": "draft_preparation",
+                    "status": "completed",
+                    "progress": 100,
+                    "completed_at": datetime.now().isoformat(),
+                    "duration_hours": 2
+                },
+                {
+                    "name": "stakeholder_review",
+                    "status": "active",
+                    "progress": 60,
+                    "started_at": datetime.now().isoformat(),
+                    "estimated_completion_hours": 48
+                },
+                {
+                    "name": "constitutional_validation",
+                    "status": "pending",
+                    "progress": 0,
+                    "estimated_duration_hours": 12
+                },
+                {
+                    "name": "voting_process",
+                    "status": "pending",
+                    "progress": 0,
+                    "estimated_duration_hours": 168
+                },
+                {
+                    "name": "implementation",
+                    "status": "pending",
+                    "progress": 0,
+                    "estimated_duration_hours": 48
+                }
+            ],
+            "stakeholders": ["governance_team", "policy_reviewers", "legal_team"],
+            "constitutional_compliance": {
+                "status": "pending",
+                "hash": "cdd01ef066bc6cf2",
+                "last_check": datetime.now().isoformat()
+            },
+            "performance_metrics": {
+                "response_time_ms": 45.2,
+                "accuracy_score": 96.8,
+                "compliance_score": 94.5
+            }
+        }
+
+        return workflow_status
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting policy creation status: {e}")
+        raise HTTPException(status_code=500, detail=f"Status retrieval failed: {str(e)}")
 
 
 # Status and Management Endpoints

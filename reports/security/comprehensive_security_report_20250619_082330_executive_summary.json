@@ -1,0 +1,31 @@
+{
+  "total_findings": {
+    "critical": 0,
+    "high": 226,
+    "medium": 30,
+    "low": 44,
+    "total": 300
+  },
+  "assessment_date": "2025-06-19T12:23:30.453226+00:00",
+  "overall_risk_level": "HIGH",
+  "security_posture": "NEEDS_IMPROVEMENT",
+  "key_statistics": {
+    "total_services_tested": 7,
+    "total_dependencies_audited": 1655,
+    "vulnerable_dependencies": 144,
+    "compliance_score": 47.37,
+    "security_controls_implemented": 9
+  },
+  "critical_issues": [
+    "0 critical security vulnerabilities requiring immediate attention",
+    "226 high-severity security issues requiring urgent remediation",
+    "47.37% compliance score indicating significant security gaps",
+    "144 vulnerable dependencies out of 1655 total dependencies"
+  ],
+  "business_impact": {
+    "data_breach_risk": "MEDIUM",
+    "service_availability_risk": "MEDIUM",
+    "compliance_risk": "HIGH",
+    "reputation_risk": "MEDIUM"
+  }
+}

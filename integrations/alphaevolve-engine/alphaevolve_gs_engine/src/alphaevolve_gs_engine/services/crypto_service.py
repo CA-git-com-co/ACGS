@@ -72,7 +72,7 @@ def hash_data(data: str, algorithm: str = "sha256") -> str:
     Args:
         data (str): The string data to hash.
         algorithm (str): The hashing algorithm to use (default: "sha256").
-                         Supported: "sha256", "sha512", "md5" (not recommended for security).
+                         Supported: "sha256", "sha512". MD5 removed for security.
 
     Returns:
         str: The hexadecimal representation of the hash.
@@ -85,11 +85,7 @@ def hash_data(data: str, algorithm: str = "sha256") -> str:
         hasher = hashlib.sha256()
     elif algorithm == "sha512":
         hasher = hashlib.sha512()
-    elif algorithm == "md5":  # MD5 is generally not recommended for new security uses
-        logger.warning(
-            "MD5 is used for hashing, which is not secure for many applications."
-        )
-        hasher = hashlib.sha256()
+    # MD5 support removed for security - use SHA-256 or SHA-512 instead
     else:
         raise ValueError(f"Unsupported hashing algorithm: {algorithm}")
 

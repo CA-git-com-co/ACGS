@@ -268,10 +268,10 @@ class IntelligentAlertManager:
         }
 
     async def generate_alert_id(self, alert_name: str, source: str) -> str:
-        """Generate unique alert ID"""
+        """Generate unique alert ID using SHA-256 (upgraded from MD5 for security)"""
         timestamp = str(int(time.time()))
         content = f"{alert_name}:{source}:{timestamp}"
-        return hashlib.md5(content.encode()).hexdigest()[:12]
+        return hashlib.sha256(content.encode()).hexdigest()[:12]
 
     async def create_alert(
         self,

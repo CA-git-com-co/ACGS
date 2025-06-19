@@ -131,6 +131,56 @@ app = FastAPI(
     openapi_url="/openapi.json",
     lifespan=lifespan,
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    """Add comprehensive OWASP-recommended security headers."""
+    response = await call_next(request)
+    
+    # Core security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    
+    # HSTS (HTTP Strict Transport Security)
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    
+    # Content Security Policy (CSP) - Enhanced for XSS protection
+    csp_policy = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https:; "
+        "font-src 'self' https:; "
+        "connect-src 'self' https:; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
+    response.headers["Content-Security-Policy"] = csp_policy
+    
+    # Permissions Policy
+    permissions_policy = (
+        "geolocation=(), microphone=(), camera=(), "
+        "payment=(), usb=(), magnetometer=(), gyroscope=()"
+    )
+    response.headers["Permissions-Policy"] = permissions_policy
+    
+    # Additional security headers
+    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+    response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+    
+    # ACGS-1 specific headers
+    response.headers["X-ACGS-Security"] = "enabled"
+    response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
+    
+    return response
+
+
 # Apply comprehensive audit logging
 if AUDIT_LOGGING_AVAILABLE:
     apply_audit_logging_to_service(app, "integrity_service")

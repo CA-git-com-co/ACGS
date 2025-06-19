@@ -1,6 +1,6 @@
 # Task ID: 3
 # Title: Upgrade Cryptographic Implementations
-# Status: pending
+# Status: in-progress
 # Dependencies: 1
 # Priority: high
 # Description: Replace all instances of MD5 with SHA-256 for improved cryptographic security across the system.

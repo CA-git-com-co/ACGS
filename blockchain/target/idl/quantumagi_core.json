@@ -482,6 +482,9 @@
       ]
     }
   ],
+  "metadata": {
+    "address": "45shrZAMBbFGfLrev4FSDBchP847Q7oUR4jVqcxqnRD3"
+  },
   "errors": [
     {
       "code": 6000,
@@ -533,8 +536,5 @@
       "name": "InsufficientTokens",
       "msg": "Insufficient governance tokens"
     }
-  ],
-  "metadata": {
-    "address": "45shrZAMBbFGfLrev4FSDBchP847Q7oUR4jVqcxqnRD3"
-  }
+  ]
 }

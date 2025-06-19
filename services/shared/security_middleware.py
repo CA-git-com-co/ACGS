@@ -509,6 +509,12 @@ class SecurityMiddleware(BaseHTTPMiddleware):
     - SQL injection detection
     - Path traversal protection
     - JWT token validation
+    - Authorization bypass protection
+    - Enhanced authentication validation
+    - CSRF protection
+    - XSS protection with CSP
+    - Content type validation
+    - Request method validation
     """
 
     def __init__(
@@ -699,6 +705,60 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         """Add security headers to response."""
         for header, value in self.config.security_headers.items():
             response.headers[header] = value
+
+    def _add_enhanced_security_headers(self, response: Response, correlation_id: str):
+        """Add enhanced security headers to response (OWASP recommended)."""
+        # Core security headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+
+        # HSTS (HTTP Strict Transport Security)
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains; preload"
+        )
+
+        # Content Security Policy (CSP) - Enhanced for ACGS-1
+        csp_policy = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data: https:; "
+            "font-src 'self' data: https:; "
+            "connect-src 'self' ws: wss: https:; "
+            "media-src 'self'; "
+            "object-src 'none'; "
+            "frame-ancestors 'self'; "
+            "form-action 'self'; "
+            "base-uri 'self'; "
+            "upgrade-insecure-requests"
+        )
+        response.headers["Content-Security-Policy"] = csp_policy
+
+        # Permissions Policy (Feature Policy)
+        permissions_policy = (
+            "geolocation=(), microphone=(), camera=(), "
+            "payment=(), usb=(), magnetometer=(), gyroscope=(), "
+            "accelerometer=(), ambient-light-sensor=(), autoplay=(), "
+            "battery=(), display-capture=(), document-domain=(), "
+            "encrypted-media=(), fullscreen=(), midi=(), "
+            "picture-in-picture=(), publickey-credentials-get=(), "
+            "screen-wake-lock=(), sync-xhr=(), web-share=()"
+        )
+        response.headers["Permissions-Policy"] = permissions_policy
+
+        # Additional security headers
+        response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+        response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+
+        # Custom ACGS-1 headers
+        response.headers["X-ACGS-Service"] = self.service_name
+        response.headers["X-Correlation-ID"] = correlation_id
+        response.headers["X-Security-Policy"] = "enforced"
+        response.headers["X-Content-Security-Policy"] = csp_policy  # Legacy support
 
     def _add_rate_limit_headers(
         self, response: Response, rate_limit_info: dict[str, Any]
@@ -1056,67 +1116,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         return False
 
-    def _add_enhanced_security_headers(self, response: Response, correlation_id: str):
-        """Add comprehensive OWASP-recommended security headers."""
-        # Basic security headers
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["X-XSS-Protection"] = "1; mode=block"
-        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
-        # HSTS (HTTP Strict Transport Security)
-        response.headers["Strict-Transport-Security"] = (
-            "max-age=31536000; includeSubDomains; preload"
-        )
-
-        # Content Security Policy (CSP) - Enhanced for XSS protection
-        csp_policy = (
-            "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
-            "style-src 'self' 'unsafe-inline'; "
-            "img-src 'self' data: https:; "
-            "font-src 'self' https:; "
-            "connect-src 'self' https:; "
-            "frame-ancestors 'none'; "
-            "base-uri 'self'; "
-            "form-action 'self'; "
-            "upgrade-insecure-requests"
-        )
-        response.headers["Content-Security-Policy"] = csp_policy
-
-        # Permissions Policy (formerly Feature Policy)
-        permissions_policy = (
-            "geolocation=(), "
-            "microphone=(), "
-            "camera=(), "
-            "payment=(), "
-            "usb=(), "
-            "magnetometer=(), "
-            "gyroscope=(), "
-            "speaker=()"
-        )
-        response.headers["Permissions-Policy"] = permissions_policy
-
-        # Additional security headers
-        response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
-        response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
-        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
-        response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
-
-        # ACGS-1 specific headers
-        response.headers["X-ACGS-Service"] = self.service_name
-        response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-        response.headers["X-Correlation-ID"] = correlation_id
-        response.headers["X-Security-Framework"] = "ACGS-1-Enterprise"
-
-        # Cache control for sensitive responses
-        if any(
-            path in str(response.headers.get("content-type", ""))
-            for path in ["application/json", "text/html"]
-        ):
-            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-            response.headers["Pragma"] = "no-cache"
-            response.headers["Expires"] = "0"
 
 
 def apply_production_security_middleware(

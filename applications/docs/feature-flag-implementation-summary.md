@@ -22,14 +22,14 @@ Successfully implemented a comprehensive feature flag system that enables safe, 
 - **Maintenance mode**: Controlled degradation during issues
 
 #### 2. Migration-Specific Configuration
-**File**: `applications/legacy-applications/governance-dashboard/src/config/featureFlags.ts`
+**File**: `applications/legacy-frontend/src/config/featureFlags.ts`
 - **Phase-based configuration**: Separate configs for each migration phase
 - **Component validation**: Automated validation for critical components
 - **Risk assessment**: Built-in risk levels and rollback times
 - **Quantumagi validation**: Special validation for Solana connectivity
 
 #### 3. Enhanced App Integration
-**File**: `applications/legacy-applications/governance-dashboard/src/App-with-feature-flags.tsx`
+**File**: `applications/legacy-frontend/src/App-with-feature-flags.tsx`
 - **MigrationToggle**: Seamless switching between legacy/shared components
 - **FeatureAwareErrorBoundary**: Error handling with automatic rollback
 - **Route analytics**: Tracking of component usage during migration
@@ -42,7 +42,7 @@ Successfully implemented a comprehensive feature flag system that enables safe, 
 - `.env.migration.phase3` - Critical phase (Days 9-12)
 
 #### 5. Migration Control Script
-**File**: `applications/legacy-applications/governance-dashboard/scripts/migration-control.sh`
+**File**: `applications/legacy-frontend/scripts/migration-control.sh`
 - **Phase management**: Easy switching between migration phases
 - **Status monitoring**: Real-time view of current configuration
 - **Emergency rollback**: One-command rollback to legacy mode

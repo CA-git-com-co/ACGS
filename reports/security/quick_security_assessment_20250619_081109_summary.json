@@ -1,0 +1,32 @@
+{
+  "assessment_id": "quick_security_assessment_20250619_081109",
+  "timestamp": "2025-06-19T12:11:09.328374+00:00",
+  "summary": {
+    "critical_findings": 0,
+    "high_findings": 9,
+    "medium_findings": 6,
+    "low_findings": 4,
+    "total_findings": 19
+  },
+  "compliance_status": "NEEDS_IMPROVEMENT",
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "action": "Address 9 high-severity security findings",
+      "timeline": "Within 1 week",
+      "impact": "Significant security risk"
+    },
+    {
+      "priority": "HIGH",
+      "action": "Implement comprehensive security middleware across all services",
+      "timeline": "Within 3 days",
+      "impact": "Multiple security vulnerabilities"
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "Address 6 medium-severity security findings",
+      "timeline": "Within 2 weeks",
+      "impact": "Moderate security risk"
+    }
+  ]
+}
