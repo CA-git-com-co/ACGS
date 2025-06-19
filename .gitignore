@@ -532,4 +532,4 @@ docker_cleanup_commands.sh
 # Additional temporary patterns
 .tmp/
 **/tmp/
-**/temp/
+**/temp/tools/NeMo-Skills/
