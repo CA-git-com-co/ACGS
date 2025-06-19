@@ -160,9 +160,7 @@ class WebhookManager:
         """Generate secure webhook secret"""
         return hashlib.sha256(str(uuid.uuid4()).encode()).hexdigest()
 
-    async def trigger_webhook(
-        self, tenant_id: str, event_type: str, payload: dict[str, Any]
-    ):
+    async def trigger_webhook(self, tenant_id: str, event_type: str, payload: dict[str, Any]):
         """Trigger webhooks for specific event"""
         async with self.db_pool.acquire() as conn:
             webhooks = await conn.fetch(
@@ -289,9 +287,7 @@ class WebhookManager:
                         )
 
             except Exception as e:
-                logger.error(
-                    f"Webhook delivery error: {delivery_id}, attempt {attempt + 1}: {e}"
-                )
+                logger.error(f"Webhook delivery error: {delivery_id}, attempt {attempt + 1}: {e}")
 
                 await self._update_delivery_status(
                     delivery_id, "failed", attempt + 1, 0, str(e)[:1000]
@@ -437,9 +433,7 @@ class AuditTrailManager:
 
         # Trigger webhooks for audit events
         webhook_manager = WebhookManager(self.database_url, self.redis_url)
-        await webhook_manager.trigger_webhook(
-            tenant_id, "audit.event", asdict(audit_event)
-        )
+        await webhook_manager.trigger_webhook(tenant_id, "audit.event", asdict(audit_event))
 
         return event_id
 
@@ -549,14 +543,12 @@ class ComplianceManager:
         access_events = [
             e
             for e in events
-            if e.event_type
-            in ["user.login", "user.logout", "access.granted", "access.denied"]
+            if e.event_type in ["user.login", "user.logout", "access.granted", "access.denied"]
         ]
         data_events = [
             e
             for e in events
-            if e.resource_type
-            in ["policy", "governance_action", "constitutional_change"]
+            if e.resource_type in ["policy", "governance_action", "constitutional_change"]
         ]
 
         return {
@@ -592,12 +584,8 @@ class ComplianceManager:
         )
 
         # Analyze for GDPR criteria
-        data_access_events = [
-            e for e in events if e.action in ["read", "access", "view"]
-        ]
-        data_modification_events = [
-            e for e in events if e.action in ["create", "update", "delete"]
-        ]
+        data_access_events = [e for e in events if e.action in ["read", "access", "view"]]
+        data_modification_events = [e for e in events if e.action in ["create", "update", "delete"]]
 
         return {
             "compliance_type": "GDPR",
@@ -673,9 +661,7 @@ class EnterpriseIntegrationAPI:
             return asdict(webhook)
 
         @self.app.post("/webhooks/trigger")
-        async def trigger_webhook(
-            tenant_id: str, event_type: str, payload: dict[str, Any]
-        ):
+        async def trigger_webhook(tenant_id: str, event_type: str, payload: dict[str, Any]):
             """Trigger webhook for testing"""
             await webhook_manager.trigger_webhook(tenant_id, event_type, payload)
             return {"status": "triggered", "event_type": event_type}

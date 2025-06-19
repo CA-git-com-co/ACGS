@@ -99,9 +99,7 @@ class GovernanceAnalyticsEngine:
         )
 
         # Anomaly detection model
-        self.models["anomaly_detection"] = IsolationForest(
-            contamination=0.1, random_state=42
-        )
+        self.models["anomaly_detection"] = IsolationForest(contamination=0.1, random_state=42)
 
         # Initialize scalers
         self.scalers["policy_features"] = StandardScaler()
@@ -109,9 +107,7 @@ class GovernanceAnalyticsEngine:
 
         logger.info("ML models initialized")
 
-    async def collect_governance_metrics(
-        self, tenant_id: str, days: int = 30
-    ) -> GovernanceMetrics:
+    async def collect_governance_metrics(self, tenant_id: str, days: int = 30) -> GovernanceMetrics:
         """Collect comprehensive governance metrics"""
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
@@ -166,9 +162,7 @@ class GovernanceAnalyticsEngine:
                 tenant_id,
             )
 
-            participation_rate = (
-                participation_stats["active_users"] / max(total_users, 1)
-            ) * 100
+            participation_rate = (participation_stats["active_users"] / max(total_users, 1)) * 100
 
             # Policy effectiveness (mock calculation - would use real implementation data)
             effectiveness_score = min(
@@ -193,17 +187,14 @@ class GovernanceAnalyticsEngine:
                 active_policies=policy_stats["active_policies"] or 0,
                 policy_approval_rate=policy_stats["approval_rate"] or 0.0,
                 avg_policy_creation_time_hours=policy_stats["avg_creation_time"] or 0.0,
-                constitutional_compliance_score=compliance_stats["avg_compliance"]
-                or 0.0,
+                constitutional_compliance_score=compliance_stats["avg_compliance"] or 0.0,
                 governance_participation_rate=participation_rate,
                 policy_effectiveness_score=effectiveness_score,
                 democratic_index=democratic_index,
                 transparency_score=0.85,  # Would calculate from audit logs
             )
 
-    async def analyze_policy_effectiveness(
-        self, tenant_id: str, policy_id: str
-    ) -> PolicyAnalytics:
+    async def analyze_policy_effectiveness(self, tenant_id: str, policy_id: str) -> PolicyAnalytics:
         """Analyze individual policy effectiveness"""
         async with self.db_pool.acquire() as conn:
             policy_data = await conn.fetchrow(
@@ -250,9 +241,7 @@ class GovernanceAnalyticsEngine:
                 usage_frequency=policy_data["usage_count"] or 0,
             )
 
-    async def predict_policy_success(
-        self, policy_features: dict[str, Any]
-    ) -> dict[str, float]:
+    async def predict_policy_success(self, policy_features: dict[str, Any]) -> dict[str, float]:
         """Predict policy success probability using ML"""
         # Extract features for prediction
         features = np.array(
@@ -275,9 +264,7 @@ class GovernanceAnalyticsEngine:
 
         # Predict (mock prediction if model not trained)
         try:
-            success_probability = self.models["policy_effectiveness"].predict(
-                features_scaled
-            )[0]
+            success_probability = self.models["policy_effectiveness"].predict(features_scaled)[0]
         except:
             # Mock prediction based on features
             success_probability = (
@@ -343,9 +330,7 @@ class GovernanceAnalyticsEngine:
 
             # Detect anomalies
             try:
-                anomaly_scores = self.models["anomaly_detection"].decision_function(
-                    features
-                )
+                anomaly_scores = self.models["anomaly_detection"].decision_function(features)
                 anomalies = self.models["anomaly_detection"].predict(features)
 
                 anomaly_results = []
@@ -376,9 +361,7 @@ class GovernanceAnalyticsEngine:
                 logger.warning(f"Anomaly detection failed: {e}")
                 return []
 
-    def _generate_anomaly_description(
-        self, anomaly_row: dict, all_metrics: list[dict]
-    ) -> str:
+    def _generate_anomaly_description(self, anomaly_row: dict, all_metrics: list[dict]) -> str:
         """Generate human-readable anomaly description"""
         avg_actions = np.mean([row["action_count"] for row in all_metrics])
         avg_compliance = np.mean([row["avg_compliance"] or 0 for row in all_metrics])
@@ -393,11 +376,7 @@ class GovernanceAnalyticsEngine:
         if (anomaly_row["avg_compliance"] or 0) < avg_compliance * 0.8:
             descriptions.append("Lower than normal constitutional compliance")
 
-        return (
-            "; ".join(descriptions)
-            if descriptions
-            else "Unusual governance pattern detected"
-        )
+        return "; ".join(descriptions) if descriptions else "Unusual governance pattern detected"
 
     async def generate_constitutional_trend_analysis(
         self, tenant_id: str, days: int = 90
@@ -468,9 +447,7 @@ class GovernanceAnalyticsEngine:
                 "constitutional_trends": trend_chart,
                 "compliance_overview": compliance_chart,
             },
-            "recommendations": await self._generate_recommendations(
-                metrics, trends, anomalies
-            ),
+            "recommendations": await self._generate_recommendations(metrics, trends, anomalies),
             "generated_at": datetime.now().isoformat(),
         }
 
@@ -614,9 +591,7 @@ class AnalyticsAPI:
             }
 
         @self.app.get("/analytics/governance-metrics/{tenant_id}")
-        async def get_governance_metrics(
-            tenant_id: str, days: int = Query(30, ge=1, le=365)
-        ):
+        async def get_governance_metrics(tenant_id: str, days: int = Query(30, ge=1, le=365)):
             """Get comprehensive governance metrics"""
             metrics = await self.analytics.collect_governance_metrics(tenant_id, days)
             return asdict(metrics)
@@ -624,9 +599,7 @@ class AnalyticsAPI:
         @self.app.get("/analytics/policy/{tenant_id}/{policy_id}")
         async def get_policy_analytics(tenant_id: str, policy_id: str):
             """Get detailed policy analytics"""
-            analytics = await self.analytics.analyze_policy_effectiveness(
-                tenant_id, policy_id
-            )
+            analytics = await self.analytics.analyze_policy_effectiveness(tenant_id, policy_id)
             return asdict(analytics)
 
         @self.app.post("/analytics/predict-policy-success")
@@ -636,23 +609,15 @@ class AnalyticsAPI:
             return prediction
 
         @self.app.get("/analytics/anomalies/{tenant_id}")
-        async def get_governance_anomalies(
-            tenant_id: str, days: int = Query(7, ge=1, le=30)
-        ):
+        async def get_governance_anomalies(tenant_id: str, days: int = Query(7, ge=1, le=30)):
             """Get governance anomalies"""
-            anomalies = await self.analytics.detect_governance_anomalies(
-                tenant_id, days
-            )
+            anomalies = await self.analytics.detect_governance_anomalies(tenant_id, days)
             return {"anomalies": anomalies}
 
         @self.app.get("/analytics/trends/{tenant_id}")
-        async def get_constitutional_trends(
-            tenant_id: str, days: int = Query(90, ge=7, le=365)
-        ):
+        async def get_constitutional_trends(tenant_id: str, days: int = Query(90, ge=7, le=365)):
             """Get constitutional compliance trends"""
-            trends = await self.analytics.generate_constitutional_trend_analysis(
-                tenant_id, days
-            )
+            trends = await self.analytics.generate_constitutional_trend_analysis(tenant_id, days)
             return {"trends": [asdict(trend) for trend in trends]}
 
         @self.app.get("/analytics/dashboard/{tenant_id}")

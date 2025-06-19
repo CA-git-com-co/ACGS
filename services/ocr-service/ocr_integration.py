@@ -26,7 +26,6 @@ class OCRServiceException(Exception):
     """Exception raised for errors in the OCR service."""
 
 
-
 class OCRIntegration:
     """Integration class for the OCR service within ACGS-1."""
 

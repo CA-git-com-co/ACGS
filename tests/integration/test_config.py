@@ -29,19 +29,19 @@ sys.path.insert(0, str(PROJECT_ROOT))
 # Service path mappings (handle both hyphen and underscore variants)
 SERVICE_PATH_MAPPINGS = {
     "constitutional_ai": [
-        "services.core.constitutional-ai.ac_service",
+        "services.core.constitutional_ai.ac_service",
         "services.core.constitutional_ai.ac_service", 
         "constitutional_ai.ac_service",
         "ac_service",
     ],
     "governance_synthesis": [
-        "services.core.governance-synthesis.gs_service",
+        "services.core.governance_synthesis.gs_service",
         "services.core.governance_synthesis.gs_service",
         "governance_synthesis.gs_service", 
         "gs_service",
     ],
     "formal_verification": [
-        "services.core.formal-verification.fv_service",
+        "services.core.formal_verification.fv_service",
         "services.core.formal_verification.fv_service",
         "formal_verification.fv_service",
         "fv_service", 

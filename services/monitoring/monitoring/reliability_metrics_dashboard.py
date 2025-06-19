@@ -34,9 +34,7 @@ try:
 except ImportError:
     # Fallback for development/testing
     logger = logging.getLogger(__name__)
-    logger.warning(
-        "Could not import QEC enhancement modules. Using mock implementations."
-    )
+    logger.warning("Could not import QEC enhancement modules. Using mock implementations.")
 
     class FidelityLevel(Enum):
         GREEN = "green"
@@ -236,9 +234,7 @@ class ReliabilityMetricsDashboard:
 
                 historical = self.historical_data.get(metric_enum, [])
                 filtered_data = [
-                    asdict(metric)
-                    for metric in historical
-                    if metric.timestamp >= cutoff_time
+                    asdict(metric) for metric in historical if metric.timestamp >= cutoff_time
                 ]
 
                 trend = self._calculate_trend(metric_enum, hours)
@@ -250,9 +246,7 @@ class ReliabilityMetricsDashboard:
                     "summary": self._calculate_metric_summary(filtered_data),
                 }
             except ValueError:
-                raise HTTPException(
-                    status_code=400, detail=f"Invalid metric type: {metric_type}"
-                )
+                raise HTTPException(status_code=400, detail=f"Invalid metric type: {metric_type}")
 
         @self.app.get("/api/alerts/active")
         async def get_active_alerts():
@@ -318,9 +312,7 @@ class ReliabilityMetricsDashboard:
                     for metric_type, data in self.historical_data.items()
                 },
                 "configuration": {
-                    "targets": {
-                        k.value: v for k, v in self.reliability_targets.items()
-                    },
+                    "targets": {k.value: v for k, v in self.reliability_targets.items()},
                     "update_interval": self.config["update_interval_seconds"],
                 },
             }
@@ -535,9 +527,9 @@ class ReliabilityMetricsDashboard:
         # Maintain maximum historical data points
         max_points = self.config["max_metrics_per_type"]
         if len(self.historical_data[metric.metric_type]) > max_points:
-            self.historical_data[metric.metric_type] = self.historical_data[
-                metric.metric_type
-            ][-max_points:]
+            self.historical_data[metric.metric_type] = self.historical_data[metric.metric_type][
+                -max_points:
+            ]
 
     async def _get_fidelity_components(self) -> FidelityComponents:
         """Get current fidelity components from the monitor."""
@@ -617,9 +609,7 @@ class ReliabilityMetricsDashboard:
         """Analyze trends for all metrics and update predictions."""
         for metric_type in ReliabilityMetricType:
             if metric_type in self.historical_data:
-                self._calculate_trend(
-                    metric_type, self.config["trend_analysis_window_hours"]
-                )
+                self._calculate_trend(metric_type, self.config["trend_analysis_window_hours"])
                 # Store trend data for dashboard display
                 # This would be implemented based on storage requirements
 
@@ -715,10 +705,7 @@ class ReliabilityMetricsDashboard:
         for alert in self.active_alerts:
             if not alert.resolved:
                 current_metric = self.current_metrics.get(alert.metric_type)
-                if (
-                    current_metric
-                    and current_metric.value >= current_metric.target_threshold
-                ):
+                if current_metric and current_metric.value >= current_metric.target_threshold:
                     alert.resolved = True
                     alert.resolution_notes = "Metric returned to healthy threshold"
 
@@ -755,9 +742,7 @@ class ReliabilityMetricsDashboard:
         # Move resolved alerts to history
         resolved_alerts = [alert for alert in self.active_alerts if alert.resolved]
         self.alert_history.extend(resolved_alerts)
-        self.active_alerts = [
-            alert for alert in self.active_alerts if not alert.resolved
-        ]
+        self.active_alerts = [alert for alert in self.active_alerts if not alert.resolved]
 
         # Clean up old alert history
         self.alert_history = [
@@ -766,18 +751,14 @@ class ReliabilityMetricsDashboard:
 
     def _get_metrics_summary(self) -> dict[str, Any]:
         """Get summary of current metrics."""
-        healthy_count = sum(
-            1 for metric in self.current_metrics.values() if metric.is_healthy
-        )
+        healthy_count = sum(1 for metric in self.current_metrics.values() if metric.is_healthy)
         total_count = len(self.current_metrics)
 
         return {
             "total_metrics": total_count,
             "healthy_metrics": healthy_count,
             "unhealthy_metrics": total_count - healthy_count,
-            "health_percentage": (
-                (healthy_count / total_count * 100) if total_count > 0 else 0
-            ),
+            "health_percentage": ((healthy_count / total_count * 100) if total_count > 0 else 0),
             "last_update": max(
                 (metric.timestamp for metric in self.current_metrics.values()),
                 default=datetime.now(),
@@ -816,13 +797,9 @@ class ReliabilityMetricsDashboard:
                     f"Address {metric_type.value}: current {metric.value:.3f} < target {metric.target_threshold:.3f}"
                 )
 
-        critical_alerts = [
-            alert for alert in self.active_alerts if alert.severity == "critical"
-        ]
+        critical_alerts = [alert for alert in self.active_alerts if alert.severity == "critical"]
         if critical_alerts:
-            recommendations.append(
-                f"Resolve {len(critical_alerts)} critical alert(s) immediately"
-            )
+            recommendations.append(f"Resolve {len(critical_alerts)} critical alert(s) immediately")
 
         if not recommendations:
             recommendations.append("System is operating within all reliability targets")

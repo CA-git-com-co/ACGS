@@ -24,6 +24,7 @@ logger = logging.getLogger("ocr-client")
 
 class OCRServiceException(Exception):
     """Exception raised for errors in the OCR service."""
+
     pass
 
 
@@ -177,17 +178,17 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ocr = OCRClient(host=args.host, port=args.port, health_port=args.health_port)
-    
+
     if not ocr.check_health():
         print("OCR service is not healthy. Please check if it's running.")
         exit(1)
-    
+
     try:
         if args.type != "general":
             result = ocr.analyze_document(args.image, args.type)
         else:
             result = ocr.extract_text(args.image, args.prompt)
-        
+
         print(json.dumps(result, indent=2))
     except OCRServiceException as e:
         print(f"Error: {e}")

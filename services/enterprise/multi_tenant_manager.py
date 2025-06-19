@@ -126,9 +126,7 @@ class TenantIsolationManager:
                     constitution_hash=row["constitution_hash"],
                     max_users=row["max_users"],
                     max_policies=row["max_policies"],
-                    max_governance_actions_per_hour=row[
-                        "max_governance_actions_per_hour"
-                    ],
+                    max_governance_actions_per_hour=row["max_governance_actions_per_hour"],
                     storage_quota_gb=row["storage_quota_gb"],
                     features=row["features"],
                     created_at=row["created_at"],
@@ -155,9 +153,7 @@ class TenantIsolationManager:
                 "max_governance_actions_per_hour", 1000
             ),
             storage_quota_gb=tenant_data.get("storage_quota_gb", 100),
-            features=tenant_data.get(
-                "features", ["basic_governance", "policy_creation"]
-            ),
+            features=tenant_data.get("features", ["basic_governance", "policy_creation"]),
             created_at=datetime.now(),
         )
 
@@ -182,9 +178,7 @@ class TenantIsolationManager:
 
         # Cache tenant
         self.tenants[tenant_id] = tenant
-        await self.redis_client.setex(
-            f"tenant:{tenant_id}", 3600, json.dumps(tenant.to_dict())
-        )
+        await self.redis_client.setex(f"tenant:{tenant_id}", 3600, json.dumps(tenant.to_dict()))
 
         # Initialize tenant-specific resources
         await self._initialize_tenant_resources(tenant)
@@ -245,9 +239,7 @@ class TenantIsolationManager:
         # Check governance actions per hour
         if action_type == "governance_action":
             current_hour = datetime.now().replace(minute=0, second=0, microsecond=0)
-            actions_count = await self._get_governance_actions_count(
-                tenant_id, current_hour
-            )
+            actions_count = await self._get_governance_actions_count(tenant_id, current_hour)
             if actions_count >= tenant.max_governance_actions_per_hour:
                 logger.warning(f"Tenant {tenant_id} exceeded governance actions limit")
                 return False
@@ -260,9 +252,7 @@ class TenantIsolationManager:
 
         return True
 
-    async def _get_governance_actions_count(
-        self, tenant_id: str, since: datetime
-    ) -> int:
+    async def _get_governance_actions_count(self, tenant_id: str, since: datetime) -> int:
         """Get governance actions count for tenant since timestamp"""
         schema_name = f"tenant_{tenant_id.replace('-', '_')}"
         async with self.db_pool.acquire() as conn:
@@ -334,9 +324,7 @@ class TenantIsolationManager:
 
             return metrics
 
-    async def list_tenants(
-        self, limit: int = 100, offset: int = 0
-    ) -> list[TenantConfig]:
+    async def list_tenants(self, limit: int = 100, offset: int = 0) -> list[TenantConfig]:
         """List all active tenants"""
         async with self.db_pool.acquire() as conn:
             rows = await conn.fetch(
@@ -358,9 +346,7 @@ class TenantIsolationManager:
                     constitution_hash=row["constitution_hash"],
                     max_users=row["max_users"],
                     max_policies=row["max_policies"],
-                    max_governance_actions_per_hour=row[
-                        "max_governance_actions_per_hour"
-                    ],
+                    max_governance_actions_per_hour=row["max_governance_actions_per_hour"],
                     storage_quota_gb=row["storage_quota_gb"],
                     features=row["features"],
                     created_at=row["created_at"],
@@ -524,9 +510,7 @@ class TenantMiddleware:
                 if not await self.tenant_manager.validate_tenant_limits(
                     tenant_id, "governance_action"
                 ):
-                    raise HTTPException(
-                        status_code=429, detail="Tenant resource limits exceeded"
-                    )
+                    raise HTTPException(status_code=429, detail="Tenant resource limits exceeded")
 
         response = await call_next(request)
         return response
