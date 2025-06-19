@@ -95,9 +95,7 @@ class ExecutionResultCache:
             # Validate constitutional hash
             cached_hash = cached_data.get("constitutional_hash")
             if cached_hash != self.cache_manager.constitutional_hash:
-                logger.warning(
-                    f"Constitutional hash mismatch for cached execution {execution_id}"
-                )
+                logger.warning(f"Constitutional hash mismatch for cached execution {execution_id}")
                 await self.invalidate_execution_result(execution_id)
                 return None
 
@@ -242,9 +240,7 @@ class ExecutionResultCache:
 
         return success
 
-    async def get_circuit_breaker_state(
-        self, service_name: str
-    ) -> dict[str, Any] | None:
+    async def get_circuit_breaker_state(self, service_name: str) -> dict[str, Any] | None:
         """
         Retrieve cached circuit breaker state.
 

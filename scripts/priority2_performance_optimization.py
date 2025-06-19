@@ -20,9 +20,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -88,8 +86,7 @@ class PerformanceOptimizer:
                     "end_time": datetime.now().isoformat(),
                     "execution_time_seconds": execution_time,
                     "success": all(
-                        phase.get("success", False)
-                        for phase in results["phases"].values()
+                        phase.get("success", False) for phase in results["phases"].values()
                     ),
                     "performance_targets_met": self.evaluate_targets(results),
                 }
@@ -155,22 +152,16 @@ class PerformanceOptimizer:
                 }
 
         # Calculate overall metrics
-        available_services = sum(
-            1 for m in baseline_metrics.values() if m.get("available", False)
-        )
+        available_services = sum(1 for m in baseline_metrics.values() if m.get("available", False))
         services_meeting_target = sum(
             1 for m in baseline_metrics.values() if m.get("meets_target", False)
         )
 
         avg_response_times = [
-            m["avg_response_ms"]
-            for m in baseline_metrics.values()
-            if m.get("available", False)
+            m["avg_response_ms"] for m in baseline_metrics.values() if m.get("available", False)
         ]
         overall_avg_response = (
-            sum(avg_response_times) / len(avg_response_times)
-            if avg_response_times
-            else 0
+            sum(avg_response_times) / len(avg_response_times) if avg_response_times else 0
         )
 
         return {
@@ -239,8 +230,7 @@ class PerformanceOptimizer:
         )
 
         return {
-            "success": workflows_meeting_target
-            >= 2,  # At least 2 workflows meeting target
+            "success": workflows_meeting_target >= 2,  # At least 2 workflows meeting target
             "workflows_meeting_target": workflows_meeting_target,
             "total_workflows": len(governance_endpoints),
             "workflow_performance": workflow_performance,
@@ -280,21 +270,15 @@ class PerformanceOptimizer:
                     end_time = time.time()
 
                     # Calculate metrics
-                    successful_requests = sum(
-                        1 for r in results if r.get("success", False)
-                    )
+                    successful_requests = sum(1 for r in results if r.get("success", False))
                     total_time = end_time - start_time
-                    requests_per_second = (
-                        len(results) / total_time if total_time > 0 else 0
-                    )
+                    requests_per_second = len(results) / total_time if total_time > 0 else 0
 
                     load_test_results[f"{concurrent_users}_users"] = {
                         "concurrent_users": concurrent_users,
                         "successful_requests": successful_requests,
                         "total_requests": len(results),
-                        "success_rate": (
-                            successful_requests / len(results) if results else 0
-                        ),
+                        "success_rate": (successful_requests / len(results) if results else 0),
                         "total_time_seconds": total_time,
                         "requests_per_second": requests_per_second,
                         "meets_target": successful_requests
@@ -318,8 +302,7 @@ class PerformanceOptimizer:
             "success": max_supported_users >= 100,  # At least 100 concurrent users
             "max_supported_users": max_supported_users,
             "target_users": self.target_concurrent_users,
-            "meets_concurrent_target": max_supported_users
-            >= self.target_concurrent_users,
+            "meets_concurrent_target": max_supported_users >= self.target_concurrent_users,
             "load_test_results": load_test_results,
         }
 
@@ -520,9 +503,7 @@ async def main():
                 status = "✅" if met else "❌"
                 print(f"  {status} {target}")
     else:
-        print(
-            f"❌ Performance optimization failed: {results.get('error', 'Unknown error')}"
-        )
+        print(f"❌ Performance optimization failed: {results.get('error', 'Unknown error')}")
         sys.exit(1)
 
 

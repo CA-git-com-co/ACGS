@@ -216,12 +216,8 @@ class CollectiveConstitutionalAI:
                     ) as response:
                         if response.status == 201:
                             data = await response.json()
-                            conversation_id = data.get(
-                                "conversation_id", conversation_id
-                            )
-                            logger.info(
-                                f"Created Polis conversation: {conversation_id}"
-                            )
+                            conversation_id = data.get("conversation_id", conversation_id)
+                            logger.info(f"Created Polis conversation: {conversation_id}")
                         else:
                             logger.warning(
                                 f"Failed to create Polis conversation: {response.status}"
@@ -271,9 +267,7 @@ class CollectiveConstitutionalAI:
 
             for template in templates:
                 # Evaluate principle against template
-                bias_score = await self._evaluate_single_bias(
-                    principle_text, template, category
-                )
+                bias_score = await self._evaluate_single_bias(principle_text, template, category)
                 bias_scores.append(bias_score)
 
                 if bias_score > 0.5:  # Potential bias detected
@@ -400,12 +394,8 @@ class CollectiveConstitutionalAI:
         template_lower = template.lower()
 
         # Count bias-related keywords in both texts
-        principle_keyword_count = sum(
-            1 for keyword in keywords if keyword in principle_lower
-        )
-        template_keyword_count = sum(
-            1 for keyword in keywords if keyword in template_lower
-        )
+        principle_keyword_count = sum(1 for keyword in keywords if keyword in principle_lower)
+        template_keyword_count = sum(1 for keyword in keywords if keyword in template_lower)
 
         # Calculate bias score based on keyword overlap and context
         total_keywords = principle_keyword_count + template_keyword_count
@@ -463,9 +453,7 @@ class CollectiveConstitutionalAI:
                                         input_id=str(uuid.uuid4()),
                                         source="polis",
                                         content=statement.get("text", ""),
-                                        participant_id=statement.get(
-                                            "participant_id", "anonymous"
-                                        ),
+                                        participant_id=statement.get("participant_id", "anonymous"),
                                         timestamp=datetime.fromisoformat(
                                             statement.get("created_at")
                                         ),
@@ -499,13 +487,9 @@ class CollectiveConstitutionalAI:
 
         # Update conversation with consensus statements
         conversation.consensus_statements = [ci.content for ci in collective_inputs]
-        conversation.participant_count = len(
-            {ci.participant_id for ci in collective_inputs}
-        )
+        conversation.participant_count = len({ci.participant_id for ci in collective_inputs})
 
-        self.metrics.record_value(
-            "collective_inputs_aggregated", len(collective_inputs)
-        )
+        self.metrics.record_value("collective_inputs_aggregated", len(collective_inputs))
 
         return collective_inputs
 
@@ -578,9 +562,7 @@ class CollectiveConstitutionalAI:
 
         return democratic_principle
 
-    async def _synthesize_principle_text(
-        self, collective_inputs: list[CollectiveInput]
-    ) -> str:
+    async def _synthesize_principle_text(self, collective_inputs: list[CollectiveInput]) -> str:
         """
         Synthesize principle text from collective inputs.
 
@@ -603,9 +585,7 @@ class CollectiveConstitutionalAI:
         )
 
         for i, content in enumerate(high_consensus_content):
-            synthesized_text += (
-                f"({i+1}) {content[:100]}{'...' if len(content) > 100 else ''}; "
-            )
+            synthesized_text += f"({i+1}) {content[:100]}{'...' if len(content) > 100 else ''}; "
 
         synthesized_text += (
             f"This principle reflects a stakeholder agreement level of "
@@ -615,9 +595,7 @@ class CollectiveConstitutionalAI:
 
         return synthesized_text
 
-    def _calculate_bias_reduction(
-        self, bias_evaluation: list[BiasEvaluationResult]
-    ) -> float:
+    def _calculate_bias_reduction(self, bias_evaluation: list[BiasEvaluationResult]) -> float:
         """Calculate overall bias reduction achieved."""
         if not bias_evaluation:
             return 0.0
@@ -679,9 +657,7 @@ class CollectiveConstitutionalAI:
 
         # Calculate trend analysis
         recent_principles = [
-            p
-            for p in principles
-            if p.created_at > datetime.now(UTC) - timedelta(days=30)
+            p for p in principles if p.created_at > datetime.now(UTC) - timedelta(days=30)
         ]
 
         metrics = {
@@ -696,9 +672,7 @@ class CollectiveConstitutionalAI:
             ),
             "bias_by_category": bias_by_category,
             "active_conversations": len(self.active_conversations),
-            "democratic_legitimacy_score": self._calculate_overall_legitimacy_score(
-                principles
-            ),
+            "democratic_legitimacy_score": self._calculate_overall_legitimacy_score(principles),
             "timestamp": datetime.now(UTC).isoformat(),
         }
 
@@ -712,9 +686,7 @@ class CollectiveConstitutionalAI:
 
         return metrics
 
-    def _calculate_overall_legitimacy_score(
-        self, principles: list[DemocraticPrinciple]
-    ) -> float:
+    def _calculate_overall_legitimacy_score(self, principles: list[DemocraticPrinciple]) -> float:
         """Calculate overall democratic legitimacy score."""
         if not principles:
             return 0.0

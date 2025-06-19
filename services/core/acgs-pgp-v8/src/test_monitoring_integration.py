@@ -39,9 +39,7 @@ class MonitoringIntegrationTest:
                         logger.info(f"Health check passed: {data.get('status')}")
                         return True
                     else:
-                        logger.error(
-                            f"Health check failed with status: {response.status}"
-                        )
+                        logger.error(f"Health check failed with status: {response.status}")
                         return False
         except Exception as e:
             logger.error(f"Health check failed: {e}")
@@ -76,9 +74,7 @@ class MonitoringIntegrationTest:
                         logger.info("All required metrics found in /metrics endpoint")
                         return True
                     else:
-                        logger.error(
-                            f"Metrics endpoint failed with status: {response.status}"
-                        )
+                        logger.error(f"Metrics endpoint failed with status: {response.status}")
                         return False
         except Exception as e:
             logger.error(f"Metrics endpoint test failed: {e}")
@@ -88,9 +84,7 @@ class MonitoringIntegrationTest:
         """Test the metrics summary endpoint."""
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    f"{self.service_url}/api/v1/metrics/summary"
-                ) as response:
+                async with session.get(f"{self.service_url}/api/v1/metrics/summary") as response:
                     if response.status == 200:
                         data = await response.json()
 
@@ -108,9 +102,7 @@ class MonitoringIntegrationTest:
                                 missing_fields.append(field)
 
                         if missing_fields:
-                            logger.error(
-                                f"Missing fields in metrics summary: {missing_fields}"
-                            )
+                            logger.error(f"Missing fields in metrics summary: {missing_fields}")
                             return False
 
                         # Validate constitutional hash
@@ -153,9 +145,7 @@ class MonitoringIntegrationTest:
                                     )
                                     return True
                                 else:
-                                    logger.warning(
-                                        "ACGS-PGP v8 service appears down in Prometheus"
-                                    )
+                                    logger.warning("ACGS-PGP v8 service appears down in Prometheus")
                                     return False
                             else:
                                 logger.error(
@@ -171,9 +161,7 @@ class MonitoringIntegrationTest:
                         )
                         return False
         except Exception as e:
-            logger.warning(
-                f"Prometheus scraping test failed (Prometheus may not be running): {e}"
-            )
+            logger.warning(f"Prometheus scraping test failed (Prometheus may not be running): {e}")
             return False
 
     async def test_constitutional_compliance_metrics(self) -> bool:
@@ -196,12 +184,8 @@ class MonitoringIntegrationTest:
                             if metric in metrics_data:
                                 found_metrics.append(metric)
 
-                        if (
-                            len(found_metrics) >= 2
-                        ):  # At least 2 out of 3 metrics should be present
-                            logger.info(
-                                f"Constitutional compliance metrics found: {found_metrics}"
-                            )
+                        if len(found_metrics) >= 2:  # At least 2 out of 3 metrics should be present
+                            logger.info(f"Constitutional compliance metrics found: {found_metrics}")
                             return True
                         else:
                             logger.error(
@@ -264,9 +248,7 @@ class MonitoringIntegrationTest:
         if success_rate >= 80:
             logger.info("🎉 Monitoring integration is ready for production!")
         elif success_rate >= 60:
-            logger.warning(
-                "⚠️  Monitoring integration has some issues but is functional"
-            )
+            logger.warning("⚠️  Monitoring integration has some issues but is functional")
         else:
             logger.error("❌ Monitoring integration has critical issues")
 

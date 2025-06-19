@@ -154,9 +154,7 @@ class AutomatedResolutionEngine:
             principles = await self._get_conflict_principles(db, conflict)
 
             if not principles:
-                return self._create_failure_result(
-                    "No principles found for conflict", start_time
-                )
+                return self._create_failure_result("No principles found for conflict", start_time)
 
             # Evaluate available strategies
             if force_strategy:
@@ -265,9 +263,7 @@ class AutomatedResolutionEngine:
         for strategy, evaluator in strategy_evaluators.items():
             try:
                 evaluation = await evaluator(conflict, principles, detection_result)
-                if (
-                    evaluation.applicability_score > 0.3
-                ):  # Minimum applicability threshold
+                if evaluation.applicability_score > 0.3:  # Minimum applicability threshold
                     evaluations.append(evaluation)
             except Exception as e:
                 logger.warning(f"Failed to evaluate strategy {strategy.value}: {e}")
@@ -288,25 +284,19 @@ class AutomatedResolutionEngine:
         """Evaluate weighted priority strategy."""
         # Check if principles have priority weights
         has_priorities = any(
-            hasattr(p, "priority_weight") and p.priority_weight is not None
-            for p in principles
+            hasattr(p, "priority_weight") and p.priority_weight is not None for p in principles
         )
 
         applicability = 0.9 if has_priorities else 0.4
 
         # Higher applicability for priority conflicts
-        if (
-            detection_result
-            and detection_result.conflict_type == ConflictType.PRIORITY_CONFLICT
-        ):
+        if detection_result and detection_result.conflict_type == ConflictType.PRIORITY_CONFLICT:
             applicability = min(applicability + 0.3, 1.0)
 
         return StrategyEvaluation(
             strategy=ResolutionStrategy.WEIGHTED_PRIORITY,
             applicability_score=applicability,
-            expected_success_rate=self.strategy_success_rates[
-                ResolutionStrategy.WEIGHTED_PRIORITY
-            ],
+            expected_success_rate=self.strategy_success_rates[ResolutionStrategy.WEIGHTED_PRIORITY],
             complexity_score=0.3,  # Low complexity
             resource_requirements={"computation": "low", "human_input": "none"},
             risk_assessment={"data_loss": 0.1, "inconsistency": 0.2},
@@ -334,9 +324,7 @@ class AutomatedResolutionEngine:
         return StrategyEvaluation(
             strategy=ResolutionStrategy.PRECEDENCE_BASED,
             applicability_score=applicability,
-            expected_success_rate=self.strategy_success_rates[
-                ResolutionStrategy.PRECEDENCE_BASED
-            ],
+            expected_success_rate=self.strategy_success_rates[ResolutionStrategy.PRECEDENCE_BASED],
             complexity_score=0.2,  # Very low complexity
             resource_requirements={"computation": "low", "human_input": "none"},
             risk_assessment={"data_loss": 0.05, "inconsistency": 0.15},
@@ -352,10 +340,7 @@ class AutomatedResolutionEngine:
         # Check for scope overlap conflicts
         applicability = 0.6  # Default applicability
 
-        if (
-            detection_result
-            and detection_result.conflict_type == ConflictType.SCOPE_OVERLAP
-        ):
+        if detection_result and detection_result.conflict_type == ConflictType.SCOPE_OVERLAP:
             applicability = 0.95
 
         return StrategyEvaluation(
@@ -440,10 +425,7 @@ class AutomatedResolutionEngine:
         """Evaluate temporal sequencing strategy."""
         applicability = 0.4  # Default low applicability
 
-        if (
-            detection_result
-            and detection_result.conflict_type == ConflictType.TEMPORAL_CONFLICT
-        ):
+        if detection_result and detection_result.conflict_type == ConflictType.TEMPORAL_CONFLICT:
             applicability = 0.85
 
         return StrategyEvaluation(
@@ -467,9 +449,7 @@ class AutomatedResolutionEngine:
         return StrategyEvaluation(
             strategy=ResolutionStrategy.CONSENSUS_BASED,
             applicability_score=0.6,
-            expected_success_rate=self.strategy_success_rates[
-                ResolutionStrategy.CONSENSUS_BASED
-            ],
+            expected_success_rate=self.strategy_success_rates[ResolutionStrategy.CONSENSUS_BASED],
             complexity_score=0.8,
             resource_requirements={"computation": "high", "human_input": "high"},
             risk_assessment={"data_loss": 0.1, "inconsistency": 0.2},
@@ -505,10 +485,7 @@ class AutomatedResolutionEngine:
         """Evaluate stakeholder mediation strategy."""
         applicability = 0.3  # Default low applicability
 
-        if (
-            detection_result
-            and detection_result.conflict_type == ConflictType.STAKEHOLDER_CONFLICT
-        ):
+        if detection_result and detection_result.conflict_type == ConflictType.STAKEHOLDER_CONFLICT:
             applicability = 0.8
 
         return StrategyEvaluation(

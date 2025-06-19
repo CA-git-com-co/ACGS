@@ -71,9 +71,7 @@ class TestHITLSamplingAPI:
                 mock_db = AsyncMock(spec=AsyncSession)
                 mock_get_db.return_value = mock_db
 
-                with patch(
-                    "app.api.hitl_sampling.hitl_sampler.assess_uncertainty"
-                ) as mock_assess:
+                with patch("app.api.hitl_sampling.hitl_sampler.assess_uncertainty") as mock_assess:
                     # Mock assessment result
                     from datetime import datetime
 
@@ -107,9 +105,7 @@ class TestHITLSamplingAPI:
                     )
                     mock_assess.return_value = mock_assessment
 
-                    response = client.post(
-                        "/api/v1/hitl-sampling/assess", json=sample_hitl_request
-                    )
+                    response = client.post("/api/v1/hitl-sampling/assess", json=sample_hitl_request)
 
                     assert response.status_code == 200
                     data = response.json()
@@ -118,9 +114,7 @@ class TestHITLSamplingAPI:
                     assert data["overall_uncertainty"] == 0.78
                     assert data["confidence_score"] == 0.72
                     assert data["requires_human_oversight"] is True
-                    assert (
-                        data["recommended_oversight_level"] == "constitutional_council"
-                    )
+                    assert data["recommended_oversight_level"] == "constitutional_council"
                     assert "high_uncertainty" in data["triggers_activated"]
                     assert "stakeholder_conflict" in data["triggers_activated"]
                     assert "safety_critical" in data["triggers_activated"]
@@ -145,9 +139,7 @@ class TestHITLSamplingAPI:
                 mock_db = AsyncMock(spec=AsyncSession)
                 mock_get_db.return_value = mock_db
 
-                with patch(
-                    "app.api.hitl_sampling.hitl_sampler.assess_uncertainty"
-                ) as mock_assess:
+                with patch("app.api.hitl_sampling.hitl_sampler.assess_uncertainty") as mock_assess:
                     with patch(
                         "app.api.hitl_sampling.hitl_sampler.trigger_human_oversight"
                     ) as mock_trigger:
@@ -223,9 +215,7 @@ class TestHITLSamplingAPI:
                 ) as mock_process:
                     mock_process.return_value = True
 
-                    response = client.post(
-                        "/api/v1/hitl-sampling/feedback", json=feedback_request
-                    )
+                    response = client.post("/api/v1/hitl-sampling/feedback", json=feedback_request)
 
                     assert response.status_code == 200
                     data = response.json()
@@ -360,14 +350,10 @@ class TestHITLSamplingAPI:
                 mock_db = AsyncMock(spec=AsyncSession)
                 mock_get_db.return_value = mock_db
 
-                with patch(
-                    "app.api.hitl_sampling.hitl_sampler.assess_uncertainty"
-                ) as mock_assess:
+                with patch("app.api.hitl_sampling.hitl_sampler.assess_uncertainty") as mock_assess:
                     mock_assess.side_effect = Exception("Assessment failed")
 
-                    response = client.post(
-                        "/api/v1/hitl-sampling/assess", json=sample_hitl_request
-                    )
+                    response = client.post("/api/v1/hitl-sampling/assess", json=sample_hitl_request)
 
                     assert response.status_code == 500
                     assert "Assessment failed" in response.json()["detail"]
@@ -416,9 +402,7 @@ class TestHITLIntegrationWorkflow:
                 mock_db = AsyncMock(spec=AsyncSession)
                 mock_get_db.return_value = mock_db
 
-                with patch(
-                    "app.api.hitl_sampling.hitl_sampler.assess_uncertainty"
-                ) as mock_assess:
+                with patch("app.api.hitl_sampling.hitl_sampler.assess_uncertainty") as mock_assess:
                     # Mock high uncertainty assessment
                     from datetime import datetime
 
@@ -442,9 +426,7 @@ class TestHITLIntegrationWorkflow:
                     mock_assess.return_value = mock_assessment
 
                     # Step 1: Assessment
-                    response = client.post(
-                        "/api/v1/hitl-sampling/assess", json=assessment_request
-                    )
+                    response = client.post("/api/v1/hitl-sampling/assess", json=assessment_request)
                     assert response.status_code == 200
                     assessment_data = response.json()
                     assert assessment_data["requires_human_oversight"] is True
@@ -466,9 +448,7 @@ class TestHITLIntegrationWorkflow:
                         assert oversight_data["oversight_triggered"] is True
 
                         # Step 3: Submit feedback
-                        with patch(
-                            "app.api.hitl_sampling.require_roles"
-                        ) as mock_require_roles:
+                        with patch("app.api.hitl_sampling.require_roles") as mock_require_roles:
                             mock_require_roles.return_value = lambda: mock_admin_user
 
                             with patch(
@@ -512,9 +492,7 @@ class TestHITLIntegrationWorkflow:
                                         "threshold_adjustments_count": 0,
                                     }
 
-                                    response = client.get(
-                                        "/api/v1/hitl-sampling/metrics"
-                                    )
+                                    response = client.get("/api/v1/hitl-sampling/metrics")
                                     assert response.status_code == 200
                                     metrics_data = response.json()
                                     assert metrics_data["total_assessments"] == 1

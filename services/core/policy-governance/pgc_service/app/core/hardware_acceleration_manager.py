@@ -194,9 +194,7 @@ class HardwareAccelerationManager:
         for edge_id, capability in edge_capabilities.items():
             self.available_hardware[edge_id] = capability
 
-        logger.info(
-            f"Detected {len(self.available_hardware)} hardware acceleration devices"
-        )
+        logger.info(f"Detected {len(self.available_hardware)} hardware acceleration devices")
 
     def _detect_cpu_capabilities(self) -> HardwareCapability:
         """Detect CPU capabilities."""
@@ -338,9 +336,7 @@ class HardwareAccelerationManager:
         profile_id = str(uuid.uuid4())
 
         # Determine acceleration types based on hardware and optimization level
-        acceleration_types = self._determine_acceleration_types(
-            target_hardware, optimization_level
-        )
+        acceleration_types = self._determine_acceleration_types(target_hardware, optimization_level)
 
         # Set hardware-specific defaults
         if target_hardware == HardwareType.GPU_NVIDIA:
@@ -379,9 +375,7 @@ class HardwareAccelerationManager:
         self.metrics.increment("acceleration_profiles_created")
         self.metrics.record_value("profile_batch_size", batch_size)
 
-        logger.info(
-            f"Created acceleration profile {profile_id} for {target_hardware.value}"
-        )
+        logger.info(f"Created acceleration profile {profile_id} for {target_hardware.value}")
 
         return profile
 
@@ -481,9 +475,7 @@ class HardwareAccelerationManager:
             self.performance_history = self.performance_history[-1000:]
 
         # Record metrics
-        self.metrics.record_timing(
-            "accelerated_policy_evaluation_duration", evaluation_time / 1000
-        )
+        self.metrics.record_timing("accelerated_policy_evaluation_duration", evaluation_time / 1000)
         self.metrics.record_value(
             "acceleration_target_achievement",
             1.0 if evaluation_time <= target_latency_ms else 0.0,
@@ -497,17 +489,13 @@ class HardwareAccelerationManager:
                     "hardware_type": profile.target_hardware.value,
                     "evaluation_time_ms": evaluation_time,
                     "target_met": evaluation_time <= target_latency_ms,
-                    "acceleration_types": [
-                        at.value for at in profile.acceleration_types
-                    ],
+                    "acceleration_types": [at.value for at in profile.acceleration_types],
                     "precision": profile.precision,
                 }
             }
         )
 
-        logger.debug(
-            f"Accelerated policy evaluation completed in {evaluation_time:.2f}ms"
-        )
+        logger.debug(f"Accelerated policy evaluation completed in {evaluation_time:.2f}ms")
 
         return result
 
@@ -686,13 +674,9 @@ class HardwareAccelerationManager:
         # Record metrics
         self.metrics.increment("edge_deployments_created")
         self.metrics.record_value("edge_model_size_mb", config["model_size_mb"])
-        self.metrics.record_value(
-            "edge_inference_latency_ms", config["inference_latency_ms"]
-        )
+        self.metrics.record_value("edge_inference_latency_ms", config["inference_latency_ms"])
 
-        logger.info(
-            f"Created edge deployment {deployment_id} for {target_device.value}"
-        )
+        logger.info(f"Created edge deployment {deployment_id} for {target_device.value}")
 
         return edge_deployment
 
@@ -761,9 +745,7 @@ class HardwareAccelerationManager:
             if capability.hardware_type == HardwareType.CPU:
                 capability.utilization_percent = psutil.cpu_percent(interval=0.1)
                 capability.temperature_celsius = 0.0  # Would need sensors
-            elif (
-                capability.hardware_type == HardwareType.GPU_NVIDIA and TORCH_AVAILABLE
-            ):
+            elif capability.hardware_type == HardwareType.GPU_NVIDIA and TORCH_AVAILABLE:
                 try:
                     # Would use nvidia-ml-py for real GPU monitoring
                     capability.utilization_percent = np.random.uniform(20, 80)
@@ -775,9 +757,7 @@ class HardwareAccelerationManager:
             # Store utilization history
             self.hardware_utilization[device_id].append(capability.utilization_percent)
             if len(self.hardware_utilization[device_id]) > 100:
-                self.hardware_utilization[device_id] = self.hardware_utilization[
-                    device_id
-                ][-100:]
+                self.hardware_utilization[device_id] = self.hardware_utilization[device_id][-100:]
 
             performance_data[device_id] = {
                 "hardware_type": capability.hardware_type.value,
@@ -793,9 +773,7 @@ class HardwareAccelerationManager:
             "timestamp": datetime.now(UTC).isoformat(),
             "hardware_performance": performance_data,
             "total_devices": len(self.available_hardware),
-            "active_devices": len(
-                [h for h in self.available_hardware.values() if h.available]
-            ),
+            "active_devices": len([h for h in self.available_hardware.values() if h.available]),
             "average_utilization": np.mean(
                 [h.utilization_percent for h in self.available_hardware.values()]
             ),
@@ -834,9 +812,7 @@ class HardwareAccelerationManager:
         # Acceleration effectiveness by hardware type
         hardware_performance = defaultdict(list)
         for perf in recent_performance:
-            hardware_performance[perf["hardware_type"]].append(
-                perf["evaluation_time_ms"]
-            )
+            hardware_performance[perf["hardware_type"]].append(perf["evaluation_time_ms"])
 
         hardware_effectiveness = {}
         for hw_type, latencies in hardware_performance.items():

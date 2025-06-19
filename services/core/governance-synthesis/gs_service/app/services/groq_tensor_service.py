@@ -179,9 +179,7 @@ class GroqTensorService:
             self._update_metrics(latency_ms, success=True)
             self._reset_circuit_breaker()
 
-            logger.info(
-                f"Generated {decomposition_type.value} decomposition in {latency_ms:.2f}ms"
-            )
+            logger.info(f"Generated {decomposition_type.value} decomposition in {latency_ms:.2f}ms")
             return result
 
         except Exception as e:
@@ -241,9 +239,7 @@ class GroqTensorService:
         decomposition_type: TensorDecompositionType,
     ) -> dict[str, Any]:
         """Generate tensor decomposition algorithm using Groq LLM."""
-        prompt = self._create_algorithm_prompt(
-            matrix_analysis, constraints, decomposition_type
-        )
+        prompt = self._create_algorithm_prompt(matrix_analysis, constraints, decomposition_type)
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -267,13 +263,9 @@ class GroqTensorService:
         async with aiohttp.ClientSession(
             timeout=aiohttp.ClientTimeout(total=self.timeout_seconds)
         ) as session:
-            async with session.post(
-                self.base_url, headers=headers, json=payload
-            ) as response:
+            async with session.post(self.base_url, headers=headers, json=payload) as response:
                 if response.status != 200:
-                    raise Exception(
-                        f"Groq API error: {response.status} - {await response.text()}"
-                    )
+                    raise Exception(f"Groq API error: {response.status} - {await response.text()}")
 
                 result = await response.json()
                 return self._parse_algorithm_response(result)
@@ -335,14 +327,10 @@ class GroqTensorService:
                 return {
                     "code": algorithm_data.get("code", ""),
                     "parameters": algorithm_data.get("parameters", {}),
-                    "accuracy_estimate": float(
-                        algorithm_data.get("accuracy_estimate", 0.95)
-                    ),
+                    "accuracy_estimate": float(algorithm_data.get("accuracy_estimate", 0.95)),
                     "complexity": algorithm_data.get("complexity", "O(n^3)"),
                     "error_bounds": algorithm_data.get("error_bounds"),
-                    "compliance_notes": algorithm_data.get(
-                        "constitutional_compliance_notes", ""
-                    ),
+                    "compliance_notes": algorithm_data.get("constitutional_compliance_notes", ""),
                 }
             else:
                 raise ValueError("Could not parse JSON from response")
@@ -358,10 +346,8 @@ class GroqTensorService:
         """Validate algorithm compliance with constitutional governance requirements."""
         compliance_checks = {
             "accuracy_sufficient": algorithm_result["accuracy_estimate"] >= 0.95,
-            "constitutional_hash_valid": constraints.constitutional_hash
-            == "cdd01ef066bc6cf2",
-            "code_quality": len(algorithm_result["code"])
-            > 100,  # Basic code quality check
+            "constitutional_hash_valid": constraints.constitutional_hash == "cdd01ef066bc6cf2",
+            "code_quality": len(algorithm_result["code"]) > 100,  # Basic code quality check
             "parameters_valid": isinstance(algorithm_result["parameters"], dict),
         }
 
@@ -370,8 +356,7 @@ class GroqTensorService:
         return {
             "compliant": overall_compliant,
             "checks": compliance_checks,
-            "compliance_score": sum(compliance_checks.values())
-            / len(compliance_checks),
+            "compliance_score": sum(compliance_checks.values()) / len(compliance_checks),
         }
 
     async def _fallback_local_decomposition(

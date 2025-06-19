@@ -108,15 +108,11 @@ class WorkflowResponse(BaseModel):
     progress_percentage: float = Field(..., description="Completion percentage")
     completed_steps: int = Field(..., description="Number of completed steps")
     total_steps: int = Field(..., description="Total number of steps")
-    current_step: dict[str, Any] | None = Field(
-        None, description="Current step information"
-    )
+    current_step: dict[str, Any] | None = Field(None, description="Current step information")
     created_at: str = Field(..., description="Creation timestamp")
     started_at: str | None = Field(None, description="Start timestamp")
     completed_at: str | None = Field(None, description="Completion timestamp")
-    total_execution_time_ms: float = Field(
-        ..., description="Total execution time in milliseconds"
-    )
+    total_execution_time_ms: float = Field(..., description="Total execution time in milliseconds")
     created_by: str = Field(..., description="User who created the workflow")
     priority: str = Field(..., description="Workflow priority")
 
@@ -137,9 +133,7 @@ class WorkflowMetricsResponse(BaseModel):
         ..., description="Performance metrics by workflow type"
     )
     active_workflows: int = Field(..., description="Number of active workflows")
-    service_endpoints: int = Field(
-        ..., description="Number of configured service endpoints"
-    )
+    service_endpoints: int = Field(..., description="Number of configured service endpoints")
     workflow_templates: int = Field(..., description="Number of workflow templates")
     timestamp: str = Field(..., description="Metrics timestamp")
 
@@ -183,9 +177,7 @@ async def create_workflow(
                     correlation_id=correlation_id,
                 )
             else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+                raise HTTPException(status_code=503, detail="Workflow orchestrator not available")
 
         # Convert string workflow type to enum
         try:
@@ -237,9 +229,7 @@ async def create_workflow(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            f"Workflow creation failed: {e}", extra={"correlation_id": correlation_id}
-        )
+        logger.error(f"Workflow creation failed: {e}", extra={"correlation_id": correlation_id})
 
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
@@ -287,9 +277,7 @@ async def list_workflows(
                     correlation_id=correlation_id,
                 )
             else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+                raise HTTPException(status_code=503, detail="Workflow orchestrator not available")
 
         # Convert string filters to enums
         status_filter = None
@@ -297,9 +285,7 @@ async def list_workflows(
             try:
                 status_filter = WorkflowStatus(status)
             except ValueError:
-                raise HTTPException(
-                    status_code=400, detail=f"Invalid status filter: {status}"
-                )
+                raise HTTPException(status_code=400, detail=f"Invalid status filter: {status}")
 
         workflow_type_filter = None
         if workflow_type:
@@ -349,9 +335,7 @@ async def list_workflows(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            f"Workflow listing failed: {e}", extra={"correlation_id": correlation_id}
-        )
+        logger.error(f"Workflow listing failed: {e}", extra={"correlation_id": correlation_id})
 
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
@@ -383,16 +367,12 @@ async def get_workflow_status(workflow_id: str, http_request: Request):
                     correlation_id=correlation_id,
                 )
             else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+                raise HTTPException(status_code=503, detail="Workflow orchestrator not available")
 
         workflow_status = await orchestrator.get_workflow_status(workflow_id)
 
         if not workflow_status:
-            raise HTTPException(
-                status_code=404, detail=f"Workflow {workflow_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found")
 
         response_data = WorkflowResponse(**workflow_status)
 
@@ -408,9 +388,7 @@ async def get_workflow_status(workflow_id: str, http_request: Request):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            f"Get workflow status failed: {e}", extra={"correlation_id": correlation_id}
-        )
+        logger.error(f"Get workflow status failed: {e}", extra={"correlation_id": correlation_id})
 
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
@@ -442,16 +420,12 @@ async def start_workflow(workflow_id: str, http_request: Request):
                     correlation_id=correlation_id,
                 )
             else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+                raise HTTPException(status_code=503, detail="Workflow orchestrator not available")
 
         success = await orchestrator.start_workflow(workflow_id)
 
         if not success:
-            raise HTTPException(
-                status_code=400, detail=f"Failed to start workflow {workflow_id}"
-            )
+            raise HTTPException(status_code=400, detail=f"Failed to start workflow {workflow_id}")
 
         response_data = {
             "workflow_id": workflow_id,
@@ -472,9 +446,7 @@ async def start_workflow(workflow_id: str, http_request: Request):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            f"Start workflow failed: {e}", extra={"correlation_id": correlation_id}
-        )
+        logger.error(f"Start workflow failed: {e}", extra={"correlation_id": correlation_id})
 
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
@@ -506,16 +478,12 @@ async def cancel_workflow(workflow_id: str, http_request: Request):
                     correlation_id=correlation_id,
                 )
             else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+                raise HTTPException(status_code=503, detail="Workflow orchestrator not available")
 
         success = await orchestrator.cancel_workflow(workflow_id)
 
         if not success:
-            raise HTTPException(
-                status_code=400, detail=f"Failed to cancel workflow {workflow_id}"
-            )
+            raise HTTPException(status_code=400, detail=f"Failed to cancel workflow {workflow_id}")
 
         response_data = {
             "workflow_id": workflow_id,
@@ -536,9 +504,7 @@ async def cancel_workflow(workflow_id: str, http_request: Request):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            f"Cancel workflow failed: {e}", extra={"correlation_id": correlation_id}
-        )
+        logger.error(f"Cancel workflow failed: {e}", extra={"correlation_id": correlation_id})
 
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
@@ -654,9 +620,7 @@ async def get_workflow_metrics(http_request: Request):
                     correlation_id=correlation_id,
                 )
             else:
-                raise HTTPException(
-                    status_code=503, detail="Workflow orchestrator not available"
-                )
+                raise HTTPException(status_code=503, detail="Workflow orchestrator not available")
 
         metrics = await orchestrator.get_performance_metrics()
 

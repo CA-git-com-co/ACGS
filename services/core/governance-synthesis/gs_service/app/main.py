@@ -73,9 +73,7 @@ try:
 except ImportError as e:
     SHARED_COMPONENTS_AVAILABLE = False
     logger_shared = logging.getLogger("shared_components")
-    logger_shared.warning(
-        f"Shared components not available: {e}. Using fallback implementations."
-    )
+    logger_shared.warning(f"Shared components not available: {e}. Using fallback implementations.")
 
 # Configure enhanced logging for Phase A3 production
 logging.basicConfig(
@@ -141,9 +139,7 @@ try:
     from .workflows.policy_synthesis_workflow import PolicySynthesisWorkflow
 
     ROUTERS_AVAILABLE = True
-    logger.info(
-        "All API routers and services imported successfully (including Phase A3)"
-    )
+    logger.info("All API routers and services imported successfully (including Phase A3)")
 except ImportError as e:
     logger.warning(f"Some routers not available: {e}. Running in minimal mode.")
     phase_a3_synthesis_router = None
@@ -243,16 +239,16 @@ app = FastAPI(
 async def add_security_headers(request, call_next):
     """Add comprehensive OWASP-recommended security headers."""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    
+
     # HSTS (HTTP Strict Transport Security)
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-    
+
     # Content Security Policy (CSP) - Enhanced for XSS protection
     csp_policy = (
         "default-src 'self'; "
@@ -266,24 +262,24 @@ async def add_security_headers(request, call_next):
         "form-action 'self'"
     )
     response.headers["Content-Security-Policy"] = csp_policy
-    
+
     # Permissions Policy
     permissions_policy = (
         "geolocation=(), microphone=(), camera=(), "
         "payment=(), usb=(), magnetometer=(), gyroscope=()"
     )
     response.headers["Permissions-Policy"] = permissions_policy
-    
+
     # Additional security headers
     response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
     response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
-    
+
     # ACGS-1 specific headers
     response.headers["X-ACGS-Security"] = "enabled"
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-    
+
     return response
 
 
@@ -319,9 +315,7 @@ else:
 if SECURITY_MIDDLEWARE_AVAILABLE:
     try:
         app.add_middleware(SecurityHeadersMiddleware)
-        app.add_middleware(
-            RateLimitingMiddleware, requests_per_minute=120, burst_limit=20
-        )
+        app.add_middleware(RateLimitingMiddleware, requests_per_minute=120, burst_limit=20)
         app.add_middleware(InputValidationMiddleware)
         print("✅ Enhanced security middleware applied")
     except NameError as e:
@@ -381,9 +375,7 @@ try:
         endpoint_func = create_enhanced_metrics_endpoint(SERVICE_NAME)
         return await endpoint_func()
 
-    logger.info(
-        "✅ Enhanced Prometheus metrics enabled for Governance Synthesis Service"
-    )
+    logger.info("✅ Enhanced Prometheus metrics enabled for Governance Synthesis Service")
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
 
@@ -503,16 +495,12 @@ async def health_check(request: Request):
         "uptime_seconds": uptime_seconds,
         "dependencies": {
             "enhanced_synthesis": (
-                "operational"
-                if enhanced_synthesis_service is not None
-                else "unavailable"
+                "operational" if enhanced_synthesis_service is not None else "unavailable"
             ),
             "multi_model_coordinator": (
                 "operational" if multi_model_coordinator is not None else "unavailable"
             ),
-            "policy_workflow": (
-                "operational" if policy_workflow is not None else "unavailable"
-            ),
+            "policy_workflow": ("operational" if policy_workflow is not None else "unavailable"),
             "shared_components": (
                 "operational" if SHARED_COMPONENTS_AVAILABLE else "fallback_mode"
             ),
@@ -526,8 +514,7 @@ async def health_check(request: Request):
         "synthesis_capabilities": {
             "standard_synthesis": True,
             "enhanced_validation": ROUTERS_AVAILABLE,
-            "multi_model_consensus": ROUTERS_AVAILABLE
-            and multi_model_coordinator is not None,
+            "multi_model_consensus": ROUTERS_AVAILABLE and multi_model_coordinator is not None,
             "human_review_integration": ROUTERS_AVAILABLE,
             "proactive_error_prediction": ROUTERS_AVAILABLE,
         },
@@ -661,9 +648,7 @@ async def validate_content(request_data: dict):
             "poison",
         ]
 
-        threats_detected = [
-            pattern for pattern in threat_patterns if pattern in content.lower()
-        ]
+        threats_detected = [pattern for pattern in threat_patterns if pattern in content.lower()]
 
         # Constitutional compliance check
         constitutional_violations = []
@@ -722,9 +707,7 @@ async def performance_metrics():
     ):
         try:
             # Get performance metrics from enhanced synthesis service
-            synthesis_metrics = (
-                await enhanced_synthesis_service.get_performance_metrics()
-            )
+            synthesis_metrics = await enhanced_synthesis_service.get_performance_metrics()
             metrics["synthesis_performance"] = synthesis_metrics
         except Exception as e:
             logger.warning(f"Failed to get synthesis metrics: {e}")
@@ -844,7 +827,5 @@ if __name__ == "__main__":
         "lifespan": "on",
     }
 
-    logger.info(
-        f"🚀 Starting ACGS-1 Phase 3 Production GS Service on port {config['port']}"
-    )
+    logger.info(f"🚀 Starting ACGS-1 Phase 3 Production GS Service on port {config['port']}")
     uvicorn.run(app, **config)

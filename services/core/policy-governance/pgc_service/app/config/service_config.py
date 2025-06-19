@@ -146,11 +146,7 @@ class ServiceConfig:
             source: Source dictionary to merge from
         """
         for key, value in source.items():
-            if (
-                key in target
-                and isinstance(target[key], dict)
-                and isinstance(value, dict)
-            ):
+            if key in target and isinstance(target[key], dict) and isinstance(value, dict):
                 self._deep_merge(target[key], value)
             else:
                 target[key] = value
@@ -194,8 +190,6 @@ def get_service_config() -> ServiceConfig:
     """
     global _service_config
     if _service_config is None:
-        config_path = os.environ.get(
-            "PGC_CONFIG_PATH", "/app/config/service_config.yaml"
-        )
+        config_path = os.environ.get("PGC_CONFIG_PATH", "/app/config/service_config.yaml")
         _service_config = ServiceConfig(config_path)
     return _service_config

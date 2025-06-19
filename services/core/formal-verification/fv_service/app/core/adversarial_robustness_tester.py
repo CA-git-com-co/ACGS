@@ -170,9 +170,7 @@ class BoundaryConditionTester:
                             test_case_id=test_case_id,
                             input_description=f"Testing boundary value {boundary_val} for number {num} in rule {rule.id}",
                             expected_behavior="Rule should handle boundary values gracefully",
-                            actual_behavior=(
-                                "Passed" if passed else "Failed boundary test"
-                            ),
+                            actual_behavior=("Passed" if passed else "Failed boundary test"),
                             passed=passed,
                             vulnerability_level=vulnerability_level,
                             vulnerability_score=0.0 if passed else 0.7,
@@ -221,9 +219,7 @@ class BoundaryConditionTester:
                     test_case_id=test_case_id,
                     input_description=f"Testing string boundary with length {len(test_string)}",
                     expected_behavior="Rule should handle various string lengths",
-                    actual_behavior=(
-                        "Passed" if passed else "Failed string boundary test"
-                    ),
+                    actual_behavior=("Passed" if passed else "Failed string boundary test"),
                     passed=passed,
                     vulnerability_level=vulnerability_level,
                     vulnerability_score=0.0 if passed else 0.5,
@@ -253,16 +249,11 @@ class BoundaryConditionTester:
         ]
 
         for i, (positive, negative) in enumerate(logical_tests):
-            if (
-                positive in rule.rule_content.lower()
-                or negative in rule.rule_content.lower()
-            ):
+            if positive in rule.rule_content.lower() or negative in rule.rule_content.lower():
                 test_case_id = f"boundary_logic_{rule_index}_{i}"
 
                 # Simulate logical boundary test
-                passed = await self._simulate_logical_boundary_test(
-                    rule, positive, negative
-                )
+                passed = await self._simulate_logical_boundary_test(rule, positive, negative)
 
                 results.append(
                     AdversarialTestResult(
@@ -270,14 +261,10 @@ class BoundaryConditionTester:
                         test_case_id=test_case_id,
                         input_description=f"Testing logical boundary between {positive} and {negative}",
                         expected_behavior="Rule should handle logical state transitions",
-                        actual_behavior=(
-                            "Passed" if passed else "Failed logical boundary test"
-                        ),
+                        actual_behavior=("Passed" if passed else "Failed logical boundary test"),
                         passed=passed,
                         vulnerability_level=(
-                            VulnerabilityLevel.MEDIUM
-                            if not passed
-                            else VulnerabilityLevel.LOW
+                            VulnerabilityLevel.MEDIUM if not passed else VulnerabilityLevel.LOW
                         ),
                         vulnerability_score=0.0 if passed else 0.6,
                         mitigation_suggestions=(
@@ -301,9 +288,7 @@ class BoundaryConditionTester:
             return secure_random.random() > 0.3  # 70% chance of handling infinity correctly
         return secure_random.random() > 0.1  # 90% chance of passing normal boundary tests
 
-    async def _simulate_string_boundary_test(
-        self, rule: PolicyRule, test_string: str
-    ) -> bool:
+    async def _simulate_string_boundary_test(self, rule: PolicyRule, test_string: str) -> bool:
         """Simulate string boundary test."""
         secure_random = secrets.SystemRandom()
         if len(test_string) == 0:
@@ -331,9 +316,7 @@ class MutationTester:
         # sha256: func_hash
         self.config = config
 
-    async def test_mutations(
-        self, policy_rules: list[PolicyRule]
-    ) -> list[AdversarialTestResult]:
+    async def test_mutations(self, policy_rules: list[PolicyRule]) -> list[AdversarialTestResult]:
         """Test policy rules with various mutations."""
         results = []
 
@@ -398,14 +381,10 @@ class MutationTester:
 
         return mutations[:20]  # Limit to 20 mutations per rule
 
-    async def _test_mutation(
-        self, original_rule: PolicyRule, mutated_content: str
-    ) -> bool:
+    async def _test_mutation(self, original_rule: PolicyRule, mutated_content: str) -> bool:
         """Test a specific mutation."""
         # Simplified simulation - in practice would test actual rule execution
-        similarity = self._calculate_similarity(
-            original_rule.rule_content, mutated_content
-        )
+        similarity = self._calculate_similarity(original_rule.rule_content, mutated_content)
         secure_random = secrets.SystemRandom()
 
         # Rules should be robust to small changes
@@ -424,9 +403,7 @@ class MutationTester:
         # Simple character-based similarity
         max_len = max(len(original), len(mutated))
         common_chars = sum(
-            1
-            for i in range(min(len(original), len(mutated)))
-            if original[i] == mutated[i]
+            1 for i in range(min(len(original), len(mutated))) if original[i] == mutated[i]
         )
 
         return common_chars / max_len
@@ -488,15 +465,11 @@ class AdversarialRobustnessTester:
         report = self._generate_robustness_report(all_results)
 
         execution_time = time.time() - start_time
-        logger.info(
-            f"Adversarial robustness testing completed in {execution_time:.2f}s"
-        )
+        logger.info(f"Adversarial robustness testing completed in {execution_time:.2f}s")
 
         return report
 
-    def _generate_robustness_report(
-        self, results: list[AdversarialTestResult]
-    ) -> RobustnessReport:
+    def _generate_robustness_report(self, results: list[AdversarialTestResult]) -> RobustnessReport:
         """Generate comprehensive robustness report."""
         total_tests = len(results)
         passed_tests = sum(1 for r in results if r.passed)
@@ -538,9 +511,7 @@ class AdversarialRobustnessTester:
             test_coverage[test_type] = len(type_results) / max(1, total_tests)
 
         # Generate recommendations
-        recommendations = self._generate_recommendations(
-            results, vulnerability_distribution
-        )
+        recommendations = self._generate_recommendations(results, vulnerability_distribution)
 
         return RobustnessReport(
             total_tests=total_tests,
@@ -562,19 +533,13 @@ class AdversarialRobustnessTester:
         recommendations = []
 
         if vulnerability_distribution[VulnerabilityLevel.CRITICAL] > 0:
-            recommendations.append(
-                "URGENT: Address critical vulnerabilities immediately"
-            )
+            recommendations.append("URGENT: Address critical vulnerabilities immediately")
 
         if vulnerability_distribution[VulnerabilityLevel.HIGH] > 0:
-            recommendations.append(
-                "Implement additional input validation and boundary checks"
-            )
+            recommendations.append("Implement additional input validation and boundary checks")
 
         if vulnerability_distribution[VulnerabilityLevel.MEDIUM] > 5:
-            recommendations.append(
-                "Review rule robustness and add defensive programming practices"
-            )
+            recommendations.append("Review rule robustness and add defensive programming practices")
 
         # Specific recommendations based on test types
         boundary_failures = [
@@ -583,19 +548,13 @@ class AdversarialRobustnessTester:
             if r.test_type == AdversarialTestType.BOUNDARY_CONDITION and not r.passed
         ]
         if len(boundary_failures) > 10:
-            recommendations.append(
-                "Strengthen boundary condition handling in policy rules"
-            )
+            recommendations.append("Strengthen boundary condition handling in policy rules")
 
         mutation_failures = [
-            r
-            for r in results
-            if r.test_type == AdversarialTestType.MUTATION_TEST and not r.passed
+            r for r in results if r.test_type == AdversarialTestType.MUTATION_TEST and not r.passed
         ]
         if len(mutation_failures) > 5:
-            recommendations.append(
-                "Improve rule stability and resistance to minor modifications"
-            )
+            recommendations.append("Improve rule stability and resistance to minor modifications")
 
         if not recommendations:
             recommendations.append(

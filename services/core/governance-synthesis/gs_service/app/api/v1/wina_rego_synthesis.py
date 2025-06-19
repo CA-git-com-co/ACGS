@@ -34,9 +34,7 @@ class ConstitutionalPrincipleModel(BaseModel):
     """Constitutional principle model for API requests."""
 
     id: str | None = None
-    description: str = Field(
-        ..., description="Description of the constitutional principle"
-    )
+    description: str = Field(..., description="Description of the constitutional principle")
     type: str | None = Field(default="governance_rule", description="Type of principle")
     priority: float | None = Field(default=1.0, description="Priority weight")
     scope: str | None = Field(default="general", description="Scope of application")
@@ -45,9 +43,7 @@ class ConstitutionalPrincipleModel(BaseModel):
 class WINARegoSynthesisRequest(BaseModel):
     """Request model for WINA Rego policy synthesis."""
 
-    synthesis_goal: str = Field(
-        ..., description="Natural language description of policy goal"
-    )
+    synthesis_goal: str = Field(..., description="Natural language description of policy goal")
     constitutional_principles: list[ConstitutionalPrincipleModel] = Field(
         default=[], description="Constitutional principles to incorporate"
     )
@@ -94,9 +90,7 @@ class BatchWINARegoSynthesisRequest(BaseModel):
     synthesis_requests: list[WINARegoSynthesisRequest] = Field(
         ..., description="List of synthesis requests"
     )
-    enable_wina: bool = Field(
-        default=True, description="Enable WINA optimization for batch"
-    )
+    enable_wina: bool = Field(default=True, description="Enable WINA optimization for batch")
 
 
 class PerformanceSummaryResponse(BaseModel):
@@ -124,9 +118,7 @@ async def synthesize_rego_policy(request: WINARegoSynthesisRequest):
         WINARegoSynthesisResponse with synthesis results and metrics
     """
     try:
-        logger.info(
-            f"Starting WINA Rego synthesis for goal: '{request.synthesis_goal}'"
-        )
+        logger.info(f"Starting WINA Rego synthesis for goal: '{request.synthesis_goal}'")
 
         # Convert Pydantic models to dictionaries
         constitutional_principles = [
@@ -348,9 +340,7 @@ async def health_check():
             "service": "WINA Rego Synthesis",
             "wina_enabled": summary["wina_enabled"],
             "total_syntheses": summary["performance_metrics"]["total_syntheses"],
-            "wina_optimized_syntheses": summary["performance_metrics"][
-                "wina_optimized_syntheses"
-            ],
+            "wina_optimized_syntheses": summary["performance_metrics"]["wina_optimized_syntheses"],
         }
 
     except Exception as e:

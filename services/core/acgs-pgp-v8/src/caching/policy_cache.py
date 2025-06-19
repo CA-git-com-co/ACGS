@@ -102,9 +102,7 @@ class PolicyGenerationCache:
             # Validate constitutional hash
             cached_hash = cached_data.get("constitutional_hash")
             if cached_hash != self.cache_manager.constitutional_hash:
-                logger.warning(
-                    f"Constitutional hash mismatch for cached policy {generation_id}"
-                )
+                logger.warning(f"Constitutional hash mismatch for cached policy {generation_id}")
                 await self.invalidate_policy_generation(generation_id)
                 return None
 
@@ -150,9 +148,7 @@ class PolicyGenerationCache:
 
         return success
 
-    async def get_constitutional_validation(
-        self, policy_content: str
-    ) -> dict[str, Any] | None:
+    async def get_constitutional_validation(self, policy_content: str) -> dict[str, Any] | None:
         """
         Retrieve cached constitutional validation result.
 
@@ -171,15 +167,11 @@ class PolicyGenerationCache:
             # Validate constitutional hash
             cached_hash = cached_data.get("constitutional_hash")
             if cached_hash != self.cache_manager.constitutional_hash:
-                logger.warning(
-                    f"Constitutional hash mismatch for cached validation {content_hash}"
-                )
+                logger.warning(f"Constitutional hash mismatch for cached validation {content_hash}")
                 await self.cache_manager.delete(cache_key, prefix=self.cache_prefix)
                 return None
 
-            logger.info(
-                f"✅ Retrieved cached constitutional validation: {content_hash}"
-            )
+            logger.info(f"✅ Retrieved cached constitutional validation: {content_hash}")
             return cached_data
 
         return None
@@ -260,9 +252,7 @@ class PolicyGenerationCache:
         """
         # Search for exact semantic hash match
         semantic_key = f"semantic:{semantic_hash}"
-        exact_match = await self.cache_manager.get(
-            semantic_key, prefix=self.cache_prefix
-        )
+        exact_match = await self.cache_manager.get(semantic_key, prefix=self.cache_prefix)
 
         if exact_match:
             return [exact_match["generation_id"]]

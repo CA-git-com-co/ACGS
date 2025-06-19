@@ -79,9 +79,7 @@ class SyndromeDiagnosticEngine:
         try:
             if self.enable_ml_models and SKLEARN_AVAILABLE:
                 # Initialize anomaly detection model
-                self.anomaly_detector = IsolationForest(
-                    contamination=0.1, random_state=42
-                )
+                self.anomaly_detector = IsolationForest(contamination=0.1, random_state=42)
 
                 # Initialize text vectorizer for error message analysis
                 self.text_vectorizer = TfidfVectorizer(
@@ -148,9 +146,7 @@ class SyndromeDiagnosticEngine:
 
             # Generate recovery recommendations if requested
             if include_recommendations and result.errors_detected:
-                recommendations = await self._generate_recommendations(
-                    result.errors_detected
-                )
+                recommendations = await self._generate_recommendations(result.errors_detected)
                 for recommendation in recommendations:
                     result.add_recommendation(recommendation)
 
@@ -170,9 +166,7 @@ class SyndromeDiagnosticEngine:
             # Update average metrics
             self._update_average_metrics(result)
 
-            result.audit_trail.append(
-                f"Diagnosis completed in {diagnostic_duration:.2f}ms"
-            )
+            result.audit_trail.append(f"Diagnosis completed in {diagnostic_duration:.2f}ms")
             logger.info(f"System diagnosis completed: {diagnostic_id}")
 
             return result
@@ -219,9 +213,7 @@ class SyndromeDiagnosticEngine:
         category = self._determine_error_category(error_message, error_context)
 
         # Check for constitutional impact
-        constitutional_impact = self._check_constitutional_impact(
-            error_message, error_context
-        )
+        constitutional_impact = self._check_constitutional_impact(error_message, error_context)
 
         # Calculate confidence score
         confidence_score = self._calculate_classification_confidence(
@@ -469,9 +461,7 @@ class SyndromeDiagnosticEngine:
                 health_data["errors"].append(
                     {
                         "message": "Response time exceeded threshold",
-                        "context": {
-                            "response_time": health_data["metrics"]["response_time_ms"]
-                        },
+                        "context": {"response_time": health_data["metrics"]["response_time_ms"]},
                     }
                 )
 
@@ -551,9 +541,7 @@ class SyndromeDiagnosticEngine:
             success_probability=success_probability,
             estimated_recovery_time_minutes=recovery_time,
             constitutional_compliance=not error.constitutional_impact,
-            risk_level=(
-                ErrorSeverity.LOW if success_probability > 0.8 else ErrorSeverity.MEDIUM
-            ),
+            risk_level=(ErrorSeverity.LOW if success_probability > 0.8 else ErrorSeverity.MEDIUM),
         )
 
     def _update_average_metrics(self, result: DiagnosticResult) -> None:
@@ -575,8 +563,7 @@ class SyndromeDiagnosticEngine:
         # Update average compliance score
         current_avg_compliance = self.metrics.average_compliance_score
         self.metrics.average_compliance_score = (
-            current_avg_compliance * (total - 1)
-            + result.constitutional_compliance_score
+            current_avg_compliance * (total - 1) + result.constitutional_compliance_score
         ) / total
 
         self.metrics.last_updated = datetime.now()
@@ -671,9 +658,7 @@ class SyndromeDiagnosticEngine:
             # Update average metrics
             self._update_average_metrics(result)
 
-            result.audit_trail.append(
-                f"LSU diagnosis completed in {diagnostic_duration:.2f}ms"
-            )
+            result.audit_trail.append(f"LSU diagnosis completed in {diagnostic_duration:.2f}ms")
             logger.info(f"LSU diagnosis completed: {diagnostic_id}")
 
             return result
@@ -683,9 +668,7 @@ class SyndromeDiagnosticEngine:
             raise RuntimeError(f"LSU diagnosis failed: {str(e)}")
 
     async def _analyze_stabilizer_result(
-        self,
-        stabilizer_result: StabilizerResult,
-        lsu: LogicalSemanticUnit
+        self, stabilizer_result: StabilizerResult, lsu: LogicalSemanticUnit
     ) -> list[ErrorClassification]:
         """Analyze a single stabilizer result for errors."""
         errors = []
@@ -779,17 +762,24 @@ class SyndromeDiagnosticEngine:
 
         # Update average diagnostic time
         current_avg = self.metrics.average_diagnostic_time_ms
-        new_avg = ((current_avg * (total_diagnostics - 1)) + result.diagnostic_duration_ms) / total_diagnostics
+        new_avg = (
+            (current_avg * (total_diagnostics - 1)) + result.diagnostic_duration_ms
+        ) / total_diagnostics
         self.metrics.average_diagnostic_time_ms = new_avg
 
         # Update average health score
         current_health_avg = self.metrics.average_health_score
-        new_health_avg = ((current_health_avg * (total_diagnostics - 1)) + result.overall_health_score) / total_diagnostics
+        new_health_avg = (
+            (current_health_avg * (total_diagnostics - 1)) + result.overall_health_score
+        ) / total_diagnostics
         self.metrics.average_health_score = new_health_avg
 
         # Update average compliance score
         current_compliance_avg = self.metrics.average_compliance_score
-        new_compliance_avg = ((current_compliance_avg * (total_diagnostics - 1)) + result.constitutional_compliance_score) / total_diagnostics
+        new_compliance_avg = (
+            (current_compliance_avg * (total_diagnostics - 1))
+            + result.constitutional_compliance_score
+        ) / total_diagnostics
         self.metrics.average_compliance_score = new_compliance_avg
 
         # Update last updated timestamp

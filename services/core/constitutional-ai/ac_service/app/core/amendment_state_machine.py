@@ -114,9 +114,7 @@ class AmendmentStateMachine:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.transitions: dict[
-            AmendmentState, dict[AmendmentEvent, StateTransition]
-        ] = {}
+        self.transitions: dict[AmendmentState, dict[AmendmentEvent, StateTransition]] = {}
         self.event_handlers: dict[AmendmentEvent, list[Callable]] = {}
         self.redis_client = None
         self.metrics = get_metrics("ac_service")
@@ -242,13 +240,9 @@ class AmendmentStateMachine:
         async with db.begin():
             try:
                 # Validate transition
-                validation_result = await self._validate_transition(
-                    current_state, event, context
-                )
+                validation_result = await self._validate_transition(current_state, event, context)
                 if not validation_result["valid"]:
-                    await self._record_failed_transition(
-                        context, validation_result["error"]
-                    )
+                    await self._record_failed_transition(context, validation_result["error"])
                     return validation_result
 
                 transition = self.transitions[current_state][event]
@@ -266,9 +260,7 @@ class AmendmentStateMachine:
                     db, context.amendment_id, transition.to_state, context
                 )
                 if not update_result["success"]:
-                    await self._record_failed_transition(
-                        context, update_result["error"]
-                    )
+                    await self._record_failed_transition(context, update_result["error"])
                     return update_result
 
                 # Execute transition action within transaction
@@ -310,17 +302,13 @@ class AmendmentStateMachine:
 
             except SQLAlchemyError as e:
                 logger.error(f"Database error in state transition: {e}")
-                await self._record_failed_transition(
-                    context, f"Database error: {str(e)}"
-                )
+                await self._record_failed_transition(context, f"Database error: {str(e)}")
                 self.metrics.record_policy_operation("state_transition", "db_error")
                 return {"success": False, "error": f"Database error: {str(e)}"}
 
             except Exception as e:
                 logger.error(f"Unexpected error in state transition: {e}")
-                await self._record_failed_transition(
-                    context, f"Unexpected error: {str(e)}"
-                )
+                await self._record_failed_transition(context, f"Unexpected error: {str(e)}")
                 self.metrics.record_policy_operation("state_transition", "error")
                 return {"success": False, "error": f"State machine error: {str(e)}"}
 
@@ -372,9 +360,7 @@ class AmendmentStateMachine:
             # Get current amendment with version for optimistic locking
             from ..models import ACAmendment
 
-            result = await db.execute(
-                select(ACAmendment).where(ACAmendment.id == amendment_id)
-            )
+            result = await db.execute(select(ACAmendment).where(ACAmendment.id == amendment_id))
             amendment = result.scalar_one_or_none()
 
             if not amendment:
@@ -456,9 +442,7 @@ class AmendmentStateMachine:
                     logger.error(f"Event handler failed for {event.value}: {e}")
                     # Continue with other handlers even if one fails
 
-    async def _record_successful_transition(
-        self, context: WorkflowContext, result: dict[str, Any]
-    ):
+    async def _record_successful_transition(self, context: WorkflowContext, result: dict[str, Any]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -469,12 +453,8 @@ class AmendmentStateMachine:
                 await self.redis_client.increment(metrics_key)
 
                 # Record transition details
-                transition_key = (
-                    f"acgs:transitions:{context.amendment_id}:{context.transaction_id}"
-                )
-                await self.redis_client.set_json(
-                    transition_key, result, ttl=86400
-                )  # 24 hours
+                transition_key = f"acgs:transitions:{context.amendment_id}:{context.transaction_id}"
+                await self.redis_client.set_json(transition_key, result, ttl=86400)  # 24 hours
 
             except Exception as e:
                 logger.error(f"Failed to record successful transition: {e}")
@@ -490,9 +470,7 @@ class AmendmentStateMachine:
                 await self.redis_client.increment(metrics_key)
 
                 # Record failure details
-                failure_key = (
-                    f"acgs:failures:{context.amendment_id}:{context.transaction_id}"
-                )
+                failure_key = f"acgs:failures:{context.amendment_id}:{context.transaction_id}"
                 failure_data = {
                     "amendment_id": context.amendment_id,
                     "user_id": context.user_id,
@@ -500,17 +478,13 @@ class AmendmentStateMachine:
                     "timestamp": datetime.utcnow().isoformat(),
                     "transaction_id": context.transaction_id,
                 }
-                await self.redis_client.set_json(
-                    failure_key, failure_data, ttl=86400
-                )  # 24 hours
+                await self.redis_client.set_json(failure_key, failure_data, ttl=86400)  # 24 hours
 
             except Exception as e:
                 logger.error(f"Failed to record failed transition: {e}")
 
     # Condition checkers
-    async def _check_review_approval(
-        self, db: AsyncSession, context: WorkflowContext
-    ) -> bool:
+    async def _check_review_approval(self, db: AsyncSession, context: WorkflowContext) -> bool:
         """Check if amendment passed review."""
         # Simplified - would check actual review criteria
         return True
@@ -522,16 +496,12 @@ class AmendmentStateMachine:
         # Would check consultation period and feedback
         return True
 
-    async def _check_voting_approval(
-        self, db: AsyncSession, context: WorkflowContext
-    ) -> bool:
+    async def _check_voting_approval(self, db: AsyncSession, context: WorkflowContext) -> bool:
         """Check if amendment was approved by voting."""
         # Would check actual vote counts and thresholds
         return True
 
-    async def _check_voting_rejection(
-        self, db: AsyncSession, context: WorkflowContext
-    ) -> bool:
+    async def _check_voting_rejection(self, db: AsyncSession, context: WorkflowContext) -> bool:
         """Check if amendment was rejected by voting."""
         # Would check actual vote counts
         return True

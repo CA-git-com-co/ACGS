@@ -47,9 +47,7 @@ class BaseValidator(ABC):
         }
 
     @abstractmethod
-    async def validate(
-        self, policy_data: dict, context: GovernanceContext
-    ) -> ValidationResult:
+    async def validate(self, policy_data: dict, context: GovernanceContext) -> ValidationResult:
         """Validate policy data against governance context."""
 
 
@@ -62,9 +60,7 @@ class PrimaryValidator(BaseValidator):
         # sha256: func_hash
         super().__init__("primary", weight=0.2)
 
-    async def validate(
-        self, policy_data: dict, context: GovernanceContext
-    ) -> ValidationResult:
+    async def validate(self, policy_data: dict, context: GovernanceContext) -> ValidationResult:
         logger.debug("PrimaryValidator validating policy")
         # Simulate GPT-4 validation logic
         return ValidationResult(
@@ -83,9 +79,7 @@ class AdversarialValidator(BaseValidator):
         # sha256: func_hash
         super().__init__("adversarial", weight=0.25)
 
-    async def validate(
-        self, policy_data: dict, context: GovernanceContext
-    ) -> ValidationResult:
+    async def validate(self, policy_data: dict, context: GovernanceContext) -> ValidationResult:
         logger.debug("AdversarialValidator validating policy")
         # Simulate adversarial validation logic
         return ValidationResult(
@@ -104,9 +98,7 @@ class FormalValidator(BaseValidator):
         # sha256: func_hash
         super().__init__("formal", weight=0.3)
 
-    async def validate(
-        self, policy_data: dict, context: GovernanceContext
-    ) -> ValidationResult:
+    async def validate(self, policy_data: dict, context: GovernanceContext) -> ValidationResult:
         logger.debug("FormalValidator validating policy")
         # Simulate Z3 formal verification
         return ValidationResult(
@@ -125,9 +117,7 @@ class SemanticValidator(BaseValidator):
         # sha256: func_hash
         super().__init__("semantic", weight=0.1)
 
-    async def validate(
-        self, policy_data: dict, context: GovernanceContext
-    ) -> ValidationResult:
+    async def validate(self, policy_data: dict, context: GovernanceContext) -> ValidationResult:
         logger.debug("SemanticValidator validating policy")
         # Simulate semantic validation
         return ValidationResult(
@@ -152,9 +142,7 @@ class HeterogeneousValidator:
     Maintains >90% confidence threshold for policy approval.
     """
 
-    def __init__(
-        self, weights: dict[str, float] | None = None, threshold: float = 0.9
-    ) -> None:
+    def __init__(self, weights: dict[str, float] | None = None, threshold: float = 0.9) -> None:
         # Import Gemini validators
         try:
             from ..validators.gemini_validators import (
@@ -296,9 +284,7 @@ class HeterogeneousValidator:
             }
 
         # Calculate weighted score
-        weighted_score = sum(
-            scores[k] * self.weights.get(k, 0.0) for k in scores if scores[k] > 0
-        )
+        weighted_score = sum(scores[k] * self.weights.get(k, 0.0) for k in scores if scores[k] > 0)
 
         # Calculate agreement factor (minimum score among active validators)
         active_scores = [s for s in scores.values() if s > 0]

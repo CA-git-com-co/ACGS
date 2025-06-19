@@ -140,9 +140,7 @@ class ACServiceClient:
                 "source": "ec_service",
             }
 
-            response = await self.client.post(
-                "/api/v1/fidelity/report-activity", json=request_data
-            )
+            response = await self.client.post("/api/v1/fidelity/report-activity", json=request_data)
             response.raise_for_status()
 
             return response.json()

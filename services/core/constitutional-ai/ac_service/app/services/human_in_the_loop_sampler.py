@@ -78,9 +78,7 @@ class SamplingTrigger(Enum):
     HIGH_UNCERTAINTY = "high_uncertainty"  # High uncertainty across dimensions
     NOVEL_SCENARIO = "novel_scenario"  # No historical precedent
     STAKEHOLDER_CONFLICT = "stakeholder_conflict"  # Conflicting stakeholder interests
-    CONSTITUTIONAL_AMBIGUITY = (
-        "constitutional_ambiguity"  # Ambiguous constitutional interpretation
-    )
+    CONSTITUTIONAL_AMBIGUITY = "constitutional_ambiguity"  # Ambiguous constitutional interpretation
     SAFETY_CRITICAL = "safety_critical"  # Safety-critical decision domain
     ESCALATION_REQUIRED = "escalation_required"  # Escalated from conflict resolution
 
@@ -205,9 +203,7 @@ class HumanInTheLoopSampler:
             )
 
             # Calculate overall uncertainty
-            overall_uncertainty = self._calculate_overall_uncertainty(
-                dimensional_uncertainties
-            )
+            overall_uncertainty = self._calculate_overall_uncertainty(dimensional_uncertainties)
 
             # Determine confidence score
             confidence_score = ai_confidence or await self._estimate_ai_confidence(
@@ -291,14 +287,10 @@ class HumanInTheLoopSampler:
             constitutional_uncertainty = await self._assess_constitutional_uncertainty(
                 db, decision_context, principle_ids
             )
-            uncertainties[UncertaintyDimension.CONSTITUTIONAL] = (
-                constitutional_uncertainty
-            )
+            uncertainties[UncertaintyDimension.CONSTITUTIONAL] = constitutional_uncertainty
 
             # Technical uncertainty - based on implementation complexity
-            technical_uncertainty = await self._assess_technical_uncertainty(
-                decision_context
-            )
+            technical_uncertainty = await self._assess_technical_uncertainty(decision_context)
             uncertainties[UncertaintyDimension.TECHNICAL] = technical_uncertainty
 
             # Stakeholder uncertainty - based on stakeholder consensus
@@ -353,9 +345,7 @@ class HumanInTheLoopSampler:
             for principle in principles:
                 # Assess principle clarity based on description length and specificity
                 description_length = len(principle.description or "")
-                clarity_score = min(
-                    1.0, description_length / 500
-                )  # Normalize to 500 chars
+                clarity_score = min(1.0, description_length / 500)  # Normalize to 500 chars
 
                 # Check for ambiguous language
                 ambiguous_terms = [
@@ -366,18 +356,14 @@ class HumanInTheLoopSampler:
                     "usually",
                 ]
                 ambiguity_penalty = sum(
-                    0.1
-                    for term in ambiguous_terms
-                    if term in (principle.description or "").lower()
+                    0.1 for term in ambiguous_terms if term in (principle.description or "").lower()
                 )
 
                 clarity_score = max(0.0, clarity_score - ambiguity_penalty)
                 clarity_scores.append(clarity_score)
 
             # Calculate uncertainty as inverse of average clarity
-            avg_clarity = (
-                sum(clarity_scores) / len(clarity_scores) if clarity_scores else 0.5
-            )
+            avg_clarity = sum(clarity_scores) / len(clarity_scores) if clarity_scores else 0.5
             constitutional_uncertainty = 1.0 - avg_clarity
 
             return max(0.1, min(0.9, constitutional_uncertainty))
@@ -386,9 +372,7 @@ class HumanInTheLoopSampler:
             logger.error(f"Constitutional uncertainty assessment failed: {e}")
             return 0.8
 
-    async def _assess_technical_uncertainty(
-        self, decision_context: dict[str, Any]
-    ) -> float:
+    async def _assess_technical_uncertainty(self, decision_context: dict[str, Any]) -> float:
         """Assess uncertainty in technical implementation."""
         try:
             # Factors affecting technical uncertainty
@@ -413,9 +397,7 @@ class HumanInTheLoopSampler:
                 technical_uncertainty += 0.2
 
             # Consider team expertise
-            team_expertise = decision_context.get(
-                "team_expertise_level", 0.7
-            )  # 0.0 to 1.0
+            team_expertise = decision_context.get("team_expertise_level", 0.7)  # 0.0 to 1.0
             technical_uncertainty *= 1.0 - team_expertise * 0.3
 
             return max(0.1, min(0.9, technical_uncertainty))
@@ -435,9 +417,7 @@ class HumanInTheLoopSampler:
 
             # Assess stakeholder diversity
             stakeholder_count = decision_context.get("stakeholder_count", 1)
-            stakeholder_diversity = decision_context.get(
-                "stakeholder_diversity", 0.5
-            )  # 0.0 to 1.0
+            stakeholder_diversity = decision_context.get("stakeholder_diversity", 0.5)  # 0.0 to 1.0
 
             # More stakeholders and diversity increase uncertainty
             diversity_uncertainty = stakeholder_diversity * 0.3
@@ -448,9 +428,7 @@ class HumanInTheLoopSampler:
             feedback_uncertainty = 0.0 if has_feedback else 0.2
 
             # Check for public consultation requirements
-            requires_consultation = decision_context.get(
-                "requires_public_consultation", False
-            )
+            requires_consultation = decision_context.get("requires_public_consultation", False)
             consultation_uncertainty = 0.2 if requires_consultation else 0.0
 
             total_uncertainty = (
@@ -491,9 +469,7 @@ class HumanInTheLoopSampler:
                 recency_score = self._calculate_recency_score(decision.get("timestamp"))
                 success_score = decision.get("outcome_success", 0.5)
 
-                precedent_score = (
-                    similarity_score * 0.5 + recency_score * 0.3 + success_score * 0.2
-                )
+                precedent_score = similarity_score * 0.5 + recency_score * 0.3 + success_score * 0.2
                 precedent_scores.append(precedent_score)
 
             # Calculate uncertainty as inverse of best precedent quality
@@ -531,15 +507,11 @@ class HumanInTheLoopSampler:
 
             # Scope complexity
             scope_weights = {"local": 0.1, "service": 0.3, "system": 0.6, "global": 0.9}
-            scope_uncertainty = scope_weights.get(
-                complexity_factors["decision_scope"], 0.5
-            )
+            scope_uncertainty = scope_weights.get(complexity_factors["decision_scope"], 0.5)
 
             # Time pressure complexity
             pressure_weights = {"low": 0.1, "normal": 0.3, "high": 0.6, "critical": 0.9}
-            pressure_uncertainty = pressure_weights.get(
-                complexity_factors["time_pressure"], 0.3
-            )
+            pressure_uncertainty = pressure_weights.get(complexity_factors["time_pressure"], 0.3)
 
             # Reversibility complexity
             reversibility_weights = {
@@ -553,14 +525,10 @@ class HumanInTheLoopSampler:
 
             # Impact magnitude complexity
             impact_weights = {"low": 0.1, "medium": 0.4, "high": 0.7, "critical": 0.9}
-            impact_uncertainty = impact_weights.get(
-                complexity_factors["impact_magnitude"], 0.3
-            )
+            impact_uncertainty = impact_weights.get(complexity_factors["impact_magnitude"], 0.3)
 
             # Combine with other dimensional uncertainties
-            avg_other_uncertainty = sum(other_uncertainties.values()) / len(
-                other_uncertainties
-            )
+            avg_other_uncertainty = sum(other_uncertainties.values()) / len(other_uncertainties)
 
             # Calculate overall complexity uncertainty
             complexity_uncertainty = (
@@ -663,10 +631,7 @@ class HumanInTheLoopSampler:
                 triggers.append(SamplingTrigger.STAKEHOLDER_CONFLICT)
 
             # Constitutional ambiguity trigger
-            if (
-                dimensional_uncertainties.get(UncertaintyDimension.CONSTITUTIONAL, 0)
-                > 0.7
-            ):
+            if dimensional_uncertainties.get(UncertaintyDimension.CONSTITUTIONAL, 0) > 0.7:
                 triggers.append(SamplingTrigger.CONSTITUTIONAL_AMBIGUITY)
 
             # Safety critical trigger
@@ -858,13 +823,9 @@ class HumanInTheLoopSampler:
                 return
 
             # Analyze recent feedback within the feedback window
-            cutoff_time = datetime.utcnow() - timedelta(
-                hours=self.config.feedback_window_hours
-            )
+            cutoff_time = datetime.utcnow() - timedelta(hours=self.config.feedback_window_hours)
             recent_feedback = [
-                f
-                for f in self.learning_history
-                if f["feedback_timestamp"] > cutoff_time
+                f for f in self.learning_history if f["feedback_timestamp"] > cutoff_time
             ]
 
             if len(recent_feedback) < self.config.min_feedback_samples:
@@ -878,8 +839,7 @@ class HumanInTheLoopSampler:
             false_positives = sum(
                 1
                 for f in recent_feedback
-                if not f["human_agreed"]
-                and f["metadata"].get("was_oversight_triggered", False)
+                if not f["human_agreed"] and f["metadata"].get("was_oversight_triggered", False)
             )
             false_positive_rate = false_positives / total_feedback
 
@@ -890,9 +850,7 @@ class HumanInTheLoopSampler:
             # Adaptive threshold adjustment
             if accuracy < self.config.accuracy_target:
                 # Decrease thresholds to be more conservative
-                adjustment = -self.config.adaptation_rate * (
-                    self.config.accuracy_target - accuracy
-                )
+                adjustment = -self.config.adaptation_rate * (self.config.accuracy_target - accuracy)
                 self._adjust_thresholds(adjustment)
 
             elif false_positive_rate > self.config.false_positive_target:
@@ -918,15 +876,11 @@ class HumanInTheLoopSampler:
         try:
             # Adjust uncertainty threshold
             new_uncertainty_threshold = self.config.uncertainty_threshold + adjustment
-            self.config.uncertainty_threshold = max(
-                0.5, min(0.9, new_uncertainty_threshold)
-            )
+            self.config.uncertainty_threshold = max(0.5, min(0.9, new_uncertainty_threshold))
 
             # Adjust confidence threshold (inverse adjustment)
             new_confidence_threshold = self.config.confidence_threshold - adjustment
-            self.config.confidence_threshold = max(
-                0.5, min(0.9, new_confidence_threshold)
-            )
+            self.config.confidence_threshold = max(0.5, min(0.9, new_confidence_threshold))
 
             # Record adjustment
             self.threshold_adjustments[datetime.utcnow().isoformat()] = {
@@ -949,21 +903,19 @@ class HumanInTheLoopSampler:
             # Calculate recent performance
             if len(self.learning_history) > 0:
                 recent_feedback = self.learning_history[-50:]  # Last 50 feedback items
-                recent_accuracy = sum(
-                    1 for f in recent_feedback if f["human_agreed"]
-                ) / len(recent_feedback)
-                recent_quality = sum(
-                    f["decision_quality"] for f in recent_feedback
-                ) / len(recent_feedback)
+                recent_accuracy = sum(1 for f in recent_feedback if f["human_agreed"]) / len(
+                    recent_feedback
+                )
+                recent_quality = sum(f["decision_quality"] for f in recent_feedback) / len(
+                    recent_feedback
+                )
             else:
                 recent_accuracy = 0.0
                 recent_quality = 0.0
 
             return {
                 "total_assessments": self.sampling_stats["total_assessments"],
-                "human_oversight_triggered": self.sampling_stats[
-                    "human_oversight_triggered"
-                ],
+                "human_oversight_triggered": self.sampling_stats["human_oversight_triggered"],
                 "oversight_rate": (
                     self.sampling_stats["human_oversight_triggered"]
                     / max(1, self.sampling_stats["total_assessments"])
@@ -986,16 +938,12 @@ class HumanInTheLoopSampler:
             return {"error": str(e)}
 
     # Helper methods
-    async def _get_principles(
-        self, db: AsyncSession, principle_ids: list[int]
-    ) -> list[Principle]:
+    async def _get_principles(self, db: AsyncSession, principle_ids: list[int]) -> list[Principle]:
         """Get principles from database."""
         try:
             from sqlalchemy import select
 
-            result = await db.execute(
-                select(Principle).where(Principle.id.in_(principle_ids))
-            )
+            result = await db.execute(select(Principle).where(Principle.id.in_(principle_ids)))
             return result.scalars().all()
         except Exception as e:
             logger.error(f"Failed to get principles: {e}")
@@ -1018,9 +966,7 @@ class HumanInTheLoopSampler:
 
             # Mock similar decisions
             similar_decisions = []
-            for i, principle_id in enumerate(
-                principle_ids[:3]
-            ):  # Limit to 3 for performance
+            for i, principle_id in enumerate(principle_ids[:3]):  # Limit to 3 for performance
                 similar_decisions.append(
                     {
                         "decision_id": f"historical_{principle_id}_{i}",
@@ -1079,12 +1025,9 @@ class HumanInTheLoopSampler:
                 "assessment_id": assessment.decision_id,
                 "uncertainty_score": assessment.overall_uncertainty,
                 "confidence_score": assessment.confidence_score,
-                "triggers": [
-                    trigger.value for trigger in assessment.triggers_activated
-                ],
+                "triggers": [trigger.value for trigger in assessment.triggers_activated],
                 "dimensional_uncertainties": {
-                    dim.value: score
-                    for dim, score in assessment.dimensional_uncertainties.items()
+                    dim.value: score for dim, score in assessment.dimensional_uncertainties.items()
                 },
                 "recommended_level": assessment.recommended_oversight_level.value,
                 "assessment_metadata": assessment.assessment_metadata,
@@ -1096,12 +1039,8 @@ class HumanInTheLoopSampler:
                 (),
                 {
                     "id": assessment.decision_id,
-                    "severity": (
-                        "high" if assessment.overall_uncertainty > 0.8 else "medium"
-                    ),
-                    "principle_ids": assessment.assessment_metadata.get(
-                        "principle_ids", []
-                    ),
+                    "severity": ("high" if assessment.overall_uncertainty > 0.8 else "medium"),
+                    "principle_ids": assessment.assessment_metadata.get("principle_ids", []),
                     "resolution_details": escalation_context,
                 },
             )()

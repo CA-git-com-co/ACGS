@@ -42,9 +42,7 @@ class ConstitutionalCouncilDashboard:
 
         # Metrics collectors
         self.metrics = get_metrics("constitutional_council_dashboard")
-        self.constitutional_metrics = get_constitutional_metrics(
-            "constitutional_council_dashboard"
-        )
+        self.constitutional_metrics = get_constitutional_metrics("constitutional_council_dashboard")
 
         # Dashboard state tracking
         self.last_update = datetime.utcnow()
@@ -165,9 +163,7 @@ class ConstitutionalCouncilDashboard:
 
                 # Update last activity for stakeholder sessions
                 if connection_id in self.stakeholder_sessions:
-                    self.stakeholder_sessions[connection_id][
-                        "last_activity"
-                    ] = datetime.utcnow()
+                    self.stakeholder_sessions[connection_id]["last_activity"] = datetime.utcnow()
 
             except WebSocketDisconnect:
                 disconnected_clients.append(connection_id)
@@ -246,9 +242,7 @@ class ConstitutionalCouncilDashboard:
             completed_amendments = status_counts.get("approved", 0) + status_counts.get(
                 "rejected", 0
             )
-            completion_rate = (
-                completed_amendments / total_amendments if total_amendments > 0 else 0
-            )
+            completion_rate = completed_amendments / total_amendments if total_amendments > 0 else 0
 
             return {
                 "status_distribution": status_counts,
@@ -296,9 +290,7 @@ class ConstitutionalCouncilDashboard:
                 session_durations.append(duration)
 
             avg_session_duration = (
-                sum(session_durations) / len(session_durations)
-                if session_durations
-                else 0
+                sum(session_durations) / len(session_durations) if session_durations else 0
             )
 
             # Get recent comments and votes (last 24 hours)
@@ -323,8 +315,7 @@ class ConstitutionalCouncilDashboard:
                 "recent_activity": {
                     "comments_24h": recent_comments,
                     "votes_24h": recent_votes,
-                    "engagement_rate": (recent_comments + recent_votes)
-                    / max(active_sessions, 1),
+                    "engagement_rate": (recent_comments + recent_votes) / max(active_sessions, 1),
                 },
                 "real_time_participation": {
                     "connected_stakeholders": active_sessions,
@@ -346,9 +337,7 @@ class ConstitutionalCouncilDashboard:
         """Get real-time voting progress data."""
         try:
             # Get amendments currently in voting phase
-            voting_amendments_query = select(ACAmendment).where(
-                ACAmendment.status == "voting"
-            )
+            voting_amendments_query = select(ACAmendment).where(ACAmendment.status == "voting")
 
             voting_result = await self.db.execute(voting_amendments_query)
             voting_amendments = voting_result.scalars().all()
@@ -588,9 +577,7 @@ class ConstitutionalCouncilDashboard:
         except Exception as e:
             logger.error(f"Failed to broadcast amendment update: {e}")
 
-    async def broadcast_voting_update(
-        self, amendment_id: int, vote_data: dict[str, Any]
-    ) -> None:
+    async def broadcast_voting_update(self, amendment_id: int, vote_data: dict[str, Any]) -> None:
         """Broadcast voting updates to connected clients."""
         try:
             voting_message = {

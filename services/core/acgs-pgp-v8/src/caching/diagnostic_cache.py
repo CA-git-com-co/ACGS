@@ -141,9 +141,7 @@ class DiagnosticDataCache:
 
         return success
 
-    async def get_error_classification(
-        self, error_signature: str
-    ) -> dict[str, Any] | None:
+    async def get_error_classification(self, error_signature: str) -> dict[str, Any] | None:
         """
         Retrieve cached error classification.
 
@@ -198,9 +196,7 @@ class DiagnosticDataCache:
 
         return success
 
-    async def get_recovery_recommendation(
-        self, error_category: str
-    ) -> dict[str, Any] | None:
+    async def get_recovery_recommendation(self, error_category: str) -> dict[str, Any] | None:
         """
         Retrieve cached recovery recommendation.
 
@@ -215,9 +211,7 @@ class DiagnosticDataCache:
         cached_data = await self.cache_manager.get(cache_key, prefix=self.cache_prefix)
 
         if cached_data:
-            logger.info(
-                f"✅ Retrieved cached recovery recommendation: {error_category}"
-            )
+            logger.info(f"✅ Retrieved cached recovery recommendation: {error_category}")
             return cached_data
 
         return None

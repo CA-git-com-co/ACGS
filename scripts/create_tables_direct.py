@@ -63,9 +63,7 @@ class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     jti = Column(String(36), unique=True, index=True, nullable=False)
     token = Column(String(512), nullable=False, index=True)
     expires_at = Column(DateTime(timezone=True), nullable=False)
@@ -109,18 +107,14 @@ class Principle(Base):
         onupdate=lambda: datetime.now(UTC),
         nullable=False,
     )
-    created_by_user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
-    )
+    created_by_user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
 
 
 async def create_tables():
     """Create all tables in the database"""
 
     # Database URL
-    DATABASE_URL = (
-        "postgresql+asyncpg://acgs_user:acgs_password@localhost:5433/acgs_pgp_db"
-    )
+    DATABASE_URL = "postgresql+asyncpg://acgs_user:acgs_password@localhost:5433/acgs_pgp_db"
 
     # Create engine
     engine = create_async_engine(DATABASE_URL, echo=True)

@@ -46,20 +46,14 @@ def _get_cache_metrics():
 
     if not _cache_metrics_initialized:
         try:
-            _cache_hit_counter = Counter(
-                "pgc_cache_hits_total", "Total cache hits", ["level"]
-            )
-            _cache_miss_counter = Counter(
-                "pgc_cache_misses_total", "Total cache misses"
-            )
+            _cache_hit_counter = Counter("pgc_cache_hits_total", "Total cache hits", ["level"])
+            _cache_miss_counter = Counter("pgc_cache_misses_total", "Total cache misses")
             _cache_lookup_histogram = Histogram(
                 "pgc_cache_lookup_duration_seconds",
                 "Cache lookup duration in seconds",
                 buckets=[0.001, 0.002, 0.005, 0.01, 0.025, 0.05, 0.1],
             )
-            _cache_size_gauge = Gauge(
-                "pgc_cache_entries_total", "Total cache entries", ["level"]
-            )
+            _cache_size_gauge = Gauge("pgc_cache_entries_total", "Total cache entries", ["level"])
             _cache_metrics_initialized = True
             logger.info("PGC cache metrics initialized successfully")
         except ValueError as e:
@@ -301,13 +295,9 @@ class RedisCacheManager:
         try:
             # Validate constitutional compliance before caching
             if constitutional_validation:
-                compliance_valid = await self.validate_constitutional_compliance(
-                    key, value
-                )
+                compliance_valid = await self.validate_constitutional_compliance(key, value)
                 if not compliance_valid:
-                    logger.warning(
-                        f"Constitutional compliance validation failed for key: {key}"
-                    )
+                    logger.warning(f"Constitutional compliance validation failed for key: {key}")
                     return False
 
             # Create cache entry with integrity signature
@@ -348,9 +338,7 @@ class RedisCacheManager:
         # sha256: hmac_generation_v1.0
 
         data = f"{key}:{json.dumps(value, sort_keys=True)}"
-        signature = hmac.new(
-            self.hmac_secret, data.encode(), hashlib.sha256
-        ).hexdigest()
+        signature = hmac.new(self.hmac_secret, data.encode(), hashlib.sha256).hexdigest()
         return signature
 
     def _verify_integrity(self, entry: CacheEntry) -> bool:
@@ -427,10 +415,7 @@ class RedisCacheManager:
     def _is_circuit_breaker_open(self) -> bool:
         """Check if circuit breaker is open (Redis unavailable)."""
         if self.circuit_breaker_failures >= self.circuit_breaker_threshold:
-            if (
-                time.time() - self.circuit_breaker_last_failure
-                > self.circuit_breaker_reset_time
-            ):
+            if time.time() - self.circuit_breaker_last_failure > self.circuit_breaker_reset_time:
                 # Reset circuit breaker
                 self.circuit_breaker_failures = 0
                 return False
@@ -476,9 +461,7 @@ class RedisCacheManager:
         invalidated_count = 0
 
         # Invalidate from L1 memory cache
-        keys_to_remove = [
-            k for k in self.memory_cache.keys() if self._matches_pattern(k, pattern)
-        ]
+        keys_to_remove = [k for k in self.memory_cache.keys() if self._matches_pattern(k, pattern)]
         for key in keys_to_remove:
             self._remove_from_memory_cache(key)
             invalidated_count += 1
@@ -568,9 +551,7 @@ class RedisCacheManager:
                 mapping={
                     "hash": self.constitutional_hash,
                     "last_validated": str(time.time()),
-                    "validation_count": str(
-                        self.metrics.get("constitutional_validations", 0) + 1
-                    ),
+                    "validation_count": str(self.metrics.get("constitutional_validations", 0) + 1),
                     "service": "pgc_service",
                 },
             )
@@ -650,8 +631,7 @@ class RedisCacheManager:
         try:
             # Check if this is constitutional data
             if not any(
-                keyword in key.lower()
-                for keyword in ["policy", "compliance", "constitutional"]
+                keyword in key.lower() for keyword in ["policy", "compliance", "constitutional"]
             ):
                 return True  # Non-constitutional data doesn't need validation
 
@@ -668,9 +648,7 @@ class RedisCacheManager:
             return True
 
         except Exception as e:
-            logger.error(
-                f"Constitutional compliance validation failed for key {key}: {e}"
-            )
+            logger.error(f"Constitutional compliance validation failed for key {key}: {e}")
             return False
 
     async def get_constitutional_state(self) -> dict[str, Any]:
@@ -687,9 +665,7 @@ class RedisCacheManager:
                 "metadata": metadata,
                 "compliance_metrics": compliance_metrics,
                 "cache_metrics": {
-                    "constitutional_validations": self.metrics.get(
-                        "constitutional_validations", 0
-                    ),
+                    "constitutional_validations": self.metrics.get("constitutional_validations", 0),
                     "constitutional_hash_mismatches": self.metrics.get(
                         "constitutional_hash_mismatches", 0
                     ),

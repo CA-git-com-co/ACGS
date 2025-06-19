@@ -146,9 +146,7 @@ class ConflictAuditSystem:
             "confidence_score": detection_result.confidence_score,
             "priority_score": detection_result.priority_score,
             "principle_ids": detection_result.principle_ids,
-            "detection_method": detection_result.detection_metadata.get(
-                "method", "unknown"
-            ),
+            "detection_method": detection_result.detection_metadata.get("method", "unknown"),
             "recommended_strategy": detection_result.recommended_strategy,
         }
 
@@ -205,9 +203,7 @@ class ConflictAuditSystem:
         if resolution_result.success:
             self.current_metrics["resolutions_succeeded"] += 1
 
-        self.current_metrics[
-            "total_processing_time"
-        ] += resolution_result.processing_time
+        self.current_metrics["total_processing_time"] += resolution_result.processing_time
 
         return audit_entry
 
@@ -227,9 +223,7 @@ class ConflictAuditSystem:
             "urgency_score": escalation_request.urgency_score,
             "required_roles": escalation_request.required_roles,
             "timeout_deadline": escalation_request.timeout_deadline.isoformat(),
-            "notification_channels": [
-                ch.value for ch in escalation_request.notification_channels
-            ],
+            "notification_channels": [ch.value for ch in escalation_request.notification_channels],
         }
 
         if escalation_response:
@@ -323,9 +317,7 @@ class ConflictAuditSystem:
 
             # Organize entries by type
             detection_entries = [
-                e
-                for e in audit_entries
-                if e.event_type == AuditEventType.CONFLICT_DETECTED
+                e for e in audit_entries if e.event_type == AuditEventType.CONFLICT_DETECTED
             ]
             resolution_entries = [
                 e
@@ -338,15 +330,11 @@ class ConflictAuditSystem:
                 ]
             ]
             escalation_entries = [
-                e
-                for e in audit_entries
-                if e.event_type == AuditEventType.ESCALATION_TRIGGERED
+                e for e in audit_entries if e.event_type == AuditEventType.ESCALATION_TRIGGERED
             ]
 
             # Build trace components
-            detection_trace = (
-                detection_entries[0].event_data if detection_entries else None
-            )
+            detection_trace = detection_entries[0].event_data if detection_entries else None
 
             resolution_attempts = []
             for entry in resolution_entries:
@@ -360,9 +348,7 @@ class ConflictAuditSystem:
                     }
                 )
 
-            escalation_trace = (
-                escalation_entries[0].event_data if escalation_entries else None
-            )
+            escalation_trace = escalation_entries[0].event_data if escalation_entries else None
 
             # Determine final outcome
             final_outcome = {}
@@ -376,9 +362,7 @@ class ConflictAuditSystem:
                 }
 
             # Calculate total processing time
-            total_time = sum(
-                attempt.get("processing_time", 0) for attempt in resolution_attempts
-            )
+            total_time = sum(attempt.get("processing_time", 0) for attempt in resolution_attempts)
 
             # Verify audit chain integrity
             integrity_verified = await self._verify_audit_chain_integrity(audit_entries)
@@ -415,9 +399,7 @@ class ConflictAuditSystem:
             )
 
             # Calculate system availability (simplified)
-            error_rate = (
-                self.current_metrics["errors_encountered"] / max(total_attempts, 1)
-            ) * 100
+            error_rate = (self.current_metrics["errors_encountered"] / max(total_attempts, 1)) * 100
             system_availability = max(0, 100 - error_rate)
 
             # Calculate throughput (conflicts per hour)

@@ -99,9 +99,7 @@ class LRUCache(Generic[T]):
         """Remove expired entries."""
         now = datetime.now()
         expired_keys = [
-            key
-            for key, entry in self.cache.items()
-            if entry.expires_at and now > entry.expires_at
+            key for key, entry in self.cache.items() if entry.expires_at and now > entry.expires_at
         ]
         for key in expired_keys:
             del self.cache[key]
@@ -193,9 +191,7 @@ class LRUCache(Generic[T]):
 
             # Update stats
             self.stats.entry_count = len(self.cache)
-            self.stats.memory_usage_bytes = sum(
-                entry.size_bytes for entry in self.cache.values()
-            )
+            self.stats.memory_usage_bytes = sum(entry.size_bytes for entry in self.cache.values())
 
             logger.debug("Cache put", key=cache_key, ttl=ttl, size_bytes=size_bytes)
             return True
@@ -233,17 +229,13 @@ class LRUCache(Generic[T]):
         """Invalidate cache entries by tags."""
         with self._lock:
             keys_to_delete = [
-                key
-                for key, entry in self.cache.items()
-                if any(tag in entry.tags for tag in tags)
+                key for key, entry in self.cache.items() if any(tag in entry.tags for tag in tags)
             ]
             for key in keys_to_delete:
                 del self.cache[key]
 
             self.stats.entry_count = len(self.cache)
-            self.stats.memory_usage_bytes = sum(
-                entry.size_bytes for entry in self.cache.values()
-            )
+            self.stats.memory_usage_bytes = sum(entry.size_bytes for entry in self.cache.values())
             logger.info(
                 "Cache invalidated by tags",
                 tags=tags,
@@ -332,9 +324,7 @@ class RedisCache:
             logger.error("Redis cache get error", key=redis_key, error=str(e))
             return None
 
-    async def put(
-        self, key: str | dict[str, Any], value: Any, ttl: int | None = None
-    ) -> bool:
+    async def put(self, key: str | dict[str, Any], value: Any, ttl: int | None = None) -> bool:
         """Put value in Redis cache."""
         redis_key = self._generate_key(key)
 
@@ -389,9 +379,7 @@ class RedisCache:
                 )
         except RedisError as e:
             self.stats.errors += 1
-            logger.error(
-                "Redis cache clear pattern error", pattern=pattern, error=str(e)
-            )
+            logger.error("Redis cache clear pattern error", pattern=pattern, error=str(e))
 
     def _update_hit_rate(self):
         # requires: Valid input parameters
@@ -413,12 +401,8 @@ class RedisCache:
             self._pubsub = self.redis_client.pubsub()
             await self._pubsub.subscribe(self.invalidation_channel)
 
-            self._invalidation_task = asyncio.create_task(
-                self._handle_invalidation_messages()
-            )
-            logger.info(
-                "Cache invalidation listener started", channel=self.invalidation_channel
-            )
+            self._invalidation_task = asyncio.create_task(self._handle_invalidation_messages())
+            logger.info("Cache invalidation listener started", channel=self.invalidation_channel)
 
         except Exception as e:
             logger.error("Failed to start invalidation listener", error=str(e))
@@ -453,9 +437,7 @@ class RedisCache:
                         invalidation_data = json.loads(message["data"])
                         await self._process_invalidation(invalidation_data)
                     except Exception as e:
-                        logger.error(
-                            "Failed to process invalidation message", error=str(e)
-                        )
+                        logger.error("Failed to process invalidation message", error=str(e))
         except asyncio.CancelledError:
             logger.info("Invalidation listener cancelled")
         except Exception as e:
@@ -504,9 +486,7 @@ class RedisCache:
             )
 
             await self.redis_client.publish(self.invalidation_channel, message)
-            logger.debug(
-                "Cache invalidation published", type=invalidation_type, target=target
-            )
+            logger.debug("Cache invalidation published", type=invalidation_type, target=target)
 
         except Exception as e:
             logger.error("Failed to publish invalidation", error=str(e))
@@ -528,9 +508,7 @@ class RedisCache:
 class MultiTierCache:
     """Multi-tier cache with L1 (memory) and L2 (Redis) layers."""
 
-    def __init__(
-        self, l1_cache: LRUCache, l2_cache: RedisCache, enable_warming: bool = True
-    ):
+    def __init__(self, l1_cache: LRUCache, l2_cache: RedisCache, enable_warming: bool = True):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -717,9 +695,7 @@ class MultiTierCache:
         }
 
 
-def cache_decorator(
-    cache: MultiTierCache, ttl: int = 300, tags: list[str] | None = None
-):
+def cache_decorator(cache: MultiTierCache, ttl: int = 300, tags: list[str] | None = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

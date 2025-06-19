@@ -87,16 +87,16 @@ app = FastAPI(
 async def add_security_headers(request, call_next):
     """Add comprehensive OWASP-recommended security headers."""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    
+
     # HSTS (HTTP Strict Transport Security)
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-    
+
     # Content Security Policy (CSP) - Enhanced for XSS protection
     csp_policy = (
         "default-src 'self'; "
@@ -110,24 +110,24 @@ async def add_security_headers(request, call_next):
         "form-action 'self'"
     )
     response.headers["Content-Security-Policy"] = csp_policy
-    
+
     # Permissions Policy
     permissions_policy = (
         "geolocation=(), microphone=(), camera=(), "
         "payment=(), usb=(), magnetometer=(), gyroscope=()"
     )
     response.headers["Permissions-Policy"] = permissions_policy
-    
+
     # Additional security headers
     response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
     response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
-    
+
     # ACGS-1 specific headers
     response.headers["X-ACGS-Security"] = "enabled"
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-    
+
     return response
 
 
@@ -194,9 +194,7 @@ try:
         endpoint_func = create_enhanced_metrics_endpoint("fv_service")
         return await endpoint_func()
 
-    logger.info(
-        "✅ Enhanced Prometheus metrics enabled for Formal Verification Service"
-    )
+    logger.info("✅ Enhanced Prometheus metrics enabled for Formal Verification Service")
 except ImportError as e:
     logger.warning(f"⚠️ Prometheus metrics not available: {e}")
 
@@ -424,14 +422,10 @@ async def get_blockchain_audit_trail():
         },
         "compliance_tracking": {
             "constitutional_verifications": sum(
-                1
-                for entry in audit_trail
-                if "constitutional" in entry.get("operation", "")
+                1 for entry in audit_trail if "constitutional" in entry.get("operation", "")
             ),
             "signature_validations": sum(
-                1
-                for entry in audit_trail
-                if entry.get("operation") == "signature_validation"
+                1 for entry in audit_trail if entry.get("operation") == "signature_validation"
             ),
             "policy_verifications": sum(
                 1 for entry in audit_trail if "policy" in entry.get("operation", "")
@@ -448,9 +442,7 @@ async def add_blockchain_audit_entry(entry: BlockchainAuditEntry):
     """Add entry to blockchain audit trail."""
     try:
         # Create blockchain-style entry with hash chain
-        previous_hash = (
-            audit_trail[-1].get("block_hash", "genesis") if audit_trail else "genesis"
-        )
+        previous_hash = audit_trail[-1].get("block_hash", "genesis") if audit_trail else "genesis"
         entry_data = f"{entry.verification_id}{entry.policy_hash}{entry.verification_result}{entry.timestamp}{previous_hash}"
         block_hash = hashlib.sha256(entry_data.encode()).hexdigest()
 
@@ -579,9 +571,7 @@ async def validate_content(request: ValidationRequest):
             "union select",
         ]
 
-        threats_detected = [
-            pattern for pattern in threat_patterns if pattern in content
-        ]
+        threats_detected = [pattern for pattern in threat_patterns if pattern in content]
 
         # Constitutional compliance check
         constitutional_violations = []

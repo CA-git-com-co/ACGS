@@ -112,9 +112,7 @@ class PerformanceMonitor:
     async def start_monitoring(self, monitoring_data: dict[str, Any]) -> dict[str, Any]:
         """Start a new performance monitoring session."""
         try:
-            session_id = (
-                f"monitor_{int(time.time())}_{len(self.active_monitoring_sessions)}"
-            )
+            session_id = f"monitor_{int(time.time())}_{len(self.active_monitoring_sessions)}"
 
             monitoring_session = {
                 "session_id": session_id,
@@ -127,9 +125,7 @@ class PerformanceMonitor:
 
             self.active_monitoring_sessions[session_id] = monitoring_session
             self.performance_stats["total_monitoring_sessions"] += 1
-            self.performance_stats["active_sessions"] = len(
-                self.active_monitoring_sessions
-            )
+            self.performance_stats["active_sessions"] = len(self.active_monitoring_sessions)
 
             logger.info(f"Started monitoring session: {session_id}")
 
@@ -277,9 +273,7 @@ class PerformanceMonitor:
 
             self.performance_stats["optimizations_implemented"] += implemented_count
 
-            logger.info(
-                f"Implemented {implemented_count} optimizations for workflow {workflow_id}"
-            )
+            logger.info(f"Implemented {implemented_count} optimizations for workflow {workflow_id}")
 
             return {
                 "success": True,
@@ -314,18 +308,13 @@ class PerformanceMonitor:
                 "workflow_id": workflow_id,
                 "monitoring_session_id": monitoring_session["session_id"],
                 "monitoring_duration_minutes": (
-                    (
-                        datetime.now(UTC) - monitoring_session["started_at"]
-                    ).total_seconds()
-                    / 60
+                    (datetime.now(UTC) - monitoring_session["started_at"]).total_seconds() / 60
                 ),
                 "performance_summary": await self._calculate_performance_summary(
                     monitoring_session
                 ),
                 "bottlenecks_summary": await self._summarize_bottlenecks(workflow_id),
-                "optimizations_summary": await self._summarize_optimizations(
-                    workflow_id
-                ),
+                "optimizations_summary": await self._summarize_optimizations(workflow_id),
                 "recommendations": await self._generate_recommendations(workflow_id),
                 "generated_at": datetime.now(UTC).isoformat(),
             }
@@ -356,14 +345,10 @@ class PerformanceMonitor:
             response_times = [
                 m.value for m in recent_metrics if m.metric_name == "response_time_ms"
             ]
-            avg_response_time = (
-                sum(response_times) / len(response_times) if response_times else 0
-            )
+            avg_response_time = sum(response_times) / len(response_times) if response_times else 0
 
             availability_metrics = [
-                m.value
-                for m in recent_metrics
-                if m.metric_name == "availability_percent"
+                m.value for m in recent_metrics if m.metric_name == "availability_percent"
             ]
             avg_availability = (
                 sum(availability_metrics) / len(availability_metrics)
@@ -417,9 +402,7 @@ class PerformanceMonitor:
 
             health_status["checks"]["performance_targets"] = {
                 "healthy": all(target_compliance.values()),
-                "response_time_compliant": target_compliance.get(
-                    "response_time", False
-                ),
+                "response_time_compliant": target_compliance.get("response_time", False),
                 "availability_compliant": target_compliance.get("availability", False),
             }
 
@@ -506,9 +489,7 @@ class PerformanceMonitor:
             # Keep only recent metrics (last 24 hours)
             cutoff_time = datetime.now(UTC).timestamp() - 86400
             self.performance_metrics = [
-                m
-                for m in self.performance_metrics
-                if m.timestamp.timestamp() > cutoff_time
+                m for m in self.performance_metrics if m.timestamp.timestamp() > cutoff_time
             ]
 
         except Exception as e:
@@ -532,18 +513,14 @@ class PerformanceMonitor:
                 logger.error(f"Bottleneck detection error: {e}")
                 await asyncio.sleep(300)
 
-    async def _detect_bottlenecks(
-        self, session: dict[str, Any]
-    ) -> list[BottleneckAnalysis]:
+    async def _detect_bottlenecks(self, session: dict[str, Any]) -> list[BottleneckAnalysis]:
         """Detect bottlenecks in a monitoring session."""
         bottlenecks = []
 
         try:
             # Analyze response time bottlenecks
             response_times = [
-                m.value
-                for m in session["metrics"]
-                if m.metric_name == "response_time_ms"
+                m.value for m in session["metrics"] if m.metric_name == "response_time_ms"
             ]
 
             if response_times:
@@ -551,8 +528,7 @@ class PerformanceMonitor:
                 if avg_response_time > self.performance_targets["response_time_ms"]:
                     severity = (
                         "high"
-                        if avg_response_time
-                        > self.performance_targets["response_time_ms"] * 2
+                        if avg_response_time > self.performance_targets["response_time_ms"] * 2
                         else "medium"
                     )
 
@@ -562,8 +538,7 @@ class PerformanceMonitor:
                         severity=severity,
                         description=f"Average response time ({avg_response_time:.2f}ms) exceeds target ({self.performance_targets['response_time_ms']}ms)",
                         impact_score=min(
-                            avg_response_time
-                            / self.performance_targets["response_time_ms"],
+                            avg_response_time / self.performance_targets["response_time_ms"],
                             10.0,
                         ),
                         recommended_actions=[
@@ -577,9 +552,7 @@ class PerformanceMonitor:
 
             # Analyze availability bottlenecks
             availability_metrics = [
-                m.value
-                for m in session["metrics"]
-                if m.metric_name == "availability_percent"
+                m.value for m in session["metrics"] if m.metric_name == "availability_percent"
             ]
 
             if availability_metrics:
@@ -593,8 +566,7 @@ class PerformanceMonitor:
                         severity=severity,
                         description=f"Availability ({avg_availability:.2f}%) below target ({self.performance_targets['availability_percent']}%)",
                         impact_score=(
-                            self.performance_targets["availability_percent"]
-                            - avg_availability
+                            self.performance_targets["availability_percent"] - avg_availability
                         )
                         / 10,
                         recommended_actions=[
@@ -611,9 +583,7 @@ class PerformanceMonitor:
 
         return bottlenecks
 
-    async def _create_optimization_plan(
-        self, bottleneck: BottleneckAnalysis
-    ) -> OptimizationPlan:
+    async def _create_optimization_plan(self, bottleneck: BottleneckAnalysis) -> OptimizationPlan:
         """Create an optimization plan for a bottleneck."""
         plan_id = f"opt_plan_{bottleneck.bottleneck_id}_{int(time.time())}"
 
@@ -666,9 +636,7 @@ class PerformanceMonitor:
             risk_level=risk_level,
         )
 
-    async def _implement_optimization_plan(
-        self, plan: OptimizationPlan
-    ) -> dict[str, Any]:
+    async def _implement_optimization_plan(self, plan: OptimizationPlan) -> dict[str, Any]:
         """Implement an optimization plan."""
         try:
             # Simulate optimization implementation
@@ -690,8 +658,7 @@ class PerformanceMonitor:
                     "implemented_steps": len(plan.implementation_steps),
                     "actual_improvement": plan.expected_improvement
                     * 0.8,  # Slightly less than expected
-                    "implementation_time_minutes": plan.estimated_duration_minutes
-                    * 0.9,
+                    "implementation_time_minutes": plan.estimated_duration_minutes * 0.9,
                 }
             else:
                 return {
@@ -719,9 +686,7 @@ class PerformanceMonitor:
                 # Create and implement optimization plans for critical bottlenecks
                 for bottleneck in critical_bottlenecks[-5:]:  # Limit to 5 most recent
                     plan = await self._create_optimization_plan(bottleneck)
-                    if (
-                        plan.risk_level == "low"
-                    ):  # Only auto-implement low-risk optimizations
+                    if plan.risk_level == "low":  # Only auto-implement low-risk optimizations
                         result = await self._implement_optimization_plan(plan)
                         if result.get("success", False):
                             self.performance_stats["optimizations_implemented"] += 1
@@ -747,25 +712,18 @@ class PerformanceMonitor:
                 )
                 if total_sessions > 0:
                     optimization_rate = (
-                        self.performance_stats["optimizations_implemented"]
-                        / total_sessions
+                        self.performance_stats["optimizations_implemented"] / total_sessions
                     ) * 100
-                    self.performance_stats["average_improvement_percent"] = (
-                        optimization_rate
-                    )
+                    self.performance_stats["average_improvement_percent"] = optimization_rate
 
                 # Sleep for reporting interval
-                await asyncio.sleep(
-                    self.reporting_interval * 60
-                )  # Convert minutes to seconds
+                await asyncio.sleep(self.reporting_interval * 60)  # Convert minutes to seconds
 
             except Exception as e:
                 logger.error(f"Performance reporting error: {e}")
                 await asyncio.sleep(self.reporting_interval * 60)
 
-    async def _calculate_performance_summary(
-        self, session: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def _calculate_performance_summary(self, session: dict[str, Any]) -> dict[str, Any]:
         """Calculate performance summary for a session."""
         try:
             metrics = session.get("metrics", [])
@@ -773,13 +731,9 @@ class PerformanceMonitor:
                 return {"error": "No metrics available"}
 
             # Calculate response time statistics
-            response_times = [
-                m.value for m in metrics if m.metric_name == "response_time_ms"
-            ]
+            response_times = [m.value for m in metrics if m.metric_name == "response_time_ms"]
             response_time_stats = {
-                "average": (
-                    sum(response_times) / len(response_times) if response_times else 0
-                ),
+                "average": (sum(response_times) / len(response_times) if response_times else 0),
                 "min": min(response_times) if response_times else 0,
                 "max": max(response_times) if response_times else 0,
                 "target": self.performance_targets["response_time_ms"],
@@ -833,18 +787,13 @@ class PerformanceMonitor:
         return {
             "total_bottlenecks": len(relevant_bottlenecks),
             "by_severity": {
-                "critical": len(
-                    [b for b in relevant_bottlenecks if b.severity == "critical"]
-                ),
+                "critical": len([b for b in relevant_bottlenecks if b.severity == "critical"]),
                 "high": len([b for b in relevant_bottlenecks if b.severity == "high"]),
-                "medium": len(
-                    [b for b in relevant_bottlenecks if b.severity == "medium"]
-                ),
+                "medium": len([b for b in relevant_bottlenecks if b.severity == "medium"]),
                 "low": len([b for b in relevant_bottlenecks if b.severity == "low"]),
             },
             "average_impact_score": (
-                sum(b.impact_score for b in relevant_bottlenecks)
-                / len(relevant_bottlenecks)
+                sum(b.impact_score for b in relevant_bottlenecks) / len(relevant_bottlenecks)
                 if relevant_bottlenecks
                 else 0
             ),
@@ -852,9 +801,7 @@ class PerformanceMonitor:
 
     async def _summarize_optimizations(self, workflow_id: str) -> dict[str, Any]:
         """Summarize optimizations for a workflow."""
-        relevant_plans = [
-            p for p in self.optimization_plans if workflow_id in p.plan_id
-        ]
+        relevant_plans = [p for p in self.optimization_plans if workflow_id in p.plan_id]
 
         return {
             "total_plans": len(relevant_plans),
@@ -863,9 +810,7 @@ class PerformanceMonitor:
                 "medium": len([p for p in relevant_plans if p.risk_level == "medium"]),
                 "high": len([p for p in relevant_plans if p.risk_level == "high"]),
             },
-            "total_expected_improvement": sum(
-                p.expected_improvement for p in relevant_plans
-            ),
+            "total_expected_improvement": sum(p.expected_improvement for p in relevant_plans),
             "total_estimated_duration_minutes": sum(
                 p.estimated_duration_minutes for p in relevant_plans
             ),
@@ -881,9 +826,7 @@ class PerformanceMonitor:
         ]
 
         if relevant_bottlenecks:
-            high_impact_bottlenecks = [
-                b for b in relevant_bottlenecks if b.impact_score > 5.0
-            ]
+            high_impact_bottlenecks = [b for b in relevant_bottlenecks if b.impact_score > 5.0]
             if high_impact_bottlenecks:
                 recommendations.append("Address high-impact bottlenecks immediately")
                 recommendations.append("Implement performance monitoring alerts")
@@ -904,9 +847,7 @@ class PerformanceMonitor:
                     "Improve system reliability with circuit breakers and redundancy"
                 )
         else:
-            recommendations.append(
-                "Continue monitoring to maintain optimal performance"
-            )
+            recommendations.append("Continue monitoring to maintain optimal performance")
             recommendations.append("Consider proactive optimization opportunities")
 
         return recommendations

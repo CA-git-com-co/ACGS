@@ -31,9 +31,7 @@ async def analyze_neuron_activations(
 
             # Calculate variance
             if n > 1:
-                variance_activation = sum(
-                    (x - mean_activation) ** 2 for x in activations
-                ) / (n - 1)
+                variance_activation = sum((x - mean_activation) ** 2 for x in activations) / (n - 1)
             else:
                 variance_activation = (
                     0.0  # Variance is undefined for a single data point or no data

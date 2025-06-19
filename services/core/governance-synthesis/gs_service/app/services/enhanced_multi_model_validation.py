@@ -194,20 +194,14 @@ class SPUQUncertaintyQuantifier:
             similarity_matrix = cosine_similarity(tfidf_matrix)
 
             # Average pairwise similarity as consistency measure
-            consistency = np.mean(
-                similarity_matrix[np.triu_indices_from(similarity_matrix, k=1)]
-            )
+            consistency = np.mean(similarity_matrix[np.triu_indices_from(similarity_matrix, k=1)])
             aleatoric_uncertainty = 1.0 - consistency
         except:
             aleatoric_uncertainty = 0.5  # Default if TF-IDF fails
 
         # Calculate constitutional uncertainty
-        constitutional_scores = [
-            pred.constitutional_compliance for pred in model_predictions
-        ]
-        constitutional_uncertainty = (
-            np.std(constitutional_scores) if constitutional_scores else 0.5
-        )
+        constitutional_scores = [pred.constitutional_compliance for pred in model_predictions]
+        constitutional_uncertainty = np.std(constitutional_scores) if constitutional_scores else 0.5
 
         # Calculate bias uncertainty
         bias_scores = [pred.bias_score for pred in model_predictions]
@@ -245,9 +239,7 @@ class BoostingWeightCalculator:
         self.model_weights: dict[str, float] = defaultdict(lambda: 1.0)
         self.performance_history: dict[str, list[float]] = defaultdict(list)
 
-    def update_weights(
-        self, model_predictions: list[ModelPrediction], ground_truth_score: float
-    ):
+    def update_weights(self, model_predictions: list[ModelPrediction], ground_truth_score: float):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -268,9 +260,9 @@ class BoostingWeightCalculator:
 
             # Keep only recent history
             if len(self.performance_history[prediction.model_id]) > 100:
-                self.performance_history[prediction.model_id] = (
-                    self.performance_history[prediction.model_id][-100:]
-                )
+                self.performance_history[prediction.model_id] = self.performance_history[
+                    prediction.model_id
+                ][-100:]
 
     def get_weights(self, model_ids: list[str]) -> dict[str, float]:
         """Get current weights for specified models."""
@@ -301,9 +293,7 @@ class ClusterBasedModelSelector:
         self.cluster_model_mapping: dict[int, list[str]] = {}
         self.is_fitted = False
 
-    def fit_clusters(
-        self, training_queries: list[str], model_performance: dict[str, list[float]]
-    ):
+    def fit_clusters(self, training_queries: list[str], model_performance: dict[str, list[float]]):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -322,11 +312,7 @@ class ClusterBasedModelSelector:
 
         # Map clusters to best-performing models
         for cluster_id in range(self.n_clusters):
-            [
-                q
-                for i, q in enumerate(training_queries)
-                if cluster_labels[i] == cluster_id
-            ]
+            [q for i, q in enumerate(training_queries) if cluster_labels[i] == cluster_id]
 
             # Find best models for this cluster (simplified)
             best_models = sorted(
@@ -340,9 +326,7 @@ class ClusterBasedModelSelector:
             self.cluster_model_mapping[cluster_id] = best_models
 
         self.is_fitted = True
-        logger.info(
-            f"Fitted cluster-based model selector with {self.n_clusters} clusters"
-        )
+        logger.info(f"Fitted cluster-based model selector with {self.n_clusters} clusters")
 
     def select_models(self, query: str, available_models: list[str]) -> list[str]:
         """Select optimal models for a given query."""
@@ -358,9 +342,7 @@ class ClusterBasedModelSelector:
             cluster_id = self.kmeans.predict(query_vector)[0]
 
             # Get recommended models for cluster
-            recommended_models = self.cluster_model_mapping.get(
-                cluster_id, available_models
-            )
+            recommended_models = self.cluster_model_mapping.get(cluster_id, available_models)
 
             # Filter by available models
             selected_models = [m for m in recommended_models if m in available_models]
@@ -394,9 +376,7 @@ class EnhancedMultiModelValidator:
 
         # Performance tracking
         self.validation_history: list[EnsembleResult] = []
-        self.model_cluster_performance: dict[ModelCluster, dict[str, float]] = (
-            defaultdict(dict)
-        )
+        self.model_cluster_performance: dict[ModelCluster, dict[str, float]] = defaultdict(dict)
 
     async def validate_with_ensemble(
         self,
@@ -420,14 +400,10 @@ class EnhancedMultiModelValidator:
         start_time = time.time()
 
         # Select models based on strategy and context
-        selected_models = await self._select_models_for_context(
-            query, context, max_models
-        )
+        selected_models = await self._select_models_for_context(query, context, max_models)
 
         # Get predictions from selected models
-        model_predictions = await self._get_model_predictions(
-            query, selected_models, context
-        )
+        model_predictions = await self._get_model_predictions(query, selected_models, context)
 
         # Apply validation strategy
         if strategy == ValidationStrategy.BOOSTING_MAJORITY_VOTE:
@@ -435,13 +411,9 @@ class EnhancedMultiModelValidator:
         elif strategy == ValidationStrategy.CLUSTER_BASED_SELECTION:
             result = await self._cluster_based_validation(model_predictions, context)
         elif strategy == ValidationStrategy.UNCERTAINTY_WEIGHTED:
-            result = await self._uncertainty_weighted_validation(
-                model_predictions, context
-            )
+            result = await self._uncertainty_weighted_validation(model_predictions, context)
         elif strategy == ValidationStrategy.CONSTITUTIONAL_PRIORITY:
-            result = await self._constitutional_priority_validation(
-                model_predictions, context
-            )
+            result = await self._constitutional_priority_validation(model_predictions, context)
         else:  # HYBRID_ENSEMBLE
             result = await self._hybrid_ensemble_validation(model_predictions, context)
 
@@ -494,9 +466,7 @@ class EnhancedMultiModelValidator:
 
         if context.target_cluster:
             # Use cluster-based selection
-            cluster_models = self.cluster_selector.select_models(
-                query, available_models
-            )
+            cluster_models = self.cluster_selector.select_models(query, available_models)
             return cluster_models[:max_models]
         else:
             # Use general selection based on context
@@ -531,10 +501,8 @@ class EnhancedMultiModelValidator:
                 response_time = time.time() - start_time
 
                 # Calculate additional metrics (simplified)
-                constitutional_compliance = (
-                    await self._assess_constitutional_compliance(
-                        response["content"], context.constitutional_requirements
-                    )
+                constitutional_compliance = await self._assess_constitutional_compliance(
+                    response["content"], context.constitutional_requirements
                 )
                 bias_score = await self._assess_bias_score(response["content"])
                 uncertainty_score = 1.0 - response.get("confidence", 0.8)
@@ -649,22 +617,16 @@ class EnhancedMultiModelValidator:
         cluster_scores = {}
         for pred in predictions:
             cluster = context.target_cluster or ModelCluster.REASONING_HEAVY
-            cluster_performance = self.model_cluster_performance[cluster].get(
-                pred.model_id, 0.5
-            )
+            cluster_performance = self.model_cluster_performance[cluster].get(pred.model_id, 0.5)
             cluster_scores[pred.model_id] = cluster_performance * pred.confidence
 
         # Select best performing model for the cluster
         best_model_id = max(cluster_scores.keys(), key=lambda k: cluster_scores[k])
-        best_prediction = next(
-            pred for pred in predictions if pred.model_id == best_model_id
-        )
+        best_prediction = next(pred for pred in predictions if pred.model_id == best_model_id)
 
         # Calculate cluster consensus
         cluster_confidences = [pred.confidence for pred in predictions]
-        consensus_level = 1.0 - (
-            np.std(cluster_confidences) / np.mean(cluster_confidences)
-        )
+        consensus_level = 1.0 - (np.std(cluster_confidences) / np.mean(cluster_confidences))
 
         return {
             "prediction": best_prediction.prediction,
@@ -684,9 +646,7 @@ class EnhancedMultiModelValidator:
         uncertainty_weights = []
         for pred in predictions:
             # Lower uncertainty = higher weight
-            uncertainty_weight = 1.0 / (
-                pred.uncertainty_score + 0.1
-            )  # Add small epsilon
+            uncertainty_weight = 1.0 / (pred.uncertainty_score + 0.1)  # Add small epsilon
             uncertainty_weights.append(uncertainty_weight)
 
         # Normalize weights
@@ -700,9 +660,7 @@ class EnhancedMultiModelValidator:
         )
 
         # Select prediction with lowest uncertainty
-        min_uncertainty_idx = np.argmin(
-            [pred.uncertainty_score for pred in predictions]
-        )
+        min_uncertainty_idx = np.argmin([pred.uncertainty_score for pred in predictions])
         final_prediction = predictions[min_uncertainty_idx].prediction
 
         # Calculate consensus based on uncertainty spread
@@ -713,9 +671,7 @@ class EnhancedMultiModelValidator:
             "prediction": final_prediction,
             "confidence": weighted_confidence,
             "consensus_level": consensus_level,
-            "constitutional_fidelity": predictions[
-                min_uncertainty_idx
-            ].constitutional_compliance,
+            "constitutional_fidelity": predictions[min_uncertainty_idx].constitutional_compliance,
         }
 
     async def _constitutional_priority_validation(
@@ -758,12 +714,8 @@ class EnhancedMultiModelValidator:
 
         # Apply multiple strategies and combine results
         boosting_result = await self._boosting_majority_vote(predictions, context)
-        uncertainty_result = await self._uncertainty_weighted_validation(
-            predictions, context
-        )
-        constitutional_result = await self._constitutional_priority_validation(
-            predictions, context
-        )
+        uncertainty_result = await self._uncertainty_weighted_validation(predictions, context)
+        constitutional_result = await self._constitutional_priority_validation(predictions, context)
 
         # Weight strategies based on context
         strategy_weights = {
@@ -774,9 +726,7 @@ class EnhancedMultiModelValidator:
 
         # Normalize strategy weights
         total_strategy_weight = sum(strategy_weights.values())
-        strategy_weights = {
-            k: v / total_strategy_weight for k, v in strategy_weights.items()
-        }
+        strategy_weights = {k: v / total_strategy_weight for k, v in strategy_weights.items()}
 
         # Combine confidences
         combined_confidence = (
@@ -792,9 +742,7 @@ class EnhancedMultiModelValidator:
             ("constitutional", constitutional_result),
         ]
 
-        best_strategy, best_result = max(
-            strategy_results, key=lambda x: x[1]["confidence"]
-        )
+        best_strategy, best_result = max(strategy_results, key=lambda x: x[1]["confidence"])
 
         # Calculate overall consensus
         all_confidences = [result["confidence"] for _, result in strategy_results]
@@ -832,9 +780,7 @@ class EnhancedMultiModelValidator:
 
         self.boosting_calculator.update_weights(mock_predictions, performance_score)
 
-        logger.debug(
-            f"Updated performance for {model_id} in {cluster.value}: {performance_score}"
-        )
+        logger.debug(f"Updated performance for {model_id} in {cluster.value}: {performance_score}")
 
     def get_validation_metrics(self) -> dict[str, Any]:
         """Get comprehensive validation metrics."""
@@ -845,9 +791,7 @@ class EnhancedMultiModelValidator:
 
         # Calculate average metrics
         avg_confidence = np.mean([r.confidence for r in recent_results])
-        avg_constitutional_fidelity = np.mean(
-            [r.constitutional_fidelity for r in recent_results]
-        )
+        avg_constitutional_fidelity = np.mean([r.constitutional_fidelity for r in recent_results])
         avg_consensus = np.mean([r.consensus_level for r in recent_results])
         avg_validation_time = np.mean([r.validation_time for r in recent_results])
 

@@ -85,9 +85,7 @@ async def get_performance_metrics(
         if include_cache:
             try:
                 # This would need to be implemented to get cache stats from the actual cache instance
-                response_data["cache_stats"] = {
-                    "message": "Cache stats integration pending"
-                }
+                response_data["cache_stats"] = {"message": "Cache stats integration pending"}
             except Exception as e:
                 logger.warning("Failed to get cache stats", error=str(e))
                 response_data["cache_stats"] = {"error": "Cache stats unavailable"}
@@ -142,9 +140,7 @@ async def get_system_health() -> SystemHealthResponse:
             opa_client = get_opa_client()
             opa_metrics = opa_client.get_metrics()
             components["opa_client"] = {
-                "status": (
-                    "healthy" if opa_metrics.get("error_count", 0) < 10 else "degraded"
-                ),
+                "status": ("healthy" if opa_metrics.get("error_count", 0) < 10 else "degraded"),
                 "last_check": datetime.now().isoformat(),
                 "metrics": opa_metrics,
             }
@@ -207,9 +203,7 @@ async def get_performance_bottlenecks(
 
         # Add optimization recommendations
         for bottleneck in bottlenecks:
-            bottleneck["recommendations"] = _get_optimization_recommendations(
-                bottleneck
-            )
+            bottleneck["recommendations"] = _get_optimization_recommendations(bottleneck)
 
         return {
             "timestamp": datetime.now().isoformat(),
@@ -255,13 +249,9 @@ async def get_latency_profile(
         target_latency_ms = 50.0  # 50ms target
         for profile in profiles:
             profile_dict = profile.__dict__ if hasattr(profile, "__dict__") else profile
-            profile_dict["meets_target"] = (
-                profile_dict.get("p95_latency_ms", 0) < target_latency_ms
-            )
+            profile_dict["meets_target"] = profile_dict.get("p95_latency_ms", 0) < target_latency_ms
             profile_dict["target_latency_ms"] = target_latency_ms
-            profile_dict["performance_grade"] = _calculate_performance_grade(
-                profile_dict
-            )
+            profile_dict["performance_grade"] = _calculate_performance_grade(profile_dict)
 
         return {
             "timestamp": datetime.now().isoformat(),
@@ -272,15 +262,11 @@ async def get_latency_profile(
                 "meeting_target": sum(
                     1
                     for p in profiles
-                    if (p.__dict__ if hasattr(p, "__dict__") else p).get(
-                        "meets_target", False
-                    )
+                    if (p.__dict__ if hasattr(p, "__dict__") else p).get("meets_target", False)
                 ),
                 "avg_p95_latency": (
                     sum(
-                        (p.__dict__ if hasattr(p, "__dict__") else p).get(
-                            "p95_latency_ms", 0
-                        )
+                        (p.__dict__ if hasattr(p, "__dict__") else p).get("p95_latency_ms", 0)
                         for p in profiles
                     )
                     / len(profiles)
@@ -420,9 +406,7 @@ def _get_optimization_recommendations(bottleneck: dict[str, Any]) -> list[str]:
             ]
         )
 
-    return recommendations or [
-        "Review operation implementation for optimization opportunities"
-    ]
+    return recommendations or ["Review operation implementation for optimization opportunities"]
 
 
 def _get_severity_distribution(bottlenecks: list[dict[str, Any]]) -> dict[str, int]:

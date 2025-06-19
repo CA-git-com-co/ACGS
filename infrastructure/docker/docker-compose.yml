@@ -1,6 +1,6 @@
 services:
   ac-service:
-    build: ./services/core/constitutional-ai
+    build: ../../services/core/constitutional-ai
     depends_on:
     - postgres
     - redis
@@ -9,7 +9,7 @@ services:
     ports:
     - 8001:8001
   auth-service:
-    build: ./services/platform/authentication
+    build: ../../services/platform/authentication
     depends_on:
     - postgres
     - redis

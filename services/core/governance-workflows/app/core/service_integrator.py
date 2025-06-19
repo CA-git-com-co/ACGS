@@ -83,45 +83,31 @@ class ServiceIntegrator:
             logger.error(f"❌ Service integrator initialization failed: {e}")
             raise
 
-    async def call_gs_service(
-        self, endpoint: str, data: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def call_gs_service(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         """Call the GS (Governance Synthesis) service."""
         return await self._call_service("gs", endpoint, data)
 
-    async def call_pgc_service(
-        self, endpoint: str, data: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def call_pgc_service(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         """Call the PGC (Policy Governance Compliance) service."""
         return await self._call_service("pgc", endpoint, data)
 
-    async def call_ac_service(
-        self, endpoint: str, data: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def call_ac_service(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         """Call the AC (Autonomous Constitution) service."""
         return await self._call_service("ac", endpoint, data)
 
-    async def call_integrity_service(
-        self, endpoint: str, data: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def call_integrity_service(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         """Call the Integrity service."""
         return await self._call_service("integrity", endpoint, data)
 
-    async def call_fv_service(
-        self, endpoint: str, data: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def call_fv_service(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         """Call the FV (Formal Verification) service."""
         return await self._call_service("fv", endpoint, data)
 
-    async def call_auth_service(
-        self, endpoint: str, data: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def call_auth_service(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         """Call the Auth service."""
         return await self._call_service("auth", endpoint, data)
 
-    async def call_ec_service(
-        self, endpoint: str, data: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def call_ec_service(self, endpoint: str, data: dict[str, Any]) -> dict[str, Any]:
         """Call the EC (Evolutionary Computation) service."""
         return await self._call_service("ec", endpoint, data)
 
@@ -155,14 +141,10 @@ class ServiceIntegrator:
 
                 # Make HTTP request
                 if method.upper() == "POST":
-                    async with client.post(
-                        f"/api/v1/{endpoint}", json=data
-                    ) as response:
+                    async with client.post(f"/api/v1/{endpoint}", json=data) as response:
                         response_data = await self._handle_response(response)
                 elif method.upper() == "GET":
-                    async with client.get(
-                        f"/api/v1/{endpoint}", params=data
-                    ) as response:
+                    async with client.get(f"/api/v1/{endpoint}", params=data) as response:
                         response_data = await self._handle_response(response)
                 else:
                     return {
@@ -195,9 +177,7 @@ class ServiceIntegrator:
                     }
 
             except Exception as e:
-                logger.error(
-                    f"Unexpected error calling service: {service_name}/{endpoint} - {e}"
-                )
+                logger.error(f"Unexpected error calling service: {service_name}/{endpoint} - {e}")
                 self._update_metrics(service_name, False, None)
                 return {
                     "success": False,
@@ -206,9 +186,7 @@ class ServiceIntegrator:
                     "endpoint": endpoint,
                 }
 
-    async def _handle_response(
-        self, response: aiohttp.ClientResponse
-    ) -> dict[str, Any]:
+    async def _handle_response(self, response: aiohttp.ClientResponse) -> dict[str, Any]:
         """Handle HTTP response and extract data."""
         try:
             if response.status == 200:
@@ -231,9 +209,7 @@ class ServiceIntegrator:
         except Exception as e:
             return {"success": False, "error": f"Response parsing error: {str(e)}"}
 
-    def _update_metrics(
-        self, service_name: str, success: bool, response_time_ms: float | None
-    ):
+    def _update_metrics(self, service_name: str, success: bool, response_time_ms: float | None):
         """Update integration metrics."""
         self.integration_metrics["total_requests"] += 1
 
@@ -284,9 +260,7 @@ class ServiceIntegrator:
                 response_time_ms = (time.time() - start_time) * 1000
 
                 if response.status == 200:
-                    self.integration_metrics["service_availability"][
-                        service_name
-                    ].update(
+                    self.integration_metrics["service_availability"][service_name].update(
                         {
                             "available": True,
                             "last_check": time.time(),
@@ -295,9 +269,7 @@ class ServiceIntegrator:
                     )
                     return True
                 else:
-                    self.integration_metrics["service_availability"][
-                        service_name
-                    ].update(
+                    self.integration_metrics["service_availability"][service_name].update(
                         {
                             "available": False,
                             "last_check": time.time(),
@@ -345,9 +317,9 @@ class ServiceIntegrator:
                 health_status["checks"][f"{service_name}_service"] = {
                     "healthy": service_available,
                     "url": self.service_urls[service_name],
-                    "response_time_ms": self.integration_metrics[
-                        "service_availability"
-                    ][service_name].get("response_time_ms"),
+                    "response_time_ms": self.integration_metrics["service_availability"][
+                        service_name
+                    ].get("response_time_ms"),
                 }
 
                 if not service_available:

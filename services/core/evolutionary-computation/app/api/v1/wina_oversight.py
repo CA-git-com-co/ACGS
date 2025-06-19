@@ -41,9 +41,7 @@ router = APIRouter(prefix="/wina-oversight", tags=["WINA EC Oversight"])
 class OversightRequestModel(BaseModel):
     """API model for EC oversight requests."""
 
-    request_id: str = Field(
-        ..., description="Unique identifier for the oversight request"
-    )
+    request_id: str = Field(..., description="Unique identifier for the oversight request")
     oversight_type: str = Field(..., description="Type of oversight operation")
     target_system: str = Field(..., description="System being overseen")
     governance_requirements: list[str] = Field(
@@ -61,9 +59,7 @@ class OversightRequestModel(BaseModel):
     wina_optimization_enabled: bool = Field(
         default=True, description="Whether to enable WINA optimization"
     )
-    metadata: dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata"
-    )
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     @field_validator("oversight_type")
     @classmethod
@@ -84,9 +80,7 @@ class OversightRequestModel(BaseModel):
         # sha256: func_hash
         valid_priorities = ["normal", "high", "critical"]
         if v not in valid_priorities:
-            raise ValueError(
-                f"Invalid priority_level. Must be one of: {valid_priorities}"
-            )
+            raise ValueError(f"Invalid priority_level. Must be one of: {valid_priorities}")
         return v
 
 
@@ -102,12 +96,8 @@ class OversightStrategySelection(BaseModel):
 class ReportingPeriodModel(BaseModel):
     """API model for reporting period specification."""
 
-    start_time: datetime | None = Field(
-        default=None, description="Start time for reporting period"
-    )
-    end_time: datetime | None = Field(
-        default=None, description="End time for reporting period"
-    )
+    start_time: datetime | None = Field(default=None, description="Start time for reporting period")
+    end_time: datetime | None = Field(default=None, description="End time for reporting period")
 
     @field_validator("end_time")
     @classmethod
@@ -209,9 +199,7 @@ async def coordinate_oversight(
         )
 
         # Execute oversight coordination
-        result = await coordinator.coordinate_oversight(
-            oversight_request, optimization_hints
-        )
+        result = await coordinator.coordinate_oversight(oversight_request, optimization_hints)
 
         # Convert result to API response format
         response = OversightResultResponse(
@@ -253,9 +241,7 @@ async def coordinate_oversight(
         raise HTTPException(status_code=400, detail=f"Invalid request: {str(e)}")
     except Exception as e:
         logger.error(f"Oversight coordination failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Oversight coordination failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Oversight coordination failed: {str(e)}")
 
 
 @router.post("/select-strategy")
@@ -270,16 +256,12 @@ async def select_oversight_strategy(
     strategy based on WINA optimization potential and constitutional requirements.
     """
     try:
-        logger.info(
-            f"Selecting strategy for request: {strategy_request.request_data.request_id}"
-        )
+        logger.info(f"Selecting strategy for request: {strategy_request.request_data.request_id}")
 
         # Convert API model to internal format
         oversight_request = ECOversightRequest(
             request_id=strategy_request.request_data.request_id,
-            oversight_type=ECOversightContext(
-                strategy_request.request_data.oversight_type
-            ),
+            oversight_type=ECOversightContext(strategy_request.request_data.oversight_type),
             target_system=strategy_request.request_data.target_system,
             governance_requirements=strategy_request.request_data.governance_requirements,
             constitutional_constraints=strategy_request.request_data.constitutional_constraints,
@@ -314,9 +296,7 @@ async def select_oversight_strategy(
         raise HTTPException(status_code=400, detail=f"Invalid request: {str(e)}")
     except Exception as e:
         logger.error(f"Strategy selection failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Strategy selection failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Strategy selection failed: {str(e)}")
 
 
 @router.post("/generate-report")
@@ -335,11 +315,7 @@ async def generate_comprehensive_report(
 
         # Convert reporting period if provided
         period_tuple = None
-        if (
-            reporting_period
-            and reporting_period.start_time
-            and reporting_period.end_time
-        ):
+        if reporting_period and reporting_period.start_time and reporting_period.end_time:
             period_tuple = (reporting_period.start_time, reporting_period.end_time)
 
         # Generate report
@@ -374,9 +350,7 @@ async def generate_comprehensive_report(
 
     except Exception as e:
         logger.error(f"Report generation failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Report generation failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Report generation failed: {str(e)}")
 
 
 @router.get("/strategies")
@@ -457,9 +431,7 @@ async def get_oversight_health(
     try:
         # Get recent operations for health analysis
         recent_operations = (
-            coordinator._oversight_history[-100:]
-            if coordinator._oversight_history
-            else []
+            coordinator._oversight_history[-100:] if coordinator._oversight_history else []
         )
 
         # Calculate health metrics
@@ -511,12 +483,7 @@ async def get_oversight_health(
                 > 0.9
             ):
                 health_metrics["system_status"] = "excellent"
-            elif (
-                health_metrics.get("performance_metrics", {}).get(
-                    "avg_confidence_score", 0
-                )
-                > 0.7
-            ):
+            elif health_metrics.get("performance_metrics", {}).get("avg_confidence_score", 0) > 0.7:
                 health_metrics["system_status"] = "good"
             else:
                 health_metrics["system_status"] = "degraded"
@@ -525,9 +492,7 @@ async def get_oversight_health(
 
     except Exception as e:
         logger.error(f"Health status retrieval failed: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Health status retrieval failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Health status retrieval failed: {str(e)}")
 
 
 # Helper functions for endpoint responses

@@ -97,9 +97,7 @@ class ACGSSecurityValidator:
                     vulnerabilities = json.loads(result.stdout) if result.stdout else []
                     scan_results["safety_scan"]["status"] = "failed"
                     scan_results["safety_scan"]["vulnerabilities"] = vulnerabilities
-                    logger.warning(
-                        f"⚠️ Safety scan found {len(vulnerabilities)} vulnerabilities"
-                    )
+                    logger.warning(f"⚠️ Safety scan found {len(vulnerabilities)} vulnerabilities")
                 except json.JSONDecodeError:
                     scan_results["safety_scan"]["status"] = "error"
                     logger.error("❌ Safety scan failed to parse results")
@@ -132,12 +130,8 @@ class ACGSSecurityValidator:
                     scan_results["bandit_scan"]["status"] = "completed"
                     scan_results["bandit_scan"]["issues"] = issues
 
-                    high_issues = [
-                        i for i in issues if i.get("issue_severity") == "HIGH"
-                    ]
-                    medium_issues = [
-                        i for i in issues if i.get("issue_severity") == "MEDIUM"
-                    ]
+                    high_issues = [i for i in issues if i.get("issue_severity") == "HIGH"]
+                    medium_issues = [i for i in issues if i.get("issue_severity") == "MEDIUM"]
 
                     logger.info(
                         f"Bandit scan completed: {len(high_issues)} high, {len(medium_issues)} medium issues"
@@ -165,15 +159,11 @@ class ACGSSecurityValidator:
         async with aiohttp.ClientSession() as session:
             for service_id, config in self.services.items():
                 try:
-                    async with session.get(
-                        f"http://localhost:{config['port']}/health"
-                    ) as response:
+                    async with session.get(f"http://localhost:{config['port']}/health") as response:
                         headers = dict(response.headers)
 
                         security_headers_present = {}
-                        for header in self.security_targets[
-                            "required_security_headers"
-                        ]:
+                        for header in self.security_targets["required_security_headers"]:
                             security_headers_present[header] = header in headers
 
                         headers_results[service_id] = {
@@ -185,9 +175,7 @@ class ACGSSecurityValidator:
                         }
 
                         score = headers_results[service_id]["score"]
-                        logger.info(
-                            f"{config['name']}: {score:.1%} security headers present"
-                        )
+                        logger.info(f"{config['name']}: {score:.1%} security headers present")
 
                 except Exception as e:
                     headers_results[service_id] = {
@@ -195,9 +183,7 @@ class ACGSSecurityValidator:
                         "error": str(e),
                         "score": 0.0,
                     }
-                    logger.error(
-                        f"❌ {config['name']} security headers test failed: {e}"
-                    )
+                    logger.error(f"❌ {config['name']} security headers test failed: {e}")
 
         self.results["security_headers_check"] = headers_results
         return headers_results
@@ -255,9 +241,7 @@ class ACGSSecurityValidator:
                             service_results["sql_injection_protected"] = False
                             service_results["command_injection_protected"] = False
                     except Exception as e:
-                        logger.debug(
-                            f"Input validation test error for {service_id}: {e}"
-                        )
+                        logger.debug(f"Input validation test error for {service_id}: {e}")
 
                 validation_results[service_id] = service_results
 
@@ -341,10 +325,7 @@ class ACGSSecurityValidator:
 
         # Dependency scan score (30% weight)
         dependency_weight = 0.30
-        if (
-            self.results["dependency_scan_results"].get("safety_scan", {}).get("status")
-            == "passed"
-        ):
+        if self.results["dependency_scan_results"].get("safety_scan", {}).get("status") == "passed":
             total_score += dependency_weight
         max_score += dependency_weight
 
@@ -367,9 +348,7 @@ class ACGSSecurityValidator:
             validation_scores = []
             for result in self.results["input_validation_tests"].values():
                 if result["total_tests"] > 0:
-                    validation_scores.append(
-                        result["tests_passed"] / result["total_tests"]
-                    )
+                    validation_scores.append(result["tests_passed"] / result["total_tests"])
 
             if validation_scores:
                 avg_validation_score = sum(validation_scores) / len(validation_scores)
@@ -420,9 +399,7 @@ class ACGSSecurityValidator:
                 high_vulns += 1
 
         bandit_issues = (
-            self.results["dependency_scan_results"]
-            .get("bandit_scan", {})
-            .get("issues", [])
+            self.results["dependency_scan_results"].get("bandit_scan", {}).get("issues", [])
         )
         for issue in bandit_issues:
             if issue.get("issue_severity", "").upper() == "HIGH":
@@ -432,19 +409,13 @@ class ACGSSecurityValidator:
         self.results["high_vulnerabilities"] = high_vulns
 
         # Evaluate criteria
-        compliance_passed = (
-            compliance_score >= self.security_targets["min_compliance_score"]
-        )
+        compliance_passed = compliance_score >= self.security_targets["min_compliance_score"]
         critical_vulns_passed = (
             critical_vulns <= self.security_targets["max_critical_vulnerabilities"]
         )
-        high_vulns_passed = (
-            high_vulns <= self.security_targets["max_high_vulnerabilities"]
-        )
+        high_vulns_passed = high_vulns <= self.security_targets["max_high_vulnerabilities"]
 
-        overall_passed = (
-            compliance_passed and critical_vulns_passed and high_vulns_passed
-        )
+        overall_passed = compliance_passed and critical_vulns_passed and high_vulns_passed
 
         logger.info(
             f"Compliance Score: {compliance_score:.1%} (Target: ≥{self.security_targets['min_compliance_score']:.1%}) - {'✅ PASSED' if compliance_passed else '❌ FAILED'}"
@@ -507,20 +478,14 @@ class ACGSSecurityValidator:
             f"Overall Status: {'✅ PASSED' if self.results['overall_status'] == 'PASSED' else '❌ FAILED'}"
         )
         logger.info(f"Compliance Score: {self.results['compliance_score']:.1%}")
-        logger.info(
-            f"Critical Vulnerabilities: {self.results['critical_vulnerabilities']}"
-        )
+        logger.info(f"Critical Vulnerabilities: {self.results['critical_vulnerabilities']}")
         logger.info(f"High Vulnerabilities: {self.results['high_vulnerabilities']}")
         logger.info(f"Detailed Report: {report_file}")
 
         if self.results["overall_status"] == "PASSED":
-            logger.info(
-                "🚀 Security validation passed! Ready for production deployment."
-            )
+            logger.info("🚀 Security validation passed! Ready for production deployment.")
         else:
-            logger.info(
-                "⚠️ Security issues found. Address vulnerabilities before production."
-            )
+            logger.info("⚠️ Security issues found. Address vulnerabilities before production.")
 
 
 async def main():

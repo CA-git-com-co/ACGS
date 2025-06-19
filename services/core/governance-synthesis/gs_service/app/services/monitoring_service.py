@@ -240,20 +240,11 @@ class AlertManager:
 
             alert_triggered = False
 
-            if (
-                threshold.comparison == "gt"
-                and metric_value > threshold.threshold_value
-            ):
+            if threshold.comparison == "gt" and metric_value > threshold.threshold_value:
                 alert_triggered = True
-            elif (
-                threshold.comparison == "lt"
-                and metric_value < threshold.threshold_value
-            ):
+            elif threshold.comparison == "lt" and metric_value < threshold.threshold_value:
                 alert_triggered = True
-            elif (
-                threshold.comparison == "eq"
-                and metric_value == threshold.threshold_value
-            ):
+            elif threshold.comparison == "eq" and metric_value == threshold.threshold_value:
                 alert_triggered = True
 
             if alert_triggered:
@@ -296,9 +287,7 @@ class MonitoringService:
             return
 
         self._running = True
-        self._monitoring_task = asyncio.create_task(
-            self._monitoring_loop(interval_seconds)
-        )
+        self._monitoring_task = asyncio.create_task(self._monitoring_loop(interval_seconds))
         logger.info("Monitoring service started", interval=interval_seconds)
 
     async def stop_monitoring(self):
@@ -376,9 +365,7 @@ class MonitoringService:
         error_rate = 0.0
         try:
             monitor = get_performance_monitor()
-            profile = monitor.profiler.get_latency_profile(
-                "opa_policy_evaluation:policy_decision"
-            )
+            profile = monitor.profiler.get_latency_profile("opa_policy_evaluation:policy_decision")
             if profile:
                 policy_latency_ms = profile.avg_latency_ms
             concurrent_requests = monitor.active_requests
@@ -421,9 +408,7 @@ class MonitoringService:
         self.metrics.concurrent_requests.set(metrics.concurrent_requests)
 
         # Update cache metrics (placeholder)
-        self.metrics.cache_hit_rate.labels(cache_type="multi_tier").set(
-            metrics.cache_hit_rate
-        )
+        self.metrics.cache_hit_rate.labels(cache_type="multi_tier").set(metrics.cache_hit_rate)
 
     async def _handle_alerts(self, alerts: list[dict[str, Any]]):
         # requires: Valid input parameters
@@ -466,17 +451,13 @@ class MonitoringService:
             "current_metrics": (
                 asdict(self.performance_history[-1]) if self.performance_history else {}
             ),
-            "average_latency_ms": sum(
-                m.policy_decision_latency_ms for m in recent_metrics
-            )
+            "average_latency_ms": sum(m.policy_decision_latency_ms for m in recent_metrics)
             / len(recent_metrics),
             "average_cache_hit_rate": sum(m.cache_hit_rate for m in recent_metrics)
             / len(recent_metrics),
             "average_memory_usage_mb": sum(m.memory_usage_mb for m in recent_metrics)
             / len(recent_metrics),
-            "average_cpu_usage_percent": sum(
-                m.cpu_usage_percent for m in recent_metrics
-            )
+            "average_cpu_usage_percent": sum(m.cpu_usage_percent for m in recent_metrics)
             / len(recent_metrics),
             "active_alerts": list(self.alert_manager.active_alerts.values()),
             "metrics_count": len(self.performance_history),

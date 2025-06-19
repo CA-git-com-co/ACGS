@@ -194,8 +194,8 @@ async def synthesize_with_mab(
         }
 
         # Execute MAB-optimized synthesis
-        synthesis_output, integration_metadata = (
-            await mab_service.synthesize_with_mab_optimization(synthesis_input, context)
+        synthesis_output, integration_metadata = await mab_service.synthesize_with_mab_optimization(
+            synthesis_input, context
         )
 
         return {

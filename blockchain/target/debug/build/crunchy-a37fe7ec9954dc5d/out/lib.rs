@@ -1,4 +1,3 @@
-
 /// Unroll the given for loop
 ///
 /// Example:
@@ -840,17 +839,16 @@ macro_rules! unroll {
 
 }
 
-
 #[cfg(all(test, feature = "std"))]
 mod tests {
     #[test]
     fn invalid_range() {
         let mut a: Vec<usize> = vec![];
         unroll! {
-                for i in (5..4) {
-                    a.push(i);
-                }
+            for i in (5..4) {
+                a.push(i);
             }
+        }
         assert_eq!(a, vec![]);
     }
 
@@ -858,10 +856,10 @@ mod tests {
     fn start_at_one_with_step() {
         let mut a: Vec<usize> = vec![];
         unroll! {
-                for i in (2..4).step_by(1) {
-                    a.push(i);
-                }
+            for i in (2..4).step_by(1) {
+                a.push(i);
             }
+        }
         assert_eq!(a, vec![2, 3]);
     }
 
@@ -869,10 +867,10 @@ mod tests {
     fn start_at_one() {
         let mut a: Vec<usize> = vec![];
         unroll! {
-                for i in 1..4 {
-                    a.push(i);
-                }
+            for i in 1..4 {
+                a.push(i);
             }
+        }
         assert_eq!(a, vec![1, 2, 3]);
     }
 
@@ -934,7 +932,10 @@ mod tests {
                     a.push(i);
                 }
             }
-            assert_eq!(a, (start..end).filter(|x| x % 2 == 0).collect::<Vec<usize>>());
+            assert_eq!(
+                a,
+                (start..end).filter(|x| x % 2 == 0).collect::<Vec<usize>>()
+            );
         }
     }
 }

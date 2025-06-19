@@ -8,9 +8,7 @@ from ..schemas import (  # Using schemas defined in fv_service
 )
 
 # Load environment variables
-INTEGRITY_SERVICE_URL = os.getenv(
-    "INTEGRITY_SERVICE_URL", "http://integrity_service:8000/api/v1"
-)
+INTEGRITY_SERVICE_URL = os.getenv("INTEGRITY_SERVICE_URL", "http://integrity_service:8000/api/v1")
 
 
 class IntegrityServiceClient:
@@ -43,9 +41,7 @@ class IntegrityServiceClient:
             print(f"Integrity Client: Request error fetching rule {rule_id}: {str(e)}")
             return None
         except Exception as e:
-            print(
-                f"Integrity Client: Unexpected error fetching rule {rule_id}: {str(e)}"
-            )
+            print(f"Integrity Client: Unexpected error fetching rule {rule_id}: {str(e)}")
             return None
 
     async def get_policy_rules_by_ids(
@@ -90,14 +86,10 @@ class IntegrityServiceClient:
                 pass
             return None
         except httpx.RequestError as e:
-            print(
-                f"Integrity Client: Request error updating status for rule {rule_id}: {str(e)}"
-            )
+            print(f"Integrity Client: Request error updating status for rule {rule_id}: {str(e)}")
             return None
         except Exception as e:
-            print(
-                f"Integrity Client: Unexpected error updating rule status {rule_id}: {str(e)}"
-            )
+            print(f"Integrity Client: Unexpected error updating rule status {rule_id}: {str(e)}")
             return None
 
     async def close(self):
@@ -118,9 +110,7 @@ if __name__ == "__main__":
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        print(
-            f"Testing Integrity Client for FV Service against URL: {INTEGRITY_SERVICE_URL}"
-        )
+        print(f"Testing Integrity Client for FV Service against URL: {INTEGRITY_SERVICE_URL}")
         # test_token = "internal_service_token" # Placeholder token for integrity_service
         # fetched_rule = await integrity_service_client.get_policy_rule_by_id(1, auth_token=test_token) # Assuming rule ID 1 exists
         # if fetched_rule:

@@ -164,9 +164,7 @@ class PolicyValidationEngine:
             logger.error(f"Failed to initialize policy validation engine: {e}")
             raise
 
-    async def validate_policy(
-        self, request: PolicyValidationRequest
-    ) -> PolicyValidationResponse:
+    async def validate_policy(self, request: PolicyValidationRequest) -> PolicyValidationResponse:
         """
         Validate policy with comprehensive checks and performance optimization.
 
@@ -198,10 +196,7 @@ class PolicyValidationEngine:
             constitutional_result = None
             if request.check_constitutional and syntax_result.is_valid:
                 constitutional_result = await self._validate_constitutional(request)
-                if (
-                    constitutional_result
-                    and not constitutional_result.is_constitutional
-                ):
+                if constitutional_result and not constitutional_result.is_constitutional:
                     errors.extend(constitutional_result.violations)
                     recommendations.extend(constitutional_result.recommendations)
 
@@ -218,9 +213,7 @@ class PolicyValidationEngine:
                 conflict_result = await self._detect_conflicts(request)
                 if conflict_result and conflict_result.has_conflicts:
                     warnings.append("Policy conflicts detected")
-                    recommendations.extend(
-                        conflict_result.conflict_resolution_suggestions
-                    )
+                    recommendations.extend(conflict_result.conflict_resolution_suggestions)
 
             # Calculate overall validation result
             is_valid = self._calculate_overall_validity(
@@ -237,10 +230,7 @@ class PolicyValidationEngine:
             self._update_metrics(validation_time_ms, len(errors) == 0)
 
             # Check performance threshold
-            if (
-                validation_time_ms
-                > self.config.performance.max_policy_decision_latency_ms
-            ):
+            if validation_time_ms > self.config.performance.max_policy_decision_latency_ms:
                 warnings.append(
                     f"Validation exceeded latency threshold: {validation_time_ms:.2f}ms"
                 )
@@ -266,9 +256,7 @@ class PolicyValidationEngine:
             logger.error(f"Policy validation failed: {e}")
             raise OPAIntegrationError(f"Policy validation failed: {e}")
 
-    async def _validate_syntax(
-        self, request: PolicyValidationRequest
-    ) -> PolicyValidationResult:
+    async def _validate_syntax(self, request: PolicyValidationRequest) -> PolicyValidationResult:
         """Validate policy syntax using OPA."""
         try:
             return await self.opa_client.validate_policy(
@@ -305,9 +293,7 @@ class PolicyValidationEngine:
             response = await self.opa_client.evaluate_policy(decision_request)
 
             if response.error:
-                raise OPAIntegrationError(
-                    f"Constitutional validation failed: {response.error}"
-                )
+                raise OPAIntegrationError(f"Constitutional validation failed: {response.error}")
 
             result = response.result
             return ConstitutionalValidationResult(
@@ -328,21 +314,15 @@ class PolicyValidationEngine:
                 recommendations=["Fix constitutional validation errors"],
             )
 
-    async def _check_compliance(
-        self, request: PolicyValidationRequest
-    ) -> ComplianceCheckResult:
+    async def _check_compliance(self, request: PolicyValidationRequest) -> ComplianceCheckResult:
         """Check policy compliance against regulatory requirements."""
         try:
             decision_request = PolicyDecisionRequest(
                 input_data={
                     "policy_content": request.policy_content,
                     "compliance_context": {
-                        "category": request.context_data.get(
-                            "compliance_category", "operational"
-                        ),
-                        "jurisdiction": request.context_data.get(
-                            "jurisdiction", "default"
-                        ),
+                        "category": request.context_data.get("compliance_category", "operational"),
+                        "jurisdiction": request.context_data.get("jurisdiction", "default"),
                         "requires_transparency": request.context_data.get(
                             "requires_transparency", False
                         ),
@@ -351,9 +331,7 @@ class PolicyValidationEngine:
                         ),
                     },
                     "governance_context": {
-                        "system_type": request.context_data.get(
-                            "target_system", "governance"
-                        ),
+                        "system_type": request.context_data.get("target_system", "governance"),
                         "risk_level": request.context_data.get("risk_level", "medium"),
                         "handles_sensitive_data": request.context_data.get(
                             "handles_sensitive_data", False
@@ -393,9 +371,7 @@ class PolicyValidationEngine:
                 requires_review=True,
             )
 
-    async def _detect_conflicts(
-        self, request: PolicyValidationRequest
-    ) -> ConflictDetectionResult:
+    async def _detect_conflicts(self, request: PolicyValidationRequest) -> ConflictDetectionResult:
         """Detect conflicts with existing policies."""
         try:
             decision_request = PolicyDecisionRequest(
@@ -415,27 +391,17 @@ class PolicyValidationEngine:
             response = await self.opa_client.evaluate_policy(decision_request)
 
             if response.error:
-                raise OPAIntegrationError(
-                    f"Conflict detection failed: {response.error}"
-                )
+                raise OPAIntegrationError(f"Conflict detection failed: {response.error}")
 
             result = response.result
             conflict_details = result.get("conflict_details", {})
 
             return ConflictDetectionResult(
                 has_conflicts=result.get("has_conflicts", False),
-                logical_conflicts=self._extract_conflicts(
-                    conflict_details, "logical_conflicts"
-                ),
-                semantic_conflicts=self._extract_conflicts(
-                    conflict_details, "semantic_conflicts"
-                ),
-                priority_conflicts=self._extract_conflicts(
-                    conflict_details, "priority_conflicts"
-                ),
-                scope_conflicts=self._extract_conflicts(
-                    conflict_details, "scope_conflicts"
-                ),
+                logical_conflicts=self._extract_conflicts(conflict_details, "logical_conflicts"),
+                semantic_conflicts=self._extract_conflicts(conflict_details, "semantic_conflicts"),
+                priority_conflicts=self._extract_conflicts(conflict_details, "priority_conflicts"),
+                scope_conflicts=self._extract_conflicts(conflict_details, "scope_conflicts"),
                 conflict_resolution_suggestions=result.get("recommendations", []),
             )
 
@@ -538,9 +504,7 @@ class PolicyValidationEngine:
         # Update average latency
         total = self.metrics["total_validations"]
         current_avg = self.metrics["average_latency_ms"]
-        self.metrics["average_latency_ms"] = (
-            (current_avg * (total - 1)) + latency_ms
-        ) / total
+        self.metrics["average_latency_ms"] = ((current_avg * (total - 1)) + latency_ms) / total
 
         # Update max latency
         if latency_ms > self.metrics["max_latency_ms"]:

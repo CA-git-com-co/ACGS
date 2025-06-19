@@ -73,9 +73,7 @@ class ConstitutionalContext:
     policy_id: str | None = None
     user_id: str | None = None
     service_name: str = "pgc_service"
-    validation_level: ConstitutionalValidationLevel = (
-        ConstitutionalValidationLevel.STANDARD
-    )
+    validation_level: ConstitutionalValidationLevel = ConstitutionalValidationLevel.STANDARD
     additional_context: dict[str, Any] = None
 
 
@@ -197,9 +195,7 @@ class ConstitutionalHashValidator:
                     "Retry validation",
                     "Check constitutional service health",
                 ],
-                performance_metrics={
-                    "validation_time_ms": (time.time() - start_time) * 1000
-                },
+                performance_metrics={"validation_time_ms": (time.time() - start_time) * 1000},
                 constitutional_hash=self.constitutional_hash,
             )
 
@@ -225,14 +221,10 @@ class ConstitutionalHashValidator:
             policy_hash = policy_data.get("constitutional_hash")
 
             # Perform hash validation
-            hash_result = await self.validate_constitutional_hash(
-                policy_hash, context, policy_data
-            )
+            hash_result = await self.validate_constitutional_hash(policy_hash, context, policy_data)
 
             # Perform additional policy compliance checks
-            compliance_checks = await self._perform_policy_compliance_checks(
-                policy_data, context
-            )
+            compliance_checks = await self._perform_policy_compliance_checks(policy_data, context)
 
             # Combine results
             combined_result = self._combine_validation_results(
@@ -318,9 +310,7 @@ class ConstitutionalHashValidator:
                 ConstitutionalValidationLevel.COMPREHENSIVE,
                 ConstitutionalValidationLevel.CRITICAL,
             ]:
-                violations.append(
-                    "Constitutional hash is required for this operation level"
-                )
+                violations.append("Constitutional hash is required for this operation level")
                 compliance_score -= 0.3
             else:
                 recommendations.append(
@@ -393,9 +383,7 @@ class ConstitutionalHashValidator:
 
         # Policy-specific checks
         if policy_data:
-            policy_checks = await self._validate_policy_constitutional_elements(
-                policy_data
-            )
+            policy_checks = await self._validate_policy_constitutional_elements(policy_data)
             violations.extend(policy_checks.get("violations", []))
             recommendations.extend(policy_checks.get("recommendations", []))
             compliance_multiplier *= policy_checks.get("compliance_multiplier", 1.0)
@@ -403,9 +391,7 @@ class ConstitutionalHashValidator:
         # Context-specific checks
         if context.operation_type in ["policy_creation", "constitutional_amendment"]:
             if not provided_hash:
-                violations.append(
-                    "Constitutional hash is mandatory for constitutional operations"
-                )
+                violations.append("Constitutional hash is mandatory for constitutional operations")
                 compliance_multiplier *= 0.5
 
         return {
@@ -426,17 +412,13 @@ class ConstitutionalHashValidator:
         required_elements = ["title", "description", "constitutional_principles"]
         for element in required_elements:
             if not policy_data.get(element):
-                violations.append(
-                    f"Policy missing required constitutional element: {element}"
-                )
+                violations.append(f"Policy missing required constitutional element: {element}")
                 compliance_multiplier *= 0.9
 
         # Check constitutional principles
         principles = policy_data.get("constitutional_principles", [])
         if isinstance(principles, list) and len(principles) == 0:
-            recommendations.append(
-                "Consider specifying applicable constitutional principles"
-            )
+            recommendations.append("Consider specifying applicable constitutional principles")
 
         # Check for constitutional compliance metadata
         if not policy_data.get("constitutional_compliance"):
@@ -496,9 +478,7 @@ class ConstitutionalHashValidator:
         start_time: float,
     ) -> ConstitutionalValidationResult:
         """Combine hash validation and compliance check results."""
-        combined_violations = hash_result.violations + compliance_checks.get(
-            "violations", []
-        )
+        combined_violations = hash_result.violations + compliance_checks.get("violations", [])
         combined_recommendations = hash_result.recommendations + compliance_checks.get(
             "recommendations", []
         )
@@ -524,16 +504,12 @@ class ConstitutionalHashValidator:
             validation_level=hash_result.validation_level,
             violations=combined_violations,
             recommendations=combined_recommendations,
-            performance_metrics={
-                "validation_time_ms": (time.time() - start_time) * 1000
-            },
+            performance_metrics={"validation_time_ms": (time.time() - start_time) * 1000},
             constitutional_hash=self.constitutional_hash,
             integrity_signature=hash_result.integrity_signature,
         )
 
-    def _generate_cache_key(
-        self, provided_hash: str | None, context: ConstitutionalContext
-    ) -> str:
+    def _generate_cache_key(self, provided_hash: str | None, context: ConstitutionalContext) -> str:
         """Generate cache key for validation result."""
         key_components = [
             provided_hash or "none",
@@ -543,9 +519,7 @@ class ConstitutionalHashValidator:
         ]
         return hashlib.sha256("|".join(key_components).encode()).hexdigest()[:16]
 
-    async def _get_cached_validation(
-        self, cache_key: str
-    ) -> ConstitutionalValidationResult | None:
+    async def _get_cached_validation(self, cache_key: str) -> ConstitutionalValidationResult | None:
         """Get cached validation result."""
         try:
             # Check in-memory cache first
@@ -559,9 +533,7 @@ class ConstitutionalHashValidator:
 
             # Check Redis cache if available
             if self.redis_client:
-                cached_data = await self.redis_client.get(
-                    f"constitutional_validation:{cache_key}"
-                )
+                cached_data = await self.redis_client.get(f"constitutional_validation:{cache_key}")
                 if cached_data:
                     # Parse cached result (simplified for this implementation)
                     return None  # Would implement proper deserialization
@@ -657,9 +629,7 @@ class ConstitutionalHashValidator:
             validation_level=context.validation_level,
             violations=[f"Validation error: {error_message}"],
             recommendations=["Check input data", "Retry validation", "Contact support"],
-            performance_metrics={
-                "validation_time_ms": (time.time() - start_time) * 1000
-            },
+            performance_metrics={"validation_time_ms": (time.time() - start_time) * 1000},
             constitutional_hash=self.constitutional_hash,
         )
 

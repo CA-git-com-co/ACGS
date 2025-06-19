@@ -22,9 +22,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -118,14 +116,10 @@ class TypeAnnotationAnalyzer:
                 suggestions["return"] = "bool"
             elif "return None" in function_body:
                 suggestions["return"] = "None"
-            elif any(
-                keyword in function_body for keyword in ["JSONResponse", "Response"]
-            ):
+            elif any(keyword in function_body for keyword in ["JSONResponse", "Response"]):
                 suggestions["return"] = "Response"
             elif "async def" in ast.unparse(node) if hasattr(ast, "unparse") else "":
-                suggestions["return"] = (
-                    "Any"  # Async functions often return complex types
-                )
+                suggestions["return"] = "Any"  # Async functions often return complex types
             else:
                 suggestions["return"] = "Any"
 
@@ -204,12 +198,8 @@ class TypeAnnotationAnalyzer:
 
             # Generate import statements if needed
             if type_annotations_needed:
-                import_statements = self.generate_import_statements(
-                    type_annotations_needed
-                )
-                result.changes_made.extend(
-                    [f"Added import: {imp}" for imp in import_statements]
-                )
+                import_statements = self.generate_import_statements(type_annotations_needed)
+                result.changes_made.extend([f"Added import: {imp}" for imp in import_statements])
 
             logger.info(
                 f"Analyzed {file_path}: {result.functions_analyzed} functions, {result.functions_annotated} annotated"
@@ -272,9 +262,7 @@ class TypeAnnotationAnalyzer:
 
         for result in sorted_results[:10]:  # Top 10 files
             if result.functions_analyzed > 0:
-                coverage = (
-                    result.functions_annotated / result.functions_analyzed
-                ) * 100
+                coverage = (result.functions_annotated / result.functions_analyzed) * 100
                 report += f"- **{result.file_path}**: {coverage:.1f}% coverage ({result.functions_annotated}/{result.functions_analyzed} functions)\n"
 
         report += "\n## Errors Encountered\n\n"
@@ -295,9 +283,7 @@ def main():
     else:
         project_root = "/mnt/persist/workspace"
 
-    logger.info(
-        f"Starting type annotation analysis for ACGS-PGP project at {project_root}"
-    )
+    logger.info(f"Starting type annotation analysis for ACGS-PGP project at {project_root}")
 
     analyzer = TypeAnnotationAnalyzer(project_root)
 

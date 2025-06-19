@@ -20,8 +20,8 @@ async def verify_policy_rules(
 
     # 1. Generate Proof Obligations from AC Principles
     # This assumes principles relevant to the rules are provided or fetched.
-    all_proof_obligations: list[ProofObligation] = (
-        await generate_proof_obligations_from_principles(ac_principles)
+    all_proof_obligations: list[ProofObligation] = await generate_proof_obligations_from_principles(
+        ac_principles
     )
 
     if not all_proof_obligations:
@@ -91,9 +91,7 @@ if __name__ == "__main__":
         # ensures: Correct function execution
         # sha256: func_hash
         sample_ac_principles = [
-            ACPrinciple(
-                id=1, name="P1", content="Ensure role-based access.", description=""
-            ),
+            ACPrinciple(id=1, name="P1", content="Ensure role-based access.", description=""),
             # ACPrinciple(id=2, name="P2", content="Data must be private.", description=""),
             ACPrinciple(
                 id=3,
@@ -125,18 +123,14 @@ if __name__ == "__main__":
         successful_principles = [
             p for p in sample_ac_principles if "fail_verification" not in p.content
         ]
-        results_success = await verify_policy_rules(
-            sample_policy_rules, successful_principles
-        )
+        results_success = await verify_policy_rules(sample_policy_rules, successful_principles)
         for res in results_success:
             print(res.model_dump_json(indent=2))
             assert res.status == "verified"
 
         print("\n--- Test Case 2: Expect Verification Failure ---")
         # Include the failing principle
-        results_failure = await verify_policy_rules(
-            sample_policy_rules, sample_ac_principles
-        )
+        results_failure = await verify_policy_rules(sample_policy_rules, sample_ac_principles)
         for res in results_failure:
             print(res.model_dump_json(indent=2))
             assert res.status == "failed"

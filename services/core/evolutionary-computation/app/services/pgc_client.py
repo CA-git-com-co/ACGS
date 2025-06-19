@@ -61,9 +61,7 @@ class PGCServiceClient:
                 "source": "ec_service",
             }
 
-            response = await self.client.post(
-                "/api/v1/enforcement/evaluate", json=request_data
-            )
+            response = await self.client.post("/api/v1/enforcement/evaluate", json=request_data)
             response.raise_for_status()
 
             return response.json()
@@ -116,9 +114,7 @@ class PGCServiceClient:
                 "source": "ec_service",
             }
 
-            response = await self.client.post(
-                "/api/v1/alphaevolve/enforce", json=request_data
-            )
+            response = await self.client.post("/api/v1/alphaevolve/enforce", json=request_data)
             response.raise_for_status()
 
             return response.json()
@@ -148,9 +144,7 @@ class PGCServiceClient:
             if optimization_hints:
                 params["optimization_hints"] = optimization_hints
 
-            response = await self.client.get(
-                "/api/v1/enforcement/strategies", params=params
-            )
+            response = await self.client.get("/api/v1/enforcement/strategies", params=params)
             response.raise_for_status()
 
             return response.json()

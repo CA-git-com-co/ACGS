@@ -19,9 +19,7 @@ from typing import Any
 import aiohttp
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -175,9 +173,7 @@ class IntegrationTestValidator:
                                 healthy_services += 1
                                 logger.info(f"✅ {service_name}: healthy")
                             else:
-                                logger.warning(
-                                    f"⚠️ {service_name}: status {response.status}"
-                                )
+                                logger.warning(f"⚠️ {service_name}: status {response.status}")
                     except Exception as e:
                         logger.warning(f"❌ {service_name}: {e}")
 
@@ -291,9 +287,7 @@ class IntegrationTestValidator:
                                 f"✅ AC Service compliance: {ac_result.get('compliance_score', 'N/A')}"
                             )
                         else:
-                            logger.warning(
-                                f"⚠️ AC Service compliance failed: {response.status}"
-                            )
+                            logger.warning(f"⚠️ AC Service compliance failed: {response.status}")
                 except Exception as e:
                     ac_success = False
                     logger.warning(f"❌ AC Service error: {e}")
@@ -312,9 +306,7 @@ class IntegrationTestValidator:
                                 f"✅ PGC Service compliance: {pgc_result.get('workflow_id', 'N/A')}"
                             )
                         else:
-                            logger.warning(
-                                f"⚠️ PGC Service compliance failed: {response.status}"
-                            )
+                            logger.warning(f"⚠️ PGC Service compliance failed: {response.status}")
                 except Exception as e:
                     pgc_success = False
                     logger.warning(f"❌ PGC Service error: {e}")
@@ -377,9 +369,7 @@ class IntegrationTestValidator:
                                 f"✅ GS Service synthesis: {gs_result.get('policy_id', 'N/A')}"
                             )
                         else:
-                            logger.warning(
-                                f"⚠️ GS Service synthesis failed: {response.status}"
-                            )
+                            logger.warning(f"⚠️ GS Service synthesis failed: {response.status}")
                 except Exception as e:
                     gs_success = False
                     logger.warning(f"❌ GS Service error: {e}")
@@ -438,9 +428,7 @@ class IntegrationTestValidator:
                                 f"✅ FV Service verification: {fv_result.get('verification_id', 'N/A')}"
                             )
                         else:
-                            logger.warning(
-                                f"⚠️ FV Service verification failed: {response.status}"
-                            )
+                            logger.warning(f"⚠️ FV Service verification failed: {response.status}")
                 except Exception as e:
                     fv_success = False
                     logger.warning(f"❌ FV Service error: {e}")
@@ -530,9 +518,7 @@ class IntegrationTestValidator:
             test_end = time.time()
             test_time = (test_end - test_start) * 1000
 
-            successful_communications = len(
-                [t for t in communication_tests if t["success"]]
-            )
+            successful_communications = len([t for t in communication_tests if t["success"]])
             success_rate = successful_communications / len(communication_tests)
 
             status = TestStatus.PASSED if success_rate >= 0.8 else TestStatus.FAILED
@@ -813,9 +799,7 @@ class IntegrationTestValidator:
             test_time = (test_end - test_start) * 1000
 
             # Test passes if performance improvement >10%
-            performance_target_met = (
-                oversight_metrics["performance_optimization"] > 0.10
-            )
+            performance_target_met = oversight_metrics["performance_optimization"] > 0.10
             status = TestStatus.PASSED if performance_target_met else TestStatus.FAILED
 
             return TestResult(
@@ -966,9 +950,7 @@ class IntegrationTestValidator:
             return TestResult(
                 test_name="Response Time Performance",
                 test_type=TestType.PERFORMANCE,
-                status=(
-                    TestStatus.PASSED if performance_target_met else TestStatus.FAILED
-                ),
+                status=(TestStatus.PASSED if performance_target_met else TestStatus.FAILED),
                 execution_time_ms=test_time,
                 coverage_percentage=100.0 if performance_target_met else 0.0,
                 performance_metrics={
@@ -1079,9 +1061,7 @@ class IntegrationTestValidator:
 
                 # Execute batch of requests
                 batch_tasks = [make_request() for _ in range(requests_per_second)]
-                batch_results = await asyncio.gather(
-                    *batch_tasks, return_exceptions=True
-                )
+                batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
 
                 successful_requests += len([r for r in batch_results if r is True])
 
@@ -1103,9 +1083,7 @@ class IntegrationTestValidator:
             return TestResult(
                 test_name="System Throughput",
                 test_type=TestType.PERFORMANCE,
-                status=(
-                    TestStatus.PASSED if throughput_target_met else TestStatus.FAILED
-                ),
+                status=(TestStatus.PASSED if throughput_target_met else TestStatus.FAILED),
                 execution_time_ms=test_time,
                 coverage_percentage=100.0 if throughput_target_met else 0.0,
                 performance_metrics={
@@ -1149,24 +1127,16 @@ class IntegrationTestValidator:
 
         # Calculate overall metrics
         total_tests = sum(
-            suite.total_tests
-            for suite in suite_results
-            if isinstance(suite, TestSuiteResult)
+            suite.total_tests for suite in suite_results if isinstance(suite, TestSuiteResult)
         )
         total_passed = sum(
-            suite.passed_tests
-            for suite in suite_results
-            if isinstance(suite, TestSuiteResult)
+            suite.passed_tests for suite in suite_results if isinstance(suite, TestSuiteResult)
         )
         total_failed = sum(
-            suite.failed_tests
-            for suite in suite_results
-            if isinstance(suite, TestSuiteResult)
+            suite.failed_tests for suite in suite_results if isinstance(suite, TestSuiteResult)
         )
 
-        overall_success_rate = (
-            (total_passed / total_tests) * 100 if total_tests > 0 else 0
-        )
+        overall_success_rate = (total_passed / total_tests) * 100 if total_tests > 0 else 0
         coverage_target_met = overall_success_rate >= 80.0
 
         # Performance summary
@@ -1188,18 +1158,12 @@ class IntegrationTestValidator:
                 "coverage_target_met": coverage_target_met,
                 "performance_metrics": performance_metrics,
                 "enterprise_targets": {
-                    "response_time_under_2s": performance_metrics.get(
-                        "target_2s_met", False
-                    ),
-                    "concurrent_users_1000": performance_metrics.get(
-                        "load_target_met", False
-                    ),
+                    "response_time_under_2s": performance_metrics.get("target_2s_met", False),
+                    "concurrent_users_1000": performance_metrics.get("load_target_met", False),
                     "throughput_target_met": performance_metrics.get(
                         "throughput_target_met", False
                     ),
-                    "enforcement_under_32ms": performance_metrics.get(
-                        "latency_target_32ms", False
-                    ),
+                    "enforcement_under_32ms": performance_metrics.get("latency_target_32ms", False),
                 },
             }
         )

@@ -81,9 +81,7 @@ try:
     ENHANCED_SERVICES_AVAILABLE = True
     logger.info("Enhanced constitutional compliance services imported successfully")
 except ImportError as e:
-    logger.warning(
-        f"Enhanced services not available: {e}. Running with basic compliance."
-    )
+    logger.warning(f"Enhanced services not available: {e}. Running with basic compliance.")
     ENHANCED_SERVICES_AVAILABLE = False
 
 # Global service instances
@@ -147,16 +145,16 @@ app = FastAPI(
 async def add_security_headers(request, call_next):
     """Add comprehensive OWASP-recommended security headers."""
     response = await call_next(request)
-    
+
     # Core security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    
+
     # HSTS (HTTP Strict Transport Security)
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-    
+
     # Content Security Policy (CSP) - Enhanced for XSS protection
     csp_policy = (
         "default-src 'self'; "
@@ -170,24 +168,24 @@ async def add_security_headers(request, call_next):
         "form-action 'self'"
     )
     response.headers["Content-Security-Policy"] = csp_policy
-    
+
     # Permissions Policy
     permissions_policy = (
         "geolocation=(), microphone=(), camera=(), "
         "payment=(), usb=(), magnetometer=(), gyroscope=()"
     )
     response.headers["Permissions-Policy"] = permissions_policy
-    
+
     # Additional security headers
     response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
     response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
-    
+
     # ACGS-1 specific headers
     response.headers["X-ACGS-Security"] = "enabled"
     response.headers["X-Constitutional-Hash"] = "cdd01ef066bc6cf2"
-    
+
     return response
 
 
@@ -603,9 +601,7 @@ def _advanced_constitutional_check(policy) -> dict[str, Any]:
         "legal framework",
     ]
 
-    score = sum(
-        1 for indicator in constitutional_indicators if indicator in policy_text
-    )
+    score = sum(1 for indicator in constitutional_indicators if indicator in policy_text)
     confidence = min(0.98, 0.7 + (score * 0.035))
 
     return {
@@ -645,9 +641,7 @@ def _advanced_accountability_check(policy) -> dict[str, Any]:
         "review",
     ]
 
-    score = sum(
-        1 for indicator in accountability_indicators if indicator in policy_text
-    )
+    score = sum(1 for indicator in accountability_indicators if indicator in policy_text)
     confidence = min(0.92, 0.6 + (score * 0.04))
 
     return {
@@ -753,16 +747,11 @@ async def validate_content_simple(request_data: dict[str, Any]):
             "absolute power",
         ]
 
-        threats_detected = [
-            pattern for pattern in threat_patterns if pattern in content.lower()
-        ]
+        threats_detected = [pattern for pattern in threat_patterns if pattern in content.lower()]
 
         # Constitutional compliance check
         constitutional_violations = []
-        if (
-            "ignore constitutional" in content.lower()
-            or "bypass constitutional" in content.lower()
-        ):
+        if "ignore constitutional" in content.lower() or "bypass constitutional" in content.lower():
             constitutional_violations.append("Constitutional bypass attempt detected")
 
         if "unrestricted access" in content.lower():
@@ -815,9 +804,7 @@ async def validate_constitutional_compliance(request: dict[str, Any]):
     validation_level = request.get("level", "comprehensive")
     enable_formal_verification = request.get("enable_formal_verification", False)
 
-    validation_id = (
-        f"VAL-{int(time.time())}-{hashlib.sha256(str(policy).encode()).hexdigest()[:8]}"
-    )
+    validation_id = f"VAL-{int(time.time())}-{hashlib.sha256(str(policy).encode()).hexdigest()[:8]}"
 
     # Log audit trail
     if audit_logger:
@@ -914,10 +901,8 @@ async def validate_constitutional_compliance(request: dict[str, Any]):
     # Formal verification integration if requested and available
     if enable_formal_verification and fv_client and overall_compliant:
         try:
-            formal_verification_results = (
-                await fv_client.verify_constitutional_compliance(
-                    policy, validation_results
-                )
+            formal_verification_results = await fv_client.verify_constitutional_compliance(
+                policy, validation_results
             )
         except Exception as e:
             logger.warning(f"Formal verification failed: {e}")
@@ -938,8 +923,7 @@ async def validate_constitutional_compliance(request: dict[str, Any]):
             "rules_failed": sum(1 for r in validation_results if not r["compliant"]),
             "overall_confidence": (
                 round(
-                    sum(r["confidence"] for r in validation_results)
-                    / len(validation_results),
+                    sum(r["confidence"] for r in validation_results) / len(validation_results),
                     4,
                 )
                 if validation_results
@@ -995,9 +979,7 @@ async def validate_constitutional_compliance_advanced(request: dict[str, Any]):
 
     # Add advanced analysis
     advanced_analysis = {
-        "constitutional_fidelity_score": _calculate_constitutional_fidelity(
-            base_result
-        ),
+        "constitutional_fidelity_score": _calculate_constitutional_fidelity(base_result),
         "risk_assessment": _assess_constitutional_risk(base_result),
         "compliance_trends": _analyze_compliance_trends(base_result),
         "stakeholder_impact": _assess_stakeholder_impact(request.get("policy", {})),
@@ -1203,9 +1185,7 @@ async def calculate_compliance_score(request: dict[str, Any]):
 
     # Calculate improvement potential
     max_possible_score = sum(r["weight"] for r in validation_result["results"])
-    detailed_score["improvement_potential"] = (
-        max_possible_score - detailed_score["overall_score"]
-    )
+    detailed_score["improvement_potential"] = max_possible_score - detailed_score["overall_score"]
 
     return {
         "policy_id": policy.get("policy_id", "unknown"),

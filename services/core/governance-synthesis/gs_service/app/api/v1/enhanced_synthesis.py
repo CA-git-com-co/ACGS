@@ -30,12 +30,8 @@ router = APIRouter()
 class ConstitutionalPrincipleAPI(BaseModel):
     """Constitutional principle for API requests."""
 
-    description: str = Field(
-        ..., description="Description of the constitutional principle"
-    )
-    type: str = Field(
-        ..., description="Type of principle (e.g., fairness, transparency)"
-    )
+    description: str = Field(..., description="Description of the constitutional principle")
+    type: str = Field(..., description="Type of principle (e.g., fairness, transparency)")
     category: str | None = Field(None, description="Category of the principle")
     weight: float | None = Field(1.0, description="Weight/importance of the principle")
 
@@ -48,45 +44,31 @@ class EnhancedSynthesisRequestAPI(BaseModel):
         ..., description="Constitutional principles to consider"
     )
     constraints: list[str] | None = Field(None, description="Additional constraints")
-    context_data: dict[str, Any] | None = Field(
-        None, description="Context data for synthesis"
-    )
+    context_data: dict[str, Any] | None = Field(None, description="Context data for synthesis")
     target_format: str = Field("rego", description="Target format for the policy")
-    policy_type: str = Field(
-        "governance_rule", description="Type of policy to synthesize"
-    )
+    policy_type: str = Field("governance_rule", description="Type of policy to synthesize")
 
     # Validation options
     validation_level: str = Field(
         "standard", description="Validation level (basic, standard, comprehensive)"
     )
     enable_opa_validation: bool = Field(True, description="Enable OPA-based validation")
-    enable_conflict_detection: bool = Field(
-        True, description="Enable conflict detection"
-    )
-    enable_compliance_checking: bool = Field(
-        True, description="Enable compliance checking"
-    )
+    enable_conflict_detection: bool = Field(True, description="Enable conflict detection")
+    enable_compliance_checking: bool = Field(True, description="Enable compliance checking")
     enable_constitutional_validation: bool = Field(
         True, description="Enable constitutional validation"
     )
 
     # Performance options
-    enable_parallel_validation: bool = Field(
-        True, description="Enable parallel validation"
-    )
+    enable_parallel_validation: bool = Field(True, description="Enable parallel validation")
     max_validation_latency_ms: int = Field(
         50, description="Maximum validation latency in milliseconds"
     )
 
     # Integration options
     enable_wina_optimization: bool = Field(True, description="Enable WINA optimization")
-    enable_alphaevolve_synthesis: bool = Field(
-        True, description="Enable AlphaEvolve synthesis"
-    )
-    enable_langgraph_workflow: bool = Field(
-        True, description="Enable LangGraph workflow"
-    )
+    enable_alphaevolve_synthesis: bool = Field(True, description="Enable AlphaEvolve synthesis")
+    enable_langgraph_workflow: bool = Field(True, description="Enable LangGraph workflow")
 
 
 class ValidationResultAPI(BaseModel):
@@ -220,9 +202,7 @@ async def synthesize_policy(
             validation_latency_ms=synthesis_response.validation_latency_ms,
             total_latency_ms=synthesis_response.total_latency_ms,
             wina_metadata=(
-                synthesis_response.wina_result.__dict__
-                if synthesis_response.wina_result
-                else None
+                synthesis_response.wina_result.__dict__ if synthesis_response.wina_result else None
             ),
             alphaevolve_metadata=synthesis_response.alphaevolve_metadata,
             langgraph_metadata=synthesis_response.langgraph_metadata,
@@ -464,9 +444,7 @@ async def multi_model_consensus_synthesis(
         ]
 
         for i, principle in enumerate(request.constitutional_principles, 1):
-            prompt_parts.append(
-                f"{i}. {principle.description} (Type: {principle.type})"
-            )
+            prompt_parts.append(f"{i}. {principle.description} (Type: {principle.type})")
 
         if request.constraints:
             prompt_parts.extend(["", "CONSTRAINTS:"])

@@ -44,18 +44,14 @@ class CreateVotingSessionRequest(BaseModel):
         default=ConsensusAlgorithm.SIMPLE_MAJORITY,
         description="Consensus algorithm to use",
     )
-    duration_hours: int = Field(
-        default=72, ge=1, le=168, description="Voting duration in hours"
-    )
+    duration_hours: int = Field(default=72, ge=1, le=168, description="Voting duration in hours")
     eligible_voters: list[int] | None = Field(
         default=None, description="List of eligible voter IDs"
     )
     custom_threshold: float | None = Field(
         default=None, ge=0.0, le=1.0, description="Custom consensus threshold"
     )
-    metadata: dict | None = Field(
-        default=None, description="Additional session metadata"
-    )
+    metadata: dict | None = Field(default=None, description="Additional session metadata")
 
 
 class CastVoteRequest(BaseModel):
@@ -63,9 +59,7 @@ class CastVoteRequest(BaseModel):
 
     vote: VoteType = Field(..., description="Vote choice")
     reasoning: str | None = Field(default=None, description="Optional vote reasoning")
-    signature: str | None = Field(
-        default=None, description="Optional cryptographic signature"
-    )
+    signature: str | None = Field(default=None, description="Optional cryptographic signature")
 
 
 class VotingSessionResponse(BaseModel):
@@ -209,9 +203,7 @@ async def create_voting_session(
             threshold=session.threshold,
             eligible_voters_count=len(session.eligible_voters),
             current_votes_count=len(session.current_votes),
-            time_remaining_seconds=max(
-                0, (session.end_time - session.start_time).total_seconds()
-            ),
+            time_remaining_seconds=max(0, (session.end_time - session.start_time).total_seconds()),
             metadata=session.metadata,
         )
 
@@ -361,12 +353,8 @@ async def finalize_voting_session(
 
 @router.get("/sessions", response_model=list[VotingSessionResponse])
 async def list_voting_sessions(
-    status_filter: VotingStatus | None = Query(
-        default=None, description="Filter by voting status"
-    ),
-    amendment_id: int | None = Query(
-        default=None, description="Filter by amendment ID"
-    ),
+    status_filter: VotingStatus | None = Query(default=None, description="Filter by voting status"),
+    amendment_id: int | None = Query(default=None, description="Filter by amendment ID"),
     db: AsyncSession = Depends(get_db_session),
 ) -> list[VotingSessionResponse]:
     """

@@ -46,9 +46,7 @@ async def perform_actual_synthesis(
         # Ensure source_principle_ids is a list of integers
         source_ids = [principle.get("id")] if principle.get("id") is not None else []
         # If principle IDs are not available (e.g., content-only synthesis), source_ids might be empty or use a placeholder
-        if (
-            not source_ids and "name" in principle
-        ):  # Fallback if id is missing but name is there
+        if not source_ids and "name" in principle:  # Fallback if id is missing but name is there
             # This is a placeholder, real scenario needs robust ID management or content hashing for traceability
             # source_ids = [hash(principle['name']) % 10000] # Example, not production ready
             pass
@@ -95,15 +93,11 @@ async def synthesize_rules(
         # Or, if policy.source_principle_ids are set, fetch those.
         if policy.source_principle_ids:
             try:
-                fetched_principles = (
-                    await ac_client.ac_service_client.fetch_principles_by_ids(
-                        policy.source_principle_ids
-                    )
+                fetched_principles = await ac_client.ac_service_client.fetch_principles_by_ids(
+                    policy.source_principle_ids
                 )
                 # Convert ACPrinciple (Pydantic model from client) to dict for internal processing
-                principles_for_synthesis = [
-                    fp.model_dump() for fp in fetched_principles
-                ]
+                principles_for_synthesis = [fp.model_dump() for fp in fetched_principles]
             except Exception as e:
                 raise HTTPException(
                     status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -125,9 +119,7 @@ async def synthesize_rules(
         # These might be minimal (e.g., just IDs) or full content.
         # If only IDs, fetch full content from AC Service.
         principle_ids_to_fetch = [
-            p["id"]
-            for p in request_body.principles
-            if "id" in p and p.get("content") is None
+            p["id"] for p in request_body.principles if "id" in p and p.get("content") is None
         ]
 
         # Add principles that already have content directly
@@ -138,14 +130,10 @@ async def synthesize_rules(
 
         if principle_ids_to_fetch:
             try:
-                fetched_principles = (
-                    await ac_client.ac_service_client.fetch_principles_by_ids(
-                        principle_ids_to_fetch
-                    )
+                fetched_principles = await ac_client.ac_service_client.fetch_principles_by_ids(
+                    principle_ids_to_fetch
                 )
-                principles_for_synthesis.extend(
-                    [fp.model_dump() for fp in fetched_principles]
-                )
+                principles_for_synthesis.extend([fp.model_dump() for fp in fetched_principles])
             except Exception as e:
                 raise HTTPException(
                     status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -179,9 +167,7 @@ async def synthesize_rules(
     # Prepare details for integrity logging
     synthesis_event_details = {
         "policy_id_synthesized_from": policy_id_for_logging,
-        "principles_used_ids": [
-            p.get("id") for p in principles_for_synthesis if p.get("id")
-        ],
+        "principles_used_ids": [p.get("id") for p in principles_for_synthesis if p.get("id")],
         "num_rules_generated": len(generated_rules_info),
         "target_context": request_body.target_context,
         # Add a hash or summary of generated rules if possible/needed
@@ -249,14 +235,10 @@ async def multi_model_synthesis(
 
             if policy.source_principle_ids:
                 try:
-                    fetched_principles = (
-                        await ac_client.ac_service_client.fetch_principles_by_ids(
-                            policy.source_principle_ids
-                        )
+                    fetched_principles = await ac_client.ac_service_client.fetch_principles_by_ids(
+                        policy.source_principle_ids
                     )
-                    principles_for_synthesis = [
-                        fp.model_dump() for fp in fetched_principles
-                    ]
+                    principles_for_synthesis = [fp.model_dump() for fp in fetched_principles]
 
                     # Also fetch database objects for risk assessment
                     principle_query = select(Principle).where(
@@ -282,9 +264,7 @@ async def multi_model_synthesis(
 
         elif request_body.principles:
             principle_ids_to_fetch = [
-                p["id"]
-                for p in request_body.principles
-                if "id" in p and p.get("content") is None
+                p["id"] for p in request_body.principles if "id" in p and p.get("content") is None
             ]
 
             for p_data in request_body.principles:
@@ -293,14 +273,10 @@ async def multi_model_synthesis(
 
             if principle_ids_to_fetch:
                 try:
-                    fetched_principles = (
-                        await ac_client.ac_service_client.fetch_principles_by_ids(
-                            principle_ids_to_fetch
-                        )
+                    fetched_principles = await ac_client.ac_service_client.fetch_principles_by_ids(
+                        principle_ids_to_fetch
                     )
-                    principles_for_synthesis.extend(
-                        [fp.model_dump() for fp in fetched_principles]
-                    )
+                    principles_for_synthesis.extend([fp.model_dump() for fp in fetched_principles])
 
                     # Fetch database objects for risk assessment
                     principle_query = select(Principle).where(
@@ -382,9 +358,7 @@ async def multi_model_synthesis(
         user_id_placeholder = 1
         synthesis_event_details = {
             "policy_id_synthesized_from": request_body.policy_id,
-            "principles_used_ids": [
-                p.get("id") for p in principles_for_synthesis if p.get("id")
-            ],
+            "principles_used_ids": [p.get("id") for p in principles_for_synthesis if p.get("id")],
             "num_rules_generated": len(generated_rules_info),
             "target_context": request_body.target_context,
             "synthesis_strategy": recommended_strategy,
@@ -455,9 +429,7 @@ async def perform_enhanced_multi_model_synthesis(
             # Add risk-aware context
             risk_level = "high"
             if error_prediction:
-                overall_risk = error_prediction.get("risk_assessment", {}).get(
-                    "overall_risk", 0.5
-                )
+                overall_risk = error_prediction.get("risk_assessment", {}).get("overall_risk", 0.5)
                 if overall_risk > 0.8:
                     risk_level = "critical"
                 elif overall_risk > 0.6:
@@ -465,7 +437,9 @@ async def perform_enhanced_multi_model_synthesis(
                 else:
                     risk_level = "medium"
 
-            rule_content = f"{base_rule}(X) :- constitutional_compliance(X), risk_level({risk_level})"
+            rule_content = (
+                f"{base_rule}(X) :- constitutional_compliance(X), risk_level({risk_level})"
+            )
 
             if target_context:
                 rule_content += f", context_is_{target_context}(X)"
@@ -473,9 +447,7 @@ async def perform_enhanced_multi_model_synthesis(
             # Add consensus validation
             rule_content += ", multi_model_validated(X), consensus_threshold_met(X)."
 
-            source_ids = (
-                [principle.get("id")] if principle.get("id") is not None else []
-            )
+            source_ids = [principle.get("id")] if principle.get("id") is not None else []
 
             generated_rules.append(
                 gs_schemas.GeneratedRuleInfo(
@@ -484,9 +456,7 @@ async def perform_enhanced_multi_model_synthesis(
             )
 
         except Exception as e:
-            logger.warning(
-                f"Error in enhanced multi-model synthesis for principle {i}: {e}"
-            )
+            logger.warning(f"Error in enhanced multi-model synthesis for principle {i}: {e}")
             # Fallback to standard synthesis for this principle
             fallback_rule = await perform_actual_synthesis([principle], target_context)
             generated_rules.extend(fallback_rule)
@@ -514,13 +484,9 @@ async def perform_enhanced_synthesis(
                 rule_content += f", context_is_{target_context}(X)"
 
             # Add validation checks
-            rule_content += (
-                ", semantic_validation_passed(X), consistency_check_passed(X)."
-            )
+            rule_content += ", semantic_validation_passed(X), consistency_check_passed(X)."
 
-            source_ids = (
-                [principle.get("id")] if principle.get("id") is not None else []
-            )
+            source_ids = [principle.get("id")] if principle.get("id") is not None else []
 
             generated_rules.append(
                 gs_schemas.GeneratedRuleInfo(

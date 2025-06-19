@@ -48,9 +48,7 @@ class GenerationConfig:
 
     # Model ensemble parameters
     primary_model: str = "qwen3-32b"
-    fallback_models: list[str] = field(
-        default_factory=lambda: ["deepseek-chat", "qwen3-235b"]
-    )
+    fallback_models: list[str] = field(default_factory=lambda: ["deepseek-chat", "qwen3-235b"])
     consensus_strategy: str = "weighted_average"
 
     # Quantum-inspired parameters
@@ -133,9 +131,7 @@ class PolicyGenerationRequest(BaseModel):
         default_factory=list, description="Relevant principles"
     )
     priority: str = Field(default="medium", description="Policy priority")
-    context: dict[str, Any] = Field(
-        default_factory=dict, description="Additional context"
-    )
+    context: dict[str, Any] = Field(default_factory=dict, description="Additional context")
 
     @validator("title")
     def validate_title(cls, v):
@@ -193,9 +189,7 @@ class GenerationEngine:
         self._quantum_state_registry: dict[str, dict[str, Any]] = {}
         self._semantic_entanglement_map: dict[str, list[str]] = {}
 
-        logger.info(
-            f"Generation Engine initialized with config: {self.config.to_dict()}"
-        )
+        logger.info(f"Generation Engine initialized with config: {self.config.to_dict()}")
 
     async def generate_policy(
         self, request: PolicyGenerationRequest, use_quantum_enhancement: bool = True
@@ -244,9 +238,7 @@ class GenerationEngine:
             # Achieve consensus
             consensus_representation = rep_set.achieve_consensus()
             if not consensus_representation:
-                raise RuntimeError(
-                    "Failed to achieve consensus among generated representations"
-                )
+                raise RuntimeError("Failed to achieve consensus among generated representations")
 
             # Validate constitutional compliance
             compliance_score = await self._validate_constitutional_compliance(
@@ -421,17 +413,13 @@ Constitution Hash: {self.config.constitutional_hash}
 
                 # Apply decoherence if entanglement is too low
                 if avg_entanglement < self.config.decoherence_threshold:
-                    rep.confidence_score *= (
-                        0.9  # Reduce confidence for low entanglement
-                    )
+                    rep.confidence_score *= 0.9  # Reduce confidence for low entanglement
 
             enhanced_representations.append(rep)
 
         return enhanced_representations
 
-    def _calculate_semantic_entanglement(
-        self, rep1: Representation, rep2: Representation
-    ) -> float:
+    def _calculate_semantic_entanglement(self, rep1: Representation, rep2: Representation) -> float:
         """Calculate quantum-inspired semantic entanglement between representations."""
         # Simplified semantic similarity calculation
         content1_words = set(rep1.lsu.content.lower().split())
@@ -446,9 +434,7 @@ Constitution Hash: {self.config.constitutional_hash}
         jaccard_similarity = intersection / union if union > 0 else 0.0
 
         # Apply quantum-inspired transformation
-        entanglement = min(
-            1.0, jaccard_similarity * self.config.semantic_entanglement_strength
-        )
+        entanglement = min(1.0, jaccard_similarity * self.config.semantic_entanglement_strength)
 
         return entanglement
 
@@ -502,14 +488,10 @@ Constitution Hash: {self.config.constitutional_hash}
         # Diversity-based recommendations
         diversity = rep_set.get_semantic_diversity()
         if diversity < 0.5:
-            recommendations.append(
-                "Consider expanding policy scope for better semantic coverage"
-            )
+            recommendations.append("Consider expanding policy scope for better semantic coverage")
 
         # Quantum state recommendations
-        entanglement = consensus_representation.lsu.quantum_state.get(
-            "entanglement_strength", 0.0
-        )
+        entanglement = consensus_representation.lsu.quantum_state.get("entanglement_strength", 0.0)
         if entanglement < 0.3:
             recommendations.append(
                 "Policy may benefit from better integration with existing governance framework"
@@ -580,9 +562,7 @@ Constitution Hash: {self.config.constitutional_hash}
 
         # Determine overall health
         dependency_issues = sum(
-            1
-            for dep in health_status["dependencies"].values()
-            if dep["status"] != "healthy"
+            1 for dep in health_status["dependencies"].values() if dep["status"] != "healthy"
         )
 
         if dependency_issues > 0:
@@ -599,8 +579,7 @@ Constitution Hash: {self.config.constitutional_hash}
             "generation_engine_metrics": {
                 "total_generations": self._generation_count,
                 "total_errors": self._error_count,
-                "success_rate": 1.0
-                - (self._error_count / max(1, self._generation_count)),
+                "success_rate": 1.0 - (self._error_count / max(1, self._generation_count)),
                 "average_generation_time_ms": (
                     self._total_generation_time / max(1, self._generation_count)
                 ),

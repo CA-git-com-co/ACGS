@@ -125,9 +125,7 @@ class TestSystemIntegration:
 
                 # Record metrics
                 test_metrics.record_response_time(response_time_ms)
-                test_metrics.record_compliance_score(
-                    response.constitutional_compliance_score
-                )
+                test_metrics.record_compliance_score(response.constitutional_compliance_score)
 
                 # Verify results
                 assert response.generation_id is not None
@@ -243,9 +241,7 @@ class TestSystemIntegration:
                     assert cached_result is None
 
                     # Cache set scenario
-                    set_result = await cache_manager.set(
-                        cache_key, cache_data, prefix="policy"
-                    )
+                    set_result = await cache_manager.set(cache_key, cache_data, prefix="policy")
                     assert set_result is True
 
                     # Verify cache metrics
@@ -316,9 +312,7 @@ class TestSystemIntegration:
 
                 # Record metrics
                 test_metrics.record_response_time(response_time_ms)
-                test_metrics.record_compliance_score(
-                    response.constitutional_compliance_score
-                )
+                test_metrics.record_compliance_score(response.constitutional_compliance_score)
 
         # Verify performance targets are met
         assert test_metrics.meets_performance_targets()

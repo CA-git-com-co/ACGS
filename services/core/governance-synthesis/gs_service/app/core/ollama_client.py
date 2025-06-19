@@ -62,9 +62,7 @@ class OllamaLLMClient:
         self.session: aiohttp.ClientSession | None = None
         self._available_models: list[str] | None = None
 
-        logger.info(
-            f"Initialized OllamaLLMClient with base URL: {self.config.base_url}"
-        )
+        logger.info(f"Initialized OllamaLLMClient with base URL: {self.config.base_url}")
 
     @classmethod
     def _load_config_from_env(cls) -> OllamaConfig:
@@ -132,9 +130,7 @@ class OllamaLLMClient:
             async with self.session.get(f"{self.config.base_url}/api/tags") as response:
                 if response.status == 200:
                     data = await response.json()
-                    self._available_models = [
-                        model["name"] for model in data.get("models", [])
-                    ]
+                    self._available_models = [model["name"] for model in data.get("models", [])]
                     logger.info(
                         f"Ollama server healthy. Available models: {len(self._available_models)}"
                     )
@@ -159,9 +155,7 @@ class OllamaLLMClient:
 
         return self._available_models or []
 
-    @retry(
-        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
-    )
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def generate_text(
         self,
         prompt: str,
@@ -206,9 +200,7 @@ class OllamaLLMClient:
             "options": {"temperature": temp, "num_predict": max_tok, **kwargs},
         }
 
-        logger.debug(
-            f"Sending request to Ollama: model={model_name}, prompt_length={len(prompt)}"
-        )
+        logger.debug(f"Sending request to Ollama: model={model_name}, prompt_length={len(prompt)}")
 
         try:
             async with self.session.post(
@@ -227,9 +219,7 @@ class OllamaLLMClient:
 
         except TimeoutError:
             logger.error(f"Ollama generation timed out for model {model_name}")
-            raise Exception(
-                f"Ollama generation timed out after {self.config.timeout_seconds}s"
-            )
+            raise Exception(f"Ollama generation timed out after {self.config.timeout_seconds}s")
         except aiohttp.ClientError as e:
             logger.error(f"Ollama client error for model {model_name}: {e}")
             raise Exception(f"Ollama client error: {e}")
@@ -237,9 +227,7 @@ class OllamaLLMClient:
             logger.error(f"Ollama generation failed for model {model_name}: {e}")
             raise
 
-    @retry(
-        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
-    )
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def get_structured_interpretation(
         self,
         query: LLMInterpretationInput,
@@ -365,9 +353,7 @@ async def get_ollama_client() -> OllamaLLMClient:
 
         # Verify server availability
         if not await _ollama_client.health_check():
-            logger.warning(
-                "Ollama server not available. Client created but may not function."
-            )
+            logger.warning("Ollama server not available. Client created but may not function.")
 
     return _ollama_client
 

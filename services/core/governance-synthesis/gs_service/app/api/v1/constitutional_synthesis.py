@@ -39,15 +39,11 @@ async def constitutional_synthesis_endpoint(
     3. Generates constitutionally compliant policies
     4. Returns detailed compliance information
     """
-    logger.info(
-        f"Constitutional synthesis requested for context: {synthesis_request.context}"
-    )
+    logger.info(f"Constitutional synthesis requested for context: {synthesis_request.context}")
 
     try:
         # Perform constitutional synthesis
-        synthesis_result = await query_llm_for_constitutional_synthesis(
-            synthesis_request
-        )
+        synthesis_result = await query_llm_for_constitutional_synthesis(synthesis_request)
 
         # Add contextual analysis in background
         background_tasks.add_task(
@@ -86,10 +82,8 @@ async def analyze_constitutional_context_endpoint(
     try:
         from ...core.constitutional_prompting import constitutional_prompt_builder
 
-        constitutional_context = (
-            await constitutional_prompt_builder.build_constitutional_context(
-                context=context, category=category, auth_token=auth_token
-            )
+        constitutional_context = await constitutional_prompt_builder.build_constitutional_context(
+            context=context, category=category, auth_token=auth_token
         )
 
         if "error" in constitutional_context:
@@ -114,9 +108,7 @@ async def analyze_constitutional_context_endpoint(
 
 
 @router.get("/constitutional-context/{context}")
-async def get_constitutional_context_endpoint(
-    context: str, category: str | None = None
-):
+async def get_constitutional_context_endpoint(context: str, category: str | None = None):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash

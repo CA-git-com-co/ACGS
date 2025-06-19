@@ -53,12 +53,8 @@ class ValidationRequest(BaseModel):
         default_factory=list, description="Constitutional requirements"
     )
     bias_sensitivity: float = Field(default=0.5, description="Bias sensitivity (0-1)")
-    uncertainty_tolerance: float = Field(
-        default=0.3, description="Uncertainty tolerance (0-1)"
-    )
-    target_cluster: ModelCluster | None = Field(
-        default=None, description="Target model cluster"
-    )
+    uncertainty_tolerance: float = Field(default=0.3, description="Uncertainty tolerance (0-1)")
+    target_cluster: ModelCluster | None = Field(default=None, description="Target model cluster")
     strategy: ValidationStrategy = Field(
         default=ValidationStrategy.HYBRID_ENSEMBLE, description="Validation strategy"
     )
@@ -228,9 +224,7 @@ async def get_validation_metrics(
             total_validations=metrics.get("total_validations", 0),
             recent_validations=metrics.get("recent_validations", 0),
             average_confidence=metrics.get("average_confidence", 0.0),
-            average_constitutional_fidelity=metrics.get(
-                "average_constitutional_fidelity", 0.0
-            ),
+            average_constitutional_fidelity=metrics.get("average_constitutional_fidelity", 0.0),
             average_consensus_level=metrics.get("average_consensus_level", 0.0),
             average_validation_time=metrics.get("average_validation_time", 0.0),
             strategy_usage_distribution=metrics.get("strategy_usage_distribution", {}),

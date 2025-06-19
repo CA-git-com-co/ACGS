@@ -27,9 +27,7 @@ class AnalyzedNeuronActivation(BaseModel):
     """
 
     neuron_id: str = Field(..., description="Identifier for the neuron.")
-    mean_activation: float = Field(
-        ..., description="Mean activation value for the neuron."
-    )
+    mean_activation: float = Field(..., description="Mean activation value for the neuron.")
     variance_activation: float = Field(
         ..., description="Variance of activation values for the neuron."
     )

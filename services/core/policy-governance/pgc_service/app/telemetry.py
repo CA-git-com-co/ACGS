@@ -103,12 +103,8 @@ class TelemetryManager:
 
         # Performance targets from config
         self.performance_config = self.config.get_section("performance")
-        self.p99_latency_target_ms = self.performance_config.get(
-            "p99_latency_target_ms", 500
-        )
-        self.p95_latency_target_ms = self.performance_config.get(
-            "p95_latency_target_ms", 25
-        )
+        self.p99_latency_target_ms = self.performance_config.get("p99_latency_target_ms", 500)
+        self.p95_latency_target_ms = self.performance_config.get("p95_latency_target_ms", 25)
 
     def setup(self) -> None:
         """Set up OpenTelemetry instrumentation."""
@@ -165,15 +161,11 @@ class TelemetryManager:
         # Add OTLP exporter if available
         if OTLP_AVAILABLE and OTLPSpanExporter:
             otlp_span_exporter = OTLPSpanExporter(endpoint=self.otlp_endpoint)
-            self.tracer_provider.add_span_processor(
-                BatchSpanProcessor(otlp_span_exporter)
-            )
+            self.tracer_provider.add_span_processor(BatchSpanProcessor(otlp_span_exporter))
 
         # Add console exporter in development or as fallback
         if self.environment == "development" or not OTLP_AVAILABLE:
-            self.tracer_provider.add_span_processor(
-                BatchSpanProcessor(ConsoleSpanExporter())
-            )
+            self.tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
 
         # Get tracer
         self.tracer = trace.get_tracer(self.service_name, self.otlp_version)
@@ -193,9 +185,7 @@ class TelemetryManager:
 
         # Add console exporter in development or as fallback
         if self.environment == "development" or not OTLP_AVAILABLE:
-            metric_readers.append(
-                PeriodicExportingMetricReader(ConsoleMetricExporter())
-            )
+            metric_readers.append(PeriodicExportingMetricReader(ConsoleMetricExporter()))
 
         # Create meter provider
         self.meter_provider = MeterProvider(
@@ -269,9 +259,7 @@ class TelemetryManager:
 
             # Add middleware for latency SLO monitoring
             @app.middleware("http")
-            async def latency_slo_middleware(
-                request: Request, call_next: Callable
-            ) -> Response:
+            async def latency_slo_middleware(request: Request, call_next: Callable) -> Response:
                 # Record start time
                 start_time = time.time()
 
@@ -310,9 +298,7 @@ class TelemetryManager:
                             response.headers["X-PGC-P95-Latency-Target"] = str(
                                 self.p95_latency_target_ms
                             )
-                            response.headers["X-PGC-Request-Duration"] = (
-                                f"{duration_ms:.2f}"
-                            )
+                            response.headers["X-PGC-Request-Duration"] = f"{duration_ms:.2f}"
 
                             # Check if request exceeded targets
                             if duration_ms > self.p99_latency_target_ms:
@@ -326,9 +312,7 @@ class TelemetryManager:
                 finally:
                     # Decrement active requests
                     if self.active_requests_gauge:
-                        self.active_requests_gauge.add(
-                            -1, {"service": self.service_name}
-                        )
+                        self.active_requests_gauge.add(-1, {"service": self.service_name})
 
             logger.info("FastAPI application instrumentation complete")
 

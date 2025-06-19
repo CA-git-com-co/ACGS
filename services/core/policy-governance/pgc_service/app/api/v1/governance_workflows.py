@@ -101,9 +101,7 @@ try:
                         self.agreement_score = 0.90
                         self.processing_time_ms = 150.0
                         self.model_results = []
-                        self.recommendations = [
-                            "Fallback analysis - enhanced analyzer unavailable"
-                        ]
+                        self.recommendations = ["Fallback analysis - enhanced analyzer unavailable"]
 
                 return FallbackConsensusResult()
 
@@ -130,9 +128,7 @@ class PolicyCreationRequest(BaseModel):
     description: str = Field(..., description="Policy description")
     stakeholders: list[str] = Field(default_factory=list, description="Stakeholders")
     priority: str = Field(default="medium", description="Policy priority")
-    risk_strategy: str = Field(
-        default="standard", description="Risk assessment strategy"
-    )
+    risk_strategy: str = Field(default="standard", description="Risk assessment strategy")
 
 
 class WorkflowResponse(BaseModel):
@@ -170,15 +166,9 @@ class EnhancedAnalysisRequest(BaseModel):
     """Request model for enhanced constitutional analysis."""
 
     policy_content: str = Field(..., description="Policy content to analyze")
-    analysis_type: str = Field(
-        default="compliance_scoring", description="Type of analysis"
-    )
-    consensus_strategy: str = Field(
-        default="weighted_average", description="Consensus strategy"
-    )
-    context: dict[str, Any] | None = Field(
-        default=None, description="Additional context"
-    )
+    analysis_type: str = Field(default="compliance_scoring", description="Type of analysis")
+    consensus_strategy: str = Field(default="weighted_average", description="Consensus strategy")
+    context: dict[str, Any] | None = Field(default=None, description="Additional context")
 
 
 class EnhancedAnalysisResponse(BaseModel):
@@ -313,7 +303,7 @@ async def initiate_policy_enforcement(
             {"name": "monitoring_setup", "status": "active", "progress": 10},
             {"name": "violation_detection", "status": "pending", "progress": 0},
             {"name": "remediation_execution", "status": "pending", "progress": 0},
-        ]
+        ],
     }
 
     return WorkflowResponse(
@@ -352,7 +342,7 @@ async def initiate_wina_oversight(
             {"name": "performance_monitoring", "status": "active", "progress": 10},
             {"name": "optimization_analysis", "status": "pending", "progress": 0},
             {"name": "reporting_generation", "status": "pending", "progress": 0},
-        ]
+        ],
     }
 
     return WorkflowResponse(
@@ -392,7 +382,7 @@ async def initiate_audit_transparency(
             {"name": "data_collection", "status": "active", "progress": 10},
             {"name": "analysis_processing", "status": "pending", "progress": 0},
             {"name": "public_reporting", "status": "pending", "progress": 0},
-        ]
+        ],
     }
 
     return WorkflowResponse(
@@ -408,9 +398,7 @@ async def initiate_audit_transparency(
 # Enhanced Constitutional Analysis Endpoints
 
 
-@router.post(
-    "/enhanced-constitutional-analysis", response_model=EnhancedAnalysisResponse
-)
+@router.post("/enhanced-constitutional-analysis", response_model=EnhancedAnalysisResponse)
 async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequest):
     # requires: Valid input parameters
     # ensures: Correct function execution
@@ -425,9 +413,7 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
 
     if not ENHANCED_ANALYZER_AVAILABLE:
         # Fallback to basic compliance validation
-        validation_results = await perform_compliance_validation(
-            analysis_id, "enhanced", []
-        )
+        validation_results = await perform_compliance_validation(analysis_id, "enhanced", [])
 
         return EnhancedAnalysisResponse(
             analysis_id=analysis_id,
@@ -470,9 +456,7 @@ async def perform_enhanced_constitutional_analysis(request: EnhancedAnalysisRequ
         )
         consensus_strategy_enum = getattr(
             ConsensusStrategy,
-            consensus_strategy_mapping.get(
-                request.consensus_strategy, "WEIGHTED_AVERAGE"
-            ),
+            consensus_strategy_mapping.get(request.consensus_strategy, "WEIGHTED_AVERAGE"),
         )
 
         # Perform consensus analysis
@@ -557,12 +541,11 @@ async def pgc_enforcement_integration(
 
     except Exception as e:
         logger.error(f"Error in PGC enforcement integration: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"PGC enforcement integration failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"PGC enforcement integration failed: {str(e)}")
 
 
 # Policy Creation Workflow Stage Endpoints
+
 
 @router.post("/policy-creation/{workflow_id}/advance-stage")
 async def advance_policy_creation_stage(
@@ -591,28 +574,28 @@ async def advance_policy_creation_stage(
             "draft_preparation": {
                 "next_stage": "stakeholder_review",
                 "required_actions": ["draft_completed", "constitutional_check"],
-                "estimated_duration_hours": 24
+                "estimated_duration_hours": 24,
             },
             "stakeholder_review": {
                 "next_stage": "constitutional_validation",
                 "required_actions": ["stakeholder_approval", "review_completed"],
-                "estimated_duration_hours": 72
+                "estimated_duration_hours": 72,
             },
             "constitutional_validation": {
                 "next_stage": "voting_process",
                 "required_actions": ["constitutional_compliance", "validation_passed"],
-                "estimated_duration_hours": 12
+                "estimated_duration_hours": 12,
             },
             "voting_process": {
                 "next_stage": "implementation",
                 "required_actions": ["voting_completed", "majority_approval"],
-                "estimated_duration_hours": 168  # 1 week
+                "estimated_duration_hours": 168,  # 1 week
             },
             "implementation": {
                 "next_stage": "completed",
                 "required_actions": ["policy_deployed", "enforcement_active"],
-                "estimated_duration_hours": 48
-            }
+                "estimated_duration_hours": 48,
+            },
         }
 
         if current_stage not in stage_transitions:
@@ -632,15 +615,21 @@ async def advance_policy_creation_stage(
                 "constitutional_validation": 50,
                 "voting_process": 75,
                 "implementation": 90,
-                "completed": 100
+                "completed": 100,
             }.get(next_stage, 10),
             "estimated_completion": datetime.now().isoformat(),
             "required_actions": transition["required_actions"],
-            "next_steps": transition["required_actions"] if next_stage != "completed" else ["workflow_complete"],
-            "timestamp": datetime.now().isoformat()
+            "next_steps": (
+                transition["required_actions"]
+                if next_stage != "completed"
+                else ["workflow_complete"]
+            ),
+            "timestamp": datetime.now().isoformat(),
         }
 
-        logger.info(f"Policy Creation workflow {workflow_id} advanced from {current_stage} to {next_stage}")
+        logger.info(
+            f"Policy Creation workflow {workflow_id} advanced from {current_stage} to {next_stage}"
+        )
 
         return processing_result
 
@@ -679,45 +668,45 @@ async def get_policy_creation_status(
                     "status": "completed",
                     "progress": 100,
                     "completed_at": datetime.now().isoformat(),
-                    "duration_hours": 2
+                    "duration_hours": 2,
                 },
                 {
                     "name": "stakeholder_review",
                     "status": "active",
                     "progress": 60,
                     "started_at": datetime.now().isoformat(),
-                    "estimated_completion_hours": 48
+                    "estimated_completion_hours": 48,
                 },
                 {
                     "name": "constitutional_validation",
                     "status": "pending",
                     "progress": 0,
-                    "estimated_duration_hours": 12
+                    "estimated_duration_hours": 12,
                 },
                 {
                     "name": "voting_process",
                     "status": "pending",
                     "progress": 0,
-                    "estimated_duration_hours": 168
+                    "estimated_duration_hours": 168,
                 },
                 {
                     "name": "implementation",
                     "status": "pending",
                     "progress": 0,
-                    "estimated_duration_hours": 48
-                }
+                    "estimated_duration_hours": 48,
+                },
             ],
             "stakeholders": ["governance_team", "policy_reviewers", "legal_team"],
             "constitutional_compliance": {
                 "status": "pending",
                 "hash": "cdd01ef066bc6cf2",
-                "last_check": datetime.now().isoformat()
+                "last_check": datetime.now().isoformat(),
             },
             "performance_metrics": {
                 "response_time_ms": 45.2,
                 "accuracy_score": 96.8,
-                "compliance_score": 94.5
-            }
+                "compliance_score": 94.5,
+            },
         }
 
         return workflow_status
@@ -752,9 +741,7 @@ async def get_governance_status():
             enhanced_analyzer_status = health.get("status", "degraded")
 
             # Check embedding client status
-            embedding_status = health.get("components", {}).get(
-                "embedding_client", "unavailable"
-            )
+            embedding_status = health.get("components", {}).get("embedding_client", "unavailable")
 
             # Check multi-model manager status
             multi_model_manager = await get_multi_model_manager()
@@ -945,9 +932,7 @@ async def perform_compliance_validation(
                 "compliance_score": result.compliance_score,
                 "detailed_results": {
                     "constitutional_alignment": (
-                        result.metadata.get("embedding_score", 0.95)
-                        if result.metadata
-                        else 0.95
+                        result.metadata.get("embedding_score", 0.95) if result.metadata else 0.95
                     ),
                     "procedural_compliance": 0.98,
                     "stakeholder_representation": 0.92,

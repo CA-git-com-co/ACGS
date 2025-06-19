@@ -155,9 +155,7 @@ class ViolationEscalationService:
             return None
 
         except Exception as e:
-            logger.error(
-                f"Error evaluating escalation for violation {violation.id}: {e}"
-            )
+            logger.error(f"Error evaluating escalation for violation {violation.id}: {e}")
             return EscalationResult(
                 escalation_id="",
                 escalated=False,
@@ -248,9 +246,7 @@ class ViolationEscalationService:
                 },
             )
 
-            logger.info(
-                f"Violation {violation.id} escalated to {escalation_level.value}"
-            )
+            logger.info(f"Violation {violation.id} escalated to {escalation_level.value}")
             return result
 
         except Exception as e:
@@ -285,8 +281,7 @@ class ViolationEscalationService:
                 select(ViolationEscalation).where(
                     and_(
                         ViolationEscalation.status == "pending",
-                        ViolationEscalation.escalated_at
-                        < datetime.now(UTC) - timedelta(hours=1),
+                        ViolationEscalation.escalated_at < datetime.now(UTC) - timedelta(hours=1),
                     )
                 )
             )
@@ -297,9 +292,7 @@ class ViolationEscalationService:
                 timeout_minutes = self._get_response_time_target(
                     EscalationLevel(escalation.escalation_level)
                 )
-                timeout_threshold = escalation.escalated_at + timedelta(
-                    minutes=timeout_minutes
-                )
+                timeout_threshold = escalation.escalated_at + timedelta(minutes=timeout_minutes)
 
                 if datetime.now(UTC) > timeout_threshold:
                     # Handle timeout
@@ -334,8 +327,7 @@ class ViolationEscalationService:
                 result = await db.execute(
                     select(func.count(ConstitutionalViolation.id)).where(
                         and_(
-                            ConstitutionalViolation.violation_type
-                            == violation.violation_type,
+                            ConstitutionalViolation.violation_type == violation.violation_type,
                             ConstitutionalViolation.detected_at >= threshold_time,
                         )
                     )
@@ -346,13 +338,8 @@ class ViolationEscalationService:
             elif rule.trigger_type == EscalationTrigger.TIME_THRESHOLD:
                 # Check if violation has been unresolved for too long
                 max_unresolved_minutes = conditions.get("max_unresolved_minutes", 30)
-                threshold_time = datetime.now(UTC) - timedelta(
-                    minutes=max_unresolved_minutes
-                )
-                return (
-                    violation.detected_at <= threshold_time
-                    and violation.status != "resolved"
-                )
+                threshold_time = datetime.now(UTC) - timedelta(minutes=max_unresolved_minutes)
+                return violation.detected_at <= threshold_time and violation.status != "resolved"
 
             return False
 
@@ -452,9 +439,7 @@ class ViolationEscalationService:
 
             # Find available user with required role
             result = await db.execute(
-                select(User)
-                .where(and_(User.role == required_role, User.is_active))
-                .limit(1)
+                select(User).where(and_(User.role == required_role, User.is_active)).limit(1)
             )
 
             return result.scalar_one_or_none()
@@ -506,14 +491,10 @@ class ViolationEscalationService:
                         )
                     elif channel == NotificationChannel.WEBSOCKET:
                         # Send WebSocket notification (would integrate with existing WebSocket system)
-                        await self._send_websocket_escalation_notification(
-                            notification_content
-                        )
+                        await self._send_websocket_escalation_notification(notification_content)
 
                 except Exception as e:
-                    logger.error(
-                        f"Failed to send notification via {channel.value}: {e}"
-                    )
+                    logger.error(f"Failed to send notification via {channel.value}: {e}")
                     success = False
 
             return success
@@ -531,9 +512,7 @@ class ViolationEscalationService:
         # For now, just log the notification
         logger.info(f"WebSocket escalation notification: {content['subject']}")
 
-    async def _handle_escalation_timeout(
-        self, escalation: ViolationEscalation, db: AsyncSession
-    ):
+    async def _handle_escalation_timeout(self, escalation: ViolationEscalation, db: AsyncSession):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -574,9 +553,7 @@ class ViolationEscalationService:
         except Exception as e:
             logger.error(f"Error handling escalation timeout: {e}")
 
-    def _get_next_escalation_level(
-        self, current_level: EscalationLevel
-    ) -> EscalationLevel | None:
+    def _get_next_escalation_level(self, current_level: EscalationLevel) -> EscalationLevel | None:
         """Get next escalation level for timeout handling."""
         escalation_hierarchy = {
             EscalationLevel.TECHNICAL_REVIEW: EscalationLevel.POLICY_MANAGER,

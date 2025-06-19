@@ -193,9 +193,7 @@ class ACGSPGPMetricsCollector:
         )
 
         if total_attempts > 0:
-            detection_rate = 1.0 - (
-                self.robustness_metrics.successful_attacks / total_attempts
-            )
+            detection_rate = 1.0 - (self.robustness_metrics.successful_attacks / total_attempts)
             self.robustness_metrics.manipulation_detection_rate = detection_rate
 
     async def _update_performance_metrics(self):
@@ -217,9 +215,7 @@ class ACGSPGPMetricsCollector:
         recent_events = list(self.enforcement_history)[-100:]  # Last 100 events
         if recent_events:
             compliant_count = sum(1 for e in recent_events if e.get("compliant", False))
-            self.performance_metrics.compliance_rate = compliant_count / len(
-                recent_events
-            )
+            self.performance_metrics.compliance_rate = compliant_count / len(recent_events)
 
         # Update total counts
         self.performance_metrics.total_enforcements = len(self.enforcement_history)
@@ -249,9 +245,7 @@ class ACGSPGPMetricsCollector:
                 state_distance = self._calculate_state_distance(prev_state, curr_state)
                 if state_distance > 0:
                     # Policy change magnitude as output distance
-                    policy_distance = self._calculate_policy_distance(
-                        prev_state, curr_state
-                    )
+                    policy_distance = self._calculate_policy_distance(prev_state, curr_state)
                     lipschitz_estimate = policy_distance / state_distance
                     lipschitz_estimates.append(lipschitz_estimate)
 
@@ -348,14 +342,9 @@ class ACGSPGPMetricsCollector:
                 recent_events = [
                     e
                     for e in self.enforcement_history
-                    if (
-                        datetime.now(UTC) - datetime.fromisoformat(e["timestamp"])
-                    ).seconds
-                    < 60
+                    if (datetime.now(UTC) - datetime.fromisoformat(e["timestamp"])).seconds < 60
                 ]
-                self.performance_metrics.throughput_per_second = (
-                    len(recent_events) / 60.0
-                )
+                self.performance_metrics.throughput_per_second = len(recent_events) / 60.0
 
                 await asyncio.sleep(10)  # Update every 10 seconds
             except Exception as e:
@@ -413,16 +402,14 @@ class ACGSPGPMetricsCollector:
             "constitutional_stability": {
                 "lipschitz_constant": self.stability_metrics.lipschitz_constant,
                 "paper_claim": 0.73,
-                "validated": abs(self.stability_metrics.lipschitz_constant - 0.73)
-                < 0.1,
+                "validated": abs(self.stability_metrics.lipschitz_constant - 0.73) < 0.1,
                 "stability_score": self.stability_metrics.stability_score,
                 "convergence_iterations": self.stability_metrics.convergence_iterations,
             },
             "enforcement_performance": {
                 "average_latency_ms": self.performance_metrics.average_latency_ms,
                 "paper_claim_ms": 37.0,
-                "sub_50ms_target_met": self.performance_metrics.average_latency_ms
-                < 50.0,
+                "sub_50ms_target_met": self.performance_metrics.average_latency_ms < 50.0,
                 "scaling_exponent": self.performance_metrics.scaling_exponent,
                 "paper_scaling_claim": 0.73,
                 "compliance_rate": self.performance_metrics.compliance_rate,

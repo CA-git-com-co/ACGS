@@ -284,9 +284,7 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         self.assertEqual(self.constitutional_hash, "cdd01ef066bc6cf2")
 
         # Test governance context structure
-        self.assertEqual(
-            self.governance_context.constitutional_hash, self.constitutional_hash
-        )
+        self.assertEqual(self.governance_context.constitutional_hash, self.constitutional_hash)
         self.assertEqual(self.governance_context.policy_type, "constitutional")
 
         # Test compliance requirements
@@ -319,15 +317,9 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         # Validate configuration requirements
         self.assertGreaterEqual(federated_config["min_nodes"], 2)
         self.assertLessEqual(federated_config["max_nodes"], 20)
-        self.assertLess(
-            federated_config["tensor_metrics"]["decomposition_error"], 0.005
-        )
-        self.assertGreater(
-            federated_config["tensor_metrics"]["computational_efficiency"], 0.90
-        )
-        self.assertEqual(
-            federated_config["tensor_metrics"]["constitutional_compliance"], 1.0
-        )
+        self.assertLess(federated_config["tensor_metrics"]["decomposition_error"], 0.005)
+        self.assertGreater(federated_config["tensor_metrics"]["computational_efficiency"], 0.90)
+        self.assertEqual(federated_config["tensor_metrics"]["constitutional_compliance"], 1.0)
 
         # Test batch processing configuration
         self.assertEqual(federated_config["batch_size"], 16)
@@ -381,9 +373,7 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         }
 
         for check_name, required in compliance_checks.items():
-            self.assertTrue(
-                required, f"{check_name} must be enabled for constitutional governance"
-            )
+            self.assertTrue(required, f"{check_name} must be enabled for constitutional governance")
 
         # Test security configuration
         security_config = {
@@ -479,9 +469,7 @@ class TestSystemValidation(unittest.TestCase):
         }
 
         for requirement, needed in verification_requirements.items():
-            self.assertTrue(
-                needed, f"Formal verification requirement {requirement} must be met"
-            )
+            self.assertTrue(needed, f"Formal verification requirement {requirement} must be met")
 
     def test_deployment_readiness(self):
         """Test deployment readiness criteria."""

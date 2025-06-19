@@ -8,9 +8,7 @@ from ..schemas import (  # Using schemas defined in gs_service
 )
 
 # Load environment variables
-INTEGRITY_SERVICE_URL = os.getenv(
-    "INTEGRITY_SERVICE_URL", "http://integrity_service:8000/api/v1"
-)
+INTEGRITY_SERVICE_URL = os.getenv("INTEGRITY_SERVICE_URL", "http://integrity_service:8000/api/v1")
 
 
 class IntegrityServiceClient:
@@ -85,9 +83,7 @@ class IntegrityServiceClient:
             )
             return None
         except httpx.RequestError as e:
-            print(
-                f"Request error fetching rule {rule_id} from Integrity Service: {str(e)}"
-            )
+            print(f"Request error fetching rule {rule_id} from Integrity Service: {str(e)}")
             return None
         except Exception as e:
             print(f"Unexpected error fetching rule {rule_id}: {str(e)}")

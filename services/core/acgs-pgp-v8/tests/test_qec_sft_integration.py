@@ -34,12 +34,12 @@ class TestQECSFTIntegration:
             postgres_url="postgresql://test:test@localhost:5432/test_db",
             constitutional_hash="cdd01ef066bc6cf2",
         )
-        
+
         # Mock the initialization to avoid actual connections
-        with patch.object(env, 'initialize') as mock_init:
+        with patch.object(env, "initialize") as mock_init:
             mock_init.return_value = None
             await env.initialize()
-        
+
         return env
 
     @pytest.fixture
@@ -49,12 +49,12 @@ class TestQECSFTIntegration:
             stabilizer_env=stabilizer_env,
             constitutional_hash="cdd01ef066bc6cf2",
         )
-        
+
         # Mock the initialization
-        with patch.object(engine, 'initialize') as mock_init:
+        with patch.object(engine, "initialize") as mock_init:
             mock_init.return_value = None
             await engine.initialize()
-        
+
         return engine
 
     @pytest.fixture
@@ -68,13 +68,13 @@ class TestQECSFTIntegration:
                 LSUConstraint(
                     type=ConstraintType.SECURITY,
                     value="high",
-                    description="High security requirement"
+                    description="High security requirement",
                 ),
                 LSUConstraint(
                     type=ConstraintType.PERFORMANCE,
                     value="<500ms",
-                    description="Response time requirement"
-                )
+                    description="Response time requirement",
+                ),
             ],
             content={
                 "title": "Test Democratic Policy",
@@ -99,15 +99,13 @@ class TestQECSFTIntegration:
             config={
                 "memory_limit": "256MB",
                 "cpu_limit": 0.5,
-                "environment_variables": {
-                    "COMPLIANCE_THRESHOLD": "0.8"
-                }
+                "environment_variables": {"COMPLIANCE_THRESHOLD": "0.8"},
             },
             constitutional_compliance={
                 "required_hash": "cdd01ef066bc6cf2",
                 "compliance_checks": ["transparency", "accountability"],
-                "minimum_compliance_score": 0.8
-            }
+                "minimum_compliance_score": 0.8,
+            },
         )
 
     @pytest.mark.asyncio
@@ -118,10 +116,10 @@ class TestQECSFTIntegration:
         assert sample_lsu.domain == LSUDomain.POLICY
         assert len(sample_lsu.constraints) == 2
         assert sample_lsu.constitutional_hash == "cdd01ef066bc6cf2"
-        
+
         # Test constraint validation
         assert sample_lsu.validate_constraints()
-        
+
         # Test constitutional compliance
         assert sample_lsu.compliance_validated
         assert sample_lsu.is_valid()
@@ -131,7 +129,7 @@ class TestQECSFTIntegration:
         """Test stabilizer registry loading and management."""
         # Add stabilizer to registry
         stabilizer_env.stabilizer_registry[sample_stabilizer.id] = sample_stabilizer
-        
+
         # Test registry access
         assert sample_stabilizer.id in stabilizer_env.stabilizer_registry
         retrieved_stabilizer = stabilizer_env.stabilizer_registry[sample_stabilizer.id]
@@ -144,7 +142,7 @@ class TestQECSFTIntegration:
         """Test stabilizer execution with mocked container."""
         # Add stabilizer to registry
         stabilizer_env.stabilizer_registry[sample_stabilizer.id] = sample_stabilizer
-        
+
         # Mock the container execution
         mock_result = {
             "success": True,
@@ -155,13 +153,13 @@ class TestQECSFTIntegration:
             },
             "execution_time_ms": 250,
         }
-        
-        with patch.object(stabilizer_env, '_run_stabilizer_container') as mock_run:
+
+        with patch.object(stabilizer_env, "_run_stabilizer_container") as mock_run:
             mock_run.return_value = mock_result
-            
+
             # Execute stabilizer
             result = await stabilizer_env.execute_stabilizer(sample_stabilizer.id, sample_lsu)
-            
+
             # Verify results
             assert result.status == StabilizerStatus.COMPLETED
             assert result.execution_time_ms > 0
@@ -180,7 +178,7 @@ class TestQECSFTIntegration:
                 compliance_score=0.9,
                 compliance_validated=True,
                 constitutional_hash="cdd01ef066bc6cf2",
-                metadata={"stabilizer_id": "STAB-TEST001"}
+                metadata={"stabilizer_id": "STAB-TEST001"},
             ),
             StabilizerResult(
                 execution_id="test_exec_2",
@@ -189,15 +187,15 @@ class TestQECSFTIntegration:
                 compliance_score=0.6,
                 compliance_validated=False,
                 constitutional_hash="cdd01ef066bc6cf2",
-                metadata={"stabilizer_id": "STAB-TEST002"}
-            )
+                metadata={"stabilizer_id": "STAB-TEST002"},
+            ),
         ]
-        
+
         # Perform diagnosis
         diagnostic_result = await diagnostic_engine.diagnose_lsu_stabilizer_results(
             sample_lsu, stabilizer_results, include_recommendations=True
         )
-        
+
         # Verify diagnostic results
         assert diagnostic_result.target_system == f"LSU-{sample_lsu.id}"
         assert diagnostic_result.error_count > 0  # Should detect errors from failed stabilizer
@@ -207,11 +205,13 @@ class TestQECSFTIntegration:
         assert diagnostic_result.requires_immediate_attention()
 
     @pytest.mark.asyncio
-    async def test_end_to_end_qec_sft_workflow(self, stabilizer_env, diagnostic_engine, sample_lsu, sample_stabilizer):
+    async def test_end_to_end_qec_sft_workflow(
+        self, stabilizer_env, diagnostic_engine, sample_lsu, sample_stabilizer
+    ):
         """Test complete QEC-SFT workflow from LSU to diagnosis."""
         # Setup
         stabilizer_env.stabilizer_registry[sample_stabilizer.id] = sample_stabilizer
-        
+
         # Mock successful stabilizer execution
         mock_result = {
             "success": True,
@@ -219,18 +219,18 @@ class TestQECSFTIntegration:
             "validation_results": {"transparency": True, "accountability": True},
             "execution_time_ms": 300,
         }
-        
-        with patch.object(stabilizer_env, '_run_stabilizer_container') as mock_run:
+
+        with patch.object(stabilizer_env, "_run_stabilizer_container") as mock_run:
             mock_run.return_value = mock_result
-            
+
             # Step 1: Execute all stabilizers
             stabilizer_results = await stabilizer_env.execute_all_stabilizers(sample_lsu)
-            
+
             # Step 2: Perform syndrome diagnosis
             diagnostic_result = await diagnostic_engine.diagnose_lsu_stabilizer_results(
                 sample_lsu, stabilizer_results, include_recommendations=True
             )
-            
+
             # Verify end-to-end results
             assert len(stabilizer_results) == 1  # One applicable stabilizer
             assert stabilizer_results[0].status == StabilizerStatus.COMPLETED
@@ -251,7 +251,7 @@ class TestQECSFTIntegration:
                 compliance_score=0.7,
                 compliance_validated=True,
                 constitutional_hash="cdd01ef066bc6cf2",
-                metadata={"stabilizer_id": "STAB-PERF001"}
+                metadata={"stabilizer_id": "STAB-PERF001"},
             ),
             StabilizerResult(
                 execution_id="test_exec_const",
@@ -259,23 +259,28 @@ class TestQECSFTIntegration:
                 compliance_score=0.4,
                 compliance_validated=False,
                 constitutional_hash="cdd01ef066bc6cf2",
-                metadata={"stabilizer_id": "STAB-CONST001"}
-            )
+                metadata={"stabilizer_id": "STAB-CONST001"},
+            ),
         ]
-        
+
         # Perform diagnosis
         diagnostic_result = await diagnostic_engine.diagnose_lsu_stabilizer_results(
             sample_lsu, stabilizer_results, include_recommendations=True
         )
-        
+
         # Verify error detection and recommendations
         assert diagnostic_result.error_count >= 2
         assert len(diagnostic_result.recommendations) > 0
-        
+
         # Check for specific recommendation types
-        recommendation_strategies = [rec.strategy.value for rec in diagnostic_result.recommendations]
-        assert "manual_intervention" in recommendation_strategies or "automatic_retry" in recommendation_strategies
-        
+        recommendation_strategies = [
+            rec.strategy.value for rec in diagnostic_result.recommendations
+        ]
+        assert (
+            "manual_intervention" in recommendation_strategies
+            or "automatic_retry" in recommendation_strategies
+        )
+
         # Verify auto-executable recommendations
         auto_recs = [rec for rec in diagnostic_result.recommendations if rec.is_safe_to_execute()]
         assert diagnostic_result.auto_executable_recommendations == len(auto_recs)
@@ -286,7 +291,7 @@ class TestQECSFTIntegration:
         # Test valid constitutional hash
         assert sample_lsu.constitutional_hash == "cdd01ef066bc6cf2"
         assert sample_lsu.compliance_validated
-        
+
         # Test invalid constitutional hash
         invalid_lsu = LogicalSemanticUnit(
             id="LSU-999999",
@@ -296,7 +301,7 @@ class TestQECSFTIntegration:
             constitutional_hash="invalid_hash",
             compliance_validated=False,
         )
-        
+
         assert not invalid_lsu.is_valid()
         assert invalid_lsu.constitutional_hash != "cdd01ef066bc6cf2"
 
@@ -304,14 +309,14 @@ class TestQECSFTIntegration:
         """Test stabilizer configuration and validation."""
         # Test memory limit parsing
         assert sample_stabilizer.get_memory_limit_mb() == 256
-        
+
         # Test CPU limit
         assert sample_stabilizer.get_cpu_limit() == 0.5
-        
+
         # Test constitutional compliance validation
         assert sample_stabilizer.validate_constitutional_compliance("cdd01ef066bc6cf2")
         assert not sample_stabilizer.validate_constitutional_compliance("invalid_hash")
-        
+
         # Test domain applicability
         assert sample_stabilizer.is_applicable_to_domain("policy")
         assert sample_stabilizer.is_applicable_to_domain("governance")

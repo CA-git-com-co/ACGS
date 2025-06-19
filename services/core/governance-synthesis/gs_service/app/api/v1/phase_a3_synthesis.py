@@ -108,21 +108,13 @@ class PhaseA3SynthesisResponse(BaseModel):
     strategy_used: str = Field(..., description="Synthesis strategy applied")
     risk_assessment: dict[str, Any] = Field(..., description="Risk analysis results")
     performance_metrics: dict[str, Any] = Field(..., description="Performance metrics")
-    constitutional_compliance: dict[str, Any] = Field(
-        ..., description="Compliance validation"
-    )
-    confidence_score: float = Field(
-        ..., ge=0.0, le=1.0, description="Synthesis confidence"
-    )
-    error_prediction: dict[str, Any] = Field(
-        ..., description="Error prediction analysis"
-    )
+    constitutional_compliance: dict[str, Any] = Field(..., description="Compliance validation")
+    confidence_score: float = Field(..., ge=0.0, le=1.0, description="Synthesis confidence")
+    error_prediction: dict[str, Any] = Field(..., description="Error prediction analysis")
     recommendations: list[str] = Field(
         default_factory=list, description="Improvement recommendations"
     )
-    synthesis_time_ms: float = Field(
-        ..., description="Total synthesis time in milliseconds"
-    )
+    synthesis_time_ms: float = Field(..., description="Total synthesis time in milliseconds")
 
 
 class RiskAssessmentEngine:
@@ -155,9 +147,7 @@ class RiskAssessmentEngine:
 
         # Calculate overall risk score
         overall_risk = (
-            principle_complexity * 0.4
-            + context_ambiguity * 0.35
-            + constraint_conflicts * 0.25
+            principle_complexity * 0.4 + context_ambiguity * 0.35 + constraint_conflicts * 0.25
         )
 
         # Recommend strategy based on risk
@@ -198,10 +188,7 @@ class RiskAssessmentEngine:
             len(context.split()) < 5,  # Too brief
             len(context.split()) > 200,  # Too verbose
             context.count("?") > 2,  # Many questions
-            any(
-                word in context.lower()
-                for word in ["maybe", "perhaps", "unclear", "ambiguous"]
-            ),
+            any(word in context.lower() for word in ["maybe", "perhaps", "unclear", "ambiguous"]),
         ]
 
         return min(1.0, sum(ambiguity_indicators) / len(ambiguity_indicators))
@@ -501,11 +488,7 @@ class PolicySynthesisEngine:
                         "agreement_level": consensus_result.agreement_level.value,
                         "consensus_time_ms": consensus_result.consensus_time_ms,
                         "models_used": len(
-                            [
-                                r
-                                for r in consensus_result.model_responses
-                                if r.error is None
-                            ]
+                            [r for r in consensus_result.model_responses if r.error is None]
                         ),
                         "requires_human_review": consensus_result.requires_human_review,
                     },
@@ -515,9 +498,7 @@ class PolicySynthesisEngine:
             except Exception as e:
                 logger.error(f"Multi-model consensus failed for {synthesis_id}: {e}")
                 # Fallback to enhanced validation
-                result = await self._enhanced_validation_synthesis(
-                    request, synthesis_id
-                )
+                result = await self._enhanced_validation_synthesis(request, synthesis_id)
                 result["recommendations"].append(
                     f"Multi-model consensus failed, used fallback: {str(e)}"
                 )
@@ -573,9 +554,7 @@ class PolicySynthesisEngine:
             "validation_timestamp": datetime.now(UTC).isoformat(),
         }
 
-    async def _predict_potential_errors(
-        self, policy_content: str, context: str
-    ) -> dict[str, Any]:
+    async def _predict_potential_errors(self, policy_content: str, context: str) -> dict[str, Any]:
         """Predict potential errors in synthesized policy."""
         # Simulate error prediction
         await asyncio.sleep(0.05)
@@ -641,9 +620,7 @@ async def synthesize_policy_phase_a3(
             return result
 
     except Exception as e:
-        logger.error(
-            f"Phase A3 synthesis failed: {e}", extra={"correlation_id": correlation_id}
-        )
+        logger.error(f"Phase A3 synthesis failed: {e}", extra={"correlation_id": correlation_id})
 
         if SHARED_COMPONENTS_AVAILABLE:
             return create_error_response(
@@ -680,9 +657,7 @@ async def _log_synthesis_metrics(
 
 
 @router.post("/consensus")
-async def multi_model_consensus_direct(
-    request: MultiModelConsensusRequest, http_request: Request
-):
+async def multi_model_consensus_direct(request: MultiModelConsensusRequest, http_request: Request):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
@@ -724,9 +699,7 @@ async def multi_model_consensus_direct(
         strategy = ConsensusStrategy.WEIGHTED_AVERAGE
         if request.models:
             primary_model = request.models[0]
-            strategy = strategy_map.get(
-                primary_model, ConsensusStrategy.WEIGHTED_AVERAGE
-            )
+            strategy = strategy_map.get(primary_model, ConsensusStrategy.WEIGHTED_AVERAGE)
 
         # Prepare context
         context = {

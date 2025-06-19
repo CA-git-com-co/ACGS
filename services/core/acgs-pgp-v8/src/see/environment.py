@@ -67,8 +67,7 @@ class CircuitBreaker:
     def _should_attempt_reset(self) -> bool:
         """Check if circuit breaker should attempt reset."""
         return (
-            self.last_failure_time
-            and time.time() - self.last_failure_time >= self.recovery_timeout
+            self.last_failure_time and time.time() - self.last_failure_time >= self.recovery_timeout
         )
 
     def _on_success(self):
@@ -166,9 +165,7 @@ class StabilizerExecutionEnvironment:
             if self.enable_circuit_breaker:
                 self.circuit_breakers = {
                     "redis": CircuitBreaker(failure_threshold=3, recovery_timeout=30.0),
-                    "postgres": CircuitBreaker(
-                        failure_threshold=3, recovery_timeout=30.0
-                    ),
+                    "postgres": CircuitBreaker(failure_threshold=3, recovery_timeout=30.0),
                     "http": CircuitBreaker(failure_threshold=5, recovery_timeout=60.0),
                     "docker": CircuitBreaker(failure_threshold=3, recovery_timeout=60.0),
                 }
@@ -363,14 +360,16 @@ class StabilizerExecutionEnvironment:
         try:
             if not os.path.exists(self.stabilizer_registry_path):
                 os.makedirs(self.stabilizer_registry_path, exist_ok=True)
-                logger.info(f"Created stabilizer registry directory: {self.stabilizer_registry_path}")
+                logger.info(
+                    f"Created stabilizer registry directory: {self.stabilizer_registry_path}"
+                )
                 return
 
             for filename in os.listdir(self.stabilizer_registry_path):
                 if filename.endswith(".json"):
                     filepath = os.path.join(self.stabilizer_registry_path, filename)
                     try:
-                        with open(filepath, 'r') as f:
+                        with open(filepath, "r") as f:
                             stabilizer_data = json.load(f)
                             stabilizer = Stabilizer(**stabilizer_data)
                             self.stabilizer_registry[stabilizer.id] = stabilizer
@@ -384,9 +383,7 @@ class StabilizerExecutionEnvironment:
             logger.error(f"Failed to load stabilizer registry: {e}")
 
     async def execute_stabilizer(
-        self,
-        stabilizer_id: str,
-        lsu: LogicalSemanticUnit
+        self, stabilizer_id: str, lsu: LogicalSemanticUnit
     ) -> StabilizerResult:
         """Execute a stabilizer against an LSU in an isolated container."""
         if stabilizer_id not in self.stabilizer_registry:
@@ -400,7 +397,7 @@ class StabilizerExecutionEnvironment:
             execution_id=execution_id,
             status=StabilizerStatus.INITIALIZING,
             constitutional_hash=self.constitutional_hash,
-            metadata={"stabilizer_id": stabilizer_id, "lsu_id": lsu.id}
+            metadata={"stabilizer_id": stabilizer_id, "lsu_id": lsu.id},
         )
 
         try:
@@ -417,9 +414,7 @@ class StabilizerExecutionEnvironment:
             # Run container with circuit breaker protection
             if self.enable_circuit_breaker:
                 container_result = await self.circuit_breakers["docker"].call(
-                    self._run_stabilizer_container,
-                    stabilizer,
-                    container_env
+                    self._run_stabilizer_container, stabilizer, container_env
                 )
             else:
                 container_result = await self._run_stabilizer_container(stabilizer, container_env)
@@ -445,9 +440,7 @@ class StabilizerExecutionEnvironment:
             raise
 
     async def _run_stabilizer_container(
-        self,
-        stabilizer: Stabilizer,
-        environment: dict[str, str]
+        self, stabilizer: Stabilizer, environment: dict[str, str]
     ) -> dict[str, Any]:
         """Run stabilizer in Docker container."""
         try:
@@ -460,14 +453,14 @@ class StabilizerExecutionEnvironment:
                 cpu_quota=int(stabilizer.get_cpu_limit() * 100000),
                 cpu_period=100000,
                 remove=True,
-                network_mode="none"  # Isolated network for security
+                network_mode="none",  # Isolated network for security
             )
 
             # Wait for completion with timeout
             exit_code = container.wait(timeout=stabilizer.timeout)
-            logs = container.logs().decode('utf-8')
+            logs = container.logs().decode("utf-8")
 
-            if exit_code['StatusCode'] == 0:
+            if exit_code["StatusCode"] == 0:
                 # Parse JSON output from stabilizer
                 try:
                     return json.loads(logs)
@@ -477,14 +470,14 @@ class StabilizerExecutionEnvironment:
                 return {
                     "success": False,
                     "error": f"Container exited with code {exit_code['StatusCode']}",
-                    "logs": logs
+                    "logs": logs,
                 }
 
         except Exception as e:
             return {
                 "success": False,
                 "error": f"Container execution failed: {str(e)}",
-                "details": {}
+                "details": {},
             }
 
     async def execute_all_stabilizers(self, lsu: LogicalSemanticUnit) -> list[StabilizerResult]:
@@ -511,9 +504,7 @@ class StabilizerExecutionEnvironment:
 
         try:
             if self.enable_circuit_breaker:
-                return await self.circuit_breakers["redis"].call(
-                    self.redis_pool.get, key
-                )
+                return await self.circuit_breakers["redis"].call(self.redis_pool.get, key)
             else:
                 return await self.redis_pool.get(key)
         except Exception as e:
@@ -567,9 +558,7 @@ class StabilizerExecutionEnvironment:
             logger.warning(f"Database execution failed: {e}")
             return None
 
-    async def http_request(
-        self, method: str, url: str, **kwargs
-    ) -> httpx.Response | None:
+    async def http_request(self, method: str, url: str, **kwargs) -> httpx.Response | None:
         """Make HTTP request with circuit breaker protection."""
         if not self.http_client:
             return None
@@ -654,9 +643,7 @@ class StabilizerExecutionEnvironment:
 
         # Determine overall health
         unhealthy_components = sum(
-            1
-            for comp in health_status["components"].values()
-            if comp["status"] != "healthy"
+            1 for comp in health_status["components"].values() if comp["status"] != "healthy"
         )
 
         if unhealthy_components > 0:
@@ -689,22 +676,20 @@ class StabilizerExecutionEnvironment:
 
     def get_execution_statistics(self) -> dict[str, Any]:
         """Get detailed execution statistics."""
-        recent_executions = (
-            self.execution_history[-100:] if self.execution_history else []
-        )
+        recent_executions = self.execution_history[-100:] if self.execution_history else []
 
         if recent_executions:
             recent_success_rate = sum(
                 1 for ex in recent_executions if ex.status == StabilizerStatus.COMPLETED
             ) / len(recent_executions)
 
-            recent_avg_time = sum(
-                ex.execution_time_ms for ex in recent_executions
-            ) / len(recent_executions)
+            recent_avg_time = sum(ex.execution_time_ms for ex in recent_executions) / len(
+                recent_executions
+            )
 
-            recent_error_rate = sum(
-                ex.errors_detected for ex in recent_executions
-            ) / len(recent_executions)
+            recent_error_rate = sum(ex.errors_detected for ex in recent_executions) / len(
+                recent_executions
+            )
         else:
             recent_success_rate = 0.0
             recent_avg_time = 0.0
@@ -714,8 +699,7 @@ class StabilizerExecutionEnvironment:
             "overall": {
                 "total_executions": self._total_executions,
                 "successful_executions": self._successful_executions,
-                "success_rate": self._successful_executions
-                / max(1, self._total_executions),
+                "success_rate": self._successful_executions / max(1, self._total_executions),
                 "average_execution_time_ms": self._total_execution_time
                 / max(1, self._total_executions),
             },

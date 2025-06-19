@@ -70,9 +70,7 @@ class AmendmentProposalInput(BaseModel):
     )
     proposed_changes: str = Field(..., description="Description of proposed changes")
     justification: str = Field(..., description="Rationale for the amendment")
-    proposed_content: str | None = Field(
-        None, description="New content if modifying/adding"
-    )
+    proposed_content: str | None = Field(None, description="New content if modifying/adding")
     urgency_level: Literal["normal", "urgent", "emergency"] = Field(
         "normal", description="Urgency level for processing"
     )
@@ -84,9 +82,7 @@ class AmendmentProposalInput(BaseModel):
 class StakeholderFeedbackInput(BaseModel):
     """Input model for stakeholder feedback collection."""
 
-    feedback_period_hours: int = Field(
-        72, ge=1, le=168, description="Feedback collection period"
-    )
+    feedback_period_hours: int = Field(72, ge=1, le=168, description="Feedback collection period")
     notification_channels: list[str] = Field(
         ["email", "dashboard"], description="Notification channels to use"
     )
@@ -99,25 +95,17 @@ class ConstitutionalAnalysisInput(BaseModel):
     """Input model for constitutional analysis."""
 
     analysis_model: str = Field("gemini-2.5-pro", description="LLM model for analysis")
-    compliance_threshold: float = Field(
-        0.85, ge=0.0, le=1.0, description="Compliance threshold"
-    )
-    conflict_detection_enabled: bool = Field(
-        True, description="Enable conflict detection"
-    )
+    compliance_threshold: float = Field(0.85, ge=0.0, le=1.0, description="Compliance threshold")
+    conflict_detection_enabled: bool = Field(True, description="Enable conflict detection")
     bias_analysis_enabled: bool = Field(True, description="Enable bias analysis")
 
 
 class VotingInput(BaseModel):
     """Input model for voting process."""
 
-    voting_period_hours: int = Field(
-        48, ge=1, le=168, description="Voting period duration"
-    )
+    voting_period_hours: int = Field(48, ge=1, le=168, description="Voting period duration")
     quorum_percentage: float = Field(0.6, ge=0.0, le=1.0, description="Required quorum")
-    weighted_voting: bool = Field(
-        True, description="Enable weighted voting by expertise"
-    )
+    weighted_voting: bool = Field(True, description="Enable weighted voting by expertise")
     anonymous_voting: bool = Field(False, description="Enable anonymous voting")
 
 
@@ -153,9 +141,7 @@ class ConstitutionalCouncilGraph:
         if LANGGRAPH_AVAILABLE:
             self._build_graph()
         else:
-            logger.warning(
-                "LangGraph not available. Graph functionality will be limited."
-            )
+            logger.warning("LangGraph not available. Graph functionality will be limited.")
 
     def _build_graph(self) -> None:
         """Build the LangGraph StateGraph for Constitutional Council workflows."""
@@ -167,9 +153,7 @@ class ConstitutionalCouncilGraph:
 
         # Add workflow nodes
         workflow.add_node("propose_amendment", self.propose_amendment)
-        workflow.add_node(
-            "gather_stakeholder_feedback", self.gather_stakeholder_feedback
-        )
+        workflow.add_node("gather_stakeholder_feedback", self.gather_stakeholder_feedback)
         workflow.add_node("analyze_constitutionality", self.analyze_constitutionality)
         workflow.add_node("conduct_voting", self.conduct_voting)
         workflow.add_node("refine_amendment", self.refine_amendment)
@@ -230,9 +214,7 @@ class ConstitutionalCouncilGraph:
         and database storage with proper error handling and logging.
         """
         try:
-            logger.info(
-                f"Starting amendment proposal for workflow {state.get('workflow_id')}"
-            )
+            logger.info(f"Starting amendment proposal for workflow {state.get('workflow_id')}")
 
             # Extract amendment proposal data
             proposal_data = state.get("amendment_proposal", {})
@@ -289,9 +271,7 @@ class ConstitutionalCouncilGraph:
                 "phase_deadlines": {
                     "feedback_deadline": (
                         datetime.now(UTC)
-                        + timedelta(
-                            hours=self.council_config.amendment_review_period_hours
-                        )
+                        + timedelta(hours=self.council_config.amendment_review_period_hours)
                     ).isoformat()
                 },
                 "required_stakeholders": self.council_config.required_stakeholder_roles,
@@ -327,9 +307,7 @@ class ConstitutionalCouncilGraph:
         and tracks participation rates for quorum requirements.
         """
         try:
-            logger.info(
-                f"Gathering stakeholder feedback for amendment {state.get('amendment_id')}"
-            )
+            logger.info(f"Gathering stakeholder feedback for amendment {state.get('amendment_id')}")
 
             amendment_id = state.get("amendment_id")
             if not amendment_id:
@@ -360,14 +338,10 @@ class ConstitutionalCouncilGraph:
                     reminder_intervals_hours=[24, 12, 2],
                 )
 
-                engagement_status = (
-                    await self.stakeholder_service.initiate_stakeholder_engagement(
-                        engagement_input
-                    )
+                engagement_status = await self.stakeholder_service.initiate_stakeholder_engagement(
+                    engagement_input
                 )
-                logger.info(
-                    f"Stakeholder engagement initiated for amendment {amendment_id}"
-                )
+                logger.info(f"Stakeholder engagement initiated for amendment {amendment_id}")
 
             # Get feedback records from stakeholder service
             feedback_records = await self.stakeholder_service.get_stakeholder_feedback(
@@ -393,9 +367,7 @@ class ConstitutionalCouncilGraph:
                 stakeholder_roles_provided.add(feedback.stakeholder_role.value)
 
             # Get engagement metrics
-            required_stakeholders = {
-                role.value for role in engagement_input.required_roles
-            }
+            required_stakeholders = {role.value for role in engagement_input.required_roles}
             missing_stakeholders = required_stakeholders - stakeholder_roles_provided
 
             # Check deadline status
@@ -463,9 +435,7 @@ class ConstitutionalCouncilGraph:
         conflict detection, and bias analysis using configured LLM models.
         """
         try:
-            logger.info(
-                f"Analyzing constitutionality for amendment {state.get('amendment_id')}"
-            )
+            logger.info(f"Analyzing constitutionality for amendment {state.get('amendment_id')}")
 
             amendment_proposal = state.get("amendment_proposal", {})
             stakeholder_feedback = state.get("stakeholder_feedback", [])
@@ -481,9 +451,7 @@ class ConstitutionalCouncilGraph:
                 "proposed_content": amendment_proposal.get("proposed_content"),
                 "stakeholder_feedback": [f["feedback"] for f in stakeholder_feedback],
                 "stakeholder_concerns": [
-                    f
-                    for f in stakeholder_feedback
-                    if "concern" in f.get("feedback", "").lower()
+                    f for f in stakeholder_feedback if "concern" in f.get("feedback", "").lower()
                 ],
             }
 
@@ -512,9 +480,7 @@ class ConstitutionalCouncilGraph:
 
             # Determine if amendment meets constitutional threshold
             compliance_threshold = self.config.constitutional_fidelity_threshold
-            is_constitutional = (
-                constitutional_analysis["compliance_score"] >= compliance_threshold
-            )
+            is_constitutional = constitutional_analysis["compliance_score"] >= compliance_threshold
 
             # Check for conflicts that require resolution
             has_conflicts = len(constitutional_analysis["identified_conflicts"]) > 0
@@ -529,9 +495,7 @@ class ConstitutionalCouncilGraph:
                 "requires_refinement": requires_refinement,
                 "identified_conflicts": constitutional_analysis["identified_conflicts"],
                 "current_phase": (
-                    "voting"
-                    if is_constitutional and not has_conflicts
-                    else "refinement_needed"
+                    "voting" if is_constitutional and not has_conflicts else "refinement_needed"
                 ),
                 "messages": state.get("messages", [])
                 + [
@@ -557,9 +521,7 @@ class ConstitutionalCouncilGraph:
                 "current_phase": "analysis_failed",
             }
 
-    async def conduct_voting(
-        self, state: ConstitutionalCouncilState
-    ) -> ConstitutionalCouncilState:
+    async def conduct_voting(self, state: ConstitutionalCouncilState) -> ConstitutionalCouncilState:
         """
         Manage democratic voting process with weighted stakeholder input.
 
@@ -603,9 +565,7 @@ class ConstitutionalCouncilGraph:
             # Calculate voting results
             total_eligible = len(self.council_config.required_stakeholder_roles)
             participation_rate = (
-                vote_summary["total_votes"] / total_eligible
-                if total_eligible > 0
-                else 0
+                vote_summary["total_votes"] / total_eligible if total_eligible > 0 else 0
             )
             quorum_met = participation_rate >= self.council_config.quorum_percentage
 
@@ -625,8 +585,7 @@ class ConstitutionalCouncilGraph:
             voting_deadline = state.get("phase_deadlines", {}).get("voting_deadline")
             if not voting_deadline:
                 voting_deadline = (
-                    datetime.now(UTC)
-                    + timedelta(hours=self.council_config.voting_period_hours)
+                    datetime.now(UTC) + timedelta(hours=self.council_config.voting_period_hours)
                 ).isoformat()
 
             # Check if voting period has ended
@@ -673,9 +632,7 @@ class ConstitutionalCouncilGraph:
                 ],
             }
 
-            logger.info(
-                f"Voting conducted. Results: {vote_summary}, Quorum met: {quorum_met}"
-            )
+            logger.info(f"Voting conducted. Results: {vote_summary}, Quorum met: {quorum_met}")
             return updated_state
 
         except Exception as e:
@@ -706,9 +663,7 @@ class ConstitutionalCouncilGraph:
 
             # Check if we've exceeded maximum refinement iterations
             if current_iterations >= max_iterations:
-                logger.warning(
-                    f"Maximum refinement iterations ({max_iterations}) reached"
-                )
+                logger.warning(f"Maximum refinement iterations ({max_iterations}) reached")
                 return {
                     **state,
                     "status": WorkflowStatus.FAILED.value,
@@ -730,9 +685,7 @@ class ConstitutionalCouncilGraph:
                     {
                         "area": "constitutional_compliance",
                         "issue": f"Compliance score {constitutional_analysis.get('compliance_score', 0):.2f} below threshold {self.config.constitutional_fidelity_threshold}",
-                        "recommendations": constitutional_analysis.get(
-                            "recommendations", []
-                        ),
+                        "recommendations": constitutional_analysis.get("recommendations", []),
                     }
                 )
 
@@ -749,9 +702,7 @@ class ConstitutionalCouncilGraph:
 
             # Add stakeholder concerns
             concerns = [
-                f
-                for f in stakeholder_feedback
-                if "concern" in f.get("feedback", "").lower()
+                f for f in stakeholder_feedback if "concern" in f.get("feedback", "").lower()
             ]
             if concerns:
                 refinement_areas.append(
@@ -770,9 +721,7 @@ class ConstitutionalCouncilGraph:
                         "issue": f"Voting failed with {voting_results.get('approval_rate', 0):.2f} approval rate",
                         "voting_feedback": [
                             v.get("reasoning", "")
-                            for v in voting_results.get(
-                                "stakeholder_votes", {}
-                            ).values()
+                            for v in voting_results.get("stakeholder_votes", {}).values()
                             if v.get("reasoning")
                         ],
                     }
@@ -848,18 +797,14 @@ class ConstitutionalCouncilGraph:
             )
 
             if not finalization_result["success"]:
-                raise ValueError(
-                    f"Amendment finalization failed: {finalization_result['error']}"
-                )
+                raise ValueError(f"Amendment finalization failed: {finalization_result['error']}")
 
             # Create comprehensive finalization summary
             finalization_summary = {
                 "amendment_id": amendment_id,
                 "final_status": finalization_result["final_status"],
                 "approval_date": datetime.now(UTC).isoformat(),
-                "voting_summary": state.get("voting_results", {}).get(
-                    "vote_summary", {}
-                ),
+                "voting_summary": state.get("voting_results", {}).get("vote_summary", {}),
                 "stakeholder_participation": state.get("stakeholder_participation", {}),
                 "constitutional_compliance": {
                     "compliance_score": state.get("compliance_score", 0),
@@ -867,9 +812,7 @@ class ConstitutionalCouncilGraph:
                     "identified_conflicts": state.get("identified_conflicts", []),
                 },
                 "refinement_iterations": state.get("refinement_iterations", 0),
-                "total_stakeholder_feedback": len(
-                    state.get("stakeholder_feedback", [])
-                ),
+                "total_stakeholder_feedback": len(state.get("stakeholder_feedback", [])),
                 "workflow_duration_hours": self._calculate_workflow_duration(state),
                 "finalization_timestamp": datetime.now(UTC).isoformat(),
                 "pipeline_processing": finalization_result["pipeline_results"],
@@ -940,9 +883,7 @@ class ConstitutionalCouncilGraph:
         status transitions, stakeholder notifications, and audit trail generation.
         """
         try:
-            logger.info(
-                f"Processing amendment finalization for amendment {amendment_id}"
-            )
+            logger.info(f"Processing amendment finalization for amendment {amendment_id}")
 
             # Get voting results and validate
             voting_results = state.get("voting_results", {})
@@ -968,9 +909,7 @@ class ConstitutionalCouncilGraph:
                 metadata={
                     "event": "finalize_amendment",
                     "voting_results": voting_results,
-                    "stakeholder_feedback_count": len(
-                        state.get("stakeholder_feedback", [])
-                    ),
+                    "stakeholder_feedback_count": len(state.get("stakeholder_feedback", [])),
                     "refinement_iterations": state.get("refinement_iterations", 0),
                 },
             )
@@ -990,9 +929,7 @@ class ConstitutionalCouncilGraph:
             amendment_update = schemas.ACAmendmentUpdate(
                 status="approved",
                 approval_date=datetime.now(UTC),
-                final_vote_count=voting_results.get("vote_summary", {}).get(
-                    "total_votes", 0
-                ),
+                final_vote_count=voting_results.get("vote_summary", {}).get("total_votes", 0),
                 approval_rate=voting_results.get("approval_rate", 0),
                 workflow_state="approved",
             )
@@ -1055,19 +992,13 @@ class ConstitutionalCouncilGraph:
         Send finalization notifications to all stakeholders through the engagement system.
         """
         try:
-            logger.info(
-                f"Sending finalization notifications for amendment {amendment_id}"
-            )
+            logger.info(f"Sending finalization notifications for amendment {amendment_id}")
 
             # Get stakeholder engagement status
-            engagement_status = await self.stakeholder_service.get_engagement_status(
-                amendment_id
-            )
+            engagement_status = await self.stakeholder_service.get_engagement_status(amendment_id)
 
             if not engagement_status:
-                logger.warning(
-                    f"No stakeholder engagement found for amendment {amendment_id}"
-                )
+                logger.warning(f"No stakeholder engagement found for amendment {amendment_id}")
                 return {"success": False, "error": "No stakeholder engagement found"}
 
             # Prepare notification content
@@ -1076,9 +1007,7 @@ class ConstitutionalCouncilGraph:
                 "final_status": final_status,
                 "voting_summary": voting_results.get("vote_summary", {}),
                 "approval_rate": voting_results.get("approval_rate", 0),
-                "total_votes": voting_results.get("vote_summary", {}).get(
-                    "total_votes", 0
-                ),
+                "total_votes": voting_results.get("vote_summary", {}).get("total_votes", 0),
                 "finalization_timestamp": datetime.now(UTC).isoformat(),
                 "workflow_duration": self._calculate_workflow_duration(state),
             }
@@ -1113,15 +1042,11 @@ class ConstitutionalCouncilGraph:
                 notification_tasks.append(task)
 
             # Execute notifications concurrently
-            notification_results = await asyncio.gather(
-                *notification_tasks, return_exceptions=True
-            )
+            notification_results = await asyncio.gather(*notification_tasks, return_exceptions=True)
 
             # Count successful notifications
             successful_notifications = sum(
-                1
-                for result in notification_results
-                if not isinstance(result, Exception) and result
+                1 for result in notification_results if not isinstance(result, Exception) and result
             )
 
             logger.info(
@@ -1155,9 +1080,7 @@ class ConstitutionalCouncilGraph:
                 "workflow_summary": {
                     "total_duration_hours": self._calculate_workflow_duration(state),
                     "refinement_iterations": state.get("refinement_iterations", 0),
-                    "stakeholder_feedback_count": len(
-                        state.get("stakeholder_feedback", [])
-                    ),
+                    "stakeholder_feedback_count": len(state.get("stakeholder_feedback", [])),
                     "constitutional_analysis": {
                         "compliance_score": state.get("compliance_score", 0),
                         "is_constitutional": state.get("is_constitutional", False),
@@ -1170,12 +1093,8 @@ class ConstitutionalCouncilGraph:
                     "transition_history": state.get("state_transition_history", []),
                 },
                 "stakeholder_engagement": {
-                    "notifications_sent": notification_result.get(
-                        "notifications_sent", 0
-                    ),
-                    "total_stakeholders": notification_result.get(
-                        "total_stakeholders", 0
-                    ),
+                    "notifications_sent": notification_result.get("notifications_sent", 0),
+                    "total_stakeholders": notification_result.get("total_stakeholders", 0),
                     "engagement_rate": state.get("stakeholder_participation", {}).get(
                         "engagement_rate", 0
                     ),
@@ -1189,9 +1108,7 @@ class ConstitutionalCouncilGraph:
                 },
             }
 
-            logger.info(
-                f"Generated audit trail for amendment {amendment_id} finalization"
-            )
+            logger.info(f"Generated audit trail for amendment {amendment_id} finalization")
             return audit_trail
 
         except Exception as e:
@@ -1208,9 +1125,7 @@ class ConstitutionalCouncilGraph:
         Handle finalization failure with rollback and recovery mechanisms.
         """
         try:
-            logger.error(
-                f"Handling finalization failure for amendment {amendment_id}: {error}"
-            )
+            logger.error(f"Handling finalization failure for amendment {amendment_id}: {error}")
 
             if amendment_id:
                 # Attempt to rollback amendment to previous state
@@ -1264,9 +1179,7 @@ class ConstitutionalCouncilGraph:
         """
         try:
             # Get stakeholder engagement status
-            engagement_status = await self.stakeholder_service.get_engagement_status(
-                amendment_id
-            )
+            engagement_status = await self.stakeholder_service.get_engagement_status(amendment_id)
 
             if engagement_status:
                 # Prepare failure notification content
@@ -1291,9 +1204,7 @@ class ConstitutionalCouncilGraph:
                                     ].get("email"),
                                 },
                             )(),
-                            amendment=await crud.get_ac_amendment(
-                                self.db, amendment_id
-                            ),
+                            amendment=await crud.get_ac_amendment(self.db, amendment_id),
                             channel=NotificationChannel.EMAIL,
                             notification_type="amendment_finalization_failed",
                             **failure_content,
@@ -1381,12 +1292,8 @@ class ConstitutionalCouncilGraph:
             results = await asyncio.gather(*processing_tasks, return_exceptions=True)
 
             # Analyze results
-            successful_amendments = [
-                r for r in results if isinstance(r, dict) and r.get("success")
-            ]
-            failed_amendments = [
-                r for r in results if isinstance(r, dict) and not r.get("success")
-            ]
+            successful_amendments = [r for r in results if isinstance(r, dict) and r.get("success")]
+            failed_amendments = [r for r in results if isinstance(r, dict) and not r.get("success")]
             exception_amendments = [r for r in results if isinstance(r, Exception)]
 
             processing_summary = {
@@ -1395,9 +1302,7 @@ class ConstitutionalCouncilGraph:
                 "failed": len(failed_amendments),
                 "exceptions": len(exception_amendments),
                 "success_rate": (
-                    len(successful_amendments) / len(amendment_ids)
-                    if amendment_ids
-                    else 0
+                    len(successful_amendments) / len(amendment_ids) if amendment_ids else 0
                 ),
                 "processing_timestamp": datetime.now(UTC).isoformat(),
                 "max_concurrent": max_concurrent,
@@ -1478,9 +1383,7 @@ class ConstitutionalCouncilGraph:
             # Create workflow context
             context = WorkflowContext(
                 amendment_id=amendment_id,
-                user_id=(
-                    transition_context.get("user_id") if transition_context else None
-                ),
+                user_id=(transition_context.get("user_id") if transition_context else None),
                 session_id=str(uuid.uuid4()),
                 transaction_id=str(uuid.uuid4()),
                 metadata={
@@ -1601,9 +1504,7 @@ class ConstitutionalCouncilGraph:
         max_iterations = state.get(
             "max_refinement_iterations", self.config.max_refinement_iterations
         )
-        refinement_areas = state.get("refinement_suggestions", {}).get(
-            "refinement_areas", []
-        )
+        refinement_areas = state.get("refinement_suggestions", {}).get("refinement_areas", [])
 
         # Abandon if maximum iterations reached
         if current_iterations >= max_iterations:
@@ -1654,18 +1555,12 @@ class ConstitutionalCouncilGraph:
             )
 
             final_state = None
-            async for state in self.graph.astream(
-                initial_state, config=workflow_config
-            ):
+            async for state in self.graph.astream(initial_state, config=workflow_config):
                 final_state = state
-                logger.debug(
-                    f"Workflow state update: {state.get('current_phase', 'unknown')}"
-                )
+                logger.debug(f"Workflow state update: {state.get('current_phase', 'unknown')}")
 
             if final_state is None:
-                raise RuntimeError(
-                    "Workflow execution failed - no final state returned"
-                )
+                raise RuntimeError("Workflow execution failed - no final state returned")
 
             logger.info(
                 f"Constitutional Council workflow completed with status: {final_state.get('status', 'unknown')}"

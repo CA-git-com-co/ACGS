@@ -301,9 +301,7 @@ class EnhancedGovernanceSynthesis:
             # Phase 3: Calculate overall results
             total_time_ms = (time.time() - start_time) * 1000
             is_valid = validation_response.is_valid if validation_response else True
-            validation_score = (
-                validation_response.overall_score if validation_response else 1.0
-            )
+            validation_score = validation_response.overall_score if validation_response else 1.0
 
             # Update metrics
             self._update_metrics(synthesis_time_ms, validation_time_ms, is_valid)
@@ -361,25 +359,21 @@ class EnhancedGovernanceSynthesis:
                 recommendations=["Fix synthesis errors and retry"],
             )
 
-    async def _execute_synthesis(
-        self, request: EnhancedSynthesisRequest
-    ) -> dict[str, Any]:
+    async def _execute_synthesis(self, request: EnhancedSynthesisRequest) -> dict[str, Any]:
         """Execute policy synthesis using available synthesis methods with Phase 2 enhancements."""
         synthesis_results = {}
 
         # Phase 2: Multi-model ensemble synthesis (if available)
         if self.multi_model_coordinator and request.enable_wina_optimization:
             try:
-                ensemble_result = (
-                    await self.multi_model_coordinator.coordinate_synthesis(
-                        synthesis_request={
-                            "goal": request.synthesis_goal,
-                            "principles": request.constitutional_principles,
-                            "constraints": request.constraints,
-                            "context": request.context_data,
-                        },
-                        enable_wina=True,
-                    )
+                ensemble_result = await self.multi_model_coordinator.coordinate_synthesis(
+                    synthesis_request={
+                        "goal": request.synthesis_goal,
+                        "principles": request.constitutional_principles,
+                        "constraints": request.constraints,
+                        "context": request.context_data,
+                    },
+                    enable_wina=True,
                 )
 
                 if ensemble_result.synthesized_policy:
@@ -397,9 +391,7 @@ class EnhancedGovernanceSynthesis:
                         synthesis_results["phase2_enhanced"] = True
 
                     synthesis_results["ensemble_result"] = ensemble_result
-                    synthesis_results["policy_content"] = (
-                        ensemble_result.synthesized_policy
-                    )
+                    synthesis_results["policy_content"] = ensemble_result.synthesized_policy
                     synthesis_results["metadata"] = {
                         "synthesis_method": "phase2_multi_model_ensemble",
                         "contributing_models": ensemble_result.contributing_models,
@@ -412,15 +404,11 @@ class EnhancedGovernanceSynthesis:
                             "performance_optimization",
                         ],
                     }
-                    logger.info(
-                        "Phase 2 multi-model ensemble synthesis completed successfully"
-                    )
+                    logger.info("Phase 2 multi-model ensemble synthesis completed successfully")
                     return synthesis_results
 
             except Exception as e:
-                logger.warning(
-                    f"Phase 2 ensemble synthesis failed, falling back to Phase 1: {e}"
-                )
+                logger.warning(f"Phase 2 ensemble synthesis failed, falling back to Phase 1: {e}")
 
         # Method 1: WINA-optimized Rego synthesis (Phase 1 fallback)
         if request.enable_wina_optimization:
@@ -448,18 +436,13 @@ class EnhancedGovernanceSynthesis:
                 logger.warning(f"WINA synthesis failed: {e}")
 
         # Method 2: AlphaEvolve synthesis (if enabled and available)
-        if (
-            request.enable_alphaevolve_synthesis
-            and self.alphaevolve_bridge.is_available()
-        ):
+        if request.enable_alphaevolve_synthesis and self.alphaevolve_bridge.is_available():
             try:
-                alphaevolve_result = (
-                    await self.alphaevolve_bridge.synthesize_ec_governance_rules(
-                        ec_context=request.context_data.get("ec_context", "general"),
-                        optimization_objective=request.synthesis_goal,
-                        constitutional_constraints=request.constraints or [],
-                        target_format=request.target_format,
-                    )
+                alphaevolve_result = await self.alphaevolve_bridge.synthesize_ec_governance_rules(
+                    ec_context=request.context_data.get("ec_context", "general"),
+                    optimization_objective=request.synthesis_goal,
+                    constitutional_constraints=request.constraints or [],
+                    target_format=request.target_format,
                 )
 
                 if alphaevolve_result.get("rules"):
@@ -467,9 +450,7 @@ class EnhancedGovernanceSynthesis:
                         "metadata", {}
                     )
                     synthesis_results["policy_content"] = (
-                        alphaevolve_result["rules"][0]
-                        if alphaevolve_result["rules"]
-                        else ""
+                        alphaevolve_result["rules"][0] if alphaevolve_result["rules"] else ""
                     )
                     synthesis_results["metadata"] = {
                         "synthesis_method": "alphaevolve",
@@ -560,9 +541,7 @@ class EnhancedGovernanceSynthesis:
             )
 
             # Execute validation
-            validation_response = await self.policy_validator.validate_policy(
-                validation_request
-            )
+            validation_response = await self.policy_validator.validate_policy(validation_request)
 
             if request.enable_opa_validation:
                 self.metrics["opa_validation_enabled_count"] += 1
@@ -605,9 +584,7 @@ class EnhancedGovernanceSynthesis:
                 results.append(result)
             return results
 
-    def _update_metrics(
-        self, synthesis_time_ms: float, validation_time_ms: float, success: bool
-    ):
+    def _update_metrics(self, synthesis_time_ms: float, validation_time_ms: float, success: bool):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -649,9 +626,7 @@ class EnhancedGovernanceSynthesis:
 
         if self.constitutional_fidelity_monitor:
             try:
-                current_fidelity = (
-                    self.constitutional_fidelity_monitor.get_current_fidelity()
-                )
+                current_fidelity = self.constitutional_fidelity_monitor.get_current_fidelity()
                 if current_fidelity:
                     base_metrics["constitutional_fidelity"] = {
                         "composite_score": current_fidelity.composite_score,
@@ -691,9 +666,7 @@ class EnhancedGovernanceSynthesis:
         achievements["constitutional_compliance_achieved"] = (
             current_fidelity >= targets["constitutional_compliance_target"]
         )
-        achievements["reliability_achieved"] = (
-            current_success_rate >= targets["reliability_target"]
-        )
+        achievements["reliability_achieved"] = current_success_rate >= targets["reliability_target"]
 
         # Overall Phase 2 achievement
         achievements["phase2_targets_met"] = all(
@@ -747,9 +720,7 @@ class EnhancedGovernanceSynthesis:
             if self.alphaevolve_bridge:
                 health_status["components"]["alphaevolve_bridge"] = {
                     "status": (
-                        "healthy"
-                        if self.alphaevolve_bridge.is_available()
-                        else "unavailable"
+                        "healthy" if self.alphaevolve_bridge.is_available() else "unavailable"
                     )
                 }
 

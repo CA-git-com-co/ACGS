@@ -109,12 +109,8 @@ if __name__ == "__main__":
         print(
             "\nNote: Actual verification depends on running fv_service and its dependencies (ac_service, integrity_service)."
         )
-        print(
-            "If services are not running or data is missing, 'None' or errors are expected."
-        )
+        print("If services are not running or data is missing, 'None' or errors are expected.")
 
     # To run this test, ensure fv_service and its dependencies are running.
     # asyncio.run(test_fv_client())
-    print(
-        "FV Service client defined. Run test_fv_client() with relevant services running to test."
-    )
+    print("FV Service client defined. Run test_fv_client() with relevant services running to test.")

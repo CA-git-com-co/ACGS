@@ -25,9 +25,7 @@ class TestWINARegoIntegration:
 
         # Mock the WINA components to avoid dependency issues
         with patch("app.core.wina_rego_synthesis.WINA_AVAILABLE", True):
-            with patch(
-                "app.core.wina_rego_synthesis.load_wina_config_from_env"
-            ) as mock_config:
+            with patch("app.core.wina_rego_synthesis.load_wina_config_from_env") as mock_config:
                 # Mock WINA configuration
                 mock_wina_config = Mock()
                 mock_wina_integration_config = Mock()

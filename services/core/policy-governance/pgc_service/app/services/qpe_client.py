@@ -179,9 +179,7 @@ class QPEClient:
                 self.metrics["entanglement_verifications"] += 1
             else:
                 self.metrics["entanglement_failures"] += 1
-                logger.warning(
-                    f"Entanglement tag verification failed for policy {policy_id}"
-                )
+                logger.warning(f"Entanglement tag verification failed for policy {policy_id}")
 
             # Update metrics
             latency_ms = (time.time() - start_time) * 1000
@@ -235,9 +233,7 @@ class QPEClient:
                 self.metrics["entanglement_verifications"] += 1
             else:
                 self.metrics["entanglement_failures"] += 1
-                logger.warning(
-                    f"Entanglement tag verification failed for policy {policy_id}"
-                )
+                logger.warning(f"Entanglement tag verification failed for policy {policy_id}")
 
             # Update metrics
             latency_ms = (time.time() - start_time) * 1000
@@ -358,9 +354,7 @@ class QPEClient:
             return response.quantum_state
 
         except Exception as e:
-            logger.error(
-                f"QPE get quantum state failed for policy {policy_id}: {str(e)}"
-            )
+            logger.error(f"QPE get quantum state failed for policy {policy_id}: {str(e)}")
             raise
 
     async def health_check(self) -> dict[str, Any]:
@@ -419,9 +413,7 @@ class QPEClient:
         # Update average latency
         total = self.metrics["total_requests"]
         current_avg = self.metrics["average_latency_ms"]
-        self.metrics["average_latency_ms"] = (
-            (current_avg * (total - 1)) + latency_ms
-        ) / total
+        self.metrics["average_latency_ms"] = ((current_avg * (total - 1)) + latency_ms) / total
 
     def get_metrics(self) -> dict[str, Any]:
         """Get client performance metrics."""
@@ -459,9 +451,7 @@ class MockQPEStub:
         import hmac
 
         # Generate mock entanglement tag
-        tag = hmac.new(
-            b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256
-        ).digest()
+        tag = hmac.new(b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256).digest()
 
         # Mock response
         class MockResponse:
@@ -490,9 +480,7 @@ class MockQPEStub:
         import hmac
 
         # Generate mock entanglement tag
-        tag = hmac.new(
-            b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256
-        ).digest()
+        tag = hmac.new(b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256).digest()
 
         # Mock response
         class MockResponse:
@@ -522,9 +510,7 @@ class MockQPEStub:
         import hashlib
         import hmac
 
-        tag = hmac.new(
-            b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256
-        ).digest()
+        tag = hmac.new(b"cdd01ef066bc6cf2", request["policy_id"].encode(), hashlib.sha256).digest()
 
         class MockResponse:
             def __init__(self):

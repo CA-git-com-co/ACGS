@@ -48,9 +48,7 @@ class Phase2SynthesisRequest(BaseModel):
     constitutional_principles: list[dict[str, Any]] = Field(
         default=[], description="Constitutional principles to apply"
     )
-    constraints: list[str] | None = Field(
-        default=None, description="Synthesis constraints"
-    )
+    constraints: list[str] | None = Field(default=None, description="Synthesis constraints")
     context_data: dict[str, Any] | None = Field(
         default=None, description="Context data for synthesis"
     )
@@ -62,12 +60,8 @@ class Phase2SynthesisRequest(BaseModel):
     ensemble_strategy: str = Field(
         default="weighted_voting", description="Ensemble strategy to use"
     )
-    enable_wina_optimization: bool = Field(
-        default=True, description="Enable WINA optimization"
-    )
-    optimization_strategy: str = Field(
-        default="adaptive", description="WINA optimization strategy"
-    )
+    enable_wina_optimization: bool = Field(default=True, description="Enable WINA optimization")
+    optimization_strategy: str = Field(default="adaptive", description="WINA optimization strategy")
     enable_constitutional_monitoring: bool = Field(
         default=True, description="Enable constitutional fidelity monitoring"
     )
@@ -217,9 +211,7 @@ async def synthesize_policy_phase2(
             success=synthesis_response.is_valid,
             synthesized_policy=policy_content,
             gflops_reduction_achieved=(
-                optimization_result.gflops_reduction_achieved
-                if optimization_result
-                else 0.0
+                optimization_result.gflops_reduction_achieved if optimization_result else 0.0
             ),
             accuracy_retained=(
                 optimization_result.accuracy_retained if optimization_result else 1.0
@@ -245,9 +237,7 @@ async def synthesize_policy_phase2(
             _track_synthesis_performance, service, response, time.time() - start_time
         )
 
-        logger.info(
-            f"Phase 2 synthesis completed successfully: {synthesis_response.synthesis_id}"
-        )
+        logger.info(f"Phase 2 synthesis completed successfully: {synthesis_response.synthesis_id}")
         return response
 
     except Exception as e:
@@ -269,9 +259,7 @@ async def get_performance_summary(
         }
     except Exception as e:
         logger.error(f"Failed to get performance summary: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get performance summary: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get performance summary: {str(e)}")
 
 
 @router.get("/health")
@@ -291,9 +279,7 @@ async def health_check_phase2(
                 "available" if service.performance_optimizer else "unavailable"
             ),
             "constitutional_fidelity_monitor": (
-                "available"
-                if service.constitutional_fidelity_monitor
-                else "unavailable"
+                "available" if service.constitutional_fidelity_monitor else "unavailable"
             ),
             "wina_svd_transformer": (
                 "available" if service.wina_svd_transformer else "unavailable"
@@ -334,8 +320,8 @@ async def update_performance_targets(
                     request.target_constitutional_compliance
                 )
             if request.optimization_strategy is not None:
-                service.performance_optimizer.optimization_strategy = (
-                    OptimizationStrategy(request.optimization_strategy)
+                service.performance_optimizer.optimization_strategy = OptimizationStrategy(
+                    request.optimization_strategy
                 )
 
             return {
@@ -349,15 +335,11 @@ async def update_performance_targets(
                 },
             }
         else:
-            raise HTTPException(
-                status_code=503, detail="Performance optimizer not available"
-            )
+            raise HTTPException(status_code=503, detail="Performance optimizer not available")
 
     except Exception as e:
         logger.error(f"Failed to update performance targets: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to update targets: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to update targets: {str(e)}")
 
 
 @router.get("/optimization-recommendations")
@@ -367,24 +349,18 @@ async def get_optimization_recommendations(
     """Get optimization strategy recommendations based on current performance."""
     try:
         if service.performance_optimizer:
-            recommendations = (
-                await service.performance_optimizer.recommend_strategy_adjustment()
-            )
+            recommendations = await service.performance_optimizer.recommend_strategy_adjustment()
             return {
                 "status": "success",
                 "recommendations": recommendations,
                 "timestamp": time.time(),
             }
         else:
-            raise HTTPException(
-                status_code=503, detail="Performance optimizer not available"
-            )
+            raise HTTPException(status_code=503, detail="Performance optimizer not available")
 
     except Exception as e:
         logger.error(f"Failed to get optimization recommendations: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get recommendations: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get recommendations: {str(e)}")
 
 
 async def _track_synthesis_performance(
@@ -399,20 +375,17 @@ async def _track_synthesis_performance(
     try:
         # Update service metrics with Phase 2 specific data
         service.metrics["wina_optimization_success_rate"] = (
-            service.metrics["wina_optimization_success_rate"]
-            * service.metrics["total_syntheses"]
+            service.metrics["wina_optimization_success_rate"] * service.metrics["total_syntheses"]
             + (1.0 if response.wina_optimization_applied and response.success else 0.0)
         ) / (service.metrics["total_syntheses"] + 1)
 
         service.metrics["gflops_reduction_achieved"] = (
-            service.metrics["gflops_reduction_achieved"]
-            * service.metrics["total_syntheses"]
+            service.metrics["gflops_reduction_achieved"] * service.metrics["total_syntheses"]
             + response.gflops_reduction_achieved
         ) / (service.metrics["total_syntheses"] + 1)
 
         service.metrics["constitutional_fidelity_score"] = (
-            service.metrics["constitutional_fidelity_score"]
-            * service.metrics["total_syntheses"]
+            service.metrics["constitutional_fidelity_score"] * service.metrics["total_syntheses"]
             + response.constitutional_fidelity_score
         ) / (service.metrics["total_syntheses"] + 1)
 
@@ -420,13 +393,10 @@ async def _track_synthesis_performance(
         service.metrics["target_performance_achieved"] = (
             response.gflops_reduction_achieved >= 0.4  # At least 40% GFLOPs reduction
             and response.accuracy_retained >= 0.95  # At least 95% accuracy retention
-            and response.constitutional_compliance
-            >= 0.85  # At least 85% constitutional compliance
+            and response.constitutional_compliance >= 0.85  # At least 85% constitutional compliance
         )
 
-        logger.debug(
-            f"Performance tracking updated for synthesis {response.synthesis_id}"
-        )
+        logger.debug(f"Performance tracking updated for synthesis {response.synthesis_id}")
 
     except Exception as e:
         logger.error(f"Failed to track synthesis performance: {e}")

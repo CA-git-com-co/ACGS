@@ -149,9 +149,7 @@ class FederatedLearningOrchestrator:
 
         # Privacy and security
         self.encryption_key = self._generate_encryption_key()
-        self.privacy_budgets: dict[str, float] = defaultdict(
-            lambda: 10.0
-        )  # Default privacy budget
+        self.privacy_budgets: dict[str, float] = defaultdict(lambda: 10.0)  # Default privacy budget
 
         # Initialize constitutional constraints
         self._initialize_constitutional_constraints()
@@ -317,9 +315,7 @@ class FederatedLearningOrchestrator:
         self.metrics.increment("federated_rounds_started")
         self.metrics.record_value("round_participants", len(participants))
 
-        logger.info(
-            f"Started federated round {round_id} with {len(participants)} participants"
-        )
+        logger.info(f"Started federated round {round_id} with {len(participants)} participants")
 
         return federated_round
 
@@ -386,9 +382,7 @@ class FederatedLearningOrchestrator:
         # Record metrics
         self.metrics.increment("model_updates_submitted")
         self.metrics.record_value("privacy_cost", privacy_cost)
-        self.metrics.record_value(
-            "constitutional_compliance", constitutional_compliance
-        )
+        self.metrics.record_value("constitutional_compliance", constitutional_compliance)
 
         logger.info(f"Model update submitted by {participant_id} for round {round_id}")
 
@@ -463,9 +457,7 @@ class FederatedLearningOrchestrator:
             elif constraint.validation_function == "validate_transparency":
                 score = await self._validate_transparency(model_weights, participant_id)
             elif constraint.validation_function == "validate_accountability":
-                score = await self._validate_accountability(
-                    model_weights, participant_id
-                )
+                score = await self._validate_accountability(model_weights, participant_id)
             else:
                 score = 0.8  # Default score
 
@@ -475,18 +467,14 @@ class FederatedLearningOrchestrator:
         overall_compliance = np.mean(compliance_scores)
         return float(overall_compliance)
 
-    async def _validate_fairness(
-        self, model_weights: dict[str, Any], participant_id: str
-    ) -> float:
+    async def _validate_fairness(self, model_weights: dict[str, Any], participant_id: str) -> float:
         """Validate fairness of model update."""
         # Simplified fairness validation
         # In production, this would analyze bias across protected groups
         await asyncio.sleep(0.01)
         return 0.85
 
-    async def _validate_privacy(
-        self, model_weights: dict[str, Any], participant_id: str
-    ) -> float:
+    async def _validate_privacy(self, model_weights: dict[str, Any], participant_id: str) -> float:
         """Validate privacy preservation of model update."""
         # Simplified privacy validation
         # In production, this would check for privacy leakage
@@ -570,17 +558,13 @@ class FederatedLearningOrchestrator:
         federated_round = self.active_rounds[round_id]
 
         # Aggregate model updates
-        aggregated_update = await self._aggregate_model_updates(
-            federated_round.updates_received
-        )
+        aggregated_update = await self._aggregate_model_updates(federated_round.updates_received)
 
         # Validate aggregated update
         constitutional_score = await self._validate_aggregated_update(aggregated_update)
 
         # Calculate convergence metric
-        convergence_metric = self._calculate_convergence_metric(
-            federated_round.updates_received
-        )
+        convergence_metric = self._calculate_convergence_metric(federated_round.updates_received)
 
         # Update round
         federated_round.aggregated_update = aggregated_update
@@ -599,9 +583,7 @@ class FederatedLearningOrchestrator:
 
         logger.info(f"Completed federated round {round_id}")
 
-    async def _aggregate_model_updates(
-        self, updates: list[ModelUpdate]
-    ) -> dict[str, Any]:
+    async def _aggregate_model_updates(self, updates: list[ModelUpdate]) -> dict[str, Any]:
         """Aggregate model updates using federated averaging."""
         if not updates:
             return {}
@@ -630,17 +612,13 @@ class FederatedLearningOrchestrator:
 
         return aggregated_weights
 
-    async def _validate_aggregated_update(
-        self, aggregated_update: dict[str, Any]
-    ) -> float:
+    async def _validate_aggregated_update(self, aggregated_update: dict[str, Any]) -> float:
         """Validate constitutional compliance of aggregated update."""
         # Use multi-model validator for constitutional compliance
         {
             "query_type": "constitutional_validation",
             "complexity_score": 0.8,
-            "constitutional_requirements": [
-                c.principle for c in self.constitutional_constraints
-            ],
+            "constitutional_requirements": [c.principle for c in self.constitutional_constraints],
             "bias_sensitivity": 0.9,
             "uncertainty_tolerance": 0.2,
         }
@@ -682,9 +660,7 @@ class FederatedLearningOrchestrator:
     async def get_federated_learning_metrics(self) -> dict[str, Any]:
         """Get comprehensive federated learning metrics."""
         active_participants = len([p for p in self.participants.values() if p.active])
-        completed_rounds = len(
-            [r for r in self.active_rounds.values() if r.status == "completed"]
-        )
+        completed_rounds = len([r for r in self.active_rounds.values() if r.status == "completed"])
 
         # Calculate average metrics
         if completed_rounds > 0:
@@ -694,9 +670,7 @@ class FederatedLearningOrchestrator:
             avg_constitutional_score = np.mean(
                 [r.constitutional_validation_score for r in completed_round_list]
             )
-            avg_convergence = np.mean(
-                [r.convergence_metric for r in completed_round_list]
-            )
+            avg_convergence = np.mean([r.convergence_metric for r in completed_round_list])
             avg_privacy_cost = np.mean(
                 [
                     np.mean([u.privacy_cost for u in r.updates_received])
@@ -713,16 +687,12 @@ class FederatedLearningOrchestrator:
             "active_participants": active_participants,
             "total_participants": len(self.participants),
             "completed_rounds": completed_rounds,
-            "active_rounds": len(
-                [r for r in self.active_rounds.values() if r.status == "active"]
-            ),
+            "active_rounds": len([r for r in self.active_rounds.values() if r.status == "active"]),
             "average_constitutional_score": avg_constitutional_score,
             "average_convergence_metric": avg_convergence,
             "average_privacy_cost": avg_privacy_cost,
             "constitutional_constraints": len(self.constitutional_constraints),
-            "privacy_mechanisms_available": [
-                mechanism.value for mechanism in PrivacyMechanism
-            ],
+            "privacy_mechanisms_available": [mechanism.value for mechanism in PrivacyMechanism],
             "federated_strategies_available": [
                 strategy.value for strategy in FederatedLearningStrategy
             ],

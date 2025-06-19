@@ -323,9 +323,7 @@ class TestPolicyValidationEngine:
                         "priority_conflicts": False,
                         "scope_conflicts": False,
                     },
-                    "recommendations": [
-                        "Resolve logical conflicts with existing policies"
-                    ],
+                    "recommendations": ["Resolve logical conflicts with existing policies"],
                 },
                 decision_id="decision_3",
                 decision_time_ms=8.0,
@@ -376,9 +374,7 @@ class TestPolicyValidationEngine:
         response = await policy_validator.validate_policy(sample_policy_request)
 
         # Should have performance warning
-        performance_warnings = [
-            w for w in response.warnings if "latency threshold" in w
-        ]
+        performance_warnings = [w for w in response.warnings if "latency threshold" in w]
         assert len(performance_warnings) > 0
         assert response.validation_time_ms > 50  # Above threshold
 
@@ -430,9 +426,7 @@ class TestPolicyValidationEngine:
         # sha256: func_hash
         """Test error handling for OPA integration failures."""
         # Mock OPA client to raise error
-        mock_opa_client.validate_policy.side_effect = OPAIntegrationError(
-            "OPA server unavailable"
-        )
+        mock_opa_client.validate_policy.side_effect = OPAIntegrationError("OPA server unavailable")
 
         # The policy validator should handle the error gracefully and return an error response
         response = await policy_validator.validate_policy(sample_policy_request)
@@ -441,9 +435,7 @@ class TestPolicyValidationEngine:
         assert "OPA server unavailable" in str(response.errors)
 
     @pytest.mark.asyncio
-    async def test_metrics_tracking(
-        self, policy_validator, mock_opa_client, sample_policy_request
-    ):
+    async def test_metrics_tracking(self, policy_validator, mock_opa_client, sample_policy_request):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -652,9 +644,7 @@ class TestPolicyValidatorPerformance:
         assert response.validation_time_ms < 50
 
     @pytest.mark.asyncio
-    async def test_batch_validation_performance(
-        self, policy_validator, mock_opa_client
-    ):
+    async def test_batch_validation_performance(self, policy_validator, mock_opa_client):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash

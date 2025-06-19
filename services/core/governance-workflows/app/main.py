@@ -108,9 +108,7 @@ async def lifespan(app: FastAPI):
             raise RuntimeError("Service startup health check failed")
 
         logger.info("🎯 Advanced Governance Workflows Service ready")
-        logger.info(
-            "📊 Performance targets: >1000 concurrent actions, >99.9% availability"
-        )
+        logger.info("📊 Performance targets: >1000 concurrent actions, >99.9% availability")
         logger.info("🏛️ Quantumagi compatibility: Constitution Hash cdd01ef066bc6cf2")
         logger.info("🔄 5 core workflows operational")
 

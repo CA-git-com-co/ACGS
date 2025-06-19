@@ -28,11 +28,13 @@ from .api.v1.wina_oversight import router as wina_oversight_router
 # Import production security middleware
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from security_middleware import (
         apply_production_security_middleware,
         create_security_config,
     )
+
     SECURITY_MIDDLEWARE_AVAILABLE = True
     print("✅ Production security middleware loaded successfully")
 except ImportError as e:
@@ -43,7 +45,8 @@ except ImportError as e:
 # Import comprehensive audit logging
 try:
     import sys
-    sys.path.append('/home/dislove/ACGS-1/services/shared')
+
+    sys.path.append("/home/dislove/ACGS-1/services/shared")
     from comprehensive_audit_logger import (
         AuditEventType,
         AuditSeverity,
@@ -54,6 +57,7 @@ try:
         log_security_violation,
         log_user_login,
     )
+
     AUDIT_LOGGING_AVAILABLE = True
     print("✅ Comprehensive audit logging loaded successfully")
 except ImportError as e:
@@ -289,7 +293,7 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         max_request_size=10 * 1024 * 1024,  # 10MB
         rate_limit_requests=120,
         rate_limit_window=60,
-        enable_threat_detection=True
+        enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "ec_service", security_config)
     print(f"✅ Production security middleware applied to ec service")
@@ -324,19 +328,13 @@ except ImportError as e:
     app.middleware("http")(metrics_middleware("ec_service"))
 
 # Include API routers
-app.include_router(
-    oversight_router, prefix="/api/v1/oversight", tags=["WINA Oversight"]
-)
+app.include_router(oversight_router, prefix="/api/v1/oversight", tags=["WINA Oversight"])
 app.include_router(wina_oversight_router, prefix="/api/v1", tags=["WINA EC Oversight"])
 app.include_router(
     alphaevolve_router, prefix="/api/v1/alphaevolve", tags=["AlphaEvolve Integration"]
 )
-app.include_router(
-    reporting_router, prefix="/api/v1/reporting", tags=["Reporting & Analytics"]
-)
-app.include_router(
-    monitoring_router, prefix="/api/v1/monitoring", tags=["Performance Monitoring"]
-)
+app.include_router(reporting_router, prefix="/api/v1/reporting", tags=["Reporting & Analytics"])
+app.include_router(monitoring_router, prefix="/api/v1/monitoring", tags=["Performance Monitoring"])
 app.include_router(
     wina_performance_router,
     prefix="/api/v1/wina/performance",
@@ -376,9 +374,7 @@ async def health_check():
     if wina_coordinator:
         try:
             # Check coordinator health
-            coordinator_status = (
-                "healthy" if wina_coordinator.enable_wina else "disabled"
-            )
+            coordinator_status = "healthy" if wina_coordinator.enable_wina else "disabled"
         except Exception as e:
             coordinator_status = f"error: {str(e)}"
 
@@ -389,9 +385,7 @@ async def health_check():
         "version": config.get("api_version", "v1"),
         "wina_coordinator": coordinator_status,
         "features": {
-            "wina_optimization": (
-                wina_coordinator.enable_wina if wina_coordinator else False
-            ),
+            "wina_optimization": (wina_coordinator.enable_wina if wina_coordinator else False),
             "constitutional_oversight": True,
             "alphaevolve_integration": True,
             "performance_monitoring": True,
@@ -401,24 +395,16 @@ async def health_check():
         },
         "performance_monitoring": {
             "collector_available": (
-                hasattr(wina_coordinator, "performance_collector")
-                if wina_coordinator
-                else False
+                hasattr(wina_coordinator, "performance_collector") if wina_coordinator else False
             ),
             "monitoring_active": (
                 wina_coordinator.performance_collector.monitoring_active
-                if (
-                    wina_coordinator
-                    and hasattr(wina_coordinator, "performance_collector")
-                )
+                if (wina_coordinator and hasattr(wina_coordinator, "performance_collector"))
                 else False
             ),
             "monitoring_level": (
                 wina_coordinator.performance_collector.monitoring_level.value
-                if (
-                    wina_coordinator
-                    and hasattr(wina_coordinator, "performance_collector")
-                )
+                if (wina_coordinator and hasattr(wina_coordinator, "performance_collector"))
                 else "unknown"
             ),
         },

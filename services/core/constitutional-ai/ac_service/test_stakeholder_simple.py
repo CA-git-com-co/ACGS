@@ -256,9 +256,7 @@ def test_notification_content_structure():
         "metadata": {},
     }
 
-    assert (
-        content["subject"] == "New Constitutional Amendment Proposal - Review Required"
-    )
+    assert content["subject"] == "New Constitutional Amendment Proposal - Review Required"
     assert content["stakeholder"]["username"] == "expert1"
     assert content["amendment"]["title"] == "Test Constitutional Amendment"
     assert content["engagement"]["hours_remaining"] == 72

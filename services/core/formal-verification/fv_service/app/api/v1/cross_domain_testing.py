@@ -45,9 +45,7 @@ router = APIRouter()
 # --- Domain Context Management Endpoints ---
 
 
-@router.post(
-    "/domains", response_model=DomainContextSchema, status_code=status.HTTP_201_CREATED
-)
+@router.post("/domains", response_model=DomainContextSchema, status_code=status.HTTP_201_CREATED)
 async def create_domain_context(
     domain_data: DomainContextCreate,
     db: AsyncSession = Depends(get_async_db),
@@ -58,9 +56,7 @@ async def create_domain_context(
     try:
         # Check if domain already exists
         existing_domain = await db.execute(
-            select(DomainContext).where(
-                DomainContext.domain_name == domain_data.domain_name
-            )
+            select(DomainContext).where(DomainContext.domain_name == domain_data.domain_name)
         )
         if existing_domain.scalar_one_or_none():
             raise HTTPException(
@@ -95,9 +91,7 @@ async def create_domain_context(
     except Exception as e:
         await db.rollback()
         logger.error(f"Failed to create domain context: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to create domain context: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to create domain context: {str(e)}")
 
 
 @router.get("/domains", response_model=list[DomainContextSchema])
@@ -115,9 +109,7 @@ async def list_domain_contexts(
         if active_only:
             query = query.where(DomainContext.is_active)
 
-        query = (
-            query.offset(skip).limit(limit).order_by(DomainContext.created_at.desc())
-        )
+        query = query.offset(skip).limit(limit).order_by(DomainContext.created_at.desc())
 
         result = await db.execute(query)
         domains = result.scalars().all()
@@ -126,9 +118,7 @@ async def list_domain_contexts(
 
     except Exception as e:
         logger.error(f"Failed to list domain contexts: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to list domain contexts: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to list domain contexts: {str(e)}")
 
 
 @router.get("/domains/{domain_id}", response_model=DomainContextSchema)
@@ -136,15 +126,11 @@ async def get_domain_context(domain_id: int, db: AsyncSession = Depends(get_asyn
     """Get a specific domain context by ID."""
 
     try:
-        result = await db.execute(
-            select(DomainContext).where(DomainContext.id == domain_id)
-        )
+        result = await db.execute(select(DomainContext).where(DomainContext.id == domain_id))
         domain = result.scalar_one_or_none()
 
         if not domain:
-            raise HTTPException(
-                status_code=404, detail=f"Domain context {domain_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Domain context {domain_id} not found")
 
         return domain
 
@@ -152,9 +138,7 @@ async def get_domain_context(domain_id: int, db: AsyncSession = Depends(get_asyn
         raise
     except Exception as e:
         logger.error(f"Failed to get domain context {domain_id}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get domain context: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get domain context: {str(e)}")
 
 
 @router.put("/domains/{domain_id}", response_model=DomainContextSchema)
@@ -167,15 +151,11 @@ async def update_domain_context(
     """Update a domain context."""
 
     try:
-        result = await db.execute(
-            select(DomainContext).where(DomainContext.id == domain_id)
-        )
+        result = await db.execute(select(DomainContext).where(DomainContext.id == domain_id))
         domain = result.scalar_one_or_none()
 
         if not domain:
-            raise HTTPException(
-                status_code=404, detail=f"Domain context {domain_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Domain context {domain_id} not found")
 
         # Update fields
         update_data = domain_data.dict(exclude_unset=True)
@@ -196,9 +176,7 @@ async def update_domain_context(
     except Exception as e:
         await db.rollback()
         logger.error(f"Failed to update domain context {domain_id}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to update domain context: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to update domain context: {str(e)}")
 
 
 # --- Test Scenario Management Endpoints ---
@@ -219,9 +197,7 @@ async def create_test_scenario(
     try:
         # Validate primary domain exists
         domain_result = await db.execute(
-            select(DomainContext).where(
-                DomainContext.id == scenario_data.primary_domain_id
-            )
+            select(DomainContext).where(DomainContext.id == scenario_data.primary_domain_id)
         )
         if not domain_result.scalar_one_or_none():
             raise HTTPException(
@@ -231,9 +207,7 @@ async def create_test_scenario(
 
         # Validate principle IDs exist (simplified check)
         if not scenario_data.principle_ids:
-            raise HTTPException(
-                status_code=400, detail="At least one principle ID is required"
-            )
+            raise HTTPException(status_code=400, detail="At least one principle ID is required")
 
         # Create test scenario
         scenario = CrossDomainTestScenario(
@@ -254,9 +228,7 @@ async def create_test_scenario(
         await db.commit()
         await db.refresh(scenario)
 
-        logger.info(
-            f"Created test scenario '{scenario_data.scenario_name}' with ID {scenario.id}"
-        )
+        logger.info(f"Created test scenario '{scenario_data.scenario_name}' with ID {scenario.id}")
 
         return scenario
 
@@ -265,9 +237,7 @@ async def create_test_scenario(
     except Exception as e:
         await db.rollback()
         logger.error(f"Failed to create test scenario: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to create test scenario: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to create test scenario: {str(e)}")
 
 
 @router.get("/scenarios", response_model=list[CrossDomainTestScenarioSchema])
@@ -289,11 +259,7 @@ async def list_test_scenarios(
         if domain_id:
             query = query.where(CrossDomainTestScenario.primary_domain_id == domain_id)
 
-        query = (
-            query.offset(skip)
-            .limit(limit)
-            .order_by(CrossDomainTestScenario.created_at.desc())
-        )
+        query = query.offset(skip).limit(limit).order_by(CrossDomainTestScenario.created_at.desc())
 
         result = await db.execute(query)
         scenarios = result.scalars().all()
@@ -302,9 +268,7 @@ async def list_test_scenarios(
 
     except Exception as e:
         logger.error(f"Failed to list test scenarios: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to list test scenarios: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to list test scenarios: {str(e)}")
 
 
 @router.get("/scenarios/{scenario_id}", response_model=CrossDomainTestScenarioSchema)
@@ -313,16 +277,12 @@ async def get_test_scenario(scenario_id: int, db: AsyncSession = Depends(get_asy
 
     try:
         result = await db.execute(
-            select(CrossDomainTestScenario).where(
-                CrossDomainTestScenario.id == scenario_id
-            )
+            select(CrossDomainTestScenario).where(CrossDomainTestScenario.id == scenario_id)
         )
         scenario = result.scalar_one_or_none()
 
         if not scenario:
-            raise HTTPException(
-                status_code=404, detail=f"Test scenario {scenario_id} not found"
-            )
+            raise HTTPException(status_code=404, detail=f"Test scenario {scenario_id} not found")
 
         return scenario
 
@@ -330,9 +290,7 @@ async def get_test_scenario(scenario_id: int, db: AsyncSession = Depends(get_asy
         raise
     except Exception as e:
         logger.error(f"Failed to get test scenario {scenario_id}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get test scenario: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get test scenario: {str(e)}")
 
 
 # --- Cross-Domain Testing Execution Endpoints ---
@@ -361,9 +319,7 @@ async def execute_cross_domain_test(
 
         if len(scenarios) != len(test_request.scenario_ids):
             missing_ids = set(test_request.scenario_ids) - {s.id for s in scenarios}
-            raise HTTPException(
-                status_code=400, detail=f"Test scenarios not found: {missing_ids}"
-            )
+            raise HTTPException(status_code=400, detail=f"Test scenarios not found: {missing_ids}")
 
         # Fetch all relevant domains
         domain_ids = set()
@@ -463,14 +419,10 @@ async def get_test_results(test_run_id: str, db: AsyncSession = Depends(get_asyn
         raise
     except Exception as e:
         logger.error(f"Failed to get test results for {test_run_id}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get test results: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get test results: {str(e)}")
 
 
-@router.get(
-    "/results/scenario/{scenario_id}", response_model=list[CrossDomainTestResultSchema]
-)
+@router.get("/results/scenario/{scenario_id}", response_model=list[CrossDomainTestResultSchema])
 async def get_scenario_results(
     scenario_id: int,
     limit: int = Query(100, ge=1, le=1000),
@@ -491,9 +443,7 @@ async def get_scenario_results(
 
     except Exception as e:
         logger.error(f"Failed to get scenario results for {scenario_id}: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get scenario results: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to get scenario results: {str(e)}")
 
 
 @router.get("/health")

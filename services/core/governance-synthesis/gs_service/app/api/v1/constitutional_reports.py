@@ -82,9 +82,7 @@ async def get_reporting_health():
                 "metrics_collection": "active",
             },
             "uptime_percentage": 99.8,
-            "last_report_generated": (
-                datetime.now(UTC) - timedelta(hours=1)
-            ).isoformat(),
+            "last_report_generated": (datetime.now(UTC) - timedelta(hours=1)).isoformat(),
         }
 
         # Update monitoring health status
@@ -387,9 +385,7 @@ async def escalate_critical_issue(
         }
 
         # Record metrics
-        metrics.record_violation_escalation(
-            escalation_level, False
-        )  # Manual escalation
+        metrics.record_violation_escalation(escalation_level, False)  # Manual escalation
         metrics.record_constitutional_council_activity("escalation_received", "active")
 
         # Mock notification to Constitutional Council

@@ -23,9 +23,7 @@ def perform_svd(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]
     return U, s, Vh
 
 
-def reconstruct_from_svd(
-    U: np.ndarray, s: np.ndarray, Vh: np.ndarray, k: int = None
-) -> np.ndarray:
+def reconstruct_from_svd(U: np.ndarray, s: np.ndarray, Vh: np.ndarray, k: int = None) -> np.ndarray:
     """
     Reconstructs a matrix from its SVD components, optionally reducing dimensionality.
 

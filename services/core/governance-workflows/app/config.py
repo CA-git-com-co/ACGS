@@ -211,9 +211,7 @@ def validate_configuration(settings: Settings) -> bool:
     # Security validations
     if settings.ENVIRONMENT == "production":
         if settings.SECRET_KEY == "acgs-governance-workflows-secret-key-2024":
-            validation_errors.append(
-                "Production environment requires custom SECRET_KEY"
-            )
+            validation_errors.append("Production environment requires custom SECRET_KEY")
 
         if settings.DEBUG:
             validation_errors.append("DEBUG should be False in production")
@@ -281,9 +279,7 @@ def validate_configuration(settings: Settings) -> bool:
     # Quantumagi validations
     if settings.QUANTUMAGI_ENABLED:
         if settings.CONSTITUTION_HASH != "cdd01ef066bc6cf2":
-            validation_errors.append(
-                "CONSTITUTION_HASH must match Quantumagi deployment"
-            )
+            validation_errors.append("CONSTITUTION_HASH must match Quantumagi deployment")
 
         if settings.SOLANA_CLUSTER not in ["devnet", "testnet", "mainnet-beta"]:
             validation_errors.append("Invalid SOLANA_CLUSTER specified")

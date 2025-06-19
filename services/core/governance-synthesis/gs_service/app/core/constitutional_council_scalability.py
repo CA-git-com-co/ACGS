@@ -99,9 +99,7 @@ class ConstitutionalCouncilScalabilityFramework:
             # Calculate current metrics
             current_load = len(self.active_sessions)
             max_capacity = self.config.get("max_concurrent_sessions", 100)
-            capacity_utilization = (
-                current_load / max_capacity if max_capacity > 0 else 0
-            )
+            capacity_utilization = current_load / max_capacity if max_capacity > 0 else 0
 
             # Identify bottlenecks
             bottlenecks = []
@@ -147,9 +145,7 @@ class ConstitutionalCouncilScalabilityFramework:
                 scaling_needed=True,
             )
 
-    async def initiate_co_evolution(
-        self, context: CoEvolutionContext
-    ) -> dict[str, Any]:
+    async def initiate_co_evolution(self, context: CoEvolutionContext) -> dict[str, Any]:
         """
         Initiate co-evolution process for Constitutional Council.
 
@@ -189,9 +185,7 @@ class ConstitutionalCouncilScalabilityFramework:
             elif context.mode == CoEvolutionMode.CONSENSUS:
                 await self._setup_consensus_co_evolution(session)
 
-            logger.info(
-                f"Co-evolution session {session_id} initiated in {context.mode.value} mode"
-            )
+            logger.info(f"Co-evolution session {session_id} initiated in {context.mode.value} mode")
             return session
 
         except Exception as e:
@@ -248,8 +242,7 @@ class ConstitutionalCouncilScalabilityFramework:
                 [
                     h
                     for h in self.performance_history
-                    if h.get("timestamp", datetime.min)
-                    > datetime.now() - timedelta(hours=1)
+                    if h.get("timestamp", datetime.min) > datetime.now() - timedelta(hours=1)
                 ]
             )
             return float(recent_decisions)
@@ -262,9 +255,7 @@ class ConstitutionalCouncilScalabilityFramework:
             if not self.performance_history:
                 return 0.0
 
-            response_times = [
-                h.get("response_time", 0) for h in self.performance_history[-10:]
-            ]
+            response_times = [h.get("response_time", 0) for h in self.performance_history[-10:]]
             return sum(response_times) / len(response_times) if response_times else 0.0
         except Exception:
             return 0.0
@@ -276,11 +267,7 @@ class ConstitutionalCouncilScalabilityFramework:
                 return 0.0
 
             consensus_decisions = len(
-                [
-                    h
-                    for h in self.performance_history[-20:]
-                    if h.get("consensus_achieved", False)
-                ]
+                [h for h in self.performance_history[-20:] if h.get("consensus_achieved", False)]
             )
             total_decisions = len(self.performance_history[-20:])
             return consensus_decisions / total_decisions if total_decisions > 0 else 0.0
@@ -297,9 +284,7 @@ class ConstitutionalCouncilScalabilityFramework:
                 h.get("participation_rate", 0) for h in self.performance_history[-10:]
             ]
             return (
-                sum(participation_rates) / len(participation_rates)
-                if participation_rates
-                else 0.0
+                sum(participation_rates) / len(participation_rates) if participation_rates else 0.0
             )
         except Exception:
             return 0.0
@@ -310,9 +295,7 @@ class ConstitutionalCouncilScalabilityFramework:
             if not self.performance_history:
                 return 0.0
 
-            quality_scores = [
-                h.get("quality_score", 0) for h in self.performance_history[-10:]
-            ]
+            quality_scores = [h.get("quality_score", 0) for h in self.performance_history[-10:]]
             return sum(quality_scores) / len(quality_scores) if quality_scores else 0.0
         except Exception:
             return 0.0
@@ -335,16 +318,11 @@ class ConstitutionalCouncilScalabilityFramework:
         if performance_metrics.get(ScalabilityMetric.CONSENSUS_RATE, 0) < 0.6:
             recommendations.append("Improve consensus-building mechanisms")
 
-        if (
-            performance_metrics.get(ScalabilityMetric.STAKEHOLDER_PARTICIPATION, 0)
-            < 0.7
-        ):
+        if performance_metrics.get(ScalabilityMetric.STAKEHOLDER_PARTICIPATION, 0) < 0.7:
             recommendations.append("Enhance stakeholder engagement strategies")
 
         if not recommendations:
-            recommendations.append(
-                "Current performance is within acceptable parameters"
-            )
+            recommendations.append("Current performance is within acceptable parameters")
 
         return recommendations
 

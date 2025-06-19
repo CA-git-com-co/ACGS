@@ -30,9 +30,7 @@ class PolicyDecisionRequest(BaseModel):
     user_id: str = Field(..., description="User identifier")
     resource: str = Field(..., description="Resource being accessed")
     action: str = Field(..., description="Action being performed")
-    context: dict[str, Any] = Field(
-        default_factory=dict, description="Additional context"
-    )
+    context: dict[str, Any] = Field(default_factory=dict, description="Additional context")
     optimization_level: OptimizationLevel = Field(
         default=OptimizationLevel.ENHANCED, description="Target optimization level"
     )
@@ -245,9 +243,7 @@ async def run_performance_benchmark(
     try:
         optimizer = get_ultra_low_latency_optimizer()
 
-        benchmark_results = await optimizer.benchmark_performance(
-            num_requests=request.num_requests
-        )
+        benchmark_results = await optimizer.benchmark_performance(num_requests=request.num_requests)
 
         return {
             "message": f"Benchmark completed with {request.num_requests} requests",

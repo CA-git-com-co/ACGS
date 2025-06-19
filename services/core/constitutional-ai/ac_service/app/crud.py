@@ -25,9 +25,7 @@ async def create_principle(
 
 
 async def get_principle(db: AsyncSession, principle_id: int) -> models.Principle | None:
-    result = await db.execute(
-        select(models.Principle).filter(models.Principle.id == principle_id)
-    )
+    result = await db.execute(select(models.Principle).filter(models.Principle.id == principle_id))
     return result.scalars().first()
 
 
@@ -71,9 +69,7 @@ async def update_principle(
     return db_principle
 
 
-async def delete_principle(
-    db: AsyncSession, principle_id: int
-) -> models.Principle | None:
+async def delete_principle(db: AsyncSession, principle_id: int) -> models.Principle | None:
     db_principle = await get_principle(db, principle_id)
     if db_principle:
         # Instead of deleting, we can mark as "deprecated" or "deleted"
@@ -191,9 +187,7 @@ async def create_ac_meta_rule(
     return db_meta_rule
 
 
-async def get_ac_meta_rule(
-    db: AsyncSession, meta_rule_id: int
-) -> models.ACMetaRule | None:
+async def get_ac_meta_rule(db: AsyncSession, meta_rule_id: int) -> models.ACMetaRule | None:
     result = await db.execute(
         select(models.ACMetaRule).filter(models.ACMetaRule.id == meta_rule_id)
     )
@@ -240,9 +234,7 @@ async def create_ac_amendment(
 
     # Determine urgency level
     urgency_level = (
-        CoEvolutionMode.RAPID
-        if amendment.rapid_processing_requested
-        else CoEvolutionMode.STANDARD
+        CoEvolutionMode.RAPID if amendment.rapid_processing_requested else CoEvolutionMode.STANDARD
     )
 
     # Initialize scalability handler if needed
@@ -290,9 +282,7 @@ async def create_ac_amendment(
     return db_amendment
 
 
-async def get_ac_amendment(
-    db: AsyncSession, amendment_id: int
-) -> models.ACAmendment | None:
+async def get_ac_amendment(db: AsyncSession, amendment_id: int) -> models.ACAmendment | None:
     result = await db.execute(
         select(models.ACAmendment).filter(models.ACAmendment.id == amendment_id)
     )
@@ -311,9 +301,7 @@ async def get_ac_amendments(
         query = query.filter(models.ACAmendment.status == status)
     if principle_id:
         query = query.filter(models.ACAmendment.principle_id == principle_id)
-    query = (
-        query.offset(skip).limit(limit).order_by(models.ACAmendment.created_at.desc())
-    )
+    query = query.offset(skip).limit(limit).order_by(models.ACAmendment.created_at.desc())
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -367,9 +355,7 @@ async def get_ac_amendment_votes(
     db: AsyncSession, amendment_id: int
 ) -> list[models.ACAmendmentVote]:
     result = await db.execute(
-        select(models.ACAmendmentVote).filter(
-            models.ACAmendmentVote.amendment_id == amendment_id
-        )
+        select(models.ACAmendmentVote).filter(models.ACAmendmentVote.amendment_id == amendment_id)
     )
     return result.scalars().all()
 
@@ -380,9 +366,7 @@ async def create_ac_amendment_comment(
     comment: schemas.ACAmendmentCommentCreate,
     commenter_id: int | None = None,
 ) -> models.ACAmendmentComment:
-    db_comment = models.ACAmendmentComment(
-        **comment.model_dump(), commenter_id=commenter_id
-    )
+    db_comment = models.ACAmendmentComment(**comment.model_dump(), commenter_id=commenter_id)
     db.add(db_comment)
     await db.commit()
     await db.refresh(db_comment)
@@ -421,9 +405,7 @@ async def get_ac_conflict_resolution(
     db: AsyncSession, conflict_id: int
 ) -> models.ACConflictResolution | None:
     result = await db.execute(
-        select(models.ACConflictResolution).filter(
-            models.ACConflictResolution.id == conflict_id
-        )
+        select(models.ACConflictResolution).filter(models.ACConflictResolution.id == conflict_id)
     )
     return result.scalars().first()
 
@@ -440,11 +422,7 @@ async def get_ac_conflict_resolutions(
         query = query.filter(models.ACConflictResolution.status == status)
     if severity:
         query = query.filter(models.ACConflictResolution.severity == severity)
-    query = (
-        query.offset(skip)
-        .limit(limit)
-        .order_by(models.ACConflictResolution.created_at.desc())
-    )
+    query = query.offset(skip).limit(limit).order_by(models.ACConflictResolution.created_at.desc())
     result = await db.execute(query)
     return result.scalars().all()
 

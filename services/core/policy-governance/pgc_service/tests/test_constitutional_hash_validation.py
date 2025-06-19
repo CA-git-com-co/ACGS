@@ -59,9 +59,7 @@ class TestConstitutionalHashValidator:
     @pytest.mark.asyncio
     async def test_valid_constitutional_hash(self, validator, basic_context):
         """Test validation with correct constitutional hash."""
-        result = await validator.validate_constitutional_hash(
-            "cdd01ef066bc6cf2", basic_context
-        )
+        result = await validator.validate_constitutional_hash("cdd01ef066bc6cf2", basic_context)
 
         assert result.status == ConstitutionalHashStatus.VALID
         assert result.hash_valid is True
@@ -72,9 +70,7 @@ class TestConstitutionalHashValidator:
     @pytest.mark.asyncio
     async def test_invalid_constitutional_hash(self, validator, basic_context):
         """Test validation with incorrect constitutional hash."""
-        result = await validator.validate_constitutional_hash(
-            "invalid_hash_123", basic_context
-        )
+        result = await validator.validate_constitutional_hash("invalid_hash_123", basic_context)
 
         assert result.status == ConstitutionalHashStatus.MISMATCH
         assert result.hash_valid is False
@@ -152,9 +148,7 @@ class TestConstitutionalHashValidator:
         """Test that validation meets performance targets."""
         start_time = time.time()
 
-        result = await validator.validate_constitutional_hash(
-            "cdd01ef066bc6cf2", basic_context
-        )
+        result = await validator.validate_constitutional_hash("cdd01ef066bc6cf2", basic_context)
 
         validation_time_ms = (time.time() - start_time) * 1000
 
@@ -180,9 +174,7 @@ class TestConstitutionalHashValidator:
         # Simulate multiple failures to trigger circuit breaker
         validator._circuit_breaker_failures = validator._circuit_breaker_threshold
 
-        result = await validator.validate_constitutional_hash(
-            "cdd01ef066bc6cf2", basic_context
-        )
+        result = await validator.validate_constitutional_hash("cdd01ef066bc6cf2", basic_context)
 
         assert result.status == ConstitutionalHashStatus.UNKNOWN
         assert "temporarily unavailable" in result.violations[0].lower()
@@ -190,15 +182,9 @@ class TestConstitutionalHashValidator:
 
     def test_integrity_signature_generation(self, validator):
         """Test HMAC integrity signature generation."""
-        signature1 = validator._generate_integrity_signature(
-            "test_data", "test_operation"
-        )
-        signature2 = validator._generate_integrity_signature(
-            "test_data", "test_operation"
-        )
-        signature3 = validator._generate_integrity_signature(
-            "different_data", "test_operation"
-        )
+        signature1 = validator._generate_integrity_signature("test_data", "test_operation")
+        signature2 = validator._generate_integrity_signature("test_data", "test_operation")
+        signature3 = validator._generate_integrity_signature("different_data", "test_operation")
 
         # Same input should produce same signature
         assert signature1 == signature2
@@ -208,42 +194,32 @@ class TestConstitutionalHashValidator:
         assert len(signature1) > 0
 
     @pytest.mark.asyncio
-    async def test_enhanced_validation_comprehensive_level(
-        self, validator, policy_data
-    ):
+    async def test_enhanced_validation_comprehensive_level(self, validator, policy_data):
         """Test enhanced validation at comprehensive level."""
         context = ConstitutionalContext(
             operation_type="policy_creation",
             validation_level=ConstitutionalValidationLevel.COMPREHENSIVE,
         )
 
-        result = await validator.validate_policy_constitutional_compliance(
-            policy_data, context
-        )
+        result = await validator.validate_policy_constitutional_compliance(policy_data, context)
 
         assert result.validation_level == ConstitutionalValidationLevel.COMPREHENSIVE
         assert result.integrity_signature is not None
         assert len(result.integrity_signature) > 0
 
     @pytest.mark.asyncio
-    async def test_constitutional_hash_format_validation(
-        self, validator, basic_context
-    ):
+    async def test_constitutional_hash_format_validation(self, validator, basic_context):
         """Test constitutional hash format validation."""
         # Test invalid length
         result1 = await validator.validate_constitutional_hash("short", basic_context)
         assert result1.compliance_score < 1.0
 
         # Test invalid characters
-        result2 = await validator.validate_constitutional_hash(
-            "gggggggggggggggg", basic_context
-        )
+        result2 = await validator.validate_constitutional_hash("gggggggggggggggg", basic_context)
         assert result2.compliance_score < 1.0
 
         # Test valid format
-        result3 = await validator.validate_constitutional_hash(
-            "cdd01ef066bc6cf2", basic_context
-        )
+        result3 = await validator.validate_constitutional_hash("cdd01ef066bc6cf2", basic_context)
         assert result3.compliance_score >= 0.95
 
     @pytest.mark.asyncio
@@ -291,9 +267,7 @@ class TestConstitutionalValidationIntegration:
             validation_level=ConstitutionalValidationLevel.COMPREHENSIVE,
         )
 
-        result = await validator.validate_policy_constitutional_compliance(
-            policy_data, context
-        )
+        result = await validator.validate_policy_constitutional_compliance(policy_data, context)
 
         # Comprehensive validation should pass
         assert result.status == ConstitutionalHashStatus.VALID
@@ -326,9 +300,7 @@ class TestConstitutionalValidationIntegration:
         total_time = time.time() - start_time
 
         # All validations should succeed
-        assert all(
-            result.status == ConstitutionalHashStatus.VALID for result in results
-        )
+        assert all(result.status == ConstitutionalHashStatus.VALID for result in results)
         assert all(result.hash_valid for result in results)
 
         # Average time per validation should be reasonable

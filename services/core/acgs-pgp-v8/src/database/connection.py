@@ -93,9 +93,7 @@ class DatabaseManager:
         """Initialize asynchronous database engine."""
         if self._async_engine is None:
             # Convert sync URL to async URL
-            async_url = self.database_url.replace(
-                "postgresql://", "postgresql+asyncpg://"
-            )
+            async_url = self.database_url.replace("postgresql://", "postgresql+asyncpg://")
 
             self._async_engine = create_async_engine(
                 async_url,
@@ -181,9 +179,7 @@ class DatabaseManager:
                         }
                     else:
                         health_status["status"] = "unhealthy"
-                        health_status["connection_pool"]["async"] = {
-                            "status": "unhealthy"
-                        }
+                        health_status["connection_pool"]["async"] = {"status": "unhealthy"}
 
             # Check sync connection
             if self._sync_engine:
@@ -200,9 +196,7 @@ class DatabaseManager:
                         }
                     else:
                         health_status["status"] = "unhealthy"
-                        health_status["connection_pool"]["sync"] = {
-                            "status": "unhealthy"
-                        }
+                        health_status["connection_pool"]["sync"] = {"status": "unhealthy"}
 
             from datetime import datetime
 

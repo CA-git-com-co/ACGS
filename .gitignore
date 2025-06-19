@@ -533,3 +533,13 @@ docker_cleanup_commands.sh
 .tmp/
 **/tmp/
 **/temp/
+
+# Added by Task Master AI
+# Logs
+logs
+# Environment variables
+# Editor directories and files
+.idea
+.vscode
+# OS specific
+# Task files

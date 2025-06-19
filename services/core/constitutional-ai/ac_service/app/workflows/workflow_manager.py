@@ -55,9 +55,7 @@ class WorkflowManager:
         self.workflow_graphs: dict[str, Any] = {}
 
         if not LANGGRAPH_AVAILABLE:
-            logger.warning(
-                "LangGraph not available. Workflow functionality will be limited."
-            )
+            logger.warning("LangGraph not available. Workflow functionality will be limited.")
 
     async def initialize_workflow(
         self,
@@ -93,9 +91,7 @@ class WorkflowManager:
 
         # Initialize workflow state based on type
         if workflow_type == "constitutional_council":
-            initial_state = self._create_constitutional_council_state(
-                initial_data, metadata
-            )
+            initial_state = self._create_constitutional_council_state(initial_data, metadata)
         else:
             raise ValueError(f"Unknown workflow type: {workflow_type}")
 
@@ -173,15 +169,11 @@ class WorkflowManager:
             "created_at": workflow["created_at"].isoformat(),
             "current_phase": workflow["state"].get("current_phase"),
             "refinement_iterations": workflow["state"].get("refinement_iterations", 0),
-            "requires_human_review": workflow["state"].get(
-                "escalation_required", False
-            ),
+            "requires_human_review": workflow["state"].get("escalation_required", False),
             "metadata": workflow["metadata"],
         }
 
-    async def update_workflow_state(
-        self, workflow_id: str, state_updates: dict[str, Any]
-    ) -> bool:
+    async def update_workflow_state(self, workflow_id: str, state_updates: dict[str, Any]) -> bool:
         """
         Update the state of an active workflow.
 

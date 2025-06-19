@@ -1,32 +1,32 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
+    "target": "es2017", // Or a more recent version like es2020, esnext
+    "module": "commonjs", // Standard for Node.js Jest environment
+    "jsx": "react", // Changed from react-jsx to react
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "baseUrl": ".",
+    "strict": true,
+    "skipLibCheck": true, // Can be useful to speed up type checking if node_modules has issues
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "allowJs": true, // If you have JS files to be compiled
+    "baseUrl": ".", // Allows for path mapping if needed
     "paths": {
-      "@/*": ["./*"],
-      "@/components/*": ["./components/*"],
-      "@/lib/*": ["./lib/*"],
-      "@/hooks/*": ["./hooks/*"],
-      "@/types/*": ["./types/*"]
-    }
+      // Example: "@/*": ["src/*"]
+    },
+    "lib": ["dom", "dom.iterable", "esnext"], // Add "dom" for browser-like environment (JSDOM)
+    "allowSyntheticDefaultImports": true, // For SWR and other libraries
+    "resolveJsonModule": true, // To import JSON files
+    "isolatedModules": true, // Recommended for Babel or other transpilers
+    // "noEmit": true, // If jest/ts-jest handles emit, can be true. Set to false if you need tsc to emit.
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js", // If allowJs is true
+    "**/*.jsx"  // If allowJs is true and you have jsx files
+  ],
+  "exclude": [
+    "node_modules"
+    // any other specific directories to exclude
+  ]
 }

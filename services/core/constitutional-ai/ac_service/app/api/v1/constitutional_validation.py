@@ -58,18 +58,14 @@ async def validate_constitutional_compliance(request: ConstitutionalValidationRe
 
     try:
         # Check cache first
-        cached_result = cache.get_cached_policy_decision(
-            request.policy_content, request.input_data
-        )
+        cached_result = cache.get_cached_policy_decision(request.policy_content, request.input_data)
 
         if cached_result:
             # Return cached result
             processing_time = (time.time() - start_time) * 1000
             cached_result["cached"] = True
             cached_result["processing_time_ms"] = processing_time
-            logger.info(
-                f"Cache hit for constitutional validation - {processing_time:.2f}ms"
-            )
+            logger.info(f"Cache hit for constitutional validation - {processing_time:.2f}ms")
             return cached_result
 
         # Simulate constitutional validation processing
@@ -77,9 +73,7 @@ async def validate_constitutional_compliance(request: ConstitutionalValidationRe
         validation_result = await _perform_constitutional_validation(request)
 
         # Cache the result
-        cache.cache_policy_decision(
-            request.policy_content, request.input_data, validation_result
-        )
+        cache.cache_policy_decision(request.policy_content, request.input_data, validation_result)
 
         processing_time = (time.time() - start_time) * 1000
         validation_result["cached"] = False

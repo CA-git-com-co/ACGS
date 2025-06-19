@@ -171,8 +171,7 @@ class FidelityMonitoringSession:
         # Check cooldown
         if (
             self.last_alert_time
-            and (datetime.utcnow() - self.last_alert_time).seconds
-            < self.alert_cooldown_seconds
+            and (datetime.utcnow() - self.last_alert_time).seconds < self.alert_cooldown_seconds
         ):
             return
 
@@ -330,9 +329,7 @@ class FidelityMonitoringManager:
         # ensures: Correct function execution
         # sha256: func_hash
         self.active_sessions: dict[str, FidelityMonitoringSession] = {}
-        self.workflow_subscribers: dict[str, set[str]] = (
-            {}
-        )  # workflow_id -> session_ids
+        self.workflow_subscribers: dict[str, set[str]] = {}  # workflow_id -> session_ids
 
     def add_session(self, session: FidelityMonitoringSession):
         # requires: Valid input parameters
@@ -507,9 +504,7 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
         if message_type == "subscribe_workflow":
             workflow_id = data.get("workflow_id")
             if workflow_id:
-                monitoring_manager.subscribe_session_to_workflow(
-                    session.session_id, workflow_id
-                )
+                monitoring_manager.subscribe_session_to_workflow(session.session_id, workflow_id)
                 await session.send_message(
                     {
                         "type": "subscription_confirmed",
@@ -559,14 +554,10 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
                                 "green"
                                 if current_fidelity.composite_score >= 0.85
                                 else (
-                                    "amber"
-                                    if current_fidelity.composite_score >= 0.70
-                                    else "red"
+                                    "amber" if current_fidelity.composite_score >= 0.70 else "red"
                                 )
                             ),
-                            "violation_count": len(
-                                session.fidelity_monitor.get_active_alerts()
-                            ),
+                            "violation_count": len(session.fidelity_monitor.get_active_alerts()),
                             "fidelity_components": {
                                 "principle_coverage": current_fidelity.principle_coverage,
                                 "synthesis_success": current_fidelity.synthesis_success,
@@ -660,9 +651,7 @@ async def handle_websocket_message(session: FidelityMonitoringSession, message: 
                 )
 
         elif message_type == "ping":
-            await session.send_message(
-                {"type": "pong", "timestamp": datetime.utcnow().isoformat()}
-            )
+            await session.send_message({"type": "pong", "timestamp": datetime.utcnow().isoformat()})
 
         else:
             await session.send_message(
@@ -708,9 +697,7 @@ async def start_performance_monitoring():
 
             # Check for performance alerts
             overall_metrics = metrics.get("overall", {})
-            reliability_target_met = overall_metrics.get(
-                "reliability_target_met", False
-            )
+            reliability_target_met = overall_metrics.get("reliability_target_met", False)
 
             if not reliability_target_met:
                 alert = FidelityAlert(
@@ -734,9 +721,7 @@ async def start_performance_monitoring():
 
 
 # Function to be called from workflow to broadcast fidelity updates
-async def broadcast_fidelity_update(
-    workflow_id: str, fidelity_score: ConstitutionalFidelityScore
-):
+async def broadcast_fidelity_update(workflow_id: str, fidelity_score: ConstitutionalFidelityScore):
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
