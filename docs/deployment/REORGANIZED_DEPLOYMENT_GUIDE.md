@@ -52,7 +52,7 @@ ACGS-1/
 ```bash
 # Clone the repository
 git clone https://github.com/CA-git-com-co/ACGS.git
-cd ACGS-1
+cd ACGS
 
 # Install dependencies
 ./scripts/setup/install_dependencies.sh
@@ -65,7 +65,7 @@ anchor deploy
 cd ..
 
 # Start all services
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 
 # Verify deployment
 ./scripts/validation/validate_deployment.py

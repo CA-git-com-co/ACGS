@@ -143,7 +143,7 @@ The complete constitutional governance workflow:
 Start all services with Docker Compose:
 
 ```bash
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up --build -d
+docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
 ```
 
 ### API Testing

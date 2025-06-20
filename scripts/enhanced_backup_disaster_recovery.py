@@ -43,8 +43,8 @@ class ACGSBackupRecoverySystem:
     """Enhanced backup and disaster recovery system for ACGS-1"""
 
     def __init__(self):
-        self.project_root = Path("/home/dislove/ACGS-1")
-        self.backup_root = Path("/home/dislove/ACGS-1/backups")
+        self.project_root = Path("/home/ubuntu/ACGS")
+        self.backup_root = Path("/home/ubuntu/ACGS/backups")
         self.config = self._load_config()
         self.services = [
             "auth_service",

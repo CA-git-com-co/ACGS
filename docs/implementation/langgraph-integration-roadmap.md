@@ -25,7 +25,7 @@ LANGGRAPH_POSTGRES_URL=postgresql://acgs_user:acgs_password@localhost:5433/acgs_
 
 **Docker Compose Updates**:
 ```yaml
-# Add to infrastructure/docker/infrastructure/docker/docker-compose.yml
+# Add to infrastructure/docker/docker-compose.yml
   langgraph-redis:
     image: redis:6
     container_name: acgs_langgraph_redis

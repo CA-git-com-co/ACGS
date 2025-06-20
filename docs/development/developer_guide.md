@@ -50,7 +50,7 @@ This comprehensive guide provides instructions and best practices for developers
 4.  **Start Development Environment:**
     ```bash
     # Build and start all services
-    docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up --build -d
+    docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
 
     # Load constitutional test data
     python scripts/load_test_data.py

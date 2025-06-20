@@ -1,11 +1,11 @@
-# Integrity Service API Documentation
+# Policy Governance Service API Documentation
 
 ## Overview
 
-Provides digital signature, verification, and audit trail capabilities for ensuring data integrity.
+Manages policy lifecycle, voting, and governance processes within the ACGS-1 system.
 
-**Base URL**: `http://localhost:8002`
-**Interactive Docs**: `http://localhost:8002/docs`
+**Base URL**: `http://localhost:8005`
+**Interactive Docs**: `http://localhost:8005/docs`
 **Service Version**: 2.1.0
 **Last Updated**: 2025-06-20
 
@@ -23,7 +23,7 @@ Authorization: Bearer <jwt_token>
 
 #### GET /health
 
-Returns the current health status of the Integrity Service.
+Returns the current health status of the Policy Governance Service.
 
 **Authentication**: Not required
 
@@ -31,7 +31,7 @@ Returns the current health status of the Integrity Service.
 ```json
 {
   "status": "healthy",
-  "service": "integrity_service",
+  "service": "policy_governance_service",
   "version": "2.1.0",
   "uptime": 3600,
   "dependencies": {
@@ -41,40 +41,40 @@ Returns the current health status of the Integrity Service.
 }
 ```
 
-### Digital Signature
+### Create Policy
 
-#### POST /api/v1/sign
+#### POST /api/v1/policies
 
-Create digital signature for document or data.
-
-**Authentication**: Required
-
-**Request Body**:
-```json
-{"document": "content", "signer_id": "user123"}
-```
-
-**Response (200 OK)**:
-```json
-{"signature": "digital_signature", "signature_id": "sig_123", "timestamp": "2024-06-20T10:30:00Z"}
-```
-
-### Signature Verification
-
-#### POST /api/v1/verify
-
-Verify digital signature authenticity.
+Create a new policy for governance.
 
 **Authentication**: Required
 
 **Request Body**:
 ```json
-{"document": "content", "signature": "digital_signature"}
+{"title": "Policy Title", "description": "Description", "category": "governance"}
 ```
 
 **Response (200 OK)**:
 ```json
-{"valid": true, "signer_id": "user123", "timestamp": "2024-06-20T10:30:00Z"}
+{"policy_id": "pol_123", "status": "draft", "created_at": "2024-06-20T10:30:00Z"}
+```
+
+### Vote on Policy
+
+#### POST /api/v1/policies/{id}/vote
+
+Cast vote on a policy proposal.
+
+**Authentication**: Required
+
+**Request Body**:
+```json
+{"vote": "approve", "comment": "Supports transparency"}
+```
+
+**Response (200 OK)**:
+```json
+{"vote_id": "vote_123", "status": "recorded", "timestamp": "2024-06-20T10:30:00Z"}
 ```
 
 ## Error Responses
@@ -87,7 +87,7 @@ Verify digital signature authenticity.
     "code": "VALIDATION_ERROR",
     "message": "Invalid input parameters"
   },
-  "timestamp": "2025-06-20T22:30:45.548172Z",
+  "timestamp": "2025-06-20T22:30:45.548336Z",
   "request_id": "req_error_123"
 }
 ```
@@ -100,7 +100,7 @@ Verify digital signature authenticity.
     "code": "UNAUTHORIZED",
     "message": "Invalid or missing authentication token"
   },
-  "timestamp": "2025-06-20T22:30:45.548173Z",
+  "timestamp": "2025-06-20T22:30:45.548337Z",
   "request_id": "req_error_456"
 }
 ```
@@ -115,10 +115,10 @@ Verify digital signature authenticity.
 ### cURL Examples
 ```bash
 # Health check
-curl http://localhost:8002/health
+curl http://localhost:8005/health
 
 # Example API call (replace with actual endpoint)
-curl -X POST http://localhost:8002/api/v1/example \
+curl -X POST http://localhost:8005/api/v1/example \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"example": "data"}'
@@ -129,8 +129,8 @@ curl -X POST http://localhost:8002/api/v1/example \
 import httpx
 import asyncio
 
-class IntegrityServiceClient:
-    def __init__(self, base_url="http://localhost:8002", token=None):
+class PolicyGovernanceServiceClient:
+    def __init__(self, base_url="http://localhost:8005", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
     
@@ -141,7 +141,7 @@ class IntegrityServiceClient:
 
 # Usage
 async def main():
-    client = IntegrityServiceClient(token="your_jwt_token")
+    client = PolicyGovernanceServiceClient(token="your_jwt_token")
     result = await client.health_check()
     print(result)
 

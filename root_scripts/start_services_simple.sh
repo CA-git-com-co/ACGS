@@ -7,12 +7,12 @@ echo "🚀 Starting ACGS-1 Services"
 echo "=========================="
 
 # Set up environment
-export PYTHONPATH="/home/dislove/ACGS-1/services/shared:/home/dislove/ACGS-1/services/core/policy-governance/pgc_service:$PYTHONPATH"
+export PYTHONPATH="/home/ubuntu/ACGS/services/shared:/home/ubuntu/ACGS/services/core/policy-governance/pgc_service:$PYTHONPATH"
 export DATABASE_URL="postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_db"
 export REDIS_URL="redis://localhost:6379/0"
 
 # Activate virtual environment
-source /home/dislove/ACGS-1/.venv/bin/activate
+source /home/ubuntu/ACGS/.venv/bin/activate
 
 # Function to start a service
 start_service() {

@@ -48,9 +48,9 @@ python scripts/health_check.sh
 docker-compose -f infrastructure/docker/docker-compose.yml logs
 
 # View specific service logs
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml logs ac_service
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml logs gs_service
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml logs fv_service
+docker-compose -f infrastructure/docker/docker-compose.yml logs ac_service
+docker-compose -f infrastructure/docker/docker-compose.yml logs gs_service
+docker-compose -f infrastructure/docker/docker-compose.yml logs fv_service
 ```
 
 ## Common Issues and Solutions
@@ -65,16 +65,16 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 #### **Solutions:**
 ```bash
 # Check PostgreSQL container status
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml ps postgres
+docker-compose -f infrastructure/docker/docker-compose.yml ps postgres
 
 # Verify database URL in environment
 grep DATABASE_URL .env
 
 # Restart database service
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml restart postgres
+docker-compose -f infrastructure/docker/docker-compose.yml restart postgres
 
 # Manual database connection test
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml exec postgres psql -U acgs_user -d acgs_db
+docker-compose -f infrastructure/docker/docker-compose.yml exec postgres psql -U acgs_user -d acgs_db
 ```
 
 #### **Common Fixes:**
@@ -160,10 +160,10 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 grep PGP_ .env
 
 # Verify PGP key availability
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml exec integrity_service gpg --list-keys
+docker-compose -f infrastructure/docker/docker-compose.yml exec integrity_service gpg --list-keys
 
 # Test PGP signing functionality
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml exec integrity_service python -c "
+docker-compose -f infrastructure/docker/docker-compose.yml exec integrity_service python -c "
 import gnupg
 gpg = gnupg.GPG()
 keys = gpg.list_keys()
@@ -171,7 +171,7 @@ print('Available PGP keys:', len(keys))
 "
 
 # Check integrity service logs
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml logs integrity_service | grep -i pgp
+docker-compose -f infrastructure/docker/docker-compose.yml logs integrity_service | grep -i pgp
 ```
 
 #### **Common Fixes:**
@@ -279,17 +279,17 @@ docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml
 ### **System Recovery**
 ```bash
 # Stop all services
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml down
+docker-compose -f infrastructure/docker/docker-compose.yml down
 
 # Clean up containers and volumes
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml down -v
+docker-compose -f infrastructure/docker/docker-compose.yml down -v
 docker system prune -f
 
 # Restore from backup
 python scripts/restore_database.sh
 
 # Restart system
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up --build -d
+docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
 ```
 
 ### **Database Recovery**

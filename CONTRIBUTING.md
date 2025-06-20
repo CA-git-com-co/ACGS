@@ -246,7 +246,7 @@ cd applications/governance-dashboard && npm test
 
 1. **Local Development**:
    ```bash
-   docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up -d
+   docker-compose -f infrastructure/docker/docker-compose.yml up -d
    ```
 
 2. **Solana Devnet**:

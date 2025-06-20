@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class ACGSPGPPaperUpdater:
     """Updates the ACGS-PGP paper with real deployment data"""
 
-    def __init__(self, project_root: str = "/home/dislove/ACGS-1"):
+    def __init__(self, project_root: str = "/home/ubuntu/ACGS"):
         self.project_root = Path(project_root)
         self.paper_path = self.project_root / "docs/research/ACGS-pgp.md"
         self.enhanced_dir = self.project_root / "docs/research/enhanced"

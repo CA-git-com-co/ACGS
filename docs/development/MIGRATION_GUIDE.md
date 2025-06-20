@@ -34,7 +34,7 @@ This guide helps existing contributors adapt to the new blockchain-focused direc
 |----------|----------|
 | `./services/core/constitutional-ai/ac_service` | `./services/core/constitutional-ai/ac_service` |
 | `./blockchain/deploy` | `./blockchain/quantumagi-deployment/deploy` |
-| `infrastructure/docker/docker-compose.yml` | `infrastructure/docker/infrastructure/docker/docker-compose.yml` |
+| `infrastructure/docker/infrastructure/docker/docker-compose.yml` | `infrastructure/docker/docker-compose.yml` |
 
 ## 🛠️ Migration Steps
 

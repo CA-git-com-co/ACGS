@@ -149,7 +149,7 @@ cd services/core/constitutional-ai
 python -m uvicorn app.main:app --reload --port 8001
 
 # Or start all services with Docker
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 ### Frontend Applications Setup

@@ -618,7 +618,7 @@ jobs:
     
     - name: Build Docker images
       run: |
-        docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml build
+        docker-compose -f infrastructure/docker/docker-compose.yml build
     
     - name: Run integration tests
       run: |

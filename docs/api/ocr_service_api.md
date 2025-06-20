@@ -1,11 +1,11 @@
-# Integrity Service API Documentation
+# OCR Service API Documentation
 
 ## Overview
 
-Provides digital signature, verification, and audit trail capabilities for ensuring data integrity.
+Provides optical character recognition for document processing and analysis.
 
-**Base URL**: `http://localhost:8002`
-**Interactive Docs**: `http://localhost:8002/docs`
+**Base URL**: `http://localhost:8020`
+**Interactive Docs**: `http://localhost:8020/docs`
 **Service Version**: 2.1.0
 **Last Updated**: 2025-06-20
 
@@ -23,7 +23,7 @@ Authorization: Bearer <jwt_token>
 
 #### GET /health
 
-Returns the current health status of the Integrity Service.
+Returns the current health status of the OCR Service.
 
 **Authentication**: Not required
 
@@ -31,7 +31,7 @@ Returns the current health status of the Integrity Service.
 ```json
 {
   "status": "healthy",
-  "service": "integrity_service",
+  "service": "ocr_service",
   "version": "2.1.0",
   "uptime": 3600,
   "dependencies": {
@@ -41,40 +41,22 @@ Returns the current health status of the Integrity Service.
 }
 ```
 
-### Digital Signature
+### Extract Text
 
-#### POST /api/v1/sign
+#### POST /api/v1/ocr/extract
 
-Create digital signature for document or data.
-
-**Authentication**: Required
-
-**Request Body**:
-```json
-{"document": "content", "signer_id": "user123"}
-```
-
-**Response (200 OK)**:
-```json
-{"signature": "digital_signature", "signature_id": "sig_123", "timestamp": "2024-06-20T10:30:00Z"}
-```
-
-### Signature Verification
-
-#### POST /api/v1/verify
-
-Verify digital signature authenticity.
+Extract text from image or document.
 
 **Authentication**: Required
 
 **Request Body**:
 ```json
-{"document": "content", "signature": "digital_signature"}
+{"image_data": "base64_encoded_image", "format": "pdf"}
 ```
 
 **Response (200 OK)**:
 ```json
-{"valid": true, "signer_id": "user123", "timestamp": "2024-06-20T10:30:00Z"}
+{"extracted_text": "Document text content", "confidence": 0.95, "processing_time_ms": 1200}
 ```
 
 ## Error Responses
@@ -87,7 +69,7 @@ Verify digital signature authenticity.
     "code": "VALIDATION_ERROR",
     "message": "Invalid input parameters"
   },
-  "timestamp": "2025-06-20T22:30:45.548172Z",
+  "timestamp": "2025-06-20T22:30:45.548424Z",
   "request_id": "req_error_123"
 }
 ```
@@ -100,7 +82,7 @@ Verify digital signature authenticity.
     "code": "UNAUTHORIZED",
     "message": "Invalid or missing authentication token"
   },
-  "timestamp": "2025-06-20T22:30:45.548173Z",
+  "timestamp": "2025-06-20T22:30:45.548425Z",
   "request_id": "req_error_456"
 }
 ```
@@ -115,10 +97,10 @@ Verify digital signature authenticity.
 ### cURL Examples
 ```bash
 # Health check
-curl http://localhost:8002/health
+curl http://localhost:8020/health
 
 # Example API call (replace with actual endpoint)
-curl -X POST http://localhost:8002/api/v1/example \
+curl -X POST http://localhost:8020/api/v1/example \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"example": "data"}'
@@ -129,8 +111,8 @@ curl -X POST http://localhost:8002/api/v1/example \
 import httpx
 import asyncio
 
-class IntegrityServiceClient:
-    def __init__(self, base_url="http://localhost:8002", token=None):
+class OCRServiceClient:
+    def __init__(self, base_url="http://localhost:8020", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
     
@@ -141,7 +123,7 @@ class IntegrityServiceClient:
 
 # Usage
 async def main():
-    client = IntegrityServiceClient(token="your_jwt_token")
+    client = OCRServiceClient(token="your_jwt_token")
     result = await client.health_check()
     print(result)
 

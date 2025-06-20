@@ -1,11 +1,11 @@
-# Integrity Service API Documentation
+# Authentication Service API Documentation
 
 ## Overview
 
-Provides digital signature, verification, and audit trail capabilities for ensuring data integrity.
+Provides user authentication, authorization, and session management for the ACGS-1 system.
 
-**Base URL**: `http://localhost:8002`
-**Interactive Docs**: `http://localhost:8002/docs`
+**Base URL**: `http://localhost:8000`
+**Interactive Docs**: `http://localhost:8000/docs`
 **Service Version**: 2.1.0
 **Last Updated**: 2025-06-20
 
@@ -23,7 +23,7 @@ Authorization: Bearer <jwt_token>
 
 #### GET /health
 
-Returns the current health status of the Integrity Service.
+Returns the current health status of the Authentication Service.
 
 **Authentication**: Not required
 
@@ -31,7 +31,7 @@ Returns the current health status of the Integrity Service.
 ```json
 {
   "status": "healthy",
-  "service": "integrity_service",
+  "service": "authentication_service",
   "version": "2.1.0",
   "uptime": 3600,
   "dependencies": {
@@ -41,40 +41,53 @@ Returns the current health status of the Integrity Service.
 }
 ```
 
-### Digital Signature
+### User Login
 
-#### POST /api/v1/sign
+#### POST /auth/login
 
-Create digital signature for document or data.
+Authenticate user and return JWT token.
+
+**Authentication**: Not required
+
+**Request Body**:
+```json
+{"username": "user", "password": "password"}
+```
+
+**Response (200 OK)**:
+```json
+{"access_token": "jwt_token", "token_type": "bearer", "expires_in": 3600}
+```
+
+### Token Refresh
+
+#### POST /auth/refresh
+
+Refresh an existing JWT token.
 
 **Authentication**: Required
 
 **Request Body**:
 ```json
-{"document": "content", "signer_id": "user123"}
+{"refresh_token": "refresh_token"}
 ```
 
 **Response (200 OK)**:
 ```json
-{"signature": "digital_signature", "signature_id": "sig_123", "timestamp": "2024-06-20T10:30:00Z"}
+{"access_token": "new_jwt_token", "expires_in": 3600}
 ```
 
-### Signature Verification
+### User Profile
 
-#### POST /api/v1/verify
+#### GET /auth/profile
 
-Verify digital signature authenticity.
+Get current user profile information.
 
 **Authentication**: Required
 
-**Request Body**:
-```json
-{"document": "content", "signature": "digital_signature"}
-```
-
 **Response (200 OK)**:
 ```json
-{"valid": true, "signer_id": "user123", "timestamp": "2024-06-20T10:30:00Z"}
+{"user_id": "123", "username": "user", "roles": ["citizen"], "permissions": ["read", "write"]}
 ```
 
 ## Error Responses
@@ -87,7 +100,7 @@ Verify digital signature authenticity.
     "code": "VALIDATION_ERROR",
     "message": "Invalid input parameters"
   },
-  "timestamp": "2025-06-20T22:30:45.548172Z",
+  "timestamp": "2025-06-20T22:30:45.548056Z",
   "request_id": "req_error_123"
 }
 ```
@@ -100,7 +113,7 @@ Verify digital signature authenticity.
     "code": "UNAUTHORIZED",
     "message": "Invalid or missing authentication token"
   },
-  "timestamp": "2025-06-20T22:30:45.548173Z",
+  "timestamp": "2025-06-20T22:30:45.548064Z",
   "request_id": "req_error_456"
 }
 ```
@@ -115,10 +128,10 @@ Verify digital signature authenticity.
 ### cURL Examples
 ```bash
 # Health check
-curl http://localhost:8002/health
+curl http://localhost:8000/health
 
 # Example API call (replace with actual endpoint)
-curl -X POST http://localhost:8002/api/v1/example \
+curl -X POST http://localhost:8000/api/v1/example \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"example": "data"}'
@@ -129,8 +142,8 @@ curl -X POST http://localhost:8002/api/v1/example \
 import httpx
 import asyncio
 
-class IntegrityServiceClient:
-    def __init__(self, base_url="http://localhost:8002", token=None):
+class AuthenticationServiceClient:
+    def __init__(self, base_url="http://localhost:8000", token=None):
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {token}"} if token else {}
     
@@ -141,7 +154,7 @@ class IntegrityServiceClient:
 
 # Usage
 async def main():
-    client = IntegrityServiceClient(token="your_jwt_token")
+    client = AuthenticationServiceClient(token="your_jwt_token")
     result = await client.health_check()
     print(result)
 
