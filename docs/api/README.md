@@ -11,37 +11,37 @@ This directory contains comprehensive API documentation for all ACGS-1 services 
 - **Features:** Constitutional principles, meta-rules, Constitutional Council, conflict resolution
 
 ### Governance Synthesis Service (`governance-synthesis`)
-- **Base URL:** `http://localhost:8002/api/governance-synthesis/`
+- **Base URL:** `http://localhost:8004/api/governance-synthesis/`
 - **Documentation:** [gs_service_api.md](gs_service_api.md)
-- **Interactive Docs:** `http://localhost:8002/docs`
+- **Interactive Docs:** `http://localhost:8004/docs`
 - **Features:** LLM-powered policy synthesis, multi-model validation, QEC error correction
 
 ### Policy Governance Service (`policy-governance`)
-- **Base URL:** `http://localhost:8003/api/policy-governance/`
-- **Interactive Docs:** `http://localhost:8003/docs`
+- **Base URL:** `http://localhost:8005/api/policy-governance/`
+- **Interactive Docs:** `http://localhost:8005/docs`
 - **Features:** Real-time policy enforcement, OPA integration, constitutional amendment integration
 
 ### Formal Verification Service (`formal-verification`)
-- **Base URL:** `http://localhost:8004/api/formal-verification/`
-- **Interactive Docs:** `http://localhost:8004/docs`
+- **Base URL:** `http://localhost:8003/api/formal-verification/`
+- **Interactive Docs:** `http://localhost:8003/docs`
 - **Features:** Z3 SMT solver integration, safety property checking, formal policy validation
 
 ## Platform Service APIs
 
 ### Authentication Service (`authentication`)
-- **Base URL:** `http://localhost:8005/api/authentication/`
-- **Interactive Docs:** `http://localhost:8005/docs`
+- **Base URL:** `http://localhost:8000/api/authentication/`
+- **Interactive Docs:** `http://localhost:8000/docs`
 - **Features:** User authentication, RBAC, JWT token management
 
 ### Integrity Service (`integrity`)
-- **Base URL:** `http://localhost:8006/api/integrity/`
-- **Interactive Docs:** `http://localhost:8006/docs`
+- **Base URL:** `http://localhost:8002/api/integrity/`
+- **Interactive Docs:** `http://localhost:8002/docs`
 - **Features:** Cryptographic integrity, policy storage, versioning, audit logs, PGP assurance
 
-### Workflow Service (`workflow`)
-- **Base URL:** `http://localhost:8006/api/workflow/`
+### Evolutionary Computation Service (`evolutionary-computation`)
+- **Base URL:** `http://localhost:8006/api/evolutionary-computation/`
 - **Interactive Docs:** `http://localhost:8006/docs`
-- **Features:** Workflow orchestration, process automation, task management
+- **Features:** WINA optimization, evolutionary governance strategies, performance monitoring
 
 ## Research Service APIs
 

@@ -44,18 +44,124 @@ GET /health
 }
 ```
 
-### Service-Specific Endpoints
+### WINA Optimization Endpoints
 
+#### WINA Performance Monitoring
+```http
+GET /api/v1/wina/performance
+```
 
-#### Main Endpoints
-- `GET /api/v1/status` - Service status and capabilities
-- `POST /api/v1/process` - Main processing endpoint
-- `GET /api/v1/metrics` - Performance metrics
+**Description:** Get current WINA optimization performance metrics
 
-#### Service-Specific Features
-- Constitutional governance integration
-- Real-time processing capabilities
-- Enterprise security compliance
+**Response (200 OK):**
+```json
+{
+  "wina_metrics": {
+    "optimization_score": 0.87,
+    "performance_improvement": 0.23,
+    "constitutional_compliance": 0.94,
+    "last_optimization": "2025-06-20T10:30:00Z"
+  },
+  "system_health": {
+    "cpu_usage": 0.45,
+    "memory_usage": 0.62,
+    "active_optimizations": 3
+  }
+}
+```
+
+#### WINA Configuration Management
+```http
+POST /api/v1/wina/configure
+```
+
+**Description:** Configure WINA optimization parameters
+
+**Request Body:**
+```json
+{
+  "optimization_level": "high",
+  "constitutional_weight": 0.8,
+  "performance_weight": 0.2,
+  "max_iterations": 100,
+  "convergence_threshold": 0.01
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "status": "configured",
+  "configuration_id": "wina_config_123",
+  "applied_at": "2025-06-20T10:30:00Z"
+}
+```
+
+#### Evolutionary Computation Endpoints
+
+#### Start Optimization Process
+```http
+POST /api/v1/oversight/start
+```
+
+**Description:** Initiate evolutionary oversight for governance optimization
+
+**Request Body:**
+```json
+{
+  "target_policy": "policy_id_123",
+  "optimization_goals": ["performance", "compliance", "efficiency"],
+  "constraints": {
+    "max_duration": 3600,
+    "constitutional_compliance_min": 0.8
+  }
+}
+```
+
+#### AlphaEvolve Integration
+```http
+POST /api/v1/alphaevolve/execute
+```
+
+**Description:** Execute AlphaEvolve iterative improvement process
+
+**Request Body:**
+```json
+{
+  "model_id": "governance_model_v2",
+  "evolution_parameters": {
+    "population_size": 50,
+    "mutation_rate": 0.1,
+    "crossover_rate": 0.8,
+    "selection_method": "tournament"
+  }
+}
+```
+
+#### Monitoring and Reporting
+```http
+GET /api/v1/reporting/execution/{execution_id}
+```
+
+**Description:** Get detailed execution report for optimization process
+
+**Response (200 OK):**
+```json
+{
+  "execution_id": "exec_123",
+  "status": "completed",
+  "results": {
+    "optimization_improvement": 0.15,
+    "constitutional_compliance": 0.92,
+    "performance_metrics": {
+      "response_time_improvement": 0.08,
+      "throughput_increase": 0.12
+    }
+  },
+  "duration": 1847,
+  "iterations_completed": 87
+}
+```
 
 
 ## 🔧 Error Handling

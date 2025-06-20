@@ -161,9 +161,9 @@ cd ACGS-1
 # Install dependencies
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r config/requirements.txt
 # Or use the helper script
-./scripts/setup/install_dependencies.sh
+./scripts/setup/quick_start.sh
 ```
 
 ### 2. Build Blockchain Programs
@@ -210,7 +210,7 @@ python -m uvicorn app.main:app --reload --port 8006
 #### Or start all services with Docker Compose
 
 ```bash
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up -d
+docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
 
 ### 4. Launch Frontend Applications
@@ -481,9 +481,9 @@ python scripts/validate_devnet_deployment.py
 ./scripts/phase3_host_based_deployment.sh
 
 # Or use Docker Compose for containerized deployment
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose -f docker-compose.production.yml up -d
 # Or run the deployment script
-./scripts/deployment/deploy_production.sh
+./scripts/deployment/deploy_production_complete.sh
 ```
 
 ### Environment Configuration

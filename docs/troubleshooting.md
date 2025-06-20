@@ -1,13 +1,39 @@
-# ACGS-PGP Troubleshooting Guide
+# ACGS-1 Comprehensive Troubleshooting Guide
 
-This guide provides solutions for common issues encountered when deploying and operating the ACGS-PGP framework with Phase 1-3 features.
+This guide provides comprehensive solutions for common issues encountered when deploying and operating the ACGS-1 Constitutional Governance System. It covers all 7 core services, deployment scenarios, and operational procedures with step-by-step resolution instructions.
+
+## 📋 Quick Reference
+
+### Service Health Status
+```bash
+# Check all services at once
+curl -s http://localhost:8000/health | jq '.status'  # Auth Service
+curl -s http://localhost:8001/health | jq '.status'  # Constitutional AI
+curl -s http://localhost:8002/health | jq '.status'  # Integrity Service
+curl -s http://localhost:8003/health | jq '.status'  # Formal Verification
+curl -s http://localhost:8004/health | jq '.status'  # Governance Synthesis
+curl -s http://localhost:8005/health | jq '.status'  # Policy Governance
+curl -s http://localhost:8006/health | jq '.status'  # Evolutionary Computation
+```
+
+### Emergency Commands
+```bash
+# Stop all services immediately
+pkill -f "uvicorn.*main:app"
+
+# Restart all services
+./scripts/start_all_services.sh
+
+# Emergency rollback
+python scripts/emergency_rollback_procedures.py
+```
 
 ## Quick Diagnostics
 
 ### **System Health Check**
 ```bash
 # Check all services status
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml ps
+docker-compose -f infrastructure/docker/docker-compose.yml ps
 
 # Verify deployment
 python scripts/verify_acgs_deployment.sh
@@ -19,7 +45,7 @@ python scripts/health_check.sh
 ### **Service Logs**
 ```bash
 # View all service logs
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml logs
+docker-compose -f infrastructure/docker/docker-compose.yml logs
 
 # View specific service logs
 docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml logs ac_service
@@ -281,8 +307,8 @@ python scripts/restore_database.sh backup_2024_01_15.sql
 ```bash
 # Collect all logs for support
 mkdir -p logs
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml logs > logs/all_services.log
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml ps > logs/service_status.log
+docker-compose -f infrastructure/docker/docker-compose.yml logs > logs/all_services.log
+docker-compose -f infrastructure/docker/docker-compose.yml ps > logs/service_status.log
 ```
 
 ### **System Information**

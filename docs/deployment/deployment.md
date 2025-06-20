@@ -132,10 +132,10 @@ curl -f http://localhost:3001/api/health           # Grafana
 From the project root directory:
 ```bash
 # Build and start all services with monitoring
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up --build -d
+docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
 
 # Verify all services are running
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml ps
+docker-compose -f infrastructure/docker/docker-compose.yml ps
 
 # Check service health endpoints
 for port in 8000 8001 8002 8003 8004 8005; do

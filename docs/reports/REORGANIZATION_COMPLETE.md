@@ -81,10 +81,10 @@ cd ACGS-master
 cp config/env/.env.example .env
 
 # Start services
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up --build -d
+docker-compose -f infrastructure/docker/docker-compose.yml up --build -d
 
 # Stop services
-docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml down
+docker-compose -f infrastructure/docker/docker-compose.yml down
 ```
 
 ### Testing

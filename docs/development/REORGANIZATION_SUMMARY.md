@@ -126,7 +126,7 @@ ACGS-master/
    git pull origin main
    
    # Update Docker Compose commands
-   docker-compose -f infrastructure/docker/infrastructure/docker/docker-compose.yml up
+   docker-compose -f infrastructure/docker/docker-compose.yml up
    ```
 
 2. **Update Import Statements**:
