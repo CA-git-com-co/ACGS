@@ -12,7 +12,7 @@ solana-account-decoder = "1.18"
 
 # Anchor framework
 anchor-client = "0.29"
-anchor-lang = "0.29"
+anchor-lang = "0.31"
 
 # Async runtime
 tokio = { version = "1.0", features = ["full"] }
