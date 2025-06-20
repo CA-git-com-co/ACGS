@@ -46,8 +46,8 @@ describe("quantumagi-core", () => {
         // Test isolation - unique governance per test suite
         const testSuiteId = "quantumagi-core_comprehensive_" + Date.now();
         authority = anchor.web3.Keypair.generate();
-        // Generate PDAs
-        [governancePDA] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("governance_quantumagi-core_comprehensive_" + Date.now())], program.programId);
+        // Generate PDAs - Use short seeds to avoid max length error
+        [governancePDA] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("governance"), Buffer.from("comp")], program.programId);
         // Airdrop SOL for testing
         yield program.provider.connection.confirmTransaction(yield program.provider.connection.requestAirdrop(authority.publicKey, 2 * anchor.web3.LAMPORTS_PER_SOL));
     }));
