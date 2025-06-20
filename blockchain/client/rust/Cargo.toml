@@ -39,5 +39,9 @@ config = "0.14"
 # Time handling
 chrono = { version = "0.4", features = ["serde"] }
 
+# Hashing
+sha256 = "1.5"
+
 [dev-dependencies]
 tokio = { version = "1.0", features = ["full"] }
+sha256 = "1.5"
