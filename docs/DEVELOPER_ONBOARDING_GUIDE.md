@@ -39,8 +39,9 @@ ACGS-1 (AI Compliance Governance System) is a production-grade constitutional go
 ```bash
 # System Requirements
 - Ubuntu 20.04+ or macOS 12+
+- Rust 1.81.0+ (primary blockchain development)
 - Python 3.12+
-- Node.js 18+
+- Node.js 18+ (frontend applications only)
 - PostgreSQL 15+
 - Redis 7+
 - Solana CLI 1.18.22+
