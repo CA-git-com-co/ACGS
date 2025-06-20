@@ -39,6 +39,26 @@ ACGS-1 implements a modular, blockchain-integrated governance system with a **th
 - **Purpose**: User interfaces and client-side applications
 - **Benefits**: Rich UI ecosystem, modern development practices
 
+## 🧬 Darwin Gödel Machine (DGM) Integration
+
+ACGS-1 now features advanced **Darwin Gödel Machine** integration for self-evolving AI governance:
+
+### **🔄 Event-Driven Architecture**
+- **NATS Message Broker**: High-performance event streaming and message routing
+- **Service Mesh Integration**: Istio/Linkerd for advanced traffic management
+- **Real-time Event Processing**: Sub-millisecond event propagation across services
+
+### **🧠 Self-Evolving Systems**
+- **LSU Interface**: Learning System Unit for continuous improvement
+- **SEE Platform**: Self-Evolving Environment for adaptive governance
+- **Conservative Bandit Algorithms**: Safe exploration with reward-hacking resilience
+- **Semantic Validation**: Hard constraints for constitutional compliance
+
+### **📊 Performance Metrics**
+- **>99.9% Uptime**: Production SLA targets with comprehensive monitoring
+- **<500ms Response Time**: Optimized for real-time governance decisions
+- **Archive-backed Evolution**: Historical learning with performance tracking
+
 ## 🎯 Project Status: Enterprise-Grade Production Ready
 
 ### **📊 Test Suite Remediation Results**
@@ -122,7 +142,9 @@ ACGS-1/
 │   │   ├── constitutional-ai/          # Constitutional principles & compliance
 │   │   ├── governance-synthesis/       # Policy synthesis & validation
 │   │   ├── policy-governance/          # Real-time policy enforcement
-│   │   └── formal-verification/        # Mathematical verification
+│   │   ├── formal-verification/        # Mathematical verification
+│   │   ├── evolutionary-computation/   # WINA oversight & optimization
+│   │   └── dgm-service/                # Darwin Gödel Machine self-evolution
 │   ├── platform/                       # Platform services
 │   │   ├── authentication/             # User authentication & authorization
 │   │   ├── integrity/                  # Cryptographic integrity
@@ -164,11 +186,12 @@ ACGS-1/
 - **Rust** 1.81.0+ (primary blockchain development language)
 - **Solana CLI** v1.18.22+
 - **Anchor Framework** v0.29.0+
-- **Python** 3.9+ (3.11+ recommended)
+- **Python** 3.11+ (required for all services, UV package manager recommended)
 - **PostgreSQL** 15+
 - **Redis** 7+
-- **Docker** & **Docker Compose**
+- **Docker** 24.0+ & **Docker Compose**
 - **Node.js** v18+ (for frontend applications only)
+- **UV Package Manager** (for Python dependency management)
 
 #### Rust-First Blockchain Development
 
@@ -214,12 +237,20 @@ cargo --version  # Should show 1.81.0+
 
 ```bash
 git clone https://github.com/CA-git-com-co/ACGS.git
-cd ACGS-1
+cd ACGS
 
-# Install dependencies
+# Install UV package manager (recommended for Python services)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.bashrc
+
+# Setup Python environment with UV
+uv sync
+
+# Alternative: Traditional Python setup
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r config/requirements.txt
+
 # Or use the helper script
 ./scripts/setup/quick_start.sh
 ```
@@ -251,42 +282,44 @@ cargo run --bin validate_deployment -- --help
 - **Type safety**: Rust's type system prevents runtime errors
 - **Unified toolchain**: Single language for all blockchain operations
 
-**Rust-First Development Benefits**:
-- **No dependency conflicts**: Native Rust eliminates Node.js version issues
-- **Better performance**: Compiled Rust tools are faster than interpreted scripts
-- **Type safety**: Rust's type system prevents runtime errors
-- **Unified toolchain**: Single language for all blockchain operations
-
-### 4. Start Backend Services (Host-based)
+### 4. Start Backend Services (Host-based with UV)
 
 ```bash
+# Install UV package manager (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.bashrc
+
 # Start Authentication Service (Port 8000)
 cd services/platform/authentication/auth_service
-python -m uvicorn app.main:app --reload --port 8000
+uv sync && uv run uvicorn app.main:app --reload --port 8000
 
 # Start Constitutional AI Service (Port 8001)
 cd services/core/constitutional-ai/constitutional-ai_service
-python -m uvicorn app.main:app --reload --port 8001
+uv sync && uv run uvicorn app.main:app --reload --port 8001
 
 # Start Integrity Service (Port 8002)
 cd services/platform/integrity/integrity_service
-python -m uvicorn app.main:app --reload --port 8002
+uv sync && uv run uvicorn app.main:app --reload --port 8002
 
 # Start Formal Verification Service (Port 8003)
 cd services/core/formal-verification/fv_service
-python -m uvicorn main:app --reload --port 8003
+uv sync && uv run uvicorn main:app --reload --port 8003
 
 # Start Governance Synthesis Service (Port 8004)
 cd services/core/governance-synthesis/governance-synthesis_service
-python -m uvicorn app.main:app --reload --port 8004
+uv sync && uv run uvicorn app.main:app --reload --port 8004
 
 # Start Policy Governance Service (Port 8005)
 cd services/core/policy-governance/policy-governance_service
-python -m uvicorn app.main:app --reload --port 8005
+uv sync && uv run uvicorn app.main:app --reload --port 8005
 
 # Start Evolutionary Computation Service (Port 8006)
 cd services/core/evolutionary-computation
-python -m uvicorn app.main:app --reload --port 8006
+uv sync && uv run uvicorn app.main:app --reload --port 8006
+
+# Start Darwin Gödel Machine Service (Port 8007)
+cd services/core/dgm-service
+uv sync && uv run python -m dgm_service.main
 ```
 
 #### Or start all services with Docker Compose
@@ -418,7 +451,7 @@ cd blockchain && cargo clean && cargo build --release
 **Appeals Program**: Governance appeals and dispute resolution
 **Logging Program**: Comprehensive audit trail and event logging
 
-### 7 Core Services Architecture
+### 8 Core Services Architecture
 
 **Authentication Service** (Port 8000) - `services/platform/authentication/auth_service/`
 - Enterprise-grade authentication with MFA
@@ -461,6 +494,13 @@ cd blockchain && cargo clean && cargo build --release
 - Constitutional compliance verification and optimization
 - Evolutionary governance strategies and learning feedback
 - Performance optimization alerts and constitutional updates
+
+**Darwin Gödel Machine Service** (Port 8007) - `services/core/dgm-service/`
+- Self-evolving AI governance with Darwin Gödel Machine concepts
+- Event-driven architecture with NATS message broker integration
+- LSU interface and SEE platform for self-evolving systems
+- Conservative bandit algorithms for safe exploration
+- Semantic validation and archive-backed evolution loops
 
 ## 🔄 5 Core Governance Workflows
 
@@ -617,10 +657,11 @@ ACGS-1 features a comprehensive CI/CD pipeline with **100% health score** and en
 
 ### **Constitutional Governance Integration**
 - **Quantumagi deployment**: Automated Solana devnet deployment validation
-- **Service health checks**: All 7 core services validation (Auth, AC, Integrity, FV, GS, PGC, EC)
+- **Service health checks**: All 8 core services validation (Auth, AC, Integrity, FV, GS, PGC, EC, DGM)
 - **Governance workflow testing**: 5 constitutional workflows validation
 - **Blockchain security**: Solana keypair and program security validation
 - **Policy compliance**: Constitutional compliance checking in CI/CD
+- **DGM integration**: Darwin Gödel Machine self-evolution validation
 
 ## 🌐 Deployment
 

@@ -19,6 +19,12 @@ Stores policies, audit logs, and cryptographic data to ensure traceability and v
 ## Setup
 1. Install dependencies:
    ```bash
+   # Using UV package manager (recommended)
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   source ~/.bashrc
+   uv sync
+
+   # Alternative: Traditional pip
    pip install -r requirements.txt
    ```
 2. Copy `.env.example` to `.env` and configure:
@@ -27,8 +33,18 @@ Stores policies, audit logs, and cryptographic data to ensure traceability and v
 
 ### Running Service
 ```bash
-uvicorn main:app --reload
+# Using UV (recommended)
+uv run uvicorn main:app --reload --port 8002
+
+# Alternative: Traditional
+uvicorn main:app --reload --port 8002
 ```
 
 ### Running Tests
-_No dedicated tests for this service_
+```bash
+# Using UV
+uv run pytest tests/
+
+# Alternative: Traditional
+pytest tests/
+```

@@ -18,6 +18,12 @@ Provides constitutional management including principles, council workflows, and 
 ## Setup
 1. Install dependencies:
    ```bash
+   # Using UV package manager (recommended)
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   source ~/.bashrc
+   uv sync
+
+   # Alternative: Traditional pip
    pip install -r requirements.txt
    ```
 2. Copy `.env.example` to `.env` and configure:
@@ -27,10 +33,18 @@ Provides constitutional management including principles, council workflows, and 
 
 ### Running Service
 ```bash
-uvicorn main:app --reload
+# Using UV (recommended)
+uv run uvicorn main:app --reload --port 8001
+
+# Alternative: Traditional
+uvicorn main:app --reload --port 8001
 ```
 
 ### Running Tests
 ```bash
+# Using UV
+uv run pytest tests
+
+# Alternative: Traditional
 pytest tests
 ```

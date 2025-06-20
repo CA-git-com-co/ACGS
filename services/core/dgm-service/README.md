@@ -71,8 +71,14 @@ The service is configured through environment variables and YAML configuration f
 
 ### Setup
 
-1. Install dependencies:
+1. Install dependencies (UV recommended):
    ```bash
+   # Using UV package manager (recommended)
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   source ~/.bashrc
+   uv sync
+
+   # Alternative: Traditional pip
    pip install -r requirements.txt
    ```
 
@@ -84,11 +90,19 @@ The service is configured through environment variables and YAML configuration f
 
 3. Run database migrations:
    ```bash
+   # Using UV
+   uv run alembic upgrade head
+
+   # Alternative: Traditional
    alembic upgrade head
    ```
 
 4. Start the service:
    ```bash
+   # Using UV
+   uv run python -m dgm_service.main
+
+   # Alternative: Traditional
    python -m dgm_service.main
    ```
 

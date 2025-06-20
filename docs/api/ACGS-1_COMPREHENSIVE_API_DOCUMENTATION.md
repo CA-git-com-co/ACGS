@@ -1,9 +1,9 @@
 # ACGS-1 Comprehensive API Documentation
 
-**Version:** 2.0  
-**Date:** 2025-06-16  
-**Status:** Production Ready  
-**Base URL**: `https://api.acgs-1.com`  
+**Version:** 3.0
+**Date:** 2025-06-20
+**Status:** Production Ready
+**Base URL**: `https://api.acgs-1.com`
 
 ## 🎯 API Overview
 
@@ -13,14 +13,14 @@ The ACGS-1 Constitutional Governance System provides a comprehensive REST API ac
 
 | Service | Port | Base Path | Purpose |
 |---------|------|-----------|---------|
-| Auth Service | 8000 | `/api/auth/` | Authentication & Authorization |
-| AC Service | 8001 | `/api/constitutional-ai/` | Constitutional AI Management |
-| Integrity Service | 8002 | `/api/integrity/` | Cryptographic Integrity |
-| FV Service | 8003 | `/api/formal-verification/` | Formal Verification |
-| GS Service | 8004 | `/api/governance-synthesis/` | Governance Synthesis |
-| PGC Service | 8005 | `/api/policy-governance/` | Policy Enforcement |
-| EC Service | 8006 | `/api/evolutionary-computation/` | Evolutionary Computation |
-| Self-Evolving AI | 8007 | `/api/self-evolving-ai/` | AI Evolution Management |
+| Auth Service | 8000 | `/auth/` | Authentication & Authorization |
+| AC Service | 8001 | `/api/v1/constitutional/` | Constitutional AI Management |
+| Integrity Service | 8002 | `/api/v1/integrity/` | Cryptographic Integrity |
+| FV Service | 8003 | `/api/v1/verification/` | Formal Verification |
+| GS Service | 8004 | `/api/v1/synthesis/` | Governance Synthesis |
+| PGC Service | 8005 | `/api/v1/governance/` | Policy Enforcement |
+| EC Service | 8006 | `/api/v1/wina/` | Evolutionary Computation |
+| DGM Service | 8007 | `/api/v1/dgm/` | Darwin Gödel Machine Self-Improvement |
 
 ## 🔐 Authentication
 
@@ -34,21 +34,21 @@ Content-Type: application/json
 
 ### Authentication Flow
 ```http
-POST /api/auth/login
+POST /auth/token
 {
   "username": "user@example.com",
-  "password": "secure_password",
-  "mfa_code": "123456"
+  "password": "secure_password"
 }
 
 Response:
 {
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-  "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
   "token_type": "bearer",
-  "expires_in": 1800
+  "refresh_token": null
 }
 ```
+
+Note: Refresh tokens are stored in HttpOnly cookies for security.
 
 ## 🏛️ Core Service APIs
 
@@ -376,49 +376,93 @@ Authorization: Bearer <token>
 }
 ```
 
-### 8. Self-Evolving AI Service (Port 8007)
+### 8. Darwin Gödel Machine Service (Port 8007)
 
-#### Evolution Management
+#### DGM Operations
 ```http
-# Initiate evolution cycle
-POST /api/self-evolving-ai/evolution/initiate
+# Get DGM system status
+GET /api/v1/dgm/status
 Authorization: Bearer <token>
+
+Response:
 {
-  "evolution_type": "policy_optimization",
-  "target_policies": ["voting_policy"],
-  "proposed_changes": {
-    "optimization_goal": "reduce_latency",
-    "constraints": ["maintain_accuracy"]
-  },
-  "approval_required": true
+  "status": "operational",
+  "version": "1.0.0",
+  "uptime_seconds": 3600,
+  "active_improvements": 2,
+  "total_improvements": 100,
+  "success_rate": 85.0,
+  "constitutional_compliance_score": 0.95
 }
 
-# Get evolution status
-GET /api/self-evolving-ai/evolution/{evolution_id}/status
-Authorization: Bearer <token>
-
-# Approve evolution
-POST /api/self-evolving-ai/evolution/{evolution_id}/approve
+# Trigger improvement cycle
+POST /api/v1/dgm/improve
 Authorization: Bearer <token>
 {
-  "approval_decision": "approved",
-  "approver_comments": "Changes look good for production"
+  "description": "Optimize query performance",
+  "target_services": ["dgm-service"],
+  "priority": "medium",
+  "metadata": {}
+}
+
+# Get improvement status
+GET /api/v1/dgm/improvements/{improvement_id}
+Authorization: Bearer <token>
+```
+
+#### Bandit Algorithm Operations
+```http
+# Select arm using bandit algorithm
+POST /api/v1/dgm/bandit/select-arm
+Authorization: Bearer <token>
+{
+  "context_key": "improvement_context",
+  "algorithm_type": "conservative_bandit",
+  "exploration_rate": 0.1,
+  "safety_threshold": 0.8
+}
+
+# Provide reward feedback
+POST /api/v1/dgm/bandit/reward-feedback
+Authorization: Bearer <token>
+{
+  "context_key": "improvement_context",
+  "arm_id": "code_optimization",
+  "reward": 0.9,
+  "metadata": {}
 }
 ```
 
-#### Security Management
+#### Performance Monitoring
 ```http
-# Get security status
-GET /api/self-evolving-ai/security/status
-Authorization: Bearer <token>
-
-# Execute security assessment
-POST /api/self-evolving-ai/security/assess
+# Query performance metrics
+POST /api/v1/dgm/metrics/query
 Authorization: Bearer <token>
 {
-  "assessment_type": "comprehensive",
-  "target_components": ["evolution_engine", "policy_orchestrator"]
+  "metric_name": "response_time",
+  "start_time": "2025-06-20T12:00:00Z",
+  "end_time": "2025-06-20T13:00:00Z",
+  "aggregation": "avg"
 }
+
+# Get metrics summary
+GET /api/v1/dgm/metrics/summary?hours=24
+Authorization: Bearer <token>
+```
+
+#### Database & Cache Optimization
+```http
+# Trigger database optimization
+POST /api/v1/dgm/optimize/database
+Authorization: Bearer <token>
+
+# Get cache statistics
+GET /api/v1/dgm/cache/stats
+Authorization: Bearer <token>
+
+# Clear cache entries
+POST /api/v1/dgm/cache/clear?pattern=dgm:metrics:*
+Authorization: Bearer <token>
 ```
 
 ## 📊 Common Response Formats
@@ -466,7 +510,9 @@ Authorization: Bearer <token>
 - **Policy Enforcement**: <25ms
 - **Formal Verification**: <500ms
 - **Policy Synthesis**: <2000ms
-- **Evolution Operations**: <10000ms
+- **DGM Operations**: <150ms
+- **DGM Improvements**: <5000ms
+- **Database Optimization**: <30000ms
 
 ### Rate Limiting
 - **Standard Users**: 1000 requests/hour

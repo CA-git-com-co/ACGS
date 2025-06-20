@@ -7,7 +7,7 @@ The Darwin Gödel Machine (DGM) service provides a comprehensive REST API for se
 ## Base URL
 
 ```
-http://localhost:8003/api/v1
+http://localhost:8007/api/v1
 ```
 
 ## Authentication
@@ -445,6 +445,6 @@ The API uses URL versioning. The current version is `v1`. Future versions will b
 
 Interactive API documentation is available at:
 
-- **Swagger UI**: `http://localhost:8003/docs`
-- **ReDoc**: `http://localhost:8003/redoc`
-- **OpenAPI JSON**: `http://localhost:8003/openapi.json`
+- **Swagger UI**: `http://localhost:8007/docs`
+- **ReDoc**: `http://localhost:8007/redoc`
+- **OpenAPI JSON**: `http://localhost:8007/openapi.json`
