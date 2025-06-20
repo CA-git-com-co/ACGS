@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "acgs-data-flywheel"
+name = "acgs-monorepo"
 version = "1.0.0"
-description = "ACGS-1 Data Flywheel Integration with Constitutional Governance"
+description = "ACGS-1 Constitutional Governance System - Unified Python Workspace"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.11"
@@ -13,13 +13,14 @@ authors = [
     { name = "ACGS-1 Team", email = "info@soln.ai" },
 ]
 keywords = [
-    "ai",
-    "governance",
-    "constitutional",
-    "optimization",
-    "nvidia",
-    "data-flywheel",
     "acgs",
+    "constitutional",
+    "governance",
+    "ai",
+    "blockchain",
+    "solana",
+    "monorepo",
+    "workspace"
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -120,10 +121,21 @@ Repository = "https://github.com/CA-git-com-co/ACGS.git"
 Issues = "https://github.com/CA-git-com-co/ACGS/issues"
 
 [project.scripts]
-acgs-flywheel = "src.cli:main"
+acgs-cli = "scripts.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
+packages = ["services", "scripts", "tools"]
+
+# UV configuration
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.11.0",
+    "isort>=5.12.0",
+    "mypy>=1.7.0"
+]
 
 [tool.black]
 line-length = 100
