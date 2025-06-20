@@ -1,0 +1,217 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dgm-service"
+version = "1.0.0"
+description = "Darwin Gödel Machine Service for ACGS Platform"
+authors = [
+    {name = "ACGS Team", email = "team@acgs.ai"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "fastapi>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic[email]>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "asyncpg>=0.29.0",
+    "sqlalchemy[asyncio]>=2.0.23",
+    "alembic>=1.13.1",
+    "redis[hiredis]>=5.0.1",
+    "httpx>=0.25.2",
+    "python-jose[cryptography]>=3.3.0",
+    "prometheus-client>=0.19.0",
+    "structlog>=23.2.0",
+    "numpy>=1.25.2",
+    "scipy>=1.11.4",
+    "scikit-learn>=1.3.2",
+    "openai>=1.3.7",
+    "anthropic>=0.7.8",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0.1",
+    "tenacity>=8.2.3",
+    "nats-py>=2.6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.3",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "pytest-xdist>=3.5.0",
+    "pytest-benchmark>=4.0.0",
+    "pytest-timeout>=2.2.0",
+    "pytest-html>=4.1.1",
+    "factory-boy>=3.3.0",
+    "faker>=20.1.0",
+    "black>=23.11.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.7.1",
+    "bandit>=1.7.5",
+    "safety>=2.3.5",
+    "pre-commit>=3.6.0",
+    "tavern>=2.4.1",
+    "locust>=2.17.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/CA-git-com-co/ACGS"
+Repository = "https://github.com/CA-git-com-co/ACGS.git"
+Documentation = "https://acgs.ai/docs"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--tb=short",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "e2e: End-to-end tests",
+    "slow: Slow running tests",
+    "constitutional: Constitutional compliance tests",
+    "performance: Performance tests",
+    "security: Security tests",
+    "bandit: Bandit algorithm tests",
+    "database: Database tests",
+    "api: API tests",
+    "auth: Authentication tests",
+    "monitoring: Monitoring tests",
+    "cache: Cache tests",
+    "services: Service integration tests",
+    "workflows: Workflow tests",
+    "governance: Governance tests",
+    "compliance: Compliance tests",
+    "audit: Audit trail tests",
+    "validation: Validation tests",
+    "messaging: Messaging tests",
+    "istio: Istio service mesh tests",
+]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["dgm_service"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/migrations/*",
+    "*/alembic/*",
+    "*/scripts/*",
+    "*/config/*",
+]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+show_missing = true
+precision = 2
+
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | migrations
+  | alembic
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["dgm_service"]
+known_third_party = ["fastapi", "pydantic", "sqlalchemy", "redis", "pytest"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "anthropic.*",
+    "openai.*",
+    "prometheus_client.*",
+    "structlog.*",
+    "factory.*",
+    "faker.*",
+    "locust.*",
+    "tavern.*",
+]
+ignore_missing_imports = true
+
+[tool.bandit]
+exclude_dirs = ["tests", "migrations", "alembic"]
+skips = ["B101", "B601"]
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503", "E501"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "migrations",
+    "alembic",
+    ".venv",
+    "build",
+    "dist",
+]
+per-file-ignores = [
+    "__init__.py:F401",
+    "test_*.py:S101",
+]

@@ -1,0 +1,388 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: dgm-service-canary
+  namespace: acgs
+  labels:
+    app: dgm-service
+    deployment-strategy: canary
+spec:
+  hosts:
+  - dgm-service
+  http:
+  # Canary deployment routing
+  - match:
+    - headers:
+        x-canary-user:
+          exact: "true"
+    route:
+    - destination:
+        host: dgm-service
+        subset: canary
+      weight: 100
+    fault:
+      delay:
+        percentage:
+          value: 0.1
+        fixedDelay: 100ms
+  
+  # A/B testing for improvement strategies
+  - match:
+    - headers:
+        x-experiment-group:
+          exact: "strategy-a"
+    route:
+    - destination:
+        host: dgm-service
+        subset: v1
+      headers:
+        request:
+          add:
+            x-strategy-variant: "conservative"
+  
+  - match:
+    - headers:
+        x-experiment-group:
+          exact: "strategy-b"
+    route:
+    - destination:
+        host: dgm-service
+        subset: v1
+      headers:
+        request:
+          add:
+            x-strategy-variant: "aggressive"
+  
+  # Default routing with traffic splitting
+  - route:
+    - destination:
+        host: dgm-service
+        subset: v1
+      weight: 95
+    - destination:
+        host: dgm-service
+        subset: canary
+      weight: 5
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+      retryOn: 5xx,reset,connect-failure,refused-stream
+      retryRemoteLocalities: true
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: dgm-service-traffic-policy
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  host: dgm-service
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 30s
+        tcpKeepalive:
+          time: 7200s
+          interval: 75s
+          probes: 9
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+        consecutiveGatewayErrors: 5
+        interval: 30s
+        baseEjectionTime: 30s
+        maxEjectionPercent: 50
+        minHealthPercent: 50
+        useClientProtocol: true
+    loadBalancer:
+      simple: LEAST_CONN
+      consistentHash:
+        httpHeaderName: "x-improvement-id"
+    outlierDetection:
+      consecutiveGatewayErrors: 5
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+      minHealthPercent: 50
+      splitExternalLocalOriginErrors: false
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+    trafficPolicy:
+      connectionPool:
+        tcp:
+          maxConnections: 80
+        http:
+          http1MaxPendingRequests: 40
+          http2MaxRequests: 80
+  - name: canary
+    labels:
+      version: canary
+    trafficPolicy:
+      connectionPool:
+        tcp:
+          maxConnections: 20
+        http:
+          http1MaxPendingRequests: 10
+          http2MaxRequests: 20
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: WorkloadEntry
+metadata:
+  name: dgm-service-external-llm
+  namespace: acgs
+  labels:
+    app: dgm-service
+    service: external-llm
+spec:
+  address: llm.acgs.local
+  ports:
+    https: 443
+  labels:
+    app: external-llm
+    version: v1
+  serviceAccount: dgm-service
+---
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: dgm-service-llm-provider
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  hosts:
+  - llm.acgs.local
+  - api.openai.com
+  - api.anthropic.com
+  ports:
+  - number: 443
+    name: https
+    protocol: HTTPS
+  location: MESH_EXTERNAL
+  resolution: DNS
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: dgm-service-circuit-breaker
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  workloadSelector:
+    labels:
+      app: dgm-service
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_OUTBOUND
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.fault
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.http.fault.v3.HTTPFault
+          abort:
+            percentage:
+              numerator: 1
+              denominator: THOUSAND
+            http_status: 503
+          delay:
+            percentage:
+              numerator: 1
+              denominator: HUNDRED
+            fixed_delay: 5s
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: dgm-service-request-id
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  workloadSelector:
+    labels:
+      app: dgm-service
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.lua
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+          inline_code: |
+            function envoy_on_request(request_handle)
+              -- Generate or preserve request ID
+              local request_id = request_handle:headers():get("x-request-id")
+              if not request_id then
+                request_id = string.format("%s-%d", 
+                  request_handle:headers():get("x-forwarded-for") or "unknown",
+                  math.random(100000, 999999))
+                request_handle:headers():add("x-request-id", request_id)
+              end
+              
+              -- Add improvement correlation ID if present
+              local improvement_id = request_handle:headers():get("x-improvement-id")
+              if improvement_id then
+                request_handle:headers():add("x-correlation-id", improvement_id)
+              end
+              
+              -- Add constitutional tracking
+              request_handle:headers():add("x-constitutional-tracking", "enabled")
+              request_handle:headers():add("x-governance-audit", "required")
+            end
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: dgm-service-metrics-collection
+  namespace: acgs
+  labels:
+    app: dgm-service
+spec:
+  workloadSelector:
+    labels:
+      app: dgm-service
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.wasm
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+          config:
+            name: "dgm_metrics_collector"
+            root_id: "dgm_metrics"
+            configuration:
+              "@type": type.googleapis.com/google.protobuf.StringValue
+              value: |
+                {
+                  "metric_prefix": "dgm_service",
+                  "constitutional_hash": "cdd01ef066bc6cf2",
+                  "governance_mode": "democratic",
+                  "collect_improvement_metrics": true,
+                  "collect_constitutional_metrics": true,
+                  "collect_performance_metrics": true
+                }
+            vm_config:
+              vm_id: "dgm_metrics_vm"
+              runtime: "envoy.wasm.runtime.v8"
+              code:
+                local:
+                  inline_string: |
+                    class DGMMetricsCollector {
+                      constructor(rootContext) {
+                        this.rootContext = rootContext;
+                      }
+                      
+                      onRequestHeaders() {
+                        const path = this.getRequestHeader(":path");
+                        const method = this.getRequestHeader(":method");
+                        
+                        // Increment request counter
+                        this.incrementCounter("dgm_requests_total", {
+                          path: path,
+                          method: method,
+                          constitutional_hash: "cdd01ef066bc6cf2"
+                        });
+                        
+                        // Track improvement requests
+                        if (path.includes("/api/v1/dgm/improve")) {
+                          this.incrementCounter("dgm_improvement_requests_total");
+                        }
+                        
+                        // Track constitutional assessments
+                        if (path.includes("/constitutional/")) {
+                          this.incrementCounter("dgm_constitutional_assessments_total");
+                        }
+                        
+                        return FilterHeadersStatus.Continue;
+                      }
+                      
+                      onResponseHeaders() {
+                        const status = this.getResponseHeader(":status");
+                        const path = this.getRequestHeader(":path");
+                        
+                        // Track response status
+                        this.incrementCounter("dgm_responses_total", {
+                          status: status,
+                          path: path
+                        });
+                        
+                        // Track constitutional compliance
+                        const constitutionalCompliant = this.getResponseHeader("x-constitutional-compliant");
+                        if (constitutionalCompliant === "true") {
+                          this.incrementCounter("dgm_constitutional_compliant_total");
+                        }
+                        
+                        return FilterHeadersStatus.Continue;
+                      }
+                    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dgm-service-istio-config
+  namespace: acgs
+  labels:
+    app: dgm-service
+data:
+  mesh_config.yaml: |
+    defaultConfig:
+      proxyStatsMatcher:
+        inclusionRegexps:
+        - ".*circuit_breakers.*"
+        - ".*upstream_rq_retry.*"
+        - ".*upstream_rq_pending.*"
+        - ".*_cx_.*"
+        - ".*dgm_.*"
+        - ".*constitutional_.*"
+        - ".*improvement_.*"
+        exclusionRegexps:
+        - ".*osconfig.*"
+    extensionProviders:
+    - name: prometheus
+      prometheus:
+        configOverride:
+          metric_relabeling_configs:
+          - source_labels: [__name__]
+            regex: 'dgm_.*'
+            target_label: service
+            replacement: 'dgm-service'
+          - source_labels: [constitutional_hash]
+            target_label: constitutional_version
+    - name: jaeger
+      envoyOtelAls:
+        service: jaeger-collector.istio-system.svc.cluster.local
+        port: 14250
+    - name: otel
+      envoyOtelAls:
+        service: opentelemetry-collector.istio-system.svc.cluster.local
+        port: 4317
